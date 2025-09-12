@@ -1,0 +1,78 @@
+{
+  "7": {
+    "name": "Körperpflege/Wellness Produkt 1",
+    "price": 30
+  },
+  "8": {
+    "name": "Körperpflege/Wellness Produkt 2",
+    "price": 42
+  },
+  "9": {
+    "name": "Körperpflege/Wellness Produkt 3",
+    "price": 44
+  },
+  "10": {
+    "name": "Elektrischer Wasserspender für Schreibtisch",
+    "price": 45.99
+  },
+  "11": {
+    "name": "350ml Elektrischer Mixer Entsafter",
+    "price": 29.99
+  },
+  "12": {
+    "name": "Multifunktions Gemüseschneider",
+    "price": 19.99
+  },
+  "13": {
+    "name": "Luft Wasser Flasche mit Pumpe",
+    "price": 24.99
+  },
+  "14": {
+    "name": "10-1 Stück Aroma-Pads",
+    "price": 12.99
+  },
+  "15": {
+    "name": "Drahtlose elektrische tragbare Espressomaschine",
+    "price": 89.99
+  },
+  "16": {
+    "name": "Elektrische Küchenwaage Digital",
+    "price": 29.99
+  },
+  "17": {
+    "name": "Anti Lost Finder",
+    "price": 14.99
+  },
+  "18": {
+    "name": "Smart LED Tischlampe",
+    "price": 34.99
+  },
+  "19": {
+    "name": "Elektronisches Distanzmessgerät",
+    "price": 39.99
+  },
+  "20": {
+    "name": "ZigBee Smart DIY Motorisierte Rollos",
+    "price": 89.99
+  },
+  "21": {
+    "name": "LED Water Ripple Crystal",
+    "price": 39.99
+  },
+  "22": {
+    "name": "Waterproof RGB LED Solar Light",
+    "price": 24.99
+  },
+  "23": {
+    "name": "LED Motion Sensor Licht Drahtlose",
+    "price": 19.99
+  },
+  "24": {
+    "name": "COBLED Arbeitsleuchte",
+    "price": 29.99
+  },
+  "25": {
+    "name": "Nachtlichter mit Bewegungsmelder",
+    "price": 16.99
+  }
+}

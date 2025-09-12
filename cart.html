@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warenkorb - Marktplatz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link href="cart.css" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-shop" aria-hidden="true"></i> Marktplatz
+            </a>
+            <a href="index.html" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i> Zurück zum Shop
+            </a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-cart3" aria-hidden="true"></i> Ihr Warenkorb
+            </h1>
+            <p class="page-subtitle">Überprüfen Sie Ihre Artikel und schließen Sie Ihre Bestellung ab</p>
+        </div>
+
+        <div id="cartContent">
+            <!-- Wird dynamisch gefüllt -->
+            <button class="checkout-btn" aria-label="Zur Kasse gehen">
+                <i class="bi bi-cart-check" aria-hidden="true"></i>
+                <span class="checkout-text">Jetzt sicher bezahlen</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Vorschläge -->
+    <div class="container my-5" id="suggestions-container" style="display: none;">
+        <h2 class="mb-4">Das könnte Ihnen auch gefallen</h2>
+        <div class="row row-cols-1 row-cols-md-2 g-4" id="suggestions-grid">
+            <!-- Vorschläge werden hier dynamisch eingefügt -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+    <script src="cart.js"></script>
+</body>
+</html>

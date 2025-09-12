@@ -1,0 +1,1127 @@
+[
+  {
+    "id": 4,
+    "name": "Beleuchtung Produkt 1",
+    "price": 20,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/ware.png",
+    "description": "Hochwertige Beleuchtungslösungen für Ihr Zuhause.",
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Style Bundle",
+        "description": "Produkt + Accessoires",
+        "items": [
+          "Passendes Accessoire",
+          "Pflegeanleitung"
+        ],
+        "originalPrice": 30,
+        "bundlePrice": 25,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Look",
+        "description": "Vollständiges Outfit",
+        "items": [
+          "Passendes Accessoire",
+          "Zusätzliches Teil",
+          "Styling Beratung"
+        ],
+        "originalPrice": 50,
+        "bundlePrice": 35,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Beleuchtung Produkt 2",
+    "price": 22,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/ware.png",
+    "description": "Hochwertige Beleuchtungslösungen für Ihr Zuhause.",
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Fashion Pack",
+        "description": "Produkt + Styling",
+        "items": [
+          "Styling Guide",
+          "Pflegeprodukt"
+        ],
+        "originalPrice": 32,
+        "bundlePrice": 28,
+        "savings": 4
+      },
+      {
+        "id": "bundle2",
+        "name": "Wardrobe Essential",
+        "description": "Komplettes Set",
+        "items": [
+          "Styling Guide",
+          "Zusätzliches Teil",
+          "Personal Styling"
+        ],
+        "originalPrice": 55,
+        "bundlePrice": 40,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Beleuchtung Produkt 3",
+    "price": 24,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/ware.png",
+    "description": "Hochwertige Beleuchtungslösungen für Ihr Zuhause.",
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Trend Bundle",
+        "description": "Produkt + Trend Accessoires",
+        "items": [
+          "Trend Accessoire",
+          "Styling Tipps"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 30,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Trendsetter Pack",
+        "description": "Kompletter Look",
+        "items": [
+          "Trend Accessoire",
+          "Zusätzliches Teil",
+          "Personal Styling"
+        ],
+        "originalPrice": 60,
+        "bundlePrice": 45,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Elektrischer Wasserspender für Schreibtisch",
+    "price": 49.99,
+    "originalPrice": 69.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.",
+    "sku": "CJ1621032671155597312",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "wasser",
+      "spender",
+      "büro",
+      "automatisch"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Büro Bundle",
+        "description": "Wasserspender + Bürozubehör",
+        "items": [
+          "Ersatzpumpe",
+          "Reinigungsset"
+        ],
+        "originalPrice": 75,
+        "bundlePrice": 65,
+        "savings": 10
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Hydration",
+        "description": "Komplettes Hydration-Set",
+        "items": [
+          "Ersatzpumpe",
+          "Reinigungsset",
+          "Wasserfilterset"
+        ],
+        "originalPrice": 120,
+        "bundlePrice": 89,
+        "savings": 31
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "350ml Elektrischer Mixer Entsafter",
+    "price": 34.99,
+    "originalPrice": 49.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Kompakter elektrischer Mixer und Entsafter. Perfekt für Smoothies und frische Säfte unterwegs.",
+    "sku": "CJ1621032671155597313",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "mixer",
+      "entsafter",
+      "smoothie",
+      "tragbar"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Smoothie Starter",
+        "description": "Mixer + Rezepte",
+        "items": [
+          "Rezeptbuch",
+          "Ersatzklingen"
+        ],
+        "originalPrice": 55,
+        "bundlePrice": 45,
+        "savings": 10
+      },
+      {
+        "id": "bundle2",
+        "name": "Health Master",
+        "description": "Komplettes Gesundheits-Set",
+        "items": [
+          "Rezeptbuch",
+          "Ersatzklingen",
+          "Superfood Starter Kit"
+        ],
+        "originalPrice": 85,
+        "bundlePrice": 65,
+        "savings": 20
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Multifunktions Gemüseschneider",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Vielseitiger Gemüseschneider mit austauschbaren Klingen. Spart Zeit und Mühe beim Kochen.",
+    "sku": "CJ1621032671155597314",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "gemüse",
+      "schneider",
+      "küche",
+      "multifunktion"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Küchen Starter",
+        "description": "Schneider + Zubehör",
+        "items": [
+          "Extra Klingen",
+          "Reinigungsbürste"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 28,
+        "savings": 7
+      },
+      {
+        "id": "bundle2",
+        "name": "Profi Küche",
+        "description": "Professionelles Küchen-Set",
+        "items": [
+          "Extra Klingen",
+          "Reinigungsbürste",
+          "Aufbewahrungsbox"
+        ],
+        "originalPrice": 55,
+        "bundlePrice": 40,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Luft Wasser Flasche mit Pumpe",
+    "price": 24.99,
+    "originalPrice": 34.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Innovative Wasserflasche mit integrierter Luftpumpe. Perfekt für Sport, Reisen und den täglichen Gebrauch.",
+    "sku": "ALI1005007209",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "wasser",
+      "sport",
+      "pumpe",
+      "flasche"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Sport Bundle",
+        "description": "Flasche + Sport Zubehör",
+        "items": [
+          "Trageschlaufe",
+          "Reinigungsset"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 30,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Active Lifestyle",
+        "description": "Komplettes Sport-Set",
+        "items": [
+          "Trageschlaufe",
+          "Reinigungsset",
+          "Ersatzventil"
+        ],
+        "originalPrice": 50,
+        "bundlePrice": 40,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": "10-1 Stück Aroma-Pads",
+    "price": 12.99,
+    "originalPrice": 18.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Hochwertige Aroma-Pads für Kaffeemaschinen. Wiederverwendbar und umweltfreundlich für perfekten Kaffeegenuss.",
+    "sku": "ALI1005008666",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "kaffee",
+      "pads",
+      "wiederverwendbar",
+      "umweltfreundlich"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Kaffee Starter",
+        "description": "Pads + Kaffee Zubehör",
+        "items": [
+          "Reinigungsbürste",
+          "Aufbewahrungsbox"
+        ],
+        "originalPrice": 20,
+        "bundlePrice": 17,
+        "savings": 3
+      },
+      {
+        "id": "bundle2",
+        "name": "Barista Set",
+        "description": "Professionelles Kaffee-Set",
+        "items": [
+          "Reinigungsbürste",
+          "Aufbewahrungsbox",
+          "Premium Kaffeebohnen"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 25,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Drahtlose elektrische tragbare Espressomaschine",
+    "price": 89.99,
+    "originalPrice": 119.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Premium tragbare Espressomaschine mit drahtloser Technologie. Perfekter Espresso überall und jederzeit.",
+    "sku": "ALI1005007317",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "espresso",
+      "kaffee",
+      "tragbar",
+      "drahtlos"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Espresso Starter",
+        "description": "Maschine + Grundausstattung",
+        "items": [
+          "Reinigungsset",
+          "Ersatzkapseln"
+        ],
+        "originalPrice": 110,
+        "bundlePrice": 99,
+        "savings": 11
+      },
+      {
+        "id": "bundle2",
+        "name": "Barista Professional",
+        "description": "Professionelles Espresso-Set",
+        "items": [
+          "Reinigungsset",
+          "Ersatzkapseln",
+          "Premium Kaffeebohnen",
+          "Milchaufschäumer"
+        ],
+        "originalPrice": 150,
+        "bundlePrice": 125,
+        "savings": 25
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Elektrische Küchenwaage Digital",
+    "price": 29.99,
+    "originalPrice": 39.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Präzise digitale Küchenwaage mit LCD-Display. Ideal für genaues Wiegen beim Kochen und Backen.",
+    "sku": "ALI1005007542",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "waage",
+      "küche",
+      "digital",
+      "präzise"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Baking Starter",
+        "description": "Waage + Back-Zubehör",
+        "items": [
+          "Messbecher Set",
+          "Rezeptbuch"
+        ],
+        "originalPrice": 40,
+        "bundlePrice": 35,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Master Baker",
+        "description": "Professionelles Back-Set",
+        "items": [
+          "Messbecher Set",
+          "Rezeptbuch",
+          "Silikon Backformen",
+          "Digitaler Timer"
+        ],
+        "originalPrice": 70,
+        "bundlePrice": 55,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Bluetooth Anti-Lost Finder Wassertropfen",
+    "price": 14.99,
+    "originalPrice": 24.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/ware.png",
+    "description": "Kompakter Bluetooth-Tracker in Wassertropfen-Design. Finden Sie verlorene Gegenstände schnell und einfach über Ihr Smartphone.",
+    "sku": "CJ9FA9912D",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "bluetooth",
+      "tracker",
+      "finder"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 19.99,
+        "bundlePrice": 16.99,
+        "savings": 3
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 29.99,
+        "bundlePrice": 24.99,
+        "savings": 5
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Home Electronic Clock Digitale Uhr",
+    "price": 24.99,
+    "originalPrice": 34.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/ware.png",
+    "description": "Moderne digitale Wanduhr mit LED-Display. Perfekt für Wohnzimmer, Büro oder Küche mit großer, gut lesbarer Anzeige.",
+    "sku": "CJ135B501D",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "uhr",
+      "digital",
+      "led"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 34.989999999999995,
+        "bundlePrice": 29.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 49.989999999999995,
+        "bundlePrice": 39.989999999999995,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Elektronisches Distanzmessgerät Digital",
+    "price": 39.99,
+    "originalPrice": 59.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/ware.png",
+    "description": "Präzises elektronisches Distanzmessgerät mit LCD-Display. Ideal für Handwerker, Architekten und Heimwerker.",
+    "sku": "CJ0E94A308",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "messen",
+      "werkzeug",
+      "elektronisch",
+      "digital"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 49.99,
+        "bundlePrice": 44.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 64.99000000000001,
+        "bundlePrice": 54.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "name": "ZigBee Smart DIY Motorisierte Rollos",
+    "price": 89.99,
+    "originalPrice": 129.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/ware.png",
+    "description": "Intelligente motorisierte Rollos mit ZigBee-Technologie. Einfache Installation und Smart Home Integration für automatische Lichtsteuerung.",
+    "sku": "ALI1005005801",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "smart",
+      "automation"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 99.99,
+        "bundlePrice": 94.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 114.99,
+        "bundlePrice": 104.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "name": "LED Water Ripple Crystal",
+    "price": 39.99,
+    "originalPrice": 59.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/ware.png",
+    "description": "LED Water Ripple Ambient Night Light - USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
+    "features": [
+      "USB-betrieben für einfache Nutzung",
+      "Rotierende Projektion für dynamische Effekte",
+      "16 verschiedene Farben verfügbar",
+      "RGB dimmbar für perfekte Atmosphäre",
+      "Kristall-Design für elegante Optik"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Ambient Starter",
+        "description": "Lampe + Grundzubehör",
+        "items": [
+          "USB-Kabel",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 49.99,
+        "bundlePrice": 44.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Ambience",
+        "description": "Komplettes Beleuchtungs-Set",
+        "items": [
+          "USB-Kabel",
+          "Bedienungsanleitung",
+          "Fernbedienung"
+        ],
+        "originalPrice": 69.99,
+        "bundlePrice": 54.99,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Waterproof RGB LED Solar Light",
+    "price": 24.99,
+    "originalPrice": 34.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/ware.png",
+    "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.",
+    "features": [
+      "Wasserdicht (IP65) für Außenbereich",
+      "Solarbetrieben - keine Stromkosten",
+      "RGB-Farbwechsel für stimmungsvolle Beleuchtung",
+      "Automatische Dämmerungsschaltung",
+      "Einfache Installation ohne Verkabelung"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Garden Starter",
+        "description": "Solarleuchte + Montagezubehör",
+        "items": [
+          "Montageschrauben",
+          "Installationsanleitung"
+        ],
+        "originalPrice": 34.99,
+        "bundlePrice": 29.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Garden",
+        "description": "Komplettes Garten-Beleuchtungsset",
+        "items": [
+          "Montageschrauben",
+          "Installationsanleitung",
+          "Zusätzliche Befestigung"
+        ],
+        "originalPrice": 44.99,
+        "bundlePrice": 34.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 23,
+    "name": "LED Motion Sensor Licht Drahtlose",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/ware.png",
+    "description": "Drahtloses LED Motion Sensor Licht mit Bewegungsmelder. Perfekt für Flure, Treppen, Schränke und andere Bereiche wo automatische Beleuchtung benötigt wird.",
+    "features": [
+      "Drahtlos - einfache Installation überall",
+      "Bewegungsmelder mit 3m Reichweite",
+      "Batteriebetrieben - bis zu 6 Monate Laufzeit",
+      "Automatische Ein-/Ausschaltung",
+      "Kompaktes Design für unauffällige Montage"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Motion Starter",
+        "description": "Sensor-Licht + Batterien",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen"
+        ],
+        "originalPrice": 29.99,
+        "bundlePrice": 24.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Smart Home Pack",
+        "description": "Komplettes Sensor-Beleuchtungsset",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen",
+          "Zusätzliche Montageoption"
+        ],
+        "originalPrice": 39.99,
+        "bundlePrice": 29.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "name": "COBLED Arbeitsleuchte",
+    "price": 34.99,
+    "originalPrice": 49.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/ware.png",
+    "description": "Professionelle COBLED Arbeitsleuchte mit COB LED-Technologie. Ideal für Werkstatt, Garage, Camping und alle Arbeiten die helles, gleichmäßiges Licht benötigen.",
+    "features": [
+      "COB LED-Technologie für gleichmäßiges Licht",
+      "Bis zu 1000 Lumen Helligkeit",
+      "Wiederaufladbar über USB",
+      "Magnetische Befestigung und Haken",
+      "Wasserdicht (IP54) für Outdoor-Einsatz"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Work Starter",
+        "description": "Arbeitsleuchte + Ladezubehör",
+        "items": [
+          "USB-Ladekabel",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 49.99,
+        "bundlePrice": 39.99,
+        "savings": 10
+      },
+      {
+        "id": "bundle2",
+        "name": "Professional Work",
+        "description": "Komplettes Arbeitsbeleuchtungsset",
+        "items": [
+          "USB-Ladekabel",
+          "Bedienungsanleitung",
+          "Zusätzliche Halterung"
+        ],
+        "originalPrice": 64.99,
+        "bundlePrice": 49.99,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Nachtlichter mit Bewegungsmelder",
+    "price": 16.99,
+    "originalPrice": 24.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/ware.png",
+    "description": "Automatische Nachtlichter mit Bewegungsmelder für sicheres Navigieren in der Dunkelheit. Perfekt für Schlafzimmer, Badezimmer, Flure und Kinderzimmer.",
+    "features": [
+      "Automatischer Bewegungsmelder",
+      "Warmes, augenschonendes Licht",
+      "Batteriebetrieben - bis zu 12 Monate",
+      "Klebestreifen für einfache Montage",
+      "Kompaktes, unauffälliges Design"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Night Safety",
+        "description": "Nachtlicht + Batterien",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen"
+        ],
+        "originalPrice": 24.99,
+        "bundlePrice": 19.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Night Safety",
+        "description": "Komplettes Nachtbeleuchtungsset",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen",
+          "Zusätzliche Befestigungsoptionen"
+        ],
+        "originalPrice": 34.99,
+        "bundlePrice": 24.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "name": "4 In 1 Self Cleaning Hair Brush",
+    "price": 10.99,
+    "originalPrice": 20.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/ware.png",
+    "description": "Revolutionäre 4-in-1 selbstreinigende Haarbürste mit Anti-Statik-Massage-Funktion. Skalierbar, rotierend und selbstreinigend für perfekte Haarpflege.",
+    "sku": "CJ1711943102027542528",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "haarbürste",
+      "selbstreinigend",
+      "massage",
+      "anti-statik"
+    ],
+    "features": [
+      "4-in-1 Multifunktions-Design",
+      "Selbstreinigende Technologie",
+      "Anti-Statik-Massage-Funktion",
+      "Skalierbar und rotierend",
+      "Ergonomischer Griff"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 20.99,
+        "bundlePrice": 15.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 35.99,
+        "bundlePrice": 25.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Volcanic Flame Aroma Essential Oil Diffuser",
+    "price": 15.99,
+    "originalPrice": 29.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/ware.png",
+    "description": "USB-betriebener Vulkanflammen-Aromadiffuser mit Quallen-Luftbefeuchter und Nachtlicht. Perfekt für entspannende Atmosphäre und Wellness.",
+    "sku": "CJ1602125961166860288",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "aromadiffuser",
+      "luftbefeuchter",
+      "nachtlicht",
+      "wellness"
+    ],
+    "features": [
+      "Vulkanflammen-Design für entspannende Atmosphäre",
+      "USB-betrieben für einfache Nutzung",
+      "Quallen-Luftbefeuchter-Funktion",
+      "Integriertes Nachtlicht",
+      "Tragbar und kompakt"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 25.99,
+        "bundlePrice": 20.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 40.99,
+        "bundlePrice": 30.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Mini Muskel Massage Pistole",
+    "price": 24.99,
+    "originalPrice": 44.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/ware.png",
+    "description": "Kompakte Mini-Massage-Pistole für Muskelentspannung und Regeneration. Ideal für Sport, Fitness und tägliche Wellness-Routine.",
+    "sku": "ALI1005007060455752",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "massage",
+      "muskel",
+      "regeneration",
+      "sport"
+    ],
+    "features": [
+      "Kompaktes Mini-Design",
+      "Verschiedene Massage-Aufsätze",
+      "Einstellbare Geschwindigkeitsstufen",
+      "Wiederaufladbar über USB",
+      "Leise Betriebsgeräusche"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 34.99,
+        "bundlePrice": 29.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 49.99,
+        "bundlePrice": 39.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Haaröl-Applikator Kopfhaut Massager",
+    "price": 8.99,
+    "originalPrice": 16.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/ware.png",
+    "description": "Innovativer Haaröl-Applikator mit Kopfhaut-Massage-Funktion. Gleichmäßige Verteilung von Haarölen und entspannende Kopfhautmassage in einem Gerät.",
+    "sku": "ALI1005007010671073",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "haaröl",
+      "kopfhaut",
+      "massage",
+      "haarpflege"
+    ],
+    "features": [
+      "Präzise Haaröl-Verteilung",
+      "Integrierte Kopfhautmassage",
+      "Ergonomisches Design",
+      "Einfache Reinigung",
+      "Für alle Haartypen geeignet"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 18.99,
+        "bundlePrice": 13.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 33.99,
+        "bundlePrice": 23.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Mini Electric Shoulder And Neck Massager",
+    "price": 19.99,
+    "originalPrice": 35.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/ware.png",
+    "description": "Kompakter elektrischer Schulter- und Nackenmassager für die Halswirbelsäule. Perfekt für Büroarbeiter und zur Entspannung nach langen Arbeitstagen.",
+    "sku": "CJ08528DD9-69BF-4E58-9B32-A0BDE765DE33",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "nackenmassage",
+      "schulter",
+      "halswirbelsäule",
+      "entspannung"
+    ],
+    "features": [
+      "Speziell für Nacken und Schultern entwickelt",
+      "Elektrische Massage-Funktion",
+      "Kompakt und tragbar",
+      "Verschiedene Massage-Modi",
+      "Ideal für Büroarbeiter"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 29.99,
+        "bundlePrice": 24.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 44.99,
+        "bundlePrice": 34.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Elektrischer Kopfhaut-Massagekamm",
+    "price": 12.99,
+    "originalPrice": 22.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/ware.png",
+    "description": "Elektrischer Kopfhaut-Massagekamm für entspannende Kopfmassage und verbesserte Durchblutung. Fördert Haarwachstum und Entspannung.",
+    "sku": "ALI1005007987737586",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "kopfhautmassage",
+      "elektrisch",
+      "haarwachstum",
+      "entspannung"
+    ],
+    "features": [
+      "Elektrische Vibrations-Massage",
+      "Fördert die Durchblutung der Kopfhaut",
+      "Unterstützt natürliches Haarwachstum",
+      "Wasserdicht für Duschnutzung",
+      "Ergonomischer Griff"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 22.99,
+        "bundlePrice": 17.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 37.99,
+        "bundlePrice": 27.99,
+        "savings": 10
+      }
+    ]
+  }
+]

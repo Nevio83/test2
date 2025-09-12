@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neue Produkte – Marktplatz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <link href="./info.css" rel="stylesheet" />
+  <link href="./neue-produkte.css" rel="stylesheet" />
+</head>
+<body>
+  <header class="header-bar py-3">
+    <div class="container d-flex align-items-center gap-3">
+      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">Marktplatz</a>
+      <a href="../index.html" class="ms-auto back-btn"><i class="bi bi-arrow-left"></i> Zurück zum Shop</a>
+    </div>
+  </header>
+
+  <main class="container py-4 py-md-5">
+    <h1 class="page-title display-5 mb-3">Neue Produkte</h1>
+    <p class="lead mb-4">Entdecke die neuesten Artikel, frisch im Sortiment — regelmäßig aktualisiert.</p>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Was ist neu?</h2>
+      <ul class="clean-list">
+        <li>Ausgewählte Neuheiten in Technik/Gadgets, Mode, Fitness und Haushalt.</li>
+        <li>Frisch hinzugefügte Produkte erscheinen zuerst in dieser Übersicht.</li>
+        <li>Tipp: Aktiviere die Wunschliste, um Updates zu verfolgen.</li>
+      </ul>
+    </div>
+
+    <section class="new-grid">
+      <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
+        <h2 class="section-title h4 mb-0">Frisch eingetroffen</h2>
+        <div class="ms-auto d-flex gap-2">
+          <select id="newCategory" class="form-select form-select-sm rounded-pill">
+            <option value="Alle">Alle Kategorien</option>
+            <option>Technik/Gadgets</option>
+            <option>Mode</option>
+            <option>Fitness</option>
+            <option>Haushalt</option>
+          </select>
+        </div>
+      </div>
+      <div id="newGrid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"></div>
+      <template id="newTemplate">
+        <div class="col">
+          <a class="new-card h-100" target="_self">
+            <img class="new-image" alt="Neu">
+            <div class="new-body">
+              <span class="badge bg-primary-subtle text-primary mb-2">Neu</span>
+              <h3 class="new-title h6 mb-1"></h3>
+              <div class="text-muted small"></div>
+            </div>
+          </a>
+        </div>
+      </template>
+    </section>
+
+    <a class="back-btn mt-4 d-inline-flex" href="../index.html#productGrid"><i class="bi bi-stars"></i> Neuheiten ansehen</a>
+
+    <div class="footer-spacer"></div>
+  </main>
+  <script>
+  (function() {
+    async function loadProducts() { try { const r = await fetch('../products.json'); return await r.json(); } catch { return []; } }
+    function normalizeImagePath(src){ if(!src) return ''; if(src.startsWith('http')||src.startsWith('/')) return src; return '../'+src; }
+    function render(products) {
+      const grid = document.getElementById('newGrid');
+      const category = document.getElementById('newCategory').value;
+      const sorted = [...products].sort((a,b) => b.id - a.id)
+        .filter(p => category === 'Alle' || p.category === category)
+        .slice(0, 12);
+      const tpl = document.getElementById('newTemplate');
+      grid.innerHTML = sorted.map(p => {
+        const node = tpl.content.cloneNode(true);
+        const link = node.querySelector('.new-card');
+        link.href = `../produkte/produkt-${p.id}.html`;
+        const img = node.querySelector('.new-image');
+        img.src = normalizeImagePath(p.image); img.alt = p.name;
+        img.onerror = function(){ this.style.background = '#f8fafc'; this.style.objectFit = 'contain'; this.removeAttribute('src'); };
+        node.querySelector('.new-title').textContent = p.name;
+        node.querySelector('.small').textContent = `${p.category} · €${p.price.toFixed(2)}`;
+        return node.firstElementChild.outerHTML;
+      }).join('');
+    }
+    let cache = [];
+    loadProducts().then(p => { cache = p; render(cache); });
+    document.getElementById('newCategory').addEventListener('change', () => render(cache));
+  })();
+  </script>
+</body>
+</html>
