@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Versand – Marktplatz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <link href="./info.css" rel="stylesheet" />
+  <link href="./versand.css" rel="stylesheet" />
+</head>
+<body>
+  <header class="header-bar py-3">
+    <div class="container d-flex align-items-center gap-3">
+      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">Marktplatz</a>
+      <a href="../index.html" class="ms-auto back-btn"><i class="bi bi-arrow-left"></i> Zurück zum Shop</a>
+    </div>
+  </header>
+
+  <main class="container py-4 py-md-5">
+    <h1 class="page-title display-5 mb-3">Versand & Lieferzeiten</h1>
+    <p class="lead mb-4">Transparente Infos zu Versandarten, Zeiten und Kosten.</p>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Standard- und Expressversand</h2>
+      <ul class="clean-list">
+        <li>Standard: 3–5 Werktage</li>
+        <li>Express: 1–2 Werktage</li>
+        <li>Kostenlos ab 50€ Bestellwert innerhalb der EU</li>
+      </ul>
+    </div>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Sendungsverfolgung</h2>
+      <p class="mb-0 text-muted">Sobald deine Bestellung versendet wurde, erhältst du eine E-Mail mit Tracking-Link.</p>
+    </div>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Versandkostenrechner</h2>
+      <div class="row g-3 align-items-end">
+        <div class="col-md-6">
+          <label class="form-label">Land</label>
+          <select id="shipCountry" class="form-select">
+            <option value="DE">Deutschland</option>
+            <option value="AT">Österreich</option>
+            <option value="CH">Schweiz</option>
+            <option value="FR">Frankreich</option>
+            <option value="IT">Italien</option>
+            <option value="ES">Spanien</option>
+            <option value="NL">Niederlande</option>
+            <option value="BE">Belgien</option>
+            <option value="GB">Vereinigtes Königreich</option>
+            <option value="US">USA</option>
+            <option value="CA">Kanada</option>
+            <option value="AU">Australien</option>
+            <option value="JP">Japan</option>
+            <option value="BR">Brasilien</option>
+            <option value="MX">Mexiko</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <div class="calc-output">
+            <div><span class="text-muted">Versandkosten:</span> <strong id="shipCost">–</strong></div>
+            <div class="small text-muted">Kostenfrei in Europa, sonst 4,99€</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a class="back-btn" href="../index.html#productGrid"><i class="bi bi-box-seam"></i> Weiter shoppen</a>
+
+    <div class="footer-spacer"></div>
+  </main>
+  <script>
+    (function(){
+      function getShippingCost(code){
+        const eu = ['DE','AT','CH','FR','IT','ES','NL','BE','GB'];
+        return eu.includes(code) ? 0 : 4.99;
+      }
+      const select = document.getElementById('shipCountry');
+      const out = document.getElementById('shipCost');
+      function update(){
+        const val = select.value;
+        const cost = getShippingCost(val);
+        out.textContent = cost === 0 ? '0,00€' : cost.toFixed(2).replace('.', ',') + '€';
+      }
+      select.addEventListener('change', update);
+      update();
+    })();
+  </script>
+</body>
+</html>

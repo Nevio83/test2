@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kontakt – Marktplatz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <link href="./info.css" rel="stylesheet" />
+  <link href="./kontakt.css" rel="stylesheet" />
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+  <header class="header-bar py-3">
+    <div class="container d-flex align-items-center gap-3">
+      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">Marktplatz</a>
+      <a href="../index.html" class="ms-auto back-btn"><i class="bi bi-arrow-left"></i> Zurück zum Shop</a>
+    </div>
+  </header>
+
+  <main class="container py-4 py-md-5">
+    <h1 class="page-title display-5 mb-3">Kontakt</h1>
+    <p class="lead mb-4">Wir sind gerne für dich da. Nutze eine der folgenden Optionen:</p>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <h2 class="section-title h5 mb-2"><i class="bi bi-envelope me-2"></i>E-Mail</h2>
+          <p class="mb-1">marktplatzcontact@gmail.com</p>
+          <p class="text-muted mb-0">Antwort in der Regel innerhalb von 24 Stunden.</p>
+        </div>
+        <div class="col-md-6">
+          <h2 class="section-title h5 mb-2"><i class="bi bi-telephone me-2"></i>Telefon</h2>
+          <p class="mb-1">0800 123 456</p>
+          <p class="text-muted mb-0">Mo–Fr, 9:00–17:00 Uhr</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Schreib uns</h2>
+      <form id="contactForm" class="contact-form">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Name</label>
+            <input type="text" name="name" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">E-Mail</label>
+            <input type="email" name="email" class="form-control" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Nachricht</label>
+            <textarea name="message" rows="5" class="form-control" required></textarea>
+          </div>
+        </div>
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-primary rounded-pill px-4" type="submit">Senden</button>
+          <div id="contactStatus" class="ms-2 small text-muted"></div>
+        </div>
+      </form>
+    </div>
+
+    <a class="back-btn" href="../index.html#hilfeButton" onclick="localStorage.setItem('openHelpPanel', 'true')"><i class="bi bi-question-circle"></i> Hilfe & Support öffnen</a>
+
+    <div class="footer-spacer"></div>
+  </main>
+  <script>
+    (function(){
+      // EmailJS initialisieren
+      emailjs.init("60APtUSJgbItJHi_W");
+      
+      const form = document.getElementById('contactForm');
+      const statusEl = document.getElementById('contactStatus');
+      
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        statusEl.textContent = 'Senden...';
+        
+        const formData = new FormData(form);
+        const templateParams = {
+          to_name: 'Marktplatz Support',
+          to_email: 'marktplatzcontact@gmail.com',
+          from_name: formData.get('name'),
+          from_email: formData.get('email'),
+          message: formData.get('message'),
+          reply_to: formData.get('email')
+        };
+        
+        try {
+          // Direkte E-Mail über EmailJS senden
+          await emailjs.send('service_ftlmmdq', 'template_gam8j1a', templateParams);
+          statusEl.textContent = 'Nachricht erfolgreich gesendet!';
+          statusEl.style.color = 'green';
+          form.reset();
+        } catch (error) {
+          console.error('EmailJS Fehler:', error);
+          // Fallback: mailto-Link öffnen
+          const subject = encodeURIComponent('Kontaktanfrage - Marktplatz');
+          const body = encodeURIComponent(`Name: ${templateParams.from_name}\nE-Mail: ${templateParams.from_email}\n\nNachricht:\n${templateParams.message}`);
+          const mailtoLink = `mailto:marktplatzcontact@gmail.com?subject=${subject}&body=${body}`;
+          
+          window.open(mailtoLink, '_blank');
+          statusEl.textContent = 'E-Mail-Programm geöffnet. Bitte senden Sie die E-Mail manuell.';
+          statusEl.style.color = 'orange';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

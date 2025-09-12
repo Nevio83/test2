@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angebote – Marktplatz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <link href="./info.css" rel="stylesheet" />
+  <link href="./angebote.css" rel="stylesheet" />
+</head>
+<body>
+  <header class="header-bar py-3">
+    <div class="container d-flex align-items-center gap-3">
+      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">Marktplatz</a>
+      <a href="../index.html" class="ms-auto back-btn"><i class="bi bi-arrow-left"></i> Zurück zum Shop</a>
+    </div>
+  </header>
+
+  <main class="container py-4 py-md-5">
+    <h1 class="page-title display-5 mb-3">Aktuelle Angebote</h1>
+    <p class="lead mb-4">Hier findest du stark reduzierte Produkte, zeitlich begrenzte Deals und saisonale Aktionen.</p>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h4 mb-3">So nutzt du Angebote optimal</h2>
+      <ul class="clean-list">
+        <li>Checke täglich die Startseite für neue Deals.</li>
+        <li>Kombiniere Angebote mit kostenlosen Versand-Aktionen, wenn verfügbar.</li>
+        <li>Lege Lieblingsartikel auf die Wunschliste, um Preissenkungen schneller zu sehen.</li>
+      </ul>
+    </div>
+
+    <section class="deals-section">
+      <div class="deals-header d-flex flex-wrap gap-3 align-items-center mb-3">
+        <h2 class="section-title h4 mb-0">Heißeste Deals</h2>
+        <div class="ms-auto d-flex gap-2">
+          <select id="dealsCategory" class="form-select form-select-sm rounded-pill">
+            <option value="Alle">Alle Kategorien</option>
+            <option>Technik/Gadgets</option>
+            <option>Mode</option>
+            <option>Fitness</option>
+            <option>Haushalt</option>
+          </select>
+          <select id="dealsSort" class="form-select form-select-sm rounded-pill">
+            <option value="desc">Rabatt: Absteigend</option>
+            <option value="asc">Rabatt: Aufsteigend</option>
+          </select>
+        </div>
+      </div>
+      <div id="dealsGrid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"></div>
+      <template id="dealTemplate">
+        <div class="col">
+          <div class="deal-card h-100" style="position: relative;">
+            <div class="deal-badge">-20%</div>
+            <img class="deal-image" alt="Deal">
+            <div class="deal-body">
+              <h3 class="deal-title h6 mb-1"></h3>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="deal-price h5 mb-0"></span>
+                <span class="deal-old text-muted text-decoration-line-through"></span>
+              </div>
+              <div class="d-flex gap-2">
+                <a class="btn btn-primary btn-sm rounded-pill px-3" target="_self">Ansehen</a>
+                <a class="btn btn-outline-secondary btn-sm rounded-pill px-3" target="_self">In Kategorie</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </section>
+
+    <a class="back-btn mt-4 d-inline-flex" href="../index.html#productGrid"><i class="bi bi-lightning-charge"></i> Jetzt Angebote entdecken</a>
+
+    <div class="footer-spacer"></div>
+  </main>
+  <script>
+  (function() {
+    async function loadProducts() {
+      try { const res = await fetch('../products.json'); return await res.json(); } catch { return []; }
+    }
+
+    function normalizeImagePath(src) {
+      if (!src) return '';
+      if (src.startsWith('http') || src.startsWith('/')) return src;
+      return '../' + src; // von infos/ nach Root relativ machen
+    }
+
+    function getDiscountInfo(p) {
+      const hasSalePrice = typeof p.salePrice === 'number' && p.salePrice < p.price;
+      const hasDiscountPercent = typeof p.discountPercent === 'number' && p.discountPercent > 0 && p.discountPercent < 1;
+      if (hasSalePrice) {
+        const discount = Math.max(0, 1 - (p.salePrice / p.price));
+        return { isDeal: true, discount, newPrice: p.salePrice };
+      }
+      if (hasDiscountPercent) {
+        const newPrice = Math.max(0, p.price * (1 - p.discountPercent));
+        return { isDeal: true, discount: p.discountPercent, newPrice };
+      }
+      return { isDeal: false, discount: 0, newPrice: p.price };
+    }
+
+    function formatPrice(value) { return '€' + value.toFixed(2); }
+
+    function renderDeals(products) {
+      const grid = document.getElementById('dealsGrid');
+      const category = document.getElementById('dealsCategory').value;
+      const sortDir = document.getElementById('dealsSort').value;
+
+      const withDiscount = products.map(p => ({ ...p, ...getDiscountInfo(p) }))
+        .filter(p => p.isDeal)
+        .filter(p => category === 'Alle' || p.category === category)
+        .sort((a,b) => sortDir === 'asc' ? a.discount - b.discount : b.discount - a.discount)
+        .slice(0, 12);
+
+      if (withDiscount.length === 0) {
+        grid.innerHTML = `
+          <div class="col-12">
+            <div class="info-card p-4 p-md-5 text-center">
+              <div class="mb-2" style="font-size:2rem;">🛍️</div>
+              <h3 class="h5 mb-2">Es gibt gerade keine Angebote</h3>
+              <p class="text-muted mb-3">Schau später wieder vorbei – wir aktualisieren regelmäßig.</p>
+              <a href="../index.html#productGrid" class="btn btn-primary rounded-pill px-4">Alle Produkte ansehen</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const tpl = document.getElementById('dealTemplate');
+      grid.innerHTML = withDiscount.map(d => {
+        const node = tpl.content.cloneNode(true);
+        node.querySelector('.deal-badge').textContent = `-${Math.round(d.discount*100)}%`;
+        const img = node.querySelector('.deal-image');
+        img.src = normalizeImagePath(d.image); img.alt = d.name;
+        img.onerror = function() { this.style.background = '#f8fafc'; this.style.objectFit = 'contain'; this.removeAttribute('src'); };
+        node.querySelector('.deal-title').textContent = d.name;
+        node.querySelector('.deal-price').textContent = formatPrice(d.newPrice);
+        node.querySelector('.deal-old').textContent = formatPrice(d.price);
+        const viewBtn = node.querySelector('.btn.btn-primary');
+        viewBtn.href = `../produkte/produkt-${d.id}.html`;
+        const catBtn = node.querySelector('.btn.btn-outline-secondary');
+        catBtn.href = `../index.html?category=${encodeURIComponent(d.category)}#productGrid`;
+        return node.firstElementChild.outerHTML;
+      }).join('');
+    }
+
+    let productsCache = [];
+    loadProducts().then(p => { productsCache = p; renderDeals(productsCache); });
+    document.getElementById('dealsCategory').addEventListener('change', () => renderDeals(productsCache));
+    document.getElementById('dealsSort').addEventListener('change', () => renderDeals(productsCache));
+  })();
+  </script>
+</body>
+</html>

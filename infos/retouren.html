@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retouren – Marktplatz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <link href="./info.css" rel="stylesheet" />
+  <link href="./retouren.css" rel="stylesheet" />
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+  <header class="header-bar py-3">
+    <div class="container d-flex align-items-center gap-3">
+      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">Marktplatz</a>
+      <a href="../index.html" class="ms-auto back-btn"><i class="bi bi-arrow-left"></i> Zurück zum Shop</a>
+    </div>
+  </header>
+
+  <main class="container py-4 py-md-5">
+    <h1 class="page-title display-5 mb-3">Retouren</h1>
+    <p class="lead mb-4">Einfach und transparent – so funktioniert die Rückgabe.</p>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Rückgabefrist & Bedingungen</h2>
+      <ul class="clean-list">
+        <li>30 Tage Rückgaberecht nach Erhalt der Ware.</li>
+        <li>Artikel bitte im Originalzustand zurücksenden.</li>
+        <li>Geld-zurück oder Umtausch nach Prüfung der Retoure.</li>
+      </ul>
+    </div>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">So startest du eine Retoure</h2>
+      <ul class="clean-list">
+        <li>Kontaktiere uns über <a href="./kontakt.html">Kontakt</a> mit deiner Bestellnummer.</li>
+        <li>Du erhältst ein Retourenlabel und weitere Anweisungen.</li>
+      </ul>
+    </div>
+
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Retoure anfragen</h2>
+      <form id="returnForm" class="return-form">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Bestellnummer</label>
+            <input type="text" name="orderId" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">E-Mail</label>
+            <input type="email" name="email" class="form-control" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Grund (optional)</label>
+            <input type="text" name="reason" class="form-control" placeholder="z.B. passt nicht">
+          </div>
+        </div>
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-primary rounded-pill px-4" type="submit">Anfragen</button>
+          <div id="returnStatus" class="ms-2 small text-muted"></div>
+        </div>
+      </form>
+    </div>
+
+    <a class="back-btn" href="../index.html#productGrid"><i class="bi bi-bag"></i> Weiter einkaufen</a>
+
+    <div class="footer-spacer"></div>
+  </main>
+  <script>
+  (function(){
+    // EmailJS initialisieren
+    emailjs.init("60APtUSJgbItJHi_W");
+    
+    const form = document.getElementById('returnForm');
+    const statusEl = document.getElementById('returnStatus');
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = 'Senden...';
+      
+      const formData = new FormData(form);
+      const templateParams = {
+        to_name: 'Marktplatz Support',
+        to_email: 'marktplatzcontact@gmail.com',
+        from_name: formData.get('email'),
+        from_email: formData.get('email'),
+        message: `Retoure-Anfrage für Bestellung #${formData.get('orderId')}\n\nKunden-E-Mail: ${formData.get('email')}\nGrund: ${formData.get('reason') || 'Nicht angegeben'}`,
+        reply_to: formData.get('email')
+      };
+      
+      try {
+        // Verwende das funktionierende Contact Template
+        const contactParams = {
+          from_name: `Retoure #${formData.get('orderId')}`,
+          from_email: formData.get('email'),
+          message: `RETOURE-ANFRAGE\n\nBestellnummer: ${formData.get('orderId')}\nKunden-E-Mail: ${formData.get('email')}\nGrund: ${formData.get('reason') || 'Nicht angegeben'}`
+        };
+        
+        console.log('Sende mit Contact Template:', contactParams);
+        const result = await emailjs.send('service_ftlmmdq', 'template_gam8j1a', contactParams);
+        console.log('EmailJS Erfolg:', result);
+        statusEl.textContent = 'Retoure-Anfrage erfolgreich gesendet!';
+        statusEl.style.color = 'green';
+        form.reset();
+      } catch (error) {
+        console.error('EmailJS Fehler Details:', error);
+        console.error('Error object:', JSON.stringify(error, null, 2));
+        
+        // EmailJS funktioniert nicht - verwende sofort mailto
+        const subject = encodeURIComponent(`Retoure-Anfrage #${formData.get('orderId')}`);
+        const body = encodeURIComponent(`Bestellnummer: ${formData.get('orderId')}\nE-Mail: ${formData.get('email')}\nGrund: ${formData.get('reason') || 'Nicht angegeben'}`);
+        const mailtoLink = `mailto:marktplatzcontact@gmail.com?subject=${subject}&body=${body}`;
+        
+        window.open(mailtoLink, '_blank');
+        statusEl.textContent = 'E-Mail-Programm geöffnet. Bitte senden Sie die E-Mail manuell.';
+        statusEl.style.color = 'orange';
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

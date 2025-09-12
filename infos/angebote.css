@@ -1,0 +1,8 @@
+/* Angebote Seite */
+.deals-section { margin-top: 1rem; }
+.deal-card { background: #fff; border: 1px solid var(--border-color); border-radius: 16px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,.06); transition: transform .2s ease, box-shadow .2s ease; }
+.deal-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,.1); }
+.deal-image { width: 100%; height: 180px; object-fit: cover; display: block; }
+.deal-body { padding: 1rem; }
+.deal-badge { position: absolute; background: #ef4444; color: #fff; padding: .4rem .6rem; border-radius: 0 12px 12px 0; font-weight: 700; top: 8px; left: 0; box-shadow: 0 8px 20px rgba(239,68,68,.25); }
+@media (min-width: 768px) { .deal-image { height: 200px; } }
