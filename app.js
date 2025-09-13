@@ -158,7 +158,7 @@ function renderProducts(products) {
 }
 
 function observeProductCards() {
-  const cards = document.querySelectorAll('.product-card');
+  const cards = document.querySelectorAll('.lumiere-product-card');
   const observer = new IntersectionObserver((entries, obs) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
@@ -174,8 +174,8 @@ function observeProductCards() {
 function initializeAddToCartButtons() {
   // Warte kurz, um sicherzustellen, dass alle Elemente gerendert sind
   setTimeout(() => {
-    const buttons = document.querySelectorAll('.add-to-cart');
-    console.log('Found', buttons.length, 'add-to-cart buttons');
+    const buttons = document.querySelectorAll('.lumiere-add-to-cart-btn');
+    console.log('Found', buttons.length, 'lumiere-add-to-cart buttons');
     
     buttons.forEach((button, index) => {
       const productId = button.dataset.productId;
@@ -204,18 +204,23 @@ function initializeAddToCartButtons() {
 
 // Produktkarten-Klicks initialisieren
 function initializeProductCardClicks() {
-  document.querySelectorAll('.product-card').forEach(card => {
+  document.querySelectorAll('.lumiere-product-card').forEach(card => {
     card.addEventListener('click', (e) => {
       // Verhindere Navigation bei Klicks auf Buttons oder deren Kinder
-      if (e.target.closest('.wishlist-btn') || 
-          e.target.closest('.add-to-cart') || 
-          e.target.classList.contains('add-to-cart') ||
+      if (e.target.closest('.lumiere-wishlist-btn') || 
+          e.target.closest('.lumiere-add-to-cart-btn') || 
+          e.target.classList.contains('lumiere-add-to-cart-btn') ||
           e.target.closest('button')) {
         return;
       }
       
       const productId = parseInt(card.dataset.productId);
-      window.location.href = `produkte/produkt-${productId}.html`;
+      // Only navigate to existing product pages (10+)
+      if (productId >= 10) {
+        window.location.href = `produkte/produkt-${productId}.html`;
+      } else {
+        console.log('Product page does not exist for ID:', productId);
+      }
     });
     
     // Cursor-Pointer für bessere UX
@@ -457,9 +462,6 @@ function debounce(func, timeout = 300) {
 
 function filterProducts(products, searchText, category) {
   return products.filter(product => {
-    // Skip products with IDs 4, 5, and 6
-    if (product.id >= 4 && product.id <= 6) return false;
-    
     const matchesSearch = product.name.toLowerCase().includes(searchText.toLowerCase()) ||
       product.description.toLowerCase().includes(searchText.toLowerCase());
     const matchesCategory = category === 'Alle Kategorien' || product.category === category;
@@ -481,24 +483,40 @@ function initializeCartDropdown() {
   const cartDropdown = document.getElementById('cartDropdown');
   const closeCartDropdown = document.getElementById('closeCartDropdown');
 
+  console.log('Initializing cart dropdown:', { cartButton: !!cartButton, cartDropdown: !!cartDropdown });
+
   if (cartButton && cartDropdown) {
-    cartButton.addEventListener('click', (e) => {
+    // Remove any existing event listeners
+    cartButton.removeEventListener('click', handleCartClick);
+    
+    function handleCartClick(e) {
       e.preventDefault();
+      e.stopPropagation();
+      console.log('Cart button clicked');
+      
       // Always render fresh data when opening dropdown
       renderCartDropdown();
       cartDropdown.classList.toggle('show');
-      // Sichtbarkeit für mobile Geräte absichern
+      
+      // Ensure visibility
       if (cartDropdown.classList.contains('show')) {
         cartDropdown.style.display = 'block';
+        console.log('Cart dropdown shown');
       } else {
         cartDropdown.style.display = 'none';
+        console.log('Cart dropdown hidden');
       }
-    });
+    }
+    
+    cartButton.addEventListener('click', handleCartClick);
+  } else {
+    console.error('Cart elements not found:', { cartButton: !!cartButton, cartDropdown: !!cartDropdown });
   }
   if (closeCartDropdown && cartDropdown) {
     closeCartDropdown.addEventListener('click', (e) => {
       e.preventDefault();
       cartDropdown.classList.remove('show');
+      cartDropdown.style.display = 'none';
       cartDropdown.style.display = 'none'; // Overlay immer ausblenden
     });
   }
@@ -785,11 +803,11 @@ function renderBestsellers(products) {
 }
 
 function initializeWishlistButtons() {
-  const wishlistButtons = document.querySelectorAll('.lumiere-wishlist-btn, .wishlist-btn');
-  wishlistButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const productId = this.getAttribute('data-product-id');
+  document.querySelectorAll('.lumiere-wishlist-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // Verhindert, dass das Klick-Event zur Karte weitergeht
+      const productId = parseInt(button.dataset.productId);
       toggleWishlist(productId);
     });
   });
@@ -808,10 +826,46 @@ function initializeAddToCartButtons() {
   });
 }
 
+// Initialize category navigation
+function initializeCategoryNavigation() {
+  const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
+  const categoryTitle = document.querySelector('.category-title');
+  
+  categoryTabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      // Remove active class from all tabs
+      categoryTabs.forEach(t => t.classList.remove('active'));
+      
+      // Add active class to clicked tab
+      tab.classList.add('active');
+      
+      const category = tab.dataset.category;
+      const categoryName = category === 'alle' ? 'Alle Kategorien' : category;
+      
+      // Update title
+      if (categoryTitle) {
+        categoryTitle.textContent = category === 'alle' ? 'Alle Produkte' : categoryName;
+      }
+      
+      // Filter and render products
+      loadProducts().then(products => {
+        const filtered = filterProducts(products, '', categoryName);
+        renderProducts(filtered);
+      });
+    });
+  });
+}
+
 // Filter- und Sortier-Event-Listener
 document.addEventListener('DOMContentLoaded', () => {
   updateCartCounter();
   initializeCartDropdown();
+  initializeCategoryNavigation();
+  initializeProductCardClicks();
+  initializeWishlistButtons();
+  initializeAddToCartButtons();
   
   // Sofortige Platzhalter für fehlende Bilder anwenden
   applyPlaceholdersForMissingImages();
