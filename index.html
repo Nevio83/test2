@@ -97,68 +97,39 @@
       </div>
     </div>
 
-    <!-- Main Navigation -->
-    <nav class="lumiere-nav">
+    <!-- Simplified Navigation like in image -->
+    <nav class="simple-nav">
       <div class="container">
-        <div class="nav-content">
+        <div class="nav-content-simple">
           <!-- Logo -->
-          <div class="nav-logo">
-            <a href="#" onclick="window.location.reload(); return false;">MARKTPLATZ</a>
+          <div class="nav-logo-simple">
+            <a href="#" onclick="window.location.reload(); return false;">Marktplatz</a>
+            <span class="nav-tagline"></span>
           </div>
 
-          <!-- Main Menu -->
-          <div class="nav-menu">
-            <div class="nav-item dropdown">
-              <a href="#" class="nav-link">Alle Produkte</a>
-              <div class="dropdown-menu">
-                <a href="#" class="dropdown-item">Technik/Gadgets</a>
-                <a href="#" class="dropdown-item">Beleuchtung</a>
-                <a href="#" class="dropdown-item">Körperpflege/Wellness</a>
-                <a href="#" class="dropdown-item">Haushalt und Küche</a>
-              </div>
-            </div>
-            <div class="nav-item">
-              <a href="#" class="nav-link">Kategorien</a>
-            </div>
-            <div class="nav-item">
-              <a href="#" class="nav-link">Bestseller</a>
-            </div>
-            <div class="nav-item">
-              <a href="#" class="nav-link">Angebote</a>
-            </div>
-          </div>
-
-          <!-- Right Side -->
-          <div class="nav-actions">
-            <!-- Search -->
-            <div class="search-container">
-              <button class="search-btn" id="searchToggle">
+          <!-- Search Bar -->
+          <div class="search-bar-center">
+            <div class="search-input-group">
+              <input type="search" id="searchInput" placeholder="Produktsuche..." class="search-field">
+              <button class="search-button" type="button" aria-label="Suchen">
                 <i class="bi bi-search"></i>
               </button>
-              <div class="search-overlay" id="searchOverlay">
-                <div class="search-content">
-                  <input type="search" id="searchInput" placeholder="Suche..." class="search-input">
-                  <button class="search-close" id="searchClose">&times;</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Cart & Wishlist -->
-            <div class="nav-icons">
-              <a href="wishlist.html" id="wishlistButton" class="nav-icon">
-                <i class="bi bi-heart"></i>
-              </a>
-              <a href="#" id="cartButton" class="nav-icon cart-icon">
-                <i class="bi bi-bag"></i>
-                <span id="cartCounter" class="cart-counter">0</span>
-              </a>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Cart Dropdown -->
-      <div class="cart-dropdown" id="cartDropdown">
+          <!-- Right Side Icons -->
+          <div class="nav-actions-simple">
+            <a href="wishlist.html" id="wishlistButton" class="nav-icon-simple">
+              <i class="bi bi-heart"></i>
+            </a>
+            <div class="position-relative">
+              <a href="#" id="cartButton" class="nav-icon-simple cart-link">
+                <i class="bi bi-cart3"></i>
+                <span>Warenkorb</span>
+                <span id="cartCounter" class="cart-counter">0</span>
+              </a>
+              <!-- Cart Dropdown -->
+              <div class="cart-dropdown" id="cartDropdown">
         <div class="cart-dropdown-header">
           <h6 class="mb-0">Warenkorb</h6>
           <button class="btn-close" id="closeCartDropdown">&times;</button>
@@ -178,6 +149,9 @@
             <button class="btn btn-outline-secondary" id="clearCart">
               <i class="bi bi-trash"></i>
             </button>
+          </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -255,6 +229,53 @@ if (searchInput && mobileSearchBtn) {
             </div>
         </section>
 
+        <!-- Lumière Adapted Top Banner -->
+        <section class="lumiere-top-banner">
+            <div class="container">
+                <div class="lumiere-hero-main">
+                    <div class="lumiere-badge-circle">10</div>
+                    <div class="lumiere-hero-text">
+                        <h2>Smart Home & Sicherheit Angebote</h2>
+                        <p>Homematic IP Neuheiten & Highlights</p>
+                    </div>
+                    <div class="lumiere-hero-products">
+                        <img src="produkt bilder/ware.png" alt="Smart Home Device 1" class="lumiere-hero-img">
+                        <img src="produkt bilder/ware.png" alt="Smart Home Device 2" class="lumiere-hero-img">
+                        <img src="produkt bilder/ware.png" alt="Smart Home Device 3" class="lumiere-hero-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lumière Adapted Feature Banners Row -->
+        <section class="lumiere-feature-row">
+            <div class="container">
+                <div class="lumiere-feature-grid">
+                    <div class="lumiere-feature-item" onclick="window.location.href='produkte/produkt-10.html'" style="cursor: pointer;">
+                        <div class="lumiere-feature-num">10</div>
+                        <div class="lumiere-feature-content">
+                            <h3>Technik Angebote</h3>
+                            <p>Bis zu 50% sparen</p>
+                        </div>
+                    </div>
+                    <div class="lumiere-feature-item" onclick="window.location.href='produkte/produkt-11.html'" style="cursor: pointer;">
+                        <div class="lumiere-feature-num">15</div>
+                        <div class="lumiere-feature-content">
+                            <h3>Beleuchtung Sale</h3>
+                            <p>LED Highlights</p>
+                        </div>
+                    </div>
+                    <div class="lumiere-feature-item" onclick="window.location.href='produkte/produkt-12.html'" style="cursor: pointer;">
+                        <div class="lumiere-feature-num">8</div>
+                        <div class="lumiere-feature-content">
+                            <h3>Haushalt Deals</h3>
+                            <p>Küche & mehr</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Categories Section - Lumière Style -->
         <section class="categories-section">
             <div class="container">
@@ -322,6 +343,34 @@ if (searchInput && mobileSearchBtn) {
                         </div>
                     </div>
                 </div>
+
+                <!-- Lumière Category Navigation -->
+                <section class="lumiere-category-nav">
+                    <div class="container">
+                        <div class="lumiere-category-tabs">
+                            <a href="#" class="lumiere-category-tab active" data-category="alle">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                                <span>Alle Kategorien</span>
+                            </a>
+                            <a href="#" class="lumiere-category-tab" data-category="Technik/Gadgets">
+                                <i class="bi bi-cpu"></i>
+                                <span>Technik/Gadgets</span>
+                            </a>
+                            <a href="#" class="lumiere-category-tab" data-category="Beleuchtung">
+                                <i class="bi bi-lightbulb"></i>
+                                <span>Beleuchtung</span>
+                            </a>
+                            <a href="#" class="lumiere-category-tab" data-category="Körperpflege/Wellness">
+                                <i class="bi bi-heart-pulse"></i>
+                                <span>Körperpflege/Wellness</span>
+                            </a>
+                            <a href="#" class="lumiere-category-tab" data-category="Haushalt und Küche">
+                                <i class="bi bi-house"></i>
+                                <span>Haushalt & Küche</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
 
                 <!-- All Products Section -->
                 <div class="product-category-section">

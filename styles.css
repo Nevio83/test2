@@ -74,6 +74,12 @@ body {
   --orange-gradient: linear-gradient(135deg, #ff8c00 0%, #ff6b35 100%);
   --orange-light: #ffa726;
   --orange-dark: #e65100;
+
+  /* Lumière feature colors */
+  --lumiere-accent: var(--lumiere-gray-800);
+  --lumiere-accent-light: var(--lumiere-gray-600);
+  --lumiere-feature-bg: var(--lumiere-gray-900);
+  --lumiere-feature-gradient: linear-gradient(135deg, var(--lumiere-gray-900) 0%, var(--lumiere-gray-800) 100%);
 }
 
 /* Lumière Design Exact Base Styles */
@@ -88,6 +94,452 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Lumière Adapted Top Banner */
+.lumiere-top-banner {
+  background: linear-gradient(135deg, var(--lumiere-black) 0%, var(--lumiere-gray-800) 100%);
+  border-radius: var(--radius-xl);
+  margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+  max-width: 1000px;
+  width: 95%;
+}
+
+.lumiere-hero-main {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: var(--lumiere-white);
+  position: relative;
+  gap: 12px;
+}
+
+.lumiere-badge-circle {
+  position: absolute;
+  top: 8px;
+  right: 15px;
+  background: var(--lumiere-white);
+  color: var(--lumiere-black);
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: var(--shadow-md);
+}
+
+.lumiere-hero-text {
+  flex: 1;
+}
+
+.lumiere-hero-text h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--lumiere-white);
+}
+
+.lumiere-hero-text p {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  color: var(--lumiere-white);
+  margin: 0;
+}
+
+.lumiere-hero-products {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.lumiere-hero-img {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Lumière Feature Banners Row */
+.lumiere-feature-row {
+  margin: 30px 0;
+}
+
+.lumiere-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.lumiere-feature-item {
+  background: var(--lumiere-feature-gradient);
+  color: var(--lumiere-white);
+  padding: 25px 20px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.lumiere-feature-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.lumiere-feature-num {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--lumiere-white);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.lumiere-feature-content h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  color: var(--lumiere-white);
+}
+
+.lumiere-feature-content p {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin: 0;
+  color: var(--lumiere-white);
+}
+
+/* Lumière Category Navigation */
+.lumiere-category-nav {
+  background: var(--lumiere-gray-50);
+  padding: 20px 0;
+  margin: 30px 0;
+  border-radius: var(--radius-xl);
+}
+
+.lumiere-category-tabs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lumiere-category-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--lumiere-white);
+  color: var(--lumiere-gray-700);
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-sm);
+}
+
+.lumiere-category-tab:hover {
+  background: var(--lumiere-gray-100);
+  color: var(--lumiere-black);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.lumiere-category-tab.active {
+  background: var(--lumiere-black);
+  color: var(--lumiere-white);
+  border-color: var(--lumiere-black);
+}
+
+.lumiere-category-tab i {
+  font-size: 16px;
+}
+
+/* Responsive Design for Lumière Adapted Elements */
+@media (max-width: 768px) {
+  .lumiere-hero-main {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 20px;
+    gap: 20px;
+  }
+  
+  .lumiere-badge-circle {
+    position: static;
+    margin-bottom: 15px;
+  }
+  
+  .lumiere-hero-text h2 {
+    font-size: 1.8rem;
+  }
+  
+  .lumiere-hero-text p {
+    font-size: 1rem;
+  }
+  
+  .lumiere-hero-products {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .lumiere-feature-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .lumiere-feature-item {
+    padding: 20px 15px;
+  }
+  
+  .lumiere-category-tabs {
+    gap: 8px;
+    padding: 0 10px;
+  }
+  
+  .lumiere-category-tab {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+  
+  .lumiere-category-tab span {
+    display: none;
+  }
+  
+  .lumiere-category-tab i {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lumiere-hero-main {
+    padding: 20px 15px;
+  }
+  
+  .lumiere-hero-text h2 {
+    font-size: 1.5rem;
+  }
+  
+  .lumiere-hero-img {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .lumiere-feature-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .lumiere-category-nav {
+    margin: 20px 0;
+    padding: 15px 0;
+  }
+}
+
+/* Responsive Design for Simplified Navigation */
+@media (max-width: 768px) {
+  .nav-content-simple {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .search-bar-center {
+    order: 3;
+    max-width: 100%;
+    margin: 0;
+  }
+  
+  .nav-actions-simple {
+    order: 2;
+    gap: 15px;
+  }
+  
+  .nav-logo-simple {
+    order: 1;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .simple-nav {
+    padding: 10px 0;
+  }
+  
+  .nav-content-simple {
+    gap: 10px;
+  }
+  
+  .nav-logo-simple a {
+    font-size: 20px;
+  }
+  
+  .nav-tagline {
+    font-size: 10px;
+  }
+  
+  .search-field {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .search-button {
+    padding: 10px 15px;
+  }
+  
+  .cart-link {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .cart-link span:not(.cart-counter) {
+    display: none;
+  }
+}
+
+/* Simplified Navigation Bar (matching image) */
+.simple-nav {
+  background: var(--lumiere-white);
+  border-bottom: 1px solid var(--lumiere-gray-200);
+  padding: 15px 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-content-simple {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.nav-logo-simple {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.nav-logo-simple a {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--lumiere-black);
+  text-decoration: none;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.nav-tagline {
+  font-size: 11px;
+  color: var(--lumiere-gray-600);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.search-bar-center {
+  flex: 1;
+  max-width: 500px;
+  margin: 0 20px;
+}
+
+.search-input-group {
+  display: flex;
+  border: 1px solid var(--lumiere-gray-300);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--lumiere-white);
+}
+
+.search-field {
+  flex: 1;
+  border: none;
+  padding: 12px 15px;
+  font-size: 14px;
+  outline: none;
+  background: transparent;
+}
+
+.search-field::placeholder {
+  color: var(--lumiere-gray-500);
+}
+
+.search-button {
+  background: var(--lumiere-black);
+  color: var(--lumiere-white);
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.search-button:hover {
+  background: var(--lumiere-gray-800);
+}
+
+.nav-actions-simple {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-icon-simple {
+  display: flex;
+  align-items: center;
+  color: var(--lumiere-gray-700);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.nav-icon-simple:hover {
+  color: var(--lumiere-black);
+}
+
+.nav-icon-simple i {
+  font-size: 18px;
+}
+
+.cart-link {
+  background: var(--lumiere-black);
+  color: var(--lumiere-white) !important;
+  padding: 8px 15px;
+  border-radius: var(--radius);
+  gap: 8px;
+  font-weight: 500;
+  position: relative;
+}
+
+.cart-link:hover {
+  background: var(--lumiere-gray-800);
+  color: var(--lumiere-white) !important;
+}
+
+.cart-counter {
+  background: var(--lumiere-white);
+  color: var(--lumiere-black);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  line-height: 1.2;
 }
 
 /* Lumière Design Announcement Bar */
@@ -1276,20 +1728,19 @@ body {
 /* Moderne Warenkorb-Dropdown */
 .cart-dropdown {
   position: absolute;
-  top: calc(100% + 20px);
+  top: calc(100% + 10px);
   right: 0;
-  width: 420px;
-  min-height: 200px;
-  max-height: 600px;
-  background: var(--card-bg);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-heavy);
-  border: 1px solid var(--border-color);
+  width: 400px;
+  background: var(--lumiere-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-20px) scale(0.95);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 1000;
+  transform: translateY(-10px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--lumiere-gray-200);
+  max-height: 500px;
   overflow: hidden;
 }
 
