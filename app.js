@@ -71,6 +71,9 @@ function isInWishlist(productId) {
 }
 
 function toggleWishlist(productId) {
+  // Trigger animation immediately for better responsiveness
+  triggerWishlistButtonAnimation(productId);
+  
   loadProducts().then(products => {
     const product = products.find(p => Number(p.id) === Number(productId));
     if (!product) {
@@ -80,8 +83,9 @@ function toggleWishlist(productId) {
     }
     
     let wishlist = getWishlist();
+    const wasInWishlist = isInWishlist(productId);
     
-    if (isInWishlist(productId)) {
+    if (wasInWishlist) {
       wishlist = wishlist.filter(item => Number(item.id) !== Number(productId));
       showAlert('Produkt von der Wunschliste entfernt', 'wishlist.html');
     } else {
@@ -93,15 +97,22 @@ function toggleWishlist(productId) {
         description: product.description
       });
       showAlert('Produkt zur Wunschliste hinzugefügt', 'wishlist.html');
-      
-      // Trigger wishlist button animation
-      triggerWishlistButtonAnimation(productId);
     }
     
     setWishlist(wishlist);
     
-    // Update only the specific wishlist button instead of re-rendering everything
-    updateWishlistButtonState(productId);
+    // Update the wishlist button state
+    const wishlistButton = document.querySelector(`[data-product-id="${productId}"] .lumiere-wishlist-btn`);
+    if (wishlistButton) {
+      wishlistButton.classList.toggle('active', !wasInWishlist);
+      const icon = wishlistButton.querySelector('i');
+      if (icon) {
+        icon.className = wasInWishlist ? 'bi bi-heart' : 'bi bi-heart-fill';
+      }
+    }
+    
+    // Update navigation wishlist counter if it exists
+    updateWishlistCounter();
   });
 }
 
@@ -338,18 +349,15 @@ window.updateCartCounter = function() {
 // Animation trigger functions
 function triggerCartButtonAnimation(productId) {
   // Animate the specific add-to-cart button that was clicked
-  const cartButton = document.querySelector(`[data-product-id="${productId}"] .add-to-cart`) ||
-                     document.querySelector('.add-to-cart:focus') ||
-                     document.querySelector('.add-to-cart:last-child');
+  const cartButton = document.querySelector(`[data-product-id="${productId}"] .lumiere-add-to-cart-btn`) ||
+                     document.querySelector('.lumiere-add-to-cart-btn:focus') ||
+                     document.querySelector('.lumiere-add-to-cart-btn:last-child');
   
   if (cartButton) {
     cartButton.classList.add('success-animation');
     setTimeout(() => {
       cartButton.classList.remove('success-animation');
     }, 800);
-    
-    // Floating cart emoji removed as requested
-    // createFloatingSuccessIndicator(cartButton, '🛒', 'cart');
   }
   
   // Enhanced colorful cart icon animation (no emojis)
@@ -367,10 +375,20 @@ function triggerCartButtonAnimation(productId) {
 
 function triggerWishlistButtonAnimation(productId) {
   // Animate the specific wishlist button that was clicked
-  const wishlistButton = document.querySelector(`[data-product-id="${productId}"] .wishlist-btn`);
+  const wishlistButton = document.querySelector(`[data-product-id="${productId}"] .lumiere-wishlist-btn`);
   
   if (wishlistButton) {
+    // Add success animation class
     wishlistButton.classList.add('success-animation');
+    
+    // Toggle active state and update icon
+    const isActive = wishlistButton.classList.toggle('active');
+    const icon = wishlistButton.querySelector('i');
+    if (icon) {
+      icon.className = isActive ? 'bi bi-heart-fill' : 'bi bi-heart';
+    }
+    
+    // Remove animation class after it completes
     setTimeout(() => {
       wishlistButton.classList.remove('success-animation');
     }, 600);
