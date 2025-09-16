@@ -102,7 +102,7 @@ body {
   border-radius: var(--radius-xl);
   margin: 20px auto;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   max-width: 1000px;
   width: 95%;
 }
@@ -118,19 +118,20 @@ body {
 
 .lumiere-badge-circle {
   position: absolute;
-  top: 8px;
-  right: 15px;
+  top: -18px;
+  right: -18px;
   background: var(--lumiere-white);
   color: var(--lumiere-black);
-  width: 35px;
-  height: 35px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   font-weight: bold;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
 }
 
 .lumiere-hero-text {
@@ -4589,6 +4590,7 @@ div#hilfePanel.offen,
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -4606,56 +4608,29 @@ div#hilfePanel.offen,
 .recommendation-add-btn {
   width: 32px;
   height: 32px;
-  background: var(--primary_gradient);
+  background: #1a1a1a;
   border: none;
   border-radius: 50%;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s ease;
+  opacity: 1;
+  visibility: visible;
 }
 
 .recommendation-add-btn:hover {
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
-  background: linear-gradient(135deg, #764ba2, #f093fb);
+  background: #333;
 }
 
 .recommendation-add-btn:active {
+  transform: scale(0.98);
+  background: #000;
 }
 
-.recommendation-add-btn i {
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-}
-
-.recommendation-add-btn:hover i {
-  transform: scale(1.2);
-}
-
-/* Ripple-Effekt für Add-Button */
-.recommendation-add-btn::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.3s ease, height 0.3s ease;
-}
-
-.recommendation-add-btn:hover::after {
-  width: 60px;
-  height: 60px;
-}
 
 /* Scrollbar für Empfehlungen */
 .recommendations-grid::-webkit-scrollbar {
@@ -4705,10 +4680,6 @@ div#hilfePanel.offen,
   .recommendation-add-btn {
     width: 28px;
     height: 28px;
-  }
-
-  .recommendation-add-btn i {
-    font-size: 0.8rem;
   }
 
   .recommendations-grid {
@@ -4783,7 +4754,7 @@ div#hilfePanel.offen,
   }
 
   .recommendation-add-btn:hover {
-    background: var(--primary_gradient);
+    background: #1a1a1a;
   }
 }
 

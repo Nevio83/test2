@@ -132,7 +132,17 @@ function updateWishlistButtonState(productId) {
 // Produktgrid rendern - Lumière Design Style
 function renderProducts(products) {
   const grid = document.getElementById('productGrid');
-  if (!grid) return;
+  if (!grid) {
+    console.error('Product grid element not found!');
+    return;
+  }
+  
+  console.log('Rendering', products.length, 'products to grid');
+  
+  if (products.length === 0) {
+    grid.innerHTML = '<div class="no-products">Keine Produkte gefunden.</div>';
+    return;
+  }
   
   grid.innerHTML = products.map(product => {
     const price = product.price || product.salePrice || 0;
@@ -440,7 +450,7 @@ window.showAlert = function(message, redirectTo = 'cart.html') {
   alert.style.padding = '0.75rem 2rem';
   alert.style.textAlign = 'center';
   alert.style.borderRadius = '2rem';
-  alert.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+  alert.style.boxShadow = '0 8px 32px rgba(0,0,0,.04)';
   alert.style.background = 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)';
   alert.style.color = '#fff';
   alert.style.fontWeight = '500';
@@ -470,7 +480,7 @@ window.showAlert = function(message, redirectTo = 'cart.html') {
 // removeFromCart function moved to cart.js to avoid duplication
 
 // Filter- und Sortierfunktionen
-function debounce(func, timeout = 300) {
+function debounce(func, timeout = 50) {
   let timer;
   return (...args) => {
     clearTimeout(timer);
@@ -479,12 +489,26 @@ function debounce(func, timeout = 300) {
 }
 
 function filterProducts(products, searchText, category) {
-  return products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchText.toLowerCase());
-    const matchesCategory = category === 'Alle Kategorien' || product.category === category;
+  console.log('filterProducts called with:', { searchText, category, productsCount: products.length });
+  
+  const filtered = products.filter(product => {
+    const matchesSearch = searchText === '' || product.name.toLowerCase().includes(searchText.toLowerCase());
+    
+    // Category matching
+    let matchesCategory;
+    if (category === 'alle' || category === 'Alle Kategorien') {
+      matchesCategory = true; // Show all categories
+    } else {
+      matchesCategory = product.category === category; // Exact match only
+    }
+    
+    console.log(`Product ${product.name} (${product.category}): search=${matchesSearch}, category=${matchesCategory}`);
+    
     return matchesSearch && matchesCategory;
   });
+  
+  console.log('Filtered result:', filtered.length, 'products');
+  return filtered;
 }
 
 function sortProducts(products, sortOrder) {
@@ -493,6 +517,24 @@ function sortProducts(products, sortOrder) {
       ? a.price - b.price
       : b.price - a.price
   );
+}
+
+// Funktion zum Berechnen der Produktanzahl pro Kategorie
+function calculateCategoryCounts(products) {
+  const counts = {
+    'Technik/Gadgets': 0,
+    'Beleuchtung': 0,
+    'Haushalt und Küche': 0,
+    'Körperpflege/Wellness': 0
+  };
+  
+  products.forEach(product => {
+    if (counts.hasOwnProperty(product.category)) {
+      counts[product.category]++;
+    }
+  });
+  
+  return counts;
 }
 
 // Warenkorb Dropdown öffnen/schließen und rendern
@@ -867,10 +909,31 @@ function initializeCategoryNavigation() {
         categoryTitle.textContent = category === 'alle' ? 'Alle Produkte' : categoryName;
       }
       
-      // Filter and render products
+      // Filter and render products with existing search text
+      const searchInput = document.getElementById('searchInput');
+      const searchText = searchInput ? searchInput.value.trim() : '';
+      
+      console.log('Category tab clicked:', categoryName);
+      console.log('Filtering products with category:', categoryName);
+      
       loadProducts().then(products => {
-        const filtered = filterProducts(products, '', categoryName);
-        renderProducts(filtered);
+        const filtered = filterProducts(products, searchText, categoryName);
+        console.log('Filtered products count:', filtered.length);
+        
+        const sorted = sortProducts(
+          filtered,
+          document.getElementById('priceSort') ? document.getElementById('priceSort').value : 'Aufsteigend'
+        );
+        renderProducts(sorted);
+        
+        // Scroll to products
+        const grid = document.getElementById('productGrid');
+        if (grid) {
+          console.log('Scrolling to product grid');
+          grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          console.error('Product grid not found for scrolling');
+        }
       });
     });
   });
@@ -878,6 +941,7 @@ function initializeCategoryNavigation() {
 
 // Filter- und Sortier-Event-Listener
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM Content Loaded - Starting initialization');
   updateCartCounter();
   initializeCartDropdown();
   initializeCategoryNavigation();
@@ -887,6 +951,90 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Sofortige Platzhalter für fehlende Bilder anwenden
   applyPlaceholdersForMissingImages();
+  
+  // SOFORT alle Produkte laden und anzeigen - MEHRFACH VERSUCHEN
+  console.log('=== STARTING IMMEDIATE PRODUCT LOAD ===');
+  
+  const loadAndShowProducts = () => {
+    loadProducts().then(products => {
+      console.log('✅ Products loaded successfully:', products.length);
+      
+      if (products.length === 0) {
+        console.error('❌ No products found in JSON file!');
+        return;
+      }
+      
+      // Prüfe ob productGrid existiert
+      const productGrid = document.getElementById('productGrid');
+      if (!productGrid) {
+        console.error('❌ Product grid element not found!');
+        return;
+      }
+      
+      console.log('📦 Rendering products to grid...');
+      renderProducts(products);
+      
+      // Prüfe ob Produkte tatsächlich gerendert wurden
+      setTimeout(() => {
+        const renderedProducts = productGrid.children.length;
+        console.log('🔍 Products in grid after render:', renderedProducts);
+        
+        if (renderedProducts === 0) {
+          console.error('❌ No products rendered to grid!');
+          // Versuche nochmal
+          console.log('🔄 Retrying product render...');
+          renderProducts(products);
+        } else {
+          console.log('✅ Products successfully rendered!');
+        }
+      }, 100);
+      
+      // Speichere die Produkte im localStorage
+      localStorage.setItem('allProducts', JSON.stringify(products));
+      
+      // Berechne Kategorie-Anzahlen und aktualisiere die Anzeige
+      const counts = calculateCategoryCounts(products);
+      updateCategoryTiles(counts);
+      
+      // UI-Elemente korrekt setzen
+      const categoryFilter = document.getElementById('categoryFilter');
+      if (categoryFilter) {
+        categoryFilter.value = 'Alle Kategorien';
+        console.log('✅ Category filter set to "Alle Kategorien"');
+      }
+      
+      const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
+      categoryTabs.forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.category === 'alle') {
+          tab.classList.add('active');
+          console.log('✅ "Alle" tab set as active');
+        }
+      });
+      
+      const categoryTitle = document.querySelector('.category-title');
+      if (categoryTitle) {
+        categoryTitle.textContent = 'Alle Produkte';
+        console.log('✅ Category title set to "Alle Produkte"');
+      }
+      
+      console.log('=== INITIAL SETUP COMPLETE ===');
+    }).catch(error => {
+      console.error('❌ Error loading products:', error);
+    });
+  };
+  
+  // Sofort laden
+  loadAndShowProducts();
+  
+  // Backup nach 500ms
+  setTimeout(() => {
+    const productGrid = document.getElementById('productGrid');
+    if (!productGrid || productGrid.children.length === 0) {
+      console.log('🔄 Backup product load triggered...');
+      loadAndShowProducts();
+    }
+  }, 500);
 
   const searchInput = document.getElementById('searchInput');
   const categoryFilter = document.getElementById('categoryFilter');
@@ -924,18 +1072,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const updateFilters = debounce(() => {
     loadProducts().then(products => {
       updateDealsNotice(products);
-      const filtered = filterProducts(
-        products,
-        searchInput ? searchInput.value : '',
-        categoryFilter ? categoryFilter.value : 'Alle Kategorien'
-      );
+      const searchText = searchInput ? searchInput.value.trim() : '';
+      const category = categoryFilter ? categoryFilter.value : 'Alle Kategorien';
+      
+      const filtered = filterProducts(products, searchText, category);
       const sorted = sortProducts(
         filtered,
         priceSort ? priceSort.value : 'Aufsteigend'
       );
       renderProducts(sorted);
     });
-  }, 300);
+  }, 50);
 
   if (searchInput) {
     searchInput.addEventListener('input', updateFilters);
@@ -949,8 +1096,28 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  if (categoryFilter) categoryFilter.addEventListener('change', updateFilters);
-  if (priceSort) priceSort.addEventListener('change', updateFilters);
+  if (categoryFilter) categoryFilter.addEventListener('change', () => {
+    // Force immediate filter update
+    const searchText = searchInput ? searchInput.value.trim() : '';
+    const category = categoryFilter ? categoryFilter.value : 'Alle Kategorien';
+    
+    loadProducts().then(products => {
+      updateDealsNotice(products);
+      const filtered = filterProducts(products, searchText, category);
+      const sorted = sortProducts(
+        filtered,
+        priceSort ? priceSort.value : 'Aufsteigend'
+      );
+      renderProducts(sorted);
+    });
+    
+    // Scroll to products when category changes
+    const productGrid = document.getElementById('productGrid');
+    if (productGrid) {
+      productGrid.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+  if (priceSort) priceSort.addEventListener('change', debounce(updateFilters, 50));
 
   // Speichere die Sucheingabe bei Enter und verhindere Seitenreload
   if (searchInput) {
@@ -988,44 +1155,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Initiales Laden und Rendern
-  loadProducts().then(products => {
-    // Speichere die Produkte im localStorage für bessere Verfügbarkeit
-    localStorage.setItem('allProducts', JSON.stringify(products));
-    console.log('Products saved to localStorage:', products.length);
-    
-    updateDealsNotice(products);
-    
-    // Render Bestseller Section (first 4 products)
-    const bestsellers = products.slice(0, 4);
-    renderBestsellers(bestsellers);
-    
-    // Render All Products
-    const filtered = filterProducts(
-      products,
-      searchInput ? searchInput.value : '',
-      categoryFilter ? categoryFilter.value : 'Alle Kategorien'
-    );
-    const sorted = sortProducts(
-      filtered,
-      priceSort ? priceSort.value : 'Aufsteigend'
-    );
-    renderProducts(sorted);
-    
-    // Bilder optimieren und Platzhalter anwenden
-    optimizeImages();
-    setTimeout(applyPlaceholdersForMissingImages, 100); // Verzögerung für bessere Erkennung
-    
-    // Zusätzliche Button-Initialisierung nach einer kurzen Verzögerung
-    setTimeout(() => {
-      console.log('Additional button initialization...');
-      initializeAddToCartButtons();
-      initializeCustomDropdown();
-    }, 500);
-  });
+  // Sekundäres Laden für Filter-Setup (falls das erste Laden fehlschlägt)
+  setTimeout(() => {
+    console.log('Secondary product loading check...');
+    const productGrid = document.getElementById('productGrid');
+    if (productGrid && productGrid.children.length === 0) {
+      console.log('No products found in grid, loading again...');
+      loadProducts().then(products => {
+        console.log('Secondary load - Products loaded:', products.length);
+        renderProducts(products);
+        console.log('Secondary load - Products rendered');
+      });
+    }
+  }, 1000);
   
-  // Initialize category tiles
-  initializeCategoryTiles();
+  // Initialize other components after a short delay
+  setTimeout(() => {
+    initializeCustomDropdown();
+    
+    // Ensure category tiles are initialized even if products aren't loaded yet
+    console.log('Initializing category tiles from timeout');
+    initializeCategoryTiles();
+  }, 500);
 });
 
 // Custom Category Dropdown Functionality
@@ -1399,45 +1550,94 @@ window.testClearCartButton = testClearCartButton;
 window.testClearCartSimple = testClearCartSimple;
 
 // Initialize category tiles and "Alle Produkte entdecken" button
-function initializeCategoryTiles() {
-  document.querySelectorAll('.category-tile').forEach(tile => {
-    tile.addEventListener('click', function(e) {
+function initializeCategoryTiles(products) {
+  console.log('Initializing category tiles with products:', products ? products.length : 'no products');
+  
+  const categoryTiles = document.querySelectorAll('.lumiere-feature-item');
+  console.log('Found category tiles:', categoryTiles.length);
+  
+  categoryTiles.forEach((tile, index) => {
+    console.log('Setting up tile', index);
+    
+    // Entferne alte Event Listener
+    tile.removeAttribute('onclick');
+    
+    // Entferne alle existierenden Event Listener
+    const newTile = tile.cloneNode(true);
+    tile.parentNode.replaceChild(newTile, tile);
+    
+    newTile.addEventListener('click', (e) => {
       e.preventDefault();
-      const category = this.dataset.category;
-      const filter = document.getElementById('categoryFilter');
-      if (filter) {
-        filter.value = category;
-        filter.dispatchEvent(new Event('change'));
+      e.stopPropagation();
+      
+      console.log('Category tile clicked, index:', index);
+      
+      let category;
+      switch(index) {
+        case 0:
+          category = 'Technik/Gadgets';
+          break;
+        case 1:
+          category = 'Beleuchtung';
+          break;
+        case 2:
+          category = 'Haushalt und Küche';
+          break;
+        default:
+          category = 'Alle Kategorien';
       }
-      const grid = document.getElementById('productGrid');
-      if (grid) {
-        grid.scrollIntoView({ behavior: 'smooth' });
+      
+      console.log('Selected category:', category);
+      
+      // Aktualisiere auch die Kategorie-Navigation-Tabs
+      const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
+      categoryTabs.forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.category === category || 
+            (category === 'Alle Kategorien' && tab.dataset.category === 'alle')) {
+          tab.classList.add('active');
+        }
+      });
+      
+      // Aktualisiere Kategorie-Titel
+      const categoryTitle = document.querySelector('.category-title');
+      if (categoryTitle) {
+        categoryTitle.textContent = category === 'Alle Kategorien' ? 'Alle Produkte' : category;
       }
-      // Clear search input when category is clicked
-      const searchInput = document.getElementById('searchInput');
-      if (searchInput) {
-        searchInput.value = '';
-        localStorage.removeItem('lastSearch');
-      }
+      
+      // Lade Produkte und filtere sie
+      loadProducts().then(loadedProducts => {
+        console.log('Products loaded for filtering:', loadedProducts.length);
+        
+        const searchInput = document.getElementById('searchInput');
+        const searchText = searchInput ? searchInput.value.trim() : '';
+        
+        console.log('Filtering with:', { searchText, category });
+        
+        const filtered = filterProducts(loadedProducts, searchText, category);
+        console.log('Filtered products count:', filtered.length);
+        
+        const sorted = sortProducts(
+          filtered,
+          document.getElementById('priceSort') ? document.getElementById('priceSort').value : 'Aufsteigend'
+        );
+        renderProducts(sorted);
+        
+        // Scrolle zu den Produkten
+        const grid = document.getElementById('productGrid');
+        if (grid) {
+          console.log('Scrolling to product grid');
+          grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          console.error('Product grid not found for scrolling');
+        }
+      }).catch(error => {
+        console.error('Error loading products for tile click:', error);
+      });
     });
+    
+    console.log('Event listener added to tile', index);
   });
-  // NEU: 'Alle Produkte entdecken' Button zeigt wieder alle Produkte
-  const allBtn = document.querySelector('a.btn.btn-outline-dark');
-  if (allBtn) {
-    allBtn.addEventListener('click', function(e) {
-      const filter = document.getElementById('categoryFilter');
-      if (filter) {
-        filter.value = 'Alle Kategorien';
-        filter.dispatchEvent(new Event('change'));
-      }
-      // Clear search input when "Alle Produkte entdecken" is clicked
-      const searchInput = document.getElementById('searchInput');
-      if (searchInput) {
-        searchInput.value = '';
-        localStorage.removeItem('lastSearch');
-      }
-    });
-  }
 }
 
 // Test-Funktion für Live Updates
