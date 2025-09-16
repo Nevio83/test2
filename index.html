@@ -109,12 +109,14 @@
 
           <!-- Search Bar -->
           <div class="search-bar-center">
-            <div class="search-input-group">
-              <input type="search" id="searchInput" placeholder="Produktsuche..." class="search-field">
-              <button class="search-button" type="button" aria-label="Suchen">
-                <i class="bi bi-search"></i>
-              </button>
-            </div>
+            <form class="search-form mx-auto">
+              <div class="input-group">
+                <input type="search" id="searchInput" class="form-control rounded-pill" placeholder="Suche...">
+                <button class="btn btn-primary rounded-pill px-3" type="button" aria-label="Suchen" id="mobileSearchBtn">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </form>
           </div>
 
           <!-- Right Side Icons -->
@@ -206,7 +208,12 @@ if (searchInput && mobileSearchBtn) {
   }
   mobileSearchBtn.addEventListener('click', function(e) {
     e.preventDefault();
-    showSearchField();
+    if (isMobile()) {
+      showSearchField();
+    } else {
+      // Desktop: Scroll to products without clearing search
+      scrollToProducts();
+    }
   });
   searchInput.addEventListener('blur', function() {
     setTimeout(hideSearchField, 150);
@@ -217,6 +224,28 @@ if (searchInput && mobileSearchBtn) {
     mobileSearchBtn.style.display = 'block';
   }
 }
+
+// Function to scroll to products without clearing search
+function scrollToProducts() {
+  // Scroll to product grid
+  const productGrid = document.getElementById('productGrid');
+  if (productGrid) {
+    productGrid.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+// Add Enter key functionality to search input
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        scrollToProducts();
+      }
+    });
+  }
+});
 </script>
 
     <!-- Main Content -->
@@ -251,22 +280,22 @@ if (searchInput && mobileSearchBtn) {
         <section class="lumiere-feature-row">
             <div class="container">
                 <div class="lumiere-feature-grid">
-                    <div class="lumiere-feature-item" onclick="window.location.href='produkte/produkt-10.html'" style="cursor: pointer;">
-                        <div class="lumiere-feature-num">10</div>
+                    <div class="lumiere-feature-item" style="cursor: pointer;">
+                        <div class="lumiere-feature-num">4</div>
                         <div class="lumiere-feature-content">
                             <h3>Technik Angebote</h3>
                             <p>Bis zu 50% sparen</p>
                         </div>
                     </div>
-                    <div class="lumiere-feature-item" onclick="window.location.href='produkte/produkt-11.html'" style="cursor: pointer;">
-                        <div class="lumiere-feature-num">15</div>
+                    <div class="lumiere-feature-item" style="cursor: pointer;">
+                        <div class="lumiere-feature-num">5</div>
                         <div class="lumiere-feature-content">
                             <h3>Beleuchtung Sale</h3>
                             <p>LED Highlights</p>
                         </div>
                     </div>
-                    <div class="lumiere-feature-item" onclick="window.location.href='produkte/produkt-12.html'" style="cursor: pointer;">
-                        <div class="lumiere-feature-num">8</div>
+                    <div class="lumiere-feature-item" style="cursor: pointer;">
+                        <div class="lumiere-feature-num">7</div>
                         <div class="lumiere-feature-content">
                             <h3>Haushalt Deals</h3>
                             <p>Küche & mehr</p>
@@ -342,7 +371,7 @@ if (searchInput && mobileSearchBtn) {
                             </a>
                             <a href="#" class="lumiere-category-tab" data-category="Haushalt und Küche">
                                 <i class="bi bi-house"></i>
-                                <span>Haushalt & Küche</span>
+                                <span>Haushalt und Küche</span>
                             </a>
                         </div>
                     </div>
@@ -351,7 +380,7 @@ if (searchInput && mobileSearchBtn) {
                 <!-- All Products Section -->
                 <div class="product-category-section">
                     <div class="category-header">
-                        <h2 class="category-title">Alle Produkt</h2>
+                        <h2 class="category-title">Alle Produkte</h2>
                     </div>
                     <div class="product-grid" id="productGrid">
                         <!-- Products will be loaded here by JavaScript -->
