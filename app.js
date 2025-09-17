@@ -1,6 +1,9 @@
 // Warenkorb-Initialisierung
 let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
 
+// Verhindere mehrfache Initialisierung
+let addToCartButtonsInitialized = false;
+
 // Make sure clearCart is globally available immediately
 window.clearCart = function() {
   console.log('clearCart function called');
@@ -101,19 +104,30 @@ function toggleWishlist(productId) {
     
     setWishlist(wishlist);
     
-    // Update the wishlist button state
-    const wishlistButton = document.querySelector(`[data-product-id="${productId}"] .lumiere-wishlist-btn`);
-    if (wishlistButton) {
-      wishlistButton.classList.toggle('active', !wasInWishlist);
-      const icon = wishlistButton.querySelector('i');
-      if (icon) {
-        icon.className = wasInWishlist ? 'bi bi-heart' : 'bi bi-heart-fill';
+    // Update all wishlist button states for this product
+    const wishlistButtons = document.querySelectorAll(`[data-product-id="${productId}"] .lumiere-wishlist-btn`);
+    wishlistButtons.forEach(wishlistButton => {
+      if (wishlistButton) {
+        wishlistButton.classList.toggle('active', !wasInWishlist);
+        const icon = wishlistButton.querySelector('i');
+        if (icon) {
+          icon.className = wasInWishlist ? 'bi bi-heart' : 'bi bi-heart-fill';
+        }
       }
-    }
+    });
     
     // Update navigation wishlist counter if it exists
     updateWishlistCounter();
   });
+}
+
+function updateWishlistCounter() {
+  const wishlistCounter = document.getElementById('wishlistCounter');
+  if (wishlistCounter) {
+    const wishlistCount = getWishlist().length;
+    wishlistCounter.textContent = wishlistCount;
+    wishlistCounter.style.display = wishlistCount > 0 ? 'block' : 'none';
+  }
 }
 
 function updateWishlistButtonState(productId) {
@@ -137,6 +151,9 @@ function renderProducts(products) {
     return;
   }
   
+  // Reset button initialization flag when rendering new products
+  addToCartButtonsInitialized = false;
+  
   console.log('Rendering', products.length, 'products to grid');
   
   if (products.length === 0) {
@@ -151,7 +168,7 @@ function renderProducts(products) {
     return `
       <div class="lumiere-product-card" data-product-id="${product.id}">
         <div class="lumiere-image-container">
-          <img src="produkt bilder/ware.png" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" class="lumiere-product-image lazy-load" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
           <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
           <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
             <i class="bi bi-heart"></i>
@@ -162,7 +179,7 @@ function renderProducts(products) {
           <div class="lumiere-price-section">
             <span class="lumiere-price">€${formattedPrice}</span>
           </div>
-          <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}" onclick="addToCart(${product.id}); return false;">
+          <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
             In den Warenkorb
           </button>
         </div>
@@ -175,6 +192,12 @@ function renderProducts(products) {
   initializeWishlistButtons();
   initializeProductCardClicks();
   observeProductCards();
+  
+  // Initialize lazy loading for new images
+  if (window.lazyLoader) {
+    window.lazyLoader.observeNewImages();
+  }
+  
   optimizeImages(); // Bilder nach dem Rendern optimieren
 }
 
@@ -193,16 +216,23 @@ function observeProductCards() {
 
 // Add-to-cart Buttons initialisieren
 function initializeAddToCartButtons() {
+  // Verhindere mehrfache Initialisierung
+  if (addToCartButtonsInitialized) {
+    console.log('AddToCart buttons already initialized, skipping...');
+    return;
+  }
+  
   // Warte kurz, um sicherzustellen, dass alle Elemente gerendert sind
   setTimeout(() => {
     const buttons = document.querySelectorAll('.lumiere-add-to-cart-btn');
-    console.log('Found', buttons.length, 'lumiere-add-to-cart buttons');
+    console.log('Initializing', buttons.length, 'lumiere-add-to-cart buttons');
     
+    // Entferne alle bestehenden Event-Listener durch Klonen
     buttons.forEach((button, index) => {
       const productId = button.dataset.productId;
       console.log(`Initializing button ${index} for product ${productId}`);
       
-      // Entferne alle bestehenden Event Listener
+      // Klone Button um alle Event-Listener zu entfernen
       const newButton = button.cloneNode(true);
       button.parentNode.replaceChild(newButton, button);
       
@@ -210,16 +240,30 @@ function initializeAddToCartButtons() {
       newButton.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('Button clicked for product:', productId);
         
-        const productId = parseInt(this.dataset.productId);
-        if (productId && !isNaN(productId)) {
-          addToCart(productId);
+        const productIdFromButton = parseInt(this.dataset.productId);
+        console.log('Button clicked for product:', productIdFromButton);
+        
+        if (productIdFromButton && !isNaN(productIdFromButton)) {
+          // Verhindere mehrfache Klicks
+          if (this.disabled) return;
+          this.disabled = true;
+          
+          addToCart(productIdFromButton);
+          
+          // Button nach kurzer Zeit wieder aktivieren
+          setTimeout(() => {
+            this.disabled = false;
+          }, 1000);
         } else {
-          console.error('Invalid product ID:', productId);
+          console.error('Invalid product ID:', productIdFromButton);
         }
       });
     });
+    
+    // Markiere als initialisiert
+    addToCartButtonsInitialized = true;
+    console.log('AddToCart buttons initialization completed');
   }, 100);
 }
 
@@ -475,9 +519,38 @@ window.showAlert = function(message, redirectTo = 'cart.html') {
   }, 3000);
 };
 
-// changeQuantity function moved to cart.js to avoid duplication
+// changeQuantity function
+function changeQuantity(productId, change) {
+  console.log('changeQuantity called:', productId, change);
+  
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const itemIndex = cart.findIndex(item => Number(item.id) === Number(productId));
+  
+  if (itemIndex !== -1) {
+    cart[itemIndex].quantity += change;
+    
+    // Entferne Item wenn Quantity 0 oder weniger
+    if (cart[itemIndex].quantity <= 0) {
+      cart.splice(itemIndex, 1);
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCounter();
+    renderCartDropdown();
+  }
+}
 
-// removeFromCart function moved to cart.js to avoid duplication
+// removeFromCart function
+function removeFromCart(productId) {
+  console.log('removeFromCart called:', productId);
+  
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cart = cart.filter(item => Number(item.id) !== Number(productId));
+  
+  localStorage.setItem('cart', JSON.stringify(cart));
+  updateCartCounter();
+  renderCartDropdown();
+}
 
 // Filter- und Sortierfunktionen
 function debounce(func, timeout = 50) {
@@ -849,7 +922,7 @@ function renderBestsellers(products) {
                     <div class="lumiere-price-section">
                         <span class="lumiere-price">€${formattedPrice}</span>
                     </div>
-                    <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}" onclick="addToCart(${product.id}); return false;">
+                    <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
                         In den Warenkorb
                     </button>
                 </div>
@@ -860,31 +933,49 @@ function renderBestsellers(products) {
     // Initialize buttons for bestseller section
     initializeAddToCartButtons();
     initializeWishlistButtons();
+    initializeProductCardClicks();
 }
 
 function initializeWishlistButtons() {
-  document.querySelectorAll('.lumiere-wishlist-btn').forEach(button => {
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation(); // Verhindert, dass das Klick-Event zur Karte weitergeht
-      const productId = parseInt(button.dataset.productId);
-      toggleWishlist(productId);
+  // Warte kurz, um sicherzustellen, dass alle Elemente gerendert sind
+  setTimeout(() => {
+    const buttons = document.querySelectorAll('.lumiere-wishlist-btn');
+    console.log('Found', buttons.length, 'wishlist buttons');
+    
+    buttons.forEach((button, index) => {
+      const productId = button.dataset.productId;
+      console.log(`Initializing wishlist button ${index} for product ${productId}`);
+      
+      // Entferne alle bestehenden Event Listener
+      const newButton = button.cloneNode(true);
+      button.parentNode.replaceChild(newButton, button);
+      
+      // Setze den korrekten Zustand basierend auf der Wunschliste
+      const isInWish = isInWishlist(productId);
+      newButton.classList.toggle('active', isInWish);
+      const icon = newButton.querySelector('i');
+      if (icon) {
+        icon.className = isInWish ? 'bi bi-heart-fill' : 'bi bi-heart';
+      }
+      
+      // Füge den Event Listener zum neuen Button hinzu
+      newButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Wishlist button clicked for product:', productId);
+        
+        const productIdNum = parseInt(this.dataset.productId);
+        if (productIdNum && !isNaN(productIdNum)) {
+          toggleWishlist(productIdNum);
+        } else {
+          console.error('Invalid product ID for wishlist:', productId);
+        }
+      });
     });
-  });
+  }, 100);
 }
 
-function initializeAddToCartButtons() {
-  const addToCartButtons = document.querySelectorAll('.lumiere-add-to-cart-btn, .add-to-cart');
-  addToCartButtons.forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const productId = this.getAttribute('data-product-id');
-      if (productId) {
-        addToCart(productId);
-      }
-    });
-  });
-}
+// Doppelte Funktion entfernt - verwende nur die geschützte Version oben
 
 // Initialize category navigation
 function initializeCategoryNavigation() {
@@ -942,18 +1033,25 @@ function initializeCategoryNavigation() {
 // Filter- und Sortier-Event-Listener
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM Content Loaded - Starting initialization');
-  updateCartCounter();
+  // Initialize cart dropdown
   initializeCartDropdown();
   initializeCategoryNavigation();
   initializeProductCardClicks();
   initializeWishlistButtons();
   initializeAddToCartButtons();
+
+  // Initialize wishlist counter
+  updateWishlistCounter();
   
+  // Initialize cart counter
+  updateCartCounter();
+
   // Sofortige Platzhalter für fehlende Bilder anwenden
   applyPlaceholdersForMissingImages();
-  
+
   // SOFORT alle Produkte laden und anzeigen - MEHRFACH VERSUCHEN
   console.log('=== STARTING IMMEDIATE PRODUCT LOAD ===');
+
   
   const loadAndShowProducts = () => {
     loadProducts().then(products => {
@@ -1017,11 +1115,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       
-      const categoryTitle = document.querySelector('.category-title');
-      if (categoryTitle) {
-        categoryTitle.textContent = 'Alle Produkte';
-        console.log('✅ Category title set to "Alle Produkte"');
-      }
+      // Nur den Titel für das Hauptprodukt-Grid setzen, nicht für Bestseller
+      const categoryTitles = document.querySelectorAll('.category-title');
+      categoryTitles.forEach((title, index) => {
+        if (index === 1) { // Das zweite Element ist "Alle Produkte"
+          title.textContent = 'Alle Produkte';
+          console.log('✅ Category title set to "Alle Produkte"');
+        }
+      });
       
       console.log('=== INITIAL SETUP COMPLETE ===');
     }).catch(error => {
