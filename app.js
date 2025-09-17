@@ -992,9 +992,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // Speichere die Produkte im localStorage
       localStorage.setItem('allProducts', JSON.stringify(products));
       
+      // Load bestseller products (first 6 products)
+      const bestsellerProducts = products.slice(0, 6);
+      console.log('📦 Loading bestseller products:', bestsellerProducts.length);
+      renderBestsellers(bestsellerProducts);
+      
       // Berechne Kategorie-Anzahlen und aktualisiere die Anzeige
       const counts = calculateCategoryCounts(products);
-      updateCategoryTiles(counts);
+      // updateCategoryTiles(counts); // Function not implemented yet
       
       // UI-Elemente korrekt setzen
       const categoryFilter = document.getElementById('categoryFilter');
