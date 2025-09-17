@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <!-- Start cookieyes banner --> <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/8e12f1f6a93c31ea65a1052f/script.js"></script> <!-- End cookieyes banner -->
+  <!-- Start cookieyes banner --> <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/8e12f1f6a93c31ea65a1052f/script.js" defer></script> <!-- End cookieyes banner -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
     <title>Marktplatz - Startseite</title>
@@ -9,11 +9,20 @@
     <meta name="keywords" content="ecommerce, online shopping, elektronik, mode">
     <meta name="cjdropshipping-key" content="6b4d5d2c435d4aceb4473c792e94e5f5">
     
+    <!-- Resource Preloading -->
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="//cdn-cookieyes.com">
+    <link rel="preload" href="styles.css?v=5.0" as="style">
+    <link rel="preload" href="app.js" as="script">
+    
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="styles.css?v=5.0">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
     <script>window.CJ_DROPSHIPPING_KEY='6b4d5d2c435d4aceb4473c792e94e5f5';</script>
     
     <style>
@@ -121,8 +130,9 @@
 
           <!-- Right Side Icons -->
           <div class="nav-actions-simple">
-            <a href="wishlist.html" id="wishlistButton" class="nav-icon-simple">
+            <a href="wishlist.html" id="wishlistButton" class="nav-icon-simple position-relative">
               <i class="bi bi-heart"></i>
+              <span id="wishlistCounter" class="cart-counter" style="display: none;">0</span>
             </a>
             <div class="position-relative">
               <a href="#" id="cartButton" class="nav-icon-simple cart-link">
@@ -268,9 +278,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p>Homematic IP Neuheiten & Highlights</p>
                     </div>
                     <div class="lumiere-hero-products">
-                        <img src="produkt bilder/ware.png" alt="Smart Home Device 1" class="lumiere-hero-img">
-                        <img src="produkt bilder/ware.png" alt="Smart Home Device 2" class="lumiere-hero-img">
-                        <img src="produkt bilder/ware.png" alt="Smart Home Device 3" class="lumiere-hero-img">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" alt="Smart Home Device 1" class="lumiere-hero-img lazy-load">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" alt="Smart Home Device 2" class="lumiere-hero-img lazy-load">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" alt="Smart Home Device 3" class="lumiere-hero-img lazy-load">
                     </div>
                 </div>
             </div>
@@ -393,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <template id="productTemplate">
             <div class="lumiere-product-card">
                 <div class="lumiere-image-container">
-                    <img src="produkt bilder/ware.png" alt="" class="lumiere-product-image">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" alt="" class="lumiere-product-image lazy-load">
                     <button class="lumiere-wishlist-btn" aria-label="Zur Wunschliste hinzufügen">
                         <i class="bi bi-heart"></i>
                     </button>
@@ -448,8 +458,9 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </footer>
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="app.js"></script>
+    <script src="lazy-load.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="app.js" defer></script>
     
     <script>
       // Sanfter Cache-Breaker ohne automatisches Neuladen

@@ -4,6 +4,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
 const sgMail = require('@sendgrid/mail');
 const CJDropshippingAPI = require('./cj-dropshipping-api');
+const compression = require('compression');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -11,10 +12,37 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const cjAPI = new CJDropshippingAPI();
 
 const app = express();
+
+// Enable gzip compression
+app.use(compression({
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+  level: 6,
+  threshold: 1024
+}));
+
 app.use(express.json());
 
-// Statische Dateien (HTML, CSS, JS, Bilder) ausliefern
-app.use(express.static(path.join(__dirname)));
+// Set caching headers for static assets
+app.use(express.static(path.join(__dirname), {
+  maxAge: '1y', // Cache static files for 1 year
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, path) => {
+    // Different cache strategies for different file types
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes for HTML
+    } else if (path.endsWith('.css') || path.endsWith('.js')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year for CSS/JS
+    } else if (path.match(/\.(jpg|jpeg|png|gif|ico|svg|webp)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year for images
+    }
+  }
+}));
 
 app.post('/api/create-checkout-session', async (req, res) => {
   const { cart } = req.body;
