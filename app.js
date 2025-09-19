@@ -166,7 +166,7 @@ function renderProducts(products) {
     const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
     
     return `
-      <div class="lumiere-product-card" data-product-id="${product.id}">
+      <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
         <div class="lumiere-image-container">
           <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" class="lumiere-product-image lazy-load" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
           <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
@@ -909,7 +909,7 @@ function renderBestsellers(products) {
         const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
         
         return `
-            <div class="lumiere-product-card" data-product-id="${product.id}">
+            <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
                 <div class="lumiere-image-container">
                     <img src="produkt bilder/ware.png" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
@@ -995,6 +995,9 @@ function initializeCategoryNavigation() {
       const category = tab.dataset.category;
       const categoryName = category === 'alle' ? 'Alle Kategorien' : category;
       
+      // Update body class for category-specific styling
+      updateCategoryBodyClass(category);
+      
       // Update title
       if (categoryTitle) {
         categoryTitle.textContent = category === 'alle' ? 'Alle Produkte' : categoryName;
@@ -1028,6 +1031,37 @@ function initializeCategoryNavigation() {
       });
     });
   });
+}
+
+// Function to update body class for category-specific styling
+function updateCategoryBodyClass(category) {
+  // Remove all existing category classes
+  document.body.classList.remove(
+    'category-selected-alle',
+    'category-selected-technik', 
+    'category-selected-beleuchtung',
+    'category-selected-koerperpflege',
+    'category-selected-haushalt'
+  );
+  
+  // Add appropriate category class
+  switch(category) {
+    case 'alle':
+      document.body.classList.add('category-selected-alle');
+      break;
+    case 'Technik/Gadgets':
+      document.body.classList.add('category-selected-technik');
+      break;
+    case 'Beleuchtung':
+      document.body.classList.add('category-selected-beleuchtung');
+      break;
+    case 'Körperpflege/Wellness':
+      document.body.classList.add('category-selected-koerperpflege');
+      break;
+    case 'Haushalt und Küche':
+      document.body.classList.add('category-selected-haushalt');
+      break;
+  }
 }
 
 // Filter- und Sortier-Event-Listener
@@ -1114,6 +1148,9 @@ document.addEventListener('DOMContentLoaded', () => {
           console.log('✅ "Alle" tab set as active');
         }
       });
+      
+      // Set initial category body class
+      updateCategoryBodyClass('alle');
       
       // Nur den Titel für das Hauptprodukt-Grid setzen, nicht für Bestseller
       const categoryTitles = document.querySelectorAll('.category-title');
@@ -1694,6 +1731,10 @@ function initializeCategoryTiles(products) {
       }
       
       console.log('Selected category:', category);
+      
+      // Update body class for category-specific styling
+      const categoryForClass = category === 'Alle Kategorien' ? 'alle' : category;
+      updateCategoryBodyClass(categoryForClass);
       
       // Aktualisiere auch die Kategorie-Navigation-Tabs
       const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
