@@ -1202,35 +1202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       
-      // Prüfe ob productGrid existiert
-      const productGrid = document.getElementById('productGrid');
-      if (!productGrid) {
-        console.error('❌ Product grid element not found!');
-        return;
-      }
-      
-      console.log('📦 Rendering products to grid...');
-      renderProducts(products);
-      
-      // Prüfe ob Produkte tatsächlich gerendert wurden
-      setTimeout(() => {
-        const renderedProducts = productGrid.children.length;
-        console.log('🔍 Products in grid after render:', renderedProducts);
-        
-        if (renderedProducts === 0) {
-          console.error('❌ No products rendered to grid!');
-          // Versuche nochmal
-          console.log('🔄 Retrying product render...');
-          renderProducts(products);
-        } else {
-          console.log('✅ Products successfully rendered!');
-        }
-      }, 100);
-      
-      // Speichere die Produkte im localStorage
-      localStorage.setItem('allProducts', JSON.stringify(products));
-      
-      // Load bestseller products with variety from different categories
+      // Lade Bestseller mit der funktionierenden Methode
       const bestsellerProducts = [];
       const categories = ['Haushalt und Küche', 'Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness'];
       
@@ -1250,6 +1222,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const finalBestsellers = bestsellerProducts.slice(0, 6);
       console.log('📦 Loading bestseller products with variety:', finalBestsellers.length);
       renderBestsellers(finalBestsellers);
+      
+      // Lade Produkte in alle Kategorie-Container
+      loadCategoryProducts(products);
+      
+      // Prüfe ob Produkte tatsächlich gerendert wurden
+      setTimeout(() => {
+        console.log('✅ All products loaded into containers');
+      }, 500);
+      
+      console.log('✅ All products loaded successfully!');
       
       // Berechne Kategorie-Anzahlen und aktualisiere die Anzeige
       const counts = calculateCategoryCounts(products);
@@ -1859,6 +1841,14 @@ function initializeCategoryTiles(products) {
       const categoryForClass = category === 'Alle Kategorien' ? 'alle' : category;
       updateCategoryBodyClass(categoryForClass);
       
+      // Lade Bestseller (erste 8 Produkte)
+      const bestsellerGrid = document.getElementById('bestsellerGrid');
+      if (bestsellerGrid) {
+        console.log('📦 Loading bestsellers...');
+        const bestsellers = products.slice(0, 8); // Erste 8 als Bestseller
+        renderProductsToGrid(bestsellers, bestsellerGrid);
+      }
+      
       // Aktualisiere auch die Kategorie-Navigation-Tabs
       const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
       categoryTabs.forEach(tab => {
@@ -2174,4 +2164,174 @@ function getDiscountInfo(product) {
     return { isDeal: true, discount: product.discountPercent, newPrice };
   }
   return { isDeal: false, discount: 0, newPrice: product.price };
+}
+
+// Erstelle eine Produktkarte
+function createProductCard(product) {
+  console.log('🔧 Creating product card for:', product.name);
+  
+  const template = document.getElementById('productTemplate');
+  if (!template) {
+    console.error('❌ Product template not found!');
+    return document.createElement('div');
+  }
+  
+  const clone = template.content.cloneNode(true);
+  const card = clone.querySelector('.lumiere-product-card');
+  
+  if (!card) {
+    console.error('❌ Product card element not found in template!');
+    return document.createElement('div');
+  }
+  
+  // Setze Produktdaten
+  const img = clone.querySelector('.lumiere-product-image');
+  const title = clone.querySelector('.lumiere-product-title');
+  const description = clone.querySelector('.lumiere-product-description');
+  const price = clone.querySelector('.lumiere-price');
+  const addToCartBtn = clone.querySelector('.lumiere-add-to-cart-btn');
+  const wishlistBtn = clone.querySelector('.lumiere-wishlist-btn');
+  
+  if (img) {
+    img.setAttribute('data-src', product.image);
+    img.alt = product.name;
+    console.log('✅ Image set for:', product.name);
+  }
+  
+  if (title) {
+    title.textContent = product.name;
+    console.log('✅ Title set:', product.name);
+  }
+  
+  if (description) {
+    description.textContent = product.description || 'Keine Beschreibung verfügbar';
+  }
+  
+  if (price) {
+    if (product.originalPrice && product.originalPrice > product.price) {
+      price.innerHTML = `
+        <span class="current-price">€${product.price}</span>
+        <span class="original-price">€${product.originalPrice}</span>
+      `;
+    } else {
+      price.innerHTML = `<span class="current-price">€${product.price}</span>`;
+    }
+  }
+  
+  // Event-Listener hinzufügen
+  if (addToCartBtn) {
+    addToCartBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (typeof addToCart === 'function') {
+        addToCart(product);
+      }
+    });
+  }
+  
+  if (wishlistBtn) {
+    wishlistBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (typeof toggleWishlist === 'function') {
+        toggleWishlist(product.id);
+      }
+    });
+  }
+  
+  // Produktkarte klickbar machen
+  if (card) {
+    card.addEventListener('click', () => {
+      window.location.href = `product.html?id=${product.id}`;
+    });
+  }
+  
+  console.log('✅ Product card created successfully for:', product.name);
+  return clone;
+}
+
+// Rendere Produkte in einen spezifischen Grid-Container (wie Bestseller)
+function renderProductsToGrid(products, gridContainer) {
+  console.log('🔧 Rendering products to grid:', products.length, 'products');
+  
+  if (!gridContainer) {
+    console.error('❌ Grid container not found!');
+    return;
+  }
+  
+  if (!products || products.length === 0) {
+    console.warn('⚠️ No products to render');
+    return;
+  }
+  
+  gridContainer.innerHTML = products.map(product => {
+    const price = product.price || product.salePrice || 0;
+    const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+    
+    return `
+        <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
+            <div class="lumiere-image-container">
+                <img src="produkt bilder/ware.png" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
+                <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
+                    <i class="bi bi-heart"></i>
+                </button>
+            </div>
+            <div class="lumiere-card-content">
+                <h3 class="lumiere-product-title">${product.name}</h3>
+                <div class="lumiere-price-section">
+                    <span class="lumiere-price">€${formattedPrice}</span>
+                </div>
+                <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
+                    In den Warenkorb
+                </button>
+            </div>
+        </div>
+    `;
+  }).join('');
+  
+  // Initialize buttons
+  initializeWishlistButtons();
+  initializeAddToCartButtons();
+  
+  console.log('✅ All product cards rendered to grid');
+}
+
+// Render Bestseller Section with horizontal scroll (funktionierender Code)
+function renderBestsellers(products) {
+    const grid = document.getElementById('bestsellerGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = products.map(product => {
+        const price = product.price || product.salePrice || 0;
+        const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+        
+        return `
+            <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
+                <div class="lumiere-image-container">
+                    <img src="produkt bilder/ware.png" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
+                    <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="lumiere-card-content">
+                    <h3 class="lumiere-product-title">${product.name}</h3>
+                    <div class="lumiere-price-section">
+                        <span class="lumiere-price">€${formattedPrice}</span>
+                    </div>
+                    <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
+                        In den Warenkorb
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    // Initialize wishlist buttons for bestsellers
+    initializeWishlistButtons();
+    initializeAddToCartButtons();
+    
+    // Initialize scrollbar tracking
+    setTimeout(() => {
+        initializeScrollbarTracking();
+    }, 100);
 }
