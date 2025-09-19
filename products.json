@@ -1018,5 +1018,39 @@
         "savings": 10
       }
     ]
+  },
+  {
+    "id": 17,
+    "name": "Bluetooth Anti-Lost Finder Wassertropfen",
+    "price": 14.99,
+    "originalPrice": 24.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/ware.png",
+    "description": "Kompakter Bluetooth-Tracker in Wassertropfen-Design. Finden Sie verlorene Gegenstände schnell und einfach über Ihr Smartphone.",
+    "sku": "CJ9FA9912D",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "bluetooth",
+      "tracker",
+      "finder"
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Home Electronic Clock Digitale Uhr",
+    "price": 24.99,
+    "originalPrice": 34.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/ware.png",
+    "description": "Moderne digitale Wanduhr mit LED-Display. Perfekt für Wohnzimmer, Büro oder Küche mit großer, gut lesbarer Anzeige.",
+    "sku": "CJ135B501D",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "uhr",
+      "digital",
+      "led"
+    ]
   }
 ]
