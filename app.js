@@ -930,10 +930,103 @@ function renderBestsellers(products) {
         `;
     }).join('');
     
-    // Initialize buttons for bestseller section
-    initializeAddToCartButtons();
+    // Initialize wishlist buttons for bestsellers
     initializeWishlistButtons();
-    initializeProductCardClicks();
+    initializeAddToCartButtons();
+    
+    // Initialize scrollbar tracking
+    setTimeout(() => {
+        initializeScrollbarTracking();
+    }, 100);
+}
+
+// Scroll function for bestseller slider
+function scrollBestsellers(direction) {
+    const grid = document.getElementById('bestsellerGrid');
+    if (!grid) return;
+    
+    const cardWidth = 280 + 20; // Card width + gap
+    const scrollAmount = cardWidth; // Scroll exactly one card
+    const currentScroll = grid.scrollLeft;
+    
+    if (direction === 'left') {
+        grid.scrollTo({
+            left: Math.max(0, currentScroll - scrollAmount),
+            behavior: 'smooth'
+        });
+    } else {
+        const maxScroll = grid.scrollWidth - grid.clientWidth;
+        grid.scrollTo({
+            left: Math.min(maxScroll, currentScroll + scrollAmount),
+            behavior: 'smooth'
+        });
+    }
+    
+    // Update scrollbar position during and after scroll
+    const updateDuringScroll = () => {
+        updateScrollbarPosition();
+        if (Math.abs(grid.scrollLeft - (direction === 'left' ? Math.max(0, currentScroll - scrollAmount) : Math.min(grid.scrollWidth - grid.clientWidth, currentScroll + scrollAmount))) > 1) {
+            requestAnimationFrame(updateDuringScroll);
+        }
+    };
+    requestAnimationFrame(updateDuringScroll);
+}
+
+// Update scrollbar position - NEUE METHODE
+function updateScrollbarPosition() {
+    const grid = document.getElementById('bestsellerGrid');
+    const thumb = document.getElementById('customScrollbarThumb');
+    if (!grid || !thumb) return;
+    
+    const scrollLeft = grid.scrollLeft;
+    const scrollWidth = grid.scrollWidth - grid.clientWidth;
+    const scrollPercentage = scrollWidth > 0 ? (scrollLeft / scrollWidth) : 0;
+    
+    // Debug logging
+    console.log('NEW Scroll update:', { scrollLeft, scrollWidth: grid.scrollWidth, clientWidth: grid.clientWidth, scrollPercentage });
+    
+    // RADIKALE Berechnung - alles bei 0px
+    const container = grid.parentElement;
+    const containerWidth = container.offsetWidth;
+    const buttonSpace = 110;
+    const trackWidth = containerWidth - buttonSpace; // KEIN leftSpace mehr
+    const thumbWidth = 100;
+    const maxPosition = Math.max(0, trackWidth - thumbWidth);
+    const position = scrollPercentage * maxPosition;
+    
+    console.log('NEW calculation:', { position, scrollPercentage, maxPosition });
+    
+    // Direkt das HTML-Element bewegen
+    thumb.style.transform = `translateX(${position}px)`;
+}
+
+// Initialize scrollbar tracking
+function initializeScrollbarTracking() {
+    const grid = document.getElementById('bestsellerGrid');
+    if (!grid) {
+        console.log('Bestseller grid not found for scrollbar tracking');
+        return;
+    }
+    
+    console.log('Initializing scrollbar tracking for bestseller grid');
+    
+    // Force scrollbar to start at 0px
+    const container = grid.parentElement;
+    if (container) {
+        container.style.setProperty('--scroll-position', '0px');
+        console.log('Set initial scrollbar position to 0px');
+    }
+    
+    grid.addEventListener('scroll', updateScrollbarPosition);
+    
+    // Force initial position update multiple times to ensure it works
+    updateScrollbarPosition();
+    setTimeout(updateScrollbarPosition, 50);
+    setTimeout(updateScrollbarPosition, 200);
+    setTimeout(updateScrollbarPosition, 500);
+    
+    // Also update on window resize
+    window.addEventListener('resize', updateScrollbarPosition);
 }
 
 function initializeWishlistButtons() {
@@ -1124,10 +1217,26 @@ document.addEventListener('DOMContentLoaded', () => {
       // Speichere die Produkte im localStorage
       localStorage.setItem('allProducts', JSON.stringify(products));
       
-      // Load bestseller products (first 6 products)
-      const bestsellerProducts = products.slice(0, 6);
-      console.log('📦 Loading bestseller products:', bestsellerProducts.length);
-      renderBestsellers(bestsellerProducts);
+      // Load bestseller products with variety from different categories
+      const bestsellerProducts = [];
+      const categories = ['Haushalt und Küche', 'Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness'];
+      
+      // Get 1-2 products from each category for variety
+      categories.forEach(category => {
+        const categoryProducts = products.filter(p => p.category === category).slice(0, 2);
+        bestsellerProducts.push(...categoryProducts);
+      });
+      
+      // If we don't have enough, fill with remaining products
+      if (bestsellerProducts.length < 6) {
+        const remaining = products.filter(p => !bestsellerProducts.includes(p)).slice(0, 6 - bestsellerProducts.length);
+        bestsellerProducts.push(...remaining);
+      }
+      
+      // Limit to 6 products
+      const finalBestsellers = bestsellerProducts.slice(0, 6);
+      console.log('📦 Loading bestseller products with variety:', finalBestsellers.length);
+      renderBestsellers(finalBestsellers);
       
       // Berechne Kategorie-Anzahlen und aktualisiere die Anzeige
       const counts = calculateCategoryCounts(products);
@@ -1686,6 +1795,7 @@ window.addProductToCart = addProductToCart;
 window.initializeAddToCartButtons = initializeAddToCartButtons;
 window.renderProducts = renderProducts;
 window.loadProducts = loadProducts;
+window.scrollBestsellers = scrollBestsellers;
 window.testCartDropdown = testCartDropdown;
 window.testEmptyCart = testEmptyCart;
 window.testLiveUpdates = testLiveUpdates;

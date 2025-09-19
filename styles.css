@@ -1510,11 +1510,12 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Horizontal Scroll Grid - Lumière Style */
+/* Horizontal Scroll Grid - Lumière Style (Bestseller Slider) */
 .product-scroll-container {
     position: relative;
     overflow: hidden;
-    margin: 0 -20px;
+    margin: 0;
+    padding: 0;
 }
 
 .product-scroll-grid {
@@ -1522,19 +1523,170 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     gap: 20px;
     overflow-x: auto;
     scroll-behavior: smooth;
-    padding: 0 20px 20px;
+    padding: 0 20px 60px 20px;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
 }
 
+/* Hide scrollbar completely */
 .product-scroll-grid::-webkit-scrollbar {
     display: none;
+}
+
+/* Navigation Arrows - Large round buttons like in image */
+.scroll-arrow {
+    position: absolute;
+    bottom: 5px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-arrow:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+}
+
+.scroll-arrow-left {
+    right: 60px;
+}
+
+.scroll-arrow-right {
+    right: 10px;
+}
+
+.scroll-arrow i {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Custom visual scrollbar - FIXED VERSION */
+.product-scroll-container {
+    --scroll-percentage: 0;
+    --scroll-position: 0px;
+}
+
+/* Remove this broken rule */
+
+.product-scroll-container::after {
+    content: '';
+    position: absolute;
+    bottom: 12px;
+    left: 20px;
+    right: 110px;
+    height: 6px;
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+.product-scroll-container::before {
+    content: '';
+    position: absolute;
+    bottom: 12px;
+    left: 20px;
+    width: 100px;
+    height: 6px;
+    background: #000000;
+    border-radius: 3px;
+    z-index: 1;
+    transform: translateX(var(--scroll-position, 0px));
+    transition: transform 0.1s ease-out;
 }
 
 .product-scroll-grid .lumiere-product-card {
     flex: 0 0 280px;
     width: 280px;
+    scroll-snap-align: start;
+    transition: transform 0.2s ease;
 }
+
+.product-scroll-grid .lumiere-product-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Ensure category colors work in bestseller grid */
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] {
+    border-color: var(--category-technik) !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.25), 0 4px 15px rgba(79, 172, 254, 0.15) !important;
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.02), rgba(79, 172, 254, 0.06)) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] {
+    border-color: var(--category-beleuchtung) !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3), 0 4px 15px rgba(255, 215, 0, 0.2) !important;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.02), rgba(255, 215, 0, 0.06)) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] {
+    border-color: var(--category-koerperpflege) !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 2px rgba(255, 107, 157, 0.25), 0 4px 15px rgba(255, 107, 157, 0.15) !important;
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.02), rgba(255, 107, 157, 0.06)) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] {
+    border-color: var(--category-haushalt) !important;
+    border-width: 2px !important;
+    box-shadow: 0 0 0 2px rgba(67, 233, 123, 0.25), 0 4px 15px rgba(67, 233, 123, 0.15) !important;
+    background: linear-gradient(135deg, rgba(67, 233, 123, 0.02), rgba(67, 233, 123, 0.06)) !important;
+}
+
+/* Category-specific titles in bestseller grid */
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-product-title {
+    color: var(--category-technik) !important;
+    font-weight: 600 !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] .lumiere-product-title {
+    color: #b8860b !important;
+    font-weight: 600 !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-product-title {
+    color: var(--category-koerperpflege) !important;
+    font-weight: 600 !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-product-title {
+    color: var(--category-haushalt) !important;
+    font-weight: 600 !important;
+}
+
+/* Category-specific buttons in bestseller grid */
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #000000, var(--category-technik)) !important;
+    box-shadow: 0 2px 8px rgba(79, 172, 254, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #000000, #b8860b) !important;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #000000, var(--category-koerperpflege)) !important;
+    box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #000000, var(--category-haushalt)) !important;
+    box-shadow: 0 2px 8px rgba(67, 233, 123, 0.2) !important;
+}
+
+/* Remove fade effects to match Lumière design */
 
 @media (max-width: 768px) {
     .products-section {
@@ -1551,17 +1703,47 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     }
     
     .product-scroll-container {
-        margin: 0 -16px;
+        margin: 0;
+        padding: 0;
     }
     
     .product-scroll-grid {
-        padding: 0 16px 16px;
+        padding: 0 16px 40px 16px;
         gap: 16px;
     }
     
     .product-scroll-grid .lumiere-product-card {
         flex: 0 0 240px;
         width: 240px;
+    }
+    
+    .scroll-arrow {
+        width: 32px;
+        height: 32px;
+        bottom: 3px;
+    }
+    
+    .scroll-arrow i {
+        font-size: 14px;
+    }
+    
+    .scroll-arrow-left {
+        right: 70px;
+    }
+    
+    .scroll-arrow-right {
+        right: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-scroll-grid .lumiere-product-card {
+        flex: 0 0 200px;
+        width: 200px;
+    }
+    
+    .product-scroll-grid {
+        gap: 12px;
     }
 }
 
