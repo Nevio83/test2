@@ -12,13 +12,13 @@
     <!-- Resource Preloading -->
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="//cdn-cookieyes.com">
-    <link rel="preload" href="styles.css?v=5.0" as="style">
-    <link rel="preload" href="app.js" as="script">
+    <link rel="preload" href="styles.css?v=14.0" as="style">
+    <link rel="preload" href="app.js?v=14.0" as="script">
     
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="styles.css?v=5.0">
+    <link rel="stylesheet" href="styles.css?v=14.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
@@ -26,6 +26,46 @@
     <script>window.CJ_DROPSHIPPING_KEY='6b4d5d2c435d4aceb4473c792e94e5f5';</script>
     
     <style>
+        /* KOMPLETT NEUE SCROLLBAR LÖSUNG */
+        .product-scroll-container {
+            position: relative;
+        }
+        
+        /* Neue graue Spur - GANZ LINKS */
+        .product-scroll-container .custom-scrollbar-track {
+            position: absolute;
+            bottom: 12px;
+            left: 0px;
+            right: 110px;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+        
+        /* Neue schwarze Scrollbar - GANZ LINKS */
+        .product-scroll-container .custom-scrollbar-thumb {
+            position: absolute;
+            bottom: 12px;
+            left: 0px;
+            width: 100px;
+            height: 6px;
+            background: #000000;
+            border-radius: 3px;
+            z-index: 1;
+            transition: transform 0.1s ease-out;
+        }
+        
+        /* ENTFERNE GRID PADDING */
+        .product-scroll-grid {
+            padding: 0 20px 60px 0px !important;
+        }
+        
+        /* Verstecke die alten ::before und ::after */
+        .product-scroll-container::before,
+        .product-scroll-container::after {
+            display: none !important;
+        }
+        
         /* Simple animations matching product 4 exactly */
         .success-animation {
             animation: success-animation 1.2s ease-in-out;
@@ -353,6 +393,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="category-subtitle">Schau dir die beliebtesten Produkte unserer Kunden an.</p>
                     </div>
                     <div class="product-scroll-container">
+                        <!-- Neue Scrollbar Elemente -->
+                        <div class="custom-scrollbar-track"></div>
+                        <div class="custom-scrollbar-thumb" id="customScrollbarThumb"></div>
+                        
+                        <button class="scroll-arrow scroll-arrow-left" onclick="scrollBestsellers('left')">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="scroll-arrow scroll-arrow-right" onclick="scrollBestsellers('right')">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
                         <div class="product-scroll-grid" id="bestsellerGrid">
                             <!-- Bestseller products will be loaded here -->
                         </div>
@@ -1099,7 +1149,7 @@ function clearSearchInput() {
 </script>
 
 <!-- Scripts am Ende laden für bessere Performance -->
-<script src="app.js"></script>
+<script src="app.js?v=14.0"></script>
 <script src="cart.js"></script>
 
 <script>
