@@ -48,6 +48,10 @@ async function loadProducts() {
   try {
     const response = await fetch('products.json');
     const products = await response.json();
+    
+    // Einfaches Logging
+    console.log('Products loaded:', products.length);
+    
     // Füge eine Standardbeschreibung hinzu, falls nicht vorhanden
     return products.map(p => ({
       ...p,
@@ -562,20 +566,23 @@ function debounce(func, timeout = 50) {
 }
 
 function filterProducts(products, searchText, category) {
-  console.log('filterProducts called with:', { searchText, category, productsCount: products.length });
+  console.log('filterProducts called:', { searchText, category, productsCount: products.length });
   
   const filtered = products.filter(product => {
     const matchesSearch = searchText === '' || product.name.toLowerCase().includes(searchText.toLowerCase());
     
-    // Category matching
+    // Category matching - ERWEITERTE DEBUG VERSION
     let matchesCategory;
-    if (category === 'alle' || category === 'Alle Kategorien') {
+    if (category === 'alle' || category === 'Alle Kategorien' || !category) {
       matchesCategory = true; // Show all categories
     } else {
       matchesCategory = product.category === category; // Exact match only
     }
     
-    console.log(`Product ${product.name} (${product.category}): search=${matchesSearch}, category=${matchesCategory}`);
+    // Einfaches Logging nur bei Problemen
+    if (category === 'Technik/Gadgets' && product.category === 'Technik/Gadgets') {
+      console.log(`✅ Technik product: ${product.name}`);
+    }
     
     return matchesSearch && matchesCategory;
   });
@@ -1075,9 +1082,14 @@ function initializeCategoryNavigation() {
   const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
   const categoryTitle = document.querySelector('.category-title');
   
-  categoryTabs.forEach(tab => {
+  console.log('🔧 Initializing category navigation');
+  console.log('🔧 Found category tabs:', categoryTabs.length);
+  
+  categoryTabs.forEach((tab, index) => {
+    console.log(`🔧 Setting up tab ${index}:`, tab.dataset.category);
     tab.addEventListener('click', (e) => {
       e.preventDefault();
+      console.log('🔥 Category tab clicked:', tab.dataset.category);
       
       // Remove active class from all tabs
       categoryTabs.forEach(t => t.classList.remove('active'));
@@ -1100,17 +1112,18 @@ function initializeCategoryNavigation() {
       const searchInput = document.getElementById('searchInput');
       const searchText = searchInput ? searchInput.value.trim() : '';
       
-      console.log('Category tab clicked:', categoryName);
-      console.log('Filtering products with category:', categoryName);
+      console.log('Category clicked:', category);
       
       loadProducts().then(products => {
-        const filtered = filterProducts(products, searchText, categoryName);
-        console.log('Filtered products count:', filtered.length);
+        console.log('Products loaded for filtering:', products.length);
+        const filtered = filterProducts(products, searchText, category);
+        console.log('Filtered products:', filtered.length);
         
         const sorted = sortProducts(
           filtered,
           document.getElementById('priceSort') ? document.getElementById('priceSort').value : 'Aufsteigend'
         );
+        
         renderProducts(sorted);
         
         // Scroll to products
