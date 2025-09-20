@@ -220,11 +220,7 @@ function observeProductCards() {
 
 // Add-to-cart Buttons initialisieren
 function initializeAddToCartButtons() {
-  // Verhindere mehrfache Initialisierung
-  if (addToCartButtonsInitialized) {
-    console.log('AddToCart buttons already initialized, skipping...');
-    return;
-  }
+  console.log('🛒 Initializing AddToCart buttons...');
   
   // Warte kurz, um sicherzustellen, dass alle Elemente gerendert sind
   setTimeout(() => {
@@ -265,9 +261,7 @@ function initializeAddToCartButtons() {
       });
     });
     
-    // Markiere als initialisiert
-    addToCartButtonsInitialized = true;
-    console.log('AddToCart buttons initialization completed');
+    console.log('✅ AddToCart buttons initialization completed');
   }, 100);
 }
 
@@ -979,61 +973,132 @@ function scrollBestsellers(direction) {
     requestAnimationFrame(updateDuringScroll);
 }
 
-// Update scrollbar position - NEUE METHODE
+// Generic scroll function for all category grids
+function scrollCategory(gridId, direction) {
+    const grid = document.getElementById(gridId);
+    if (!grid) {
+        console.error('Grid not found:', gridId);
+        return;
+    }
+    
+    console.log(`🔧 Scrolling ${gridId} ${direction}`);
+    console.log(`Grid scrollWidth: ${grid.scrollWidth}, clientWidth: ${grid.clientWidth}`);
+    
+    // Calculate scroll amount - always use a reasonable amount
+    const cardWidth = 280 + 20; // Card width + gap
+    const scrollAmount = cardWidth * 0.8; // Always scroll by 80% of a card
+    
+    const currentScroll = grid.scrollLeft;
+    const maxScroll = grid.scrollWidth - grid.clientWidth;
+    
+    console.log(`Current scroll: ${currentScroll}, Max scroll: ${maxScroll}`);
+    
+    // Force scroll even if there's little content
+    if (direction === 'left') {
+        const newScroll = Math.max(0, currentScroll - scrollAmount);
+        console.log(`Scrolling left to: ${newScroll}`);
+        grid.scrollTo({
+            left: newScroll,
+            behavior: 'smooth'
+        });
+    } else {
+        const newScroll = Math.min(maxScroll, currentScroll + scrollAmount);
+        console.log(`Scrolling right to: ${newScroll}`);
+        grid.scrollTo({
+            left: newScroll,
+            behavior: 'smooth'
+        });
+    }
+    
+    // Update scrollbar position for this specific grid
+    setTimeout(() => {
+        updateScrollbarPositionForGrid(gridId);
+    }, 100);
+}
+
+// Update scrollbar position - NEUE METHODE (for bestsellers)
 function updateScrollbarPosition() {
-    const grid = document.getElementById('bestsellerGrid');
-    const thumb = document.getElementById('customScrollbarThumb');
-    if (!grid || !thumb) return;
+    updateScrollbarPositionForGrid('bestsellerGrid');
+}
+
+// Generic scrollbar position update function for any grid
+function updateScrollbarPositionForGrid(gridId) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    
+    // Map grid IDs to their corresponding scrollbar thumb IDs
+    const thumbMapping = {
+        'bestsellerGrid': 'customScrollbarThumb',
+        'technikGrid': 'technikScrollbarThumb',
+        'beleuchtungGrid': 'beleuchtungScrollbarThumb',
+        'haushaltGrid': 'haushaltScrollbarThumb',
+        'wellnessGrid': 'wellnessScrollbarThumb'
+    };
+    
+    const thumbId = thumbMapping[gridId];
+    const thumb = document.getElementById(thumbId);
+    
+    if (!thumb) {
+        console.log('Scrollbar thumb not found for grid:', gridId);
+        return;
+    }
     
     const scrollLeft = grid.scrollLeft;
     const scrollWidth = grid.scrollWidth - grid.clientWidth;
     const scrollPercentage = scrollWidth > 0 ? (scrollLeft / scrollWidth) : 0;
     
-    // Debug logging
-    console.log('NEW Scroll update:', { scrollLeft, scrollWidth: grid.scrollWidth, clientWidth: grid.clientWidth, scrollPercentage });
-    
-    // RADIKALE Berechnung - alles bei 0px
+    // Calculate position
     const container = grid.parentElement;
     const containerWidth = container.offsetWidth;
     const buttonSpace = 110;
-    const trackWidth = containerWidth - buttonSpace; // KEIN leftSpace mehr
+    const trackWidth = containerWidth - buttonSpace;
     const thumbWidth = 100;
     const maxPosition = Math.max(0, trackWidth - thumbWidth);
     const position = scrollPercentage * maxPosition;
     
-    console.log('NEW calculation:', { position, scrollPercentage, maxPosition });
-    
-    // Direkt das HTML-Element bewegen
+    // Move the scrollbar thumb
     thumb.style.transform = `translateX(${position}px)`;
 }
 
-// Initialize scrollbar tracking
+// Initialize scrollbar tracking for all grids
 function initializeScrollbarTracking() {
-    const grid = document.getElementById('bestsellerGrid');
-    if (!grid) {
-        console.log('Bestseller grid not found for scrollbar tracking');
-        return;
-    }
+    const grids = [
+        'bestsellerGrid',
+        'technikGrid', 
+        'beleuchtungGrid',
+        'haushaltGrid',
+        'wellnessGrid'
+    ];
     
-    console.log('Initializing scrollbar tracking for bestseller grid');
+    grids.forEach(gridId => {
+        const grid = document.getElementById(gridId);
+        if (!grid) {
+            console.log(`Grid ${gridId} not found for scrollbar tracking`);
+            return;
+        }
+        
+        console.log(`Initializing scrollbar tracking for ${gridId}`);
+        
+        // Force scrollbar to start at 0px
+        const container = grid.parentElement;
+        if (container) {
+            container.style.setProperty('--scroll-position', '0px');
+        }
+        
+        // Add scroll event listener for this specific grid
+        grid.addEventListener('scroll', () => updateScrollbarPositionForGrid(gridId));
+        
+        // Force initial position update
+        updateScrollbarPositionForGrid(gridId);
+        setTimeout(() => updateScrollbarPositionForGrid(gridId), 50);
+        setTimeout(() => updateScrollbarPositionForGrid(gridId), 200);
+        setTimeout(() => updateScrollbarPositionForGrid(gridId), 500);
+    });
     
-    // Force scrollbar to start at 0px
-    const container = grid.parentElement;
-    if (container) {
-        container.style.setProperty('--scroll-position', '0px');
-        console.log('Set initial scrollbar position to 0px');
-    }
-    
-    grid.addEventListener('scroll', updateScrollbarPosition);
-    
-    // Force initial position update multiple times to ensure it works
-    updateScrollbarPosition();
-    setTimeout(updateScrollbarPosition, 50);
-    setTimeout(updateScrollbarPosition, 200);
-    setTimeout(updateScrollbarPosition, 500);
-    
-    // Also update on window resize
-    window.addEventListener('resize', updateScrollbarPosition);
+    // Also update all scrollbars on window resize
+    window.addEventListener('resize', () => {
+        grids.forEach(gridId => updateScrollbarPositionForGrid(gridId));
+    });
 }
 
 function initializeWishlistButtons() {
@@ -1103,40 +1168,107 @@ function initializeCategoryNavigation() {
       // Update body class for category-specific styling
       updateCategoryBodyClass(category);
       
-      // Update title
-      if (categoryTitle) {
-        categoryTitle.textContent = category === 'alle' ? 'Alle Produkte' : categoryName;
+      // Update the "Alle Produkte" section title
+      const allProductsTitle = document.querySelector('.category-header[style*="margin-top: 3rem"] h2.category-title');
+      if (allProductsTitle) {
+        allProductsTitle.textContent = category === 'alle' ? 'Alle Produkte' : categoryName;
+        console.log('✅ Updated section title to:', allProductsTitle.textContent);
       }
       
-      // Filter and render products with existing search text
-      const searchInput = document.getElementById('searchInput');
-      const searchText = searchInput ? searchInput.value.trim() : '';
+      // Show/hide category sections based on selection
+      showCategorySections(category);
       
-      console.log('Category clicked:', category);
-      
-      loadProducts().then(products => {
-        console.log('Products loaded for filtering:', products.length);
-        const filtered = filterProducts(products, searchText, category);
-        console.log('Filtered products:', filtered.length);
-        
-        const sorted = sortProducts(
-          filtered,
-          document.getElementById('priceSort') ? document.getElementById('priceSort').value : 'Aufsteigend'
-        );
-        
-        renderProducts(sorted);
-        
-        // Scroll to products
-        const grid = document.getElementById('productGrid');
-        if (grid) {
-          console.log('Scrolling to product grid');
-          grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          console.error('Product grid not found for scrolling');
+      // Scroll to the appropriate section based on category selection
+      if (category === 'alle') {
+        // Scroll to "Alle Produkte" header when showing all categories
+        const scrollTarget = document.querySelector('.category-header[style*="margin-top: 3rem"]');
+        if (scrollTarget) {
+          console.log('Scrolling to Alle Produkte header');
+          scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      });
+      } else {
+        // Scroll to the specific category section when only one category is shown
+        const firstVisibleSection = document.querySelector('.product-category-section:not([style*="display: none"])');
+        if (firstVisibleSection) {
+          console.log('Scrolling to visible category section');
+          firstVisibleSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
     });
   });
+}
+
+// Function to show/hide category sections based on selection
+function showCategorySections(selectedCategory) {
+  console.log('🔧 Showing category sections for:', selectedCategory);
+  
+  // Get all product category sections (but NOT the bestseller section)
+  const categorySections = document.querySelectorAll('.product-category-section');
+  
+  // Get the bestseller section (should always stay visible)
+  const bestsellerSection = document.querySelector('#bestsellerGrid')?.closest('.product-category-section');
+  
+  // Get the "Alle Produkte" header section
+  const alleProduktHeader = document.querySelector('.category-header[style*="margin-top: 3rem"]');
+  
+  // Define category mapping for section identification
+  const categoryMapping = {
+    'Technik/Gadgets': 'technikGrid',
+    'Beleuchtung': 'beleuchtungGrid', 
+    'Haushalt und Küche': 'haushaltGrid',
+    'Körperpflege/Wellness': 'wellnessGrid'
+  };
+  
+  if (selectedCategory === 'alle') {
+    // Show "Alle Produkte" header
+    if (alleProduktHeader) {
+      alleProduktHeader.style.display = 'block';
+    }
+    
+    // Show all category sections
+    categorySections.forEach(section => {
+      section.style.display = 'block';
+    });
+    
+    // Ensure bestseller section is always visible
+    if (bestsellerSection) {
+      bestsellerSection.style.display = 'block';
+    }
+    
+    console.log('✅ All category sections shown');
+  } else {
+    // Hide "Alle Produkte" header when specific category is selected
+    if (alleProduktHeader) {
+      alleProduktHeader.style.display = 'none';
+    }
+    
+    // Hide all sections first (except bestseller)
+    categorySections.forEach(section => {
+      // Don't hide the bestseller section
+      if (section !== bestsellerSection) {
+        section.style.display = 'none';
+      }
+    });
+    
+    // Always keep bestseller section visible
+    if (bestsellerSection) {
+      bestsellerSection.style.display = 'block';
+    }
+    
+    // Show only the selected category section
+    const targetGridId = categoryMapping[selectedCategory];
+    if (targetGridId) {
+      const targetSection = document.getElementById(targetGridId)?.closest('.product-category-section');
+      if (targetSection) {
+        targetSection.style.display = 'block';
+        console.log('✅ Showing section for category:', selectedCategory);
+      } else {
+        console.error('❌ Target section not found for category:', selectedCategory);
+      }
+    } else {
+      console.error('❌ No mapping found for category:', selectedCategory);
+    }
+  }
 }
 
 // Function to update body class for category-specific styling
@@ -1255,6 +1387,9 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Set initial category body class
       updateCategoryBodyClass('alle');
+      
+      // Show all category sections initially
+      showCategorySections('alle');
       
       // Nur den Titel für das Hauptprodukt-Grid setzen, nicht für Bestseller
       const categoryTitles = document.querySelectorAll('.category-title');
@@ -1791,6 +1926,8 @@ window.initializeAddToCartButtons = initializeAddToCartButtons;
 window.renderProducts = renderProducts;
 window.loadProducts = loadProducts;
 window.scrollBestsellers = scrollBestsellers;
+window.scrollCategory = scrollCategory;
+window.initializeScrollbarTracking = initializeScrollbarTracking;
 window.testCartDropdown = testCartDropdown;
 window.testEmptyCart = testEmptyCart;
 window.testLiveUpdates = testLiveUpdates;
@@ -2288,9 +2425,10 @@ function renderProductsToGrid(products, gridContainer) {
     `;
   }).join('');
   
-  // Initialize buttons
+  // Initialize buttons and card clicks
   initializeWishlistButtons();
   initializeAddToCartButtons();
+  initializeProductCardClicks();
   
   console.log('✅ All product cards rendered to grid');
 }

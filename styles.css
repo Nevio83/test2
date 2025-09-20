@@ -969,84 +969,27 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     transform: translateY(-1px);
 }
 
-/* Category-specific product card effects - ALWAYS VISIBLE based on product category */
-/* Technik/Gadgets products - Blue theme */
-.lumiere-product-card[data-category="Technik/Gadgets"] {
-    border-color: var(--category-technik);
-    border-width: 2px;
-    box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.25), 0 4px 15px rgba(79, 172, 254, 0.15);
-    background: linear-gradient(135deg, rgba(79, 172, 254, 0.02), rgba(79, 172, 254, 0.06));
-}
-
-/* Beleuchtung products - Gold theme */
-.lumiere-product-card[data-category="Beleuchtung"] {
-    border-color: var(--category-beleuchtung);
-    border-width: 2px;
-    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3), 0 4px 15px rgba(255, 215, 0, 0.2);
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.02), rgba(255, 215, 0, 0.06));
-}
-
-/* Körperpflege/Wellness products - Pink theme */
-.lumiere-product-card[data-category="Körperpflege/Wellness"] {
-    border-color: var(--category-koerperpflege);
-    border-width: 2px;
-    box-shadow: 0 0 0 2px rgba(255, 107, 157, 0.25), 0 4px 15px rgba(255, 107, 157, 0.15);
-    background: linear-gradient(135deg, rgba(255, 107, 157, 0.02), rgba(255, 107, 157, 0.06));
-}
-
-/* Haushalt und Küche products - Green theme */
+/* All product cards are white - no category-specific backgrounds */
+.lumiere-product-card[data-category="Technik/Gadgets"],
+.lumiere-product-card[data-category="Beleuchtung"],
+.lumiere-product-card[data-category="Körperpflege/Wellness"],
 .lumiere-product-card[data-category="Haushalt und Küche"] {
-    border-color: var(--category-haushalt);
-    border-width: 2px;
-    box-shadow: 0 0 0 2px rgba(67, 233, 123, 0.25), 0 4px 15px rgba(67, 233, 123, 0.15);
-    background: linear-gradient(135deg, rgba(67, 233, 123, 0.02), rgba(67, 233, 123, 0.06));
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
-/* Enhanced hover effects for ALL product cards based on their category */
-.lumiere-product-card[data-category="Technik/Gadgets"]:hover {
-    box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.5), 0 12px 35px rgba(79, 172, 254, 0.3);
-    transform: translateY(-4px) scale(1.02);
-    background: linear-gradient(135deg, rgba(79, 172, 254, 0.08), rgba(79, 172, 254, 0.15));
-}
-
-.lumiere-product-card[data-category="Beleuchtung"]:hover {
-    box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.6), 0 12px 35px rgba(255, 215, 0, 0.35);
-    transform: translateY(-4px) scale(1.02);
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 215, 0, 0.15));
-}
-
-.lumiere-product-card[data-category="Körperpflege/Wellness"]:hover {
-    box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.5), 0 12px 35px rgba(255, 107, 157, 0.3);
-    transform: translateY(-4px) scale(1.02);
-    background: linear-gradient(135deg, rgba(255, 107, 157, 0.08), rgba(255, 107, 157, 0.15));
-}
-
+/* Simple hover effects - white background like in the image */
+.lumiere-product-card[data-category="Technik/Gadgets"]:hover,
+.lumiere-product-card[data-category="Beleuchtung"]:hover,
+.lumiere-product-card[data-category="Körperpflege/Wellness"]:hover,
 .lumiere-product-card[data-category="Haushalt und Küche"]:hover {
-    box-shadow: 0 0 0 4px rgba(67, 233, 123, 0.5), 0 12px 35px rgba(67, 233, 123, 0.3);
-    transform: translateY(-4px) scale(1.02);
-    background: linear-gradient(135deg, rgba(67, 233, 123, 0.08), rgba(67, 233, 123, 0.15));
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+    background: #ffffff;
 }
 
-/* Category-specific product titles - ALWAYS VISIBLE */
-.lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-product-title {
-    color: var(--category-technik);
-    font-weight: 600;
-}
-
-.lumiere-product-card[data-category="Beleuchtung"] .lumiere-product-title {
-    color: #b8860b; /* Darker gold for readability */
-    font-weight: 600;
-}
-
-.lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-product-title {
-    color: var(--category-koerperpflege);
-    font-weight: 600;
-}
-
-.lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-product-title {
-    color: var(--category-haushalt);
-    font-weight: 600;
-}
+/* All product titles are black like in the image */
 
 /* Category-specific add-to-cart buttons - ALWAYS VISIBLE */
 .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn {
@@ -1615,55 +1558,17 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     transform: translateY(-2px);
 }
 
-/* Ensure category colors work in bestseller grid */
-#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] {
-    border-color: var(--category-technik) !important;
-    border-width: 2px !important;
-    box-shadow: 0 0 0 2px rgba(79, 172, 254, 0.25), 0 4px 15px rgba(79, 172, 254, 0.15) !important;
-    background: linear-gradient(135deg, rgba(79, 172, 254, 0.02), rgba(79, 172, 254, 0.06)) !important;
-}
-
-#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] {
-    border-color: var(--category-beleuchtung) !important;
-    border-width: 2px !important;
-    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3), 0 4px 15px rgba(255, 215, 0, 0.2) !important;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.02), rgba(255, 215, 0, 0.06)) !important;
-}
-
-#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] {
-    border-color: var(--category-koerperpflege) !important;
-    border-width: 2px !important;
-    box-shadow: 0 0 0 2px rgba(255, 107, 157, 0.25), 0 4px 15px rgba(255, 107, 157, 0.15) !important;
-    background: linear-gradient(135deg, rgba(255, 107, 157, 0.02), rgba(255, 107, 157, 0.06)) !important;
-}
-
+/* Bestseller grid uses same white design as other categories */
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"],
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"],
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"],
 #bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] {
-    border-color: var(--category-haushalt) !important;
-    border-width: 2px !important;
-    box-shadow: 0 0 0 2px rgba(67, 233, 123, 0.25), 0 4px 15px rgba(67, 233, 123, 0.15) !important;
-    background: linear-gradient(135deg, rgba(67, 233, 123, 0.02), rgba(67, 233, 123, 0.06)) !important;
+    background: #ffffff !important;
+    border: 1px solid #f0f0f0 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
 }
 
-/* Category-specific titles in bestseller grid */
-#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-product-title {
-    color: var(--category-technik) !important;
-    font-weight: 600 !important;
-}
-
-#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] .lumiere-product-title {
-    color: #b8860b !important;
-    font-weight: 600 !important;
-}
-
-#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-product-title {
-    color: var(--category-koerperpflege) !important;
-    font-weight: 600 !important;
-}
-
-#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-product-title {
-    color: var(--category-haushalt) !important;
-    font-weight: 600 !important;
-}
+/* All titles in bestseller grid are black like other categories */
 
 /* Category-specific buttons in bestseller grid */
 #bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn {
