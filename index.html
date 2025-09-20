@@ -325,34 +325,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </section>
 
-        <!-- Lumière Category Navigation -->
-        <section class="lumiere-category-nav">
-            <div class="container">
-                <div class="lumiere-category-tabs">
-                    <a href="#" class="lumiere-category-tab active" data-category="alle">
-                        <i class="bi bi-grid-3x3-gap"></i>
-                        <span>Alle Kategorien</span>
-                    </a>
-                    <a href="#" class="lumiere-category-tab" data-category="Technik/Gadgets">
-                        <i class="bi bi-cpu"></i>
-                        <span>Technik/Gadgets</span>
-                    </a>
-                    <a href="#" class="lumiere-category-tab" data-category="Beleuchtung">
-                        <i class="bi bi-lightbulb"></i>
-                        <span>Beleuchtung</span>
-                    </a>
-                    <a href="#" class="lumiere-category-tab" data-category="Körperpflege/Wellness">
-                        <i class="bi bi-heart-pulse"></i>
-                        <span>Körperpflege/Wellness</span>
-                    </a>
-                    <a href="#" class="lumiere-category-tab" data-category="Haushalt und Küche">
-                        <i class="bi bi-house"></i>
-                        <span>Haushalt und Küche</span>
-                    </a>
-                </div>
-            </div>
-        </section>
-
         <!-- Products Section - Lumière Style with Swipe -->
         <section class="products-section">
             <div class="container">
@@ -377,6 +349,40 @@ document.addEventListener('DOMContentLoaded', function() {
                             <!-- Bestseller products will be loaded here -->
                         </div>
                     </div>
+                </div>
+
+                <!-- Lumière Category Navigation -->
+                <section class="lumiere-category-nav">
+                    <div class="container">
+                        <div class="lumiere-category-tabs">
+                            <a href="#" class="lumiere-category-tab active" data-category="alle">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                                <span>Alle Kategorien</span>
+                            </a>
+                            <a href="#" class="lumiere-category-tab" data-category="Technik/Gadgets">
+                                <i class="bi bi-cpu"></i>
+                                <span>Technik/Gadgets</span>
+                            </a>
+                            <a href="#" class="lumiere-category-tab" data-category="Beleuchtung">
+                                <i class="bi bi-lightbulb"></i>
+                                <span>Beleuchtung</span>
+                            </a>
+                            <a href="#" class="lumiere-category-tab" data-category="Körperpflege/Wellness">
+                                <i class="bi bi-heart-pulse"></i>
+                                <span>Körperpflege/Wellness</span>
+                            </a>
+                            <a href="#" class="lumiere-category-tab" data-category="Haushalt und Küche">
+                                <i class="bi bi-house"></i>
+                                <span>Haushalt und Küche</span>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Alle Produkte Section Header -->
+                <div class="category-header" style="margin-top: 3rem; margin-bottom: 2rem;">
+                    <h2 class="category-title">Alle Produkte</h2>
+                    <p class="category-subtitle">Entdecken Sie unser gesamtes Sortiment nach Kategorien.</p>
                 </div>
 
                 <!-- Technik/Gadgets Section -->
@@ -576,6 +582,13 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       
       console.log('✅ Category products loading completed');
+      
+      // Initialize scrollbar tracking for all category grids after products are loaded
+      setTimeout(() => {
+        if (window.initializeScrollbarTracking) {
+          window.initializeScrollbarTracking();
+        }
+      }, 200);
     }
     
     // Make function globally available
