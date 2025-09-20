@@ -335,10 +335,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="category-subtitle">Schau dir die beliebtesten Produkte unserer Kunden an.</p>
                     </div>
                     <div class="product-scroll-container">
-                        <!-- Neue Scrollbar Elemente -->
-                        <div class="custom-scrollbar-track"></div>
-                        <div class="custom-scrollbar-thumb" id="customScrollbarThumb"></div>
-                        
                         <button class="scroll-arrow scroll-arrow-left" onclick="scrollBestsellers('left')">
                             <i class="bi bi-chevron-left"></i>
                         </button>
@@ -392,10 +388,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="category-subtitle">Innovative Technologie für den Alltag.</p>
                     </div>
                     <div class="product-scroll-container">
-                        <!-- Neue Scrollbar Elemente -->
-                        <div class="custom-scrollbar-track"></div>
-                        <div class="custom-scrollbar-thumb" id="technikScrollbarThumb"></div>
-                        
                         <button class="scroll-arrow scroll-arrow-left" onclick="scrollCategory('technikGrid', 'left')">
                             <i class="bi bi-chevron-left"></i>
                         </button>
@@ -415,10 +407,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="category-subtitle">Stilvolle Beleuchtungslösungen für Ihr Zuhause.</p>
                     </div>
                     <div class="product-scroll-container">
-                        <!-- Neue Scrollbar Elemente -->
-                        <div class="custom-scrollbar-track"></div>
-                        <div class="custom-scrollbar-thumb" id="beleuchtungScrollbarThumb"></div>
-                        
                         <button class="scroll-arrow scroll-arrow-left" onclick="scrollCategory('beleuchtungGrid', 'left')">
                             <i class="bi bi-chevron-left"></i>
                         </button>
@@ -438,10 +426,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="category-subtitle">Praktische Helfer für Haushalt und Küche.</p>
                     </div>
                     <div class="product-scroll-container">
-                        <!-- Neue Scrollbar Elemente -->
-                        <div class="custom-scrollbar-track"></div>
-                        <div class="custom-scrollbar-thumb" id="haushaltScrollbarThumb"></div>
-                        
                         <button class="scroll-arrow scroll-arrow-left" onclick="scrollCategory('haushaltGrid', 'left')">
                             <i class="bi bi-chevron-left"></i>
                         </button>
@@ -461,10 +445,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="category-subtitle">Wellness und Pflege für Ihr Wohlbefinden.</p>
                     </div>
                     <div class="product-scroll-container">
-                        <!-- Neue Scrollbar Elemente -->
-                        <div class="custom-scrollbar-track"></div>
-                        <div class="custom-scrollbar-thumb" id="wellnessScrollbarThumb"></div>
-                        
                         <button class="scroll-arrow scroll-arrow-left" onclick="scrollCategory('wellnessGrid', 'left')">
                             <i class="bi bi-chevron-left"></i>
                         </button>
@@ -545,6 +525,195 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="app.js" defer></script>
     
     <script>
+    // ULTIMATE ANIMATION FIX: Brute force approach
+    function ultimateAnimationFix() {
+        console.log('🚀 ULTIMATE animation fix starting...');
+        
+        // Find ALL wishlist buttons and fix them
+        const allWishlistButtons = document.querySelectorAll('.lumiere-wishlist-btn');
+        console.log(`Found ${allWishlistButtons.length} wishlist buttons total`);
+        
+        allWishlistButtons.forEach((btn, index) => {
+            const productId = btn.dataset.productId;
+            
+            // Skip if already fixed
+            if (btn.hasAttribute('data-ultimate-fixed')) return;
+            btn.setAttribute('data-ultimate-fixed', 'true');
+            
+            // Clone button to remove all existing listeners
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            // Add new click listener with guaranteed animation
+            newBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                console.log(`🚀 ULTIMATE animation for product ${productId}`);
+                
+                // FORCE visible animation
+                this.style.transform = 'scale(1.3)';
+                this.style.transition = 'all 0.3s ease';
+                this.style.backgroundColor = '#ff6b6b';
+                
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                    this.style.backgroundColor = '';
+                }, 300);
+                
+                // FORCE floating heart
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.style.cssText = `
+                    position: absolute !important;
+                    top: -25px !important;
+                    left: 50% !important;
+                    transform: translateX(-50%) !important;
+                    font-size: 20px !important;
+                    pointer-events: none !important;
+                    z-index: 9999 !important;
+                    color: red !important;
+                `;
+                
+                // Animate heart manually
+                this.appendChild(heart);
+                let pos = -25;
+                const animateHeart = setInterval(() => {
+                    pos -= 2;
+                    heart.style.top = pos + 'px';
+                    heart.style.opacity = (1 - Math.abs(pos + 25) / 30);
+                    if (pos < -55) {
+                        clearInterval(animateHeart);
+                        heart.remove();
+                    }
+                }, 50);
+                
+                // Call original function
+                if (window.toggleWishlist) {
+                    window.toggleWishlist(parseInt(productId));
+                }
+            });
+            
+            console.log(`🚀 ULTIMATE fixed button ${index} for product ${productId}`);
+        });
+        
+        console.log('🚀 ULTIMATE animation fix completed');
+    }
+    
+    // Add CSS for float animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes float-up {
+            0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            100% { transform: translateX(-50%) translateY(-30px); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Call ULTIMATE fix multiple times
+    setTimeout(ultimateAnimationFix, 1000);
+    setTimeout(ultimateAnimationFix, 3000);
+    setTimeout(ultimateAnimationFix, 5000);
+    
+    // Also fix after category clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('lumiere-category-tab')) {
+            setTimeout(ultimateAnimationFix, 500);
+            setTimeout(ultimateAnimationFix, 1500);
+        }
+    });
+    
+    // Fix on any page interaction
+    document.addEventListener('click', function() {
+        setTimeout(ultimateAnimationFix, 100);
+    });
+    
+    // DRAG SCROLLING - DIREKT IM HTML
+    function initializeDragScrolling() {
+        console.log('🎯 Initializing drag scrolling in HTML...');
+        
+        const scrollContainers = document.querySelectorAll('.product-scroll-grid');
+        
+        scrollContainers.forEach((container, index) => {
+            console.log(`🎯 Setting up drag for slider ${index + 1}: ${container.id}`);
+            
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+            
+            // Make container draggable
+            container.style.cursor = 'grab';
+            container.style.userSelect = 'none';
+            
+            // Mouse down
+            container.addEventListener('mousedown', (e) => {
+                // Skip buttons
+                if (e.target.tagName === 'BUTTON' || 
+                    e.target.closest('button') || 
+                    e.target.closest('.lumiere-wishlist-btn') ||
+                    e.target.closest('.lumiere-add-to-cart-btn')) {
+                    return;
+                }
+                
+                isDown = true;
+                container.style.cursor = 'grabbing';
+                startX = e.pageX - container.offsetLeft;
+                scrollLeft = container.scrollLeft;
+                e.preventDefault();
+                console.log(`🎯 Drag started on ${container.id}`);
+            });
+            
+            // Mouse up
+            container.addEventListener('mouseup', () => {
+                if (isDown) {
+                    isDown = false;
+                    container.style.cursor = 'grab';
+                    console.log(`🎯 Drag ended on ${container.id}`);
+                }
+            });
+            
+            // Mouse leave
+            container.addEventListener('mouseleave', () => {
+                if (isDown) {
+                    isDown = false;
+                    container.style.cursor = 'grab';
+                }
+            });
+            
+            // Mouse move - THE ACTUAL DRAGGING
+            container.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                
+                const x = e.pageX - container.offsetLeft;
+                const walk = (x - startX) * 2;
+                const newScrollLeft = Math.max(0, Math.min(container.scrollWidth - container.clientWidth, scrollLeft - walk));
+                
+                // Use scrollTo like the buttons do
+                container.scrollTo({
+                    left: newScrollLeft,
+                    behavior: 'auto'
+                });
+                
+                console.log(`🎯 Dragging ${container.id}: scrollLeft=${newScrollLeft}`);
+                
+                // Update scrollbar if function exists
+                if (window.updateScrollbarPositionForGrid) {
+                    window.updateScrollbarPositionForGrid(container.id);
+                }
+            });
+            
+            console.log(`✅ Drag setup completed for ${container.id}`);
+        });
+        
+        console.log(`✅ Drag scrolling initialized for ${scrollContainers.length} containers`);
+    }
+    
+    // Initialize drag after page loads
+    setTimeout(initializeDragScrolling, 1000);
+    setTimeout(initializeDragScrolling, 3000);
+    setTimeout(initializeDragScrolling, 5000);
+    
     // Lade Produkte in Kategorie-Container (inline fix)
     function loadCategoryProducts(products) {
       console.log('🔄 Loading products into category containers...');
@@ -1232,8 +1401,9 @@ function clearSearchInput() {
 </script>
 
 <!-- Scripts am Ende laden für bessere Performance -->
-<script src="app.js?v=14.0"></script>
+<script src="app.js?v=18.0"></script>
 <script src="cart.js"></script>
+
 
 <script>
 // Check if help panel should be opened automatically (from contact page)
