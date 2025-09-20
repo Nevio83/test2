@@ -1023,41 +1023,8 @@ function updateScrollbarPosition() {
 
 // Generic scrollbar position update function for any grid
 function updateScrollbarPositionForGrid(gridId) {
-    const grid = document.getElementById(gridId);
-    if (!grid) return;
-    
-    // Map grid IDs to their corresponding scrollbar thumb IDs
-    const thumbMapping = {
-        'bestsellerGrid': 'customScrollbarThumb',
-        'technikGrid': 'technikScrollbarThumb',
-        'beleuchtungGrid': 'beleuchtungScrollbarThumb',
-        'haushaltGrid': 'haushaltScrollbarThumb',
-        'wellnessGrid': 'wellnessScrollbarThumb'
-    };
-    
-    const thumbId = thumbMapping[gridId];
-    const thumb = document.getElementById(thumbId);
-    
-    if (!thumb) {
-        console.log('Scrollbar thumb not found for grid:', gridId);
-        return;
-    }
-    
-    const scrollLeft = grid.scrollLeft;
-    const scrollWidth = grid.scrollWidth - grid.clientWidth;
-    const scrollPercentage = scrollWidth > 0 ? (scrollLeft / scrollWidth) : 0;
-    
-    // Calculate position
-    const container = grid.parentElement;
-    const containerWidth = container.offsetWidth;
-    const buttonSpace = 110;
-    const trackWidth = containerWidth - buttonSpace;
-    const thumbWidth = 100;
-    const maxPosition = Math.max(0, trackWidth - thumbWidth);
-    const position = scrollPercentage * maxPosition;
-    
-    // Move the scrollbar thumb
-    thumb.style.transform = `translateX(${position}px)`;
+    // Use the new custom scrollbar update function
+    updateCustomScrollbarPosition(gridId);
 }
 
 // Initialize scrollbar tracking for all grids
@@ -1093,12 +1060,291 @@ function initializeScrollbarTracking() {
         setTimeout(() => updateScrollbarPositionForGrid(gridId), 50);
         setTimeout(() => updateScrollbarPositionForGrid(gridId), 200);
         setTimeout(() => updateScrollbarPositionForGrid(gridId), 500);
+        
+        // Initialize drag scroll functionality for this grid
+        initializeDragScrollForGrid(grid);
+        
+        // Create custom scrollbar for this grid
+        createCustomScrollbarForGrid(gridId);
     });
     
     // Also update all scrollbars on window resize
     window.addEventListener('resize', () => {
         grids.forEach(gridId => updateScrollbarPositionForGrid(gridId));
     });
+}
+
+// Initialize drag scroll functionality for a specific grid
+function initializeDragScrollForGrid(container) {
+    console.log(`🎯 Setting up drag scroll for grid: ${container.id}`);
+    
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    
+    // Make the whole container draggable
+    container.style.cursor = 'grab';
+    
+    // Mouse down event
+    container.addEventListener('mousedown', (e) => {
+        // Skip if clicking on buttons or links
+        if (e.target.tagName === 'BUTTON' || 
+            e.target.closest('button') || 
+            e.target.closest('a') ||
+            e.target.closest('.lumiere-wishlist-btn') ||
+            e.target.closest('.lumiere-add-to-cart-btn')) {
+            return;
+        }
+        
+        isDown = true;
+        container.style.cursor = 'grabbing';
+        startX = e.pageX - container.offsetLeft;
+        scrollLeft = container.scrollLeft;
+        e.preventDefault();
+        console.log('🎯 Container drag started for:', container.id);
+    });
+    
+    // Mouse up event
+    container.addEventListener('mouseup', () => {
+        if (isDown) {
+            isDown = false;
+            container.style.cursor = 'grab';
+            console.log('🎯 Container drag ended for:', container.id);
+        }
+    });
+    
+    // Mouse leave event
+    container.addEventListener('mouseleave', () => {
+        if (isDown) {
+            isDown = false;
+            container.style.cursor = 'grab';
+        }
+    });
+    
+    // Mouse move event
+    container.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        
+        const x = e.pageX - container.offsetLeft;
+        const walk = (x - startX) * 2; // Scroll speed
+        const newScrollLeft = Math.max(0, Math.min(container.scrollWidth - container.clientWidth, scrollLeft - walk));
+        
+        // Use scrollTo for smooth scrolling
+        container.scrollTo({
+            left: newScrollLeft,
+            behavior: 'auto' // No smooth during drag
+        });
+        
+        // Update scrollbar position immediately
+        updateScrollbarPositionForGrid(container.id);
+    });
+    
+    // Touch events for mobile
+    let touchStartX;
+    let touchScrollLeft;
+    
+    container.addEventListener('touchstart', (e) => {
+        // Don't interfere with button clicks
+        if (e.target.closest('button') || 
+            e.target.closest('a') || 
+            e.target.closest('.lumiere-product-card')) {
+            return;
+        }
+        
+        touchStartX = e.touches[0].pageX;
+        touchScrollLeft = container.scrollLeft;
+        container.classList.add('dragging');
+    }, { passive: true });
+    
+    container.addEventListener('touchmove', (e) => {
+        if (touchStartX === undefined) return;
+        
+        const touchX = e.touches[0].pageX;
+        const walk = (touchStartX - touchX) * 1.5; // Touch scroll speed
+        const newScrollLeft = Math.max(0, Math.min(container.scrollWidth - container.clientWidth, touchScrollLeft + walk));
+        
+        container.scrollTo({
+            left: newScrollLeft,
+            behavior: 'auto'
+        });
+        
+        // Update scrollbar position immediately
+        updateScrollbarPositionForGrid(container.id);
+    }, { passive: true });
+    
+    container.addEventListener('touchend', () => {
+        touchStartX = undefined;
+        container.classList.remove('dragging');
+    });
+    
+    console.log(`✅ Drag scroll initialized for: ${container.id}`);
+}
+
+// Create and initialize a custom scrollbar for a specific grid
+function createCustomScrollbarForGrid(gridId) {
+    console.log(`🎯 Creating custom scrollbar for: ${gridId}`);
+    
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    
+    const container = grid.parentElement;
+    if (!container) return;
+    
+    // Remove any existing scrollbars
+    const existingTrack = container.querySelector('.custom-scrollbar-track');
+    const existingThumb = container.querySelector('.custom-scrollbar-thumb');
+    if (existingTrack) existingTrack.remove();
+    if (existingThumb) existingThumb.remove();
+    
+    // Create scrollbar track (gray background)
+    const scrollbarTrack = document.createElement('div');
+    scrollbarTrack.className = 'custom-scrollbar-track';
+    scrollbarTrack.style.cssText = `
+        position: absolute;
+        bottom: 12px;
+        left: 20px;
+        right: 110px;
+        height: 6px;
+        background: #f0f0f0;
+        border-radius: 3px;
+        pointer-events: none;
+        z-index: 1;
+    `;
+    
+    // Create scrollbar thumb (black draggable part)
+    const scrollbarThumb = document.createElement('div');
+    scrollbarThumb.className = 'custom-scrollbar-thumb';
+    scrollbarThumb.id = `${gridId}ScrollbarThumb`;
+    scrollbarThumb.style.cssText = `
+        position: absolute;
+        bottom: 12px;
+        left: 20px;
+        width: 100px;
+        height: 6px;
+        background: #000000;
+        border-radius: 3px;
+        cursor: grab;
+        pointer-events: auto;
+        z-index: 2;
+        transition: all 0.1s ease-out;
+    `;
+    
+    // Add elements to container
+    container.appendChild(scrollbarTrack);
+    container.appendChild(scrollbarThumb);
+    
+    // Add hover effects
+    scrollbarThumb.addEventListener('mouseenter', () => {
+        scrollbarThumb.style.height = '8px';
+        scrollbarThumb.style.bottom = '11px';
+        scrollbarThumb.style.background = '#333333';
+    });
+    
+    scrollbarThumb.addEventListener('mouseleave', () => {
+        scrollbarThumb.style.height = '6px';
+        scrollbarThumb.style.bottom = '12px';
+        scrollbarThumb.style.background = '#000000';
+    });
+    
+    // Make scrollbar thumb draggable
+    let isDragging = false;
+    let startX;
+    let startScrollLeft;
+    let startThumbLeft;
+    
+    scrollbarThumb.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        scrollbarThumb.style.cursor = 'grabbing';
+        startX = e.clientX;
+        startScrollLeft = grid.scrollLeft;
+        
+        // Get current thumb position
+        const thumbRect = scrollbarThumb.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        startThumbLeft = thumbRect.left - containerRect.left - 20; // 20px is left offset
+        
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🎯 Scrollbar thumb drag started for:', gridId);
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        const deltaX = e.clientX - startX;
+        const containerWidth = container.offsetWidth;
+        const trackWidth = containerWidth - 130; // 20px left + 110px right
+        const thumbWidth = 100;
+        const maxThumbPosition = Math.max(0, trackWidth - thumbWidth);
+        
+        if (maxThumbPosition <= 0) return;
+        
+        // Calculate new thumb position
+        const newThumbLeft = Math.max(0, Math.min(maxThumbPosition, startThumbLeft + deltaX));
+        
+        // Calculate scroll percentage
+        const scrollPercentage = newThumbLeft / maxThumbPosition;
+        const maxScrollLeft = grid.scrollWidth - grid.clientWidth;
+        const newScrollLeft = scrollPercentage * maxScrollLeft;
+        
+        // Move thumb
+        scrollbarThumb.style.transform = `translateX(${newThumbLeft}px)`;
+        
+        // Scroll grid
+        grid.scrollTo({
+            left: newScrollLeft,
+            behavior: 'auto'
+        });
+        
+        console.log(`🎯 Dragging: thumbPos=${newThumbLeft}px, scrollPos=${newScrollLeft}px`);
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            scrollbarThumb.style.cursor = 'grab';
+            console.log('🎯 Scrollbar thumb drag ended for:', gridId);
+        }
+    });
+    
+    // Update thumb position when grid scrolls (from buttons or other sources)
+    grid.addEventListener('scroll', () => {
+        updateCustomScrollbarPosition(gridId);
+    });
+    
+    console.log(`✅ Custom scrollbar created for: ${gridId}`);
+    return scrollbarThumb;
+}
+
+// Update the position of a custom scrollbar based on grid scroll position
+function updateCustomScrollbarPosition(gridId) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    
+    const container = grid.parentElement;
+    if (!container) return;
+    
+    const scrollbarThumb = container.querySelector('.custom-scrollbar-thumb');
+    if (!scrollbarThumb) return;
+    
+    const scrollLeft = grid.scrollLeft;
+    const maxScrollLeft = grid.scrollWidth - grid.clientWidth;
+    
+    if (maxScrollLeft <= 0) {
+        scrollbarThumb.style.transform = 'translateX(0px)';
+        return;
+    }
+    
+    const scrollPercentage = scrollLeft / maxScrollLeft;
+    const containerWidth = container.offsetWidth;
+    const trackWidth = containerWidth - 130; // 20px left + 110px right
+    const thumbWidth = 100;
+    const maxThumbPosition = Math.max(0, trackWidth - thumbWidth);
+    const thumbPosition = scrollPercentage * maxThumbPosition;
+    
+    scrollbarThumb.style.transform = `translateX(${thumbPosition}px)`;
 }
 
 function initializeWishlistButtons() {
@@ -1928,6 +2174,10 @@ window.loadProducts = loadProducts;
 window.scrollBestsellers = scrollBestsellers;
 window.scrollCategory = scrollCategory;
 window.initializeScrollbarTracking = initializeScrollbarTracking;
+window.updateScrollbarPositionForGrid = updateScrollbarPositionForGrid;
+window.initializeDragScrollForGrid = initializeDragScrollForGrid;
+window.createCustomScrollbarForGrid = createCustomScrollbarForGrid;
+window.updateCustomScrollbarPosition = updateCustomScrollbarPosition;
 window.testCartDropdown = testCartDropdown;
 window.testEmptyCart = testEmptyCart;
 window.testLiveUpdates = testLiveUpdates;
