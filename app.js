@@ -43,19 +43,37 @@ window.clearCart = function() {
 // Wishlist-Initialisierung
 let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
 
-// Produktdaten laden
+// Produktdaten laden mit Cache-Busting
 async function loadProducts() {
   try {
-    const response = await fetch('products.json');
+    // Cache-busting für products.json
+    const cacheBuster = Date.now();
+    const response = await fetch(`products.json?v=${cacheBuster}`);
     const products = await response.json();
     
-    // Einfaches Logging
-    console.log('Products loaded:', products.length);
+    console.log('📋 Products loaded with cache-busting:', products.length);
+    
+    // Validiere kritische Produkte (die 6 problematischen)
+    const criticalIds = [10, 11, 19, 20, 24, 25];
+    criticalIds.forEach(id => {
+      const product = products.find(p => Number(p.id) === id);
+      if (product) {
+        console.log(`✅ Critical product ${id} found:`, product.name);
+        // Prüfe auf kaputte Preise
+        if (typeof product.price !== 'number' || isNaN(product.price)) {
+          console.error(`❌ Product ${id} has invalid price:`, product.price);
+        }
+      } else {
+        console.error(`❌ Critical product ${id} NOT FOUND!`);
+      }
+    });
     
     // Füge eine Standardbeschreibung hinzu, falls nicht vorhanden
     return products.map(p => ({
       ...p,
-      description: p.description || ''
+      description: p.description || '',
+      // Repariere kaputte Preise
+      price: typeof p.price === 'number' && !isNaN(p.price) ? p.price : 0
     }));
   } catch (error) {
     console.error('Fehler beim Laden der Produkte:', error);
@@ -108,8 +126,8 @@ function toggleWishlist(productId) {
     
     setWishlist(wishlist);
     
-    // Update all wishlist button states for this product
-    const wishlistButtons = document.querySelectorAll(`[data-product-id="${productId}"] .lumiere-wishlist-btn`);
+    // Update all wishlist button states for this product - NEW: Direct selector
+    const wishlistButtons = document.querySelectorAll(`.lumiere-wishlist-btn[data-product-id="${productId}"]`);
     wishlistButtons.forEach(wishlistButton => {
       if (wishlistButton) {
         wishlistButton.classList.toggle('active', !wasInWishlist);
@@ -275,17 +293,24 @@ function initializeAddToCartButtons() {
 
 // Produktkarten-Klicks initialisieren
 function initializeProductCardClicks() {
+  console.log('🔗 Initializing product card clicks...');
+  
   document.querySelectorAll('.lumiere-product-card').forEach(card => {
+    const productId = parseInt(card.dataset.productId);
+    console.log(`Setting up click for product card ${productId}`);
+    
     card.addEventListener('click', (e) => {
       // Verhindere Navigation bei Klicks auf Buttons oder deren Kinder
       if (e.target.closest('.lumiere-wishlist-btn') || 
           e.target.closest('.lumiere-add-to-cart-btn') || 
           e.target.classList.contains('lumiere-add-to-cart-btn') ||
           e.target.closest('button')) {
+        console.log('Click on button - preventing navigation');
         return;
       }
       
-      const productId = parseInt(card.dataset.productId);
+      console.log(`🔗 Navigating to product page for ID: ${productId}`);
+      
       // Only navigate to existing product pages (10+)
       if (productId >= 10) {
         window.location.href = `produkte/produkt-${productId}.html`;
@@ -297,6 +322,8 @@ function initializeProductCardClicks() {
     // Cursor-Pointer für bessere UX
     card.style.cursor = 'pointer';
   });
+  
+  console.log('✅ Product card clicks initialized');
 }
 
 // Warenkorb-Funktionen
@@ -408,17 +435,15 @@ window.updateCartCounter = function() {
 };
 // Animation trigger functions
 function triggerCartButtonAnimation(productId) {
-  // Animate the specific add-to-cart button that was clicked
-  const cartButton = document.querySelector(`[data-product-id="${productId}"] .lumiere-add-to-cart-btn`) ||
-                     document.querySelector('.lumiere-add-to-cart-btn:focus') ||
-                     document.querySelector('.lumiere-add-to-cart-btn:last-child');
+  // Find ALL buttons for this product and animate them
+  const cartButtons = document.querySelectorAll(`.lumiere-add-to-cart-btn[data-product-id="${productId}"]`);
   
-  if (cartButton) {
+  cartButtons.forEach((cartButton) => {
     cartButton.classList.add('success-animation');
     setTimeout(() => {
       cartButton.classList.remove('success-animation');
     }, 800);
-  }
+  });
   
   // Enhanced colorful cart icon animation (no emojis)
   const navCartButton = document.querySelector('#cartButton');
@@ -434,10 +459,10 @@ function triggerCartButtonAnimation(productId) {
 }
 
 function triggerWishlistButtonAnimation(productId) {
-  // Animate the specific wishlist button that was clicked
-  const wishlistButton = document.querySelector(`[data-product-id="${productId}"] .lumiere-wishlist-btn`);
+  // Find ALL wishlist buttons for this product
+  const wishlistButtons = document.querySelectorAll(`.lumiere-wishlist-btn[data-product-id="${productId}"]`);
   
-  if (wishlistButton) {
+  wishlistButtons.forEach((wishlistButton) => {
     // Add success animation class
     wishlistButton.classList.add('success-animation');
     
@@ -455,7 +480,7 @@ function triggerWishlistButtonAnimation(productId) {
     
     // Create floating success indicator for wishlist
     createFloatingSuccessIndicator(wishlistButton, '♥', 'wishlist');
-  }
+  });
   
   // Animate the heart icon in the navigation
   const heartIcon = document.querySelector('#heartIcon');
@@ -477,10 +502,14 @@ function createFloatingSuccessIndicator(button, icon, type = 'cart') {
   indicator.style.position = 'fixed';
   indicator.style.left = buttonRect.left + buttonRect.width / 2 + 'px';
   indicator.style.top = buttonRect.top + buttonRect.height / 2 + 'px';
+  indicator.style.fontSize = '2rem';
+  indicator.style.zIndex = '99999';
+  indicator.style.pointerEvents = 'none';
+  indicator.style.color = type === 'wishlist' ? '#e74c3c' : '#4CAF50';
   
   document.body.appendChild(indicator);
   
-  // Remove after animation completes (different timing for cart vs wishlist)
+  // Remove after animation completes
   const duration = type === 'cart' ? 1200 : 1000;
   setTimeout(() => {
     if (document.body.contains(indicator)) {
@@ -563,6 +592,149 @@ function removeFromCart(productId) {
   updateCartCounter();
   renderCartDropdown();
 }
+
+// RADICAL FIX: Clear and reload all product cards
+function radicalProductReload() {
+  console.log('🚨 RADICAL: Clearing all product grids and reloading...');
+  
+  // Clear all grids completely
+  const grids = ['bestsellerGrid', 'technikGrid', 'beleuchtungGrid', 'haushaltGrid', 'wellnessGrid'];
+  grids.forEach(gridId => {
+    const grid = document.getElementById(gridId);
+    if (grid) {
+      grid.innerHTML = '';
+      console.log(`🗑️ Cleared ${gridId}`);
+    }
+  });
+  
+  // Force reload products after clearing
+  setTimeout(() => {
+    console.log('🔄 Reloading products after clearing...');
+    loadProducts().then(products => {
+      if (products.length > 0) {
+        console.log('✅ Products reloaded, rendering to grids...');
+        
+        // Render bestsellers
+        const bestsellerGrid = document.getElementById('bestsellerGrid');
+        if (bestsellerGrid) {
+          const bestsellers = products.slice(0, 8);
+          renderProductsToGrid(bestsellers, bestsellerGrid);
+        }
+        
+        // Render categories
+        const categoryMappings = {
+          'technikGrid': 'Technik/Gadgets',
+          'beleuchtungGrid': 'Beleuchtung',
+          'haushaltGrid': 'Haushalt und Küche',
+          'wellnessGrid': 'Körperpflege/Wellness'
+        };
+        
+        Object.entries(categoryMappings).forEach(([gridId, categoryName]) => {
+          const grid = document.getElementById(gridId);
+          if (grid) {
+            const categoryProducts = products.filter(p => p.category === categoryName);
+            renderProductsToGrid(categoryProducts, grid);
+          }
+        });
+        
+        console.log('🎉 RADICAL reload completed!');
+      }
+    });
+  }, 100);
+}
+
+// Make it globally available
+window.radicalProductReload = radicalProductReload;
+
+// NUCLEAR OPTION: Clear everything and start fresh
+function nuclearReset() {
+  console.log('💥 NUCLEAR RESET: Clearing all caches and restarting...');
+  
+  // Clear all localStorage
+  localStorage.removeItem('allProducts');
+  localStorage.removeItem('cart');
+  localStorage.removeItem('wishlist');
+  
+  // Clear all grids
+  const grids = ['bestsellerGrid', 'technikGrid', 'beleuchtungGrid', 'haushaltGrid', 'wellnessGrid'];
+  grids.forEach(gridId => {
+    const grid = document.getElementById(gridId);
+    if (grid) {
+      grid.innerHTML = '<div class="col-12 text-center p-4">Loading...</div>';
+    }
+  });
+  
+  // Force reload everything after 500ms
+  setTimeout(() => {
+    window.location.reload(true);
+  }, 500);
+}
+
+window.nuclearReset = nuclearReset;
+
+// DEEP DIAGNOSIS: Analyze the 6 problematic products
+function deepDiagnosis() {
+  console.log('🔍 DEEP DIAGNOSIS: Analyzing the 6 problematic products...');
+  
+  const problematicIds = [10, 11, 19, 20, 24, 25];
+  
+  problematicIds.forEach(id => {
+    console.log(`\n🔍 === ANALYZING PRODUCT ${id} ===`);
+    
+    // Find all possible selectors for this product
+    const selectors = [
+      `.lumiere-add-to-cart-btn[data-product-id="${id}"]`,
+      `.lumiere-wishlist-btn[data-product-id="${id}"]`,
+      `[data-product-id="${id}"] .lumiere-add-to-cart-btn`,
+      `[data-product-id="${id}"] .lumiere-wishlist-btn`,
+      `.lumiere-product-card[data-product-id="${id}"]`
+    ];
+    
+    selectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      console.log(`  ${selector}: ${elements.length} found`);
+      
+      elements.forEach((el, index) => {
+        console.log(`    [${index}] Classes:`, el.className);
+        console.log(`    [${index}] Parent:`, el.parentNode?.className);
+        console.log(`    [${index}] Has onclick:`, el.onclick !== null);
+        console.log(`    [${index}] Data-product-id:`, el.dataset.productId);
+        
+        // Test if clicking works
+        if (el.classList.contains('lumiere-add-to-cart-btn')) {
+          console.log(`    [${index}] TESTING CLICK...`);
+          try {
+            // Simulate click and see what happens
+            const clickEvent = new MouseEvent('click', { bubbles: true });
+            el.dispatchEvent(clickEvent);
+            console.log(`    [${index}] Click dispatched successfully`);
+          } catch (e) {
+            console.log(`    [${index}] Click failed:`, e.message);
+          }
+        }
+      });
+    });
+    
+    // Test if product exists in products array
+    const products = JSON.parse(localStorage.getItem('allProducts') || '[]');
+    const product = products.find(p => Number(p.id) === id);
+    console.log(`  Product in localStorage:`, product ? product.name : 'NOT FOUND');
+  });
+  
+  // Compare with a working product (from bestsellers)
+  console.log('\n🔍 === COMPARING WITH WORKING PRODUCT ===');
+  const workingButton = document.querySelector('#bestsellerGrid .lumiere-add-to-cart-btn');
+  if (workingButton) {
+    console.log('Working button classes:', workingButton.className);
+    console.log('Working button parent:', workingButton.parentNode?.className);
+    console.log('Working button has click:', workingButton.onclick !== null);
+    console.log('Working button product-id:', workingButton.dataset.productId);
+  }
+}
+
+window.deepDiagnosis = deepDiagnosis;
+
+// Deep diagnosis removed - problem solved!
 
 // Filter- und Sortierfunktionen
 function debounce(func, timeout = 50) {
@@ -2667,9 +2839,9 @@ function createProductCard(product) {
   return clone;
 }
 
-// Rendere Produkte in einen spezifischen Grid-Container (wie Bestseller)
+// USE THE WORKING renderBestsellers() FOR ALL CATEGORIES
 function renderProductsToGrid(products, gridContainer) {
-  console.log('🔧 Rendering products to grid:', products.length, 'products');
+  console.log('🚨 USING WORKING renderBestsellers() logic for categories!');
   
   if (!gridContainer) {
     console.error('❌ Grid container not found!');
@@ -2681,45 +2853,119 @@ function renderProductsToGrid(products, gridContainer) {
     return;
   }
   
+  // SCROLL GRID STRUCTURE (no Bootstrap cols) - WITH WORKING ANIMATIONS
   gridContainer.innerHTML = products.map(product => {
-    const price = product.price || product.salePrice || 0;
-    const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
-    
-    return `
-        <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
-            <div class="lumiere-image-container">
-                <img src="produkt bilder/ware.png" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
-                <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
-                    <i class="bi bi-heart"></i>
-                </button>
-            </div>
-            <div class="lumiere-card-content">
-                <h3 class="lumiere-product-title">${product.name}</h3>
-                <div class="lumiere-price-section">
-                    <span class="lumiere-price">€${formattedPrice}</span>
+        const price = product.price || product.salePrice || 0;
+        const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+        
+        return `
+            <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
+                <div class="lumiere-image-container">
+                    <img src="produkt bilder/ware.png" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
+                    <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
+                        <i class="bi bi-heart"></i>
+                    </button>
                 </div>
-                <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
-                    In den Warenkorb
-                </button>
+                <div class="lumiere-card-content">
+                    <h3 class="lumiere-product-title">${product.name}</h3>
+                    <div class="lumiere-price-section">
+                        <span class="lumiere-price">€${formattedPrice}</span>
+                    </div>
+                    <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
+                        In den Warenkorb
+                    </button>
+                </div>
             </div>
-        </div>
-    `;
-  }).join('');
-  
-  // Initialize buttons and card clicks
-  initializeWishlistButtons();
-  initializeAddToCartButtons();
-  initializeProductCardClicks();
-  
-  // Additional initialization for category grids with delay to ensure DOM is ready
-  setTimeout(() => {
-    console.log('🔄 Re-initializing buttons for category grid...');
+        `;
+    }).join('');
+    
+    // COPY EXACT INITIALIZATION FROM renderBestsellers()
     initializeWishlistButtons();
     initializeAddToCartButtons();
-  }, 100);
-  
-  console.log('✅ All product cards rendered to grid');
+    initializeProductCardClicks(); // FÜR NAVIGATION ZU PRODUKTSEITEN
+    
+    // Initialize scrollbar tracking
+    setTimeout(() => {
+        if (typeof initializeScrollbarTracking === 'function') {
+            initializeScrollbarTracking();
+        }
+    }, 100);
+
+    console.log('✅ Categories now use EXACT renderBestsellers() logic!');
+}
+
+// Scroll functions for arrow buttons
+function scrollBestsellers(direction) {
+    const grid = document.getElementById('bestsellerGrid');
+    if (!grid) return;
+    
+    const scrollAmount = 300;
+    const currentScroll = grid.scrollLeft;
+    
+    if (direction === 'left') {
+        grid.scrollTo({
+            left: Math.max(0, currentScroll - scrollAmount),
+            behavior: 'smooth'
+        });
+    } else {
+        grid.scrollTo({
+            left: Math.min(grid.scrollWidth - grid.clientWidth, currentScroll + scrollAmount),
+            behavior: 'smooth'
+        });
+    }
+    
+    // Update scrollbar if function exists
+    setTimeout(() => {
+        if (window.updateScrollbarPositionForGrid) {
+            window.updateScrollbarPositionForGrid('bestsellerGrid');
+        }
+    }, 100);
+}
+
+function scrollCategory(gridId, direction) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    
+    const scrollAmount = 300;
+    const currentScroll = grid.scrollLeft;
+    
+    if (direction === 'left') {
+        grid.scrollTo({
+            left: Math.max(0, currentScroll - scrollAmount),
+            behavior: 'smooth'
+        });
+    } else {
+        grid.scrollTo({
+            left: Math.min(grid.scrollWidth - grid.clientWidth, currentScroll + scrollAmount),
+            behavior: 'smooth'
+        });
+    }
+    
+    // Update scrollbar if function exists
+    setTimeout(() => {
+        if (window.updateScrollbarPositionForGrid) {
+            window.updateScrollbarPositionForGrid(gridId);
+        }
+    }, 100);
+    
+}
+
+// Call loadCategoryProducts after products are loaded
+function initializeCategoryProducts() {
+    if (window.allProducts && window.allProducts.length > 0) {
+        loadCategoryProducts(window.allProducts);
+    } else {
+        console.log('⏳ Waiting for products to load...');
+        setTimeout(initializeCategoryProducts, 500);
+    }
+}
+
+// Initialize category products when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCategoryProducts);
+} else {
+    initializeCategoryProducts();
 }
 
 // Render Bestseller Section with horizontal scroll (funktionierender Code)
@@ -2762,3 +3008,52 @@ function renderBestsellers(products) {
         initializeScrollbarTracking();
     }, 100);
 }
+
+// Load products into category containers
+function loadCategoryProducts(products) {
+    console.log('🔄 Loading products into category containers...');
+    console.log('🔄 Total products available:', products.length);
+    
+    // Define category mappings
+    const categoryMappings = {
+        'technikGrid': 'Technik/Gadgets',
+        'beleuchtungGrid': 'Beleuchtung', 
+        'haushaltGrid': 'Haushalt und Küche',
+        'wellnessGrid': 'Körperpflege/Wellness'
+    };
+    
+    // For each category
+    Object.entries(categoryMappings).forEach(([gridId, categoryName]) => {
+        console.log(`🔧 Processing category: ${categoryName} -> ${gridId}`);
+        
+        const grid = document.getElementById(gridId);
+        if (!grid) {
+            console.warn(`❌ Grid ${gridId} not found`);
+            return;
+        }
+        
+        // Filter products for this category
+        const categoryProducts = products.filter(product => product.category === categoryName);
+        console.log(`📦 ${categoryName}: ${categoryProducts.length} products found`);
+        
+        if (categoryProducts.length > 0) {
+            console.log(`✅ Rendering ${categoryProducts.length} products to ${gridId}`);
+            // Render products to this container
+            renderProductsToGrid(categoryProducts, grid);
+        } else {
+            console.warn(`⚠️ No products found for category: ${categoryName}`);
+        }
+    });
+    
+    console.log('✅ Category products loading completed');
+    
+    // Initialize scrollbar tracking for all category grids after products are loaded
+    setTimeout(() => {
+        if (typeof initializeScrollbarTracking === 'function') {
+            initializeScrollbarTracking();
+        }
+    }, 200);
+}
+
+// Make function globally available
+window.loadCategoryProducts = loadCategoryProducts;
