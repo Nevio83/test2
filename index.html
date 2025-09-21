@@ -315,12 +315,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="lumiere-badge-circle">10</div>
                     <div class="lumiere-hero-text">
                         <h2>Smart Home & Sicherheit Angebote</h2>
-                        <p>Homematic IP Neuheiten & Highlights</p>
+                        <p>Homematic IP Neuheiten & Highlights für die produkte</p>
                     </div>
                     <div class="lumiere-hero-products">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" alt="Smart Home Device 1" class="lumiere-hero-img lazy-load">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" alt="Smart Home Device 2" class="lumiere-hero-img lazy-load">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" alt="Smart Home Device 3" class="lumiere-hero-img lazy-load">
+                        <img src="produkt bilder/ware.png" alt="Smart Home Device 1" class="lumiere-hero-img">
+                        <img src="produkt bilder/ware.png" alt="Smart Home Device 2" class="lumiere-hero-img">
+                        <img src="produkt bilder/ware.png" alt="Smart Home Device 3" class="lumiere-hero-img">
                 </div>
             </div>
         </section>
@@ -520,7 +520,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </footer>
     <!-- Scripts -->
-    <script src="lazy-load.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="app.js" defer></script>
     
@@ -544,51 +543,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
             
-            // Add new click listener with guaranteed animation
+            // Add new click listener - let app.js handle the animation
             newBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                console.log(`🚀 ULTIMATE animation for product ${productId}`);
+                console.log(`🚀 ULTIMATE click for product ${productId}`);
                 
-                // FORCE visible animation
-                this.style.transform = 'scale(1.3)';
-                this.style.transition = 'all 0.3s ease';
-                this.style.backgroundColor = '#ff6b6b';
-                
-                setTimeout(() => {
-                    this.style.transform = 'scale(1)';
-                    this.style.backgroundColor = '';
-                }, 300);
-                
-                // FORCE floating heart
-                const heart = document.createElement('div');
-                heart.innerHTML = '❤️';
-                heart.style.cssText = `
-                    position: absolute !important;
-                    top: -25px !important;
-                    left: 50% !important;
-                    transform: translateX(-50%) !important;
-                    font-size: 20px !important;
-                    pointer-events: none !important;
-                    z-index: 9999 !important;
-                    color: red !important;
-                `;
-                
-                // Animate heart manually
-                this.appendChild(heart);
-                let pos = -25;
-                const animateHeart = setInterval(() => {
-                    pos -= 2;
-                    heart.style.top = pos + 'px';
-                    heart.style.opacity = (1 - Math.abs(pos + 25) / 30);
-                    if (pos < -55) {
-                        clearInterval(animateHeart);
-                        heart.remove();
-                    }
-                }, 50);
-                
-                // Call original function
+                // Call original function - app.js will handle all animations
                 if (window.toggleWishlist) {
                     window.toggleWishlist(parseInt(productId));
                 }
