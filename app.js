@@ -232,6 +232,14 @@ function initializeAddToCartButtons() {
       const productId = button.dataset.productId;
       console.log(`Initializing button ${index} for product ${productId}`);
       
+      // Special attention to the problematic products
+      const problematicIds = [10, 11, 19, 20, 24, 25];
+      if (problematicIds.includes(parseInt(productId))) {
+        console.log(`🔍 SPECIAL: Initializing problematic product button ${productId}`);
+        console.log(`🔍 Button parent:`, button.parentNode?.className);
+        console.log(`🔍 Button data-product-id:`, button.getAttribute('data-product-id'));
+      }
+      
       // Klone Button um alle Event-Listener zu entfernen
       const newButton = button.cloneNode(true);
       button.parentNode.replaceChild(newButton, button);
@@ -483,6 +491,12 @@ function createFloatingSuccessIndicator(button, icon, type = 'cart') {
 
 // Make showAlert globally available with enhanced animations
 window.showAlert = function(message, redirectTo = 'cart.html') {
+  // Remove any existing notifications immediately
+  const existingAlerts = document.querySelectorAll('.alert.alert-success.position-fixed');
+  existingAlerts.forEach(existingAlert => {
+    existingAlert.remove();
+  });
+  
   const alert = document.createElement('div');
   alert.className = 'alert alert-success position-fixed end-0 m-4 shadow-lg notification-slide-in';
   alert.style.zIndex = '20000';
@@ -1357,6 +1371,14 @@ function initializeWishlistButtons() {
       const productId = button.dataset.productId;
       console.log(`Initializing wishlist button ${index} for product ${productId}`);
       
+      // Special attention to the problematic products
+      const problematicIds = [10, 11, 19, 20, 24, 25];
+      if (problematicIds.includes(parseInt(productId))) {
+        console.log(`🔍 SPECIAL: Initializing problematic wishlist button ${productId}`);
+        console.log(`🔍 Button parent:`, button.parentNode?.className);
+        console.log(`🔍 Button data-product-id:`, button.getAttribute('data-product-id'));
+      }
+      
       // Entferne alle bestehenden Event Listener
       const newButton = button.cloneNode(true);
       button.parentNode.replaceChild(newButton, button);
@@ -1646,12 +1668,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
       
-      console.log('=== INITIAL SETUP COMPLETE ===');
-    }).catch(error => {
-      console.error('❌ Error loading products:', error);
-    });
-  };
-  
+      console.log('✅ All bestsellers loaded and rendered');
+  }).catch(error => {
+    console.error('Error loading bestsellers:', error);
+  });
+}
+
+
   // Sofort laden
   loadAndShowProducts();
   
@@ -2482,14 +2505,14 @@ function addRecommendationToCart(productId, buttonElement) {
 
 // Show subtle notification when item is added
 function showAddToCartNotification() {
-  // Check if notification already exists
-  let notification = document.querySelector('.cart-notification');
-  if (notification) {
+  // Remove any existing cart notifications immediately
+  const existingNotifications = document.querySelectorAll('.cart-notification');
+  existingNotifications.forEach(notification => {
     notification.remove();
-  }
+  });
   
   // Create notification element
-  notification = document.createElement('div');
+  const notification = document.createElement('div');
   notification.className = 'cart-notification';
   notification.innerHTML = `
     <i class="bi bi-check-circle-fill"></i>
@@ -2605,12 +2628,21 @@ function createProductCard(product) {
     }
   }
   
+  // Set data attributes for buttons
+  if (addToCartBtn) {
+    addToCartBtn.setAttribute('data-product-id', product.id);
+  }
+  
+  if (wishlistBtn) {
+    wishlistBtn.setAttribute('data-product-id', product.id);
+  }
+  
   // Event-Listener hinzufügen
   if (addToCartBtn) {
     addToCartBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (typeof addToCart === 'function') {
-        addToCart(product);
+        addToCart(product.id);
       }
     });
   }
@@ -2679,6 +2711,13 @@ function renderProductsToGrid(products, gridContainer) {
   initializeWishlistButtons();
   initializeAddToCartButtons();
   initializeProductCardClicks();
+  
+  // Additional initialization for category grids with delay to ensure DOM is ready
+  setTimeout(() => {
+    console.log('🔄 Re-initializing buttons for category grid...');
+    initializeWishlistButtons();
+    initializeAddToCartButtons();
+  }, 100);
   
   console.log('✅ All product cards rendered to grid');
 }
