@@ -1136,6 +1136,97 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     opacity: 0.7;
 }
 
+/* Navigation Arrows - Large round buttons like in original */
+.scroll-arrow {
+    position: absolute;
+    bottom: 5px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-arrow:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.05);
+}
+
+.scroll-arrow-left {
+    right: 60px;
+}
+
+.scroll-arrow-right {
+    right: 10px;
+}
+
+.scroll-arrow i {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Scroll Controls - verstecken da wir scroll-arrow verwenden */
+.scroll-controls {
+    display: none;
+}
+
+.category-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.category-title {
+    font-size: 36px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: -0.01em;
+}
+
+/* Horizontal Scroll Grid - Original Style */
+.product-scroll-container {
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.product-scroll-grid {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 0 20px 60px 20px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+    cursor: grab;
+    user-select: none;
+}
+
+.product-scroll-grid:active {
+    cursor: grabbing;
+}
+
+.product-scroll-grid.dragging {
+    scroll-behavior: auto;
+    cursor: grabbing;
+}
+
+/* Hide scrollbar completely */
+.product-scroll-grid::-webkit-scrollbar {
+    display: none;
+}
+
 /* Legacy styles for backward compatibility */
 .product-image-container {
   position: relative;
