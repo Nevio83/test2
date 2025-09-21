@@ -242,8 +242,9 @@ function initializeAddToCartButtons() {
   
   // Warte kurz, um sicherzustellen, dass alle Elemente gerendert sind
   setTimeout(() => {
-    const buttons = document.querySelectorAll('.lumiere-add-to-cart-btn');
-    console.log('Initializing', buttons.length, 'lumiere-add-to-cart buttons');
+    // Get ALL add-to-cart buttons (including cart dropdown ones)
+    const buttons = document.querySelectorAll('.lumiere-add-to-cart-btn:not(.recommendation-add-btn)');
+    console.log('Initializing', buttons.length, 'lumiere-add-to-cart buttons (excluding recommendations)');
     
     // Entferne alle bestehenden Event-Listener durch Klonen
     buttons.forEach((button, index) => {
@@ -268,19 +269,40 @@ function initializeAddToCartButtons() {
         e.stopPropagation();
         
         const productIdFromButton = parseInt(this.dataset.productId);
-        console.log('Button clicked for product:', productIdFromButton);
+        const isFromCartDropdown = this.closest('#cartDropdown') !== null;
+        console.log('Button clicked for product:', productIdFromButton, 'from cart dropdown:', isFromCartDropdown);
         
         if (productIdFromButton && !isNaN(productIdFromButton)) {
           // Verhindere mehrfache Klicks
           if (this.disabled) return;
           this.disabled = true;
           
-          addToCart(productIdFromButton);
-          
-          // Button nach kurzer Zeit wieder aktivieren
-          setTimeout(() => {
-            this.disabled = false;
-          }, 1000);
+          // Use different logic for cart dropdown buttons
+          if (isFromCartDropdown) {
+            // For cart dropdown: use addProductToCart directly with flag
+            loadProducts().then(products => {
+              addProductToCart(products, productIdFromButton, true);
+            });
+            
+            // Visual feedback for cart dropdown buttons
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="bi bi-check"></i> Hinzugefügt';
+            this.style.background = 'var(--success-color)';
+            
+            setTimeout(() => {
+              this.innerHTML = originalText;
+              this.style.background = '';
+              this.disabled = false;
+            }, 1000);
+          } else {
+            // For normal buttons: use regular addToCart
+            addToCart(productIdFromButton);
+            
+            // Button nach kurzer Zeit wieder aktivieren
+            setTimeout(() => {
+              this.disabled = false;
+            }, 1000);
+          }
         } else {
           console.error('Invalid product ID:', productIdFromButton);
         }
@@ -355,7 +377,7 @@ function addToCart(productId) {
   }
 }
 
-function addProductToCart(products, productId) {
+function addProductToCart(products, productId, fromCartDropdown = false) {
   console.log('Looking for product ID:', productId, 'in', products.length, 'products');
   
   const product = products.find(p => Number(p.id) === Number(productId));
@@ -363,7 +385,9 @@ function addProductToCart(products, productId) {
   if (!product) {
     console.error('Product not found for ID:', productId);
     console.log('Available product IDs:', products.map(p => p.id));
-    alert('Produkt konnte nicht gefunden werden.');
+    if (!fromCartDropdown) {
+      alert('Produkt konnte nicht gefunden werden.');
+    }
     return;
   }
   
@@ -387,11 +411,20 @@ function addProductToCart(products, productId) {
   // Update counter and dropdown immediately
   updateCartCounter();
   
-  // Show alert
-  showAlert('Produkt wurde zum Warenkorb hinzugefügt');
+  // Show alert only if not from cart dropdown
+  if (!fromCartDropdown) {
+    showAlert('Produkt wurde zum Warenkorb hinzugefügt');
+  }
 
   // Trigger button animations
   triggerCartButtonAnimation(productId);
+  
+  // Update cart dropdown if it's open
+  if (fromCartDropdown) {
+    setTimeout(() => {
+      renderCartDropdown();
+    }, 100);
+  }
 
   // --- NEU: Wenn der User auf cart.html ist, direkt die Seite aktualisieren ---
   if (window.location.pathname.endsWith('cart.html')) {
@@ -519,7 +552,7 @@ function createFloatingSuccessIndicator(button, icon, type = 'cart') {
 }
 
 // Make showAlert globally available with enhanced animations
-window.showAlert = function(message, redirectTo = 'cart.html') {
+window.showAlert = function(message, redirectTo = 'cart.html', preventDropdownClose = false) {
   // Remove any existing notifications immediately
   const existingAlerts = document.querySelectorAll('.alert.alert-success.position-fixed');
   existingAlerts.forEach(existingAlert => {
@@ -950,7 +983,8 @@ function renderCartDropdown() {
 
   if (cartItems.length === 0) {
     console.log('Cart is empty, showing empty state');
-    footer.style.display = 'none';
+    footer.style.display = 'none'; // Footer verstecken bei leerem Warenkorb
+    totalElement.textContent = '0.00'; // Gesamt auf 0 setzen bei leerem Warenkorb
     
     // Bei leerem Warenkorb: 3 zufällige Produktvorschläge anzeigen
     loadProducts().then(products => {
@@ -1066,6 +1100,11 @@ function renderCartDropdown() {
   // Update total immediately
   totalElement.textContent = total.toFixed(2);
   console.log('Cart dropdown rendered successfully with total:', total.toFixed(2));
+  
+  // Re-initialize add-to-cart buttons for new dropdown content
+  setTimeout(() => {
+    initializeAddToCartButtons();
+  }, 100);
   
   // Re-initialize clear cart button after rendering
   setTimeout(() => {
@@ -2647,10 +2686,13 @@ function clearSearchInput() {
 // Funktion global verfügbar machen
 window.clearSearchInput = clearSearchInput;
 
+
 // Enhanced function to add recommendations to cart with animation
 function addRecommendationToCart(productId, buttonElement) {
-  // Add product to cart using existing function
-  addToCart(productId);
+  // Add product to cart WITHOUT closing dropdown
+  loadProducts().then(products => {
+    addProductToCart(products, productId, true); // fromCartDropdown = true
+  });
   
   // Add visual feedback animation
   const card = buttonElement.closest('.recommendation-card');

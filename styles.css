@@ -1801,7 +1801,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 
 .lumiere-footer p {
   font-size: 14px;
-  color: var(--lumiere-gray-400);
+  color: var(--lumiere-white);
   line-height: 1.6;
 }
 
@@ -1814,6 +1814,11 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 
 .lumiere-footer a:hover {
   color: var(--lumiere-white);
+}
+
+/* Footer Copyright Text - Override Bootstrap text-muted */
+.lumiere-footer .text-muted {
+  color: var(--lumiere-white) !important;
 }
 
 .social-icons a {
@@ -2184,8 +2189,9 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 .cart-dropdown {
   position: absolute;
   top: calc(100% + 10px);
-  right: 0;
+  right: -20px; /* Verschoben nach links um Platz zu schaffen */
   width: 400px;
+  max-width: calc(100vw - 40px); /* Verhindert Überlauf */
   background: var(--lumiere-white);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
@@ -2195,8 +2201,10 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   transform: translateY(-10px) scale(0.95);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--lumiere-gray-200);
-  max-height: 500px;
+  max-height: 90vh; /* 90% der Bildschirmhöhe - mehr Platz für Footer */
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .cart-dropdown.show {
@@ -2323,9 +2331,10 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 }
 
 .cart-dropdown-body {
-  max-height: 300px;
+  max-height: 50vh; /* 50% der Bildschirmhöhe - mehr Platz für Footer */
   overflow-y: auto;
   padding: 0;
+  flex: 1; /* Nimmt verfügbaren Platz ein */
 }
 
 .cart-item {
@@ -2423,6 +2432,8 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   padding: 20px;
   border-top: 1px solid var(--border-color);
   background: var(--light-bg);
+  flex-shrink: 0; /* Footer soll nicht schrumpfen */
+  min-height: 120px; /* Mindesthöhe für Footer */
 }
 
 .cart-dropdown-footer .btn {
@@ -2439,8 +2450,39 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 }
 
 .cart-dropdown-footer .btn-outline-secondary {
-  border: 2px solid var(--border-color);
-  color: var(--text-secondary);
+  border: 2px solid #dc3545;
+  color: #dc3545;
+  background: white;
+  font-weight: 600;
+}
+
+.cart-dropdown-footer .btn-outline-secondary:hover {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+/* Müll-Button spezifische Styles */
+#clearCart {
+  border: 2px solid #dc3545 !important;
+  color: #dc3545 !important;
+  background: white !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+#clearCart:hover {
+  background: #dc3545 !important;
+  color: white !important;
+  border-color: #dc3545 !important;
+  transform: scale(1.02) !important;
+}
+
+#clearCart i {
+  font-size: 1.2rem !important;
 }
 
 /* Moderne Filter-Dropdowns */
