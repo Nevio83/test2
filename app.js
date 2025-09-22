@@ -1547,12 +1547,11 @@ function createCustomScrollbarForGrid(gridId) {
     let startScrollLeft;
     let startThumbLeft;
 
-    // Add dragging class for visual feedback
-    scrollbarThumb.addEventListener('mousedown', (e) => {
+    function startDrag(clientX, event) {
         isDragging = true;
         scrollbarThumb.classList.add('dragging');
         scrollbarThumb.style.cursor = 'grabbing';
-        startX = e.clientX;
+        startX = clientX;
         startScrollLeft = grid.scrollLeft;
 
         // Get current thumb position
@@ -1564,17 +1563,27 @@ function createCustomScrollbarForGrid(gridId) {
         document.body.style.userSelect = 'none';
         document.body.style.webkitUserSelect = 'none';
 
-        e.preventDefault();
-        e.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
         console.log('🎯 Scrollbar thumb drag started for:', gridId);
+    }
+
+    // Mouse events
+    scrollbarThumb.addEventListener('mousedown', (e) => {
+        startDrag(e.clientX, e);
     });
 
-    document.addEventListener('mousemove', (e) => {
-        // Handle thumb dragging
+    // Touch events for mobile
+    scrollbarThumb.addEventListener('touchstart', (e) => {
+        startDrag(e.touches[0].clientX, e);
+    }, { passive: false });
+
+    // UNIFIED MOVE HANDLER FOR MOUSE AND TOUCH
+    function handleMove(clientX, event) {
         if (isDragging) {
-            e.preventDefault();
+            event.preventDefault();
             
-            const deltaX = e.clientX - startX;
+            const deltaX = clientX - startX;
             const containerWidth = container.offsetWidth;
             const trackWidth = containerWidth - 130; // 20px left + 110px right
             const thumbWidth = 100;
@@ -1601,6 +1610,11 @@ function createCustomScrollbarForGrid(gridId) {
             
             console.log(`🎯 Thumb dragging: thumbPos=${newThumbLeft}px, scrollPos=${newScrollLeft}px`);
         }
+    }
+
+    // Mouse move events
+    document.addEventListener('mousemove', (e) => {
+        handleMove(e.clientX, e);
         
         // Handle track dragging
         if (isTrackDragging) {
@@ -1626,8 +1640,16 @@ function createCustomScrollbarForGrid(gridId) {
             console.log(`🎯 Track dragging: scrollPos=${newScrollLeft}px`);
         }
     });
+
+    // Touch move events
+    document.addEventListener('touchmove', (e) => {
+        if (isDragging && e.touches.length > 0) {
+            handleMove(e.touches[0].clientX, e);
+        }
+    }, { passive: false });
     
-    document.addEventListener('mouseup', () => {
+    // UNIFIED END HANDLER FOR MOUSE AND TOUCH
+    function handleEnd() {
         if (isDragging) {
             isDragging = false;
             scrollbarThumb.classList.remove('dragging');
@@ -1650,7 +1672,11 @@ function createCustomScrollbarForGrid(gridId) {
             
             console.log('🎯 Track drag ended for:', gridId);
         }
-    });
+    }
+
+    // Mouse and touch end events
+    document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('touchend', handleEnd);
     
     // Update thumb position when grid scrolls (from buttons or other sources)
     grid.addEventListener('scroll', () => {
