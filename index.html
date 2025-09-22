@@ -614,6 +614,89 @@
             
             setupSearchButton();
         });
+
+        // MOBILE-OPTIMIERUNG: JavaScript Fixes für test2
+        function initializeMobileOptimizations() {
+            // Verhindere Zoom bei Double-Tap auf Buttons
+            const buttons = document.querySelectorAll('button, .btn, .nav-icon-link');
+            buttons.forEach(button => {
+                button.style.touchAction = 'manipulation';
+            });
+
+            // Touch-Feedback für Category-Tiles
+            const categoryTiles = document.querySelectorAll('.category-tile');
+            categoryTiles.forEach(tile => {
+                tile.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.98)';
+                    this.style.transition = 'transform 0.1s ease';
+                });
+                
+                tile.addEventListener('touchend', function() {
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 100);
+                });
+            });
+
+            // Verbesserte Mobile Navigation
+            const navIcons = document.querySelectorAll('.nav-icon-link');
+            navIcons.forEach(icon => {
+                icon.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                icon.addEventListener('touchend', function() {
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // Passive Scroll-Events für bessere Performance
+            let ticking = false;
+            function updateScrollEffects() {
+                if (window.innerWidth <= 768) {
+                    const navbar = document.querySelector('.navbar');
+                    if (navbar && window.scrollY > 10) {
+                        navbar.style.backdropFilter = 'blur(20px)';
+                        navbar.style.webkitBackdropFilter = 'blur(20px)';
+                    }
+                }
+                ticking = false;
+            }
+            
+            document.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(updateScrollEffects);
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            console.log('✅ Mobile-Optimierungen für test2 initialisiert!');
+        }
+
+        // Initialisiere Mobile-Optimierungen nach DOM-Load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeMobileOptimizations);
+        } else {
+            initializeMobileOptimizations();
+        }
+
+        // Such-Focus Fix: Entferne Auto-Focus auf Mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInputs = document.querySelectorAll('input[type="search"], .search-input');
+            searchInputs.forEach(input => {
+                // Verhindere automatisches Fokussieren auf Mobile-Geräten
+                if (window.innerWidth <= 768) {
+                    input.addEventListener('focus', function(e) {
+                        // Nur verhindern wenn es nicht durch Benutzer-Interaktion ausgelöst wurde
+                        if (!e.isTrusted) {
+                            this.blur();
+                        }
+                    });
+                }
+            });
+        });
     </script>
 </body>
 </html>
