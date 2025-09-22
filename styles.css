@@ -2997,17 +2997,13 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   font-weight: bold;
   opacity: 1;
   visibility: visible;
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+  /* Entferne absolute Positionierung für Desktop */
 }
 
 .cart-dropdown .btn-close:hover {
   background: #dc3545;
   color: white;
   border-color: #dc3545;
-  transform: translateY(-50%);
 }
 
 .cart-dropdown .btn-close:active {
