@@ -379,6 +379,42 @@ body {
   filter: drop-shadow(0 0 4px currentColor);
 }
 
+/* Hover effects for active categories - better readability */
+.lumiere-category-tab.active:hover {
+  transform: translateY(-2px) !important;
+  opacity: 0.9;
+}
+
+.lumiere-category-tab[data-category="alle"].active:hover {
+  background: linear-gradient(135deg, #5a67d8, var(--category-alle)) !important;
+  color: var(--lumiere-white) !important;
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5) !important;
+}
+
+.lumiere-category-tab[data-category="Technik/Gadgets"].active:hover {
+  background: linear-gradient(135deg, #3182ce, var(--category-technik)) !important;
+  color: var(--lumiere-white) !important;
+  box-shadow: 0 8px 30px rgba(79, 172, 254, 0.5) !important;
+}
+
+.lumiere-category-tab[data-category="Beleuchtung"].active:hover {
+  background: linear-gradient(135deg, #b8860b, var(--category-beleuchtung)) !important;
+  color: var(--lumiere-white) !important;
+  box-shadow: 0 8px 30px rgba(255, 215, 0, 0.5) !important;
+}
+
+.lumiere-category-tab[data-category="Körperpflege/Wellness"].active:hover {
+  background: linear-gradient(135deg, #ed64a6, var(--category-koerperpflege)) !important;
+  color: var(--lumiere-white) !important;
+  box-shadow: 0 8px 30px rgba(255, 107, 157, 0.5) !important;
+}
+
+.lumiere-category-tab[data-category="Haushalt und Küche"].active:hover {
+  background: linear-gradient(135deg, #38a169, var(--category-haushalt)) !important;
+  color: var(--lumiere-white) !important;
+  box-shadow: 0 8px 30px rgba(67, 233, 123, 0.5) !important;
+}
+
 /* Responsive Design for Lumière Adapted Elements */
 @media (max-width: 768px) {
   .lumiere-hero-main {
@@ -2189,7 +2225,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 .cart-dropdown {
   position: absolute;
   top: calc(100% + 10px);
-  right: -20px; /* Verschoben nach links um Platz zu schaffen */
+  right: 0; /* Korrekte Positionierung am rechten Rand */
   width: 400px;
   max-width: calc(100vw - 40px); /* Verhindert Überlauf */
   background: var(--lumiere-white);
@@ -2292,6 +2328,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   justify-content: space-between;
   align-items: center;
   background: var(--bg-secondary);
+  min-height: 60px;
 }
 
 .cart-dropdown-header h6 {
@@ -2304,7 +2341,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 .cart-dropdown .btn-close {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: var(--text-secondary);
   cursor: pointer;
   padding: 0;
@@ -2314,20 +2351,22 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-full);
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  line-height: 0;
+  flex-shrink: 0;
+  font-family: monospace;
+  font-weight: normal;
 }
 
 .cart-dropdown .btn-close:hover {
   background: var(--danger-color);
   color: white;
-  transform: scale(1.1) rotate(90deg);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }
 
 .cart-dropdown .btn-close:active {
-  transform: scale(0.95) rotate(90deg);
+  opacity: 0.8;
 }
 
 .cart-dropdown-body {
