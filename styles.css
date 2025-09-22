@@ -124,6 +124,39 @@
   font-weight: 500;
 }
 
+/* Search Category Groups */
+.search-category-group {
+  margin-bottom: 40px;
+}
+
+.search-category-title {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.search-category-products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .search-category-products {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+  
+  .search-category-title {
+    font-size: 18px;
+  }
+}
+
 /* Search Header */
 .fullscreen-search-header {
   display: flex;

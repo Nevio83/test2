@@ -3313,8 +3313,40 @@ function testSearchFunction(query) {
         if (filtered.length === 0) {
             grid.innerHTML = `<div style="color: white; text-align: center; padding: 40px; font-size: 16px;">Keine Produkte mit "${query}" im Namen gefunden</div>`;
         } else {
-            // Render filtered products
-            grid.innerHTML = filtered.map(product => {
+            // Group products by category
+            const groupedProducts = {};
+            filtered.forEach(product => {
+                const category = product.category || 'Andere';
+                if (!groupedProducts[category]) {
+                    groupedProducts[category] = [];
+                }
+                groupedProducts[category].push(product);
+            });
+            
+            console.log('📦 Grouped products:', groupedProducts);
+            
+            // Create sorted product array (grouped by category but no titles)
+            let sortedProducts = [];
+            
+            // Category order
+            const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness', 'Haushalt und Küche'];
+            
+            // Add products in category order
+            categoryOrder.forEach(category => {
+                if (groupedProducts[category] && groupedProducts[category].length > 0) {
+                    sortedProducts = sortedProducts.concat(groupedProducts[category]);
+                }
+            });
+            
+            // Add any remaining categories not in the predefined order
+            Object.keys(groupedProducts).forEach(category => {
+                if (!categoryOrder.includes(category) && groupedProducts[category].length > 0) {
+                    sortedProducts = sortedProducts.concat(groupedProducts[category]);
+                }
+            });
+            
+            // Render all products in one grid (but grouped by category)
+            grid.innerHTML = sortedProducts.map(product => {
                 const price = product.price || product.salePrice || 0;
                 const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
                 
@@ -3568,10 +3600,42 @@ function renderAllProducts(allProductsGrid, products) {
         return;
     }
     
-    console.log('🎨 Rendering products to grid:', products.length);
+    console.log('🎨 Rendering products with category grouping:', products.length);
     
-    // Render all products with new style
-    allProductsGrid.innerHTML = products.map(product => {
+    // Group products by category
+    const groupedProducts = {};
+    products.forEach(product => {
+        const category = product.category || 'Andere';
+        if (!groupedProducts[category]) {
+            groupedProducts[category] = [];
+        }
+        groupedProducts[category].push(product);
+    });
+    
+    console.log('📦 Grouped products:', groupedProducts);
+    
+    // Create sorted product array (grouped by category but no titles)
+    let sortedProducts = [];
+    
+    // Category order
+    const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness', 'Haushalt und Küche'];
+    
+    // Add products in category order
+    categoryOrder.forEach(category => {
+        if (groupedProducts[category] && groupedProducts[category].length > 0) {
+            sortedProducts = sortedProducts.concat(groupedProducts[category]);
+        }
+    });
+    
+    // Add any remaining categories not in the predefined order
+    Object.keys(groupedProducts).forEach(category => {
+        if (!categoryOrder.includes(category) && groupedProducts[category].length > 0) {
+            sortedProducts = sortedProducts.concat(groupedProducts[category]);
+        }
+    });
+    
+    // Render all products in one grid (but grouped by category)
+    allProductsGrid.innerHTML = sortedProducts.map(product => {
         const price = product.price || product.salePrice || 0;
         const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
         
@@ -3597,7 +3661,7 @@ function renderAllProducts(allProductsGrid, products) {
         `;
     }).join('');
     
-    console.log('✅ Products rendered successfully:', products.length);
+    console.log('✅ Products rendered with category grouping');
     
     // Initialize buttons like on main page
     initializeAddToCartButtons();
