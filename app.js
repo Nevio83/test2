@@ -1433,9 +1433,78 @@ function createCustomScrollbarForGrid(gridId) {
         height: 6px;
         background: #f0f0f0;
         border-radius: 3px;
-        pointer-events: none;
+        cursor: pointer;
         z-index: 1;
     `;
+    
+    // Add hover effects for the track
+    scrollbarTrack.addEventListener('mouseenter', () => {
+        scrollbarTrack.style.background = '#e0e0e0';
+        scrollbarTrack.style.cursor = 'grab';
+    });
+    
+    scrollbarTrack.addEventListener('mouseleave', () => {
+        scrollbarTrack.style.background = '#f0f0f0';
+        scrollbarTrack.style.cursor = 'pointer';
+    });
+    
+    // Make the track draggable too
+    let isTrackDragging = false;
+    let trackStartX;
+    let trackStartScrollLeft;
+    
+    scrollbarTrack.addEventListener('mousedown', (e) => {
+        // Check if we're clicking on the thumb area
+        const trackRect = scrollbarTrack.getBoundingClientRect();
+        const thumbRect = scrollbarThumb.getBoundingClientRect();
+        const clickX = e.clientX;
+        
+        // If clicking on thumb area, let thumb handle it
+        if (clickX >= thumbRect.left && clickX <= thumbRect.right) {
+            return;
+        }
+        
+        isTrackDragging = true;
+        scrollbarTrack.style.cursor = 'grabbing';
+        trackStartX = e.clientX;
+        trackStartScrollLeft = grid.scrollLeft;
+        
+        // Prevent text selection during drag
+        document.body.style.userSelect = 'none';
+        document.body.style.webkitUserSelect = 'none';
+        
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🎯 Track drag started for:', gridId);
+    });
+    
+    // Add click-to-jump functionality for the track (when not dragging)
+    scrollbarTrack.addEventListener('click', (e) => {
+        if (isTrackDragging) return; // Don't jump if we were dragging
+        
+        const trackRect = scrollbarTrack.getBoundingClientRect();
+        const clickX = e.clientX - trackRect.left;
+        const trackWidth = trackRect.width;
+        const thumbWidth = 100;
+        
+        // Calculate where to position the thumb center
+        const thumbCenterX = Math.max(thumbWidth/2, Math.min(trackWidth - thumbWidth/2, clickX));
+        const thumbLeftX = thumbCenterX - thumbWidth/2;
+        
+        // Calculate scroll percentage
+        const maxThumbPosition = Math.max(0, trackWidth - thumbWidth);
+        const scrollPercentage = maxThumbPosition > 0 ? thumbLeftX / maxThumbPosition : 0;
+        const maxScrollLeft = grid.scrollWidth - grid.clientWidth;
+        const newScrollLeft = scrollPercentage * maxScrollLeft;
+        
+        // Scroll to position
+        grid.scrollTo({
+            left: newScrollLeft,
+            behavior: 'smooth'
+        });
+        
+        console.log(`🎯 Track clicked: jumping to ${newScrollLeft}px`);
+    });
     
     // Create scrollbar thumb (black draggable part)
     const scrollbarThumb = document.createElement('div');
@@ -1471,66 +1540,115 @@ function createCustomScrollbarForGrid(gridId) {
         scrollbarThumb.style.bottom = '12px';
         scrollbarThumb.style.background = '#000000';
     });
-    
-    // Make scrollbar thumb draggable
+
+    // Make scrollbar thumb draggable - IMPROVED
     let isDragging = false;
     let startX;
     let startScrollLeft;
     let startThumbLeft;
-    
+
+    // Add dragging class for visual feedback
     scrollbarThumb.addEventListener('mousedown', (e) => {
         isDragging = true;
+        scrollbarThumb.classList.add('dragging');
         scrollbarThumb.style.cursor = 'grabbing';
         startX = e.clientX;
         startScrollLeft = grid.scrollLeft;
-        
+
         // Get current thumb position
         const thumbRect = scrollbarThumb.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
         startThumbLeft = thumbRect.left - containerRect.left - 20; // 20px is left offset
-        
+
+        // Prevent text selection during drag
+        document.body.style.userSelect = 'none';
+        document.body.style.webkitUserSelect = 'none';
+
         e.preventDefault();
         e.stopPropagation();
         console.log('🎯 Scrollbar thumb drag started for:', gridId);
     });
-    
+
     document.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        e.preventDefault();
+        // Handle thumb dragging
+        if (isDragging) {
+            e.preventDefault();
+            
+            const deltaX = e.clientX - startX;
+            const containerWidth = container.offsetWidth;
+            const trackWidth = containerWidth - 130; // 20px left + 110px right
+            const thumbWidth = 100;
+            const maxThumbPosition = Math.max(0, trackWidth - thumbWidth);
+            
+            if (maxThumbPosition <= 0) return;
+            
+            // Calculate new thumb position
+            const newThumbLeft = Math.max(0, Math.min(maxThumbPosition, startThumbLeft + deltaX));
+            
+            // Calculate scroll percentage
+            const scrollPercentage = newThumbLeft / maxThumbPosition;
+            const maxScrollLeft = grid.scrollWidth - grid.clientWidth;
+            const newScrollLeft = scrollPercentage * maxScrollLeft;
+            
+            // Move thumb
+            scrollbarThumb.style.transform = `translateX(${newThumbLeft}px)`;
+            
+            // Scroll grid
+            grid.scrollTo({
+                left: newScrollLeft,
+                behavior: 'auto'
+            });
+            
+            console.log(`🎯 Thumb dragging: thumbPos=${newThumbLeft}px, scrollPos=${newScrollLeft}px`);
+        }
         
-        const deltaX = e.clientX - startX;
-        const containerWidth = container.offsetWidth;
-        const trackWidth = containerWidth - 130; // 20px left + 110px right
-        const thumbWidth = 100;
-        const maxThumbPosition = Math.max(0, trackWidth - thumbWidth);
-        
-        if (maxThumbPosition <= 0) return;
-        
-        // Calculate new thumb position
-        const newThumbLeft = Math.max(0, Math.min(maxThumbPosition, startThumbLeft + deltaX));
-        
-        // Calculate scroll percentage
-        const scrollPercentage = newThumbLeft / maxThumbPosition;
-        const maxScrollLeft = grid.scrollWidth - grid.clientWidth;
-        const newScrollLeft = scrollPercentage * maxScrollLeft;
-        
-        // Move thumb
-        scrollbarThumb.style.transform = `translateX(${newThumbLeft}px)`;
-        
-        // Scroll grid
-        grid.scrollTo({
-            left: newScrollLeft,
-            behavior: 'auto'
-        });
-        
-        console.log(`🎯 Dragging: thumbPos=${newThumbLeft}px, scrollPos=${newScrollLeft}px`);
+        // Handle track dragging
+        if (isTrackDragging) {
+            e.preventDefault();
+            
+            const deltaX = e.clientX - trackStartX;
+            const containerWidth = container.offsetWidth;
+            const trackWidth = containerWidth - 130;
+            const maxScrollLeft = grid.scrollWidth - grid.clientWidth;
+            
+            if (maxScrollLeft <= 0) return;
+            
+            // Calculate scroll movement (inverted for natural feel)
+            const scrollSensitivity = 2; // Adjust sensitivity
+            const newScrollLeft = Math.max(0, Math.min(maxScrollLeft, trackStartScrollLeft + (deltaX * scrollSensitivity)));
+            
+            // Scroll grid
+            grid.scrollTo({
+                left: newScrollLeft,
+                behavior: 'auto'
+            });
+            
+            console.log(`🎯 Track dragging: scrollPos=${newScrollLeft}px`);
+        }
     });
     
     document.addEventListener('mouseup', () => {
         if (isDragging) {
             isDragging = false;
+            scrollbarThumb.classList.remove('dragging');
             scrollbarThumb.style.cursor = 'grab';
+            
+            // Restore text selection
+            document.body.style.userSelect = '';
+            document.body.style.webkitUserSelect = '';
+            
             console.log('🎯 Scrollbar thumb drag ended for:', gridId);
+        }
+        
+        if (isTrackDragging) {
+            isTrackDragging = false;
+            scrollbarTrack.style.cursor = 'grab';
+            
+            // Restore text selection
+            document.body.style.userSelect = '';
+            document.body.style.webkitUserSelect = '';
+            
+            console.log('🎯 Track drag ended for:', gridId);
         }
     });
     

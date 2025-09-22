@@ -40,6 +40,15 @@
             height: 6px;
             background: #f0f0f0;
             border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        /* Hover-Effekt für die graue Spur */
+        .product-scroll-container .custom-scrollbar-track:hover {
+            height: 8px;
+            bottom: 11px;
+            background: #e0e0e0;
         }
         
         /* Neue schwarze Scrollbar - GANZ LINKS */
@@ -51,8 +60,46 @@
             height: 6px;
             background: #000000;
             border-radius: 3px;
+            z-index: 2;
+            transition: all 0.2s ease;
+            cursor: grab;
+        }
+        
+        /* Hover-Effekt für den schwarzen Thumb */
+        .product-scroll-container .custom-scrollbar-thumb:hover {
+            height: 8px;
+            bottom: 11px;
+            background: #333333;
+            cursor: grab;
+        }
+        
+        /* Active/Dragging-Effekt für den schwarzen Thumb */
+        .product-scroll-container .custom-scrollbar-thumb:active,
+        .product-scroll-container .custom-scrollbar-thumb.dragging {
+            cursor: grabbing;
+            background: #555555;
+            transform: scale(1.05);
+        }
+        
+        /* Größerer Klickbereich für bessere Usability */
+        .product-scroll-container .custom-scrollbar-track::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -5px;
+            right: -5px;
+            bottom: -10px;
             z-index: 1;
-            transition: transform 0.1s ease-out;
+        }
+        
+        .product-scroll-container .custom-scrollbar-thumb::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -5px;
+            right: -5px;
+            bottom: -10px;
+            z-index: 3;
         }
         
         /* ENTFERNE GRID PADDING */
