@@ -45,7 +45,8 @@
         }
         
         /* Hover-Effekt für die graue Spur */
-        .product-scroll-container .custom-scrollbar-track:hover {
+        .product-scroll-container .custom-scrollbar-track:hover,
+        .product-scroll-container .custom-scrollbar-track:active {
             height: 8px;
             bottom: 11px;
             background: #e0e0e0;
@@ -102,6 +103,45 @@
             z-index: 3;
         }
         
+        /* MOBILE TOUCH-OPTIMIERUNGEN FÜR SCROLLBAR */
+        @media (max-width: 768px) {
+            .product-scroll-container .custom-scrollbar-track {
+                height: 8px !important;
+                bottom: 10px;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            .product-scroll-container .custom-scrollbar-thumb {
+                height: 8px !important;
+                bottom: 10px;
+                min-width: 60px;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            .product-scroll-container .custom-scrollbar-thumb:active {
+                height: 10px !important;
+                bottom: 9px;
+                transform: scale(1.1);
+            }
+            
+            /* Größerer Touch-Bereich für Mobile */
+            .product-scroll-container .custom-scrollbar-track::before {
+                top: -15px;
+                bottom: -15px;
+                left: -10px;
+                right: -10px;
+            }
+            
+            .product-scroll-container .custom-scrollbar-thumb::before {
+                top: -15px;
+                bottom: -15px;
+                left: -10px;
+                right: -10px;
+            }
+        }
+
         /* ENTFERNE GRID PADDING */
         .product-scroll-grid {
             padding: 0 20px 60px 0px !important;
@@ -564,10 +604,11 @@
                         searchOverlay.classList.add('active');
                         document.body.style.overflow = 'hidden';
                         
-                        // Focus search input and load products
+                        // Focus search input and load products (nur für Desktop)
                         setTimeout(() => {
                             const searchInput = document.getElementById('fullscreenSearchInput');
-                            if (searchInput) {
+                            if (searchInput && window.innerWidth > 768) {
+                                // Nur auf Desktop fokussieren, nicht auf Mobile
                                 searchInput.focus();
                             }
                             
@@ -613,89 +654,6 @@
             }
             
             setupSearchButton();
-        });
-
-        // MOBILE-OPTIMIERUNG: JavaScript Fixes für test2
-        function initializeMobileOptimizations() {
-            // Verhindere Zoom bei Double-Tap auf Buttons
-            const buttons = document.querySelectorAll('button, .btn, .nav-icon-link');
-            buttons.forEach(button => {
-                button.style.touchAction = 'manipulation';
-            });
-
-            // Touch-Feedback für Category-Tiles
-            const categoryTiles = document.querySelectorAll('.category-tile');
-            categoryTiles.forEach(tile => {
-                tile.addEventListener('touchstart', function() {
-                    this.style.transform = 'scale(0.98)';
-                    this.style.transition = 'transform 0.1s ease';
-                });
-                
-                tile.addEventListener('touchend', function() {
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 100);
-                });
-            });
-
-            // Verbesserte Mobile Navigation
-            const navIcons = document.querySelectorAll('.nav-icon-link');
-            navIcons.forEach(icon => {
-                icon.addEventListener('touchstart', function() {
-                    this.style.transform = 'scale(0.95)';
-                });
-                
-                icon.addEventListener('touchend', function() {
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 150);
-                });
-            });
-
-            // Passive Scroll-Events für bessere Performance
-            let ticking = false;
-            function updateScrollEffects() {
-                if (window.innerWidth <= 768) {
-                    const navbar = document.querySelector('.navbar');
-                    if (navbar && window.scrollY > 10) {
-                        navbar.style.backdropFilter = 'blur(20px)';
-                        navbar.style.webkitBackdropFilter = 'blur(20px)';
-                    }
-                }
-                ticking = false;
-            }
-            
-            document.addEventListener('scroll', () => {
-                if (!ticking) {
-                    requestAnimationFrame(updateScrollEffects);
-                    ticking = true;
-                }
-            }, { passive: true });
-
-            console.log('✅ Mobile-Optimierungen für test2 initialisiert!');
-        }
-
-        // Initialisiere Mobile-Optimierungen nach DOM-Load
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeMobileOptimizations);
-        } else {
-            initializeMobileOptimizations();
-        }
-
-        // Such-Focus Fix: Entferne Auto-Focus auf Mobile
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInputs = document.querySelectorAll('input[type="search"], .search-input');
-            searchInputs.forEach(input => {
-                // Verhindere automatisches Fokussieren auf Mobile-Geräten
-                if (window.innerWidth <= 768) {
-                    input.addEventListener('focus', function(e) {
-                        // Nur verhindern wenn es nicht durch Benutzer-Interaktion ausgelöst wurde
-                        if (!e.isTrusted) {
-                            this.blur();
-                        }
-                    });
-                }
-            });
         });
     </script>
 </body>
