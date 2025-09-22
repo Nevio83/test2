@@ -13,7 +13,7 @@
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="//cdn-cookieyes.com">
     <link rel="preload" href="styles.css?v=14.0" as="style">
-    <link rel="preload" href="app.js?v=14.0" as="script">
+    <link rel="preload" href="app.js?v=19.0" as="script">
     
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -156,16 +156,11 @@
             <span class="nav-tagline"></span>
           </div>
 
-          <!-- Search Bar -->
-          <div class="search-bar-center">
-            <form class="search-form mx-auto">
-              <div class="input-group">
-                <input type="search" id="searchInput" class="form-control rounded-pill" placeholder="Suche...">
-                <button class="btn btn-primary rounded-pill px-3" type="button" aria-label="Suchen" id="mobileSearchBtn">
-                  <i class="bi bi-search"></i>
-                </button>
-              </div>
-            </form>
+          <!-- Search Icon Only -->
+          <div class="search-icon-center">
+            <button class="search-icon-btn" type="button" aria-label="Suchen" id="fullscreenSearchBtn">
+              <i class="bi bi-search"></i>
+            </button>
           </div>
 
           <!-- Right Side Icons -->
@@ -208,6 +203,66 @@
         </div>
       </div>
     </nav>
+
+    <!-- Fullscreen Search Overlay -->
+    <div class="fullscreen-search-overlay" id="fullscreenSearchOverlay">
+      <div class="fullscreen-search-container">
+        <!-- Search Header -->
+        <div class="fullscreen-search-header">
+          <button class="close-search-btn" id="closeSearchBtn">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <!-- Lumière Category Tabs -->
+        <div class="lumiere-category-tabs">
+          <a href="#" class="lumiere-category-tab active" data-category="alle" onclick="searchCategoryClick(this, 'alle'); return false;">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <span>ALLE</span>
+          </a>
+          <a href="#" class="lumiere-category-tab" data-category="Technik/Gadgets" onclick="searchCategoryClick(this, 'Technik/Gadgets'); return false;">
+            <i class="bi bi-cpu"></i>
+            <span>TECHNIK</span>
+          </a>
+          <a href="#" class="lumiere-category-tab" data-category="Beleuchtung" onclick="searchCategoryClick(this, 'Beleuchtung'); return false;">
+            <i class="bi bi-lightbulb"></i>
+            <span>LICHT</span>
+          </a>
+          <a href="#" class="lumiere-category-tab" data-category="Körperpflege/Wellness" onclick="searchCategoryClick(this, 'Körperpflege/Wellness'); return false;">
+            <i class="bi bi-heart-pulse"></i>
+            <span>WELLNESS</span>
+          </a>
+          <a href="#" class="lumiere-category-tab" data-category="Haushalt und Küche" onclick="searchCategoryClick(this, 'Haushalt und Küche'); return false;">
+            <i class="bi bi-house"></i>
+            <span>KÜCHE</span>
+          </a>
+        </div>
+        
+        <!-- Search Input -->
+        <div class="fullscreen-search-input-container">
+          <div class="search-input-wrapper">
+            <i class="bi bi-search search-input-icon"></i>
+            <input type="text" class="fullscreen-search-input" placeholder="Wonach suchst du?" id="fullscreenSearchInput" oninput="testSearchFunction(this.value)" onkeyup="testSearchFunction(this.value)">
+          </div>
+        </div>
+        
+        <!-- Search Results -->
+        <div class="search-results" id="searchResults" style="display: none;">
+          <h3 class="search-section-title">Suchergebnisse</h3>
+          <div class="search-results-grid" id="searchResultsGrid">
+            <!-- Results will be populated here -->
+          </div>
+        </div>
+        
+        <!-- All Products Section -->
+        <div class="search-all-products">
+          <h3 class="search-section-title">VIELLEICHT INTERESSIERT SIE DAS FOLGENDE</h3>
+          <div class="search-all-products-grid" id="searchAllProductsGrid">
+            <!-- All products will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Main Content -->
     <main>
@@ -432,5 +487,86 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="app.js?v=19.0" defer></script>
+    
+    <!-- Direct Search Button Handler -->
+    <script>
+        // Immediate search button handler
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 DOM loaded, setting up search button...');
+            
+            function setupSearchButton() {
+                const searchBtn = document.getElementById('fullscreenSearchBtn');
+                const searchOverlay = document.getElementById('fullscreenSearchOverlay');
+                
+                console.log('🔍 Elements found:', {
+                    searchBtn: !!searchBtn,
+                    searchOverlay: !!searchOverlay
+                });
+                
+                if (searchBtn && searchOverlay) {
+                    // Remove any existing listeners
+                    searchBtn.onclick = null;
+                    
+                    // Add click handler
+                    searchBtn.addEventListener('click', function(e) {
+                        console.log('🔍 DIRECT: Search button clicked!');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Show overlay with slide animation
+                        searchOverlay.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                        
+                        // Focus search input and load products
+                        setTimeout(() => {
+                            const searchInput = document.getElementById('fullscreenSearchInput');
+                            if (searchInput) {
+                                searchInput.focus();
+                            }
+                            
+                            // Load products immediately
+                            if (typeof loadAllProducts === 'function') {
+                                loadAllProducts();
+                            } else {
+                                // Backup: Try again after a short delay
+                                setTimeout(() => {
+                                    if (typeof loadAllProducts === 'function') {
+                                        loadAllProducts();
+                                    } else {
+                                        console.log('⚠️ loadAllProducts function not available');
+                                    }
+                                }, 1000);
+                            }
+                        }, 400);
+                    });
+                    
+                    // Close button handler
+                    const closeBtn = document.getElementById('closeSearchBtn');
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            searchOverlay.classList.remove('active');
+                            document.body.style.overflow = '';
+                        });
+                    }
+                    
+                    // ESC key handler
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
+                            searchOverlay.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                    
+                    console.log('✅ DIRECT: Search button setup complete!');
+                } else {
+                    console.log('⏳ DIRECT: Elements not ready, retrying...');
+                    setTimeout(setupSearchButton, 100);
+                }
+            }
+            
+            setupSearchButton();
+        });
+    </script>
 </body>
 </html>
