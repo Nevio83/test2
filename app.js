@@ -3099,3 +3099,581 @@ function loadCategoryProducts(products) {
 
 // Make function globally available
 window.loadCategoryProducts = loadCategoryProducts;
+
+// ===== FULLSCREEN SEARCH FUNCTIONALITY =====
+
+// Global search variables
+let allProducts = [];
+let searchOverlay = null;
+let searchInput = null;
+let searchResults = null;
+let searchResultsGrid = null;
+
+// Initialize fullscreen search when DOM is ready
+function initializeFullscreenSearch() {
+    console.log('🔍 Initializing fullscreen search...');
+    
+    // Wait for DOM elements to be available
+    setTimeout(() => {
+        // Get DOM elements
+        const fullscreenSearchBtn = document.getElementById('fullscreenSearchBtn');
+        const closeSearchBtn = document.getElementById('closeSearchBtn');
+        searchOverlay = document.getElementById('fullscreenSearchOverlay');
+        searchInput = document.getElementById('fullscreenSearchInput');
+        searchResults = document.getElementById('searchResults');
+        searchResultsGrid = document.getElementById('searchResultsGrid');
+        
+        console.log('🔍 Search elements found:', {
+            searchBtn: !!fullscreenSearchBtn,
+            overlay: !!searchOverlay,
+            input: !!searchInput
+        });
+        
+        if (!fullscreenSearchBtn || !searchOverlay) {
+            console.error('❌ Fullscreen search elements not found');
+            // Try again in 1 second
+            setTimeout(initializeFullscreenSearch, 1000);
+            return;
+        }
+        
+        // Remove any existing event listeners
+        fullscreenSearchBtn.removeEventListener('click', handleSearchButtonClick);
+        
+        // Open search overlay
+        fullscreenSearchBtn.addEventListener('click', handleSearchButtonClick);
+        
+        // Close search overlay
+        if (closeSearchBtn) {
+            closeSearchBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeSearchOverlay();
+            });
+        }
+        
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
+                closeSearchOverlay();
+            }
+        });
+        
+        // Close on overlay background click
+        searchOverlay.addEventListener('click', (e) => {
+            if (e.target === searchOverlay) {
+                closeSearchOverlay();
+            }
+        });
+        
+        // Search input functionality - FORCE TEST
+        console.log('🔧 Looking for search input...');
+        const testInput = document.getElementById('fullscreenSearchInput');
+        console.log('🔧 Found input:', testInput);
+        
+        if (testInput) {
+            console.log('✅ Search input found, adding FORCE event listeners');
+            
+            // Multiple event listeners to catch everything
+            testInput.addEventListener('input', function(e) {
+                console.log('🔍 INPUT EVENT:', e.target.value);
+                testSearchFunction(e.target.value);
+            });
+            
+            testInput.addEventListener('keyup', function(e) {
+                console.log('🔍 KEYUP EVENT:', e.target.value);
+                testSearchFunction(e.target.value);
+            });
+            
+            testInput.addEventListener('change', function(e) {
+                console.log('🔍 CHANGE EVENT:', e.target.value);
+                testSearchFunction(e.target.value);
+            });
+            
+        } else {
+            console.error('❌ Search input STILL not found!');
+            // Try to find it by class
+            const inputByClass = document.querySelector('.fullscreen-search-input');
+            console.log('🔧 Input by class:', inputByClass);
+        }
+        
+        // Category buttons now use direct onclick handlers
+        
+        // Popular search tags (removed - no longer needed)
+        
+        console.log('✅ Search button event listener added');
+    }, 100);
+}
+
+// Handle search button click
+function handleSearchButtonClick(e) {
+    console.log('🔍 Search button clicked!');
+    e.preventDefault();
+    e.stopPropagation();
+    openSearchOverlay();
+}
+
+// Open search overlay
+function openSearchOverlay() {
+    console.log('🔍 Opening search overlay...');
+    
+    if (searchOverlay) {
+        searchOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        
+        // Focus on search input after animation
+        setTimeout(() => {
+            if (searchInput) {
+                searchInput.focus();
+            }
+        }, 300);
+        
+        // Load products if not already loaded
+        if (allProducts.length === 0) {
+            loadProducts().then(products => {
+                allProducts = products;
+                console.log('📦 Products loaded for search:', allProducts.length);
+                loadAllProducts();
+                
+            });
+        } else {
+            loadAllProducts();
+        }
+    }
+}
+
+// Close search overlay
+function closeSearchOverlay() {
+    console.log('🔍 Closing search overlay...');
+    
+    if (searchOverlay) {
+        searchOverlay.classList.remove('active');
+        document.body.style.overflow = ''; // Restore scrolling
+        
+        // Clear search
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        if (searchResults) {
+            searchResults.style.display = 'none';
+        }
+    }
+}
+
+// REAL SEARCH FUNCTION
+function testSearchFunction(query) {
+    console.log('🔍 REAL SEARCH FUNCTION CALLED WITH:', `"${query}"`);
+    
+    const grid = document.getElementById('searchAllProductsGrid');
+    if (!grid) {
+        console.error('❌ Grid not found!');
+        return;
+    }
+    
+    // Reset category buttons
+    const allButtons = document.querySelectorAll('.lumiere-category-tab');
+    allButtons.forEach(btn => btn.classList.remove('active'));
+    
+    if (query.length === 0) {
+        console.log('🔍 Empty query - loading all products');
+        const allButton = document.querySelector('.lumiere-category-tab[data-category="alle"]');
+        if (allButton) {
+            allButton.classList.add('active');
+        }
+        
+        // Reset title
+        const title = document.querySelector('.search-all-products .search-section-title');
+        if (title) {
+            title.textContent = 'VIELLEICHT INTERESSIERT SIE DAS FOLGENDE';
+        }
+        
+        loadAllProducts();
+        return;
+    }
+    
+    console.log('🔍 Searching for products with:', query);
+    
+    // Load products and filter
+    loadProducts().then(products => {
+        console.log('📦 Total products:', products.length);
+        
+        const searchText = query.toLowerCase();
+        const filtered = products.filter(product => {
+            const name = (product.name || '').toLowerCase();
+            const match = name.includes(searchText);
+            if (match) {
+                console.log('✅ Found match:', product.name);
+            }
+            return match;
+        });
+        
+        console.log('🔍 Filtered results:', filtered.length);
+        
+        // Clear and render
+        grid.innerHTML = '';
+        
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div style="color: white; text-align: center; padding: 40px; font-size: 16px;">Keine Produkte mit "${query}" im Namen gefunden</div>`;
+        } else {
+            // Render filtered products
+            grid.innerHTML = filtered.map(product => {
+                const price = product.price || product.salePrice || 0;
+                const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+                
+                return `
+                    <div class="lumiere-product-card search-product-card" data-product-id="${product.id}" data-category="${product.category}">
+                        <div class="lumiere-image-container">
+                            <img src="produkt bilder/ware.png" data-src="produkt bilder/ware.png" class="lumiere-product-image lazy-load" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
+                            <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        </div>
+                        <div class="lumiere-card-content">
+                            <h3 class="lumiere-product-title">${product.name}</h3>
+                            <div class="lumiere-price-section">
+                                <span class="lumiere-price">€${formattedPrice}</span>
+                            </div>
+                            <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
+                                In den Warenkorb
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Initialize buttons for new products
+            initializeAddToCartButtons();
+            initializeWishlistButtons();
+            initializeProductCardClicks();
+        }
+        
+        // Update title
+        const title = document.querySelector('.search-all-products .search-section-title');
+        if (title) {
+            title.textContent = filtered.length > 0 
+                ? `SUCHERGEBNISSE FÜR "${query.toUpperCase()}" (${filtered.length})`
+                : `KEINE ERGEBNISSE FÜR "${query.toUpperCase()}"`;
+        }
+        
+    }).catch(error => {
+        console.error('❌ Search error:', error);
+    });
+}
+
+// Simple and direct search function
+function performSearch(query) {
+    console.log('🔍 performSearch called with:', `"${query}"`);
+    
+    const grid = document.getElementById('searchAllProductsGrid');
+    if (!grid) {
+        console.error('❌ Grid not found!');
+        return;
+    }
+    
+    console.log('✅ Grid found:', grid);
+    
+    if (query.length === 0) {
+        console.log('🔍 Empty query - showing all products');
+        loadAllProducts();
+        return;
+    }
+    
+    console.log('🔍 Filtering products for:', query);
+    
+    // Get all products and filter immediately
+    if (window.allProducts && window.allProducts.length > 0) {
+        console.log('📦 Using cached products:', window.allProducts.length);
+        filterAndDisplay(window.allProducts, query, grid);
+    } else {
+        console.log('📦 Loading products from JSON...');
+        loadProducts().then(products => {
+            console.log('📦 Products loaded:', products.length);
+            window.allProducts = products; // Cache for next time
+            filterAndDisplay(products, query, grid);
+        }).catch(error => {
+            console.error('❌ Error loading products:', error);
+        });
+    }
+}
+
+function filterAndDisplay(products, query, grid) {
+    console.log('🔍 filterAndDisplay called with:', products.length, 'products, query:', `"${query}"`);
+    
+    const searchText = query.toLowerCase();
+    const filtered = products.filter(product => {
+        const name = (product.name || '').toLowerCase();
+        const match = name.includes(searchText);
+        if (match) {
+            console.log('✅ Match:', product.name);
+        }
+        return match;
+    });
+    
+    console.log('🔍 Filtered results:', filtered.length);
+    
+    // Clear grid completely
+    grid.innerHTML = '';
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div style="color: white; text-align: center; padding: 40px; font-size: 16px;">Keine Produkte mit "${query}" im Namen gefunden</div>`;
+        console.log('❌ No matches - showing empty message');
+    } else {
+        console.log('✅ Rendering', filtered.length, 'products');
+        renderAllProducts(grid, filtered);
+    }
+    
+    // Update title
+    const title = document.querySelector('.search-all-products .search-section-title');
+    if (title) {
+        title.textContent = filtered.length > 0 
+            ? `SUCHERGEBNISSE FÜR "${query.toUpperCase()}" (${filtered.length})`
+            : `KEINE ERGEBNISSE FÜR "${query.toUpperCase()}"`;
+    }
+}
+
+// Handle category search
+function handleCategorySearch(category) {
+    console.log('🔍 Category search:', category);
+    
+    // Load products first, then filter
+    loadProducts().then(products => {
+        let filteredProducts = [];
+        
+        if (category === 'alle') {
+            filteredProducts = products;
+        } else {
+            // Filter products by exact category match
+            filteredProducts = products.filter(product => {
+                const productCategory = product.category;
+                console.log(`🔍 Checking product: ${product.name} - Category: "${productCategory}" vs Filter: "${category}"`);
+                return productCategory === category;
+            });
+        }
+        
+        console.log('🔍 Found', filteredProducts.length, 'products for category:', category);
+        console.log('🔍 Available categories:', [...new Set(products.map(p => p.category))]);
+        console.log('🔍 Filtered products:', filteredProducts.map(p => p.name));
+        
+        // Update the main products grid instead of search results
+        const allProductsGrid = document.getElementById('searchAllProductsGrid');
+        if (allProductsGrid) {
+            renderAllProducts(allProductsGrid, filteredProducts);
+        }
+        
+        // Hide "VIELLEICHT INTERESSIERT SIE DAS FOLGENDE" title when filtering
+        const sectionTitle = document.querySelector('.search-all-products .search-section-title');
+        if (sectionTitle) {
+            if (category === 'alle') {
+                sectionTitle.textContent = 'VIELLEICHT INTERESSIERT SIE DAS FOLGENDE';
+            } else {
+                const categoryNames = {
+                    'Technik/Gadgets': 'TECHNIK PRODUKTE',
+                    'Beleuchtung': 'BELEUCHTUNG PRODUKTE',
+                    'Körperpflege/Wellness': 'WELLNESS PRODUKTE',
+                    'Haushalt und Küche': 'KÜCHEN PRODUKTE'
+                };
+                sectionTitle.textContent = categoryNames[category] || category.toUpperCase() + ' PRODUKTE';
+            }
+        }
+    }).catch(error => {
+        console.error('❌ Error during category search:', error);
+    });
+}
+
+// Display search results
+function displaySearchResults(products, query) {
+    if (!searchResults || !searchResultsGrid) {
+        console.error('❌ Search results elements not found');
+        return;
+    }
+    
+    // Show results section
+    searchResults.style.display = 'block';
+    
+    // Update title
+    const title = searchResults.querySelector('.search-section-title');
+    if (title) {
+        title.textContent = `Suchergebnisse für "${query}" (${products.length})`;
+    }
+    
+    // Clear previous results
+    searchResultsGrid.innerHTML = '';
+    
+    if (products.length === 0) {
+        searchResultsGrid.innerHTML = `
+            <div class="no-results">
+                <i class="bi bi-search" style="font-size: 48px; color: var(--lumiere-gray-400); margin-bottom: 20px;"></i>
+                <h4>Keine Ergebnisse gefunden</h4>
+                <p>Versuche es mit anderen Suchbegriffen oder durchsuche unsere Kategorien.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Render search results
+    searchResultsGrid.innerHTML = products.map(product => {
+        const price = product.price || product.salePrice || 0;
+        const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+        
+        return `
+            <div class="search-result-item" data-product-id="${product.id}" onclick="navigateToProduct(${product.id})">
+                <div class="search-result-category">${product.category}</div>
+                <img src="produkt bilder/ware.png" alt="${product.name}" class="search-result-image" loading="lazy">
+                <h4 class="search-result-title">${product.name}</h4>
+                <div class="search-result-price">€${formattedPrice}</div>
+            </div>
+        `;
+    }).join('');
+    
+    // Scroll to results
+    searchResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Hide search results
+function hideSearchResults() {
+    if (searchResults) {
+        searchResults.style.display = 'none';
+    }
+}
+
+// Load all products for search overlay
+function loadAllProducts() {
+    console.log('🔍 Loading all products...');
+    
+    const allProductsGrid = document.getElementById('searchAllProductsGrid');
+    if (!allProductsGrid) {
+        console.log('❌ All products grid not found');
+        return;
+    }
+    
+    // Always load products fresh
+    loadProducts().then(products => {
+        console.log('📦 Products loaded for search grid:', products.length);
+        renderAllProducts(allProductsGrid, products);
+    }).catch(error => {
+        console.error('❌ Error loading products:', error);
+    });
+}
+
+function renderAllProducts(allProductsGrid, products) {
+    console.log('🎨 renderAllProducts called with:', products ? products.length : 'null', 'products');
+    
+    if (!allProductsGrid) {
+        console.error('❌ Grid element is null!');
+        return;
+    }
+    
+    if (!products || products.length === 0) {
+        console.log('❌ No products to render - clearing grid');
+        allProductsGrid.innerHTML = '<div style="color: white; text-align: center; padding: 40px; font-size: 16px;">Keine Produkte gefunden</div>';
+        return;
+    }
+    
+    console.log('🎨 Rendering products to grid:', products.length);
+    
+    // Render all products with new style
+    allProductsGrid.innerHTML = products.map(product => {
+        const price = product.price || product.salePrice || 0;
+        const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+        
+        return `
+            <div class="lumiere-product-card search-product-card" data-product-id="${product.id}" data-category="${product.category}">
+                <div class="lumiere-image-container">
+                    <img src="produkt bilder/ware.png" data-src="produkt bilder/ware.png" class="lumiere-product-image lazy-load" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
+                    <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="lumiere-card-content">
+                    <h3 class="lumiere-product-title">${product.name}</h3>
+                    <div class="lumiere-price-section">
+                        <span class="lumiere-price">€${formattedPrice}</span>
+                    </div>
+                    <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
+                        In den Warenkorb
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    console.log('✅ Products rendered successfully:', products.length);
+    
+    // Initialize buttons like on main page
+    initializeAddToCartButtons();
+    initializeWishlistButtons();
+    initializeProductCardClicks();
+}
+
+// Simple onclick function for search categories
+function searchCategoryClick(button, category) {
+    console.log('🔍 Search category clicked:', category);
+    
+    // Remove active class from all buttons
+    const allButtons = document.querySelectorAll('.lumiere-category-tab');
+    allButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Add active class to clicked button
+    button.classList.add('active');
+    
+    // Handle the category search
+    handleCategorySearch(category);
+}
+
+// Navigate to product
+function navigateToProduct(productId) {
+    console.log('🔗 Navigating to product:', productId);
+    
+    // Close search overlay first
+    closeSearchOverlay();
+    
+    // Navigate to product page (only for products with ID >= 10)
+    if (productId >= 10) {
+        setTimeout(() => {
+            window.location.href = `produkte/produkt-${productId}.html`;
+        }, 300);
+    } else {
+        console.log('Product page does not exist for ID:', productId);
+    }
+}
+
+// Make functions globally available
+window.navigateToProduct = navigateToProduct;
+window.openSearchOverlay = openSearchOverlay;
+window.closeSearchOverlay = closeSearchOverlay;
+window.loadAllProducts = loadAllProducts;
+window.searchCategoryClick = searchCategoryClick;
+window.testSearchFunction = testSearchFunction;
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeFullscreenSearch);
+} else {
+    initializeFullscreenSearch();
+}
+
+// Additional initialization after window load
+window.addEventListener('load', () => {
+    console.log('🔍 Window loaded, ensuring search is initialized...');
+    
+    // Double-check initialization
+    const searchBtn = document.getElementById('fullscreenSearchBtn');
+    if (searchBtn && !searchBtn.hasAttribute('data-initialized')) {
+        console.log('🔍 Re-initializing search...');
+        searchBtn.setAttribute('data-initialized', 'true');
+        searchBtn.addEventListener('click', handleSearchButtonClick);
+    }
+});
+
+// Emergency fallback - direct event binding
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'fullscreenSearchBtn' || e.target.closest('#fullscreenSearchBtn')) {
+        console.log('🔍 Emergency search activation!');
+        e.preventDefault();
+        e.stopPropagation();
+        openSearchOverlay();
+    }
+});
+
+// Global event delegation for search functionality - removed, using direct event listeners instead
+window.loadCategoryProducts = loadCategoryProducts;
