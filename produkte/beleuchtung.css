@@ -1683,3 +1683,313 @@
 .product-card .h4 {
     color: #e67e22 !important;
 }
+
+/* ===== MOBILE-OPTIMIERUNGEN FÜR BELEUCHTUNG PRODUKTSEITEN ===== */
+
+@media (max-width: 768px) {
+    /* Navigation für Mobile */
+    .navbar {
+        padding: 0.5rem 0;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.95) !important;
+    }
+    
+    .modern-nav-link {
+        padding: 8px 12px !important;
+        margin: 0 4px;
+        font-size: 0.9rem;
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+    }
+    
+    /* Product Hero Section Mobile */
+    .product-hero {
+        padding: 2rem 0;
+        text-align: center;
+    }
+    
+    .product-hero .row {
+        flex-direction: column-reverse;
+    }
+    
+    .product-hero h1 {
+        font-size: 1.8rem !important;
+        line-height: 1.3;
+        margin-bottom: 1rem;
+    }
+    
+    .product-hero .lead {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .product-hero .d-flex {
+        flex-direction: column;
+        gap: 1rem !important;
+        align-items: center;
+    }
+    
+    .price-tag {
+        font-size: 1.2rem;
+        padding: 0.4rem 1.2rem;
+    }
+    
+    .product-hero .btn {
+        width: 100%;
+        max-width: 280px;
+        margin: 0.5rem 0;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        min-height: 48px;
+        touch-action: manipulation;
+    }
+    
+    .product-image {
+        max-height: 250px !important;
+        width: 100%;
+        object-fit: contain;
+        margin-bottom: 1rem;
+    }
+    
+    /* Bundle Box Mobile - Beleuchtung spezifisch */
+    .bundle-box {
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #fff8f0 0%, #fef2e8 100%);
+    }
+    
+    .bundle-header {
+        font-size: 1.3rem;
+        margin: 1rem 0;
+        color: #e67e22;
+    }
+    
+    .bundle-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.2rem;
+        gap: 0.8rem;
+        background: white;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .bundle-card.selected {
+        border-color: #e67e22;
+        background: linear-gradient(135deg, #fff8f0 0%, #fef2e8 100%);
+    }
+    
+    .bundle-radio {
+        width: 1.5rem;
+        height: 1.5rem;
+        align-self: center;
+        border-color: #e67e22;
+    }
+    
+    .bundle-radio:checked {
+        background: #e67e22;
+        border-color: #e67e22;
+    }
+    
+    .bundle-label {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+        display: block;
+        margin: 0.5rem auto 0 auto;
+        font-size: 0.8rem;
+        padding: 0.2em 0.6em;
+    }
+    
+    .bundle-badge {
+        position: static;
+        display: inline-block;
+        margin: 0.5rem 0;
+        font-size: 0.7rem;
+        padding: 0.3em 0.8em;
+        background: #e67e22;
+    }
+    
+    .bundle-add-btn {
+        background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        margin-top: 1.5rem;
+        min-height: 48px;
+        touch-action: manipulation;
+    }
+    
+    /* Quick Order Card Mobile - Beleuchtung Design */
+    .quick-order-card {
+        padding: 1.5rem;
+        margin: 1rem 0;
+        border-radius: 15px;
+        background: white;
+        box-shadow: 0 8px 32px rgba(230, 126, 34, 0.1);
+    }
+    
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        touch-action: manipulation;
+        min-height: 44px;
+        min-width: 44px;
+        background: #e67e22;
+    }
+    
+    .quantity-btn:hover {
+        background: #d35400;
+    }
+    
+    .buy-now-btn {
+        background: linear-gradient(135deg, #e67e22, #d35400);
+        width: 100%;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 10px;
+        min-height: 48px;
+        touch-action: manipulation;
+    }
+    
+    .buy-now-btn:hover {
+        background: linear-gradient(135deg, #d35400, #e67e22);
+    }
+    
+    .wishlist-btn {
+        border-color: #e67e22;
+        color: #e67e22;
+        width: 100%;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        border-radius: 10px;
+        min-height: 48px;
+        touch-action: manipulation;
+    }
+    
+    .wishlist-btn:hover {
+        background: #e67e22;
+        color: white;
+    }
+    
+    /* Quantity Input Group Mobile */
+    .quantity-input-group {
+        justify-content: center;
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-color: #e67e22;
+    }
+    
+    .quantity-input {
+        width: 60px;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        margin: 0 0.8rem;
+    }
+    
+    .price-section {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    
+    .current-price {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #e67e22;
+        margin-bottom: 0.5rem;
+    }
+    
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-hero h1 {
+        font-size: 1.5rem !important;
+    }
+    
+    .bundle-box {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .bundle-card {
+        padding: 1rem;
+    }
+    
+    .quick-order-card {
+        padding: 1rem;
+    }
+    
+    .quantity-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    .buy-now-btn, .wishlist-btn {
+        padding: 0.7rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .product-hero h1 {
+        font-size: 1.3rem !important;
+    }
+    
+    .bundle-header {
+        font-size: 1.1rem;
+    }
+    
+    .bundle-title {
+        font-size: 0.9rem;
+    }
+    
+    .quantity-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Touch-Optimierungen für Beleuchtung */
+@media (max-width: 768px) {
+    button, .btn, .bundle-card, .similar-product-card {
+        touch-action: manipulation;
+    }
+    
+    html {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    input[type="number"] {
+        font-size: 16px;
+    }
+    
+    .bundle-card, .quick-order-card, .similar-product-card {
+        will-change: transform;
+        transform: translateZ(0);
+    }
+    
+    .btn:active, .bundle-card:active {
+        transform: scale(0.98);
+    }
+    
+    .modern-nav-link:active {
+        transform: scale(0.95);
+    }
+}
