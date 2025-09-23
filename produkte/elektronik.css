@@ -892,8 +892,10 @@
 
   .price-section {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    text-align: center;
     padding: 1.2rem 0;
     border-top: 1px solid #e2e8f0;
     border-bottom: 1px solid #e2e8f0;
@@ -913,12 +915,13 @@
 
   .action-buttons {
     display: flex;
+    flex-direction: column;
     gap: 1rem;
     margin-top: 1rem;
   }
 
   .buy-now-btn {
-    flex: 2;
+    width: 100%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
@@ -938,7 +941,7 @@
   }
 
   .wishlist-btn {
-    flex: 1;
+    width: 100%;
     background: white;
     color: #667eea;
     border: 2px solid #667eea;
@@ -1890,7 +1893,8 @@
     .product-hero .d-flex {
         flex-direction: column;
         gap: 1rem !important;
-        align-items: center;
+        align-items: stretch;
+        width: 100%;
     }
     
     .price-tag {
@@ -1900,12 +1904,13 @@
     
     .product-hero .btn {
         width: 100%;
-        max-width: 280px;
-        margin: 0.5rem 0;
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
-        min-height: 48px;
+        margin: 0;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
         touch-action: manipulation;
+        display: block;
+        text-align: center;
     }
     
     .product-image {

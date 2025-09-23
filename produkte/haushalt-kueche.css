@@ -1627,7 +1627,8 @@
     .product-hero .d-flex {
         flex-direction: column;
         gap: 1rem !important;
-        align-items: center;
+        align-items: stretch;
+        width: 100%;
     }
     
     .price-tag {
@@ -1637,12 +1638,13 @@
     
     .product-hero .btn {
         width: 100%;
-        max-width: 280px;
-        margin: 0.5rem 0;
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
-        min-height: 48px;
+        margin: 0;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
         touch-action: manipulation;
+        display: block;
+        text-align: center;
     }
     
     .product-image {
