@@ -632,6 +632,7 @@
   <!-- Hilfe-Themen (wird ausgeblendet wenn Chatbot aktiv ist) -->
   <div id="hilfeThemen" class="hilfe-themen-modern">
 
+    <button class="hilfe-thema-btn desktop-only" data-topic="shortcuts">🎹 Keyboard Shortcuts</button>
     <button class="hilfe-thema-btn" data-topic="bestellung">Bestellung stornieren</button>
     <button class="hilfe-thema-btn" data-topic="versand">Versand & Lieferzeiten</button>
     <button class="hilfe-thema-btn" data-topic="rabattcodes">Mehrere Rabattcodes</button>
@@ -838,7 +839,11 @@
   
   // Vorgefertigte Antworten für verschiedene Themen
   const topicResponses = {
-
+    shortcuts: {
+      question: "🎹 Keyboard Shortcuts",
+      answer: "Nutzen Sie diese praktischen Tastenkombinationen für eine schnellere Navigation:<br><br><strong>Navigation:</strong><br>• H - Zur Startseite<br>• S - Suche öffnen<br>• C - Warenkorb öffnen/schließen<br>• P - Zum Warenkorb (cart.html)<br>• ESC - Schließen/Zurück<br><br><strong>Kategorien:</strong><br>• 1-5 - Produktkategorien wechseln<br><br><strong>Produkte:</strong><br>• Strg+A - Gehövertes Produkt zum Warenkorb<br>• Strg+L - Gehövertes Produkt zur Wunschliste<br><br><strong>Hilfe:</strong><br>• F oder ? - Alle Shortcuts anzeigen",
+      additionalInfo: "Drücken Sie F oder ? für eine vollständige Liste aller verfügbaren Shortcuts. Das Keyboard-Symbol 🎹 unten rechts zeigt Ihnen ebenfalls alle Shortcuts an. Die Shortcuts funktionieren nicht in Eingabefeldern."
+    },
     bestellung: {
       question: "Bestellung stornieren",
       answer: "Sie können Ihre Bestellung innerhalb von 2 Stunden nach der Bestellung stornieren. Gehen Sie zu Ihren Bestellungen und klicken Sie auf 'Stornieren'. Nach 2 Stunden können Bestellungen nur noch über unseren Kundenservice storniert werden.",
@@ -1146,6 +1151,27 @@
   document.querySelectorAll('.hilfe-thema-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const topic = btn.getAttribute('data-topic');
+      
+      // Spezielle Behandlung für Keyboard Shortcuts
+      if (topic === 'shortcuts') {
+        // Schließe das Hilfe-Panel zuerst
+        hilfePanel.classList.remove('offen');
+        document.body.classList.remove('help-panel-open');
+        hilfePanel.style.display = 'none';
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+        hideChatbot();
+        
+        // Öffne das große Keyboard Shortcuts Modal nach kurzer Verzögerung
+        setTimeout(() => {
+          if (window.keyboardShortcuts) {
+            window.keyboardShortcuts.showHelpModal();
+          }
+        }, 200);
+        return; // Beende hier, öffne nicht den Chat
+      }
+      
+      // Für alle anderen Themen: normaler Chat-Ablauf
       // Aktiviere orange Farben sofort beim Klick
       activateOrangeSupport();
       showChatbot();
@@ -1183,5 +1209,7 @@
   
   console.log('Script geladen!');
 </script>
+<script src="app.js"></script>
+<script src="keyboard-shortcuts.js"></script>
 </body>
 </html>
