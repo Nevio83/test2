@@ -208,7 +208,7 @@
     background: #ff6b6b;
     box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.2);
 }
-.bundle-info { flex: 1; }
+.bundle-info { flex: 1; width: 100%; text-align: center; }
 .bundle-title {
     font-size: 1.2rem;
     font-weight: 600;
@@ -280,9 +280,12 @@
     font-size: 1rem;
 }
 .bundle-total {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 600;
     color: #2d3748;
+    text-align: center;
+    width: 100%;
+    display: block;
 }
 .bundle-total b { font-size: 1.3rem; }
 .bundle-add-btn {
@@ -579,7 +582,7 @@
   
   .bundle-card {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     padding: 1.5rem;
     gap: 1rem;
     border-radius: 20px;
@@ -626,6 +629,10 @@
   .bundle-prices {
     font-size: 1.1rem;
     margin-top: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
   
   .bundle-prices .old {
@@ -634,6 +641,9 @@
   
   .bundle-prices .savings {
     font-size: 1rem;
+    text-align: center;
+    width: 100%;
+    display: block;
   }
   
   .bundle-total {
