@@ -575,6 +575,73 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="app.js?v=19.0" defer></script>
     
+    <!-- Nach oben Button -->
+    <button id="scrollToTopBtn" aria-label="Nach oben" style="position:fixed; bottom:100px; left:30px; z-index:9998; width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; box-shadow:0 4px 16px rgba(102,126,234,0.18); font-size:2rem; display:flex; align-items:center; justify-content:center; transition:background 0.2s, box-shadow 0.2s; cursor:pointer;">
+      <span style="display:flex; align-items:center; justify-content:center; width:100%; height:100%;"><i class="bi bi-arrow-up"></i></span>
+    </button>
+    <script>
+      const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+          scrollToTopBtn.classList.add('show');
+        } else {
+          scrollToTopBtn.classList.remove('show');
+        }
+      });
+      scrollToTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    </script>
+
+<!-- Hilfe-Button und Panel (ultra-modernes Design) -->
+<div id="hilfeButton" aria-label="Hilfe öffnen" style="display: flex !important; visibility: visible !important; opacity: 1 !important;">
+  <!-- Icon wird jetzt über CSS ::after pseudo-element angezeigt -->
+</div>
+<div id="hilfePanel" class="hilfe-panel">
+  <!-- Lila Header für Hauptseite -->
+  <div class="hilfe-panel-header" id="hilfePanelHeader">
+    <i class="bi bi-question-circle"></i>
+    <span>Hilfe & Support</span>
+    <button id="hilfePanelClose" aria-label="Hilfe schließen">&times;</button>
+  </div>
+  
+  <!-- Chatbot Interface -->
+  <div id="chatbotInterface" class="chatbot-interface">
+    <div class="chatbot-header">
+      <i class="bi bi-arrow-left"></i>
+      <span>Support </span>
+    </div>
+    
+    <div class="chatbot-messages" id="chatbotMessages">
+      <!-- Messages will be added here dynamically -->
+    </div>
+    
+    <!-- Feedback Buttons (werden dynamisch hinzugefügt) -->
+    <div id="feedbackButtons" class="feedback-buttons" style="display: none;">
+      <button class="feedback-btn helpful-btn">
+        <i class="bi bi-hand-thumbs-up"></i>
+        Ja, das war hilfreich
+      </button>
+      <button class="feedback-btn not-helpful-btn">
+        <i class="bi bi-hand-thumbs-down"></i>
+        Nein, das war nicht hilfreich
+      </button>
+    </div>
+  </div>
+  
+  <!-- Hilfe-Themen (wird ausgeblendet wenn Chatbot aktiv ist) -->
+  <div id="hilfeThemen" class="hilfe-themen-modern">
+
+    <button class="hilfe-thema-btn" data-topic="bestellung">Bestellung stornieren</button>
+    <button class="hilfe-thema-btn" data-topic="versand">Versand & Lieferzeiten</button>
+    <button class="hilfe-thema-btn" data-topic="rabattcodes">Mehrere Rabattcodes</button>
+    <button class="hilfe-thema-btn" data-topic="kaeuferschutz">Was ist Käuferschutz?</button>
+    <button class="hilfe-thema-btn" data-topic="adresse">Adresse ändern</button>
+    <button class="hilfe-thema-btn" data-topic="zahlung">Zahlungsmethoden</button>
+    <button class="hilfe-thema-btn" data-topic="konto">Konto & Profil</button>
+  </div>
+</div>
+    
     <!-- Direct Search Button Handler -->
     <script>
         // Immediate search button handler
@@ -656,5 +723,465 @@
             setupSearchButton();
         });
     </script>
+
+<script>
+  // Debug: Prüfe ob Elemente gefunden werden
+  console.log('Script lädt...');
+  
+  const hilfeButton = document.getElementById('hilfeButton');
+  const hilfePanel = document.getElementById('hilfePanel');
+  const hilfePanelClose = document.getElementById('hilfePanelClose');
+  const hilfePanelHeader = document.getElementById('hilfePanelHeader');
+  const chatbotInterface = document.getElementById('chatbotInterface');
+  const hilfeThemen = document.getElementById('hilfeThemen');
+  const chatbotMessages = document.getElementById('chatbotMessages');
+  const backButton = document.querySelector('.chatbot-header .bi-arrow-left');
+  
+
+  
+  console.log('hilfeButton:', hilfeButton);
+  console.log('hilfePanel:', hilfePanel);
+  
+  // Hilfe-Button sofort sichtbar machen
+  if (hilfeButton) {
+    hilfeButton.style.display = 'flex';
+    hilfeButton.style.visibility = 'visible';
+    hilfeButton.style.opacity = '1';
+    console.log('Hilfe-Button wurde sichtbar gemacht');
+  }
+  
+  // Debug: Teste Panel-Sichtbarkeit
+  if (hilfePanel) {
+    console.log('Initial hilfePanel display:', window.getComputedStyle(hilfePanel).display);
+    console.log('Initial hilfePanel visibility:', window.getComputedStyle(hilfePanel).visibility);
+    console.log('Initial hilfePanel opacity:', window.getComputedStyle(hilfePanel).opacity);
+  }
+  
+  // Function to check if device is mobile
+  function isMobileDevice() {
+    return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
+  // Event Listener für Hilfe-Button
+  if (hilfeButton) {
+    hilfeButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Hilfe-Button geklickt!');
+      
+      // Prüfe aktuellen Zustand
+      const isOpen = hilfePanel.classList.contains('offen');
+      console.log('Panel ist offen:', isOpen);
+      
+      if (isOpen) {
+        // Panel schließen
+        hilfePanel.classList.remove('offen');
+        document.body.classList.remove('help-panel-open');
+        hilfePanel.style.display = 'none';
+        
+        // Restore body styles (especially important for mobile)
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+        
+        hideChatbot();
+        console.log('Panel geschlossen');
+      } else {
+        // Panel öffnen
+        hilfePanel.classList.add('offen');
+        document.body.classList.add('help-panel-open');
+        console.log('Panel geöffnet');
+        
+        // Force visibility
+        hilfePanel.style.display = 'flex';
+        hilfePanel.style.visibility = 'visible';
+        hilfePanel.style.opacity = '1';
+        hilfePanel.style.zIndex = '2147483647';
+        hilfePanel.style.position = 'fixed';
+        
+        // Check if mobile device for fullscreen behavior
+        if (isMobileDevice()) {
+          // Mobile: Fullscreen styling
+          hilfePanel.style.top = '0';
+          hilfePanel.style.left = '0';
+          hilfePanel.style.right = '0';
+          hilfePanel.style.bottom = '0';
+          hilfePanel.style.transform = 'none';
+          hilfePanel.style.width = '100vw';
+          hilfePanel.style.height = '100vh';
+          hilfePanel.style.maxWidth = '100vw';
+          hilfePanel.style.maxHeight = '100vh';
+          hilfePanel.style.minHeight = '100vh';
+          hilfePanel.style.borderRadius = '0';
+          hilfePanel.style.border = 'none';
+          // Prevent scrolling on body
+          document.body.style.overflow = 'hidden';
+          document.body.style.height = '100vh';
+        } else {
+          // Desktop: Normal panel styling
+          hilfePanel.style.top = '50%';
+          hilfePanel.style.right = '20px';
+          hilfePanel.style.left = 'auto';
+          hilfePanel.style.bottom = 'auto';
+          hilfePanel.style.transform = 'translateY(-50%) scale(1)';
+          hilfePanel.style.width = '440px';
+          hilfePanel.style.maxWidth = '95vw';
+          hilfePanel.style.height = 'auto';
+          hilfePanel.style.minHeight = '500px';
+          hilfePanel.style.maxHeight = '650px';
+          hilfePanel.style.borderRadius = '28px';
+        }
+      }
+    });
+  } else {
+    console.error('hilfeButton nicht gefunden!');
+  }
+  
+  // Vorgefertigte Antworten für verschiedene Themen
+  const topicResponses = {
+
+    bestellung: {
+      question: "Bestellung stornieren",
+      answer: "Sie können Ihre Bestellung innerhalb von 2 Stunden nach der Bestellung stornieren. Gehen Sie zu Ihren Bestellungen und klicken Sie auf 'Stornieren'. Nach 2 Stunden können Bestellungen nur noch über unseren Kundenservice storniert werden.",
+      additionalInfo: "Für Stornierungen nach 2 Stunden kontaktieren Sie uns bitte telefonisch unter 0800-123456 oder per E-Mail an stornierung@marktplatz.de. Bitte haben Sie Ihre Bestellnummer bereit."
+    },
+    versand: {
+      question: "Versand & Lieferzeiten",
+      answer: "Standardversand: 3-5 Werktage. Expressversand: 1-2 Werktage. Kostenloser Versand ab 50€ Bestellwert. Tracking-Informationen erhalten Sie per E-Mail sobald Ihre Bestellung versendet wird.",
+      additionalInfo: "Bei Verzögerungen kontaktieren Sie uns unter 0800-123456 oder versand@marktplatz.de. Wir können Ihnen dann den aktuellen Status Ihrer Bestellung mitteilen und bei Problemen helfen."
+    },
+    rabattcodes: {
+      question: "Mehrere Rabattcodes",
+      answer: "Sie können nur einen Rabattcode pro Bestellung verwenden. Der Code mit dem höchsten Rabatt wird automatisch angewendet. Kombinieren Sie Rabattcodes nicht mit anderen Aktionen.",
+      additionalInfo: "Falls Ihr Rabattcode nicht funktioniert, prüfen Sie bitte das Ablaufdatum und die Bedingungen. Bei Problemen kontaktieren Sie uns unter rabatt@marktplatz.de oder 0800-123456."
+    },
+    kaeuferschutz: {
+      question: "Was ist Käuferschutz?",
+      answer: "Unser Käuferschutz garantiert Ihnen: 30 Tage Rückgaberecht, sichere Zahlung, Käuferschutz durch PayPal/Stripe, und 24/7 Kundenservice. Ihre Daten sind durch SSL-Verschlüsselung geschützt.",
+      additionalInfo: "Bei Problemen mit dem Käuferschutz kontaktieren Sie uns unter sicherheit@marktplatz.de oder 0800-123456. Wir helfen Ihnen gerne weiter und können bei Bedarf auch eine Rückerstattung veranlassen."
+    },
+    adresse: {
+      question: "Adresse ändern",
+      answer: "Wenn Ihre Bestellung weniger als 90 Minuten alt ist, können Sie Ihre Lieferadresse, E-Mail oder andere persönliche Daten aktualisieren.",
+      additionalInfo: "Bei Problemen mit der Adressänderung kontaktieren Sie uns unter adresse@marktplatz.de oder 0800-123456. Wir helfen Ihnen gerne weiter."
+    },
+    zahlung: {
+      question: "Zahlungsmethoden",
+      answer: "Wir akzeptieren: Kreditkarte, PayPal, SEPA-Lastschrift, Klarna (Kauf auf Rechnung), und Apple Pay/Google Pay. Alle Zahlungen sind sicher und verschlüsselt.",
+      additionalInfo: "Bei Zahlungsproblemen kontaktieren Sie uns unter zahlung@marktplatz.de oder 0800-123456. Wir können Ihnen alternative Zahlungsmethoden vorschlagen oder bei technischen Problemen helfen."
+    },
+    konto: {
+      question: "Konto & Profil",
+      answer: "In Ihrem Konto können Sie: Bestellungen verfolgen, Adressen verwalten, Zahlungsmethoden speichern, Wunschlisten erstellen und E-Mail-Benachrichtigungen verwalten.",
+      additionalInfo: "Bei Problemen mit Ihrem Konto oder wenn Sie Ihr Passwort vergessen haben, kontaktieren Sie uns unter konto@marktplatz.de oder 0800-123456. Wir helfen Ihnen gerne weiter."
+    }
+  };
+  
+  // Chatbot-Funktionen
+  function showChatbot() {
+    chatbotInterface.style.display = 'block';
+    hilfeThemen.style.display = 'none';
+    hilfePanelHeader.style.display = 'none'; // Verstecke lila Header
+    
+    // Aktiviere orange Farben für den Chatbot-Header sofort
+    const chatbotHeader = document.querySelector('.chatbot-header');
+    if (chatbotHeader) {
+      chatbotHeader.classList.add('orange-support');
+    }
+    
+    // Füge Willkommensnachricht hinzu (mit orange Klassen wenn aktiv)
+    addWelcomeMessage();
+  }
+  
+  function hideChatbot() {
+    chatbotInterface.style.display = 'none';
+    hilfeThemen.style.display = 'flex';
+    hilfePanelHeader.style.display = 'flex'; // Zeige lila Header wieder
+    chatbotMessages.innerHTML = '';
+    
+    // Deaktiviere orange Support-Farben
+    deactivateOrangeSupport();
+  }
+  
+  function addWelcomeMessage() {
+    const orangeClass = window.orangeSupportActive ? 'orange-support' : '';
+    const welcomeMessage = `
+      <div class="chatbot-message bot-message">
+        <div class="message-content">
+          <div class="bot-avatar ${orangeClass}">
+            <i class="bi bi-headset"></i>
+          </div>
+          <div class="message-text ${orangeClass}">
+            <p>Hallo! Ich bin Ihr Comfort Consultant Support EU. Wie kann ich Ihnen heute helfen?</p>
+            <div class="quick-topics">
+              <button class="quick-topic-btn ${orangeClass}" data-topic="adresse">Adresse ändern</button>
+              <button class="quick-topic-btn ${orangeClass}" data-topic="bestellung">Bestellung stornieren</button>
+              <button class="quick-topic-btn ${orangeClass}" data-topic="versand">Versand & Lieferzeiten</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    chatbotMessages.innerHTML = welcomeMessage;
+  }
+  
+  function addUserMessage(message) {
+    const orangeClass = window.orangeSupportActive ? 'orange-support' : '';
+    const userMessage = `
+      <div class="chatbot-message user-message">
+        <div class="message-content">
+          <div class="message-text ${orangeClass}">
+            <p>${message}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    chatbotMessages.insertAdjacentHTML('beforeend', userMessage);
+  }
+  
+  function addBotMessage(response, showFeedback = true) {
+    const orangeClass = window.orangeSupportActive ? 'orange-support' : '';
+    const botMessage = `
+      <div class="chatbot-message bot-message">
+        <div class="message-content">
+          <div class="bot-avatar ${orangeClass}">
+            <i class="bi bi-headset"></i>
+          </div>
+          <div class="message-text ${orangeClass}">
+            <p>${response.answer}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    chatbotMessages.insertAdjacentHTML('beforeend', botMessage);
+    
+    if (showFeedback) {
+      showFeedbackButtons(response);
+    }
+  }
+  
+  function addAdditionalInfo(additionalInfo) {
+    const orangeClass = window.orangeSupportActive ? 'orange-support' : '';
+    const additionalMessage = `
+      <div class="chatbot-message bot-message additional-info">
+        <div class="message-content">
+          <div class="bot-avatar ${orangeClass}">
+            <i class="bi bi-info-circle"></i>
+          </div>
+          <div class="message-text ${orangeClass}">
+            <p><strong>Zusätzliche Informationen:</strong></p>
+            <p>${additionalInfo}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    chatbotMessages.insertAdjacentHTML('beforeend', additionalMessage);
+  }
+  
+  function showFeedbackButtons(response) {
+    const feedbackButtons = document.getElementById('feedbackButtons');
+    feedbackButtons.style.display = 'flex';
+    
+    // Event listeners für Feedback-Buttons
+    const helpfulBtn = feedbackButtons.querySelector('.helpful-btn');
+    const notHelpfulBtn = feedbackButtons.querySelector('.not-helpful-btn');
+    
+    // Entferne alte Event Listeners
+    helpfulBtn.replaceWith(helpfulBtn.cloneNode(true));
+    notHelpfulBtn.replaceWith(notHelpfulBtn.cloneNode(true));
+    
+    // Neue Event Listeners
+    const newHelpfulBtn = feedbackButtons.querySelector('.helpful-btn');
+    const newNotHelpfulBtn = feedbackButtons.querySelector('.not-helpful-btn');
+    
+    newHelpfulBtn.addEventListener('click', () => {
+      addFeedbackMessage('Vielen Dank für Ihr Feedback! 👍 Das freut uns zu hören.');
+      hideFeedbackButtons();
+    });
+    
+    newNotHelpfulBtn.addEventListener('click', () => {
+      addFeedbackMessage('Entschuldigung, dass die Antwort nicht hilfreich war. Hier sind weitere Informationen:');
+      addAdditionalInfo(response.additionalInfo);
+      hideFeedbackButtons();
+    });
+  }
+  
+  function hideFeedbackButtons() {
+    const feedbackButtons = document.getElementById('feedbackButtons');
+    feedbackButtons.style.display = 'none';
+  }
+  
+  function addFeedbackMessage(message) {
+    const orangeClass = window.orangeSupportActive ? 'orange-support' : '';
+    const feedbackMessage = `
+      <div class="chatbot-message bot-message feedback-message">
+        <div class="message-content">
+          <div class="bot-avatar ${orangeClass}">
+            <i class="bi bi-headset"></i>
+          </div>
+          <div class="message-text ${orangeClass}">
+            <p>${message}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    chatbotMessages.insertAdjacentHTML('beforeend', feedbackMessage);
+  }
+  
+  function handleTopicClick(topic) {
+    const response = topicResponses[topic];
+    if (response) {
+      addUserMessage(response.question);
+      setTimeout(() => {
+        addBotMessage(response);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+      }, 500);
+    }
+  }
+  
+  function activateOrangeSupport() {
+    // Füge orange Klassen zu den relevanten Elementen hinzu
+    const hilfePanelHeader = document.getElementById('hilfePanelHeader');
+    const chatbotHeader = document.querySelector('.chatbot-header');
+    const messageTexts = document.querySelectorAll('.message-text');
+    const botAvatars = document.querySelectorAll('.bot-avatar');
+    const quickTopicBtns = document.querySelectorAll('.quick-topic-btn');
+    const hilfeThemaBtns = document.querySelectorAll('.hilfe-thema-btn');
+    
+    if (hilfePanelHeader) {
+      hilfePanelHeader.classList.add('orange-support');
+    }
+    if (chatbotHeader) {
+      chatbotHeader.classList.add('orange-support');
+    }
+    
+    // Füge orange Klassen zu allen Nachrichten und Avataren hinzu
+    messageTexts.forEach(text => {
+      text.classList.add('orange-support'); // Alle Nachrichten (Bot und Benutzer)
+    });
+    
+    botAvatars.forEach(avatar => {
+      avatar.classList.add('orange-support');
+    });
+    
+    // Füge orange Klassen zu Quick Topic Buttons hinzu
+    quickTopicBtns.forEach(btn => {
+      btn.classList.add('orange-support');
+    });
+    
+    // Füge orange Klassen zu Hilfe-Themen-Buttons hinzu
+    hilfeThemaBtns.forEach(btn => {
+      btn.classList.add('orange-support');
+    });
+    
+    // Setze einen Flag, damit neue Nachrichten automatisch orange werden
+    window.orangeSupportActive = true;
+  }
+  
+  function deactivateOrangeSupport() {
+    // Entferne orange Klassen von den relevanten Elementen
+    const hilfePanelHeader = document.getElementById('hilfePanelHeader');
+    const chatbotHeader = document.querySelector('.chatbot-header');
+    const messageTexts = document.querySelectorAll('.message-text');
+    const botAvatars = document.querySelectorAll('.bot-avatar');
+    const quickTopicBtns = document.querySelectorAll('.quick-topic-btn');
+    const hilfeThemaBtns = document.querySelectorAll('.hilfe-thema-btn');
+    
+    if (hilfePanelHeader) {
+      hilfePanelHeader.classList.remove('orange-support');
+    }
+    if (chatbotHeader) {
+      chatbotHeader.classList.remove('orange-support');
+    }
+    
+    messageTexts.forEach(text => {
+      text.classList.remove('orange-support');
+    });
+    
+    botAvatars.forEach(avatar => {
+      avatar.classList.remove('orange-support');
+    });
+    
+    quickTopicBtns.forEach(btn => {
+      btn.classList.remove('orange-support');
+    });
+    
+    hilfeThemaBtns.forEach(btn => {
+      btn.classList.remove('orange-support');
+    });
+    
+    // Entferne den Flag
+    window.orangeSupportActive = false;
+  }
+  
+  // Event Listeners für X-Button
+  if (hilfePanelClose) {
+    hilfePanelClose.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      console.log('X-Button geklickt - Panel wird geschlossen');
+      
+      // Sofort schließen ohne Animation
+      hilfePanel.classList.remove('offen');
+      document.body.classList.remove('help-panel-open');
+      hilfePanel.style.display = 'none';
+      
+      // Restore body styles (especially important for mobile)
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      
+      hideChatbot();
+      console.log('Panel sofort geschlossen');
+    });
+  }
+  
+  // Back button im Chatbot
+  if (backButton) {
+    backButton.addEventListener('click', () => {
+      hideChatbot();
+    });
+  }
+  
+  // Hilfe-Themen Buttons
+  document.querySelectorAll('.hilfe-thema-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const topic = btn.getAttribute('data-topic');
+      // Aktiviere orange Farben sofort beim Klick
+      activateOrangeSupport();
+      showChatbot();
+      setTimeout(() => {
+        handleTopicClick(topic);
+      }, 300);
+    });
+  });
+  
+  // Quick topic buttons (werden dynamisch erstellt)
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('quick-topic-btn')) {
+      const topic = e.target.getAttribute('data-topic');
+      // Aktiviere orange Support-Farben für Quick Topic Buttons
+      activateOrangeSupport();
+      handleTopicClick(topic);
+    }
+  });
+  
+  // Schließe das Panel beim Klick außerhalb
+  document.addEventListener('mousedown', function(event) {
+    if (
+      hilfePanel.classList.contains('offen') &&
+      !hilfePanel.contains(event.target) &&
+      !hilfeButton.contains(event.target) &&
+      !event.target.closest('#hilfePanelClose')
+    ) {
+      console.log('Klick außerhalb - Panel wird geschlossen');
+      hilfePanel.classList.remove('offen');
+      document.body.classList.remove('help-panel-open');
+      hilfePanel.style.display = 'none';
+      hideChatbot();
+    }
+  });
+  
+  console.log('Script geladen!');
+</script>
 </body>
 </html>
