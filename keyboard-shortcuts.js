@@ -51,24 +51,32 @@ class KeyboardShortcuts {
     }
     
     bindEvents() {
-        document.addEventListener('keydown', (e) => this.handleKeydown(e));
+        document.addEventListener('keydown', (e) => this.handleKeydown(e), true); // Use capture phase
         
         // Hover-Tracking für Produktkarten - Lumière spezifische Selektoren
         document.addEventListener('mouseover', (e) => {
-            // Suche nach Lumière Produktkarten
-            const productCard = e.target.closest('.lumiere-product-card, .product-card, .card, [data-product-id], [class*="lumiere"], .col .card, .col-md-3 .card, .col-lg-4 .card');
-            if (productCard) {
+            // Suche nach Lumière Produktkarten mit verbesserter Selektor-Logik
+            const productCard = e.target.closest('.lumiere-product-card') || 
+                               e.target.closest('[data-product-id]') ||
+                               e.target.closest('.product-card') ||
+                               e.target.closest('.card[data-product-id]');
+            
+            if (productCard && productCard.dataset.productId) {
                 this.currentHoveredProduct = productCard;
-                const productId = productCard.dataset.productId || productCard.querySelector('[data-product-id]')?.dataset.productId;
-                const productTitle = productCard.querySelector('.lumiere-product-title, .card-title, .product-title, h5, h4')?.textContent;
-                console.log('🎯 Hovered product card:', productCard);
+                const productId = productCard.dataset.productId;
+                const productTitle = productCard.querySelector('.lumiere-product-title, .card-title, .product-title, h5, h4, h3')?.textContent;
+                console.log('🎯 Hovered product card:', productCard.className);
                 console.log('🎯 Product ID:', productId);
                 console.log('🎯 Product title:', productTitle);
             }
         });
         
         document.addEventListener('mouseout', (e) => {
-            const productCard = e.target.closest('.lumiere-product-card, .product-card, .card, [data-product-id], [class*="lumiere"], .col .card, .col-md-3 .card, .col-lg-4 .card');
+            const productCard = e.target.closest('.lumiere-product-card') || 
+                               e.target.closest('[data-product-id]') ||
+                               e.target.closest('.product-card') ||
+                               e.target.closest('.card[data-product-id]');
+            
             if (productCard === this.currentHoveredProduct) {
                 this.currentHoveredProduct = null;
                 console.log('🎯 Mouse left product');
@@ -77,8 +85,13 @@ class KeyboardShortcuts {
     }
     
     handleKeydown(e) {
+        console.log('🎹 Keydown event received:', e.key, 'Active element:', document.activeElement.tagName);
+        
         // Ignoriere Shortcuts in Input-Feldern
-        if (this.isInputFocused()) return;
+        if (this.isInputFocused()) {
+            console.log('🎹 Input focused, ignoring shortcut');
+            return;
+        }
         
         // Baue Shortcut-String
         let shortcut = '';
@@ -93,10 +106,16 @@ class KeyboardShortcuts {
         }
         shortcut += key;
         
+        console.log('🎹 Built shortcut string:', shortcut);
+        
         // Führe Shortcut aus
         if (this.shortcuts[shortcut]) {
+            console.log('🎹 Shortcut found, executing:', shortcut);
             e.preventDefault();
+            e.stopPropagation();
             this.executeShortcut(shortcut);
+        } else {
+            console.log('🎹 No shortcut found for:', shortcut);
         }
     }
     
@@ -258,6 +277,7 @@ class KeyboardShortcuts {
     addToCart() {
         console.log('🛒 Ctrl+A pressed - trying to add to cart');
         console.log('🛒 Current hovered product:', this.currentHoveredProduct);
+        console.log('🛒 Current URL:', window.location.pathname);
         
         // Prüfe ob wir auf einer Produktseite sind
         const isProductPage = window.location.pathname.includes('/produkte/') || 
@@ -274,11 +294,15 @@ class KeyboardShortcuts {
                 return;
             }
         } else {
-            // Auf anderen Seiten: NUR funktionieren wenn über Produktkarte gehövert wird
+            // Auf anderen Seiten: Funktioniert wenn über Produktkarte gehövert wird
             if (!this.currentHoveredProduct) {
                 console.log('🛒 No product hovered - Ctrl+A disabled');
+                console.log('🛒 Available product cards:', document.querySelectorAll('.lumiere-product-card').length);
                 return;
             }
+            
+            console.log('🛒 Hovered product card classes:', this.currentHoveredProduct.className);
+            console.log('🛒 Hovered product ID:', this.currentHoveredProduct.dataset.productId);
             
             // Suche nach Lumière Add-to-Cart Button
             const addToCartBtn = this.currentHoveredProduct.querySelector('.lumiere-add-to-cart-btn');
@@ -287,8 +311,12 @@ class KeyboardShortcuts {
                 const productId = addToCartBtn.dataset.productId;
                 console.log('🛒 Found lumiere-add-to-cart button for product ID:', productId);
                 console.log('🛒 Button element:', addToCartBtn);
+                console.log('🛒 Clicking button...');
                 addToCartBtn.click();
                 return;
+            } else {
+                console.log('🛒 No add-to-cart button found in hovered product');
+                console.log('🛒 Available buttons in product:', this.currentHoveredProduct.querySelectorAll('button'));
             }
         }
         
@@ -298,6 +326,7 @@ class KeyboardShortcuts {
     addToWishlist() {
         console.log('❤️ Ctrl+L pressed - trying to add to wishlist');
         console.log('❤️ Current hovered product:', this.currentHoveredProduct);
+        console.log('❤️ Current URL:', window.location.pathname);
         
         // Prüfe ob wir auf einer Produktseite sind
         const isProductPage = window.location.pathname.includes('/produkte/') || 
@@ -314,11 +343,15 @@ class KeyboardShortcuts {
                 return;
             }
         } else {
-            // Auf anderen Seiten: NUR funktionieren wenn über Produktkarte gehövert wird
+            // Auf anderen Seiten: Funktioniert wenn über Produktkarte gehövert wird
             if (!this.currentHoveredProduct) {
                 console.log('❤️ No product hovered - Ctrl+L disabled');
+                console.log('❤️ Available product cards:', document.querySelectorAll('.lumiere-product-card').length);
                 return;
             }
+            
+            console.log('❤️ Hovered product card classes:', this.currentHoveredProduct.className);
+            console.log('❤️ Hovered product ID:', this.currentHoveredProduct.dataset.productId);
             
             // Suche nach Lumière Wishlist Button
             const wishlistBtn = this.currentHoveredProduct.querySelector('.lumiere-wishlist-btn');
@@ -327,8 +360,12 @@ class KeyboardShortcuts {
                 const productId = wishlistBtn.dataset.productId;
                 console.log('❤️ Found lumiere-wishlist button for product ID:', productId);
                 console.log('❤️ Button element:', wishlistBtn);
+                console.log('❤️ Clicking button...');
                 wishlistBtn.click();
                 return;
+            } else {
+                console.log('❤️ No wishlist button found in hovered product');
+                console.log('❤️ Available buttons in product:', this.currentHoveredProduct.querySelectorAll('button'));
             }
         }
         
@@ -532,12 +569,26 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Initialisiere System wenn DOM geladen ist
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+function initializeKeyboardShortcuts() {
+    console.log('🎹 Initializing keyboard shortcuts system...');
+    if (window.keyboardShortcuts) {
+        console.log('🎹 Keyboard shortcuts already initialized');
+        return;
+    }
+    
+    try {
         window.keyboardShortcuts = new KeyboardShortcuts();
-    });
+        console.log('🎹 Keyboard shortcuts system successfully initialized');
+    } catch (error) {
+        console.error('🎹 Error initializing keyboard shortcuts:', error);
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeKeyboardShortcuts);
 } else {
-    window.keyboardShortcuts = new KeyboardShortcuts();
+    // DOM is already loaded, initialize immediately
+    setTimeout(initializeKeyboardShortcuts, 100); // Small delay to ensure other scripts are loaded
 }
 
 console.log('🎹 Keyboard Shortcuts System geladen');

@@ -393,6 +393,11 @@ function addProductToCart(products, productId, fromCartDropdown = false) {
   
   console.log('Found product:', product.name);
   
+  // Check if cart dropdown is currently open before adding product
+  const cartDropdown = document.getElementById('cartDropdown');
+  const wasDropdownOpen = cartDropdown && cartDropdown.classList.contains('show');
+  console.log('Cart dropdown was open before adding product:', wasDropdownOpen);
+  
   // Always read from localStorage to ensure we have the latest data
   cartItems = JSON.parse(localStorage.getItem('cart')) || [];
   const existingItem = cartItems.find(item => Number(item.id) === Number(productId));
@@ -423,6 +428,19 @@ function addProductToCart(products, productId, fromCartDropdown = false) {
   if (fromCartDropdown) {
     setTimeout(() => {
       renderCartDropdown();
+    }, 100);
+  }
+
+  // Keep cart dropdown open if it was open before adding the product
+  if (wasDropdownOpen && cartDropdown) {
+    setTimeout(() => {
+      console.log('Keeping cart dropdown open after adding product');
+      cartDropdown.classList.add('show');
+      cartDropdown.style.display = 'block';
+      // Re-render the dropdown to show updated content
+      if (typeof renderCartDropdown === 'function') {
+        renderCartDropdown();
+      }
     }, 100);
   }
 
