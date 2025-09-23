@@ -1810,17 +1810,32 @@ function initializeCategoryNavigation() {
           scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       } else {
-        // Scroll to the specific category section when only one category is shown
-        const firstVisibleSection = document.querySelector('.product-category-section:not([style*="display: none"])');
-        if (firstVisibleSection) {
-          console.log('Scrolling to visible category section');
-          firstVisibleSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // For specific categories, scroll to their specific section
+        const categoryMapping = {
+          'Technik/Gadgets': 'technikGrid',
+          'Beleuchtung': 'beleuchtungGrid', 
+          'Haushalt und Küche': 'haushaltGrid',
+          'Körperpflege/Wellness': 'wellnessGrid'
+        };
+        
+        const targetGridId = categoryMapping[category];
+        if (targetGridId) {
+          const targetSection = document.getElementById(targetGridId)?.closest('.product-category-section');
+          if (targetSection) {
+            console.log('Scrolling to specific category section:', category);
+            targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else {
+            console.error('❌ Target section not found for category:', category);
+          }
+        } else {
+          console.error('❌ No mapping found for category:', category);
         }
       }
     });
   });
 }
 
+// ... rest of the code remains the same ...
 // Function to show/hide category sections based on selection
 function showCategorySections(selectedCategory) {
   console.log('🔧 Showing category sections for:', selectedCategory);
