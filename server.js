@@ -1,14 +1,29 @@
 require('dotenv').config();
 const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const path = require('path');
-const sgMail = require('@sendgrid/mail');
-const CJDropshippingAPI = require('./cj-dropshipping-api');
 const compression = require('compression');
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// Initialize Stripe only if API key is available
+let stripe = null;
+if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'your_stripe_secret_key_here') {
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  console.log('✅ Stripe initialized');
+} else {
+  console.warn('⚠️  Stripe not initialized - STRIPE_SECRET_KEY missing');
+}
 
-// Initialize CJ Dropshipping API
+// Initialize SendGrid only if API key is available
+let sgMail = null;
+if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
+  sgMail = require('@sendgrid/mail');
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log('✅ SendGrid initialized');
+} else {
+  console.warn('⚠️  SendGrid not initialized - SENDGRID_API_KEY missing');
+}
+
+// Initialize CJ Dropshipping API (has its own fallback system)
+const CJDropshippingAPI = require('./cj-dropshipping-api');
 const cjAPI = new CJDropshippingAPI();
 
 const app = express();
@@ -54,6 +69,9 @@ app.use(express.static(path.join(__dirname), {
 }));
 
 app.post('/api/create-checkout-session', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ error: 'Payment system not configured. Please set up Stripe API key.' });
+  }
   const { cart } = req.body;
   const line_items = cart.map(item => {
     if (item.id === 1) {
@@ -92,6 +110,9 @@ app.post('/api/create-checkout-session', async (req, res) => {
 
 // Stripe Webhook für Zahlungsbestätigung
 app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ error: 'Payment system not configured' });
+  }
   const sig = req.headers['stripe-signature'];
   
   try {
