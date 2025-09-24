@@ -27,20 +27,29 @@ app.use(compression({
 
 app.use(express.json());
 
-// Set caching headers for static assets
+// Add middleware for Replit proxy/iframe support
+app.use((req, res, next) => {
+  // Allow iframe embedding for Replit preview
+  res.setHeader('X-Frame-Options', 'ALLOWALL');
+  res.setHeader('Content-Security-Policy', 'frame-ancestors *');
+  
+  // CORS headers for development
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  next();
+});
+
+// Serve static files with no cache for development
 app.use(express.static(path.join(__dirname), {
-  maxAge: '1y', // Cache static files for 1 year
-  etag: true,
-  lastModified: true,
+  maxAge: 0, // No caching for development
+  etag: false,
   setHeaders: (res, path) => {
-    // Different cache strategies for different file types
-    if (path.endsWith('.html')) {
-      res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes for HTML
-    } else if (path.endsWith('.css') || path.endsWith('.js')) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year for CSS/JS
-    } else if (path.match(/\.(jpg|jpeg|png|gif|ico|svg|webp)$/)) {
-      res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year for images
-    }
+    // Disable caching in development
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
   }
 }));
 
@@ -68,8 +77,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
-      success_url: 'http://localhost:3000/success.html',
-      cancel_url: 'http://localhost:3000/cart.html',
+      success_url: `${process.env.REPL_URL || 'http://localhost:5000'}/success.html`,
+      cancel_url: `${process.env.REPL_URL || 'http://localhost:5000'}/cart.html`,
     });
     // Stripe Checkout Link (z.B. für Debugging oder manuelle Weiterleitung)
     console.log('Stripe Checkout Link:', session.url);
@@ -429,7 +438,8 @@ app.get('/api/cj/methods', (req, res) => {
 
 
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+  console.log(`📱 Access URL: ${process.env.REPL_URL || `http://localhost:${PORT}`}`);
 });
