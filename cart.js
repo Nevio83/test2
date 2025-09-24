@@ -303,7 +303,7 @@ function updateCartPage() {
                     <div class="addon-list">
                         ${randomProducts.map(product => `
                             <div class="addon-card">
-                                <img src="${product.image.startsWith('produkt bilder/') ? product.image : product.image.replace('../', '')}" class="addon-card-img" alt="${product.name}">
+                                <img src="${product.image}" class="addon-card-img" alt="${product.name}">
                                 <div class="addon-card-info">
                                     <div class="addon-card-title">${product.name}</div>
                                     <div class="addon-card-price">${currentCurrency.symbol}${product.price.toFixed(2)}</div>
@@ -369,7 +369,7 @@ function updateCartPage() {
                 <div id="cartItemsList">
                     ${cartItems.map(item => `
                         <div class="cart-item" data-id="${item.id}">
-                            <img src="${item.image.startsWith('produkt bilder/') ? item.image : item.image.replace('../', '')}" alt="${item.name}" class="cart-item-image">
+                            <img src="${item.image}" alt="${item.name}" class="cart-item-image">
                             <div class="cart-item-details">
                                 <h5>${item.name}</h5>
                                 <div class="cart-item-price">${currentCurrency.symbol}${convertPrice(item.price, currentCurrency.code).toFixed(2)}</div>
@@ -402,7 +402,7 @@ function updateCartPage() {
                     <div class="addon-list">
                         ${addonProducts.map(addon => `
                             <div class="addon-card">
-                                <img src="${addon.image.startsWith('produkt bilder/') ? addon.image : addon.image.replace('../', '')}" class="addon-card-img" alt="${addon.name}">
+                                <img src="${addon.image}" class="addon-card-img" alt="${addon.name}">
                                 <div class="addon-card-info">
                                     <div class="addon-card-title">${addon.name}</div>
                                     <div class="addon-card-price">${currentCurrency.symbol}${convertPrice(addon.price, currentCurrency.code).toFixed(2)}</div>

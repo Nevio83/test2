@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wunschliste</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="styles.css" rel="stylesheet">
+  <link href="wishlist.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-light bg-light shadow-sm">
+    <div class="container-fluid nav-flex">
+      <a class="navbar-brand fw-bold mb-0 h1" href="index.html">Wunschliste</a>
+   
+      <a href="index.html" class="back-to-shop-btn d-inline-flex align-items-center ms-auto">
+        <i class="bi bi-arrow-left me-2"></i> Zurück zum Shop
+      </a>
+    </div>
+  </nav>
+  <main>
+    <div class="container mt-2">
+      <h2 class="mb-4">Deine Wunschliste</h2>
+      <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4" id="wishlistGrid">
+        <!-- Produkte werden hier per JS eingefügt -->
+      </div>
+      <div id="wishlistEmpty" class="text-center text-muted mt-5" style="display:none;">
+        <i class="bi bi-heart fs-1"></i>
+        <p>Deine Wunschliste ist leer.</p>
+        <a href="index.html" class="btn btn-primary mt-3">
+          <i class="bi bi-shop me-2"></i>Produkte entdecken
+        </a>
+      </div>
+    </div>
+    <div class="d-flex justify-content-center mt-4 gap-3" id="addAllContainer" style="display: none;">
+      <button id="addAllToCart" class="btn btn-primary btn-lg">
+        <i class="bi bi-cart-plus me-2"></i>Alle zum Warenkorb
+      </button>
+      <button id="removeAllFromWishlist" class="btn btn-outline-danger btn-lg">
+        <i class="bi bi-trash me-2"></i>Alle entfernen
+      </button>
+    </div>
+  </main>
+
+  <script>
+    // Wunschliste initialisieren
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${type} position-fixed end-0 m-4 shadow-lg fade show`;
+      notification.style.zIndex = '20000';
+      notification.style.fontSize = '1rem';
+      notification.style.minWidth = '160px';
+      notification.style.maxWidth = '320px';
+      notification.style.padding = '0.75rem 2rem';
+      notification.style.textAlign = 'center';
+      notification.style.borderRadius = '2rem';
+      notification.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+      notification.style.background = type === 'success' 
+        ? 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)' 
+        : 'linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%)';
+      notification.style.color = '#fff';
+      notification.style.fontWeight = '500';
+      notification.style.letterSpacing = '0.02em';
+      notification.style.pointerEvents = 'auto';
+      notification.style.position = 'fixed';
+      notification.style.right = '2.5rem';
+      notification.style.top = 'calc(56px + 1.2rem)';
+      notification.style.cursor = 'pointer';
+      notification.textContent = message;
+      
+      // Klick-Event hinzufügen
+      notification.addEventListener('click', function() {
+        notification.classList.remove('show');
+        notification.classList.add('fade');
+        setTimeout(() => notification.remove(), 400);
+        // Zur Wishlist-Seite weiterleiten
+        window.location.href = 'wishlist.html';
+      });
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          notification.classList.remove('show');
+          notification.classList.add('fade');
+          setTimeout(() => notification.remove(), 400);
+        }
+      }, 2000);
+    }
+
+    function addToCart(productId) {
+      const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+      const product = wishlist.find(item => Number(item.id) === Number(productId));
+      if (!product) return;
+      
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const existingItem = cart.find(item => Number(item.id) === Number(productId));
+
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      showNotification('Produkt wurde zum Warenkorb hinzugefügt');
+    }
+
+    function removeFromWishlist(productId) {
+      let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+      wishlist = wishlist.filter(item => Number(item.id) !== Number(productId));
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      
+      showNotification('Produkt von der Wunschliste entfernt', 'info');
+      
+      // Sofort neu rendern - Button verschwindet automatisch wenn Wunschliste leer
+      renderWishlist();
+    }
+
+    function addToCartAndRemoveFromWishlist(productId) {
+      const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+      const product = wishlist.find(item => Number(item.id) === Number(productId));
+      if (!product) return;
+      
+      // In den Warenkorb legen
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const existingItem = cart.find(item => Number(item.id) === Number(productId));
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      
+      // Aus der Wunschliste entfernen
+      const newWishlist = wishlist.filter(item => Number(item.id) !== Number(productId));
+      localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+      
+      showNotification('Produkt wurde zum Warenkorb hinzugefügt');
+      
+      // Sofort neu rendern - Button verschwindet automatisch wenn Wunschliste leer
+      renderWishlist();
+    }
+
+    function renderWishlist() {
+      const grid = document.getElementById('wishlistGrid');
+      const emptyMsg = document.getElementById('wishlistEmpty');
+      const addAllContainer = document.getElementById('addAllContainer');
+      const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+      console.log('Wunschliste beim Rendern:', wishlist); // Debug
+      
+      // Prüfe ob Wunschliste leer ist
+      if (wishlist.length === 0) {
+        grid.innerHTML = '';
+        emptyMsg.style.display = 'block';
+        addAllContainer.style.display = 'none';
+        addAllContainer.classList.remove('show');
+        addAllContainer.style.visibility = 'hidden';
+        addAllContainer.style.opacity = '0';
+        console.log('Wunschliste ist leer - Button versteckt'); // Debug
+        return;
+      }
+      
+      // Wunschliste hat Produkte - zeige Grid und "Alle zum Warenkorb" Button
+      emptyMsg.style.display = 'none';
+      addAllContainer.style.display = 'flex';
+      addAllContainer.style.visibility = 'visible';
+      addAllContainer.style.opacity = '1';
+      addAllContainer.classList.add('show');
+      console.log('Wunschliste hat Produkte - Button angezeigt'); // Debug
+      grid.innerHTML = wishlist.map(product => {
+        try {
+          // Fallbacks für fehlende Felder
+          const name = product.name || 'Produkt';
+          const price = typeof product.price === 'number' ? product.price : 0;
+          const image = product.image || 'waren/ware.png';
+          const description = product.description || '';
+          return `
+            <div class="col">
+              <div class="card h-100 border-0 shadow-hover position-relative">
+                <button class="wishlist-btn" data-product-id="${product.id}" aria-label="Von Wunschliste entfernen">
+                  <i class="bi bi-heart-fill"></i>
+                </button>
+                <div class="ratio ratio-4x3">
+                  <img src="${image}" class="card-img-top object-fit-cover" alt="${name}">
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title">${name}</h5>
+                  <p class="card-text">${description}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <span class="h4 text-primary">€${price.toFixed(2)}</span>
+                      <small class="text-muted d-block">inkl. MwSt.</small>
+                    </div>
+                    <button class="btn btn-primary rounded-pill px-3 py-2 add-to-cart-btn" data-product-id="${product.id}">
+                      <i class="bi bi-cart-plus me-2"></i>Hinzufügen
+                    </button>
+                  </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                  <button class="btn btn-outline-danger w-100 remove-wishlist-btn" data-product-id="${product.id}">
+                    <i class="bi bi-trash me-2"></i>Von Wunschliste entfernen
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        } catch (err) {
+          console.error('Fehler beim Rendern eines Wunschlisten-Produkts:', product, err);
+          return '';
+        }
+      }).join('');
+      // Event-Listener für "Zum Warenkorb hinzufügen" Buttons
+      document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const productId = parseInt(this.dataset.productId);
+          addToCartAndRemoveFromWishlist(productId);
+        });
+      });
+      // Event-Listener für "Von Wunschliste entfernen" Buttons
+      document.querySelectorAll('.remove-wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const productId = parseInt(this.dataset.productId);
+          removeFromWishlist(productId);
+        });
+      });
+      // Event-Listener für Herz-Buttons (auch zum Entfernen)
+      document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const productId = parseInt(this.dataset.productId);
+          removeFromWishlist(productId);
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Wunschliste-Seite geladen'); // Debug
+      
+      // Initialisiere Button-Status
+      const addAllContainer = document.getElementById('addAllContainer');
+      const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+      
+      if (wishlist.length === 0) {
+        addAllContainer.style.display = 'none';
+        addAllContainer.style.visibility = 'hidden';
+        addAllContainer.style.opacity = '0';
+        addAllContainer.classList.remove('show');
+      }
+      
+      renderWishlist();
+      
+      // Event-Listener für "Alle zum Warenkorb" Button
+      const addAllBtn = document.getElementById('addAllToCart');
+      if (addAllBtn) {
+        addAllBtn.addEventListener('click', function() {
+          const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+          if (wishlist.length === 0) return;
+          
+          let cart = JSON.parse(localStorage.getItem('cart')) || [];
+          
+          // Alle Produkte aus der Wunschliste zum Warenkorb hinzufügen
+          wishlist.forEach(wish => {
+            const existingItem = cart.find(item => Number(item.id) === Number(wish.id));
+            if (existingItem) {
+              existingItem.quantity++;
+            } else {
+              cart.push({ ...wish, quantity: 1 });
+            }
+          });
+          
+          localStorage.setItem('cart', JSON.stringify(cart));
+          
+          // Wunschliste leeren
+          localStorage.setItem('wishlist', JSON.stringify([]));
+          
+          showNotification('Alle Produkte wurden zum Warenkorb hinzugefügt');
+          
+          // Kurz warten, dann zur Warenkorb-Seite weiterleiten
+          setTimeout(() => {
+            renderWishlist(); // Aktualisiere die Wunschliste nach dem Hinzufügen
+            window.location.href = 'cart.html';
+          }, 1500);
+        });
+      }
+
+      // Event-Listener für "Alle entfernen" Button
+      const removeAllBtn = document.getElementById('removeAllFromWishlist');
+      if (removeAllBtn) {
+        removeAllBtn.addEventListener('click', function() {
+          const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+          if (wishlist.length === 0) return;
+          
+          // Wunschliste leeren
+          localStorage.setItem('wishlist', JSON.stringify([]));
+          
+          showNotification('Alle Produkte wurden von der Wunschliste entfernt', 'info');
+          
+          // Wunschliste sofort neu rendern
+          renderWishlist();
+        });
+      }
+
+      // Wunschliste bei Storage-Änderung neu rendern (z.B. bei mehreren Tabs)
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'wishlist') {
+          renderWishlist();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

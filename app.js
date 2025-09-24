@@ -190,7 +190,7 @@ function renderProducts(products) {
     return `
       <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
         <div class="lumiere-image-container">
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect width='100%25' height='100%25' fill='%23f0f0f0'/%3E%3C/svg%3E" data-src="produkt bilder/ware.png" class="lumiere-product-image lazy-load" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <img src="${product.image}" class="lumiere-product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" loading="lazy">
           <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
           <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
             <i class="bi bi-heart"></i>
@@ -215,12 +215,9 @@ function renderProducts(products) {
   initializeProductCardClicks();
   observeProductCards();
   
-  // Initialize lazy loading for new images
-  if (window.lazyLoader) {
-    window.lazyLoader.observeNewImages();
-  }
+  // Images are now loaded directly with native lazy loading
   
-  optimizeImages(); // Bilder nach dem Rendern optimieren
+  // No need to optimize images anymore
 }
 
 function observeProductCards() {
@@ -1001,7 +998,9 @@ function renderCartDropdown() {
 
   if (cartItems.length === 0) {
     console.log('Cart is empty, showing empty state');
-    footer.style.display = 'none'; // Footer verstecken bei leerem Warenkorb
+    // Footer bleibt immer sichtbar
+    footer.style.display = 'block';
+    footer.style.visibility = 'visible';
     totalElement.textContent = '0.00'; // Gesamt auf 0 setzen bei leerem Warenkorb
     
     // Bei leerem Warenkorb: 3 zufällige Produktvorschläge anzeigen
@@ -1043,7 +1042,6 @@ function renderCartDropdown() {
               `).join('')}
             </div>
           </div>
-        </div>
       `;
     });
     return;
@@ -1051,6 +1049,8 @@ function renderCartDropdown() {
   
   console.log('Rendering cart items:', cartItems.length);
   footer.style.display = 'block';
+  footer.style.visibility = 'visible';
+  console.log('Footer should now be visible:', footer.style.display, footer.style.visibility);
   
   // Calculate total for display
   const total = cartItems.reduce((sum, item) => sum + (typeof item.price === 'number' ? item.price * item.quantity : 0), 0);
@@ -1119,6 +1119,13 @@ function renderCartDropdown() {
   totalElement.textContent = total.toFixed(2);
   console.log('Cart dropdown rendered successfully with total:', total.toFixed(2));
   
+  // Ensure footer is ALWAYS visible
+  footer.style.display = 'block';
+  footer.style.visibility = 'visible';
+  footer.style.opacity = '1';
+  footer.style.position = 'relative';
+  console.log('Footer forced visible - items:', cartItems.length);
+  
   // Re-initialize add-to-cart buttons for new dropdown content
   setTimeout(() => {
     initializeAddToCartButtons();
@@ -1141,6 +1148,87 @@ function renderCartDropdown() {
       });
     }
   }, 100);
+  
+  // Final safety check - ensure footer AND buttons are always visible (especially on PC)
+  setTimeout(() => {
+    const finalFooter = document.getElementById('cartDropdownFooter');
+    const checkoutBtn = document.querySelector('.cart-dropdown-footer .btn-primary');
+    const clearBtn = document.getElementById('clearCart');
+    
+    console.log('PC Button visibility check - Elements found:', {
+      footer: !!finalFooter,
+      checkoutBtn: !!checkoutBtn,
+      clearBtn: !!clearBtn
+    });
+    
+    if (finalFooter) {
+      finalFooter.style.display = 'block';
+      finalFooter.style.visibility = 'visible';
+      finalFooter.style.opacity = '1';
+      finalFooter.style.position = 'relative';
+      finalFooter.style.zIndex = '9999';
+      finalFooter.style.background = 'white';
+      finalFooter.style.borderTop = '1px solid #ddd';
+      finalFooter.style.padding = '20px';
+      console.log('Final footer visibility check completed');
+    }
+    
+    if (checkoutBtn) {
+      checkoutBtn.style.display = 'block';
+      checkoutBtn.style.visibility = 'visible';
+      checkoutBtn.style.opacity = '1';
+      checkoutBtn.style.position = 'relative';
+      checkoutBtn.style.zIndex = '9999';
+      checkoutBtn.style.width = '100%';
+      checkoutBtn.style.height = '44px';
+      checkoutBtn.style.lineHeight = '44px';
+      checkoutBtn.style.textAlign = 'center';
+      checkoutBtn.style.marginBottom = '8px';
+      checkoutBtn.style.background = '#007bff';
+      checkoutBtn.style.color = 'white';
+      checkoutBtn.style.border = 'none';
+      checkoutBtn.style.borderRadius = '8px';
+      checkoutBtn.style.textDecoration = 'none';
+      console.log('Checkout button forced visible with full styling');
+    }
+    
+    if (clearBtn) {
+      clearBtn.style.display = 'block';
+      clearBtn.style.visibility = 'visible';
+      clearBtn.style.opacity = '1';
+      clearBtn.style.position = 'relative';
+      clearBtn.style.zIndex = '9999';
+      clearBtn.style.width = '100%';
+      clearBtn.style.height = '44px';
+      clearBtn.style.border = '2px solid #dc3545';
+      clearBtn.style.color = '#dc3545';
+      clearBtn.style.background = 'white';
+      clearBtn.style.borderRadius = '8px';
+      clearBtn.style.cursor = 'pointer';
+      clearBtn.style.fontSize = '16px';
+      clearBtn.style.lineHeight = '40px';
+      clearBtn.style.textAlign = 'center';
+      // Ensure button has text content
+      if (!clearBtn.textContent.includes('Löschen')) {
+        clearBtn.innerHTML = '<i class="bi bi-trash" style="font-size: 16px; margin-right: 4px;"></i> Löschen';
+      }
+      console.log('Clear button forced visible with full styling and text');
+    }
+    
+    // Extra check for PC browsers
+    if (window.innerWidth >= 769) {
+      console.log('PC detected - applying extra button visibility measures');
+      const allFooterBtns = document.querySelectorAll('.cart-dropdown-footer .btn');
+      allFooterBtns.forEach((btn, index) => {
+        btn.style.display = 'block';
+        btn.style.visibility = 'visible';
+        btn.style.opacity = '1';
+        btn.style.position = 'relative';
+        btn.style.zIndex = '9999';
+        console.log(`PC Button ${index + 1} forced visible`);
+      });
+    }
+  }, 200);
 }
 
 // Render Bestseller Section with horizontal scroll
@@ -1155,7 +1243,7 @@ function renderBestsellers(products) {
         return `
             <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
                 <div class="lumiere-image-container">
-                    <img src="produkt bilder/ware.png" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <img src="${product.image}" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
                     <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
                         <i class="bi bi-heart"></i>
@@ -2994,9 +3082,9 @@ function createProductCard(product) {
   const wishlistBtn = clone.querySelector('.lumiere-wishlist-btn');
   
   if (img) {
-    img.setAttribute('data-src', product.image);
+    img.src = product.image;
     img.alt = product.name;
-    console.log('✅ Image set for:', product.name);
+    console.log('✅ Image set for:', product.name, 'Path:', product.image);
   }
   
   if (title) {
@@ -3080,7 +3168,7 @@ function renderProductsToGrid(products, gridContainer) {
         return `
             <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
                 <div class="lumiere-image-container">
-                    <img src="produkt bilder/ware.png" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <img src="${product.image}" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
                     <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
                         <i class="bi bi-heart"></i>
@@ -3199,7 +3287,7 @@ function renderBestsellers(products) {
         return `
             <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
                 <div class="lumiere-image-container">
-                    <img src="produkt bilder/ware.png" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <img src="${product.image}" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
                     <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
                         <i class="bi bi-heart"></i>
@@ -3530,7 +3618,7 @@ function testSearchFunction(query) {
                 return `
                     <div class="lumiere-product-card search-product-card" data-product-id="${product.id}" data-category="${product.category}">
                         <div class="lumiere-image-container">
-                            <img src="produkt bilder/ware.png" data-src="produkt bilder/ware.png" class="lumiere-product-image lazy-load" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <img src="${product.image}" class="lumiere-product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" loading="lazy">
                             <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
                             <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
                                 <i class="bi bi-heart"></i>
@@ -3726,7 +3814,7 @@ function displaySearchResults(products, query) {
         return `
             <div class="search-result-item" data-product-id="${product.id}" onclick="navigateToProduct(${product.id})">
                 <div class="search-result-category">${product.category}</div>
-                <img src="produkt bilder/ware.png" alt="${product.name}" class="search-result-image" loading="lazy">
+                <img src="${product.image}" alt="${product.name}" class="search-result-image" loading="lazy">
                 <h4 class="search-result-title">${product.name}</h4>
                 <div class="search-result-price">€${formattedPrice}</div>
             </div>
@@ -3819,7 +3907,7 @@ function renderAllProducts(allProductsGrid, products) {
         return `
             <div class="lumiere-product-card search-product-card" data-product-id="${product.id}" data-category="${product.category}">
                 <div class="lumiere-image-container">
-                    <img src="produkt bilder/ware.png" data-src="produkt bilder/ware.png" class="lumiere-product-image lazy-load" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <img src="${product.image}" class="lumiere-product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" loading="lazy">
                     <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
                     <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
                         <i class="bi bi-heart"></i>
