@@ -1056,7 +1056,7 @@ body {
     padding: 1.2rem 1.5rem 1.2rem 1.5rem;
     background: #f8f9fa;
     min-height: 180px;
-    max-height: 50vh;
+    max-height: 65vh;
   }
   #cartDropdown .cart-dropdown-footer {
     position: sticky;
