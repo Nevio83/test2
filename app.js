@@ -847,6 +847,11 @@ function calculateCategoryCounts(products) {
 
 // Warenkorb Dropdown öffnen/schließen und rendern
 function initializeCartDropdown() {
+  // Skip initialization on cart.html page
+  if (window.location.pathname.includes('cart.html')) {
+    return;
+  }
+  
   const cartButton = document.getElementById('cartButton');
   const cartDropdown = document.getElementById('cartDropdown');
   const closeCartDropdown = document.getElementById('closeCartDropdown');
@@ -955,13 +960,16 @@ function initializeCartDropdown() {
         searchInput.value = '';
         searchInput.dispatchEvent(new Event('input'));
       }
-      
-      // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
+}
+
+function setupClearCartButton() {
+  // Skip on cart.html page as it has its own clear cart logic
+  if (window.location.pathname.includes('cart.html')) {
+    return;
+  }
   
-  // Initialize clear cart button
   const clearCartBtn = document.getElementById('clearCart');
   if (clearCartBtn) {
     console.log('Clear cart button found, adding event listener');
@@ -1360,24 +1368,25 @@ function updateScrollbarPositionForGrid(gridId) {
 
 // Initialize scrollbar tracking for all grids
 function initializeScrollbarTracking() {
-    const grids = [
-        'bestsellerGrid',
-        'technikGrid', 
-        'beleuchtungGrid',
-        'haushaltGrid',
-        'wellnessGrid'
-    ];
+    // Skip on cart.html page
+    if (window.location.pathname.includes('cart.html')) {
+        return;
+    }
+    
+    const grids = ['bestsellerGrid', 'technikGrid', 'beleuchtungGrid', 'haushaltGrid', 'wellnessGrid'];
     
     grids.forEach(gridId => {
         const grid = document.getElementById(gridId);
         if (!grid) {
-            console.log(`Grid ${gridId} not found for scrollbar tracking`);
+            // Only log if we're on index.html where these should exist
+            if (!window.location.pathname.includes('cart.html')) {
+                console.log(`Grid ${gridId} not found for scrollbar tracking`);
+            }
             return;
         }
         
         console.log(`Initializing scrollbar tracking for ${gridId}`);
         
-        // Force scrollbar to start at 0px
         const container = grid.parentElement;
         if (container) {
             container.style.setProperty('--scroll-position', '0px');
@@ -2677,11 +2686,11 @@ window.updateScrollbarPositionForGrid = updateScrollbarPositionForGrid;
 window.initializeDragScrollForGrid = initializeDragScrollForGrid;
 window.createCustomScrollbarForGrid = createCustomScrollbarForGrid;
 window.updateCustomScrollbarPosition = updateCustomScrollbarPosition;
-window.testCartDropdown = testCartDropdown;
-window.testEmptyCart = testEmptyCart;
+// window.testCartDropdown = testCartDropdown;
+// window.testEmptyCart = testEmptyCart;
 // window.testLiveUpdates = testLiveUpdates; // Wird später definiert
-window.testClearCartButton = testClearCartButton;
-window.testClearCartSimple = testClearCartSimple;
+// window.testClearCartButton = testClearCartButton; // Auskommentiert - Funktion existiert
+// window.testClearCartSimple = testClearCartSimple;
 
 // Initialize category tiles and "Alle Produkte entdecken" button
 function initializeCategoryTiles(products) {
@@ -3259,12 +3268,25 @@ function scrollCategory(gridId, direction) {
 }
 
 // Call loadCategoryProducts after products are loaded
+let categoryInitAttempts = 0;
+const maxCategoryInitAttempts = 10;
+
 function initializeCategoryProducts() {
+    // Skip on cart.html page
+    if (window.location.pathname.includes('cart.html')) {
+        return;
+    }
+    
     if (window.allProducts && window.allProducts.length > 0) {
         loadCategoryProducts(window.allProducts);
     } else {
-        console.log('⏳ Waiting for products to load...');
-        setTimeout(initializeCategoryProducts, 500);
+        categoryInitAttempts++;
+        if (categoryInitAttempts < maxCategoryInitAttempts) {
+            console.log(`⏳ Waiting for products to load... (attempt ${categoryInitAttempts}/${maxCategoryInitAttempts})`);
+            setTimeout(initializeCategoryProducts, 500);
+        } else {
+            console.log('⚠️ Category products initialization stopped after max attempts');
+        }
     }
 }
 
@@ -3318,6 +3340,11 @@ function renderBestsellers(products) {
 
 // Load products into category containers
 function loadCategoryProducts(products) {
+    // Skip on cart.html page
+    if (window.location.pathname.includes('cart.html')) {
+        return;
+    }
+    
     console.log('🔄 Loading products into category containers...');
     console.log('🔄 Total products available:', products.length);
     
@@ -3335,13 +3362,15 @@ function loadCategoryProducts(products) {
         
         const grid = document.getElementById(gridId);
         if (!grid) {
-            console.warn(`❌ Grid ${gridId} not found`);
+            // Only warn if we're on a page where these grids should exist
+            if (!window.location.pathname.includes('cart.html')) {
+                console.warn(`❌ Grid ${gridId} not found`);
+            }
             return;
         }
         
         // Filter products for this category
-        const categoryProducts = products.filter(product => product.category === categoryName);
-        console.log(`📦 ${categoryName}: ${categoryProducts.length} products found`);
+        const categoryProducts = products.filter(p => p.category === categoryName);
         
         if (categoryProducts.length > 0) {
             console.log(`✅ Rendering ${categoryProducts.length} products to ${gridId}`);
@@ -3376,6 +3405,11 @@ let searchResultsGrid = null;
 
 // Initialize fullscreen search when DOM is ready
 function initializeFullscreenSearch() {
+    // Skip initialization on cart.html page
+    if (window.location.pathname.includes('cart.html')) {
+        return;
+    }
+    
     console.log('🔍 Initializing fullscreen search...');
     
     // Wait for DOM elements to be available
@@ -3395,9 +3429,10 @@ function initializeFullscreenSearch() {
         });
         
         if (!fullscreenSearchBtn || !searchOverlay) {
-            console.error('❌ Fullscreen search elements not found');
-            // Try again in 1 second
-            setTimeout(initializeFullscreenSearch, 1000);
+            // Only log error if we're on a page where these elements should exist
+            if (!window.location.pathname.includes('cart.html')) {
+                console.error('❌ Fullscreen search elements not found');
+            }
             return;
         }
         
