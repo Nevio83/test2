@@ -303,7 +303,7 @@ function updateCartPage() {
                     <div class="addon-list">
                         ${randomProducts.map(product => `
                             <div class="addon-card">
-                                <img src="${product.image}" class="addon-card-img" alt="${product.name}">
+                                <img src="${product.image}" class="addon-card-img" alt="${product.name}" onerror="this.src='produkt bilder/ware.png'">
                                 <div class="addon-card-info">
                                     <div class="addon-card-title">${product.name}</div>
                                     <div class="addon-card-price">${currentCurrency.symbol}${product.price.toFixed(2)}</div>
@@ -402,7 +402,7 @@ function updateCartPage() {
                     <div class="addon-list">
                         ${addonProducts.map(addon => `
                             <div class="addon-card">
-                                <img src="${addon.image}" class="addon-card-img" alt="${addon.name}">
+                                <img src="${addon.image}" class="addon-card-img" alt="${addon.name}" onerror="this.src='produkt bilder/ware.png'">
                                 <div class="addon-card-info">
                                     <div class="addon-card-title">${addon.name}</div>
                                     <div class="addon-card-price">${currentCurrency.symbol}${convertPrice(addon.price, currentCurrency.code).toFixed(2)}</div>

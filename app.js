@@ -2679,7 +2679,7 @@ window.createCustomScrollbarForGrid = createCustomScrollbarForGrid;
 window.updateCustomScrollbarPosition = updateCustomScrollbarPosition;
 window.testCartDropdown = testCartDropdown;
 window.testEmptyCart = testEmptyCart;
-window.testLiveUpdates = testLiveUpdates;
+// window.testLiveUpdates = testLiveUpdates; // Wird später definiert
 window.testClearCartButton = testClearCartButton;
 window.testClearCartSimple = testClearCartSimple;
 

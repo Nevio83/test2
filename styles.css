@@ -3126,13 +3126,16 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   border-radius: var(--border-radius-small) !important;
   font-weight: 600 !important;
   padding: 12px 20px !important;
-  display: block !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   visibility: visible !important;
   opacity: 1 !important;
   position: relative !important;
   z-index: 9999 !important;
   height: auto !important;
   min-height: 44px !important;
+  text-align: center !important;
 }
 
 /* Spezielle Regeln für Desktop/PC */
@@ -3159,13 +3162,16 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   }
   
   .cart-dropdown-footer .btn {
-    display: block !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     visibility: visible !important;
     opacity: 1 !important;
     width: 100% !important;
     margin-bottom: 8px !important;
     position: relative !important;
     z-index: 9999 !important;
+    text-align: center !important;
   }
   
   .cart-dropdown-footer .btn-primary {
@@ -3187,9 +3193,12 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   color: white !important;
   width: 100% !important;
   height: 44px !important;
-  display: block !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   visibility: visible !important;
   opacity: 1 !important;
+  text-align: center !important;
 }
 
 /* Schöne Hover-Effekte für Buttons */
@@ -3200,6 +3209,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   color: white !important;
   opacity: 1 !important;
   visibility: visible !important;
+  text-align: center !important;
 }
 
 .cart-dropdown-footer .clear-cart-btn {
@@ -3208,11 +3218,14 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   background: white !important;
   width: 100% !important;
   height: 48px !important;
-  display: block !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   visibility: visible !important;
   opacity: 1 !important;
   border-radius: 12px !important;
   font-weight: 600 !important;
+  text-align: center !important;
 }
 
 .cart-dropdown-footer .clear-cart-btn:hover {
@@ -3220,6 +3233,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   color: white !important;
   border-color: #dc3545 !important;
   transform: translateY(-2px) !important;
+  text-align: center !important;
   box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4) !important;
   opacity: 1 !important;
   visibility: visible !important;
@@ -5190,6 +5204,10 @@ div#hilfePanel.offen,
     padding: 16px 20px;
     font-size: 1.1rem;
     font-weight: 600;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   /* Größere Touch-Buttons im Mobile-Warenkorb */
