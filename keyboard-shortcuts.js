@@ -7,10 +7,8 @@ class KeyboardShortcuts {
     constructor() {
         this.shortcuts = {
             // Navigation Shortcuts
-            'h': { action: 'home', description: 'Zur Startseite', category: 'Navigation' },
-            's': { action: 'search', description: 'Suche öffnen/fokussieren', category: 'Navigation' },
-            'c': { action: 'cart', description: 'Warenkorb öffnen/schließen', category: 'Navigation' },
-            'w': { action: 'wishlist', description: 'Zur Wunschliste', category: 'Navigation' },
+            'h': { action: 'wishlist', description: 'Zur Wunschliste', category: 'Navigation' },
+            'w': { action: 'cart', description: 'Warenkorb öffnen/schließen', category: 'Navigation' },
             'escape': { action: 'close', description: 'Schließen/Zurück', category: 'Navigation' },
             
             // Kategorie Shortcuts
@@ -21,16 +19,12 @@ class KeyboardShortcuts {
             '5': { action: 'category-wellness', description: 'Körperpflege & Wellness', category: 'Kategorien' },
             
             // Hilfe Shortcuts
-            'f': { action: 'help', description: 'Keyboard Shortcuts Hilfe', category: 'Hilfe' },
-            '?': { action: 'help', description: 'Keyboard Shortcuts Hilfe', category: 'Hilfe' },
+            'f': { action: 'help-panel', description: 'Hilfe-Panel öffnen', category: 'Hilfe' },
+            '?': { action: 'help-panel', description: 'Hilfe-Panel öffnen', category: 'Hilfe' },
             
             // Produkt Shortcuts (mit Modifiern)
             'ctrl+a': { action: 'add-to-cart', description: 'Gehövertes Produkt zum Warenkorb hinzufügen', category: 'Produkte' },
-            'ctrl+l': { action: 'add-to-wishlist', description: 'Gehövertes Produkt zur Wunschliste hinzufügen', category: 'Produkte' },
-            
-            // Warenkorb Shortcuts
-            'p': { action: 'go-to-cart', description: 'Zum Warenkorb (cart.html)', category: 'Warenkorb' },
-            'e': { action: 'empty-cart', description: 'Warenkorb leeren', category: 'Warenkorb' }
+            'ctrl+l': { action: 'add-to-wishlist', description: 'Gehövertes Produkt zur Wunschliste hinzufügen', category: 'Produkte' }
         };
         
         this.isActive = true;
@@ -115,7 +109,21 @@ class KeyboardShortcuts {
             e.stopPropagation();
             this.executeShortcut(shortcut);
         } else {
-            console.log('🎹 No shortcut found for:', shortcut);
+            // Alle anderen Tasten öffnen die Suchleiste (außer Modifier-Tasten und spezielle Tasten)
+            const isModifierKey = e.key === 'Control' || e.key === 'Alt' || e.key === 'Shift' || e.key === 'Meta';
+            const isSpecialKey = e.key === 'Tab' || e.key === 'Enter' || e.key === 'Backspace' || e.key === 'Delete' || 
+                                 e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' ||
+                                 e.key === 'Home' || e.key === 'End' || e.key === 'PageUp' || e.key === 'PageDown' ||
+                                 e.key === 'F1' || e.key === 'F2' || e.key === 'F3' || e.key === 'F4' || e.key === 'F5' || 
+                                 e.key === 'F6' || e.key === 'F7' || e.key === 'F8' || e.key === 'F9' || e.key === 'F10' || 
+                                 e.key === 'F11' || e.key === 'F12';
+            
+            if (!isModifierKey && !isSpecialKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                console.log('🎹 No specific shortcut, opening search for key:', shortcut);
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleSearch();
+            }
         }
     }
     
@@ -139,17 +147,11 @@ class KeyboardShortcuts {
         
         // Führe Aktion aus
         switch (action) {
-            case 'home':
-                this.goHome();
-                break;
-            case 'search':
-                this.toggleSearch();
+            case 'wishlist':
+                this.goToWishlist();
                 break;
             case 'cart':
                 this.toggleCart();
-                break;
-            case 'wishlist':
-                this.goToWishlist();
                 break;
             case 'close':
                 this.closeOverlays();
@@ -169,20 +171,14 @@ class KeyboardShortcuts {
             case 'category-wellness':
                 this.selectCategory('Körperpflege/Wellness');
                 break;
-            case 'help':
-                this.showHelpModal();
+            case 'help-panel':
+                this.openHelpPanel();
                 break;
             case 'add-to-cart':
                 this.addToCart();
                 break;
             case 'add-to-wishlist':
                 this.addToWishlist();
-                break;
-            case 'go-to-cart':
-                this.goToCart();
-                break;
-            case 'empty-cart':
-                this.emptyCart();
                 break;
         }
     }
@@ -233,35 +229,6 @@ class KeyboardShortcuts {
         window.location.href = this.getRelativePath('wishlist.html');
     }
     
-    closeOverlays() {
-        // Schließe alle Overlays
-        const searchOverlay = document.getElementById('fullscreenSearchOverlay');
-        const cartDropdown = document.getElementById('cartDropdown');
-        const hilfePanel = document.getElementById('hilfePanel');
-        
-        if (searchOverlay && searchOverlay.classList.contains('active')) {
-            searchOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-        
-        if (cartDropdown && cartDropdown.classList.contains('show')) {
-            cartDropdown.classList.remove('show');
-            document.body.classList.remove('cart-open');
-        }
-        
-        if (hilfePanel && hilfePanel.classList.contains('offen')) {
-            hilfePanel.classList.remove('offen');
-            hilfePanel.style.display = 'none';
-            document.body.classList.remove('help-panel-open');
-        }
-        
-        // Schließe Help Modal
-        const helpModal = document.getElementById('keyboard-help-modal');
-        if (helpModal) {
-            helpModal.remove();
-        }
-    }
-    
     selectCategory(category) {
         // Für Hauptseite - Kategorie-Navigation
         const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
@@ -274,142 +241,23 @@ class KeyboardShortcuts {
         });
     }
     
-    addToCart() {
-        console.log('🛒 Ctrl+A pressed - trying to add to cart');
-        console.log('🛒 Current hovered product:', this.currentHoveredProduct);
-        console.log('🛒 Current URL:', window.location.pathname);
+    openHelpPanel() {
+        // Öffne das Hilfe-Panel (das lila Fragezeichen-Panel)
+        const hilfeButton = document.getElementById('hilfeButton');
+        const hilfePanel = document.getElementById('hilfePanel');
         
-        // Prüfe ob wir auf einer Produktseite sind
-        const isProductPage = window.location.pathname.includes('/produkte/') || 
-                             window.location.pathname.includes('produkt-');
-        
-        if (isProductPage) {
-            // Auf Produktseiten: Funktioniert ohne Hover (nur 1 Produkt)
-            console.log('🛒 On product page - searching for any add-to-cart button');
-            const addToCartBtn = document.querySelector('.lumiere-add-to-cart-btn, .add-to-cart, button[onclick*="addToCart"]');
-            
-            if (addToCartBtn) {
-                console.log('🛒 Found add-to-cart button on product page:', addToCartBtn);
-                addToCartBtn.click();
-                return;
-            }
-        } else {
-            // Auf anderen Seiten: Funktioniert wenn über Produktkarte gehövert wird
-            if (!this.currentHoveredProduct) {
-                console.log('🛒 No product hovered - Ctrl+A disabled');
-                console.log('🛒 Available product cards:', document.querySelectorAll('.lumiere-product-card').length);
-                return;
-            }
-            
-            console.log('🛒 Hovered product card classes:', this.currentHoveredProduct.className);
-            console.log('🛒 Hovered product ID:', this.currentHoveredProduct.dataset.productId);
-            
-            // Suche nach Lumière Add-to-Cart Button
-            const addToCartBtn = this.currentHoveredProduct.querySelector('.lumiere-add-to-cart-btn');
-            
-            if (addToCartBtn) {
-                const productId = addToCartBtn.dataset.productId;
-                console.log('🛒 Found lumiere-add-to-cart button for product ID:', productId);
-                console.log('🛒 Button element:', addToCartBtn);
-                console.log('🛒 Clicking button...');
-                addToCartBtn.click();
-                return;
+        if (hilfePanel && !hilfePanel.classList.contains('offen')) {
+            // Simuliere einen Klick auf den Hilfe-Button
+            if (hilfeButton) {
+                hilfeButton.click();
             } else {
-                console.log('🛒 No add-to-cart button found in hovered product');
-                console.log('🛒 Available buttons in product:', this.currentHoveredProduct.querySelectorAll('button'));
+                // Falls Button nicht gefunden, öffne Panel direkt
+                hilfePanel.classList.add('offen');
+                document.body.classList.add('help-panel-open');
+                hilfePanel.style.display = 'flex';
+                hilfePanel.style.visibility = 'visible';
+                hilfePanel.style.opacity = '1';
             }
-        }
-        
-        console.log('🛒 No add-to-cart functionality found');
-    }
-    
-    addToWishlist() {
-        console.log('❤️ Ctrl+L pressed - trying to add to wishlist');
-        console.log('❤️ Current hovered product:', this.currentHoveredProduct);
-        console.log('❤️ Current URL:', window.location.pathname);
-        
-        // Prüfe ob wir auf einer Produktseite sind
-        const isProductPage = window.location.pathname.includes('/produkte/') || 
-                             window.location.pathname.includes('produkt-');
-        
-        if (isProductPage) {
-            // Auf Produktseiten: Funktioniert ohne Hover (nur 1 Produkt)
-            console.log('❤️ On product page - searching for any wishlist button');
-            const wishlistBtn = document.querySelector('.lumiere-wishlist-btn, .wishlist-btn, button[onclick*="wishlist"]');
-            
-            if (wishlistBtn) {
-                console.log('❤️ Found wishlist button on product page:', wishlistBtn);
-                wishlistBtn.click();
-                return;
-            }
-        } else {
-            // Auf anderen Seiten: Funktioniert wenn über Produktkarte gehövert wird
-            if (!this.currentHoveredProduct) {
-                console.log('❤️ No product hovered - Ctrl+L disabled');
-                console.log('❤️ Available product cards:', document.querySelectorAll('.lumiere-product-card').length);
-                return;
-            }
-            
-            console.log('❤️ Hovered product card classes:', this.currentHoveredProduct.className);
-            console.log('❤️ Hovered product ID:', this.currentHoveredProduct.dataset.productId);
-            
-            // Suche nach Lumière Wishlist Button
-            const wishlistBtn = this.currentHoveredProduct.querySelector('.lumiere-wishlist-btn');
-            
-            if (wishlistBtn) {
-                const productId = wishlistBtn.dataset.productId;
-                console.log('❤️ Found lumiere-wishlist button for product ID:', productId);
-                console.log('❤️ Button element:', wishlistBtn);
-                console.log('❤️ Clicking button...');
-                wishlistBtn.click();
-                return;
-            } else {
-                console.log('❤️ No wishlist button found in hovered product');
-                console.log('❤️ Available buttons in product:', this.currentHoveredProduct.querySelectorAll('button'));
-            }
-        }
-        
-        console.log('❤️ No wishlist functionality found');
-    }
-    
-    goToCart() {
-        // Navigiere direkt zu cart.html
-        window.location.href = this.getRelativePath('cart.html');
-    }
-    
-    emptyCart() {
-        // Direkt leeren ohne Popup
-        console.log('🗑️ Clearing cart via E shortcut');
-        
-        // Versuche verschiedene Methoden den Warenkorb zu leeren
-        if (window.location.pathname.includes('cart.html')) {
-            // Im Warenkorb: Suche nach Clear-Button
-            const emptyBtn = document.querySelector('#clearCart, .clear-cart, .empty-cart, button[onclick*="clear"], button[onclick*="empty"], .btn[onclick*="clearCart"]');
-            if (emptyBtn) {
-                emptyBtn.click();
-                return;
-            }
-        }
-        
-        // Versuche localStorage/sessionStorage zu leeren
-        try {
-            localStorage.removeItem('cart');
-            localStorage.removeItem('cartItems');
-            sessionStorage.removeItem('cart');
-            sessionStorage.removeItem('cartItems');
-            
-            // Versuche globale Cart-Funktionen
-            if (typeof clearCart === 'function') {
-                clearCart();
-            } else if (typeof window.clearCart === 'function') {
-                window.clearCart();
-            } else if (typeof emptyCart === 'function') {
-                emptyCart();
-            }
-            
-            console.log('🗑️ Cart cleared via storage');
-        } catch (e) {
-            console.log('Could not clear cart storage:', e);
         }
     }
     
@@ -537,6 +385,136 @@ class KeyboardShortcuts {
         
         return content;
     }
+    
+    closeOverlays() {
+        // Schließe alle Overlays
+        const searchOverlay = document.getElementById('fullscreenSearchOverlay');
+        const cartDropdown = document.getElementById('cartDropdown');
+        const hilfePanel = document.getElementById('hilfePanel');
+        
+        if (searchOverlay && searchOverlay.classList.contains('active')) {
+            searchOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        if (cartDropdown && cartDropdown.classList.contains('show')) {
+            cartDropdown.classList.remove('show');
+            document.body.classList.remove('cart-open');
+        }
+        
+        if (hilfePanel && hilfePanel.classList.contains('offen')) {
+            hilfePanel.classList.remove('offen');
+            hilfePanel.style.display = 'none';
+            document.body.classList.remove('help-panel-open');
+        }
+        
+        // Schließe Help Modal
+        const helpModal = document.getElementById('keyboard-help-modal');
+        if (helpModal) {
+            helpModal.remove();
+        }
+    }
+    
+    
+    addToCart() {
+        console.log('🛒 Ctrl+A pressed - trying to add to cart');
+        console.log('🛒 Current hovered product:', this.currentHoveredProduct);
+        console.log('🛒 Current URL:', window.location.pathname);
+        
+        // Prüfe ob wir auf einer Produktseite sind
+        const isProductPage = window.location.pathname.includes('/produkte/') || 
+                             window.location.pathname.includes('produkt-');
+        
+        if (isProductPage) {
+            // Auf Produktseiten: Funktioniert ohne Hover (nur 1 Produkt)
+            console.log('🛒 On product page - searching for any add-to-cart button');
+            const addToCartBtn = document.querySelector('.lumiere-add-to-cart-btn, .add-to-cart, button[onclick*="addToCart"]');
+            
+            if (addToCartBtn) {
+                console.log('🛒 Found add-to-cart button on product page:', addToCartBtn);
+                addToCartBtn.click();
+                return;
+            }
+        } else {
+            // Auf anderen Seiten: Funktioniert wenn über Produktkarte gehövert wird
+            if (!this.currentHoveredProduct) {
+                console.log('🛒 No product hovered - Ctrl+A disabled');
+                console.log('🛒 Available product cards:', document.querySelectorAll('.lumiere-product-card').length);
+                return;
+            }
+            
+            console.log('🛒 Hovered product card classes:', this.currentHoveredProduct.className);
+            console.log('🛒 Hovered product ID:', this.currentHoveredProduct.dataset.productId);
+            
+            // Suche nach Lumière Add-to-Cart Button
+            const addToCartBtn = this.currentHoveredProduct.querySelector('.lumiere-add-to-cart-btn');
+            
+            if (addToCartBtn) {
+                const productId = addToCartBtn.dataset.productId;
+                console.log('🛒 Found lumiere-add-to-cart button for product ID:', productId);
+                console.log('🛒 Button element:', addToCartBtn);
+                console.log('🛒 Clicking button...');
+                addToCartBtn.click();
+                return;
+            } else {
+                console.log('🛒 No add-to-cart button found in hovered product');
+                console.log('🛒 Available buttons in product:', this.currentHoveredProduct.querySelectorAll('button'));
+            }
+        }
+        
+        console.log('🛒 No add-to-cart functionality found');
+    }
+    
+    addToWishlist() {
+        console.log('❤️ Ctrl+L pressed - trying to add to wishlist');
+        console.log('❤️ Current hovered product:', this.currentHoveredProduct);
+        console.log('❤️ Current URL:', window.location.pathname);
+        
+        // Prüfe ob wir auf einer Produktseite sind
+        const isProductPage = window.location.pathname.includes('/produkte/') || 
+                             window.location.pathname.includes('produkt-');
+        
+        if (isProductPage) {
+            // Auf Produktseiten: Funktioniert ohne Hover (nur 1 Produkt)
+            console.log('❤️ On product page - searching for any wishlist button');
+            const wishlistBtn = document.querySelector('.lumiere-wishlist-btn, .wishlist-btn, button[onclick*="wishlist"]');
+            
+            if (wishlistBtn) {
+                console.log('❤️ Found wishlist button on product page:', wishlistBtn);
+                wishlistBtn.click();
+                return;
+            }
+        } else {
+            // Auf anderen Seiten: Funktioniert wenn über Produktkarte gehövert wird
+            if (!this.currentHoveredProduct) {
+                console.log('❤️ No product hovered - Ctrl+L disabled');
+                console.log('❤️ Available product cards:', document.querySelectorAll('.lumiere-product-card').length);
+                return;
+            }
+            
+            console.log('❤️ Hovered product card classes:', this.currentHoveredProduct.className);
+            console.log('❤️ Hovered product ID:', this.currentHoveredProduct.dataset.productId);
+            
+            // Suche nach Lumière Wishlist Button
+            const wishlistBtn = this.currentHoveredProduct.querySelector('.lumiere-wishlist-btn');
+            
+            if (wishlistBtn) {
+                const productId = wishlistBtn.dataset.productId;
+                console.log('❤️ Found lumiere-wishlist button for product ID:', productId);
+                console.log('❤️ Button element:', wishlistBtn);
+                console.log('❤️ Clicking button...');
+                wishlistBtn.click();
+                return;
+            } else {
+                console.log('❤️ No wishlist button found in hovered product');
+                console.log('❤️ Available buttons in product:', this.currentHoveredProduct.querySelectorAll('button'));
+            }
+        }
+        
+        console.log('❤️ No wishlist functionality found');
+    }
+    
+    
     
     getRelativePath(filename) {
         // Intelligente Pfad-Erkennung
