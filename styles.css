@@ -2193,11 +2193,43 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 }
 
 .product-category-section {
-    margin-bottom: 80px;
+    margin-bottom: 0;
+    padding: 60px 0;
+    position: relative;
 }
 
 .product-category-section:last-child {
     margin-bottom: 0;
+}
+
+/* Hintergrundfarben für die verschiedenen Kategorien */
+.product-category-section {
+    width: 100%;
+}
+
+/* Bestseller - Hellblau/Lavendel */
+.category-bestseller {
+    background: linear-gradient(135deg, #e8f4ff 0%, #f0e8ff 100%);
+}
+
+/* Technik/Gadgets - Hellgrün/Mint */
+.category-technik {
+    background: linear-gradient(135deg, #e8fff4 0%, #f0fffa 100%);
+}
+
+/* Beleuchtung - Hellgelb/Pfirsich */
+.category-beleuchtung {
+    background: linear-gradient(135deg, #fff9e8 0%, #ffefe8 100%);
+}
+
+/* Haushalt und Küche - Hellrosa/Pink */
+.category-haushalt {
+    background: linear-gradient(135deg, #ffe8f5 0%, #ffeef8 100%);
+}
+
+/* Körperpflege/Wellness - Hellviolett/Lila */
+.category-wellness {
+    background: linear-gradient(135deg, #f5e8ff 0%, #f8eeff 100%);
 }
 
 .category-header {
