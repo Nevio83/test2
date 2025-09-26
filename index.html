@@ -31,47 +31,53 @@
             position: relative;
         }
         
-        /* Neue graue Spur - GANZ LINKS */
+        /* Neue graue Spur - GANZ LINKS - VERSTÄRKT */
         .product-scroll-container .custom-scrollbar-track {
             position: absolute;
             bottom: 12px;
             left: 0px;
             right: 110px;
-            height: 6px;
-            background: #f0f0f0;
-            border-radius: 3px;
+            height: 10px;
+            background: #d0d0d0;
+            border-radius: 5px;
             cursor: pointer;
             transition: all 0.2s ease;
+            border: 1px solid #b0b0b0;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         /* Hover-Effekt für die graue Spur */
         .product-scroll-container .custom-scrollbar-track:hover,
         .product-scroll-container .custom-scrollbar-track:active {
-            height: 8px;
+            height: 12px;
             bottom: 11px;
-            background: #e0e0e0;
+            background: #c0c0c0;
+            border-color: #999999;
         }
         
-        /* Neue schwarze Scrollbar - GANZ LINKS */
+        /* Neue schwarze Scrollbar - GANZ LINKS - VERSTÄRKT */
         .product-scroll-container .custom-scrollbar-thumb {
             position: absolute;
             bottom: 12px;
             left: 0px;
             width: 100px;
-            height: 6px;
-            background: #000000;
-            border-radius: 3px;
+            height: 10px;
+            background: linear-gradient(135deg, #333333, #000000);
+            border-radius: 5px;
             z-index: 2;
             transition: all 0.2s ease;
             cursor: grab;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            border: 1px solid #000000;
         }
         
         /* Hover-Effekt für den schwarzen Thumb */
         .product-scroll-container .custom-scrollbar-thumb:hover {
-            height: 8px;
+            height: 12px;
             bottom: 11px;
-            background: #333333;
+            background: linear-gradient(135deg, #555555, #222222);
             cursor: grab;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
         }
         
         /* Active/Dragging-Effekt für den schwarzen Thumb */
@@ -106,24 +112,29 @@
         /* MOBILE TOUCH-OPTIMIERUNGEN FÜR SCROLLBAR */
         @media (max-width: 768px) {
             .product-scroll-container .custom-scrollbar-track {
-                height: 8px !important;
+                height: 12px !important;
                 bottom: 10px;
                 touch-action: manipulation;
                 -webkit-tap-highlight-color: transparent;
+                background: #c0c0c0 !important;
+                border: 1px solid #999999 !important;
             }
             
             .product-scroll-container .custom-scrollbar-thumb {
-                height: 8px !important;
+                height: 12px !important;
                 bottom: 10px;
                 min-width: 60px;
                 touch-action: manipulation;
                 -webkit-tap-highlight-color: transparent;
+                background: linear-gradient(135deg, #444444, #111111) !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
             }
             
             .product-scroll-container .custom-scrollbar-thumb:active {
-                height: 10px !important;
+                height: 14px !important;
                 bottom: 9px;
                 transform: scale(1.1);
+                background: linear-gradient(135deg, #666666, #333333) !important;
             }
             
             /* Größerer Touch-Bereich für Mobile */
