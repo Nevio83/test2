@@ -1788,23 +1788,25 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 
 .lumiere-add-to-cart-btn {
     width: 100%;
-    background: #000000;
+    background: linear-gradient(135deg, #1a1a1a, #000000);
     color: white;
-    border: none;
-    padding: 12px 16px;
-    border-radius: 4px;
-    font-weight: 500;
-    font-size: 13px;
-    transition: all 0.2s ease;
+    border: 2px solid #000000;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-top: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .lumiere-add-to-cart-btn:hover {
-    background: #333333;
+    background: linear-gradient(135deg, #333333, #1a1a1a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
 .lumiere-add-to-cart-btn:disabled {
@@ -1813,14 +1815,14 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     opacity: 0.7;
 }
 
-/* Navigation Arrows - Large round buttons like in original */
+/* Navigation Arrows - Enhanced contrast for pastel backgrounds */
 .scroll-arrow {
     position: absolute;
     bottom: 5px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid #ddd;
+    width: 44px;
+    height: 44px;
+    background: #ffffff;
+    border: 2px solid #000000;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1828,13 +1830,17 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     cursor: pointer;
     z-index: 10;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .scroll-arrow:hover {
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: scale(1.05);
+    background: #000000;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    transform: scale(1.1);
+}
+
+.scroll-arrow:hover i {
+    color: #ffffff;
 }
 
 .scroll-arrow-left {
@@ -1846,8 +1852,9 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 }
 
 .scroll-arrow i {
-    font-size: 16px;
-    color: #666;
+    font-size: 18px;
+    color: #000000;
+    font-weight: bold;
 }
 
 /* Scroll Controls - verstecken da wir scroll-arrow verwenden */
@@ -2288,42 +2295,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     display: none;
 }
 
-/* Navigation Arrows - Large round buttons like in image */
-.scroll-arrow {
-    position: absolute;
-    bottom: 5px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.scroll-arrow:hover {
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: scale(1.05);
-}
-
-.scroll-arrow-left {
-    right: 60px;
-}
-
-.scroll-arrow-right {
-    right: 10px;
-}
-
-.scroll-arrow i {
-    font-size: 16px;
-    color: #666;
-}
+/* Navigation Arrows styles are defined above - removed duplicate */
 
 /* Custom visual scrollbar - FIXED VERSION */
 .product-scroll-container {
@@ -2339,9 +2311,11 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     bottom: 12px;
     left: 20px;
     right: 110px;
-    height: 6px;
-    background: #f0f0f0;
-    border-radius: 3px;
+    height: 10px;
+    background: #c5c5c5;
+    border-radius: 5px;
+    border: 1px solid #a0a0a0;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .product-scroll-container::before {
@@ -2350,19 +2324,22 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     bottom: 12px;
     left: 20px;
     width: 100px;
-    height: 6px;
-    background: #000000;
-    border-radius: 3px;
+    height: 10px;
+    background: linear-gradient(135deg, #333333, #000000);
+    border-radius: 5px;
     z-index: 1;
     transform: translateX(var(--scroll-position, 0px));
     transition: transform 0.1s ease-out;
     cursor: grab;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    border: 1px solid #000000;
 }
 
 .product-scroll-container:hover::before {
-    height: 8px;
+    height: 12px;
     bottom: 11px;
-    background: #333333;
+    background: linear-gradient(135deg, #555555, #222222);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
 }
 
 /* New custom scrollbar system - created dynamically by JavaScript */
@@ -2444,21 +2421,23 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     }
     
     .scroll-arrow {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         bottom: 3px;
+        border-width: 2px;
     }
     
     .scroll-arrow i {
-        font-size: 14px;
+        font-size: 16px;
+        font-weight: bold;
     }
     
     .scroll-arrow-left {
-        right: 70px;
+        right: 55px;
     }
     
     .scroll-arrow-right {
-        right: 20px;
+        right: 10px;
     }
 }
 
