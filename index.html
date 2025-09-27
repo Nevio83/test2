@@ -12,13 +12,14 @@
     <!-- Resource Preloading -->
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="//cdn-cookieyes.com">
-    <link rel="preload" href="styles.css?v=14.0" as="style">
-    <link rel="modulepreload" href="app.js?v=19.0">
+    <link rel="preload" href="styles.css?v=19.0" as="style">
+    <link rel="modulepreload" href="app.js?v=21.0">
     
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="styles.css?v=18.0">
+    <link rel="stylesheet" href="styles.css?v=19.0">
+    <link rel="stylesheet" href="bestseller-pastel.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
@@ -26,6 +27,73 @@
     <script>window.CJ_DROPSHIPPING_KEY='6b4d5d2c435d4aceb4473c792e94e5f5';</script>
     
     <style>
+        /* KRITISCHE FIXES - SOFORT ANWENDEN */
+        
+        /* 1. KÖRPERPFLEGE - LILA STATT ROSA */
+        .category-koerperpflege,
+        section[data-category="Körperpflege/Wellness"],
+        .product-category-section:has(#wellnessGrid) {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e8d5ff 100%) !important;
+        }
+        
+        /* 2. KÖRPERPFLEGE BUTTONS - LILA */
+        .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn,
+        #wellnessGrid .lumiere-add-to-cart-btn {
+            background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+            color: #6b2c91 !important;
+            border: 1px solid #c9a8ff !important;
+        }
+        
+        /* 3. KATEGORIE-TABS - RICHTIGE FARBEN */
+        .lumiere-category-tab:first-child.active {
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            color: white !important;
+        }
+        
+        .lumiere-category-tab[data-category="Technik/Gadgets"].active {
+            background: linear-gradient(135deg, #4facfe, #00f2fe) !important;
+            color: white !important;
+        }
+        
+        .lumiere-category-tab[data-category="Beleuchtung"].active {
+            background: linear-gradient(135deg, #ffd700, #ffb347) !important;
+            color: #333 !important;
+        }
+        
+        .lumiere-category-tab[data-category="Körperpflege/Wellness"].active {
+            background: linear-gradient(135deg, #ff6b9d, #c66fbc) !important;
+            color: white !important;
+        }
+        
+        .lumiere-category-tab[data-category="Haushalt und Küche"].active {
+            background: linear-gradient(135deg, #43e97b, #38f9d7) !important;
+            color: white !important;
+        }
+        
+        /* 4. BESTSELLER BUTTONS - PASTEL FARBEN */
+        #bestsellerGrid .lumiere-add-to-cart-btn {
+            background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+            color: #6b2c91 !important;
+            border: 1px solid #c9a8ff !important;
+        }
+        
+        #bestsellerGrid .lumiere-add-to-cart-btn:hover {
+            background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 44, 145, 0.3) !important;
+        }
+        
+        /* 5. WEIßEN BEREICH ENTFERNEN */
+        body { margin: 0 !important; padding: 0 !important; }
+        main { margin: 0 !important; padding: 0 !important; }
+        .product-category-section:last-of-type {
+            padding-bottom: 100px !important;
+            margin-bottom: 0 !important;
+        }
+        .lumiere-footer {
+            margin-top: 0 !important;
+        }
+        
         /* KOMPLETT NEUE SCROLLBAR LÖSUNG */
         .product-scroll-container {
             position: relative;
