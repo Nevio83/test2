@@ -4040,4 +4040,142 @@ document.addEventListener('click', (e) => {
 });
 
 // Global event delegation for search functionality - removed, using direct event listeners instead
+
+// ===== INTEGRIERTE BUTTON COLOR FUNKTIONEN =====
+
+// Dynamic button color management based on selected category
+function updateButtonColors(selectedCategory) {
+  const allButtons = document.querySelectorAll('.lumiere-add-to-cart-btn');
+  
+  // Define color schemes for each category - matching category backgrounds
+  const categoryColors = {
+    'alle': {
+      bg: 'linear-gradient(135deg, #f0f4ff, #e0e8ff)',
+      color: '#4a5fc8',
+      border: '#c8d4ff',
+      hoverBg: 'linear-gradient(135deg, #e0e8ff, #d0dcff)',
+      hoverColor: '#3a4fb8',
+      hoverBorder: '#a8b8ff'
+    },
+    'Technik/Gadgets': {
+      bg: 'linear-gradient(135deg, #e8fff4, #d0f5e8)',
+      color: '#0a7ea4',
+      border: '#b8f0e0',
+      hoverBg: 'linear-gradient(135deg, #d0f5e8, #b8e8d8)',
+      hoverColor: '#086a8a',
+      hoverBorder: '#8edcc8'
+    },
+    'Beleuchtung': {
+      bg: 'linear-gradient(135deg, #fffaeb, #fff3d1)',
+      color: '#8b6914',
+      border: '#ffe4a1',
+      hoverBg: 'linear-gradient(135deg, #fff3d1, #ffe8b8)',
+      hoverColor: '#6b5010',
+      hoverBorder: '#ffd480'
+    },
+    'Körperpflege/Wellness': {
+      bg: 'linear-gradient(135deg, #f0d9ff, #e8c8ff)',
+      color: '#7a2e9d',
+      border: '#d9b3ff',
+      hoverBg: 'linear-gradient(135deg, #e8c8ff, #ddb8ff)',
+      hoverColor: '#5e1d7a',
+      hoverBorder: '#cc99ff'
+    },
+    'Haushalt und Küche': {
+      bg: 'linear-gradient(135deg, #d4f5e0, #b8ecd0)',
+      color: '#0a7a3c',
+      border: '#9ce0b8',
+      hoverBg: 'linear-gradient(135deg, #b8ecd0, #9ce0b8)',
+      hoverColor: '#086030',
+      hoverBorder: '#7dd8a0'
+    }
+  };
+  
+  const colors = categoryColors[selectedCategory] || categoryColors['alle'];
+  
+  // Apply colors to all buttons when a specific category is selected
+  if (selectedCategory !== 'alle') {
+    allButtons.forEach(btn => {
+      // Skip disabled buttons
+      if (btn.disabled) return;
+      
+      btn.style.background = colors.bg;
+      btn.style.color = colors.color;
+      btn.style.border = `1px solid ${colors.border}`;
+      
+      // Remove existing event listeners
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      
+      // Add hover effect
+      newBtn.addEventListener('mouseenter', function() {
+        if (!this.disabled) {
+          this.style.background = colors.hoverBg;
+          this.style.color = colors.hoverColor;
+          this.style.borderColor = colors.hoverBorder;
+        }
+      });
+      
+      newBtn.addEventListener('mouseleave', function() {
+        if (!this.disabled) {
+          this.style.background = colors.bg;
+          this.style.color = colors.color;
+          this.style.borderColor = colors.border;
+        }
+      });
+      
+      // Re-attach click event for add to cart
+      newBtn.addEventListener('click', function() {
+        const productId = this.getAttribute('data-product-id');
+        if (productId && window.addToCart) {
+          window.addToCart(productId);
+        }
+      });
+    });
+  } else {
+    // Reset to original category-specific colors when "alle" is selected
+    allButtons.forEach(btn => {
+      // Skip disabled buttons
+      if (btn.disabled) return;
+      
+      // Remove inline styles to revert to CSS-defined styles
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.border = '';
+      btn.style.borderColor = '';
+      
+      // Remove event listeners by replacing the element
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      
+      // Re-attach click event for add to cart
+      newBtn.addEventListener('click', function() {
+        const productId = this.getAttribute('data-product-id');
+        if (productId && window.addToCart) {
+          window.addToCart(productId);
+        }
+      });
+    });
+  }
+}
+
+// Hook into existing showCategorySections function to update button colors
+const originalShowCategorySections = window.showCategorySections;
+window.showCategorySections = function(selectedCategory) {
+  // Call original function
+  if (originalShowCategorySections) {
+    originalShowCategorySections.call(this, selectedCategory);
+  }
+  
+  // Update button colors
+  updateButtonColors(selectedCategory);
+};
+
+// Initialize button colors on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Set initial state to 'alle'
+  setTimeout(() => {
+    updateButtonColors('alle');
+  }, 100);
+});
 window.loadCategoryProducts = loadCategoryProducts;
