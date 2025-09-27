@@ -12,13 +12,13 @@
     <!-- Resource Preloading -->
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="//cdn-cookieyes.com">
-    <link rel="preload" href="styles.css?v=20.0" as="style">
+    <link rel="preload" href="styles.css?v=21.0" as="style">
     <link rel="modulepreload" href="app.js?v=21.0">
     
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="styles.css?v=20.0">
+    <link rel="stylesheet" href="styles.css?v=21.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
@@ -75,44 +75,74 @@
             box-shadow: 0 6px 25px rgba(190, 24, 93, 0.4) !important;
         }
         
-        /* HOVER EFFEKTE FÜR KATEGORIE BUTTONS */
-        .lumiere-category-tab[data-category="Technik/Gadgets"]:hover:not(.active) {
-            background: rgba(67, 233, 123, 0.15) !important;
-            color: #43e97b !important;
-            border: 1px solid #43e97b !important;
-            transform: translateY(-2px) !important;
-        }
-        
-        .lumiere-category-tab[data-category="Technik/Gadgets"].active:hover {
-            background: linear-gradient(135deg, #38a169, #43e97b) !important;
-            color: white !important;
-            box-shadow: 0 8px 30px rgba(67, 233, 123, 0.5) !important;
-        }
-        
-        .lumiere-category-tab[data-category="Körperpflege/Wellness"]:hover:not(.active) {
-            background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
-            color: #a855f7 !important;
-            border: 1px solid #c4b5fd !important;
-            transform: translateY(-2px) !important;
-        }
-        
-        .lumiere-category-tab[data-category="Haushalt und Küche"]:hover:not(.active) {
-            background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+        /* ULTIMATIVE KATEGORIE-BUTTON FIXES - ÜBERSCHREIBT ALLES */
+        .lumiere-category-tab[data-category="Haushalt und Küche"].active,
+        .lumiere-category-tab[data-category*="Haushalt"].active {
+            background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
             color: #be185d !important;
             border: 1px solid #f9a8d4 !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 25px rgba(190, 24, 93, 0.4) !important;
+        }
+        
+        .lumiere-category-tab[data-category="Körperpflege/Wellness"].active,
+        .lumiere-category-tab[data-category*="Körperpflege"].active {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+            color: white !important;
+            border: 1px solid #8b5cf6 !important;
+            box-shadow: 0 6px 25px rgba(139, 92, 246, 0.6) !important;
+        }
+        
+        .lumiere-category-tab[data-category="Technik/Gadgets"].active,
+        .lumiere-category-tab[data-category*="Technik"].active {
+            background: linear-gradient(135deg, #43e97b, #38a169) !important;
+            color: white !important;
+            border: 1px solid #43e97b !important;
+            box-shadow: 0 6px 25px rgba(67, 233, 123, 0.4) !important;
+        }
+        
+        /* HOVER EFFEKTE KOMPLETT DEAKTIVIERT */
+        .lumiere-category-tab:hover,
+        .lumiere-category-tab.active:hover,
+        .lumiere-category-tab:hover:not(.active) {
+            transform: none !important;
+            cursor: pointer !important;
+        }
+        
+        /* Keine Hover-Änderungen für aktive Buttons - VERSTÄRKT */
+        .lumiere-category-tab[data-category="Haushalt und Küche"].active:hover {
+            background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+            color: #be185d !important;
+            border: 1px solid #f9a8d4 !important;
+            box-shadow: 0 6px 25px rgba(190, 24, 93, 0.4) !important;
+            transform: none !important;
         }
         
         .lumiere-category-tab[data-category="Körperpflege/Wellness"].active:hover {
-            background: linear-gradient(135deg, #9333ea, #7c3aed) !important;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
             color: white !important;
-            box-shadow: 0 8px 30px rgba(168, 85, 247, 0.6) !important;
+            border: 1px solid #8b5cf6 !important;
+            box-shadow: 0 6px 25px rgba(139, 92, 246, 0.6) !important;
+            transform: none !important;
         }
         
-        .lumiere-category-tab[data-category="Haushalt und Küche"].active:hover {
-            background: linear-gradient(135deg, #fbcfe8, #ec4899) !important;
-            color: #ffffff !important;
-            box-shadow: 0 8px 30px rgba(190, 24, 93, 0.5) !important;
+        .lumiere-category-tab[data-category="Technik/Gadgets"].active:hover {
+            background: linear-gradient(135deg, #43e97b, #38a169) !important;
+            color: white !important;
+            border: 1px solid #43e97b !important;
+            box-shadow: 0 6px 25px rgba(67, 233, 123, 0.4) !important;
+            transform: none !important;
+        }
+        
+        .lumiere-category-tab[data-category="Beleuchtung"].active:hover {
+            background: linear-gradient(135deg, #ffd700, #ffb347) !important;
+            color: #333 !important;
+            transform: none !important;
+        }
+        
+        .lumiere-category-tab:first-child.active:hover {
+            background: linear-gradient(135deg, #667eea, #764ba2) !important;
+            color: white !important;
+            transform: none !important;
         }
         
         /* 4. BESTSELLER BUTTONS - PASTEL FARBEN */
@@ -128,15 +158,191 @@
             box-shadow: 0 4px 12px rgba(107, 44, 145, 0.3) !important;
         }
         
-        /* 5. WEIßEN BEREICH ENTFERNEN */
+        /* 5. WEIßEN BEREICH ENTFERNEN UND ÜBER UNS VERBESSERN */
         body { margin: 0 !important; padding: 0 !important; }
         main { margin: 0 !important; padding: 0 !important; }
+        
+        /* Letzte Kategorie-Sektion direkt an Footer anschließen */
         .product-category-section:last-of-type {
-            padding-bottom: 100px !important;
+            padding-bottom: 0 !important;
             margin-bottom: 0 !important;
         }
-        .lumiere-footer {
+        
+        /* ULTIMATIVER FIX - Weißer Bereich komplett entfernen */
+        .product-category-section:last-of-type::after {
+            content: "" !important;
+            display: block !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #1a1a1a !important;
+        }
+        
+        /* Alle möglichen Container zwischen Kategorie und Footer */
+        .container-fluid:last-of-type,
+        .row:last-of-type,
+        section:last-of-type,
+        main > *:last-child {
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        
+        /* Über uns Sektion - Kein weißer Raum */
+        .about-section,
+        #about,
+        section:has(.about-content),
+        .lumiere-footer,
+        footer {
             margin-top: 0 !important;
+            padding-top: 40px !important;
+            padding-bottom: 40px !important;
+            background: #1a1a1a !important;
+        }
+        
+        /* Body und HTML Hintergrund auch dunkel */
+        html, body {
+            background-color: #1a1a1a !important;
+        }
+        
+        /* Über uns Text - MITTLERE GRÖßE */
+        .about-content,
+        .lumiere-footer .container {
+            max-width: 1200px !important;
+            width: 90% !important;
+            margin: 0 auto !important;
+            padding: 0 40px !important;
+        }
+        
+        /* Footer Grid Layout - Bessere Anordnung */
+        .lumiere-footer .row {
+            display: grid !important;
+            grid-template-columns: 2fr 1fr 1fr !important;
+            gap: 60px !important;
+            margin-top: 0 !important;
+            width: 100% !important;
+            align-items: start !important;
+        }
+        
+        /* Über uns Spalte - Größer */
+        .lumiere-footer .col-md-4:first-child {
+            grid-column: 1 !important;
+        }
+        
+        .about-content h2,
+        .lumiere-footer h2,
+        .lumiere-footer h3,
+        .lumiere-footer h4 {
+            font-size: 1.8rem !important;
+            margin-bottom: 20px !important;
+            text-align: left !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+        
+        .about-content p,
+        .lumiere-footer p,
+        .lumiere-footer .col-md-4 p {
+            font-size: 1rem !important;
+            line-height: 1.6 !important;
+            margin-bottom: 15px !important;
+            max-width: 100% !important;
+            color: #b0b0b0 !important;
+        }
+        
+        .lumiere-footer li {
+            font-size: 1rem !important;
+            line-height: 1.8 !important;
+            margin-bottom: 10px !important;
+            color: #b0b0b0 !important;
+            list-style: none !important;
+        }
+        
+        .lumiere-footer ul {
+            padding-left: 0 !important;
+            margin: 0 !important;
+        }
+        
+        .about-content .features {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 30px !important;
+            margin-top: 30px !important;
+            width: 100% !important;
+        }
+        
+        .about-content .feature-item,
+        .lumiere-footer .col-md-4 {
+            font-size: 1.05rem !important;
+            padding: 0 !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* Entferne alle Abstände zwischen Sektionen */
+        section + section,
+        .product-category-section + .about-section,
+        .product-category-section + .lumiere-footer {
+            margin-top: 0 !important;
+        }
+        
+        /* Links im Footer - mittlere Größe */
+        .lumiere-footer a {
+            font-size: 1.1rem !important;
+            color: #d0d0d0 !important;
+            text-decoration: none !important;
+        }
+        
+        .lumiere-footer a:hover {
+            color: #667eea !important;
+            text-decoration: underline !important;
+        }
+        
+        /* Social Media Icons - Bessere Anordnung */
+        .lumiere-footer .social-icons {
+            margin-top: 25px !important;
+            display: flex !important;
+            gap: 15px !important;
+            align-items: center !important;
+        }
+        
+        .lumiere-footer .social-icons a {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 40px !important;
+            height: 40px !important;
+            font-size: 1.3rem !important;
+            color: #b0b0b0 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-radius: 50% !important;
+            transition: all 0.3s ease !important;
+            text-decoration: none !important;
+        }
+        
+        .lumiere-footer .social-icons a:hover {
+            color: #ffffff !important;
+            background: #667eea !important;
+            transform: translateY(-2px) !important;
+            text-decoration: none !important;
+        }
+        
+        /* Social Icons spezifisch */
+        .lumiere-footer .social-icons .bi-facebook::before,
+        .lumiere-footer .social-icons .bi-instagram::before,
+        .lumiere-footer .social-icons .bi-twitter::before,
+        .lumiere-footer .social-icons .bi-twitter-x::before {
+            font-size: 1.2rem !important;
+        }
+        
+        /* Copyright Text */
+        .lumiere-footer .text-center {
+            margin-top: 40px !important;
+            padding-top: 30px !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+            font-size: 0.9rem !important;
+            color: #808080 !important;
         }
         
         /* KOMPLETT NEUE SCROLLBAR LÖSUNG */
