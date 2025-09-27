@@ -8461,3 +8461,31 @@ section[data-category="Haushalt und K�che"]::after,
     color: #a855f7 !important;
     border: 1px solid rgba(168, 85, 247, 0.3) !important;
 }
+
+/* Fix für Warenkorb Löschen Button Zentrierung */
+.cart-dropdown-footer .clear-cart-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+.cart-dropdown-footer .clear-cart-btn i {
+    margin-right: 6px !important;
+}
+
+/* Fix für Warenkorb Löschen Button Zentrierung - Höhere Spezifität */
+#cartDropdown .cart-dropdown-footer .clear-cart-btn,
+.cart-dropdown .cart-dropdown-footer .clear-cart-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    gap: 6px !important;
+}
+
+#cartDropdown .cart-dropdown-footer .clear-cart-btn i,
+.cart-dropdown .cart-dropdown-footer .clear-cart-btn i {
+    margin: 0 !important;
+    padding: 0 !important;
+}
