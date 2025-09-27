@@ -369,7 +369,7 @@ function updateCartPage() {
                 <div id="cartItemsList">
                     ${cartItems.map(item => `
                         <div class="cart-item" data-id="${item.id}">
-                            <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                            <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="handleImageError(this, '${item.name}', '${item.image}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
                             <div class="cart-item-details">
                                 <h5>${item.name}</h5>
                                 <div class="cart-item-price">${currentCurrency.symbol}${convertPrice(item.price, currentCurrency.code).toFixed(2)}</div>

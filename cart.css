@@ -374,6 +374,134 @@ body {
     text-decoration: none;
 }
 
+/* ULTIMATIVER MOBILE BILDFIX - VIEWPORT-SPEZIFISCH */
+@media screen and (max-width: 768px) and (orientation: portrait),
+       screen and (max-width: 1024px) and (orientation: landscape) {
+  /* KOPIERE EXAKT DIE ADD-ON CSS-REGELN */
+  .cart-item-image,
+  #cartDropdown .cart-item-image,
+  .cart-item img,
+  img.cart-item-image,
+  #cartItemsList img,
+  #cartContent img,
+  .cart-items-section img,
+  .cart-item > img,
+  .cart-item img:first-child,
+  img[src*="produkt"],
+  img[alt*="Produktbild"],
+  img[class*="cart"] {
+    /* EXAKT WIE .addon-card-img */
+    width: 56px !important;
+    height: 56px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 50% !important;
+    margin-right: 1.2rem !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15) !important;
+    border: 2.5px solid #e3e8f0 !important;
+    background: #f3f6fa !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 2.1rem !important;
+    color: #667eea !important;
+    /* Bildqualität verbessern */
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+    /* Schärfe und Kontrast */
+    filter: brightness(1.02) contrast(1.05) saturate(1.08) !important;
+    transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease !important;
+    /* Zusätzliche Sichtbarkeits-Erzwingung */
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    z-index: 10 !important;
+  }
+  
+  /* HOVER-EFFEKT WIE BEI ADD-ONS */
+  .cart-item-image:hover,
+  #cartDropdown .cart-item-image:hover,
+  .cart-item img:hover,
+  img.cart-item-image:hover,
+  #cartItemsList img:hover,
+  #cartContent img:hover,
+  .cart-items-section img:hover {
+    transform: scale(1.05) !important;
+    filter: brightness(1.05) contrast(1.08) saturate(1.12) !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2) !important;
+  }
+  
+  /* ERZWINGE AUCH FALLBACK-BILDER MIT PSEUDO-ELEMENT */
+  .cart-item::before {
+    content: "📷" !important;
+    display: block !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 20px !important;
+    transform: translateY(-50%) !important;
+    width: 80px !important;
+    height: 80px !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 50% !important;
+    border: 3px solid #ffffff !important;
+    z-index: 999 !important;
+    font-size: 2.5rem !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4) !important;
+    text-align: center !important;
+    line-height: 74px !important;
+    font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif !important;
+  }
+  
+  /* Mache cart-item relativ positioniert für absolute Positionierung */
+  .cart-item {
+    position: relative !important;
+  }
+  
+  /* Verstecke das ::before wenn ein echtes Bild da ist */
+  .cart-item:has(img)::before,
+  .cart-item:has(.cart-item-image)::before {
+    display: none !important;
+  }
+  
+  /* Fallback für Browser die :has() nicht unterstützen */
+  @supports not selector(:has(*)) {
+    .cart-item img + *::before {
+      display: none !important;
+    }
+  }
+  
+  /* Spezifische Fixes für verschiedene Container */
+  .cart-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    overflow: visible !important;
+  }
+  
+  .cart-item-details {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  
+  /* Zusätzlicher Fix für dynamisch geladene Bilder */
+  #cartItemsList .cart-item-image,
+  #cartItemsList img {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+    border: 3px solid #e3e8f0 !important;
+    background: #f3f6fa !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+}
+
 /* Erweiterte Mobile Optimierungen für Warenkorb */
 @media (max-width: 768px) {
   .main-container {
@@ -406,10 +534,13 @@ body {
   }
   
   .cart-item {
-    grid-template-columns: 80px 1fr;
-    grid-template-rows: auto auto auto;
-    gap: 0.8rem;
-    padding: 1rem;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding: 1rem !important;
+    /* Erzwinge sichtbaren Bildbereich */
+    min-height: 100px !important;
   }
   
   .cart-item-image {
@@ -541,8 +672,23 @@ body {
   }
   
   .cart-item-image {
-    width: 70px;
-    height: 70px;
+    width: 70px !important;
+    height: 70px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+    flex-shrink: 0 !important;
+    border-radius: 50% !important;
+    /* Bildqualität für mobile Geräte verbessern */
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+    filter: brightness(1.03) contrast(1.06) saturate(1.1) !important;
+    /* Sicherstellen, dass das Bild immer angezeigt wird */
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: #f3f6fa !important;
+    border: 3px solid #e3e8f0 !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
   }
   
   .cart-item-details h5 {
@@ -654,8 +800,23 @@ body {
   }
   
   .cart-item-image {
-    width: 60px;
-    height: 60px;
+    width: 60px !important;
+    height: 60px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+    flex-shrink: 0 !important;
+    border-radius: 50% !important;
+    /* Bildqualität für mobile Geräte verbessern */
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+    filter: brightness(1.03) contrast(1.06) saturate(1.1) !important;
+    /* Sicherstellen, dass das Bild immer angezeigt wird */
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: #f3f6fa !important;
+    border: 2px solid #e3e8f0 !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.12) !important;
   }
   
   .cart-item-details h5 {
@@ -1296,9 +1457,23 @@ body {
     gap: 0.7rem;
   }
   .cart-item-image {
-    width: 56px;
-    height: 56px;
-    border-radius: 10px;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 10px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    display: block !important;
+    flex-shrink: 0 !important;
+    /* Bildqualität für mobile Geräte verbessern */
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
+    filter: brightness(1.03) contrast(1.06) saturate(1.1) !important;
+    /* Sicherstellen, dass das Bild immer angezeigt wird */
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
   }
   .cart-item-details h5 {
     font-size: 1rem;
