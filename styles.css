@@ -8209,3 +8209,255 @@ section[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn:hover,
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
 }
+
+/* ===== HAUSHALT KATEGORIE SEKTION - ROSA BUTTONS FIX ===== */
+
+/* Haushalt Sektion - Alle Buttons ROSA mit höchster Priorität */
+#haushaltGrid .lumiere-add-to-cart-btn,
+#haushaltGrid .lumiere-product-card .lumiere-add-to-cart-btn,
+.product-category-section:has(#haushaltGrid) .lumiere-add-to-cart-btn,
+section[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn,
+.haushalt-section .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
+}
+
+#haushaltGrid .lumiere-add-to-cart-btn:hover,
+#haushaltGrid .lumiere-product-card .lumiere-add-to-cart-btn:hover,
+.product-category-section:has(#haushaltGrid) .lumiere-add-to-cart-btn:hover,
+section[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn:hover,
+.haushalt-section .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+    color: #be185d !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
+}
+
+/* Überschreibe alle anderen Farben in der Haushalt Sektion */
+#haushaltGrid [class*="add-to-cart"] {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+}
+
+/* ===== ÜBER UNS SEKTION - HINTERGRUND UND TEXT FIXES ===== */
+
+/* Entferne weißen Raum vor Über uns */
+.about-section,
+#about,
+section:has(.about-content) {
+    margin-top: 0 !important;
+    padding-top: 60px !important;
+    background: #1a1a1a !important;
+}
+
+/* Vorherige Sektion soll direkt anschließen */
+.product-category-section:last-of-type {
+    margin-bottom: 0 !important;
+    padding-bottom: 80px !important;
+}
+
+/* Über uns Text größer und volle Breite nutzen */
+.about-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 5% !important;
+}
+
+.about-content h2,
+.about-section h2 {
+    font-size: 3rem !important;
+    margin-bottom: 30px !important;
+    text-align: center !important;
+}
+
+.about-content p,
+.about-section p {
+    font-size: 1.3rem !important;
+    line-height: 1.8 !important;
+    margin-bottom: 20px !important;
+    max-width: 100% !important;
+}
+
+.about-content .features,
+.about-section .features {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+    gap: 30px !important;
+    margin-top: 40px !important;
+    width: 100% !important;
+}
+
+.about-content .feature-item,
+.about-section .feature-item {
+    font-size: 1.2rem !important;
+    padding: 20px !important;
+}
+
+/* Footer Bereich auch anpassen */
+.footer-section {
+    margin-top: 0 !important;
+    padding-top: 60px !important;
+}
+
+/* Übergangsbereich zwischen letzter Kategorie und Über uns */
+section[data-category="Haushalt und Küche"]::after,
+#haushaltGrid::after,
+.product-category-section:last-of-type::after {
+    content: "" !important;
+    display: block !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* ===== KATEGORIE BUTTONS - FINALE KORREKTUR ===== */
+
+/* Haushalt und Küche - ROSA wenn aktiv (NICHT GRÜN!) */
+.lumiere-category-tab[data-category="Haushalt und Küche"].active {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 6px 25px rgba(190, 24, 93, 0.3) !important;
+}
+
+/* Haushalt und Küche - ROSA Hover (NICHT LILA-GRÜN!) */
+.lumiere-category-tab[data-category="Haushalt und Küche"]:hover:not(.active) {
+    background: rgba(236, 72, 153, 0.15) !important;
+    color: #ec4899 !important;
+    border-color: #ec4899 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.25) !important;
+}
+
+/* Haushalt und Küche - Active Hover */
+.lumiere-category-tab[data-category="Haushalt und Küche"].active:hover {
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+    color: #be185d !important;
+    box-shadow: 0 8px 30px rgba(236, 72, 153, 0.4) !important;
+}
+
+/* Körperpflege/Wellness - MEHR LILA wenn aktiv */
+.lumiere-category-tab[data-category="Körperpflege/Wellness"].active {
+    background: linear-gradient(135deg, #e9d5ff, #d8b4fe) !important;
+    color: #7c3aed !important;
+    border: 1px solid #a78bfa !important;
+    box-shadow: 0 6px 25px rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Körperpflege/Wellness - Lila Hover */
+.lumiere-category-tab[data-category="Körperpflege/Wellness"]:hover:not(.active) {
+    background: rgba(147, 51, 234, 0.15) !important;
+    color: #9333ea !important;
+    border-color: #9333ea !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.25) !important;
+}
+
+/* Körperpflege/Wellness - Active Hover */
+.lumiere-category-tab[data-category="Körperpflege/Wellness"].active:hover {
+    background: linear-gradient(135deg, #d8b4fe, #c084fc) !important;
+    color: #7c3aed !important;
+    box-shadow: 0 8px 30px rgba(147, 51, 234, 0.4) !important;
+}
+
+/* Technik/Gadgets bleibt GRÜN - zur Sicherheit nochmal definieren */
+.lumiere-category-tab[data-category="Technik/Gadgets"].active {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0) !important;
+    color: #166534 !important;
+    border: 1px solid #86efac !important;
+    box-shadow: 0 6px 25px rgba(22, 101, 52, 0.3) !important;
+}
+
+/* Beleuchtung bleibt GELB - zur Sicherheit nochmal definieren */
+.lumiere-category-tab[data-category="Beleuchtung"].active {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #92400e !important;
+    border: 1px solid #fbbf24 !important;
+    box-shadow: 0 6px 25px rgba(146, 64, 14, 0.3) !important;
+}
+
+/* Alle Kategorien bleibt LILA - zur Sicherheit nochmal definieren */
+.lumiere-category-tab:first-child.active,
+.lumiere-category-tab[data-category="alle"].active {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 6px 25px rgba(107, 44, 145, 0.3) !important;
+}
+
+/* ===== KATEGORIE BUTTONS - FARBEN KORRIGIERT ===== */
+
+/* Haushalt und Küche - ROSA wenn aktiv (nicht grün!) */
+.lumiere-category-tab[data-category="Haushalt und Küche"].active {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 6px 25px rgba(190, 24, 93, 0.4) !important;
+}
+
+/* Haushalt und Küche - ROSA hover */
+.lumiere-category-tab[data-category="Haushalt und Küche"]:hover {
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 20px rgba(190, 24, 93, 0.3) !important;
+}
+
+/* Haushalt und Küche - ROSA active hover */
+.lumiere-category-tab[data-category="Haushalt und Küche"].active:hover {
+    background: linear-gradient(135deg, #fbcfe8, #ec4899) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 30px rgba(190, 24, 93, 0.5) !important;
+}
+
+/* Körperpflege/Wellness - MEHR LILA wenn aktiv */
+.lumiere-category-tab[data-category="Körperpflege/Wellness"].active {
+    background: linear-gradient(135deg, #a855f7, #9333ea) !important;
+    color: #ffffff !important;
+    border: 1px solid #a855f7 !important;
+    box-shadow: 0 6px 25px rgba(168, 85, 247, 0.5) !important;
+}
+
+/* Körperpflege/Wellness - LILA hover (nicht aktiv) */
+.lumiere-category-tab[data-category="Körperpflege/Wellness"]:hover:not(.active) {
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
+    color: #a855f7 !important;
+    border: 1px solid #c4b5fd !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3) !important;
+}
+
+/* Körperpflege/Wellness - DUNKEL LILA active hover */
+.lumiere-category-tab[data-category="Körperpflege/Wellness"].active:hover {
+    background: linear-gradient(135deg, #9333ea, #7c3aed) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 30px rgba(168, 85, 247, 0.6) !important;
+}
+
+/* Überschreibe alle anderen Regeln für diese Buttons */
+.lumiere-category-tab[data-category*="Haushalt"] {
+    --category-color: #ec4899 !important;
+    --category-light: rgba(236, 72, 153, 0.15) !important;
+}
+
+.lumiere-category-tab[data-category*="Körperpflege"] {
+    --category-color: #a855f7 !important;
+    --category-light: rgba(168, 85, 247, 0.15) !important;
+}
+
+/* Zusätzliche Sicherheit - überschreibe grüne Farben */
+.lumiere-category-tab[data-category="Haushalt und Küche"]:not(.active) {
+    background: rgba(236, 72, 153, 0.1) !important;
+    color: #ec4899 !important;
+    border: 1px solid rgba(236, 72, 153, 0.3) !important;
+}
+
+.lumiere-category-tab[data-category="Körperpflege/Wellness"]:not(.active) {
+    background: rgba(168, 85, 247, 0.1) !important;
+    color: #a855f7 !important;
+    border: 1px solid rgba(168, 85, 247, 0.3) !important;
+}
