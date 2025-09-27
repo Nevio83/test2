@@ -7706,3 +7706,506 @@ div#hilfePanel.offen,
          c o l o r :   # a a a   ! i m p o r t a n t ;  
  }  
  
+/* ===== BESTSELLER BUTTONS - PASTEL COLORS OVERRIDE ===== */
+
+/* KATEGORIE-TABS - PASTEL FARBEN - KORRIGIERTE ACTIVE STATES */
+.lumiere-category-tab:first-child.active,
+.lumiere-category-tab[data-category="alle"].active {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+}
+
+/* Technik/Gadgets - GRÜN wenn aktiv */
+.lumiere-category-tab[data-category="Technik/Gadgets"].active {
+    background: linear-gradient(135deg, #43e97b, #38a169) !important;
+    color: #ffffff !important;
+    border: 1px solid #43e97b !important;
+    box-shadow: 0 6px 25px rgba(67, 233, 123, 0.4) !important;
+}
+
+.lumiere-category-tab[data-category="Beleuchtung"].active {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #92400e !important;
+    border: 1px solid #fbbf24 !important;
+}
+
+/* Körperpflege/Wellness - LILA wenn aktiv */
+.lumiere-category-tab[data-category="Körperpflege/Wellness"].active {
+    background: linear-gradient(135deg, #9333ea, #7c3aed) !important;
+    color: #ffffff !important;
+    border: 1px solid #9333ea !important;
+    box-shadow: 0 6px 25px rgba(147, 51, 234, 0.4) !important;
+}
+
+/* Haushalt und Küche - ROSA wenn aktiv */
+.lumiere-category-tab[data-category="Haushalt und Küche"].active {
+    background: linear-gradient(135deg, #ec4899, #db2777) !important;
+    color: #ffffff !important;
+    border: 1px solid #ec4899 !important;
+    box-shadow: 0 6px 25px rgba(236, 72, 153, 0.4) !important;
+}
+
+/* KATEGORIE-TABS HOVER EFFECTS - PASTEL */
+.lumiere-category-tab:first-child:hover,
+.lumiere-category-tab[data-category="alle"]:hover {
+    background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+    color: #6b2c91 !important;
+    transform: translateY(-2px);
+}
+
+.lumiere-category-tab[data-category="Technik/Gadgets"]:hover {
+    background: rgba(67, 233, 123, 0.15) !important;
+    color: #43e97b !important;
+    border-color: #43e97b !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(67, 233, 123, 0.25) !important;
+}
+
+.lumiere-category-tab[data-category="Beleuchtung"]:hover {
+    background: linear-gradient(135deg, #fde68a, #fbbf24) !important;
+    color: #92400e !important;
+    transform: translateY(-2px);
+}
+
+.lumiere-category-tab[data-category="Körperpflege/Wellness"]:hover {
+    background: rgba(147, 51, 234, 0.15) !important;
+    color: #9333ea !important;
+    border-color: #9333ea !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(147, 51, 234, 0.25) !important;
+}
+
+.lumiere-category-tab[data-category="Haushalt und Küche"]:hover {
+    background: rgba(236, 72, 153, 0.15) !important;
+    color: #ec4899 !important;
+    border-color: #ec4899 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(236, 72, 153, 0.25) !important;
+}
+
+/* ACTIVE HOVER STATES */
+.lumiere-category-tab[data-category="Technik/Gadgets"].active:hover {
+    background: linear-gradient(135deg, #38a169, #43e97b) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 30px rgba(67, 233, 123, 0.5) !important;
+}
+
+.lumiere-category-tab[data-category="Körperpflege/Wellness"].active:hover {
+    background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 30px rgba(147, 51, 234, 0.5) !important;
+}
+
+.lumiere-category-tab[data-category="Haushalt und Küche"].active:hover {
+    background: linear-gradient(135deg, #db2777, #ec4899) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 30px rgba(236, 72, 153, 0.5) !important;
+}
+
+/* Category-specific buttons in bestseller grid - PASTEL COLORS */
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0) !important;
+    color: #166534 !important;
+    border: 1px solid #86efac !important;
+    box-shadow: 0 2px 8px rgba(22, 101, 52, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #92400e !important;
+    border: 1px solid #fbbf24 !important;
+    box-shadow: 0 2px 8px rgba(146, 64, 14, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
+    color: #6b21a8 !important;
+    border: 1px solid #c4b5fd !important;
+    box-shadow: 0 2px 8px rgba(107, 33, 168, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
+}
+
+/* Hover-Effekte für Bestseller-Buttons - PASTEL COLORS */
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #bbf7d0, #86efac) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(22, 101, 52, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fde68a, #fbbf24) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(146, 64, 14, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #e9d5ff, #c4b5fd) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 33, 168, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
+}
+
+/* Fallback für alle Bestseller Buttons falls keine spezifische Kategorie */
+#bestsellerGrid .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
+}
+
+/* ===== HAUSHALT KATEGORIE SEKTION BUTTONS - ROSA STATT GRÜN ===== */
+
+/* Haushalt Kategorie Sektion - Rosa Hintergrund */
+section[data-category="Haushalt und Küche"],
+.product-category-section:has(#haushaltGrid) {
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%) !important;
+}
+
+/* Haushalt Warenkorb Buttons - ROSA */
+section[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn,
+#haushaltGrid .lumiere-add-to-cart-btn,
+.lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
+}
+
+section[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn:hover,
+#haushaltGrid .lumiere-add-to-cart-btn:hover,
+.lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
+}
+
+/* CSS Variablen überschreiben */
+:root {
+  /* Technik wird GRÜN */
+  --category-technik: #43e97b !important;
+  --category-technik-light: rgba(67, 233, 123, 0.15) !important;
+  
+  /* Körperpflege wird LILA */
+  --category-koerperpflege: #9333ea !important;
+  --category-koerperpflege-light: rgba(147, 51, 234, 0.15) !important;
+  
+  /* Haushalt wird ROSA (weg vom Grün) */
+  --category-haushalt: #ec4899 !important;
+  --category-haushalt-light: rgba(236, 72, 153, 0.15) !important;
+}
+
+/* ===== KATEGORIE BUTTONS - PASTELL FARBEN WENN AUSGEWÄHLT ===== */
+
+/* Alle Kategorien - PASTELL LILA wenn aktiv */
+.lumiere-category-tab:first-child.active,
+.lumiere-category-tab[data-category="alle"].active {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 6px 25px rgba(107, 44, 145, 0.3) !important;
+}
+
+/* Technik/Gadgets - PASTELL GRÜN wenn aktiv */
+.lumiere-category-tab[data-category="Technik/Gadgets"].active {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0) !important;
+    color: #166534 !important;
+    border: 1px solid #86efac !important;
+    box-shadow: 0 6px 25px rgba(22, 101, 52, 0.3) !important;
+}
+
+/* Beleuchtung - PASTELL GELB wenn aktiv */
+.lumiere-category-tab[data-category="Beleuchtung"].active {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #92400e !important;
+    border: 1px solid #fbbf24 !important;
+    box-shadow: 0 6px 25px rgba(146, 64, 14, 0.3) !important;
+}
+
+/* Körperpflege/Wellness - PASTELL LILA/ROSA wenn aktiv */
+.lumiere-category-tab[data-category="Körperpflege/Wellness"].active {
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
+    color: #6b21a8 !important;
+    border: 1px solid #c4b5fd !important;
+    box-shadow: 0 6px 25px rgba(107, 33, 168, 0.3) !important;
+}
+
+/* Haushalt und Küche - PASTELL ROSA wenn aktiv */
+.lumiere-category-tab[data-category="Haushalt und Küche"].active {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 6px 25px rgba(190, 24, 93, 0.3) !important;
+}
+
+/* ===== BESTSELLER BUTTONS - ALLE KONSISTENT MACHEN ===== */
+
+/* Standard Fallback für alle Bestseller Buttons */
+#bestsellerGrid .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
+}
+
+/* Spezifische Überschreibungen nach Kategorie */
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn,
+#bestsellerGrid .lumiere-product-card[data-category="Elektronik"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0) !important;
+    color: #166534 !important;
+    border: 1px solid #86efac !important;
+    box-shadow: 0 2px 8px rgba(22, 101, 52, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-product-card[data-category="Elektronik"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #bbf7d0, #86efac) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(22, 101, 52, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #92400e !important;
+    border: 1px solid #fbbf24 !important;
+    box-shadow: 0 2px 8px rgba(146, 64, 14, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fde68a, #fbbf24) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(146, 64, 14, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
+    color: #6b21a8 !important;
+    border: 1px solid #c4b5fd !important;
+    box-shadow: 0 2px 8px rgba(107, 33, 168, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #e9d5ff, #c4b5fd) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 33, 168, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
+}
+
+/* Zusätzliche Selektoren für alle möglichen Varianten */
+#bestsellerGrid .lumiere-product-card:not([data-category]) .lumiere-add-to-cart-btn,
+#bestsellerGrid .lumiere-product-card[data-category=""] .lumiere-add-to-cart-btn,
+#bestsellerGrid .lumiere-product-card[data-category="undefined"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card:not([data-category]) .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-product-card[data-category=""] .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-product-card[data-category="undefined"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
+}
+
+/* Sehr spezifische Überschreibung für hartnäckige Buttons */
+#bestsellerGrid .lumiere-add-to-cart-btn[style] {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
+}
+
+/* ===== BESTSELLER BUTTONS - ULTIMATIVE ÜBERSCHREIBUNG ===== */
+
+/* Alle Bestseller Buttons - Stärkste Regel mit höchster Spezifität */
+#bestsellerGrid .lumiere-product-card .lumiere-add-to-cart-btn,
+#bestsellerGrid .product-card .lumiere-add-to-cart-btn,
+#bestsellerGrid .lumiere-add-to-cart-btn,
+.bestseller-section .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .product-card .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-add-to-cart-btn:hover,
+.bestseller-section .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+    color: #6b2c91 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
+}
+
+/* Überschreibt alle inline Styles und andere Regeln */
+#bestsellerGrid .lumiere-add-to-cart-btn[style*="background"],
+#bestsellerGrid .lumiere-add-to-cart-btn[style*="color"] {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+}
+
+/* Spezielle Regel für die ersten beiden Buttons */
+#bestsellerGrid .lumiere-product-card:nth-child(1) .lumiere-add-to-cart-btn,
+#bestsellerGrid .lumiere-product-card:nth-child(2) .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card:nth-child(1) .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-product-card:nth-child(2) .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+    color: #6b2c91 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
+}
+
+/* Reset aller möglichen Kategorie-spezifischen Styles für Bestseller */
+#bestsellerGrid .lumiere-product-card[data-category] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+    color: #6b2c91 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
+}
+
+/* ===== BESTSELLER BUTTONS - KATEGORIE-SPEZIFISCHE FARBEN KORRIGIERT ===== */
+
+/* Entferne die ultimative Überschreibung und mache kategorie-spezifisch */
+
+/* Standard Fallback für Buttons ohne spezifische Kategorie */
+#bestsellerGrid .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
+}
+
+/* Technik/Gadgets und Elektronik - GRÜN */
+#bestsellerGrid .lumiere-product-card[data-category*="Technik"] .lumiere-add-to-cart-btn,
+#bestsellerGrid .lumiere-product-card[data-category*="Gadgets"] .lumiere-add-to-cart-btn,
+#bestsellerGrid .lumiere-product-card[data-category*="Elektronik"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0) !important;
+    color: #166534 !important;
+    border: 1px solid #86efac !important;
+    box-shadow: 0 2px 8px rgba(22, 101, 52, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category*="Technik"] .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-product-card[data-category*="Gadgets"] .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-product-card[data-category*="Elektronik"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #bbf7d0, #86efac) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(22, 101, 52, 0.3) !important;
+}
+
+/* Beleuchtung - GELB */
+#bestsellerGrid .lumiere-product-card[data-category*="Beleuchtung"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #92400e !important;
+    border: 1px solid #fbbf24 !important;
+    box-shadow: 0 2px 8px rgba(146, 64, 14, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category*="Beleuchtung"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fde68a, #fbbf24) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(146, 64, 14, 0.3) !important;
+}
+
+/* Körperpflege/Wellness - LILA/ROSA */
+#bestsellerGrid .lumiere-product-card[data-category*="Körperpflege"] .lumiere-add-to-cart-btn,
+#bestsellerGrid .lumiere-product-card[data-category*="Wellness"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
+    color: #6b21a8 !important;
+    border: 1px solid #c4b5fd !important;
+    box-shadow: 0 2px 8px rgba(107, 33, 168, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category*="Körperpflege"] .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-product-card[data-category*="Wellness"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #e9d5ff, #c4b5fd) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 33, 168, 0.3) !important;
+}
+
+/* Haushalt und Küche - ROSA */
+#bestsellerGrid .lumiere-product-card[data-category*="Haushalt"] .lumiere-add-to-cart-btn,
+#bestsellerGrid .lumiere-product-card[data-category*="Küche"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category*="Haushalt"] .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-product-card[data-category*="Küche"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
+}
+
+/* Spezielle Fixes für die ersten beiden Produkte falls sie falsche Kategorien haben */
+#bestsellerGrid .lumiere-product-card:nth-child(1)[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+}
+
+#bestsellerGrid .lumiere-product-card:nth-child(2)[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+}
