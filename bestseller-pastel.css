@@ -1,0 +1,69 @@
+/* Bestseller Buttons - Pastel Colors Override */
+
+/* Category-specific buttons in bestseller grid - PASTEL COLORS */
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe) !important;
+    color: #1e40af !important;
+    border: 1px solid #93c5fd !important;
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fef3c7, #fde68a) !important;
+    color: #92400e !important;
+    border: 1px solid #fbbf24 !important;
+    box-shadow: 0 2px 8px rgba(146, 64, 14, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
+    color: #be185d !important;
+    border: 1px solid #f9a8d4 !important;
+    box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
+}
+
+/* Hover-Effekte für Bestseller-Buttons - PASTEL COLORS */
+#bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #bfdbfe, #93c5fd) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fde68a, #fbbf24) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(146, 64, 14, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
+}
+
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
+}
+
+/* Fallback für alle Bestseller Buttons falls keine spezifische Kategorie */
+#bestsellerGrid .lumiere-add-to-cart-btn {
+    background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
+    color: #6b2c91 !important;
+    border: 1px solid #c9a8ff !important;
+    box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
+}
+
+#bestsellerGrid .lumiere-add-to-cart-btn:hover {
+    background: linear-gradient(135deg, #d9c2ff, #c9a8ff) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
+}
