@@ -9360,37 +9360,3 @@ section[data-category="Haushalt und K�che"]::after,
     margin: 0 !important;
     padding: 0 !important;
 }
-
-
-/* ===== GITHUB PAGES MOBILE FIXES - FINAL VERSION ===== */
-@media (max-width: 768px) {
-  /* FORCE MOBILE LAYOUT FIXES */
-  .product-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
-  }
-  
-  .category-grid-lumiere {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
-  }
-  
-  .product-card img,
-  .product-image,
-  .hero-image img {
-    max-width: 100% !important;
-    height: auto !important;
-    object-fit: cover !important;
-  }
-  
-  /* ENSURE NO HORIZONTAL OVERFLOW */
-  html, body {
-    overflow-x: hidden !important;
-    max-width: 100vw !important;
-  }
-  
-  .container, .container-fluid {
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-  }
-}
