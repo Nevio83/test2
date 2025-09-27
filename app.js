@@ -13,7 +13,6 @@ window.clearCart = function() {
     
     // Update counter and dropdown immediately
     if (typeof updateCartCounter === 'function') {
-      updateCartCounter();
     } else {
       console.log('updateCartCounter function not available');
     }
@@ -22,8 +21,14 @@ window.clearCart = function() {
     console.log('Cart cleared, hiding dropdown');
     const cartDropdown = document.getElementById('cartDropdown');
     if (cartDropdown) {
+      // Flüssige Schließ-Animation
+      cartDropdown.classList.add('hiding');
       cartDropdown.classList.remove('show');
-      cartDropdown.style.display = 'none';
+      
+      setTimeout(() => {
+        cartDropdown.style.display = 'none';
+        cartDropdown.classList.remove('hiding');
+      }, 300);
     }
     
     // Show confirmation message
@@ -869,15 +874,26 @@ function initializeCartDropdown() {
       
       // Always render fresh data when opening dropdown
       renderCartDropdown();
-      cartDropdown.classList.toggle('show');
       
-      // Ensure visibility
+      // Flüssige Animation beim Öffnen/Schließen
       if (cartDropdown.classList.contains('show')) {
-        cartDropdown.style.display = 'block';
-        console.log('Cart dropdown shown');
+        // Schließen mit Animation
+        cartDropdown.classList.add('hiding');
+        cartDropdown.classList.remove('show');
+        
+        setTimeout(() => {
+          cartDropdown.style.display = 'none';
+          cartDropdown.classList.remove('hiding');
+          console.log('Cart dropdown hidden with animation');
+        }, 300); // Wartet auf die Schließ-Animation
       } else {
-        cartDropdown.style.display = 'none';
-        console.log('Cart dropdown hidden');
+        // Öffnen mit Animation
+        cartDropdown.style.display = 'block';
+        // Kurze Verzögerung für smooth Animation
+        requestAnimationFrame(() => {
+          cartDropdown.classList.add('show');
+          console.log('Cart dropdown shown with animation');
+        });
       }
     }
     
@@ -888,9 +904,14 @@ function initializeCartDropdown() {
   if (closeCartDropdown && cartDropdown) {
     closeCartDropdown.addEventListener('click', (e) => {
       e.preventDefault();
+      // Flüssige Schließ-Animation
+      cartDropdown.classList.add('hiding');
       cartDropdown.classList.remove('show');
-      cartDropdown.style.display = 'none';
-      cartDropdown.style.display = 'none'; // Overlay immer ausblenden
+      
+      setTimeout(() => {
+        cartDropdown.style.display = 'none';
+        cartDropdown.classList.remove('hiding');
+      }, 300);
     });
   }
 
@@ -899,8 +920,14 @@ function initializeCartDropdown() {
     if (cartDropdown && cartDropdown.classList.contains('show')) {
       // Check if click is outside the cart dropdown and cart button
       if (!cartDropdown.contains(e.target) && !cartButton.contains(e.target)) {
+        // Flüssige Schließ-Animation
+        cartDropdown.classList.add('hiding');
         cartDropdown.classList.remove('show');
-        cartDropdown.style.display = 'none';
+        
+        setTimeout(() => {
+          cartDropdown.style.display = 'none';
+          cartDropdown.classList.remove('hiding');
+        }, 300);
       }
     }
   });
