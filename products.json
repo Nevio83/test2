@@ -47,7 +47,7 @@
   {
     "id": 11,
     "name": "350ml Elektrischer Mixer Entsafter",
-    "price": 34.99,
+    "price": 24.99,
     "originalPrice": 49.99,
     "category": "Haushalt und Küche",
     "image": "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
@@ -273,7 +273,7 @@
   {
     "id": 16,
     "name": "Elektrische Küchenwaage Digital",
-    "price": 29.99,
+    "price": 49.99,
     "originalPrice": 39.99,
     "category": "Haushalt und Küche",
     "image": "produkt bilder/ware.png",
@@ -407,7 +407,7 @@
   {
     "id": 24,
     "name": "COBLED Arbeitsleuchte",
-    "price": 34.99,
+    "price": 29.99,
     "originalPrice": 49.99,
     "category": "Beleuchtung",
     "image": "produkt bilder/COBLED Arbeitsleuchte.jpeg",
