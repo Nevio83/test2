@@ -584,9 +584,9 @@ html, body {
   #wishlistGrid .card-img-top {
     object-fit: contain !important;
     background: white !important;
-    padding: 15px !important;
-    min-height: 250px !important;
-    max-height: 350px !important;
+    padding: 10px !important;
+    min-height: 180px !important;
+    max-height: 250px !important;
     height: auto !important;
   }
   
@@ -595,7 +595,7 @@ html, body {
   }
   
   #wishlistGrid .ratio.ratio-4x3 {
-    --bs-aspect-ratio: 75% !important;
+    --bs-aspect-ratio: 85% !important;
   }
   
   #wishlistGrid .card {
@@ -604,7 +604,7 @@ html, body {
   
   #wishlistGrid .card-img-wrapper,
   #wishlistGrid .ratio {
-    min-height: 250px !important;
+    min-height: 180px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -615,14 +615,14 @@ html, body {
   .wishlist-product-image,
   #wishlistGrid img,
   #wishlistGrid .card-img-top {
-    padding: 12px !important;
-    min-height: 220px !important;
-    max-height: 300px !important;
+    padding: 8px !important;
+    min-height: 160px !important;
+    max-height: 220px !important;
   }
   
   #wishlistGrid .card-img-wrapper,
   #wishlistGrid .ratio {
-    min-height: 220px !important;
+    min-height: 160px !important;
   }
   
   /* Button mit Icon für bessere mobile Darstellung */
