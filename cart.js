@@ -906,17 +906,33 @@ async function handleStripeSubmit(event) {
             throw new Error("Ihr Warenkorb ist leer.");
         }
 
-        // 2. PaymentIntent auf dem Server erstellen
+        // 2. PaymentIntent auf dem Server erstellen (Demo-Modus)
+        // Da kein echter Server vorhanden ist, simulieren wir einen Fehler
         const response = await fetch('/api/create-payment-intent', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ cart, email, country, city, firstname, lastname })
+        }).catch(error => {
+            // Netzwerkfehler abfangen
+            throw new Error('Server nicht erreichbar. Dies ist eine Demo-Version ohne echte Zahlungsabwicklung.');
         });
 
-        const { clientSecret, error: backendError } = await response.json();
+        let responseData;
+        try {
+            const responseText = await response.text();
+            if (!responseText) {
+                throw new Error('Server antwortet nicht. Dies ist eine Demo-Version ohne echte Zahlungsabwicklung.');
+            }
+            responseData = JSON.parse(responseText);
+        } catch (parseError) {
+            // JSON Parse Fehler - wahrscheinlich weil kein Server läuft
+            throw new Error('Zahlungsserver nicht verfügbar. Dies ist eine Demo-Version. Für eine echte Bestellung kontaktieren Sie uns bitte direkt.');
+        }
+
+        const { clientSecret, error: backendError } = responseData;
 
         if (backendError || !clientSecret) {
-            throw new Error(backendError || 'Fehler bei der Zahlungsinitialisierung.');
+            throw new Error(backendError || 'Fehler bei der Zahlungsinitialisierung. Server nicht konfiguriert.');
         }
 
         // 3. Zahlung auf dem Client bestätigen
@@ -953,9 +969,63 @@ async function handleStripeSubmit(event) {
     } catch (err) {
         // Alle Fehler hier abfangen und anzeigen
         errorDiv.textContent = err.message;
+        
+        // Neue auffällige Fehlerbenachrichtigung
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show position-fixed';
+        alertDiv.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            animation: slideIn 0.3s ease-out;
+        `;
+        alertDiv.innerHTML = `
+            <div class="d-flex align-items-start">
+                <i class="bi bi-exclamation-triangle-fill me-2" style="font-size: 1.2rem;"></i>
+                <div>
+                    <strong>Zahlung fehlgeschlagen!</strong>
+                    <div class="mt-1" style="font-size: 0.9rem;">${err.message}</div>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // CSS Animation hinzufügen falls noch nicht vorhanden
+        if (!document.querySelector('#payment-error-animation')) {
+            const style = document.createElement('style');
+            style.id = 'payment-error-animation';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(alertDiv);
+        
+        // Alert nach 7 Sekunden automatisch entfernen
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 150);
+        }, 7000);
+        
+        // Button und Spinner zurücksetzen
         spinner.style.display = 'none';
         buttonText.style.display = 'inline-block';
         submitButton.disabled = false;
+        
+        // Scroll zum Fehler
+        errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 
