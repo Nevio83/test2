@@ -6,13 +6,13 @@ let addToCartButtonsInitialized = false;
 
 // Make sure clearCart is globally available immediately
 window.clearCart = function() {
-  console.log('clearCart function called');
   try {
     cartItems = [];
     localStorage.setItem('cart', JSON.stringify(cartItems));
     
     // Update counter and dropdown immediately
     if (typeof updateCartCounter === 'function') {
+      updateCartCounter();
     } else {
       console.log('updateCartCounter function not available');
     }
