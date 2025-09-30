@@ -45,7 +45,7 @@
 
   <script>
     // Wunschliste initialisieren
-    function showNotification(message, type = 'success') {
+    function showNotification(message, type = 'success', redirectUrl = null) {
       const notification = document.createElement('div');
       notification.className = `alert alert-${type} position-fixed end-0 m-4 shadow-lg fade show`;
       notification.style.zIndex = '20000';
@@ -74,8 +74,10 @@
         notification.classList.remove('show');
         notification.classList.add('fade');
         setTimeout(() => notification.remove(), 400);
-        // Zur Wishlist-Seite weiterleiten
-        window.location.href = 'wishlist.html';
+        // Zur entsprechenden Seite weiterleiten
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+        }
       });
       
       document.body.appendChild(notification);
@@ -104,7 +106,7 @@
       }
 
       localStorage.setItem('cart', JSON.stringify(cart));
-      showNotification('Produkt wurde zum Warenkorb hinzugefügt');
+      showNotification('Produkt wurde zum Warenkorb hinzugefügt', 'success', 'cart.html');
     }
 
     function removeFromWishlist(productId) {
@@ -112,7 +114,7 @@
       wishlist = wishlist.filter(item => Number(item.id) !== Number(productId));
       localStorage.setItem('wishlist', JSON.stringify(wishlist));
       
-      showNotification('Produkt von der Wunschliste entfernt', 'info');
+      showNotification('Produkt von der Wunschliste entfernt', 'info', 'wishlist.html');
       
       // Sofort neu rendern - Button verschwindet automatisch wenn Wunschliste leer
       renderWishlist();
@@ -137,7 +139,7 @@
       const newWishlist = wishlist.filter(item => Number(item.id) !== Number(productId));
       localStorage.setItem('wishlist', JSON.stringify(newWishlist));
       
-      showNotification('Produkt wurde zum Warenkorb hinzugefügt');
+      showNotification('Produkt wurde zum Warenkorb hinzugefügt', 'success', 'cart.html');
       
       // Sofort neu rendern - Button verschwindet automatisch wenn Wunschliste leer
       renderWishlist();
@@ -183,7 +185,7 @@
                   <i class="bi bi-heart-fill"></i>
                 </button>
                 <div class="ratio ratio-4x3">
-                  <img src="${image}" class="card-img-top object-fit-cover" alt="${name}">
+                  <img src="${image}" class="card-img-top object-fit-contain" alt="${name}">
                 </div>
                 <div class="card-body">
                   <h5 class="card-title">${name}</h5>
@@ -300,7 +302,7 @@
           // Wunschliste leeren
           localStorage.setItem('wishlist', JSON.stringify([]));
           
-          showNotification('Alle Produkte wurden von der Wunschliste entfernt', 'info');
+          showNotification('Alle Produkte wurden von der Wunschliste entfernt', 'info', 'wishlist.html');
           
           // Wunschliste sofort neu rendern
           renderWishlist();
