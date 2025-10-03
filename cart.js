@@ -24,14 +24,40 @@ let currentCurrency = currencyByCountry[currentCountry];
 function getCart() {
     try {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        return cart;
+        // Stelle sicher, dass Farben im Namen angezeigt werden
+        const processedCart = cart.map(item => {
+            // Entferne alte Farbe aus dem Namen falls vorhanden
+            let cleanName = item.name.replace(/\s*\([^)]*\)$/, '');
+            
+            // Füge Farbe hinzu wenn vorhanden
+            if (item.selectedColor) {
+                item.name = `${cleanName} (${item.selectedColor})`;
+                console.log(`📦 Warenkorb-Artikel: ${item.name} - Preis: €${item.price}`);
+            }
+            
+            return item;
+        });
+        
+        return processedCart;
     } catch (e) {
         console.error("Fehler beim Parsen des Warenkorbs aus dem localStorage:", e);
         return [];
     }
 }
 
-
+// Funktion zum Speichern des Warenkorbs mit Farbauswahl
+function saveCartWithColor(cart) {
+    // Stelle sicher, dass Farben korrekt gespeichert werden
+    const processedCart = cart.map(item => {
+        // Wenn selectedColor vorhanden ist, stelle sicher dass der Name die Farbe enthält
+        if (item.selectedColor && !item.name.includes(`(${item.selectedColor})`)) {
+            item.name = item.name.replace(/\s*\([^)]*\)$/, '') + ` (${item.selectedColor})`;
+        }
+        return item;
+    });
+    localStorage.setItem('cart', JSON.stringify(processedCart));
+    console.log('🛒 Warenkorb mit Farbauswahl gespeichert:', processedCart);
+}
 
 const currencyConversion = {
     'EUR': 1,

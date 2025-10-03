@@ -402,18 +402,63 @@ function addProductToCart(products, productId, fromCartDropdown = false) {
   
   // Always read from localStorage to ensure we have the latest data
   cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-  const existingItem = cartItems.find(item => Number(item.id) === Number(productId));
+  
+  // Bei Produkten mit Farbauswahl: Prüfe ob gleiche Farbe
+  let existingItem;
+  
+  // Hole Farbinformationen falls vorhanden
+  const hasColorSelection = window.product && window.product.selectedColor && window.product.id === product.id;
+  
+  if (hasColorSelection) {
+    // Bei Produkten mit Farbe: Nur gleiche ID UND gleiche Farbe ist "existing"
+    existingItem = cartItems.find(item => {
+      const sameId = Number(item.id) === Number(productId);
+      const sameColor = item.selectedColor === window.product.selectedColor;
+      console.log(`Vergleiche: ID ${item.id} vs ${productId}, Farbe "${item.selectedColor}" vs "${window.product.selectedColor}"`);
+      return sameId && sameColor;
+    });
+    console.log(`🎨 Suche nach Produkt ${productId} mit Farbe "${window.product.selectedColor}":`, existingItem ? 'Gefunden' : 'Neuer Artikel');
+  } else {
+    // Bei Produkten ohne Farbe: Nur ID prüfen
+    existingItem = cartItems.find(item => 
+      Number(item.id) === Number(productId) && 
+      !item.selectedColor  // Wichtig: Nur Artikel OHNE Farbe
+    );
+  }
 
   if (existingItem) {
     existingItem.quantity++;
     console.log('Updated existing item quantity:', existingItem.quantity);
   } else {
-    cartItems.push({ ...product, quantity: 1 });
-    console.log('Added new item to cart');
+    // Prüfe ob Farbinformationen vom window.product vorhanden sind
+    let productToAdd = { ...product, quantity: 1 };
+    
+    if (window.product && window.product.selectedColor && window.product.id === product.id) {
+      // Füge Farbinformationen hinzu
+      let cleanName = product.name.replace(/\s*\([^)]*\)$/, '');
+      productToAdd = {
+        ...productToAdd,
+        name: `${cleanName} (${window.product.selectedColor})`,
+        selectedColor: window.product.selectedColor,
+        selectedColorCode: window.product.selectedColorCode,
+        selectedColorSku: window.product.selectedColorSku,
+        price: window.product.price || product.price,
+        originalPrice: window.product.originalPrice || product.originalPrice
+      };
+      console.log('🎨 Produkt mit Farbe hinzugefügt:', productToAdd.name);
+    }
+    
+    cartItems.push(productToAdd);
+    console.log('Added new item to cart:', productToAdd);
   }
 
   // Speichere den aktuellen Warenkorb immer im localStorage
-  localStorage.setItem('cart', JSON.stringify(cartItems));
+  // Nutze saveCartWithColor falls verfügbar (aus cart.js)
+  if (typeof saveCartWithColor === 'function') {
+    saveCartWithColor(cartItems);
+  } else {
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+  }
   
   // Update counter and dropdown immediately
   updateCartCounter();
