@@ -945,64 +945,16 @@
     "originalPrice": 34.99,
     "category": "Beleuchtung",
     "image": "produkt bilder/Waterproof RGB LED Solar Light.jpg",
-    "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.",
-    "colors": [
-      {
-        "name": "Schwarz (2 Stück)",
-        "code": "#000000",
-        "sku": "CJSOL22001BK2",
-        "price": 24.99,
-        "originalPrice": 34.99
-      },
-      {
-        "name": "Schwarz (4 Stück)",
-        "code": "#1a1a1a",
-        "sku": "CJSOL22002BK4",
-        "price": 44.99,
-        "originalPrice": 64.99
-      },
-      {
-        "name": "Schwarz (6 Stück)",
-        "code": "#333333",
-        "sku": "CJSOL22003BK6",
-        "price": 64.99,
-        "originalPrice": 94.99
-      }
-    ],
-    "features": [
-      "Wasserdicht (IP65) für Außenbereich",
-      "Solarbetrieben - keine Stromkosten",
-      "RGB-Farbwechsel für stimmungsvolle Beleuchtung",
-      "Automatische Dämmerungsschaltung",
-      "Einfache Installation ohne Verkabelung"
-    ],
-    "bundles": [
-      {
-        "id": "bundle1",
-        "name": "Garden Starter",
-        "description": "Solarleuchte + Montagezubehör",
-        "items": [
-          "Montageschrauben",
-          "Installationsanleitung"
-        ],
-        "originalPrice": 34.99,
-        "bundlePrice": 29.99,
-        "savings": 5
-      },
-      {
-        "id": "bundle2",
-        "name": "Complete Garden",
-        "description": "Komplettes Garten-Beleuchtungsset",
-        "items": [
-          "Montageschrauben",
-          "Installationsanleitung",
-          "Zusätzliche Befestigung"
-        ],
-        "originalPrice": 44.99,
-        "bundlePrice": 34.99,
-        "savings": 10
-      }
-    ]
+    "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung."
+  },
+  {
+    "id": 23,
+    "name": "Elektrischer Wasserspender",
+    "price": 29.99,
+    "originalPrice": 39.99,
+    "category": "Haushalt & Küche",
+    "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
+    "description": "Praktischer elektrischer Wasserspender für Büro und Zuhause. Automatische Wasserausgabe mit einstellbarer Temperatur."
   },
   {
     "id": 23,
