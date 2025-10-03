@@ -48,13 +48,22 @@ window.clearCart = function() {
 // Wishlist-Initialisierung
 let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
 
+// Globale Produktliste
+let products = [];
+
 // Produktdaten laden mit Cache-Busting
 async function loadProducts() {
   try {
     // Cache-busting für products.json
     const cacheBuster = Date.now();
-    const response = await fetch(`products.json?v=${cacheBuster}`);
-    const products = await response.json();
+    // Prüfe ob wir auf einer Produktseite sind (im produkte/ Ordner)
+    const isProductPage = window.location.pathname.includes('/produkte/');
+    const jsonPath = isProductPage ? '../products.json' : 'products.json';
+    const response = await fetch(`${jsonPath}?v=${cacheBuster}`);
+    products = await response.json(); // Nutze die globale Variable
+    
+    // Speichere im localStorage als Backup
+    localStorage.setItem('allProducts', JSON.stringify(products));
     
     console.log('📋 Products loaded with cache-busting:', products.length);
     
@@ -379,14 +388,27 @@ function addToCart(productId) {
   }
 }
 
-function addProductToCart(products, productId, fromCartDropdown = false) {
-  console.log('Looking for product ID:', productId, 'in', products.length, 'products');
+function addProductToCart(productsParam, productId, fromCartDropdown = false) {
+  // Fallback: Wenn keine Produkte übergeben wurden oder die globale Variable leer ist, lade sie
+  if ((!productsParam || productsParam.length === 0) && (!products || products.length === 0)) {
+    console.log('⚠️ Keine Produkte verfügbar, lade aus localStorage oder JSON...');
+    // Versuche aus localStorage
+    const storedProducts = localStorage.getItem('allProducts');
+    if (storedProducts) {
+      products = JSON.parse(storedProducts);
+      console.log('📦 Produkte aus localStorage geladen:', products.length);
+    }
+  }
   
-  const product = products.find(p => Number(p.id) === Number(productId));
+  // Verwende die übergebenen Produkte oder die globale Variable
+  const availableProducts = productsParam && productsParam.length > 0 ? productsParam : products;
+  console.log('Looking for product ID:', productId, 'in', availableProducts.length, 'products');
+  
+  const product = availableProducts.find(p => Number(p.id) === Number(productId));
   
   if (!product) {
     console.error('Product not found for ID:', productId);
-    console.log('Available product IDs:', products.map(p => p.id));
+    console.log('Available product IDs:', availableProducts.map(p => p.id));
     if (!fromCartDropdown) {
       alert('Produkt konnte nicht gefunden werden.');
     }
@@ -403,53 +425,89 @@ function addProductToCart(products, productId, fromCartDropdown = false) {
   // Always read from localStorage to ensure we have the latest data
   cartItems = JSON.parse(localStorage.getItem('cart')) || [];
   
-  // Bei Produkten mit Farbauswahl: Prüfe ob gleiche Farbe
+  // VEREINFACHTE Logik: Verschiedene Farben = Verschiedene Artikel
   let existingItem;
   
-  // Hole Farbinformationen falls vorhanden
-  const hasColorSelection = window.product && window.product.selectedColor && window.product.id === product.id;
+  // Hole aktuelle Farbinformationen - UNIVERSELL für alle Produkte
+  let currentColor = null;
+  let currentColorData = null;
   
-  if (hasColorSelection) {
-    // Bei Produkten mit Farbe: Nur gleiche ID UND gleiche Farbe ist "existing"
-    existingItem = cartItems.find(item => {
-      const sameId = Number(item.id) === Number(productId);
-      const sameColor = item.selectedColor === window.product.selectedColor;
-      console.log(`Vergleiche: ID ${item.id} vs ${productId}, Farbe "${item.selectedColor}" vs "${window.product.selectedColor}"`);
-      return sameId && sameColor;
-    });
-    console.log(`🎨 Suche nach Produkt ${productId} mit Farbe "${window.product.selectedColor}":`, existingItem ? 'Gefunden' : 'Neuer Artikel');
+  // Methode 1: window.product (für Produkt 10)
+  if (window.product && window.product.selectedColor) {
+    currentColor = window.product.selectedColor;
+    currentColorData = {
+      name: window.product.selectedColor,
+      code: window.product.selectedColorCode,
+      sku: window.product.selectedColorSku,
+      price: window.product.price
+    };
+    console.log('🎨 Farbe von window.product:', currentColor);
+  }
+  
+  // Methode 2: getSelectedColor() (für Produkt 11, 12, 17, 21, 26)
+  else if (window.getSelectedColor && typeof window.getSelectedColor === 'function') {
+    const selectedColorObj = window.getSelectedColor();
+    console.log('🔍 getSelectedColor() Ergebnis:', selectedColorObj);
+    
+    if (selectedColorObj && selectedColorObj.name) {
+      currentColor = selectedColorObj.name;
+      currentColorData = selectedColorObj;
+      console.log('🎨 Farbe von getSelectedColor():', currentColor, selectedColorObj);
+    } else {
+      console.log('❌ getSelectedColor() lieferte keine gültigen Daten');
+    }
   } else {
-    // Bei Produkten ohne Farbe: Nur ID prüfen
+    console.log('❌ getSelectedColor() Funktion nicht gefunden');
+  }
+  
+  console.log('🔍 Finale Farbe für Warenkorb:', currentColor);
+  
+  if (currentColor) {
+    // Bei Produkten mit Farbe: Nur EXAKT gleiche ID + Farbe ist "existing"
     existingItem = cartItems.find(item => 
       Number(item.id) === Number(productId) && 
-      !item.selectedColor  // Wichtig: Nur Artikel OHNE Farbe
+      item.selectedColor === currentColor
     );
+    console.log(`🎨 Suche nach Produkt ${productId} mit Farbe "${currentColor}":`, existingItem ? 'GEFUNDEN - Menge erhöhen' : 'NEUER ARTIKEL');
+  } else {
+    // Bei Produkten ohne Farbe: Nur ID prüfen (und keine Farbe vorhanden)
+    existingItem = cartItems.find(item => 
+      Number(item.id) === Number(productId) && 
+      !item.selectedColor
+    );
+    console.log(`📦 Suche nach Produkt ${productId} OHNE Farbe:`, existingItem ? 'GEFUNDEN - Menge erhöhen' : 'NEUER ARTIKEL');
   }
 
   if (existingItem) {
     existingItem.quantity++;
     console.log('Updated existing item quantity:', existingItem.quantity);
   } else {
-    // Prüfe ob Farbinformationen vom window.product vorhanden sind
+    // Erstelle neuen Warenkorb-Artikel
     let productToAdd = { ...product, quantity: 1 };
     
-    if (window.product && window.product.selectedColor && window.product.id === product.id) {
-      // Füge Farbinformationen hinzu
+    if (currentColor && currentColorData) {
+      // Produkt MIT Farbe - erstelle eindeutigen Artikel
       let cleanName = product.name.replace(/\s*\([^)]*\)$/, '');
       productToAdd = {
         ...productToAdd,
-        name: `${cleanName} (${window.product.selectedColor})`,
-        selectedColor: window.product.selectedColor,
-        selectedColorCode: window.product.selectedColorCode,
-        selectedColorSku: window.product.selectedColorSku,
-        price: window.product.price || product.price,
-        originalPrice: window.product.originalPrice || product.originalPrice
+        name: `${cleanName} (${currentColor})`,
+        selectedColor: currentColor,
+        selectedColorCode: currentColorData.code || '#000000',
+        selectedColorSku: currentColorData.sku || 'default',
+        price: currentColorData.price || product.price,
+        originalPrice: currentColorData.originalPrice || product.originalPrice,
+        // Eindeutige ID für verschiedene Farben
+        cartItemId: `${productId}-${currentColor.replace(/\s+/g, '-').toLowerCase()}`
       };
-      console.log('🎨 Produkt mit Farbe hinzugefügt:', productToAdd.name);
+      console.log('🎨 NEUER Artikel mit Farbe:', productToAdd.name, '- ID:', productToAdd.cartItemId, '- Preis:', productToAdd.price);
+    } else {
+      // Produkt OHNE Farbe
+      productToAdd.cartItemId = `${productId}-no-color`;
+      console.log('📦 NEUER Artikel ohne Farbe:', productToAdd.name, '- ID:', productToAdd.cartItemId);
     }
     
     cartItems.push(productToAdd);
-    console.log('Added new item to cart:', productToAdd);
+    console.log('✅ Artikel zum Warenkorb hinzugefügt:', productToAdd);
   }
 
   // Speichere den aktuellen Warenkorb immer im localStorage
@@ -618,6 +676,11 @@ function createFloatingSuccessIndicator(button, icon, type = 'cart') {
 
 // Make showAlert globally available with enhanced animations
 window.showAlert = function(message, redirectTo = 'cart.html', preventDropdownClose = false) {
+  // Korrigiere den Pfad für Produktseiten
+  const isProductPage = window.location.pathname.includes('/produkte/');
+  if (isProductPage && !redirectTo.startsWith('../')) {
+    redirectTo = '../' + redirectTo;
+  }
   // Remove any existing notifications immediately
   const existingAlerts = document.querySelectorAll('.alert.alert-success.position-fixed');
   existingAlerts.forEach(existingAlert => {
