@@ -7,6 +7,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="beleuchtung.css" rel="stylesheet">
+    <style>
+        /* Farbauswahl CSS */
+        .color-selection{margin:1rem 0}.color-selection h5{font-size:1.1rem;font-weight:600;margin-bottom:0.75rem}.color-options{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem}.color-option{width:45px;height:45px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all 0.3s ease;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.1)}.color-option:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(0,0,0,0.2)}.color-option.selected{border-color:#fff;box-shadow:0 0 0 2px #007bff,0 4px 12px rgba(0,0,0,0.2);transform:scale(1.1)}.color-option.selected::after{content:"✓";color:white;font-weight:bold;font-size:18px;text-shadow:0 0 3px rgba(0,0,0,0.5)}.color-option[data-color="#FFFFFF"],.color-option[data-color="#FFF0F5"]{border:2px solid #ddd}.color-option[data-color="#FFFFFF"].selected::after,.color-option[data-color="#FFF0F5"].selected::after{color:#333;text-shadow:none}.selected-color-info{font-size:0.9rem;opacity:0.8}.selected-color-info span{font-weight:600}@media (max-width:768px){.color-option{width:40px;height:40px}.color-options{gap:0.4rem}}.color-change-animation{animation:colorChange 0.3s ease}@keyframes colorChange{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+    </style>
     <!-- Added animation styles for consistent animations -->
     <style>
         .success-animation {
@@ -801,6 +805,12 @@
   }
 
   function addToCartWithQuantity(event) {
+    // Verhindere doppelte Ausführung
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
     // Determine which quantity input to use based on the clicked button
     const button = event ? event.target : null;
     const isDesktop = button && button.closest('.d-none.d-lg-block');
@@ -889,13 +899,24 @@
   });
 </script>
 <script src="../keyboard-shortcuts.js"></script>
-<script>
+
+<!-- Warenkorb-Farbauswahl-Erweiterung -->
+<script src="../cart-color-extension.js"></script>
+
+<!-- Bundle-Farbauswahl-Erweiterung -->
+<script src="../bundle-color-selection.js"></script>
+
+<!-- CJ Dropshipping Farbauswahl-Integration -->
+<script src="../cj-color-integration.js"></script>
+</body>
+</html>
+
   // Populate mobile quantity dropdown on page load
   function populateMobileQuantityDropdown() {
     const select = document.getElementById('quantity-mobile');
     if (select && select.options.length === 0) {
       // Generate all options from 1 to 999
-      for (let i = 1; i <= 999; i++) {
+{{ ... }}
         const option = document.createElement('option');
         option.value = i;
         option.textContent = i;
@@ -926,11 +947,3 @@
     if (select) {
       const currentValue = parseInt(select.value, 10) || 1;
       if (currentValue > 1) {
-        select.value = currentValue - 1;
-        updateTotalPrice();
-      }
-    }
-  }
-</script>
-</body>
-</html>

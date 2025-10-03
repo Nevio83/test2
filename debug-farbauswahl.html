@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Farbauswahl</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug-info { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .color-option { width: 30px; height: 30px; border-radius: 50%; display: inline-block; margin: 5px; cursor: pointer; border: 2px solid #ccc; }
+        .color-option.selected { border-color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Farbauswahl Debug Test</h1>
+    
+    <div class="debug-info">
+        <h3>Test 1: Produkt-ID Erkennung</h3>
+        <p>Aktuelle URL: <span id="currentUrl"></span></p>
+        <p>Erkannte Produkt-ID: <span id="detectedId"></span></p>
+    </div>
+
+    <div class="debug-info">
+        <h3>Test 2: Products.json Laden</h3>
+        <p>Status: <span id="jsonStatus">Lade...</span></p>
+        <p>Produkt gefunden: <span id="productFound"></span></p>
+        <p>Farben verfügbar: <span id="colorsAvailable"></span></p>
+    </div>
+
+    <div class="debug-info">
+        <h3>Test 3: Farbauswahl</h3>
+        <div id="colorTest"></div>
+        <p>Ausgewählte Farbe: <span id="selectedColor">Keine</span></p>
+    </div>
+
+    <script>
+        // Test 1: URL und ID
+        document.getElementById('currentUrl').textContent = window.location.href;
+        
+        function extractProductIdFromUrl() {
+            const path = window.location.pathname;
+            const match = path.match(/produkt-(\d+)\.html/);
+            return match ? parseInt(match[1]) : null;
+        }
+        
+        const productId = extractProductIdFromUrl();
+        document.getElementById('detectedId').textContent = productId || 'Keine ID gefunden';
+
+        // Test 2: Products.json laden
+        async function testProductLoad() {
+            try {
+                const response = await fetch('products.json');
+                const products = await response.json();
+                document.getElementById('jsonStatus').textContent = 'Erfolgreich geladen';
+                
+                if (productId) {
+                    const product = products.find(p => p.id === productId);
+                    if (product) {
+                        document.getElementById('productFound').textContent = product.name;
+                        if (product.colors && product.colors.length > 0) {
+                            document.getElementById('colorsAvailable').textContent = product.colors.length + ' Farben';
+                            renderTestColors(product.colors);
+                        } else {
+                            document.getElementById('colorsAvailable').textContent = 'Keine Farben';
+                        }
+                    } else {
+                        document.getElementById('productFound').textContent = 'Produkt nicht gefunden';
+                    }
+                } else {
+                    document.getElementById('productFound').textContent = 'Keine Produkt-ID';
+                }
+            } catch (error) {
+                document.getElementById('jsonStatus').textContent = 'Fehler: ' + error.message;
+            }
+        }
+
+        function renderTestColors(colors) {
+            const container = document.getElementById('colorTest');
+            colors.forEach(color => {
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'color-option';
+                colorDiv.style.backgroundColor = color.code;
+                colorDiv.title = color.name;
+                colorDiv.onclick = () => {
+                    document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+                    colorDiv.classList.add('selected');
+                    document.getElementById('selectedColor').textContent = color.name + ' (' + color.code + ')';
+                };
+                container.appendChild(colorDiv);
+            });
+        }
+
+        // Test starten
+        testProductLoad();
+    </script>
+</body>
+</html>

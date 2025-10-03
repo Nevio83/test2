@@ -10,11 +10,28 @@
     "sku": "CJ1621032671155597312",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
-    "tags": [
-      "wasser",
-      "spender",
-      "büro",
-      "automatisch"
+    "colors": [
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJHS167415804DW",
+        "price": 49.99,
+        "originalPrice": 69.99
+      },
+      {
+        "name": "Blau",
+        "code": "#4A90E2",
+        "sku": "CJHS167415803CX",
+        "price": 52.99,
+        "originalPrice": 72.99
+      },
+      {
+        "name": "Blau mit Schwerkraft",
+        "code": "#2E5BBA",
+        "sku": "CJHS167415802BY",
+        "price": 54.99,
+        "originalPrice": 74.99
+      }
     ],
     "bundles": [
       {
@@ -55,6 +72,50 @@
     "sku": "CJ1621032671155597313",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJMX350ML001WH",
+        "price": 24.99,
+        "originalPrice": 49.99
+      },
+      {
+        "name": "Rosa",
+        "code": "#FFB6C1",
+        "sku": "CJMX350ML002PK",
+        "price": 26.99,
+        "originalPrice": 51.99
+      },
+      {
+        "name": "Weiß-Rosa",
+        "code": "#FFF0F5",
+        "sku": "CJMX350ML003WP",
+        "price": 27.99,
+        "originalPrice": 52.99
+      },
+      {
+        "name": "Blau (380ml)",
+        "code": "#4A90E2",
+        "sku": "CJMX380ML004BL",
+        "price": 29.99,
+        "originalPrice": 54.99
+      },
+      {
+        "name": "Blau (420ml)",
+        "code": "#2E5BBA",
+        "sku": "CJMX420ML005DB",
+        "price": 32.99,
+        "originalPrice": 57.99
+      },
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJMX350ML006BK",
+        "price": 28.99,
+        "originalPrice": 53.99
+      }
+    ],
     "tags": [
       "mixer",
       "entsafter",
@@ -100,6 +161,36 @@
     "sku": "CJ1621032671155597314",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJVC12001BK",
+        "price": 19.99,
+        "originalPrice": 39.99
+      },
+      {
+        "name": "Silber",
+        "code": "#C0C0C0",
+        "sku": "CJVC12002SL",
+        "price": 21.99,
+        "originalPrice": 41.99
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJVC12003WH",
+        "price": 20.99,
+        "originalPrice": 40.99
+      },
+      {
+        "name": "Edelstahl",
+        "code": "#B8B8B8",
+        "sku": "CJVC12004ST",
+        "price": 22.99,
+        "originalPrice": 42.99
+      }
+    ],
     "tags": [
       "gemüse",
       "schneider",
@@ -758,6 +849,50 @@
     "category": "Beleuchtung",
     "image": "produkt bilder/LED Water Ripple Crystal.jpg",
     "description": "LED Water Ripple Ambient Night Light - USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
+    "colors": [
+      {
+        "name": "16 Farben Quadrat",
+        "code": "#FF6B6B",
+        "sku": "CJLED21001SQ",
+        "price": 39.99,
+        "originalPrice": 59.99
+      },
+      {
+        "name": "16 Farben Krone",
+        "code": "#4ECDC4",
+        "sku": "CJLED21002CR",
+        "price": 42.99,
+        "originalPrice": 62.99
+      },
+      {
+        "name": "Holzbasis Quadrat",
+        "code": "#8B4513",
+        "sku": "CJLED21003WD",
+        "price": 44.99,
+        "originalPrice": 64.99
+      },
+      {
+        "name": "Set 1 - Rot/Blau",
+        "code": "#FF0000",
+        "sku": "CJLED21004S1",
+        "price": 41.99,
+        "originalPrice": 61.99
+      },
+      {
+        "name": "Set 2 - Grün/Lila",
+        "code": "#00FF00",
+        "sku": "CJLED21005S2",
+        "price": 41.99,
+        "originalPrice": 61.99
+      },
+      {
+        "name": "Set 3 - Orange/Cyan",
+        "code": "#FFA500",
+        "sku": "CJLED21006S3",
+        "price": 41.99,
+        "originalPrice": 61.99
+      }
+    ],
     "features": [
       "USB-betrieben für einfache Nutzung",
       "Rotierende Projektion für dynamische Effekte",
@@ -801,6 +936,29 @@
     "category": "Beleuchtung",
     "image": "produkt bilder/Waterproof RGB LED Solar Light.jpg",
     "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.",
+    "colors": [
+      {
+        "name": "Schwarz (2 Stück)",
+        "code": "#000000",
+        "sku": "CJSOL22001BK2",
+        "price": 24.99,
+        "originalPrice": 34.99
+      },
+      {
+        "name": "Schwarz (4 Stück)",
+        "code": "#1a1a1a",
+        "sku": "CJSOL22002BK4",
+        "price": 44.99,
+        "originalPrice": 64.99
+      },
+      {
+        "name": "Schwarz (6 Stück)",
+        "code": "#333333",
+        "sku": "CJSOL22003BK6",
+        "price": 64.99,
+        "originalPrice": 94.99
+      }
+    ],
     "features": [
       "Wasserdicht (IP65) für Außenbereich",
       "Solarbetrieben - keine Stromkosten",
@@ -942,6 +1100,92 @@
     "sku": "CJ9FA9912D",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
+    "colors": [
+      {
+        "name": "Lila",
+        "code": "#8A2BE2",
+        "sku": "CJBT17001PP",
+        "price": 14.99,
+        "originalPrice": 24.99
+      },
+      {
+        "name": "Gelb",
+        "code": "#FFD700",
+        "sku": "CJBT17002YL",
+        "price": 14.99,
+        "originalPrice": 24.99
+      },
+      {
+        "name": "Gold",
+        "code": "#FFD700",
+        "sku": "CJBT17003GD",
+        "price": 16.99,
+        "originalPrice": 26.99
+      },
+      {
+        "name": "Silber",
+        "code": "#C0C0C0",
+        "sku": "CJBT17004SL",
+        "price": 15.99,
+        "originalPrice": 25.99
+      },
+      {
+        "name": "Roségold",
+        "code": "#E8B4B8",
+        "sku": "CJBT17005RG",
+        "price": 17.99,
+        "originalPrice": 27.99
+      },
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJBT17006BK",
+        "price": 14.99,
+        "originalPrice": 24.99
+      },
+      {
+        "name": "Rot",
+        "code": "#FF0000",
+        "sku": "CJBT17007RD",
+        "price": 15.99,
+        "originalPrice": 25.99
+      },
+      {
+        "name": "Königsblau",
+        "code": "#4169E1",
+        "sku": "CJBT17008RB",
+        "price": 15.99,
+        "originalPrice": 25.99
+      },
+      {
+        "name": "Grün",
+        "code": "#008000",
+        "sku": "CJBT17009GR",
+        "price": 15.99,
+        "originalPrice": 25.99
+      },
+      {
+        "name": "Blau",
+        "code": "#0000FF",
+        "sku": "CJBT17010BL",
+        "price": 14.99,
+        "originalPrice": 24.99
+      },
+      {
+        "name": "Rosa",
+        "code": "#FFC0CB",
+        "sku": "CJBT17011PK",
+        "price": 15.99,
+        "originalPrice": 25.99
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJBT17012WH",
+        "price": 14.99,
+        "originalPrice": 24.99
+      }
+    ],
     "tags": [
       "bluetooth",
       "tracker",
@@ -952,13 +1196,28 @@
     "id": 18,
     "name": "Home Electronic Clock Digitale Uhr",
     "price": 24.99,
-    "originalPrice": 34.99,
     "category": "Technik/Gadgets",
     "image": "produkt bilder/Home Electronic Clock Digitale Uhr.jpg",
     "description": "Moderne digitale Wanduhr mit LED-Display. Perfekt für Wohnzimmer, Büro oder Küche mit großer, gut lesbarer Anzeige.",
     "sku": "CJ135B501D",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Roland Purple",
+        "code": "#663399",
+        "sku": "CJHB26001RP",
+        "price": 10.99,
+        "originalPrice": 20.99
+      },
+      {
+        "name": "Lunar Rock Gray",
+        "code": "#708090",
+        "sku": "CJHB26002LG",
+        "price": 11.99,
+        "originalPrice": 21.99
+      }
+    ],
     "tags": [
       "uhr",
       "digital",
