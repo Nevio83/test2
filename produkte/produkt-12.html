@@ -169,7 +169,7 @@
                                 <div class="total-price">Gesamt: <span id="totalPrice-mobile" class="text-success">€19.99</span></div>
                             </div>
                             <div class="action-buttons">
-                                <button class="buy-now-btn add-to-cart" onclick="addToCartWithQuantity(event)">
+                                <button class="buy-now-btn" id="buyNowBtnMobile">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
                                 <button class="wishlist-btn wishlist-style-btn wishlist-button" onclick="toggleWishlist(product)">
@@ -213,7 +213,7 @@
                             
                             <div class="action-buttons">
                                 <!-- Added proper CSS classes for animations -->
-                                <button class="buy-now-btn add-to-cart" id="buyNowBtn" onclick="addToCartWithQuantity(event)">
+                                <button class="buy-now-btn" id="buyNowBtn">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
                                 <button class="wishlist-btn wishlist-style-btn wishlist-button" onclick="toggleWishlist(product)">
@@ -782,6 +782,8 @@
     // Event-Listener für Hero-Buttons
     const cartBtn = document.getElementById('cartBtn');
     const wishlistBtn = document.getElementById('wishlistBtn');
+    const buyNowBtn = document.getElementById('buyNowBtn');
+    const buyNowBtnMobile = document.getElementById('buyNowBtnMobile');
     
     if (cartBtn) {
       cartBtn.addEventListener('click', function(e) {
@@ -821,7 +823,6 @@
 
     // Event-Listener für Quantity-Input
     const quantityInput = document.getElementById('quantity');
-    const buyNowBtn = document.getElementById('buyNowBtn');
     
     if (quantityInput) {
       quantityInput.addEventListener('input', updateTotalPrice);
@@ -829,27 +830,21 @@
       updateTotalPrice(); // Initialisiere den Preis
     }
     
+    // Desktop Button
     if (buyNowBtn) {
       buyNowBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        const quantity = parseInt(quantityInput.value, 10) || 1;
-        const productToCart = {
-          ...product,
-          quantity: quantity
-        };
-        addToCart(productToCart);
-        
-        // Added animation triggers
-        triggerCartButtonAnimation(this);
-        triggerNavCartAnimation();
-        triggerCartIconPulse();
-        
-        // Popup anzeigen statt direkter Weiterleitung
-        if (typeof showAlert === 'function') {
-          showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
-        } else {
-          showNotification('Zum Warenkorb hinzugefügt');
-        }
+        e.stopPropagation();
+        addToCartWithQuantity(e);
+      });
+    }
+    
+    // Mobile Button
+    if (buyNowBtnMobile) {
+      buyNowBtnMobile.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCartWithQuantity(e);
       });
     }
   });
