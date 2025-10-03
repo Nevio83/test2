@@ -588,15 +588,25 @@
     "originalPrice": 20.99,
     "category": "Körperpflege/Wellness",
     "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",
-    "description": "Revolutionäre 4-in-1 selbstreinigende Haarbürste mit Anti-Statik-Massage-Funktion. Skalierbar, rotierend und selbstreinigend für perfekte Haarpflege.",
+    "description": "Revolutionäre 4-in-1 selbstreinigende haarbürste mit Anti-Statik-Massage-Funktion. Skalierbar, rotierend und selbstreinigend für perfekte haarpflege.",
     "sku": "CJ1711943102027542528",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
-    "tags": [
-      "haarbürste",
-      "selbstreinigend",
-      "massage",
-      "anti-statik"
+    "colors": [
+      {
+        "name": "Roland Purple",
+        "code": "#663399",
+        "sku": "CJHB26001RP",
+        "price": 10.99,
+        "originalPrice": 20.99
+      },
+      {
+        "name": "Lunar Rock Gray",
+        "code": "#708090",
+        "sku": "CJHB26002LG",
+        "price": 11.99,
+        "originalPrice": 21.99
+      }
     ],
     "features": [
       "4-in-1 Multifunktions-Design",

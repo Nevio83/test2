@@ -678,12 +678,6 @@
   }
 
   function addToCartWithQuantity(event) {
-  // Verhindere doppelte Ausführung
-  if (event) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
-  
   // Determine which quantity input to use based on the clicked button
   const button = event ? event.target : null;
   const isDesktop = button && button.closest('.d-none.d-lg-block');
@@ -845,13 +839,8 @@
     });
   }
 </script>
-<!-- Warenkorb-Farbauswahl-Erweiterung -->
-<script src="../cart-color-extension.js"></script>
 
-<script src="../bundle-color-selection.js"></script>
 
-<!-- CJ Dropshipping Farbauswahl-Integration -->
-<script src="../cj-color-integration.js"></script>
 </body>
 </html>
   // Populate mobile quantity dropdown on page load

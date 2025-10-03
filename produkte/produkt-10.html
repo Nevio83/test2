@@ -173,7 +173,7 @@
                                 <div class="total-price">Gesamt: <span id="totalPrice-mobile" class="text-success">€19.99</span></div>
                             </div>
                             <div class="action-buttons">
-                                <button class="buy-now-btn add-to-cart" onclick="addToCartWithQuantity(event)">
+                                <button class="buy-now-btn" id="buyNowBtnMobile">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
                                 <button class="wishlist-btn wishlist-style-btn wishlist-button" onclick="toggleWishlist(product)">
@@ -217,7 +217,7 @@
                             
                             <div class="action-buttons">
                                 <!-- Added proper CSS classes for animations -->
-                                <button class="buy-now-btn add-to-cart" id="buyNowBtn" onclick="addToCartWithQuantity(event)">
+                                <button class="buy-now-btn" id="buyNowBtn">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
                                 <button class="wishlist-btn wishlist-style-btn wishlist-button" onclick="toggleWishlist(product)">
@@ -719,10 +719,23 @@
   const quantityInput = document.getElementById(inputId);
   const quantity = quantityInput ? parseInt(quantityInput.value, 10) || 1 : 1;
   
+  // SPEZIAL FÜR PRODUKT-10: Füge Farbdaten hinzu
   const productToCart = {
     ...product,
     quantity: quantity
   };
+  
+  // Hole die ausgewählte Farbe für Produkt-10
+  if (window.product && window.product.selectedColor) {
+    productToCart.name = `${product.name} (${window.product.selectedColor})`;
+    productToCart.selectedColor = window.product.selectedColor;
+    productToCart.selectedColorCode = window.product.selectedColorCode;
+    productToCart.selectedColorSku = window.product.selectedColorSku;
+    productToCart.price = window.product.price;
+    productToCart.originalPrice = window.product.originalPrice;
+    console.log('🎨 Produkt-10 mit Farbe zum Warenkorb:', productToCart.name, 'Preis:', productToCart.price);
+  }
+  
   addToCart(productToCart);
   
   // Enhanced animations for product page - only animate the clicked button
@@ -826,6 +839,7 @@
     // Event-Listener für Quantity-Input
     const quantityInput = document.getElementById('quantity');
     const buyNowBtn = document.getElementById('buyNowBtn');
+    const buyNowBtnMobile = document.getElementById('buyNowBtnMobile');
     
     if (quantityInput) {
       quantityInput.addEventListener('input', updateTotalPrice);
@@ -833,27 +847,21 @@
       updateTotalPrice(); // Initialisiere den Preis
     }
     
+    // Desktop Button
     if (buyNowBtn) {
       buyNowBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        const quantity = parseInt(quantityInput.value, 10) || 1;
-        const productToCart = {
-          ...product,
-          quantity: quantity
-        };
-        addToCart(productToCart);
-        
-        // Added animation triggers
-        triggerCartButtonAnimation(this);
-        triggerNavCartAnimation();
-        triggerCartIconPulse();
-        
-        // Popup anzeigen statt direkter Weiterleitung
-        if (typeof showAlert === 'function') {
-          showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
-        } else {
-          showNotification('Zum Warenkorb hinzugefügt');
-        }
+        e.stopPropagation();
+        addToCartWithQuantity(e);
+      });
+    }
+    
+    // Mobile Button
+    if (buyNowBtnMobile) {
+      buyNowBtnMobile.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCartWithQuantity(e);
       });
     }
   });
@@ -905,6 +913,9 @@
 
 <!-- Warenkorb-Farbauswahl-Erweiterung -->
 <script src="../cart-color-extension.js"></script>
+
+<!-- Fix für Produkt-10 Farbauswahl -->
+<script src="../fix-produkt-10.js"></script>
 
 <!-- Bundle-Farbauswahl-Erweiterung -->
 <script src="../bundle-color-selection.js"></script>
