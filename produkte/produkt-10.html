@@ -727,7 +727,9 @@
   
   // Hole die ausgewählte Farbe für Produkt-10
   if (window.product && window.product.selectedColor) {
-    productToCart.name = `${product.name} (${window.product.selectedColor})`;
+    // Entferne alte Farbe aus dem Namen falls vorhanden
+    let cleanName = product.name.replace(/\s*\([^)]*\)$/, '');
+    productToCart.name = `${cleanName} (${window.product.selectedColor})`;
     productToCart.selectedColor = window.product.selectedColor;
     productToCart.selectedColorCode = window.product.selectedColorCode;
     productToCart.selectedColorSku = window.product.selectedColorSku;
