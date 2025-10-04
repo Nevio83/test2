@@ -82,6 +82,7 @@
         }
     </style>
     <link rel="stylesheet" href="../product-image-fullscreen.css">
+    <link rel="stylesheet" href="../product-image-gallery.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -336,8 +337,14 @@
     .then(res => res.json())
     .then(products => {
       const prod = products.find(p => p.id === product.id);
+      console.log('Produkt 26 - Checking colors:', prod?.colors);
       if (prod && prod.bundles && prod.bundles.length > 0) {
-        renderBundles(prod.bundles);
+        // Verwende renderBundlesWithColors wenn Farben vorhanden sind
+        if (typeof renderBundlesWithColors === 'function' && prod.colors && prod.colors.length > 0) {
+          renderBundlesWithColors(product.id, prod.colors);
+        } else {
+          renderBundles(prod.bundles);
+        }
       } else {
         // Fallback: Bundle-Box immer anzeigen
         renderBundles();
@@ -1182,5 +1189,9 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="../fix-bundle-naming.js"></script>
 
     <script src="../product-image-fullscreen.js"></script>
+    <script src="../product-image-gallery.js"></script>
+    
+    <!-- Force Bundle Colors für Produkt 26 -->
+    <script src="../force-bundle-colors.js"></script>
 </body>
 </html>
