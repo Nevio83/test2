@@ -29,10 +29,15 @@ function getCart() {
             // Entferne alte Farbe aus dem Namen falls vorhanden
             let cleanName = item.name.replace(/\s*\([^)]*\)$/, '');
             
+            // Entferne leere Klammern
+            cleanName = cleanName.replace(/\s*\(\s*\)/g, '');
+            
             // Füge Farbe hinzu wenn vorhanden
-            if (item.selectedColor) {
+            if (item.selectedColor && item.selectedColor.trim() !== '') {
                 item.name = `${cleanName} (${item.selectedColor})`;
                 console.log(`📦 Warenkorb-Artikel: ${item.name} - Preis: €${item.price}`);
+            } else {
+                item.name = cleanName; // Keine Klammern wenn keine Farbe
             }
             
             return item;
@@ -823,20 +828,9 @@ function addAddonToCart(productId) {
     localStorage.setItem('cart', JSON.stringify(cart));
     
     // Aktualisiere die Anzeige
-    updateCart();
+    updateCartPage();
     
-    // Füge Farbauswahl zu Warenkorb-Artikeln hinzu (falls verfügbar)
-    setTimeout(async () => {
-        if (window.renderColorSelector) {
-            const cartItems = getCart();
-            for (const item of cartItems) {
-                const selectorContainer = document.querySelector(`.cart-item-color-selector-${item.id}`);
-                if (selectorContainer) {
-                    selectorContainer.innerHTML = await window.renderColorSelector(item, selectorContainer);
-                }
-            }
-        }
-    }, 100);
+    // Sofort zur cart.html navigieren
     window.location.href = 'cart.html';
 }
 
