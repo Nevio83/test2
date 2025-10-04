@@ -667,4 +667,58 @@ if (typeof window.addBundleToCart !== 'function') {
     console.log('✅ addBundleToCart ist verfügbar');
 }
 
+// ============================================
+// BUNDLE NAME FIX - Korrigiert Bundle-Namen in Cart
+// ============================================
+
+function fixBundleNamesInCart() {
+    // Nur auf cart.html ausführen
+    if (!window.location.pathname.includes('cart.html')) return;
+    
+    const cartItems = document.querySelectorAll('.cart-item, .cart-product, [data-cart-item]');
+    
+    cartItems.forEach(item => {
+        const nameElement = item.querySelector('.product-name, .cart-item-name, h5, h6');
+        if (!nameElement) return;
+        
+        const currentName = nameElement.textContent.trim();
+        
+        // Prüfe ob es ein Bundle ist
+        if (currentName.includes('Sets)') && !currentName.includes('(', currentName.indexOf('Sets)') + 5)) {
+            // Bundle hat keine Farben im Namen - hole sie aus localStorage
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            // Finde das passende Bundle
+            const bundleItem = cart.find(cartItem => {
+                if (cartItem.isBundle || cartItem.isBundleItem) {
+                    const baseName = cartItem.name.split('(')[0].trim();
+                    const currentBaseName = currentName.split('(')[0].trim();
+                    return baseName === currentBaseName;
+                }
+                return false;
+            });
+            
+            if (bundleItem && bundleItem.name.includes('(') && bundleItem.name !== currentName) {
+                console.log(`🔧 Korrigiere Bundle-Name: "${bundleItem.name}"`);
+                nameElement.textContent = bundleItem.name;
+            }
+        }
+    });
+}
+
+// Initialisiere Bundle Name Fix
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(fixBundleNamesInCart, 1000);
+        setInterval(fixBundleNamesInCart, 2000);
+    });
+} else {
+    setTimeout(fixBundleNamesInCart, 1000);
+    setInterval(fixBundleNamesInCart, 2000);
+}
+
+// Bei Cart-Updates
+document.addEventListener('cart-updated', () => setTimeout(fixBundleNamesInCart, 100));
+window.addEventListener('cartUpdated', () => setTimeout(fixBundleNamesInCart, 100));
+
 console.log('✅ Bundle Complete vollständig geladen');
