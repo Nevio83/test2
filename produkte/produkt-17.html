@@ -60,6 +60,7 @@
         }
     </style>
     <link rel="stylesheet" href="../product-image-fullscreen.css">
+    <link rel="stylesheet" href="../product-image-gallery.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -324,7 +325,12 @@
     .then(products => {
       const prod = products.find(p => p.id === product.id);
       if (prod && prod.bundles && prod.bundles.length > 0) {
-        renderBundles(prod.bundles);
+        // Verwende renderBundlesWithColors wenn Farben vorhanden sind
+        if (typeof renderBundlesWithColors === 'function' && prod.colors && prod.colors.length > 0) {
+          renderBundlesWithColors(product.id, prod.colors);
+        } else {
+          renderBundles(prod.bundles);
+        }
       }
     });
 
@@ -1199,6 +1205,10 @@ window.getSelectedColor = () => colorSelection.getSelectedColor();
 <script src="../fix-bundle-naming.js"></script>
 
     <script src="../product-image-fullscreen.js"></script>
+    <script src="../product-image-gallery.js"></script>
+    
+    <!-- Force Bundle Colors für Produkt 17 -->
+    <script src="../force-bundle-colors.js"></script>
 </body>
 </html>
 

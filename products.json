@@ -12,25 +12,18 @@
     "shippingTime": "7-15 Werktage",
     "colors": [
       {
+        "name": "Blau",
+        "code": "#4A90E2",
+        "sku": "CJHS167415803CX",
+        "price": 49.99,
+        "originalPrice": 69.99
+      },
+      {
         "name": "Weiß",
         "code": "#FFFFFF",
         "sku": "CJHS167415804DW",
         "price": 49.99,
         "originalPrice": 69.99
-      },
-      {
-        "name": "Blau",
-        "code": "#4A90E2",
-        "sku": "CJHS167415803CX",
-        "price": 52.99,
-        "originalPrice": 72.99
-      },
-      {
-        "name": "Blau mit Schwerkraft",
-        "code": "#2E5BBA",
-        "sku": "CJHS167415802BY",
-        "price": 54.99,
-        "originalPrice": 74.99
       }
     ],
     "bundles": [
@@ -81,73 +74,76 @@
         "originalPrice": 49.99
       },
       {
-        "name": "Rosa",
-        "code": "#FFB6C1",
+        "name": "Pink",
+        "code": "#FFC0CB",
         "sku": "CJMX350ML002PK",
-        "price": 26.99,
-        "originalPrice": 51.99
+        "price": 24.99,
+        "originalPrice": 49.99
+      }
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Smoothie Starter",
+        "description": "Mixer + Zubehör",
+        "items": [
+          "Ersatzbecher",
+          "Reinigungsbürste"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 29,
+        "savings": 6
       },
       {
-        "name": "Weiß-Rosa",
-        "code": "#FFF0F5",
-        "sku": "CJMX350ML003WP",
-        "price": 27.99,
-        "originalPrice": 52.99
+        "id": "bundle2",
+        "name": "Fitness Bundle",
+        "description": "Komplettes Smoothie-Set",
+        "items": [
+          "2x Ersatzbecher",
+          "Reinigungsbürste",
+          "Rezeptbuch"
+        ],
+        "originalPrice": 60,
+        "bundlePrice": 45,
+        "savings": 15
       },
       {
-        "name": "Blau (380ml)",
-        "code": "#4A90E2",
-        "sku": "CJMX380ML004BL",
-        "price": 29.99,
-        "originalPrice": 54.99
+        "id": "bundle3",
+        "name": "Family Pack",
+        "description": "Alles für die Familie",
+        "items": [
+          "3x Ersatzbecher",
+          "2x Reinigungsbürste",
+          "Rezeptbuch",
+          "Transporttasche"
+        ],
+        "originalPrice": 85,
+        "bundlePrice": 59,
+        "savings": 26
       },
       {
-        "name": "Blau (420ml)",
-        "code": "#2E5BBA",
-        "sku": "CJMX420ML005DB",
-        "price": 32.99,
-        "originalPrice": 57.99
-      },
-      {
-        "name": "Schwarz",
-        "code": "#000000",
-        "sku": "CJMX350ML006BK",
-        "price": 28.99,
-        "originalPrice": 53.99
+        "id": "bundle4",
+        "name": "Professional Set",
+        "description": "Für tägliche Nutzung",
+        "items": [
+          "4x Ersatzbecher",
+          "3x Reinigungsbürste",
+          "Rezeptbuch",
+          "Transporttasche",
+          "Ersatzklingen"
+        ],
+        "originalPrice": 120,
+        "bundlePrice": 79,
+        "savings": 41
       }
     ],
     "tags": [
       "mixer",
       "entsafter",
       "smoothie",
+      "350ml",
+      "elektrisch",
       "tragbar"
-    ],
-    "bundles": [
-      {
-        "id": "bundle1",
-        "name": "Smoothie Starter",
-        "description": "Mixer + Rezepte",
-        "items": [
-          "Rezeptbuch",
-          "Ersatzklingen"
-        ],
-        "originalPrice": 55,
-        "bundlePrice": 45,
-        "savings": 10
-      },
-      {
-        "id": "bundle2",
-        "name": "Health Master",
-        "description": "Komplettes Gesundheits-Set",
-        "items": [
-          "Rezeptbuch",
-          "Ersatzklingen",
-          "Superfood Starter Kit"
-        ],
-        "originalPrice": 85,
-        "bundlePrice": 65,
-        "savings": 20
-      }
     ]
   },
   {
@@ -161,36 +157,6 @@
     "sku": "CJ1621032671155597314",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#000000",
-        "sku": "CJVC12001BK",
-        "price": 19.99,
-        "originalPrice": 39.99
-      },
-      {
-        "name": "Silber",
-        "code": "#C0C0C0",
-        "sku": "CJVC12002SL",
-        "price": 21.99,
-        "originalPrice": 41.99
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJVC12003WH",
-        "price": 20.99,
-        "originalPrice": 40.99
-      },
-      {
-        "name": "Edelstahl",
-        "code": "#B8B8B8",
-        "sku": "CJVC12004ST",
-        "price": 22.99,
-        "originalPrice": 42.99
-      }
-    ],
     "tags": [
       "gemüse",
       "schneider",
@@ -859,50 +825,9 @@
     "category": "Beleuchtung",
     "image": "produkt bilder/LED Water Ripple Crystal.jpg",
     "description": "LED Water Ripple Ambient Night Light - USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
-    "colors": [
-      {
-        "name": "16 Farben Quadrat",
-        "code": "#FF6B6B",
-        "sku": "CJLED21001SQ",
-        "price": 39.99,
-        "originalPrice": 59.99
-      },
-      {
-        "name": "16 Farben Krone",
-        "code": "#4ECDC4",
-        "sku": "CJLED21002CR",
-        "price": 42.99,
-        "originalPrice": 62.99
-      },
-      {
-        "name": "Holzbasis Quadrat",
-        "code": "#8B4513",
-        "sku": "CJLED21003WD",
-        "price": 44.99,
-        "originalPrice": 64.99
-      },
-      {
-        "name": "Set 1 - Rot/Blau",
-        "code": "#FF0000",
-        "sku": "CJLED21004S1",
-        "price": 41.99,
-        "originalPrice": 61.99
-      },
-      {
-        "name": "Set 2 - Grün/Lila",
-        "code": "#00FF00",
-        "sku": "CJLED21005S2",
-        "price": 41.99,
-        "originalPrice": 61.99
-      },
-      {
-        "name": "Set 3 - Orange/Cyan",
-        "code": "#FFA500",
-        "sku": "CJLED21006S3",
-        "price": 41.99,
-        "originalPrice": 61.99
-      }
-    ],
+    "sku": "CJLED21001",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
     "features": [
       "USB-betrieben für einfache Nutzung",
       "Rotierende Projektion für dynamische Effekte",
@@ -1064,41 +989,6 @@
     "shippingTime": "10-20 Werktage",
     "colors": [
       {
-        "name": "Lila",
-        "code": "#8A2BE2",
-        "sku": "CJBT17001PP",
-        "price": 14.99,
-        "originalPrice": 24.99
-      },
-      {
-        "name": "Gelb",
-        "code": "#FFD700",
-        "sku": "CJBT17002YL",
-        "price": 14.99,
-        "originalPrice": 24.99
-      },
-      {
-        "name": "Gold",
-        "code": "#FFD700",
-        "sku": "CJBT17003GD",
-        "price": 16.99,
-        "originalPrice": 26.99
-      },
-      {
-        "name": "Silber",
-        "code": "#C0C0C0",
-        "sku": "CJBT17004SL",
-        "price": 15.99,
-        "originalPrice": 25.99
-      },
-      {
-        "name": "Roségold",
-        "code": "#E8B4B8",
-        "sku": "CJBT17005RG",
-        "price": 17.99,
-        "originalPrice": 27.99
-      },
-      {
         "name": "Schwarz",
         "code": "#000000",
         "sku": "CJBT17006BK",
@@ -1106,44 +996,23 @@
         "originalPrice": 24.99
       },
       {
-        "name": "Rot",
-        "code": "#FF0000",
-        "sku": "CJBT17007RD",
-        "price": 15.99,
-        "originalPrice": 25.99
-      },
-      {
-        "name": "Königsblau",
-        "code": "#4169E1",
-        "sku": "CJBT17008RB",
-        "price": 15.99,
-        "originalPrice": 25.99
-      },
-      {
-        "name": "Grün",
-        "code": "#008000",
-        "sku": "CJBT17009GR",
-        "price": 15.99,
-        "originalPrice": 25.99
-      },
-      {
-        "name": "Blau",
-        "code": "#0000FF",
-        "sku": "CJBT17010BL",
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJBT17007WH",
         "price": 14.99,
         "originalPrice": 24.99
       },
       {
-        "name": "Rosa",
-        "code": "#FFC0CB",
-        "sku": "CJBT17011PK",
-        "price": 15.99,
-        "originalPrice": 25.99
+        "name": "Grün",
+        "code": "#00FF00",
+        "sku": "CJBT17008GR",
+        "price": 14.99,
+        "originalPrice": 24.99
       },
       {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJBT17012WH",
+        "name": "Pink",
+        "code": "#FFC0CB",
+        "sku": "CJBT17009PK",
         "price": 14.99,
         "originalPrice": 24.99
       }
@@ -1164,22 +1033,6 @@
     "sku": "CJ135B501D",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#000000",
-        "sku": "CJCL18001BK",
-        "price": 24.99,
-        "originalPrice": 34.99
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJCL18002WH",
-        "price": 24.99,
-        "originalPrice": 34.99
-      }
-    ],
     "tags": [
       "uhr",
       "digital",

@@ -1,8 +1,16 @@
 // Bundle Color Integration - Integriert Farbauswahl in Bundle-Boxen auf Produktseiten
 console.log('🎨 Bundle Color Integration geladen');
 
+// Liste der Produkte die KEINE Farbauswahl haben (auch nicht bei Bundles)
+const productsWithoutColors = [12, 18, 21];
+
 // Erweiterte renderBundles Funktion mit optionaler Farbauswahl
 function renderBundlesWithColors(productId, productColors) {
+    // Prüfe ob dieses Produkt überhaupt Farben haben soll
+    if (productsWithoutColors.includes(parseInt(productId))) {
+        productColors = null; // Keine Farben für diese Produkte
+    }
+    
     // Prüfe ob Farben vorhanden sind
     const hasColors = productColors && productColors.length > 0;
     const einzelpreis = hasColors ? productColors[0].price : 24.99;
@@ -383,6 +391,8 @@ function updateBundlePrice(bundleId, bundleCard) {
 }
 
 // CSS für inline Farbauswahl in Bundles
+// Prüfe ob Styles bereits definiert wurden
+if (typeof bundleColorStyles === 'undefined') {
 const bundleColorStyles = `
 <style>
 .bundle-color-selection {
@@ -468,4 +478,38 @@ if (!document.getElementById('bundle-color-inline-styles')) {
 window.renderBundlesWithColors = renderBundlesWithColors;
 window.selectBundleItemColor = selectBundleItemColor;
 
+// Auto-initialisiere für Produkte mit Farben
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        // Prüfe ob wir auf einer Produktseite sind
+        const urlPath = window.location.pathname;
+        const match = urlPath.match(/produkt-(\d+)\.html/);
+        
+        if (match) {
+            const productId = parseInt(match[1]);
+            
+            // Produkte die Farbauswahl bei Bundles haben sollen
+            const productsWithBundleColors = [10, 11, 17, 26];
+            
+            if (productsWithBundleColors.includes(productId)) {
+                // Lade Produktdaten und initialisiere Bundles mit Farben
+                fetch('../products.json')
+                    .then(res => res.json())
+                    .then(products => {
+                        const prod = products.find(p => p.id === productId);
+                        if (prod && prod.colors && prod.colors.length > 0) {
+                            const bundleSection = document.getElementById('bundle-section');
+                            if (bundleSection && !bundleSection.querySelector('.bundle-box')) {
+                                console.log(`Auto-initializing bundle colors for product ${productId}`);
+                                renderBundlesWithColors(productId, prod.colors);
+                            }
+                        }
+                    })
+                    .catch(err => console.error('Error loading products for bundle colors:', err));
+            }
+        }
+    }, 2000); // Warte 2 Sekunden um sicherzustellen, dass alles geladen ist
+});
+
 console.log('✅ Bundle Color Integration initialisiert');
+}
