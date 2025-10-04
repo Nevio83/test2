@@ -659,6 +659,32 @@ function updateCartPage() {
     }
     setupStripeForm(); // Diese Zeile hinzufügen
     mountStripeElements();
+    
+    // Füge Farbauswahl zu Warenkorb-Artikeln hinzu (falls verfügbar)
+    setTimeout(async () => {
+        if (window.addColorSelectorsToCart) {
+            console.log('🎨 Rufe addColorSelectorsToCart auf...');
+            await window.addColorSelectorsToCart();
+        } else if (window.renderColorSelector) {
+            console.log('🎨 Fallback: Füge Farbauswahl manuell hinzu...');
+            const cartItems = getCart();
+            for (const item of cartItems) {
+                const container = document.querySelector(`.cart-item[data-id="${item.id}"] .cart-item-details`);
+                if (container && !container.querySelector('.cart-color-selector')) {
+                    const colorDiv = document.createElement('div');
+                    colorDiv.className = 'cart-color-selector-wrapper';
+                    const selectorHtml = await window.renderColorSelector(item, colorDiv);
+                    if (selectorHtml) {
+                        colorDiv.innerHTML = selectorHtml;
+                        const title = container.querySelector('h5');
+                        if (title) {
+                            title.insertAdjacentElement('afterend', colorDiv);
+                        }
+                    }
+                }
+            }
+        }
+    }, 500);
 }
 
 async function handleRedirectCheckout(methodName) {
@@ -796,7 +822,21 @@ function addAddonToCart(productId) {
     // Speichere den aktualisierten Warenkorb
     localStorage.setItem('cart', JSON.stringify(cart));
     
-    // Aktualisiere die Seite
+    // Aktualisiere die Anzeige
+    updateCart();
+    
+    // Füge Farbauswahl zu Warenkorb-Artikeln hinzu (falls verfügbar)
+    setTimeout(async () => {
+        if (window.renderColorSelector) {
+            const cartItems = getCart();
+            for (const item of cartItems) {
+                const selectorContainer = document.querySelector(`.cart-item-color-selector-${item.id}`);
+                if (selectorContainer) {
+                    selectorContainer.innerHTML = await window.renderColorSelector(item, selectorContainer);
+                }
+            }
+        }
+    }, 100);
     window.location.href = 'cart.html';
 }
 
