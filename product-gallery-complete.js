@@ -1,7 +1,19 @@
-// Product Image Gallery Functionality
+// ============================================
+// PRODUCT GALLERY COMPLETE - Kombinierte Galerie & Fullscreen
+// Vereint product-image-gallery.js und product-image-fullscreen.js
+// ============================================
+
+// ============================================
+// TEIL 1: PRODUCT IMAGE GALLERY
+// ============================================
 
 class ProductImageGallery {
     constructor(productId, productName) {
+        // Singleton Pattern für jede Produkt-ID
+        if (window.galleryInstance && window.galleryInstance.productId === productId) {
+            return window.galleryInstance;
+        }
+        
         this.productId = productId;
         this.productName = productName;
         this.currentImageIndex = 0;
@@ -19,6 +31,9 @@ class ProductImageGallery {
         };
         
         this.init();
+        
+        // Speichere Instanz global
+        window.galleryInstance = this;
     }
     
     init() {
@@ -46,7 +61,7 @@ class ProductImageGallery {
                     {
                         src: `../produkt bilder/${folderName}/Elektrischer Wasserspender für Schreibtisch schwarz.jpg`,
                         alt: 'Elektrischer Wasserspender für Schreibtisch - Blau',
-                        color: 'Blau'  // Geändert zu Blau, da das die Farboption ist
+                        color: 'Blau'
                     },
                     {
                         src: `../produkt bilder/${folderName}/Elektrischer Wasserspender für Schreibtisch weiß.jpg`,
@@ -444,6 +459,314 @@ class ProductImageGallery {
     }
 }
 
+// ============================================
+// TEIL 2: PRODUCT IMAGE FULLSCREEN
+// ============================================
+
+class ProductImageFullscreen {
+    constructor() {
+        // Singleton Pattern - nur eine Instanz erlauben
+        if (window.fullscreenInstance) {
+            return window.fullscreenInstance;
+        }
+        
+        this.modal = null;
+        this.modalImg = null;
+        this.captionText = null;
+        this.galleryKeyHandler = null;
+        this.init();
+        
+        // Speichere Instanz global
+        window.fullscreenInstance = this;
+    }
+
+    init() {
+        // Create modal structure
+        this.createModal();
+
+        // Add click listeners to all product images
+        this.attachImageListeners();
+        
+        // Add keyboard navigation
+        this.attachKeyboardListeners();
+    }
+
+    createModal() {
+        // Check if modal already exists
+        if (document.getElementById('imageFullscreenModal')) {
+            this.modal = document.getElementById('imageFullscreenModal');
+            this.modalImg = document.getElementById('fullscreenImage');
+            this.captionText = document.getElementById('fullscreenCaption');
+            return;
+        }
+
+        // Create modal HTML
+        const modalHTML = `
+            <div id="imageFullscreenModal" class="image-fullscreen-modal">
+                <span class="fullscreen-close">&times;</span>
+                <div class="image-loading" id="imageLoading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Lädt...</p>
+                </div>
+                <img class="fullscreen-image-content" id="fullscreenImage">
+                <div class="fullscreen-caption" id="fullscreenCaption"></div>
+            </div>
+        `;
+
+        // Add modal to body
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Get references
+        this.modal = document.getElementById('imageFullscreenModal');
+        this.modalImg = document.getElementById('fullscreenImage');
+        this.captionText = document.getElementById('fullscreenCaption');
+
+        // Add event listeners to modal controls
+        this.attachModalControls();
+    }
+
+    attachModalControls() {
+        // Close button
+        const closeBtn = this.modal.querySelector('.fullscreen-close');
+        closeBtn.onclick = () => this.closeModal();
+
+        // Click outside image to close
+        this.modal.onclick = (e) => {
+            if (e.target === this.modal || e.target === this.modalImg) {
+                this.closeModal();
+            }
+        };
+    }
+
+    attachImageListeners() {
+        // Main product images
+        const mainImages = document.querySelectorAll('.main-product-image, .product-image[style*="max-height: 500px"], .product-image[style*="max-height: 400px"], .product-image[style*="max-height: 350px"]');
+        mainImages.forEach(img => {
+            img.style.cursor = 'zoom-in';
+            img.classList.add('main-product-image');
+            img.onclick = () => this.openModal(img);
+        });
+
+        // Color variant images if they exist
+        const colorImages = document.querySelectorAll('.color-image-preview');
+        colorImages.forEach(img => {
+            img.style.cursor = 'zoom-in';
+            img.onclick = () => this.openModal(img);
+        });
+    }
+
+    attachKeyboardListeners() {
+        document.addEventListener('keydown', (e) => {
+            if (this.modal && this.modal.style.display === 'block') {
+                if (e.key === 'Escape') {
+                    this.closeModal();
+                }
+            }
+        });
+    }
+
+    openModal(img) {
+        // Show loading spinner
+        const loadingDiv = document.getElementById('imageLoading');
+        if (loadingDiv) {
+            loadingDiv.style.display = 'block';
+        }
+
+        // Show modal
+        this.modal.style.display = 'block';
+        
+        // Create new image to load
+        const tempImg = new Image();
+        tempImg.onload = () => {
+            // Hide loading spinner
+            if (loadingDiv) {
+                loadingDiv.style.display = 'none';
+            }
+            
+            // Set image source
+            this.modalImg.src = tempImg.src;
+            
+            // Set caption
+            this.captionText.innerHTML = img.alt || 'Produktbild';
+            
+            // Add animation class
+            this.modalImg.classList.add('fullscreen-image-content');
+            
+            // Setup gallery navigation if available
+            this.setupGalleryNavigation(img);
+        };
+        
+        // Handle high resolution images
+        const highResSrc = img.getAttribute('data-highres') || img.src;
+        tempImg.src = highResSrc;
+
+        // Prevent body scroll when modal is open
+        document.body.style.overflow = 'hidden';
+    }
+    
+    setupGalleryNavigation(currentImg) {
+        // WICHTIG: Erst alle alten Navigations-Elemente entfernen
+        const existingNavs = document.querySelectorAll('.fullscreen-nav-btn, .fullscreen-counter');
+        existingNavs.forEach(el => el.remove());
+        
+        // Check if ProductImageGallery exists
+        const urlPath = window.location.pathname;
+        const match = urlPath.match(/produkt-(\d+)\.html/);
+        if (!match) return;
+        
+        const productId = parseInt(match[1]);
+        
+        // Get gallery images if available
+        let galleryImages = [];
+        
+        // Try to get images from existing ProductImageGallery instance
+        if (window.galleryInstance && window.galleryInstance.images) {
+            galleryImages = window.galleryInstance.images;
+        } else if (window.ProductImageGallery) {
+            // Fallback: Lade Bilder direkt ohne neue Instanz zu erstellen
+            const tempGallery = Object.create(ProductImageGallery.prototype);
+            tempGallery.productId = productId;
+            tempGallery.images = [];
+            tempGallery.productImageFolders = {
+                10: 'Elektrischer Wasserspender für Schreibtisch bilder',
+                11: '350ml Elektrischer Mixer Entsafter bilder',
+                17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
+                26: '4 In 1 Self Cleaning Hair Brush bilder'
+            };
+            
+            if (tempGallery.productImageFolders[productId]) {
+                tempGallery.loadProductImages();
+                galleryImages = tempGallery.images;
+            }
+        }
+        
+        // If no gallery images, try to find all product images on page
+        if (galleryImages.length === 0) {
+            const allImages = document.querySelectorAll('.gallery-image, .main-product-image, .gallery-thumbnail img');
+            if (allImages.length > 1) {
+                galleryImages = Array.from(allImages).map(img => ({
+                    src: img.src,
+                    alt: img.alt || 'Produktbild'
+                }));
+            }
+        }
+        
+        if (galleryImages.length <= 1) return; // No navigation needed
+        
+        // Find current image index
+        let currentIndex = galleryImages.findIndex(img => 
+            img.src === currentImg.src || 
+            currentImg.src.includes(img.src.split('/').pop())
+        );
+        
+        if (currentIndex === -1) currentIndex = 0;
+        
+        // Create navigation buttons
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'fullscreen-nav-btn fullscreen-nav-prev';
+        prevBtn.innerHTML = '‹';
+        prevBtn.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: 2px solid white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 100002;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            padding: 0;
+        `;
+        
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'fullscreen-nav-btn fullscreen-nav-next';
+        nextBtn.innerHTML = '›';
+        nextBtn.style.cssText = prevBtn.style.cssText;
+        nextBtn.style.left = 'auto';
+        nextBtn.style.right = '20px';
+        
+        // Create counter
+        const counter = document.createElement('div');
+        counter.className = 'fullscreen-counter';
+        counter.style.cssText = `
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 100002;
+        `;
+        counter.textContent = `${currentIndex + 1} / ${galleryImages.length}`;
+        
+        // Navigation function
+        const navigateImage = (direction) => {
+            if (direction === 'next') {
+                currentIndex = (currentIndex + 1) % galleryImages.length;
+            } else {
+                currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+            }
+            
+            this.modalImg.src = galleryImages[currentIndex].src;
+            this.captionText.innerHTML = galleryImages[currentIndex].alt;
+            counter.textContent = `${currentIndex + 1} / ${galleryImages.length}`;
+        };
+        
+        // Add event listeners
+        prevBtn.onclick = () => navigateImage('prev');
+        nextBtn.onclick = () => navigateImage('next');
+        
+        // Add keyboard navigation
+        const keyHandler = (e) => {
+            if (this.modal.style.display !== 'block') return;
+            if (e.key === 'ArrowLeft') navigateImage('prev');
+            if (e.key === 'ArrowRight') navigateImage('next');
+        };
+        
+        // Remove old handler if exists
+        if (this.galleryKeyHandler) {
+            document.removeEventListener('keydown', this.galleryKeyHandler);
+        }
+        this.galleryKeyHandler = keyHandler;
+        document.addEventListener('keydown', keyHandler);
+        
+        // Add elements to body (not modal) with higher z-index
+        document.body.appendChild(prevBtn);
+        document.body.appendChild(nextBtn);
+        document.body.appendChild(counter);
+    }
+
+    closeModal() {
+        // Entferne alle Navigations-Elemente beim Schließen
+        const navElements = document.querySelectorAll('.fullscreen-nav-btn, .fullscreen-counter');
+        navElements.forEach(el => el.remove());
+        
+        // Entferne Event-Handler
+        if (this.galleryKeyHandler) {
+            document.removeEventListener('keydown', this.galleryKeyHandler);
+            this.galleryKeyHandler = null;
+        }
+        
+        this.modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// ============================================
+// INITIALISIERUNG
+// ============================================
+
 // Initialisiere Gallery wenn DOM bereit ist
 document.addEventListener('DOMContentLoaded', function() {
     // Extrahiere Produkt-ID aus der URL oder Seite
@@ -463,7 +786,13 @@ document.addEventListener('DOMContentLoaded', function() {
             new ProductImageGallery(productId, productName);
         }
     }
+    
+    // Initialisiere Fullscreen immer
+    new ProductImageFullscreen();
 });
 
 // Export für andere Scripts
 window.ProductImageGallery = ProductImageGallery;
+window.ProductImageFullscreen = ProductImageFullscreen;
+
+console.log('✅ Product Gallery Complete geladen');
