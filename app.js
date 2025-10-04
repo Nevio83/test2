@@ -4301,16 +4301,43 @@ window.showCategorySections = function(selectedCategory) {
   if (originalShowCategorySections) {
     originalShowCategorySections.call(this, selectedCategory);
   }
-  
   // Update button colors
   updateButtonColors(selectedCategory);
 };
 
-// Initialize button colors on page load
+// Lade Cart Color Selector für Farbauswahl im Dropdown
+function loadCartColorSelector() {
+    if (!document.querySelector('script[src="cart-color-selector.js"]')) {
+        const script = document.createElement('script');
+        script.src = 'cart-color-selector.js';
+        script.onload = () => {
+            console.log('✅ Cart Color Selector geladen für Dropdown');
+            // Rufe die Funktion auf, nachdem das Script geladen wurde
+            setTimeout(() => {
+                if (window.addColorSelectorsToCart) {
+                    window.addColorSelectorsToCart();
+                }
+            }, 500);
+        };
+        document.body.appendChild(script);
+    }
+}
+
+// Initialisierung beim Laden der Seite
 document.addEventListener('DOMContentLoaded', function() {
+    // Lade Color Selector für Dropdown
+    loadCartColorSelector();
   // Set initial state to 'alle'
   setTimeout(() => {
     updateButtonColors('alle');
   }, 100);
 });
-window.loadCategoryProducts = loadCategoryProducts;
+
+
+// Lade Default Color Handler f�r index.html
+if (!window.location.pathname.includes('produkt-')) {
+    const script = document.createElement('script');
+    script.src = 'default-color-handler.js';
+    document.head.appendChild(script);
+    console.log('Default Color Handler wird geladen...');
+}
