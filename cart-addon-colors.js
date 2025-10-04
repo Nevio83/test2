@@ -7,9 +7,38 @@
     function autoSelectFirstColor() {
         console.log('🎨 Auto-selecting first color for addons...');
         
-        // Suche nach allen Radio-Buttons in der gesamten Seite die zu Farben gehören
+        // Spezifisch für Cart-Seite: Suche in "Das könnte Ihnen gefallen" Bereich
+        const suggestionsSection = document.querySelector('#suggestions, .suggestions-section, [class*="suggestion"], #recommendedProducts, .recommended-section');
+        if (suggestionsSection) {
+            console.log('Found suggestions section');
+            
+            // Finde alle Farb-Radio-Buttons in diesem Bereich
+            const colorRadios = suggestionsSection.querySelectorAll('input[type="radio"][name*="color"]');
+            console.log(`Found ${colorRadios.length} color radios in suggestions`);
+            
+            // Gruppiere nach Namen und wähle jeweils den ersten aus
+            const radioGroups = {};
+            colorRadios.forEach(radio => {
+                const name = radio.name;
+                if (!radioGroups[name]) {
+                    radioGroups[name] = [];
+                }
+                radioGroups[name].push(radio);
+            });
+            
+            // Wähle den ersten in jeder Gruppe
+            Object.values(radioGroups).forEach(group => {
+                if (group.length > 0 && !group.some(r => r.checked)) {
+                    group[0].checked = true;
+                    group[0].click();
+                    console.log(`✅ Selected first color for group: ${group[0].name}`);
+                }
+            });
+        }
+        
+        // Allgemeine Suche als Fallback
         const allColorRadios = document.querySelectorAll('input[type="radio"][name*="color"]');
-        console.log(`Found ${allColorRadios.length} color radio buttons`);
+        console.log(`Found ${allColorRadios.length} color radio buttons total`);
         
         // Gruppiere Radio-Buttons nach Namen
         const radioGroups = {};
@@ -36,7 +65,7 @@
         });
         
         // Spezifisch für die sichtbaren Produktkarten
-        const visibleProducts = document.querySelectorAll('.product-card:not([style*="display: none"]), .addon-item, .suggestion-item');
+        const visibleProducts = document.querySelectorAll('.product-card:not([style*="display: none"]), .addon-item, .suggestion-item, .cart-item');
         console.log(`Found ${visibleProducts.length} visible product cards`);
         
         visibleProducts.forEach(productCard => {
@@ -48,7 +77,41 @@
                 if (!hasSelection) {
                     colorRadios[0].checked = true;
                     colorRadios[0].click();
-                    console.log('✅ Selected first color for product card');
+                    console.log('✅ Selected first color radio for product card');
+                }
+            }
+            
+            // Finde Farb-Kreise (wie im Screenshot)
+            const colorCircles = productCard.querySelectorAll('.color-circle, .color-option:not(label), div[style*="background-color"][onclick], div[style*="border-radius"][style*="background"]');
+            console.log(`Found ${colorCircles.length} color circles in product card`);
+            
+            if (colorCircles.length > 0) {
+                // Prüfe ob einer bereits ausgewählt ist
+                const hasSelected = Array.from(colorCircles).some(circle => {
+                    const hasCheckmark = circle.innerHTML.includes('✓') || 
+                                       circle.querySelector('.checkmark') ||
+                                       circle.querySelector('[class*="check"]');
+                    const hasActiveClass = circle.classList.contains('selected') || 
+                                          circle.classList.contains('active');
+                    return hasCheckmark || hasActiveClass;
+                });
+                
+                if (!hasSelected && colorCircles[0]) {
+                    console.log('🎯 Clicking first color circle...');
+                    colorCircles[0].click();
+                    
+                    // Füge Checkmark hinzu für visuelles Feedback
+                    setTimeout(() => {
+                        if (!colorCircles[0].innerHTML.includes('✓')) {
+                            const checkmark = document.createElement('span');
+                            checkmark.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;font-size:14px;font-weight:bold;pointer-events:none;';
+                            checkmark.textContent = '✓';
+                            colorCircles[0].style.position = 'relative';
+                            colorCircles[0].appendChild(checkmark);
+                        }
+                    }, 50);
+                    
+                    console.log('✅ Selected first color circle for product card');
                 }
             }
         });
@@ -149,13 +212,72 @@
     function init() {
         console.log('🚀 Initialisiere Cart Addon Colors');
         
+        // Spezielle Funktion für Cart-Items
+        function selectFirstColorInCartItems() {
+            // Suche spezifisch in Cart-Items
+            const cartItems = document.querySelectorAll('.cart-item, [data-cart-item], .product-card');
+            cartItems.forEach(item => {
+                // Versuche Radio-Buttons zu finden
+                const radios = item.querySelectorAll('input[type="radio"][name*="color"]');
+                if (radios.length > 0 && !Array.from(radios).some(r => r.checked)) {
+                    radios[0].checked = true;
+                    console.log('✅ Selected first color radio in cart item');
+                }
+                
+                // Versuche Farb-Kreise zu finden (wie im Bild)
+                const colorCircles = item.querySelectorAll('.color-circle, .color-option, [class*="color"][onclick]');
+                if (colorCircles.length > 0) {
+                    // Prüfe ob einer bereits ausgewählt ist
+                    const hasSelected = Array.from(colorCircles).some(circle => 
+                        circle.classList.contains('selected') || 
+                        circle.classList.contains('active') ||
+                        circle.querySelector('.checkmark') ||
+                        circle.innerHTML.includes('✓')
+                    );
+                    
+                    if (!hasSelected) {
+                        // Klicke auf den ersten Kreis
+                        colorCircles[0].click();
+                        console.log('✅ Clicked first color circle in cart item');
+                        
+                        // Füge visuelles Feedback hinzu
+                        colorCircles[0].classList.add('selected');
+                        if (!colorCircles[0].innerHTML.includes('✓')) {
+                            colorCircles[0].innerHTML += '<span style="position:absolute;color:white;font-size:16px;">✓</span>';
+                        }
+                    }
+                }
+            });
+        }
+        
         // Mehrfache Ausführung mit verschiedenen Timings
         autoSelectFirstColor(); // Sofort
-        setTimeout(autoSelectFirstColor, 100);   // Nach 100ms
-        setTimeout(autoSelectFirstColor, 500);   // Nach 500ms
-        setTimeout(autoSelectFirstColor, 1000);  // Nach 1 Sekunde
-        setTimeout(autoSelectFirstColor, 2000);  // Nach 2 Sekunden
-        setTimeout(autoSelectFirstColor, 3000);  // Nach 3 Sekunden
+        selectFirstColorInCartItems(); // Sofort für Cart-Items
+        
+        setTimeout(() => {
+            autoSelectFirstColor();
+            selectFirstColorInCartItems();
+        }, 100);
+        
+        setTimeout(() => {
+            autoSelectFirstColor();
+            selectFirstColorInCartItems();
+        }, 500);
+        
+        setTimeout(() => {
+            autoSelectFirstColor();
+            selectFirstColorInCartItems();
+        }, 1000);
+        
+        setTimeout(() => {
+            autoSelectFirstColor();
+            selectFirstColorInCartItems();
+        }, 2000);
+        
+        setTimeout(() => {
+            autoSelectFirstColor();
+            selectFirstColorInCartItems();
+        }, 3000);
         
         // Überwache neue Buttons
         observeNewButtons();
