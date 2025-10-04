@@ -82,6 +82,7 @@
             100% { transform: scale(1); }
         }
     </style>
+    <link rel="stylesheet" href="../product-image-fullscreen.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -122,7 +123,7 @@
                     </button>
                 </div>
                 <div class="col-lg-6 text-center">
-                    <img src="../produkt bilder/Multifunktions Gemüseschneider.jpg" alt="Multifunktions Gemüseschneider" class="img-fluid product-image" style="max-height: 350px; max-width: 350px;">
+                    <img src="../produkt bilder/Multifunktions Gemüseschneider.jpg" alt="Multifunktions Gemüseschneider" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
                 </div>
             </div>
         </div>
@@ -923,7 +924,7 @@ function populateMobileQuantityDropdown() {
 <!-- Color Cart Bridge für Farbauswahl-Integration -->
 <script src="../color-cart-bridge.js"></script>
 
-<!-- Bundle Color Integration f�r Farbauswahl in Bundles -->
+<!-- Bundle Color Integration f�r Farbauswahl in Bundles -->
 <script src="../bundle-color-integration.js"></script>
 
 <!-- Farbauswahl JavaScript - EXAKTE Kopie von Produkt 11 -->
@@ -1189,9 +1190,10 @@ const colorSelection = new ColorSelection();
 window.getSelectedColor = () => colorSelection.getSelectedColor();
 </script>
 
-<!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
+<!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
 <script src="../fix-bundle-naming.js"></script>
 
+    <script src="../product-image-fullscreen.js"></script>
 </body>
 </html>
 
