@@ -923,19 +923,274 @@
   }
 </script>
 
-<!-- Farbauswahl JavaScript -->
+<!-- Farbauswahl JavaScript - Funktionierende Version von Produkt 11 -->
 <script>
-class ColorSelection{constructor(){this.selectedColor=null;this.productId=null;this.colors=[];this.init()}init(){if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',()=>this.initializeColorSelection())}else{this.initializeColorSelection()}}async initializeColorSelection(){try{this.productId=this.extractProductIdFromUrl();if(!this.productId){console.log('Keine Produkt-ID gefunden');return}const productData=await this.loadProductData(this.productId);if(!productData||!productData.colors||productData.colors.length===0){console.log(`Keine Farboptionen für Produkt ${this.productId}`);return}this.colors=productData.colors;this.renderColorSelection()}catch(error){console.error('Fehler beim Initialisieren der Farbauswahl:',error)}}extractProductIdFromUrl(){const path=window.location.pathname;const match=path.match(/produkt-(\d+)\.html/);return match?parseInt(match[1]):null}async loadProductData(productId){try{const response=await fetch('../products.json');const products=await response.json();return products.find(p=>p.id===productId)}catch(error){console.error('Fehler beim Laden der Produktdaten:',error);return null}}renderColorSelection(){let container=document.getElementById('colorSelection');if(!container){container=this.createColorSelectionContainer()}if(!container){return}const colorOptionsContainer=container.querySelector('#colorOptions')||container.querySelector('.color-options');if(colorOptionsContainer){this.renderColorOptions(colorOptionsContainer)}if(this.colors.length>0){this.selectColor(this.colors[0])}}createColorSelectionContainer(){const possibleParents=[document.querySelector('.product-hero .container .row .col-lg-6'),document.querySelector('.product-hero .container'),document.querySelector('main'),document.body];for(const parent of possibleParents){if(parent){const container=document.createElement('div');container.className='color-selection mb-4';container.id='colorSelection';container.innerHTML=`<h5 class="mb-3 text-white">Farbe wählen:</h5><div class="color-options d-flex gap-2 flex-wrap" id="colorOptions"></div><div class="selected-color-info mt-2" id="selectedColorInfo"><small class="text-white-50">Ausgewählte Farbe: <span id="selectedColorName">-</span></small></div>`;const priceSection=parent.querySelector('.price-tag')?.closest('.d-flex');if(priceSection){priceSection.insertAdjacentElement('afterend',container)}else{parent.insertBefore(container,parent.firstChild)}return container}}return null}renderColorOptions(container){container.innerHTML='';this.colors.forEach((color)=>{const colorOption=document.createElement('div');colorOption.className='color-option';colorOption.style.backgroundColor=color.code;colorOption.setAttribute('data-color',color.code);colorOption.setAttribute('data-sku',color.sku);colorOption.setAttribute('title',color.name);colorOption.addEventListener('click',()=>this.selectColor(color));container.appendChild(colorOption)})}selectColor(color){document.querySelectorAll('.color-option.selected').forEach(option=>{option.classList.remove('selected')});const selectedOption=document.querySelector(`[data-sku="${color.sku}"]`);if(selectedOption){selectedOption.classList.add('selected')}this.selectedColor=color;const selectedColorName=document.getElementById('selectedColorName');if(selectedColorName){selectedColorName.textContent=color.name}console.log(`Farbe ausgewählt: ${color.name}`)}getSelectedColor(){return this.selectedColor}}const colorSelection=new ColorSelection();window.getSelectedColor=()=>colorSelection.getSelectedColor();
+class ColorSelection {
+    constructor() {
+        this.selectedColor = null;
+        this.productId = null;
+        this.colors = [];
+        this.init();
+    }
+
+    init() {
+        // Warte immer auf DOM-Ready und zusätzliche Zeit für andere Scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                this.initializeColorSelection();
+            }, 100);
+        });
+        
+        // Fallback falls DOM bereits geladen
+        if (document.readyState === 'complete') {
+            setTimeout(() => {
+                this.initializeColorSelection();
+            }, 100);
+        }
+    }
+
+    async initializeColorSelection() {
+        try {
+            console.log('🎨 Farbauswahl wird initialisiert...');
+            this.productId = this.extractProductIdFromUrl();
+            console.log('📍 Produkt-ID:', this.productId);
+            
+            if (!this.productId) {
+                console.log('❌ Keine Produkt-ID gefunden, Farbauswahl wird übersprungen');
+                return;
+            }
+
+            const productData = await this.loadProductData(this.productId);
+            console.log('📦 Produktdaten geladen:', productData);
+            
+            if (!productData || !productData.colors || productData.colors.length === 0) {
+                console.log(`❌ Keine Farboptionen für Produkt ${this.productId} gefunden`);
+                return;
+            }
+
+            this.colors = productData.colors;
+            console.log('🎨 Farben gefunden:', this.colors.length);
+            this.renderColorSelection();
+            console.log('✅ Farbauswahl erfolgreich gerendert');
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Initialisieren der Farbauswahl:', error);
+        }
+    }
+
+    extractProductIdFromUrl() {
+        const path = window.location.pathname;
+        const match = path.match(/produkt-(\d+)\.html/);
+        return match ? parseInt(match[1]) : null;
+    }
+
+    async loadProductData(productId) {
+        try {
+            const response = await fetch('../products.json');
+            const products = await response.json();
+            return products.find(p => p.id === productId);
+        } catch (error) {
+            console.error('Fehler beim Laden der Produktdaten:', error);
+            return null;
+        }
+    }
+
+    renderColorSelection() {
+        let container = document.getElementById('colorSelection');
+        
+        if (!container) {
+            container = this.createColorSelectionContainer();
+        }
+
+        if (!container) {
+            console.log('Kein Container für Farbauswahl gefunden');
+            return;
+        }
+
+        const colorOptionsContainer = container.querySelector('#colorOptions') || 
+                                    container.querySelector('.color-options');
+        
+        if (colorOptionsContainer) {
+            this.renderColorOptions(colorOptionsContainer);
+        }
+
+        if (this.colors.length > 0) {
+            this.selectColor(this.colors[0]);
+        }
+    }
+
+    createColorSelectionContainer() {
+        const possibleParents = [
+            document.querySelector('.product-hero .container .row .col-lg-6'),
+            document.querySelector('.product-hero .container'),
+            document.querySelector('main'),
+            document.body
+        ];
+
+        for (const parent of possibleParents) {
+            if (parent) {
+                const container = document.createElement('div');
+                container.className = 'color-selection mb-4';
+                container.id = 'colorSelection';
+                container.innerHTML = `
+                    <h5 class="mb-3 text-white">Farbe wählen:</h5>
+                    <div class="color-options d-flex gap-2 flex-wrap" id="colorOptions">
+                    </div>
+                    <div class="selected-color-info mt-2" id="selectedColorInfo">
+                        <small class="text-white-50">Ausgewählte Farbe: <span id="selectedColorName">-</span></small>
+                    </div>
+                `;
+
+                const priceSection = parent.querySelector('.price-tag')?.closest('.d-flex');
+                if (priceSection) {
+                    priceSection.insertAdjacentElement('afterend', container);
+                } else {
+                    parent.insertBefore(container, parent.firstChild);
+                }
+
+                return container;
+            }
+        }
+        return null;
+    }
+
+    renderColorOptions(container) {
+        container.innerHTML = '';
+
+        this.colors.forEach((color) => {
+            const colorOption = document.createElement('div');
+            colorOption.className = 'color-option';
+            colorOption.style.backgroundColor = color.code;
+            colorOption.setAttribute('data-color', color.code);
+            colorOption.setAttribute('data-sku', color.sku);
+            colorOption.setAttribute('title', color.name);
+            colorOption.setAttribute('role', 'button');
+            colorOption.setAttribute('tabindex', '0');
+
+            colorOption.addEventListener('click', () => this.selectColor(color));
+            colorOption.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectColor(color);
+                }
+            });
+
+            container.appendChild(colorOption);
+        });
+    }
+
+    selectColor(color) {
+        document.querySelectorAll('.color-option.selected').forEach(option => {
+            option.classList.remove('selected');
+        });
+
+        const selectedOption = document.querySelector(`[data-sku="${color.sku}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('selected');
+            selectedOption.classList.add('color-change-animation');
+            
+            setTimeout(() => {
+                selectedOption.classList.remove('color-change-animation');
+            }, 300);
+        }
+
+        this.selectedColor = color;
+        
+        const selectedColorName = document.getElementById('selectedColorName');
+        if (selectedColorName) {
+            selectedColorName.textContent = color.name;
+        }
+
+        // Preis aktualisieren
+        this.updatePrices(color);
+
+        // Warenkorb-Integration
+        this.updateCartIntegration(color);
+
+        console.log(`Farbe ausgewählt: ${color.name} - Preis: €${color.price}`);
+    }
+
+    updatePrices(color) {
+        // Hero-Bereich Preise aktualisieren
+        const priceTag = document.querySelector('.price-tag');
+        if (priceTag && color.price) {
+            priceTag.textContent = `€${color.price}`;
+        }
+
+        const originalPriceSpan = document.querySelector('.text-decoration-line-through');
+        if (originalPriceSpan && color.originalPrice) {
+            originalPriceSpan.textContent = `€${color.originalPrice}`;
+        }
+
+        // Schnellbestellung Preise aktualisieren
+        const currentPrices = document.querySelectorAll('.current-price');
+        currentPrices.forEach(priceElement => {
+            if (color.price) {
+                priceElement.textContent = `€${color.price}`;
+            }
+        });
+
+        // Alle Preis-Elemente in Schnellbestellungen aktualisieren
+        this.updateAllQuickOrderPrices(color);
+    }
+
+    updateCartIntegration(color) {
+        if (window.product) {
+            window.product.selectedColor = color.name;
+            window.product.selectedColorCode = color.code;
+            window.product.selectedColorSku = color.sku;
+            window.product.price = color.price || window.product.price;
+            window.product.originalPrice = color.originalPrice || window.product.originalPrice;
+            console.log('📦 window.product aktualisiert:', window.product);
+        }
+    }
+
+    updateAllQuickOrderPrices(color) {
+        // Aktualisiere alle Preis-Displays in Schnellbestellungen
+        const priceSelectors = [
+            '.current-price',
+            '.price-section .current-price',
+            '#totalPrice',
+            '#totalPrice-mobile',
+            '.total-price span'
+        ];
+        
+        priceSelectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(element => {
+                if (color.price && element.textContent.includes('€')) {
+                    // Berechne Gesamtpreis basierend auf Menge
+                    const quantityInput = document.getElementById('quantity') || document.getElementById('quantity-mobile');
+                    const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+                    const totalPrice = (color.price * quantity).toFixed(2);
+                    
+                    console.log('🎯 Schnellbestellung Update:', selector, 'von', element.textContent, 'zu €' + (selector.includes('total') ? totalPrice : color.price));
+                    
+                    if (selector.includes('total') || selector.includes('Total')) {
+                        element.textContent = `€${totalPrice}`;
+                    } else {
+                        element.textContent = `€${color.price}`;
+                    }
+                }
+            });
+        });
+    }
+
+    getSelectedColor() {
+        return this.selectedColor;
+    }
+}
+
+// Globale Instanz erstellen
+const colorSelection = new ColorSelection();
+window.getSelectedColor = () => colorSelection.getSelectedColor();
 </script>
 
-<!-- Warenkorb-Farbauswahl-Erweiterung -->
-<script src="../cart-color-extension.js"></script>
+<!-- App.js für globale Funktionen -->
+<script src="../app.js"></script>
 
-<!-- Bundle-Farbauswahl-Erweiterung -->
-<script src="../bundle-color-selection.js"></script>
-
-<!-- CJ Dropshipping Farbauswahl-Integration -->
-<script src="../cj-color-integration.js"><script src="../app.js"></script>`n<script src="../color-cart-bridge.js"></script>`n</script>
+<!-- Color Cart Bridge für Farbauswahl-Integration -->
+<script src="../color-cart-bridge.js"></script>
 </body>
 </html>
 
