@@ -35,6 +35,12 @@ async function loadProductColors(productId) {
 async function renderColorSelector(item, container) {
     console.log(`🎨 renderColorSelector called for item:`, item);
     
+    // Keine Farbauswahl für Bundles
+    if (item.isBundle || item.bundleId) {
+        console.log(`📦 Item ist ein Bundle - keine Farbauswahl`);
+        return ''; // Keine Farbauswahl für Bundles
+    }
+    
     // Extrahiere die Basis-ID (ohne Farbzusatz)
     const baseId = String(item.id).split('-')[0];
     console.log(`📍 Base ID extracted: ${baseId} from ${item.id}`);
@@ -53,13 +59,12 @@ async function renderColorSelector(item, container) {
     
     return `
         <div class="cart-color-selector mb-2">
-            <label class="small text-muted">Farbe:</label>
             <div class="d-flex gap-2 align-items-center">
                 <div class="color-options-cart d-flex gap-1">
                     ${colors.map(color => `
                         <div class="color-option-cart ${color.name === item.selectedColor ? 'selected' : ''}"
                              style="background-color: ${color.code};"
-                             title="${color.name}"
+                             title="${color.name} - ${color.code}"
                              data-product-id="${item.id}"
                              data-base-id="${baseId}"
                              data-color-name="${color.name}"
@@ -120,6 +125,15 @@ function changeCartItemColor(cartItemId, baseProductId, colorName, colorCode, co
         // Trim und bereinige den Namen
         cleanName = cleanName.trim();
         
+        // Extrahiere Sets-Information aus dem Namen
+        let setsMatch = cleanName.match(/\(\d+\s+Sets?\)/i);
+        let setsInfo = setsMatch ? setsMatch[0] : '';
+        
+        // Entferne Sets-Info aus dem cleanName für Verarbeitung
+        if (setsInfo) {
+            cleanName = cleanName.replace(setsInfo, '').trim();
+        }
+        
         // Entferne ml-Angabe aus dem Basisnamen für Produkte mit ml in der Farbe
         let baseName = cleanName;
         const hasMlInBase = baseName.match(/\d+ml/i);
@@ -129,13 +143,13 @@ function changeCartItemColor(cartItemId, baseProductId, colorName, colorCode, co
             // Entferne die alte ml-Angabe aus dem Basisnamen
             baseName = baseName.replace(/\s*\d+ml/gi, '').trim();
             // Verwende den vollen Farbnamen mit ml-Angabe
-            cart[itemIndex].name = `${baseName} ${colorName}`;
+            cart[itemIndex].name = `${baseName} ${setsInfo} ${colorName}`.trim();
         } else if (hasMlInColor) {
             // Farbe hat ml, Basis nicht - verwende vollen Farbnamen
-            cart[itemIndex].name = `${baseName} ${colorName}`;
+            cart[itemIndex].name = `${baseName} ${setsInfo} ${colorName}`.trim();
         } else {
-            // Normale Farbe ohne ml
-            cart[itemIndex].name = `${baseName} (${colorName})`;
+            // Normale Farbe ohne ml - füge Sets-Info wieder hinzu
+            cart[itemIndex].name = setsInfo ? `${baseName} ${setsInfo} (${colorName})`.trim() : `${baseName} (${colorName})`.trim();
         }
         
         // Aktualisiere Artikel mit neuer Farbe

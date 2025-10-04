@@ -423,7 +423,25 @@
         renderBundles(prod.bundles);
       } else {
         // Fallback: Bundle-Box immer anzeigen
-        renderBundles();
+        // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
+  setTimeout(() => {
+    if (window.renderBundlesWithColors) {
+      // Lade Farben aus products.json
+      fetch('../products.json')
+        .then(res => res.json())
+        .then(products => {
+          const prod = products.find(p => p.id === product.id);
+          if (prod && prod.colors) {
+            window.renderBundlesWithColors(product.id, prod.colors);
+          } else {
+            renderBundles();
+          }
+        })
+        .catch(() => renderBundles());
+    } else {
+      renderBundles();
+    }
+  }, 500);
       }
     });
 
@@ -715,7 +733,25 @@
     });
   }
 
-  renderBundles();
+  // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
+  setTimeout(() => {
+    if (window.renderBundlesWithColors) {
+      // Lade Farben aus products.json
+      fetch('../products.json')
+        .then(res => res.json())
+        .then(products => {
+          const prod = products.find(p => p.id === product.id);
+          if (prod && prod.colors) {
+            window.renderBundlesWithColors(product.id, prod.colors);
+          } else {
+            renderBundles();
+          }
+        })
+        .catch(() => renderBundles());
+    } else {
+      renderBundles();
+    }
+  }, 500);
 
   // Funktionen für die neue Schnellbestellung
   function increaseQuantity(event) {
@@ -979,6 +1015,9 @@
 
 <!-- Color Cart Bridge für Farbauswahl-Integration -->
 <script src="../color-cart-bridge.js"></script>
+
+<!-- Bundle Color Integration für Farbauswahl in Bundles -->
+<script src="../bundle-color-integration.js"></script>
 <script>
 class ColorSelection {
     constructor() {
@@ -1279,5 +1318,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
 });
 </script>
+<!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
+<script src="../fix-bundle-naming.js"></script>
+
 </body>
 </html>

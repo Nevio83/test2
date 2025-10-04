@@ -3,11 +3,11 @@ const currencyByCountry = {
     'DE': { symbol: '€', code: 'EUR', name: 'Deutschland' },
     'US': { symbol: '$', code: 'USD', name: 'Vereinigte Staaten' },
     'GB': { symbol: '£', code: 'GBP', name: 'Vereinigtes Königreich' },
-    'CH': { symbol: 'CHF', code: 'CHF', name: 'Schweiz' },
-    'AT': { symbol: '€', code: 'EUR', name: 'Österreich' },
     'FR': { symbol: '€', code: 'EUR', name: 'Frankreich' },
     'IT': { symbol: '€', code: 'EUR', name: 'Italien' },
     'ES': { symbol: '€', code: 'EUR', name: 'Spanien' },
+    'AT': { symbol: '€', code: 'EUR', name: 'Österreich' },
+    'CH': { symbol: 'CHF', code: 'CHF', name: 'Schweiz' },
     'NL': { symbol: '€', code: 'EUR', name: 'Niederlande' },
     'BE': { symbol: '€', code: 'EUR', name: 'Belgien' },
     'CA': { symbol: 'CAD$', code: 'CAD', name: 'Kanada' },
@@ -17,32 +17,50 @@ const currencyByCountry = {
     'MX': { symbol: 'MX$', code: 'MXN', name: 'Mexiko' }
 };
 
-let currentCountry = 'DE';
-let currentCurrency = currencyByCountry[currentCountry];
+// Verwende currencyByCountry als COUNTRIES für Konsistenz
+const COUNTRIES = currencyByCountry;
 
+let currentCountry = 'DE';
+let currentCurrency = currencyByCountry['DE']; // Initialisiere currentCurrency mit Deutschland als Standard
 // Funktion zum Abrufen des Warenkorbs aus dem localStorage
 function getCart() {
     try {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        // Stelle sicher, dass Farben im Namen angezeigt werden
         const processedCart = cart.map(item => {
-            // Entferne alte Farbe aus dem Namen falls vorhanden
-            let cleanName = item.name.replace(/\s*\([^)]*\)$/, '');
-            
-            // Entferne leere Klammern
-            cleanName = cleanName.replace(/\s*\(\s*\)/g, '');
-            
-            // Füge Farbe hinzu wenn vorhanden
-            if (item.selectedColor && item.selectedColor.trim() !== '') {
-                item.name = `${cleanName} (${item.selectedColor})`;
-                console.log(`📦 Warenkorb-Artikel: ${item.name} - Preis: €${item.price}`);
+            // Fix für Bundle-Namen ohne Sets-Angabe
+            if (item.bundleId && !item.isBundle) {
+                // Altes Bundle-Format - füge Sets-Angabe hinzu
+                const qtyMatch = item.bundleId.match(/qty(\d+)/);
+                const qty = qtyMatch ? parseInt(qtyMatch[1]) : 1;
+                
+                // Prüfe ob Sets-Angabe bereits vorhanden
+                if (!item.name.includes('Set')) {
+                    item.name = item.name.replace(/\s*\(\d+\s+Sets?\s+kaufen\)/gi, '');
+                    item.name = item.name.trim() + ` (${qty} Set${qty > 1 ? 's' : ''})`;
+                }
+            } else if (item.bundleId && item.isBundle) {
+                // Neues Bundle-Format - stelle sicher dass Sets-Angabe vorhanden ist
+                const hasSetInfo = /\(\d+\s+Sets?\)/i.test(item.name);
+                if (!hasSetInfo && item.bundleQuantity) {
+                    item.name = item.name.trim() + ` (${item.bundleQuantity} Set${item.bundleQuantity > 1 ? 's' : ''})`;
+                }
             } else {
-                item.name = cleanName; // Keine Klammern wenn keine Farbe
+                // Normale Produkte - bereinige Namen und füge Farbe hinzu
+                let cleanName = item.name.replace(/\s*\([^)]*\)$/, '');
+                
+                // Entferne leere Klammern
+                cleanName = cleanName.replace(/\s*\(\s*\)/g, '');
+                
+                // Füge Farbe hinzu wenn vorhanden
+                if (item.selectedColor && item.selectedColor.trim() !== '') {
+                    item.name = `${cleanName} (${item.selectedColor})`;
+                    console.log(`Warenkorb-Artikel: ${item.name} - Preis: €${item.price}`);
+                } else {
+                    item.name = cleanName; // Keine Klammern wenn keine Farbe
+                }
             }
-            
             return item;
         });
-        
         return processedCart;
     } catch (e) {
         console.error("Fehler beim Parsen des Warenkorbs aus dem localStorage:", e);
@@ -753,16 +771,41 @@ function removeFromCart(productId) {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     console.log('Cart before removal:', cart);
     
-    const originalLength = cart.length;
-    cart = cart.filter(item => {
-        const itemId = Number(item.id);
-        const targetId = Number(productId);
-        console.log('Comparing item ID:', itemId, 'with target ID:', targetId, 'match:', itemId === targetId);
-        return itemId !== targetId;
-    });
+    // Prüfe ob es ein Bundle-Item ist
+    const itemToRemove = cart.find(item => Number(item.id) === Number(productId));
+    
+    if (itemToRemove && itemToRemove.isBundle) {
+        // Es ist ein neues Bundle-Format - lösche nur dieses eine Item
+        const originalLength = cart.length;
+        cart = cart.filter(item => {
+            const itemId = Number(item.id);
+            const targetId = Number(productId);
+            // Zusätzliche Prüfung für Bundles mit gleichen Farben
+            if (itemToRemove.bundleId && item.bundleId === itemToRemove.bundleId) {
+                return JSON.stringify(item.bundleColors) !== JSON.stringify(itemToRemove.bundleColors);
+            }
+            return itemId !== targetId;
+        });
+        console.log(`🗑️ Bundle gelöscht - ${originalLength - cart.length} Item(s) entfernt`);
+    } else if (itemToRemove && itemToRemove.bundleId && !itemToRemove.isBundle) {
+        // Altes Bundle-Format (falls noch vorhanden) - lösche alle mit gleicher bundleId
+        const bundleId = itemToRemove.bundleId;
+        const originalLength = cart.length;
+        cart = cart.filter(item => item.bundleId !== bundleId);
+        console.log(`🗑️ Alte Bundle-Items mit ID ${bundleId} gelöscht`);
+    } else {
+        // Normales Item - lösche nur dieses
+        const originalLength = cart.length;
+        cart = cart.filter(item => {
+            const itemId = Number(item.id);
+            const targetId = Number(productId);
+            console.log('Comparing item ID:', itemId, 'with target ID:', targetId, 'match:', itemId === targetId);
+            return itemId !== targetId;
+        });
+        console.log('Items removed:', originalLength - cart.length);
+    }
     
     console.log('Cart after removal:', cart);
-    console.log('Items removed:', originalLength - cart.length);
     
     localStorage.setItem('cart', JSON.stringify(cart));
     if (typeof updateCartCounter === 'function') {
@@ -810,7 +853,10 @@ function addAddonToCart(productId) {
     let allProducts = [];
     try {
         allProducts = JSON.parse(localStorage.getItem('allProducts')) || [];
-    } catch (e) { allProducts = []; }
+    } catch (e) { 
+        allProducts = []; 
+    }
+    
     const product = allProducts.find(p => Number(p.id) === Number(productId));
     if (!product) return;
     
