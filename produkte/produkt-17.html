@@ -318,7 +318,6 @@
   };
   window.product = product;
 
-
   // Bundles dynamisch laden
   fetch('../products.json')
     .then(res => res.json())
@@ -1200,13 +1199,10 @@ window.getSelectedColor = () => colorSelection.getSelectedColor();
 <script src="../color-cart-bridge.js"></script>
 
 <!-- Bundle Color Integration f�r Farbauswahl in Bundles -->
-<script src="../bundle-color-integration.js"></script>
+<script src="../bundle-complete.js"></script>
 <!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
-<script src="../fix-bundle-naming.js"></script>
 
-    <script src="../product-image-fullscreen.js"></script>
-    <script src="../product-image-gallery.js"></script>
+    <script src="../product-gallery-complete.js"></script>
 </body>
 </html>
-
-
+
