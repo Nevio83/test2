@@ -513,3 +513,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
 console.log('✅ Bundle Color Integration initialisiert');
 }
+
+// Force Bundle Colors Code direkt integriert
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const urlPath = window.location.pathname;
+        const match = urlPath.match(/produkt-(\d+)\.html/);
+        
+        if (match) {
+            const productId = parseInt(match[1]);
+            
+            // Nur für Produkte 17 und 26
+            if (productId === 17 || productId === 26) {
+                console.log(`🔧 Forcing bundle colors for product ${productId}`);
+                
+                const bundleSection = document.getElementById('bundle-section');
+                
+                if (bundleSection && !bundleSection.querySelector('.bundle-color-selection')) {
+                    console.log('🔧 No color bundles found, creating them...');
+                    
+                    fetch('../products.json')
+                        .then(res => res.json())
+                        .then(products => {
+                            const prod = products.find(p => p.id === productId);
+                            
+                            if (prod && prod.colors && prod.colors.length > 0) {
+                                console.log(`🔧 Found ${prod.colors.length} colors, rendering bundles...`);
+                                bundleSection.innerHTML = '';
+                                
+                                // Stelle sicher, dass renderBundlesWithColors verfügbar ist
+                                if (typeof renderBundlesWithColors === 'function') {
+                                    renderBundlesWithColors(productId, prod.colors);
+                                    console.log('✅ Bundle colors forced successfully!');
+                                }
+                            }
+                        })
+                        .catch(err => console.error('Error forcing bundle colors:', err));
+                }
+            }
+        }
+    }, 3000);
+});

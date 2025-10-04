@@ -40,6 +40,32 @@
         return null;
     }
     
+    // Funktion zum Holen der ausgewählten Farbe aus dem Color Selector
+    function getSelectedColorFromSelector(productId) {
+        // Suche nach dem Color Selector für dieses Produkt
+        const selector = document.querySelector(`.cart-color-selector[data-product-id="${productId}"]`);
+        if (selector) {
+            const selectedRadio = selector.querySelector('input[type="radio"]:checked');
+            if (selectedRadio) {
+                return selectedRadio.value;
+            }
+        }
+        
+        // Alternative: Suche im localStorage
+        const colorKey = `selectedColor_${productId}`;
+        const storedColor = localStorage.getItem(colorKey);
+        if (storedColor) {
+            try {
+                const colorData = JSON.parse(storedColor);
+                return colorData.name || colorData;
+            } catch {
+                return storedColor;
+            }
+        }
+        
+        return null;
+    }
+    
     // Funktion zum Aktualisieren der Produktbilder
     function updateCartProductImages() {
         console.log('🖼️ Aktualisiere Warenkorb-Bilder nach Farbe');
@@ -63,8 +89,38 @@
                 return;
             }
             
-            // Extrahiere Farbe aus dem Namen
-            const color = extractColorFromName(fullName);
+            // Extrahiere Farbe aus dem Namen oder Color Selector
+            let color = extractColorFromName(fullName);
+            
+            // Wenn keine Farbe im Namen, versuche aus dem Selector zu holen
+            if (!color) {
+                // Versuche Produkt-ID zu finden
+                const productIdAttr = item.getAttribute('data-product-id') || 
+                                     item.getAttribute('data-id');
+                
+                if (productIdAttr) {
+                    color = getSelectedColorFromSelector(productIdAttr);
+                    if (color) {
+                        console.log(`✅ Farbe aus Selector geholt: ${color} für Produkt ${productIdAttr}`);
+                    }
+                }
+                
+                // Wenn immer noch keine Farbe, versuche aus dem Produktnamen die ID zu ermitteln
+                if (!color) {
+                    // Spezialfall für bekannte Produkte
+                    if (fullName.includes('Hair Brush')) {
+                        color = getSelectedColorFromSelector(26) || 'Roland Purple'; // Default
+                        console.log(`📌 Using color for Hair Brush: ${color}`);
+                    } else if (fullName.includes('Mixer')) {
+                        color = getSelectedColorFromSelector(11) || 'Weiß';
+                    } else if (fullName.includes('Wasserspender')) {
+                        color = getSelectedColorFromSelector(10) || 'Blau';
+                    } else if (fullName.includes('Bluetooth')) {
+                        color = getSelectedColorFromSelector(17) || 'Schwarz';
+                    }
+                }
+            }
+            
             if (!color) {
                 console.log('❌ Keine Farbe gefunden in:', fullName);
                 return;

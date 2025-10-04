@@ -874,15 +874,6 @@
   },
   {
     "id": 23,
-    "name": "Elektrischer Wasserspender",
-    "price": 29.99,
-    "originalPrice": 39.99,
-    "category": "Haushalt & Küche",
-    "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
-    "description": "Praktischer elektrischer Wasserspender für Büro und Zuhause. Automatische Wasserausgabe mit einstellbarer Temperatur."
-  },
-  {
-    "id": 23,
     "name": "LED Motion Sensor Licht Drahtlose",
     "price": 19.99,
     "originalPrice": 29.99,
