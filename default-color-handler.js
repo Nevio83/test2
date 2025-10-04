@@ -4,19 +4,24 @@ console.log('🎨 Default Color Handler geladen');
 // Original addProductToCart speichern
 const originalAddProductToCart = window.addProductToCart;
 
+// Liste der Produkt-IDs die Farben haben (aus products.json)
+const productsWithColors = [10, 11, 12, 17, 21, 26, 30];
+
 // Überschreibe addProductToCart
 window.addProductToCart = function(productsParam, productId, fromCartDropdown = false) {
     console.log('🎨 Default Color Handler: Intercepting addProductToCart');
     
     // Prüfe ob wir auf index.html sind (nicht auf einer Produktseite)
     const isIndexPage = !window.location.pathname.includes('produkt-');
+    const numericProductId = Number(productId);
     
-    if (isIndexPage) {
+    // Nur für index.html UND nur für Produkte die tatsächlich Farben haben
+    if (isIndexPage && productsWithColors.includes(numericProductId)) {
         // Lade Produkt um zu prüfen ob es Farben hat
         const availableProducts = productsParam && productsParam.length > 0 ? productsParam : 
                                  (window.products || JSON.parse(localStorage.getItem('allProducts') || '[]'));
         
-        const product = availableProducts.find(p => Number(p.id) === Number(productId));
+        const product = availableProducts.find(p => Number(p.id) === numericProductId);
         
         if (product && product.colors && product.colors.length > 0) {
             // Setze die erste Farbe als Standard in window.product
@@ -34,6 +39,10 @@ window.addProductToCart = function(productsParam, productId, fromCartDropdown = 
             
             console.log(`🎨 Standard-Farbe gesetzt für Produkt ${product.name}: ${defaultColor.name}`);
         }
+    } else if (isIndexPage) {
+        // Für Produkte ohne Farben: Stelle sicher, dass keine Farbe gesetzt ist
+        window.product = null;
+        console.log(`📦 Produkt ${productId} hat keine Farben - keine Standardfarbe gesetzt`);
     }
     
     // Rufe die originale Funktion auf

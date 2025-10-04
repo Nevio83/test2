@@ -91,15 +91,58 @@ function changeCartItemColor(cartItemId, baseProductId, colorName, colorCode, co
     });
     
     if (itemIndex !== -1) {
-        // Entferne alte Farbe aus dem Namen
-        let cleanName = cart[itemIndex].name.replace(/\s*\([^)]*\)$/, '');
+        // Entferne ALLE Farben und überschüssige Klammern aus dem Namen
+        let cleanName = cart[itemIndex].name;
+        
+        // Entferne alle überschüssigen schließenden Klammern
+        cleanName = cleanName.replace(/\)+/g, ')');
+        
+        // Entferne alle Farbangaben in Klammern (alles in Klammern)
+        cleanName = cleanName.replace(/\s*\([^)]*\)/g, '');
+        
+        // Entferne verbleibende einzelne Klammern
+        cleanName = cleanName.replace(/[()]/g, '');
+        
+        // Entferne doppelte Farbnamen (z.B. "Blau Blau" -> "Blau")
+        const colorWords = ['Weiß', 'Blau', 'Grün', 'Rosa', 'Pink', 'Schwarz', 'Grau', 'Rot', 'Gelb'];
+        colorWords.forEach(color => {
+            const regex = new RegExp(`(${color}\\s+)+${color}`, 'gi');
+            cleanName = cleanName.replace(regex, color);
+        });
+        
+        // Entferne Farbnamen die bereits im Text sind
+        colorWords.forEach(color => {
+            // Wenn der Farbname bereits im Namen ist, entferne ihn
+            const regex = new RegExp(`\\s+${color}(?!\\s*\\()`, 'gi');
+            cleanName = cleanName.replace(regex, '');
+        });
+        
+        // Trim und bereinige den Namen
+        cleanName = cleanName.trim();
+        
+        // Entferne ml-Angabe aus dem Basisnamen für Produkte mit ml in der Farbe
+        let baseName = cleanName;
+        const hasMlInBase = baseName.match(/\d+ml/i);
+        const hasMlInColor = colorName.match(/\(\d+ml\)/i);
+        
+        if (hasMlInBase && hasMlInColor) {
+            // Entferne die alte ml-Angabe aus dem Basisnamen
+            baseName = baseName.replace(/\s*\d+ml/gi, '').trim();
+            // Verwende den vollen Farbnamen mit ml-Angabe
+            cart[itemIndex].name = `${baseName} ${colorName}`;
+        } else if (hasMlInColor) {
+            // Farbe hat ml, Basis nicht - verwende vollen Farbnamen
+            cart[itemIndex].name = `${baseName} ${colorName}`;
+        } else {
+            // Normale Farbe ohne ml
+            cart[itemIndex].name = `${baseName} (${colorName})`;
+        }
         
         // Aktualisiere Artikel mit neuer Farbe
         cart[itemIndex].selectedColor = colorName;
         cart[itemIndex].selectedColorCode = colorCode;
         cart[itemIndex].selectedColorSku = colorSku;
         cart[itemIndex].price = colorPrice;
-        cart[itemIndex].name = `${cleanName} (${colorName})`;
         
         // Aktualisiere auch die cartItemId für eindeutige Identifikation
         cart[itemIndex].cartItemId = `${baseProductId}-${colorName.replace(/\s+/g, '-').toLowerCase()}`;
