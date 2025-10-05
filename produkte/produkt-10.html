@@ -1,67 +1,63 @@
 <!DOCTYPE html>
 <html lang="de">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elektrischer Wasserspender für Schreibtisch - Marktplatz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="haushalt-kueche.css" rel="stylesheet">
+    <link href="elektronik.css" rel="stylesheet">
     <style>
-        .product-hero {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            color: white;
-            padding: 4rem 0;
+        /* Farbauswahl-Komponente CSS */
+        .color-selection {
+            margin: 1rem 0;
         }
-        .product-image {
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            max-width: 100%;
-            height: auto;
-            object-fit: contain;
-            background: white;
-            padding: 20px;
+        .color-selection h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
         }
-        .product-image:hover {
-            transform: scale(1.02);
+        .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
         }
-        .price-tag {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 1.5rem;
+        .color-option[data-color="#FFFFFF"],
+        .color-option[data-color="#FFF0F5"] {
+            border: 2px solid #ddd;
         }
-        /* Added animation CSS classes for consistent animations */
-        .success-animation {
-            animation: successAnimation 0.6s ease;
+        .color-option[data-color="#FFFFFF"].selected::after,
+        .color-option[data-color="#FFF0F5"].selected::after {
+            color: #333;
+            text-shadow: none;
         }
-        @keyframes successAnimation {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .selected-color-info {
+            font-size: 1rem;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.3);
         }
-        .heart-pulse {
-            animation: heartPulse 0.6s ease;
+        .selected-color-info span {
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
-        @keyframes heartPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        @media (max-width: 768px) {
+            .color-option {
+                width: 40px;
+                height: 40px;
+            }
+            .color-options {
+                gap: 0.4rem;
+            }
         }
-        .cart-rainbow-bounce {
-            animation: cartRainbowBounce 1s ease;
+        .color-change-animation {
+            animation: colorChange 0.3s ease;
         }
-        @keyframes cartRainbowBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        .cart-icon-pulse {
-            animation: cartIconPulse 0.6s ease;
-        }
-        @keyframes cartIconPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+        @keyframes colorChange {
+            50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
     </style>
@@ -93,24 +89,11 @@
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <h1 class="display-4 fw-bold mb-3">Elektrischer Wasserspender für Schreibtisch</h1>
-                    <p class="lead mb-4">Kompakter elektrischer Wasserspender für den Schreibtisch. Ideal für Büro und Homeoffice.</p>
+                    <p class="lead mb-4">Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.</p>
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <span class="price-tag">€49.99</span>
                         <span class="text-muted text-decoration-line-through">€69.99</span>
                         <span class="badge bg-success">Kostenloser Versand in Europa</span>
-                    </div>
-                    
-                    <!-- Farbauswahl statisch eingefügt -->
-                    <div class="color-selection mb-4" id="colorSelection">
-                        <h5 class="mb-3 text-white">Farbe wählen:</h5>
-                        <div class="color-options d-flex gap-2 flex-wrap" id="colorOptions">
-                            <div class="color-option selected" style="background-color: #FFFFFF; border: 2px solid #ddd;" data-color="#FFFFFF" data-name="Weiß" data-price="49.99" title="Weiß"></div>
-                            <div class="color-option" style="background-color: #4A90E2;" data-color="#4A90E2" data-name="Blau" data-price="52.99" title="Blau"></div>
-                            <div class="color-option" style="background-color: #2E5BBA;" data-color="#2E5BBA" data-name="Blau mit Schwerkraft" data-price="54.99" title="Blau mit Schwerkraft"></div>
-                        </div>
-                        <div class="selected-color-info mt-2" id="selectedColorInfo">
-                            Ausgewählte Farbe: <span id="selectedColorName">Weiß</span>
-                        </div>
                     </div>
                     <!-- Added proper CSS classes for animations -->
                     <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn">
@@ -133,7 +116,7 @@
             <div class="row">
                 <div class="col-lg-8">
                     <h2 class="mb-4">Produktbeschreibung</h2>
-                    <p class="lead mb-4">Kompakter elektrischer Wasserspender für den Schreibtisch. Ideal für Büro und Homeoffice.</p>
+                    <p class="lead mb-4">Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.</p>
                     
                     <h3>Hauptmerkmale</h3>
                     <ul class="list-unstyled">
@@ -147,7 +130,7 @@
                     <h3 class="mt-4">Technische Spezifikationen</h3>
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Kategorie:</strong> Haushalt und Küche</p>
+                            <p><strong>Kategorie:</strong> Technik/Gadgets</p>
                             <p><strong>Artikelnummer:</strong> 010</p>
                             <p><strong>Preis:</strong> €49.99</p>
                         </div>
@@ -160,8 +143,10 @@
                     <p><strong>Material:</strong> ABS Kunststoff</p>
                     <p><strong>Stromversorgung:</strong> USB wiederaufladbar</p>
                     <p><strong>Kapazität:</strong> Für 5L Flaschen geeignet</p>
+                    <p><strong>Leistung:</strong> 5W</p>
+                    <p><strong>Pumpenleistung:</strong> 1.2L/min</p>
+                    <p><strong>Gewicht:</strong> 800 Gramm</p>
                     <p><strong>Abmessungen:</strong> 30 x 12 x 10 cm</p>
-                    <p><strong>Gewicht:</strong> 800g</p>
 
                     <!-- Schnellbestellung (Mobile only) -->
                     <div class="quick-order-card mt-5 d-lg-none">
@@ -179,8 +164,7 @@
                                 </div>
                             </div>
                             <div class="price-section">
-                                <div class="current-price">€19.99</div>
-                                <div class="total-price">Gesamt: <span id="totalPrice-mobile" class="text-success">€19.99</span></div>
+                                <div class="current-price">€49.99</div>
                             </div>
                             <div class="action-buttons">
                                 <button class="buy-now-btn" id="buyNowBtnMobile">
@@ -221,8 +205,7 @@
                             </div>
                             
                             <div class="price-section">
-                                <div class="current-price">€19.99</div>
-                                <div class="total-price">Gesamt: <span id="totalPrice">€19.99</span></div>
+                                <div class="current-price">€49.99</div>
                             </div>
                             
                             <div class="action-buttons">
@@ -258,13 +241,13 @@
                 </div>
                 <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
                 <div class="col">
-                    <div class="similar-product-card" onclick="window.location.href='produkt-11.html'">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-10.html'">
                         <div class="product-image-wrapper">
-                            <img src="../produkt bilder/350ml Elektrischer Mixer Entsafter.jpg" class="product-image" alt="350ml Elektrischer Mixer Entsafter">
+                            <img src="../produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg" class="product-image" alt="Elektrischer Wasserspender für Schreibtisch">
                         </div>
                         <div class="product-info">
-                            <h5 class="product-title">350ml Elektrischer Mixer Entsafter</h5>
-                            <div class="price-container"><span class="current-price">€24.99</span></div>
+                            <h5 class="product-title">Elektrischer Wasserspender für Schreibtisch</h5>
+                            <div class="price-container"><span class="current-price">€49.99</span></div>
                             <div class="view-product-btn">
                                 <span>Jetzt ansehen</span>
                                 <i class="bi bi-arrow-right"></i>
@@ -288,13 +271,13 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="similar-product-card" onclick="window.location.href='produkt-13.html'">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-15.html'">
                         <div class="product-image-wrapper">
-                            <img src="../produkt bilder/Luft Wasser Flasche mit Pumpe.jpeg" class="product-image" alt="Luft Wasser Flasche mit Pumpe">
+                            <img src="../produkt bilder/Drahtlose elektrische tragbare Espressomaschine.jpeg" class="product-image" alt="Drahtlose elektrische tragbare Espressomaschine">
                         </div>
                         <div class="product-info">
-                            <h5 class="product-title">Luft Wasser Flasche mit Pumpe</h5>
-                            <div class="price-container"><span class="current-price">€24.99</span></div>
+                            <h5 class="product-title">Drahtlose elektrische tragbare Espressomaschine</h5>
+                            <div class="price-container"><span class="current-price">€89.99</span></div>
                             <div class="view-product-btn">
                                 <span>Jetzt ansehen</span>
                                 <i class="bi bi-arrow-right"></i>
@@ -303,13 +286,13 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="similar-product-card" onclick="window.location.href='produkt-14.html'">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-16.html'">
                         <div class="product-image-wrapper">
-                            <img src="../produkt bilder/10-1 Stück Aroma-Pads.jpeg" class="product-image" alt="10-1 Stück Aroma-Pads">
+                            <img src="../produkt bilder/ware.png" class="product-image" alt="Elektrische Küchenwaage Digital">
                         </div>
                         <div class="product-info">
-                            <h5 class="product-title">10-1 Stück Aroma-Pads</h5>
-                            <div class="price-container"><span class="current-price">€12.99</span></div>
+                            <h5 class="product-title">Elektrische Küchenwaage Digital</h5>
+                            <div class="price-container"><span class="current-price">€49.99</span></div>
                             <div class="view-product-btn">
                                 <span>Jetzt ansehen</span>
                                 <i class="bi bi-arrow-right"></i>
@@ -337,15 +320,14 @@
     price: 49.99,
     originalPrice: 69.99,
     image: "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
-    category: "Haushalt und Küche",
-    categoryId: "haushalt-kueche",
-    description: "Kompakter elektrischer Wasserspender perfekt für den Schreibtisch. Einfache Bedienung und platzsparendes Design.",
-    sku: "WATER010",
+    category: "Technik/Gadgets",
+    categoryId: "technik-gadgets",
+    description: "Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.",
+    sku: "CJ1621032671155597312",
     inStock: true,
     shippingTime: "7-15 Werktage",
-    tags: ["wasser", "spender", "schreibtisch", "elektrisch"]
+    tags: ["wasserspender", "elektrisch", "büro", "automatisch"]
   };
-  window.product = product;
 
   // Bundles dynamisch laden
   fetch('../products.json')
@@ -765,23 +747,10 @@
   const quantityInput = document.getElementById(inputId);
   const quantity = quantityInput ? parseInt(quantityInput.value, 10) || 1 : 1;
   
-  // SPEZIAL FÜR PRODUKT-10: Füge Farbdaten hinzu
   const productToCart = {
     ...product,
     quantity: quantity
   };
-  
-  // Hole die ausgewählte Farbe für Produkt-10
-  if (window.product && window.product.selectedColor) {
-    productToCart.name = `${product.name} (${window.product.selectedColor})`;
-    productToCart.selectedColor = window.product.selectedColor;
-    productToCart.selectedColorCode = window.product.selectedColorCode;
-    productToCart.selectedColorSku = window.product.selectedColorSku;
-    productToCart.price = window.product.price;
-    productToCart.originalPrice = window.product.originalPrice;
-    console.log('🎨 Produkt-10 mit Farbe zum Warenkorb:', productToCart.name, 'Preis:', productToCart.price);
-  }
-  
   addToCart(productToCart);
   
   // Enhanced animations for product page - only animate the clicked button
@@ -845,6 +814,8 @@
     // Event-Listener für Hero-Buttons
     const cartBtn = document.getElementById('cartBtn');
     const wishlistBtn = document.getElementById('wishlistBtn');
+    const buyNowBtn = document.getElementById('buyNowBtn');
+    const buyNowBtnMobile = document.getElementById('buyNowBtnMobile');
     
     if (cartBtn) {
       cartBtn.addEventListener('click', function(e) {
@@ -884,8 +855,6 @@
 
     // Event-Listener für Quantity-Input
     const quantityInput = document.getElementById('quantity');
-    const buyNowBtn = document.getElementById('buyNowBtn');
-    const buyNowBtnMobile = document.getElementById('buyNowBtnMobile');
     
     if (quantityInput) {
       quantityInput.addEventListener('input', updateTotalPrice);
@@ -899,15 +868,14 @@
         e.preventDefault();
         e.stopPropagation();
         addToCartWithQuantity(e);
-      });
-    }
-    
-    // Mobile Button
-    if (buyNowBtnMobile) {
-      buyNowBtnMobile.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        addToCartWithQuantity(e);
+        triggerCartButtonAnimation(this);
+        triggerNavCartAnimation();
+        triggerCartIconPulse();
+        if (typeof showAlert === 'function') {
+          showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
+        } else {
+          showNotification('Zum Warenkorb hinzugefügt');
+        }
       });
     }
   });
@@ -963,7 +931,7 @@
 <!-- Color Cart Bridge für Farbauswahl-Integration -->
 <script src="../color-cart-bridge.js"></script>
 
-<!-- Bundle mit Bildern - Finale Version -->
+<!-- Bundle mit Bildern -->
 <script src="../bundle-images-final.js"></script>
 <script>
     // Überschreibe lokale addBundleToCart mit der globalen Version
@@ -993,7 +961,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
 });
 </script>
+<!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
 
-<script src="../product-gallery-complete.js"></script>
+    <script src="../product-gallery-complete.js"></script>
 </body>
 </html>
+
