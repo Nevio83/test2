@@ -72,11 +72,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="price-display">
                                     <span class="price">€${(bundle.price * bundle.qty).toFixed(2)}</span>
                                     ${bundle.discount > 0 ? `<span class="original">€${(24.99 * bundle.qty).toFixed(2)}</span>` : ''}
+                                    ${bundle.discount > 0 ? 
+                                        `<span class="savings-text">Spare €${((24.99 - bundle.price) * bundle.qty).toFixed(2)}</span>` : 
+                                        ''
+                                    }
                                 </div>
-                                ${bundle.discount > 0 ? 
-                                    `<div class="savings-badge">Spare €${((24.99 - bundle.price) * bundle.qty).toFixed(2)}</div>` : 
-                                    ''
-                                }
                             </div>
                         </div>
                     </div>
@@ -96,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function() {
             style.id = 'bundle-images-styles';
             style.textContent = `
                 .bundle-container {
-                    padding: 20px;
-                    max-width: 800px;
+                    padding: 25px;
+                    max-width: 900px;
                     margin: 0 auto;
                 }
                 
@@ -220,34 +220,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 .color-image-option {
                     position: relative !important;
-                    border: 2px solid #e0e0e0;
-                    border-radius: 8px;
-                    padding: 4px;
+                    border: 3px solid #e0e0e0;
+                    border-radius: 10px;
+                    padding: 5px;
                     cursor: pointer;
                     transition: all 0.3s ease;
                     display: inline-block;
+                    background: white;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
                 }
                 
-                /* Hover entfernt - Checkmark immer sichtbar */
+                .color-image-option:hover {
+                    border-color: #6c757d;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+                }
                 
                 .color-image-option.selected {
                     border-color: #28a745;
+                    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
                 }
                 
                 .color-img {
-                    width: 50px;
-                    height: 50px;
+                    width: 80px;
+                    height: 80px;
                     object-fit: cover;
-                    border-radius: 4px;
+                    border-radius: 6px;
                     display: block;
                 }
                 
                 .color-name {
                     display: block;
                     text-align: center;
-                    font-size: 11px;
-                    margin-top: 4px;
-                    color: #666;
+                    font-size: 13px;
+                    margin-top: 6px;
+                    color: #495057;
+                    font-weight: 500;
                 }
                 
                 .checkmark {
@@ -277,28 +285,43 @@ document.addEventListener('DOMContentLoaded', function() {
                     display: none !important;
                 }
                 
-                .bundle-price {
-                    font-size: 20px;
+                .bundle-pricing {
+                    margin-top: 20px;
+                    padding: 15px;
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    border-radius: 12px;
+                    border: 1px solid #dee2e6;
+                }
+                
+                .price-display {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+                
+                .price {
+                    font-size: 28px;
                     font-weight: bold;
-                    color: #28a745;
-                    margin-top: 15px;
+                    color: #212529;
                 }
                 
                 .original {
                     text-decoration: line-through;
-                    color: #999;
-                    margin-left: 10px;
-                    font-size: 16px;
+                    color: #6c757d;
+                    font-size: 20px;
+                    opacity: 0.7;
                 }
                 
-                .savings {
-                    background: #28a745;
+                .savings-text {
+                    background: linear-gradient(135deg, #28a745, #20c997);
                     color: white;
-                    padding: 8px 16px;
+                    padding: 6px 14px;
                     border-radius: 20px;
-                    display: inline-block;
-                    margin-top: 10px;
-                    font-weight: bold;
+                    font-size: 14px;
+                    font-weight: 600;
+                    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
                 }
                 
                 .add-bundle-btn {
