@@ -4,7 +4,6 @@
     "name": "Elektrischer Wasserspender für Schreibtisch",
     "price": 49.99,
     "originalPrice": 69.99,
-    "category": "Haushalt und Küche",
     "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
     "description": "Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.",
     "sku": "CJ1621032671155597312",
@@ -12,18 +11,20 @@
     "shippingTime": "7-15 Werktage",
     "colors": [
       {
-        "name": "Blau",
-        "code": "#4A90E2",
+        "name": "Schwarz",
+        "code": "#2C2C2C",
         "sku": "CJHS167415803CX",
         "price": 49.99,
-        "originalPrice": 69.99
+        "originalPrice": 69.99,
+        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg"
       },
       {
         "name": "Weiß",
         "code": "#FFFFFF",
         "sku": "CJHS167415804DW",
         "price": 49.99,
-        "originalPrice": 69.99
+        "originalPrice": 69.99,
+        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg"
       }
     ],
     "bundles": [
@@ -71,14 +72,16 @@
         "code": "#FFFFFF",
         "sku": "CJMX350ML001WH",
         "price": 24.99,
-        "originalPrice": 49.99
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg"
       },
       {
-        "name": "Pink",
+        "name": "Rosa",
         "code": "#FFC0CB",
         "sku": "CJMX350ML002PK",
         "price": 24.99,
-        "originalPrice": 49.99
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png"
       }
     ],
     "bundles": [
@@ -564,14 +567,16 @@
         "code": "#663399",
         "sku": "CJHB26001RP",
         "price": 10.99,
-        "originalPrice": 20.99
+        "originalPrice": 20.99,
+        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg"
       },
       {
-        "name": "Lunar Rock Gray",
+        "name": "Lunar Rock",
         "code": "#708090",
         "sku": "CJHB26002LG",
         "price": 11.99,
-        "originalPrice": 21.99
+        "originalPrice": 21.99,
+        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg"
       }
     ],
     "features": [
@@ -828,6 +833,24 @@
     "sku": "CJLED21001",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Crown",
+        "code": "#FFD700",
+        "sku": "CJLED21001CR",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal crown.png"
+      },
+      {
+        "name": "Square",
+        "code": "#C0C0C0",
+        "sku": "CJLED21002SQ",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal square.png"
+      }
+    ],
     "features": [
       "USB-betrieben für einfache Nutzung",
       "Rotierende Projektion für dynamische Effekte",
@@ -984,28 +1007,32 @@
         "code": "#2C2C2C",
         "sku": "CJBT17006BK",
         "price": 14.99,
-        "originalPrice": 24.99
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png"
       },
       {
         "name": "Weiß",
         "code": "#F8F8F8",
         "sku": "CJBT17007WH",
         "price": 14.99,
-        "originalPrice": 24.99
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png"
       },
       {
         "name": "Grün",
         "code": "#7ED321",
         "sku": "CJBT17008GR",
         "price": 14.99,
-        "originalPrice": 24.99
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png"
       },
       {
         "name": "Pink",
         "code": "#E91E63",
         "sku": "CJBT17009PK",
         "price": 14.99,
-        "originalPrice": 24.99
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png"
       }
     ],
     "tags": [

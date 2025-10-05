@@ -71,24 +71,40 @@ class ImageColorSelection {
         if (!this.productData.colors) return;
         
         this.productData.colors.forEach(color => {
-            // Für Produkt 11 (Mixer) - spezielle Bilder
+            // Verwende das Bild aus products.json wenn vorhanden
             let colorImagePath = this.productData.image;
             
-            if (this.productId === 11) {
-                if (color.name === 'Weiß') {
-                    colorImagePath = '../produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg';
-                } else if (color.name === 'Pink') {
-                    colorImagePath = '../produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png';
-                }
+            if (color.image) {
+                // Füge ../ hinzu für Pfade aus products.json (da wir im produkte/ Ordner sind)
+                colorImagePath = '../' + color.image;
             }
             
-            // Fallback zum Hauptbild wenn farbspezifisches nicht existiert
+            // Speichere den Bildpfad für diese Farbe
             this.productImages[color.name] = colorImagePath;
+            console.log(`📸 Bild für ${color.name}: ${colorImagePath}`);
         });
     }
     
     getColorSpecificImage(colorName) {
         return this.productImages[colorName] || this.productData.image;
+    }
+    
+    getCategoryColor() {
+        // Bestimme die Rahmenfarbe basierend auf der Kategorie
+        const category = this.productData.category;
+        
+        switch(category) {
+            case 'Haushalt und Küche':
+                return '#43e97b'; // Grün
+            case 'Technik/Gadgets':
+                return '#4A90E2'; // Blau
+            case 'Beleuchtung':
+                return '#FFD700'; // Gold
+            case 'Körperpflege/Wellness':
+                return '#E91E63'; // Pink
+            default:
+                return '#007bff'; // Standard Blau
+        }
     }
     
     renderColorSelection() {
@@ -103,6 +119,8 @@ class ImageColorSelection {
             console.warn('⚠️ Kein Container für Farbauswahl gefunden');
             return;
         }
+        
+        const categoryColor = this.getCategoryColor();
         
         // Erstelle HTML für Farbauswahl - RAHMEN NUR UM BILD
         const colorOptionsHtml = this.productData.colors.map(color => {
@@ -176,12 +194,12 @@ class ImageColorSelection {
                 <div class="selected-color-text" style="
                     margin-top: 12px; 
                     font-size: 14px; 
-                    color: #007bff; 
+                    color: ${categoryColor}; 
                     font-weight: 500;
                     padding: 6px 12px;
-                    background: rgba(0, 123, 255, 0.08);
+                    background: ${categoryColor}15;
                     border-radius: 6px;
-                    border-left: 3px solid #007bff;
+                    border-left: 3px solid ${categoryColor};
                     display: none;
                 "></div>
             </div>
@@ -196,29 +214,41 @@ class ImageColorSelection {
     }
     
     createColorSelectionContainer() {
-        // Suche nach möglichen Parent-Elementen
-        const possibleParents = [
-            document.querySelector('.product-hero .container .row .col-lg-6'),
-            document.querySelector('.product-details'),
-            document.querySelector('main'),
-            document.body
-        ];
+        // Suche nach dem Hero-Bereich mit den Produktinfos
+        const heroSection = document.querySelector('.product-hero .col-lg-6:first-child');
         
-        for (const parent of possibleParents) {
-            if (parent) {
-                const container = document.createElement('div');
-                container.id = 'colorSelection';
-                
+        if (heroSection) {
+            const container = document.createElement('div');
+            container.id = 'colorSelection';
+            
+            // Finde die Stelle nach dem Lead-Text und vor den Buttons
+            const leadText = heroSection.querySelector('.lead');
+            const buttonsContainer = heroSection.querySelector('.d-flex.align-items-center.gap-3');
+            
+            if (leadText && buttonsContainer) {
+                // Füge zwischen Lead-Text und Buttons ein
+                leadText.parentNode.insertBefore(container, buttonsContainer);
+            } else if (buttonsContainer) {
                 // Füge vor den Buttons ein
-                const buttonsContainer = parent.querySelector('.d-flex.align-items-center.gap-3.mb-4');
-                if (buttonsContainer) {
-                    parent.insertBefore(container, buttonsContainer);
-                } else {
-                    parent.appendChild(container);
-                }
-                
-                return container;
+                heroSection.insertBefore(container, buttonsContainer);
+            } else {
+                // Füge am Ende des Hero-Bereichs ein
+                heroSection.appendChild(container);
             }
+            
+            return container;
+        }
+        
+        // Fallback auf alte Methode
+        const parent = document.querySelector('.product-hero .container .row .col-lg-6') || 
+                      document.querySelector('main') || 
+                      document.body;
+        
+        if (parent) {
+            const container = document.createElement('div');
+            container.id = 'colorSelection';
+            parent.appendChild(container);
+            return container;
         }
         
         return null;
@@ -228,17 +258,18 @@ class ImageColorSelection {
         // Markiere erste Farbe visuell OHNE Bildwechsel
         const firstColor = this.productData.colors[0];
         this.selectedColor = firstColor;
+        const categoryColor = this.getCategoryColor();
         
         const firstOption = document.querySelector('.color-option');
         if (firstOption) {
             firstOption.classList.add('selected');
             const imageContainer = firstOption.querySelector('div');
             if (imageContainer) {
-                imageContainer.style.borderColor = '#007bff';
-                imageContainer.style.boxShadow = '0 4px 12px rgba(0, 123, 255, 0.25)';
+                imageContainer.style.borderColor = categoryColor;
+                imageContainer.style.boxShadow = `0 4px 12px ${categoryColor}40`;
             }
             
-            // KEIN Checkmark - nur blauer Rahmen
+            // KEIN Checkmark - nur kategorie-spezifischer Rahmen
         }
         
         // Zeige ausgewählte Farbe Text
@@ -250,15 +281,16 @@ class ImageColorSelection {
     }
     
     attachColorEventListeners() {
+        const categoryColor = this.getCategoryColor();
         const colorOptions = document.querySelectorAll('.color-option');
         colorOptions.forEach(option => {
-            // Hover-Effekte - nur für Bildrahmen
+            // Hover-Effekte - nur für Bildrahmen mit Kategorie-Farbe
             option.addEventListener('mouseenter', (e) => {
                 if (!e.currentTarget.classList.contains('selected')) {
                     const imgContainer = e.currentTarget.querySelector('div');
                     if (imgContainer) {
-                        imgContainer.style.borderColor = '#6c757d';
-                        imgContainer.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)';
+                        imgContainer.style.borderColor = categoryColor;
+                        imgContainer.style.boxShadow = `0 4px 12px ${categoryColor}20`;
                     }
                 }
             });
@@ -286,6 +318,7 @@ class ImageColorSelection {
     
     selectColor(color) {
         this.selectedColor = color;
+        const categoryColor = this.getCategoryColor();
         
         // Update angezeigter Farbname
         const selectedColorText = document.querySelector('.selected-color-text');
@@ -310,19 +343,19 @@ class ImageColorSelection {
             }
         });
         
+        // Markiere ausgewählte Farbe - NUR RAHMEN UM BILD mit Kategorie-Farbe
         const selectedOption = document.querySelector(`[data-color="${color.name}"]`);
         if (selectedOption) {
             selectedOption.classList.add('selected');
-            const imageContainer = selectedOption.querySelector('div');
-            if (imageContainer) {
-                imageContainer.style.borderColor = '#007bff';  // Blauer Rahmen nur um Bild
-                imageContainer.style.boxShadow = '0 4px 12px rgba(0, 123, 255, 0.25)';
+            const imgContainer = selectedOption.querySelector('div');
+            if (imgContainer) {
+                imgContainer.style.borderColor = categoryColor;
+                imgContainer.style.boxShadow = `0 4px 12px ${categoryColor}40`;
             }
             
             // KEIN Checkmark - nur blauer Rahmen um das Bild
         }
         
-        console.log('✅ Farbe ausgewählt:', color.name);
     }
     
     updateMainImage(color) {
