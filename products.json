@@ -981,28 +981,28 @@
     "colors": [
       {
         "name": "Schwarz",
-        "code": "#000000",
+        "code": "#2C2C2C",
         "sku": "CJBT17006BK",
         "price": 14.99,
         "originalPrice": 24.99
       },
       {
         "name": "Weiß",
-        "code": "#FFFFFF",
+        "code": "#F8F8F8",
         "sku": "CJBT17007WH",
         "price": 14.99,
         "originalPrice": 24.99
       },
       {
         "name": "Grün",
-        "code": "#00FF00",
+        "code": "#7ED321",
         "sku": "CJBT17008GR",
         "price": 14.99,
         "originalPrice": 24.99
       },
       {
         "name": "Pink",
-        "code": "#FFC0CB",
+        "code": "#E91E63",
         "sku": "CJBT17009PK",
         "price": 14.99,
         "originalPrice": 24.99
