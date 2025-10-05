@@ -16,23 +16,79 @@ const currencyByCountry = {
     'BR': { symbol: 'R$', code: 'BRL', name: 'Brasilien' },
     'MX': { symbol: 'MX$', code: 'MXN', name: 'Mexiko' }
 };
+
 // Verwende currencyByCountry als COUNTRIES für Konsistenz
 const COUNTRIES = currencyByCountry;
 
 let currentCountry = 'DE';
 let currentCurrency = currencyByCountry['DE']; // Initialisiere currentCurrency mit Deutschland als Standard
+
 // Funktion zum Abrufen des farbspezifischen Bildes
 function getCartItemImage(item) {
+    console.log('🖼️ getCartItemImage aufgerufen für:', item.name, 'ID:', item.id);
+    
     // Extrahiere Farbe aus dem Namen
     const colorMatch = item.name.match(/\(([^)]+)\)$/);
-    if (colorMatch && item.id === 11) {
+    if (colorMatch) {
         const color = colorMatch[1];
-        if (color === 'Weiß') {
-            return 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg';
-        } else if (color === 'Pink') {
-            return 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png';
+        console.log('🎨 Extrahierte Farbe:', color);
+        
+        // Produkt 10 - Elektrischer Wasserspender
+        if (item.id == 10) {  // Verwende == für Type-Coercion
+            if (color === 'Schwarz') {
+                return 'produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg';
+            } else if (color === 'Weiß') {
+                return 'produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg';
+            }
+        }
+        
+        // Produkt 11 - Elektrischer Mixer
+        if (item.id == 11) {  // Verwende == für Type-Coercion
+            if (color === 'Weiß') {
+                return 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg';
+            } else if (color === 'Rosa' || color === 'Pink') {
+                return 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png';
+            }
+        }
+        
+        // Produkt 17 - Bluetooth Finder
+        if (item.id == 17) {  // Verwende == für Type-Coercion
+            if (color === 'Schwarz') {
+                return 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png';
+            } else if (color === 'Weiß') {
+                return 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png';
+            } else if (color === 'Grün') {
+                return 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png';
+            } else if (color === 'Pink') {
+                return 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png';
+            }
+        }
+        
+        // Produkt 21 - LED Water Ripple Crystal
+        if (item.id == 21) {  // Verwende == statt === für Type-Coercion
+            console.log('🔮 Produkt 21 erkannt, Farbe:', color);
+            if (color === 'Crown') {
+                const path = 'produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal crown.png';
+                console.log('👑 Crown Bild gewählt:', path);
+                return path;
+            } else if (color === 'Square') {
+                const path = 'produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal square.png';
+                console.log('⬜ Square Bild gewählt:', path);
+                return path;
+            }
+        }
+        
+        // Produkt 26 - Hair Brush
+        if (item.id == 26) {  // Verwende == für Type-Coercion
+            if (color === 'Roland Purple') {
+                return 'produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg';
+            } else if (color === 'Lunar Rock') {
+                return 'produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg';
+            }
         }
     }
+    
+    console.log('⚠️ Verwende Standard-Bild:', item.image);
     return item.image;
 }
 

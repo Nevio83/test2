@@ -5,6 +5,38 @@ console.log('🎨 Bundle Images Final wird geladen...');
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🎨 Initialisiere Bundle-Bilder...');
     
+    // Funktion zum Bestimmen der Kategorie-Farbe
+    function getCategoryColor(category) {
+        switch(category) {
+            case 'Haushalt und Küche':
+                return '#43e97b'; // Grün
+            case 'Technik/Gadgets':
+                return '#4A90E2'; // Blau
+            case 'Beleuchtung':
+                return '#FFD700'; // Gold
+            case 'Körperpflege/Wellness':
+                return '#E91E63'; // Pink
+            default:
+                return '#007bff'; // Standard Blau
+        }
+    }
+    
+    // Funktion für dunklere Variante der Kategorie-Farbe
+    function getDarkerCategoryColor(category) {
+        switch(category) {
+            case 'Haushalt und Küche':
+                return '#2ecc71'; // Dunkleres Grün
+            case 'Technik/Gadgets':
+                return '#2c5aa0'; // Dunkleres Blau
+            case 'Beleuchtung':
+                return '#FFA500'; // Orange-Gold
+            case 'Körperpflege/Wellness':
+                return '#c2185b'; // Dunkleres Pink
+            default:
+                return '#0056b3'; // Dunkleres Standard Blau
+        }
+    }
+    
     // Funktion zum Rendern der Bundles mit Bildern
     function renderBundlesWithImages() {
         const bundleSection = document.getElementById('bundle-section');
@@ -13,11 +45,26 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Produkt 11 Farben
-        const colors = [
-            { name: 'Weiß', image: '../produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg' },
-            { name: 'Pink', image: '../produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png' }
-        ];
+        // Hole Farben und Kategorie vom aktuellen Produkt
+        let colors = [];
+        let productCategory = 'Haushalt und Küche'; // Default
+        
+        if (window.imageColorSelection && window.imageColorSelection.productData) {
+            const productData = window.imageColorSelection.productData;
+            colors = productData.colors || [];
+            productCategory = productData.category || 'Haushalt und Küche';
+            console.log('✅ Produktdaten geholt:', { colors, category: productCategory });
+        } else {
+            // Fallback für Produkt 11
+            colors = [
+                { name: 'Weiß', image: '../produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg' },
+                { name: 'Rosa', image: '../produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png' }
+            ];
+            console.log('⚠️ Verwende Fallback-Farben');
+        }
+        
+        const categoryColor = getCategoryColor(productCategory);
+        const darkerCategoryColor = getDarkerCategoryColor(productCategory);
         
         // Bundle-Optionen
         const bundles = [
@@ -59,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                      data-color="${color.name}"
                                                      onclick="selectBundleColor(${bundle.qty}, ${i}, '${color.name}', this)">
                                                     ${colorIndex === 0 ? '<span class="checkmark">✓</span>' : ''}
-                                                    <img src="${color.image}" alt="${color.name}" class="color-img">
+                                                    <img src="${color.image && !color.image.startsWith('../') ? '../' + color.image : color.image}" alt="${color.name}" class="color-img">
                                                     <span class="color-name">${color.name}</span>
                                                 </div>
                                             `).join('')}
@@ -122,15 +169,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .bundle-card:hover {
-                    border-color: #007bff;
+                    border-color: ${categoryColor};
                     transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    box-shadow: 0 4px 12px ${categoryColor}30;
                 }
                 
                 .bundle-card.selected {
-                    border-color: #28a745;
-                    background: linear-gradient(135deg, #f0fff4 0%, #e8f5e9 100%);
-                    box-shadow: 0 4px 16px rgba(40, 167, 69, 0.2);
+                    border-color: ${categoryColor};
+                    background: linear-gradient(135deg, ${categoryColor}15 0%, ${darkerCategoryColor}10 100%);
+                    box-shadow: 0 6px 20px ${categoryColor}30;
+                    transform: scale(1.02);
                 }
                 
                 .bundle-content {
@@ -171,30 +219,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .discount-badge {
-                    background: #28a745;
+                    background: linear-gradient(90deg, ${categoryColor} 0%, ${darkerCategoryColor} 100%);
                     color: white;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 12px;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                    font-size: 11px;
                     font-weight: bold;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    box-shadow: 0 2px 4px ${categoryColor}30;
                 }
                 
                 .popular-badge {
-                    background: #6f42c1;
+                    background: linear-gradient(135deg, ${darkerCategoryColor} 0%, ${categoryColor} 100%);
                     color: white;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 12px;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                    font-size: 11px;
                     font-weight: bold;
+                    animation: pulse 2s infinite;
+                    box-shadow: 0 2px 6px ${darkerCategoryColor}40;
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
                 }
                 
                 .best-badge {
-                    background: #ff6b6b;
+                    background: linear-gradient(45deg, #ff6b6b 0%, ${categoryColor} 50%, ${darkerCategoryColor} 100%);
                     color: white;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 12px;
+                    padding: 5px 10px;
+                    border-radius: 20px;
+                    font-size: 11px;
                     font-weight: bold;
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .best-badge::before {
+                    content: '';
+                    position: absolute;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
+                    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+                    transform: rotate(45deg);
+                    animation: shine 3s infinite;
+                }
+                
+                @keyframes shine {
+                    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+                    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
                 }
                 
                 .bundle-colors {
@@ -231,14 +308,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .color-image-option:hover {
-                    border-color: #6c757d;
+                    border-color: ${categoryColor}80;
                     transform: translateY(-2px);
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+                    box-shadow: 0 4px 10px ${categoryColor}20;
                 }
                 
                 .color-image-option.selected {
-                    border-color: #28a745;
-                    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+                    border-color: ${categoryColor};
+                    box-shadow: 0 4px 12px ${categoryColor}40;
                 }
                 
                 .color-img {
@@ -262,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     position: absolute !important;
                     top: 2px !important;
                     right: 2px !important;
-                    background: #28a745 !important;
+                    background: ${categoryColor} !important;
                     color: white !important;
                     width: 18px !important;
                     height: 18px !important;
@@ -315,33 +392,61 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .savings-text {
-                    background: linear-gradient(135deg, #28a745, #20c997);
+                    background: linear-gradient(135deg, ${darkerCategoryColor}, ${categoryColor});
                     color: white;
-                    padding: 6px 14px;
-                    border-radius: 20px;
+                    padding: 8px 16px;
+                    border-radius: 25px;
                     font-size: 14px;
-                    font-weight: 600;
-                    box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+                    font-weight: 700;
+                    box-shadow: 0 3px 10px ${categoryColor}35;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    position: relative;
+                }
+                
+                .savings-text::before {
+                    content: '💰';
+                    font-size: 16px;
                 }
                 
                 .add-bundle-btn {
                     width: 100%;
-                    padding: 15px;
-                    background: #28a745;
+                    padding: 16px;
+                    background: linear-gradient(135deg, ${categoryColor} 0%, ${darkerCategoryColor} 100%);
                     color: white;
                     border: none;
-                    border-radius: 8px;
+                    border-radius: 12px;
                     font-size: 18px;
                     font-weight: bold;
                     cursor: pointer;
                     margin-top: 20px;
                     transition: all 0.3s ease;
+                    position: relative;
+                    overflow: hidden;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }
+                
+                .add-bundle-btn::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                    transition: left 0.5s;
                 }
                 
                 .add-bundle-btn:hover {
-                    background: #218838;
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                    background: linear-gradient(135deg, ${darkerCategoryColor} 0%, ${categoryColor} 100%);
+                    transform: translateY(-3px) scale(1.02);
+                    box-shadow: 0 6px 20px ${categoryColor}40;
+                }
+                
+                .add-bundle-btn:hover::before {
+                    left: 100%;
                 }
             `;
             document.head.appendChild(style);

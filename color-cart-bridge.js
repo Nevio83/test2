@@ -34,6 +34,10 @@
                     // Erweitere das Produkt mit Farbinformationen
                     const coloredProduct = {
                         ...product,
+                        // WICHTIG: Füge Farbe zum Namen hinzu für cart.js getCartItemImage
+                        name: product.name.includes(`(${selectedColorData.name})`) 
+                            ? product.name 
+                            : `${product.name} (${selectedColorData.name})`,
                         selectedColor: selectedColorData.name,
                         selectedColorCode: selectedColorData.code || '#000000',
                         selectedColorSku: selectedColorData.sku || 'default',
