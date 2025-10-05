@@ -16,56 +16,40 @@ const currencyByCountry = {
     'BR': { symbol: 'R$', code: 'BRL', name: 'Brasilien' },
     'MX': { symbol: 'MX$', code: 'MXN', name: 'Mexiko' }
 };
-
 // Verwende currencyByCountry als COUNTRIES für Konsistenz
 const COUNTRIES = currencyByCountry;
 
 let currentCountry = 'DE';
 let currentCurrency = currencyByCountry['DE']; // Initialisiere currentCurrency mit Deutschland als Standard
-// Funktion zum Abrufen des Warenkorbs aus dem localStorage
+// Funktion zum Abrufen des farbspezifischen Bildes
+function getCartItemImage(item) {
+    // Extrahiere Farbe aus dem Namen
+    const colorMatch = item.name.match(/\(([^)]+)\)$/);
+    if (colorMatch && item.id === 11) {
+        const color = colorMatch[1];
+        if (color === 'Weiß') {
+            return 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg';
+        } else if (color === 'Pink') {
+            return 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png';
+        }
+    }
+    return item.image;
+}
+
+// Funktion zum Abrufen des Warenkorbs
 function getCart() {
     try {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const processedCart = cart.map(item => {
-            // Fix für Bundle-Namen ohne Sets-Angabe
-            if (item.bundleId && !item.isBundle) {
-                // Altes Bundle-Format - füge Sets-Angabe hinzu
-                const qtyMatch = item.bundleId.match(/qty(\d+)/);
-                const qty = qtyMatch ? parseInt(qtyMatch[1]) : 1;
-                
-                // Prüfe ob Sets-Angabe bereits vorhanden
-                if (!item.name.includes('Set')) {
-                    item.name = item.name.replace(/\s*\(\d+\s+Sets?\s+kaufen\)/gi, '');
-                    item.name = item.name.trim() + ` (${qty} Set${qty > 1 ? 's' : ''})`;
-                }
-            } else if (item.bundleId && item.isBundle) {
-                // Neues Bundle-Format - stelle sicher dass Sets-Angabe vorhanden ist
-                const hasSetInfo = /\(\d+\s+Sets?\)/i.test(item.name);
-                if (!hasSetInfo && item.bundleQuantity) {
-                    item.name = item.name.trim() + ` (${item.bundleQuantity} Set${item.bundleQuantity > 1 ? 's' : ''})`;
-                }
-            } else {
-                // Normale Produkte - bereinige Namen und füge Farbe hinzu
-                let cleanName = item.name.replace(/\s*\([^)]*\)$/, '');
-                
-                // Entferne leere Klammern
-                cleanName = cleanName.replace(/\s*\(\s*\)/g, '');
-                
-                // Füge Farbe hinzu wenn vorhanden
-                if (item.selectedColor && item.selectedColor.trim() !== '') {
-                    item.name = `${cleanName} (${item.selectedColor})`;
-                    console.log(`Warenkorb-Artikel: ${item.name} - Preis: €${item.price}`);
-                } else {
-                    item.name = cleanName; // Keine Klammern wenn keine Farbe
-                }
-            }
-            return item;
-        });
-        return processedCart;
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        return cart;
     } catch (e) {
-        console.error("Fehler beim Parsen des Warenkorbs aus dem localStorage:", e);
+        console.error("Fehler beim Laden des Warenkorbs:", e);
         return [];
     }
+}
+
+// Funktion zum Rendern des Warenkorbs
+function renderCart() {
+    updateCartPage();
 }
 
 // Funktion zum Speichern des Warenkorbs mit Farbauswahl
@@ -421,7 +405,7 @@ function updateCartPage() {
                     ${cartItems.map(item => `
                         <div class="cart-item" data-id="${item.id}">
                             <a href="produkte/produkt-${item.id}.html" style="text-decoration: none;">
-                                <img src="${item.image}" alt="${item.name}" class="cart-item-image" style="cursor: pointer;" onerror="handleImageError(this, '${item.name}', '${item.image}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
+                                <img src="${getCartItemImage(item)}" alt="${item.name}" class="cart-item-image" style="cursor: pointer;" onerror="handleImageError(this, '${item.name}', '${getCartItemImage(item)}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
                             </a>
                             <div class="cart-item-details">
                                 <h5>${item.name}</h5>

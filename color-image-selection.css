@@ -1,0 +1,330 @@
+/* Bild-basierte Farbauswahl Styles - MediaMarkt Style */
+
+/* Container für Farbauswahl */
+.color-selection-container {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.color-selection-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+/* Farboptionen Container */
+.color-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 80px);
+    gap: 25px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-left: 170px;
+}
+
+/* Einzelne Farboption mit Bild */
+.color-option {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 80px;
+}
+
+.color-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.color-option-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s ease;
+    min-width: 80px;
+    overflow: hidden;
+}
+
+/* Produktbild in Farboption */
+.color-option-image {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px 6px 0 0;
+}
+
+/* Farbname unter dem Bild */
+.color-option-name {
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+    padding: 8px 4px;
+    background: white;
+    font-weight: 500;
+}
+
+/* Hover Effekt */
+.color-option:hover .color-option-label {
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+/* Ausgewählte Farboption - KEIN Hintergrund mehr */
+.color-option input[type="radio"]:checked + .color-option-label {
+    border-color: #007bff;
+    background: transparent;
+    box-shadow: none;
+}
+.color-option input[type="radio"]:checked + .color-option-label .color-option-name {
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* Checkmark ENTFERNT - kein Checkmark mehr */
+.color-option input[type="radio"]:checked + .color-option-label::after {
+    display: none !important;
+}
+
+/* Ausgewählte Farbe Anzeige */
+.selected-color-display {
+    margin-top: 12px;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Bundle Farbauswahl Styles */
+.bundle-item-color-with-image {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.bundle-item-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.bundle-color-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.bundle-color-option {
+    position: relative;
+    cursor: pointer;
+    padding: 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+}
+
+.bundle-color-option:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+}
+
+.bundle-color-option.selected {
+    border-color: #28a745;
+    background: #f0fff4;
+}
+
+.bundle-color-image {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-bottom: 6px;
+    border-radius: 4px;
+}
+.bundle-color-name {
+    font-size: 13px;
+    text-align: center;
+}
+
+.bundle-color-option.selected .bundle-color-name {
+    color: #28a745;
+}
+
+.color-option .checkmark {
+    display: none !important;
+}
+
+.selected-bundle-color {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #28a745;
+    font-weight: 500;
+}
+
+/* Bundle Preise schöner */
+.bundle-pricing {
+    margin-top: 15px;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bundle-price {
+    font-size: 24px;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.bundle-original {
+    font-size: 18px;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.savings {
+    background: #28a745;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: auto;
+}
+
+/* Cart Farbauswahl Styles */
+.cart-color-selection {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.cart-color-label {
+    font-size: 13px;
+    color: #666;
+    margin-right: 8px;
+}
+
+.cart-color-options {
+    display: flex;
+    gap: 8px;
+}
+
+.cart-color-option {
+    position: relative;
+    width: 50px;
+    height: 50px;
+}
+
+.cart-color-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.cart-color-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    padding: 2px;
+}
+
+.cart-color-option input[type="radio"]:checked + .cart-color-image {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.cart-color-option:hover .cart-color-image {
+    transform: scale(1.05);
+    border-color: #007bff;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .color-option-label {
+        min-width: 70px;
+        padding: 6px;
+    }
+    
+    .color-option-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .color-option-name {
+        font-size: 11px;
+    }
+    
+    .bundle-color-image {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .cart-color-option {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* Animation für Farbwechsel */
+@keyframes colorChange {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.color-change-animation {
+    animation: colorChange 0.3s ease;
+}
+
+/* Fallback für fehlende Bilder */
+.color-option-fallback {
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+/* Spezifische Fallback-Farben */
+.color-fallback-white { background: #FFFFFF; border: 1px solid #e0e0e0; color: #333; }
+.color-fallback-black { background: #000000; }
+.color-fallback-blue { background: #4A90E2; }
+.color-fallback-pink { background: #FFC0CB; }
+.color-fallback-green { background: #4CAF50; }
+.color-fallback-red { background: #F44336; }
+.color-fallback-yellow { background: #FFEB3B; color: #333; }
+.color-fallback-gray { background: #9E9E9E; }
+.color-fallback-brown { background: #795548; }
+.color-fallback-orange { background: #FF9800; }
+.color-fallback-purple { background: #9C27B0; }

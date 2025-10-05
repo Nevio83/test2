@@ -579,16 +579,24 @@ window.addEventListener('load', () => {
 // CSS für inline Farbauswahl in Bundles
 const bundleColorStyles = `
 <style>
+/* Verstecke ALLE Farbkreise in Bundles - KOMPLETT */
+.bundle-color-selection .color-circle,
+.bundle-color-selection [style*="border-radius: 50%"],
+.bundle-color-selection [style*="background-color"],
+.bundle-item-color .color-circle,
+.bundle-item-color [style*="border-radius: 50%"],
+.bundle-item-color [style*="background-color"],
+.bundle-box .color-circle,
+.bundle-box [style*="border-radius: 50%"] {
+    display: none !important;
+}
 .bundle-color-selection {
-    margin: 15px 0;
-    padding: 10px;
     background: rgba(255,255,255,0.5);
     border-radius: 8px;
 }
 
 .bundle-item-color-inline {
     display: flex;
-    align-items: center;
     margin: 8px 0;
     gap: 10px;
 }
@@ -637,18 +645,10 @@ const bundleColorStyles = `
 
 .selected-color-text {
     font-size: 12px;
-    color: #333;
-    font-weight: 500;
-    min-width: 50px;
+    color: #28a745;
+    margin-left: 10px;
 }
-
-.bundle-card.selected .bundle-color-selection {
-    background: rgba(255,255,255,0.8);
-}
-</style>
-`;
-
-// Füge Styles hinzu
+</style>`;
 if (!document.getElementById('bundle-color-inline-styles')) {
     const styleElement = document.createElement('div');
     styleElement.id = 'bundle-color-inline-styles';
@@ -699,7 +699,7 @@ function fixBundleNamesInCart() {
             });
             
             if (bundleItem && bundleItem.name.includes('(') && bundleItem.name !== currentName) {
-                console.log(`🔧 Korrigiere Bundle-Name: "${bundleItem.name}"`);
+                console.log('🔧 Korrigiere Bundle-Name: ' + bundleItem.name);
                 nameElement.textContent = bundleItem.name;
             }
         }
