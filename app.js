@@ -4341,3 +4341,120 @@ if (!window.location.pathname.includes('produkt-')) {
     document.head.appendChild(script);
     console.log('Default Color Handler wird geladen...');
 }
+// === DROPDOWN-BILDER KLICKBAR MACHEN ===
+// Fügen Sie diesen Code am Ende Ihrer app.js Datei hinzu
+
+// Macht Dropdown-Bilder klickbar
+function makeDropdownImagesClickable() {
+  setTimeout(() => {
+    // Produkt-ID Mapping
+    const productIdMap = {
+      // Technik/Gadgets
+      'Elektrischer Wasserspender für Schreibtisch': 10,
+      '350ml Elektrischer Mixer Entsafter': 11,
+      'Bluetooth Anti-Lost Finder Wassertropfen': 17,
+      'Home Electronic Clock Digitale Uhr': 18,
+      'Elektronisches Distanzmessgerät Digital': 19,
+      'ZigBee Smart DIY Motorisierte Rollos': 20,
+      
+      // Beleuchtung
+      'LED Water Ripple Crystal': 21,
+      'LED Wasserwellen Kristall Tischlampe': 21,
+      'Waterproof RGB LED Solar Light': 22,
+      'Waterproof RGB LED Solarleuchte': 22,
+      'Solarleuchte Metall Laterne': 23,
+      'COBLED Arbeitsleuchte': 24,
+      'Nachtlichter mit Bewegungsmelder': 25,
+      
+      // Haushalt & Küche
+      'Multifunktions Gemüseschneider': 12,
+      'Elektrische Küchenwaage Digital': 13,
+      'Automatischer Seifenspender': 14,
+      'Vakuum Aufbewahrungsbeutel Set': 15,
+      'Silikon Stretch Deckel 6er Set': 16,
+      
+      // Wellness & Körperpflege
+      '4 In 1 Self Cleaning Hair Brush': 26,
+      'Volcanic Flame Aroma Essential Oil Diffuser': 27,
+      'Mini Muskel Massage Pistole': 28,
+      'Haaröl-Applikator Kopfhaut Massager': 29,
+      'Mini Electric Shoulder And Neck Massager': 30,
+      'Elektrischer Kopfhaut-Massagekamm': 31
+    };
+    
+    // Verarbeite Warenkorb-Artikel
+    document.querySelectorAll('#cartDropdown .cart-item').forEach(item => {
+      const img = item.querySelector('.cart-item-image');
+      if (!img || img.parentElement.tagName === 'A') return;
+      
+      const nameEl = item.querySelector('.cart-item-name');
+      if (!nameEl) return;
+      
+      const productName = nameEl.textContent.trim();
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const product = cart.find(p => p.name === productName);
+      
+      if (product && product.id) {
+        const link = document.createElement('a');
+        link.href = 'produkte/produkt-' + product.id + '.html';
+        link.style.textDecoration = 'none';
+        
+        img.style.cursor = 'pointer';
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      }
+    });
+    
+    // Verarbeite Empfehlungen
+    document.querySelectorAll('#cartDropdown .recommendation-card').forEach(card => {
+      const img = card.querySelector('.recommendation-image');
+      if (!img || img.parentElement.tagName === 'A') return;
+      
+      const nameEl = card.querySelector('.recommendation-name');
+      if (!nameEl) return;
+      
+      const productName = nameEl.textContent.trim();
+      const productId = productIdMap[productName] || 
+                       (window.products && window.products.find(p => p.name === productName)?.id);
+      
+      if (productId) {
+        const link = document.createElement('a');
+        link.href = 'produkte/produkt-' + productId + '.html';
+        link.style.textDecoration = 'none';
+        
+        img.style.cursor = 'pointer';
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
+      }
+    });
+  }, 200);
+}
+
+// Erweitere renderCartDropdown Funktion
+(function() {
+  if (typeof window.renderCartDropdown === 'function') {
+    const originalRender = window.renderCartDropdown;
+    window.renderCartDropdown = function() {
+      const result = originalRender.apply(this, arguments);
+      makeDropdownImagesClickable();
+      return result;
+    };
+    console.log('✅ renderCartDropdown erweitert - Bilder sind klickbar');
+  } else {
+    // Fallback: Warte auf die Funktion
+    const checkInterval = setInterval(() => {
+      if (typeof window.renderCartDropdown === 'function') {
+        clearInterval(checkInterval);
+        const originalRender = window.renderCartDropdown;
+        window.renderCartDropdown = function() {
+          const result = originalRender.apply(this, arguments);
+          makeDropdownImagesClickable();
+          return result;
+        };
+        console.log('✅ renderCartDropdown erweitert - Bilder sind klickbar');
+      }
+    }, 100);
+    
+    setTimeout(() => clearInterval(checkInterval), 5000);
+  }
+})();
