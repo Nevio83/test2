@@ -274,11 +274,12 @@ class ProductImageGallery {
         const prevBtn = this.galleryContainer.querySelector('.gallery-nav.prev');
         const nextBtn = this.galleryContainer.querySelector('.gallery-nav.next');
         
+        // Entferne die Begrenzung - Buttons sind immer aktiviert für endlose Navigation
         if (prevBtn) {
-            prevBtn.disabled = this.currentImageIndex === 0;
+            prevBtn.disabled = false;
         }
         if (nextBtn) {
-            nextBtn.disabled = this.currentImageIndex === this.images.length - 1;
+            nextBtn.disabled = false;
         }
     }
     
