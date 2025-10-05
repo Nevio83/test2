@@ -352,7 +352,9 @@ function updateCartPage() {
                     <div class="addon-list">
                         ${randomProducts.map(product => `
                             <div class="addon-card">
-                                <img src="${product.image}" class="addon-card-img" alt="${product.name}" onerror="this.src='produkt bilder/ware.png'">
+                                <a href="produkte/produkt-${product.id}.html" style="text-decoration: none;">
+                                    <img src="${product.image}" class="addon-card-img" alt="${product.name}" style="cursor: pointer;" onerror="this.src='produkt bilder/ware.png'">
+                                </a>
                                 <div class="addon-card-info">
                                     <div class="addon-card-title">${product.name}</div>
                                     <div class="addon-card-price">${currentCurrency.symbol}${product.price.toFixed(2)}</div>
@@ -418,7 +420,9 @@ function updateCartPage() {
                 <div id="cartItemsList">
                     ${cartItems.map(item => `
                         <div class="cart-item" data-id="${item.id}">
-                            <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="handleImageError(this, '${item.name}', '${item.image}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
+                            <a href="produkte/produkt-${item.id}.html" style="text-decoration: none;">
+                                <img src="${item.image}" alt="${item.name}" class="cart-item-image" style="cursor: pointer;" onerror="handleImageError(this, '${item.name}', '${item.image}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
+                            </a>
                             <div class="cart-item-details">
                                 <h5>${item.name}</h5>
                                 <div class="cart-item-price">${currentCurrency.symbol}${convertPrice(item.price, currentCurrency.code).toFixed(2)}</div>
@@ -451,7 +455,9 @@ function updateCartPage() {
                     <div class="addon-list">
                         ${addonProducts.map(addon => `
                             <div class="addon-card">
-                                <img src="${addon.image}" class="addon-card-img" alt="${addon.name}" onerror="this.src='produkt bilder/ware.png'">
+                                <a href="produkte/produkt-${addon.id}.html" style="text-decoration: none;">
+                                    <img src="${addon.image}" class="addon-card-img" alt="${addon.name}" style="cursor: pointer;" onerror="this.src='produkt bilder/ware.png'">
+                                </a>
                                 <div class="addon-card-info">
                                     <div class="addon-card-title">${addon.name}</div>
                                     <div class="addon-card-price">${currentCurrency.symbol}${convertPrice(addon.price, currentCurrency.code).toFixed(2)}</div>

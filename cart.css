@@ -2930,6 +2930,14 @@ html, body {
     width: 100px !important;
     height: 100px !important;
     object-fit: cover !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Hover-Effekt für klickbare Bilder */
+.cart-item-image:hover,
+.addon-card-img:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3) !important;
 }
 
 /* Mobile Ansicht */
