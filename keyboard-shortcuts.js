@@ -36,12 +36,10 @@ class KeyboardShortcuts {
     init() {
         this.createKeyboardIndicator();
         this.bindEvents();
-        console.log('🎹 Keyboard Shortcuts System aktiviert');
     }
     
     createKeyboardIndicator() {
         // Keyboard Indikator entfernt - wird nicht mehr angezeigt
-        console.log('🎹 Keyboard Indicator deaktiviert');
     }
     
     bindEvents() {
@@ -49,62 +47,51 @@ class KeyboardShortcuts {
         
         // Hover-Tracking für Produktkarten - Lumière spezifische Selektoren
         document.addEventListener('mouseover', (e) => {
-            // Suche nach Lumière Produktkarten mit verbesserter Selektor-Logik
             const productCard = e.target.closest('.lumiere-product-card') || 
-                               e.target.closest('[data-product-id]') ||
                                e.target.closest('.product-card') ||
                                e.target.closest('.card[data-product-id]');
             
-            if (productCard && productCard.dataset.productId) {
+            if (productCard === this.currentHoveredProduct) {
+                this.currentHoveredProduct = null;
+            } else if (productCard && productCard.dataset.productId) {
                 this.currentHoveredProduct = productCard;
-                const productId = productCard.dataset.productId;
-                const productTitle = productCard.querySelector('.lumiere-product-title, .card-title, .product-title, h5, h4, h3')?.textContent;
-                console.log('🎯 Hovered product card:', productCard.className);
-                console.log('🎯 Product ID:', productId);
-                console.log('🎯 Product title:', productTitle);
             }
         });
         
         document.addEventListener('mouseout', (e) => {
-            const productCard = e.target.closest('.lumiere-product-card') || 
+            const productCard = e.target.closest('.lumiere-product-card') ||
                                e.target.closest('[data-product-id]') ||
                                e.target.closest('.product-card') ||
                                e.target.closest('.card[data-product-id]');
             
             if (productCard === this.currentHoveredProduct) {
                 this.currentHoveredProduct = null;
-                console.log('🎯 Mouse left product');
             }
         });
     }
     
     handleKeydown(e) {
-        console.log('🎹 Keydown event received:', e.key, 'Active element:', document.activeElement.tagName);
-        
         // Ignoriere Shortcuts in Input-Feldern
         if (this.isInputFocused()) {
-            console.log('🎹 Input focused, ignoring shortcut');
             return;
         }
         
         // Baue Shortcut-String
-        let shortcut = '';
-        if (e.ctrlKey) shortcut += 'ctrl+';
-        if (e.altKey) shortcut += 'alt+';
-        if (e.shiftKey) shortcut += 'shift+';
+        const parts = [];
+        if (e.ctrlKey) parts.push('ctrl');
+        if (e.altKey) parts.push('alt');
+        if (e.shiftKey) parts.push('shift');
+        if (e.metaKey) parts.push('meta');
         
-        // Spezielle Behandlung für Sonderzeichen
-        let key = e.key.toLowerCase();
-        if (key === '?') {
-            key = '?';
+        const key = e.key.toLowerCase();
+        if (!['control', 'alt', 'shift', 'meta'].includes(key)) {
+            parts.push(key);
         }
-        shortcut += key;
         
-        console.log('🎹 Built shortcut string:', shortcut);
+        const shortcut = parts.join('+');
         
         // Führe Shortcut aus
         if (this.shortcuts[shortcut]) {
-            console.log('🎹 Shortcut found, executing:', shortcut);
             e.preventDefault();
             e.stopPropagation();
             this.executeShortcut(shortcut);
@@ -119,7 +106,6 @@ class KeyboardShortcuts {
                                  e.key === 'F11' || e.key === 'F12';
             
             if (!isModifierKey && !isSpecialKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                console.log('🎹 No specific shortcut, opening search for key:', shortcut);
                 e.preventDefault();
                 e.stopPropagation();
                 this.toggleSearch();
@@ -139,8 +125,6 @@ class KeyboardShortcuts {
     executeShortcut(shortcut) {
         const action = this.shortcuts[shortcut].action;
         const description = this.shortcuts[shortcut].description;
-        
-        console.log(`🎹 Executing shortcut: ${shortcut} (${action})`);
         
         // Zeige visuelles Feedback
         this.showNotification(shortcut, description);
@@ -185,7 +169,6 @@ class KeyboardShortcuts {
     
     showNotification(shortcut, description) {
         // Benachrichtigungen deaktiviert
-        console.log(`🎹 Shortcut ausgeführt: ${shortcut} (${description})`);
     }
     
     // Shortcut Aktionen
@@ -548,17 +531,14 @@ document.head.appendChild(style);
 
 // Initialisiere System wenn DOM geladen ist
 function initializeKeyboardShortcuts() {
-    console.log('🎹 Initializing keyboard shortcuts system...');
     if (window.keyboardShortcuts) {
-        console.log('🎹 Keyboard shortcuts already initialized');
         return;
     }
     
     try {
         window.keyboardShortcuts = new KeyboardShortcuts();
-        console.log('🎹 Keyboard shortcuts system successfully initialized');
     } catch (error) {
-        console.error('🎹 Error initializing keyboard shortcuts:', error);
+        console.error('Error initializing keyboard shortcuts:', error);
     }
 }
 
@@ -568,5 +548,3 @@ if (document.readyState === 'loading') {
     // DOM is already loaded, initialize immediately
     setTimeout(initializeKeyboardShortcuts, 100); // Small delay to ensure other scripts are loaded
 }
-
-console.log('🎹 Keyboard Shortcuts System geladen');

@@ -8,7 +8,30 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
     <link href="cart.css" rel="stylesheet">
+    <link href="color-image-selection.css" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        /* Verstecke ALLE Farbkreise in cart.html */
+        .color-circle,
+        .color-option:not(.cart-color-option),
+        div[style*="border-radius: 50%"][style*="background"],
+        div[style*="border-radius: 50%"][style*="background-color"],
+        .color-options:not(.cart-color-options) .color-option,
+        div[onclick*="selectColor"],
+        div[class*="color"][style*="width: 30px"],
+        div[class*="color"][style*="height: 30px"],
+        .cart-item-details > div[style*="background-color"],
+        .cart-item-details > div[style*="border-radius"],
+        [style*="width: 30px"][style*="height: 30px"][style*="border-radius"],
+        [style*="width: 25px"][style*="height: 25px"][style*="border-radius"] {
+            display: none !important;
+        }
+        
+        /* Zeige nur Bild-basierte Farbauswahl */
+        .cart-item-color-selection {
+            display: flex !important;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
@@ -50,8 +73,28 @@
     <script src="app.js"></script>
     <script src="cart.js"></script>
     <script src="keyboard-shortcuts.js" defer></script>
-    <script src="cart-colors-complete.js"></script>
     <script src="bundle-complete.js"></script>
-    <script src="cart-color-selector.js"></script>
+    <script src="cart-image-colors.js"></script>
+    <!-- cart-colors-complete.js deaktiviert wegen Konflikt mit Bildern -->
+    <!-- <script src="cart-colors-complete.js"></script> -->
+    <script>
+        // Entferne alle Farbkreise nach dem Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            // Entferne alle Farbkreise
+            setInterval(() => {
+                // Finde alle Elemente die wie Farbkreise aussehen
+                const circles = document.querySelectorAll('[style*="border-radius: 50%"], .color-circle, .color-option:not(.cart-color-option)');
+                circles.forEach(circle => {
+                    // Prüfe ob es wirklich ein Farbkreis ist (klein und rund)
+                    const style = window.getComputedStyle(circle);
+                    const width = parseInt(style.width);
+                    const height = parseInt(style.height);
+                    if (width < 50 && height < 50 && width === height) {
+                        circle.style.display = 'none';
+                    }
+                });
+            }, 100);
+        });
+    </script>
 </body>
 </html>

@@ -4,14 +4,14 @@
 //         cart-addon-colors.js, cart-addon-color-renderer.js
 // ============================================
 
-console.log('🎨 Cart Colors Complete geladen');
+// Cart Colors Complete - Vereint alle Cart-Farbfunktionen
 
 // ============================================
 // TEIL 1: CART COLOR IMAGES
 // ============================================
 
 (function() {
-    console.log('🎨 Cart Color Images Modul geladen');
+    // Cart Color Images Modul
     
     // Mapping der Produkte zu ihren farbspezifischen Bildern
     const colorImageMappings = {
@@ -69,13 +69,12 @@ console.log('🎨 Cart Colors Complete geladen');
                 return storedColor;
             }
         }
-        
         return null;
     }
     
-    // Funktion zum Aktualisieren der Produktbilder
+    // Funktion zum Aktualisieren der Produkktbilder
     function updateCartProductImages() {
-        console.log('🖼️ Aktualisiere Warenkorb-Bilder nach Farbe');
+        // Aktualisiere Warenkorb-Bilder nach Farbe
         
         const cartItems = document.querySelectorAll('.cart-item, .cart-product, [data-cart-item]');
         
@@ -90,7 +89,7 @@ console.log('🎨 Cart Colors Complete geladen');
             
             // Überspringe Bundles - sie sollen immer das Hauptbild behalten
             if (fullName.includes('Sets') || fullName.includes('Bundle') || item.getAttribute('data-is-bundle') === 'true' || item.classList.contains('bundle-item')) {
-                console.log('⏭️ Überspringe Bundle (Hauptbild beibehalten):', fullName);
+                // Überspringe Bundle (Hauptbild beibehalten)
                 return;
             }
             
@@ -103,14 +102,14 @@ console.log('🎨 Cart Colors Complete geladen');
                 if (productIdAttr) {
                     color = getSelectedColorFromSelector(productIdAttr);
                     if (color) {
-                        console.log(`✅ Farbe aus Selector geholt: ${color} für Produkt ${productIdAttr}`);
+                        // Farbe aus Selector geholt
                     }
                 }
                 
                 if (!color) {
                     if (fullName.includes('Hair Brush')) {
                         color = getSelectedColorFromSelector(26) || 'Roland Purple';
-                        console.log(`📌 Using color for Hair Brush: ${color}`);
+                        // Using color for Hair Brush
                     } else if (fullName.includes('Mixer')) {
                         color = getSelectedColorFromSelector(11) || 'Weiß';
                     } else if (fullName.includes('Wasserspender')) {
@@ -122,7 +121,7 @@ console.log('🎨 Cart Colors Complete geladen');
             }
             
             if (!color) {
-                console.log('❌ Keine Farbe gefunden in:', fullName);
+                // Keine Farbe gefunden
                 return;
             }
             
@@ -140,7 +139,7 @@ console.log('🎨 Cart Colors Complete geladen');
             productId = parseInt(productId);
             
             if (!productId || !colorImageMappings[productId]) {
-                console.log('❌ Kein Mapping für Produkt-ID:', productId);
+                // Kein Mapping für Produkt-ID
                 return;
             }
             
@@ -148,9 +147,11 @@ console.log('🎨 Cart Colors Complete geladen');
             const newImageSrc = mapping[color] || mapping['default'];
             
             if (newImageSrc) {
-                console.log(`✅ Ändere Bild für ${fullName} zu:`, newImageSrc);
+                // Ändere Bild
                 img.src = newImageSrc;
                 img.alt = fullName;
+                // Speichere die richtige Bildquelle im data-Attribut
+                img.setAttribute('data-color-image', newImageSrc);
             }
         });
     }
@@ -163,6 +164,11 @@ console.log('🎨 Cart Colors Complete geladen');
     }
     
     function initCartColorImages() {
+        // Sofort ausführen
+        updateCartProductImages();
+        
+        // Nochmal nach kurzer Zeit
+        setTimeout(updateCartProductImages, 100);
         setTimeout(updateCartProductImages, 500);
         
         const observer = new MutationObserver(() => {
@@ -180,9 +186,10 @@ console.log('🎨 Cart Colors Complete geladen');
         document.addEventListener('cart-updated', updateCartProductImages);
         window.addEventListener('cartUpdated', updateCartProductImages);
         
-        setInterval(updateCartProductImages, 2000);
+        // Häufigere Updates
+        setInterval(updateCartProductImages, 1000);
         
-        console.log('✅ Cart Color Images initialisiert');
+        // Cart Color Images initialisiert
     }
     
     window.updateCartProductImages = updateCartProductImages;
@@ -193,17 +200,17 @@ console.log('🎨 Cart Colors Complete geladen');
 // ============================================
 
 (function() {
-    console.log('🎨 Cart Addon Colors Modul geladen');
+    // Cart Addon Colors Modul
     
     function autoSelectFirstColor() {
-        console.log('🎨 Auto-selecting first color for addons...');
+        // Auto-selecting first color for addons
         
         const suggestionsSection = document.querySelector('#suggestions, .suggestions-section, [class*="suggestion"], #recommendedProducts, .recommended-section');
         if (suggestionsSection) {
-            console.log('Found suggestions section');
+            // Found suggestions section
             
             const colorRadios = suggestionsSection.querySelectorAll('input[type="radio"][name*="color"]');
-            console.log(`Found ${colorRadios.length} color radios in suggestions`);
+            // Found color radios in suggestions
             
             const radioGroups = {};
             colorRadios.forEach(radio => {
@@ -218,13 +225,13 @@ console.log('🎨 Cart Colors Complete geladen');
                 if (group.length > 0 && !group.some(r => r.checked)) {
                     group[0].checked = true;
                     group[0].click();
-                    console.log(`✅ Selected first color for group: ${group[0].name}`);
+                    // Selected first color for group
                 }
             });
         }
         
         const allColorRadios = document.querySelectorAll('input[type="radio"][name*="color"]');
-        console.log(`Found ${allColorRadios.length} color radio buttons total`);
+        // Found color radio buttons total
         
         const radioGroups = {};
         allColorRadios.forEach(radio => {
@@ -240,7 +247,7 @@ console.log('🎨 Cart Colors Complete geladen');
             const hasSelection = radios.some(r => r.checked);
             
             if (!hasSelection && radios.length > 0) {
-                console.log(`Selecting first color for group: ${groupName}`);
+                // Selecting first color for group
                 radios[0].checked = true;
                 const event = new Event('change', { bubbles: true });
                 radios[0].dispatchEvent(event);
@@ -248,7 +255,7 @@ console.log('🎨 Cart Colors Complete geladen');
         });
         
         const visibleProducts = document.querySelectorAll('.product-card:not([style*="display: none"]), .addon-item, .suggestion-item, .cart-item');
-        console.log(`Found ${visibleProducts.length} visible product cards`);
+        // Found visible product cards
         
         visibleProducts.forEach(productCard => {
             const colorRadios = productCard.querySelectorAll('input[type="radio"][name*="color"]');
@@ -258,12 +265,12 @@ console.log('🎨 Cart Colors Complete geladen');
                 if (!hasSelection) {
                     colorRadios[0].checked = true;
                     colorRadios[0].click();
-                    console.log('✅ Selected first color radio for product card');
+                    // Selected first color radio for product card
                 }
             }
             
             const colorCircles = productCard.querySelectorAll('.color-circle, .color-option:not(label), div[style*="background-color"][onclick], div[style*="border-radius"][style*="background"]');
-            console.log(`Found ${colorCircles.length} color circles in product card`);
+            // Found color circles in product card
             
             if (colorCircles.length > 0) {
                 const hasSelected = Array.from(colorCircles).some(circle => {
@@ -276,7 +283,7 @@ console.log('🎨 Cart Colors Complete geladen');
                 });
                 
                 if (!hasSelected && colorCircles[0]) {
-                    console.log('🎯 Clicking first color circle...');
+                    // Clicking first color circle
                     colorCircles[0].click();
                     
                     setTimeout(() => {
@@ -289,7 +296,7 @@ console.log('🎨 Cart Colors Complete geladen');
                         }
                     }, 50);
                     
-                    console.log('✅ Selected first color circle for product card');
+                    // Selected first color circle for product card
                 }
             }
         });
@@ -301,7 +308,7 @@ console.log('🎨 Cart Colors Complete geladen');
             const radios = item.querySelectorAll('input[type="radio"][name*="color"]');
             if (radios.length > 0 && !Array.from(radios).some(r => r.checked)) {
                 radios[0].checked = true;
-                console.log('✅ Selected first color radio in cart item');
+                // Selected first color radio in cart item
             }
             
             const colorCircles = item.querySelectorAll('.color-circle, .color-option, [class*="color"][onclick]');
@@ -315,7 +322,7 @@ console.log('🎨 Cart Colors Complete geladen');
                 
                 if (!hasSelected) {
                     colorCircles[0].click();
-                    console.log('✅ Clicked first color circle in cart item');
+                    // Clicked first color circle in cart item
                     
                     colorCircles[0].classList.add('selected');
                     if (!colorCircles[0].innerHTML.includes('✓')) {
@@ -365,7 +372,7 @@ console.log('🎨 Cart Colors Complete geladen');
     }
     
     function initAddonColors() {
-        console.log('🚀 Initialisiere Cart Addon Colors');
+        // Initialisiere Cart Addon Colors
         
         autoSelectFirstColor();
         selectFirstColorInCartItems();
@@ -403,7 +410,7 @@ console.log('🎨 Cart Colors Complete geladen');
             scrollTimeout = setTimeout(autoSelectFirstColor, 300);
         });
         
-        console.log('✅ Cart Addon Colors initialisiert');
+        // Cart Addon Colors initialisiert
     }
     
     window.autoSelectFirstColor = autoSelectFirstColor;
@@ -414,7 +421,7 @@ console.log('🎨 Cart Colors Complete geladen');
 // ============================================
 
 (function() {
-    console.log('🎨 Cart Color Selector Modul geladen');
+    // Cart Color Selector Modul
     
     // Funktion zum Hinzufügen der Farbauswahl zu Cart-Items
     function addColorSelectorsToCart() {
@@ -580,7 +587,9 @@ console.log('🎨 Cart Colors Complete geladen');
     `;
     document.head.appendChild(style);
     
-    console.log('✅ Cart Color Selector initialisiert');
+    // Cart Color Selector initialisiert
+    
+    window.addColorSelectorsToCart = addColorSelectorsToCart;
 })();
 
-console.log('✅ Cart Colors Complete vollständig geladen');
+// Cart Colors Complete vollständig geladen
