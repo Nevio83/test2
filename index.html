@@ -929,6 +929,7 @@
           <div class="search-icon-center">
             <button class="search-icon-btn" type="button" aria-label="Suchen" id="fullscreenSearchBtn">
               <i class="bi bi-search"></i>
+              <span>Suche</span>
             </button>
           </div>
 
@@ -1999,7 +2000,24 @@
       hideChatbot();
     }
   });
-</script>
-<script src="keyboard-shortcuts.js" defer></script>
-</body>
-</html>
+
+  // Transparent navigation on scroll for mobile
+  function updateNavTransparency() {
+    const nav = document.querySelector('.simple-nav');
+    if (window.innerWidth <= 768 && nav) {
+      if (window.scrollY > 10) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    } else if (nav) {
+      nav.classList.remove('scrolled');
+    }
+  }
+
+  window.addEventListener('scroll', updateNavTransparency);
+  window.addEventListener('resize', updateNavTransparency);
+  window.addEventListener('load', updateNavTransparency);
+  
+  // Initial call
+  updateNavTransparency();
