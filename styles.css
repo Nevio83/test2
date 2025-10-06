@@ -10,23 +10,31 @@
 }
 
 .search-icon-btn {
-  background: var(--lumiere-gray-100);
-  border: none;
-  border-radius: 50%;
-  width: 40px;
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 20px;
+  width: 600px;
   height: 40px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   color: var(--lumiere-black);
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
+  padding: 0 15px;
+  gap: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.search-icon-btn:hover {
-  background: var(--lumiere-gray-200);
-  transform: scale(1.05);
+/* Mobile responsive for search bar */
+@media (max-width: 768px) {
+  .search-icon-btn {
+    width: 250px;
+    font-size: 14px;
+    padding: 0 10px;
+    gap: 8px;
+  }
 }
 
 /* Fullscreen Search Overlay */
@@ -209,10 +217,10 @@
   height: 60px;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 30px;
-  padding: 0 20px 0 60px;
-  font-size: 18px;
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
+  font-size: 18px;
+  padding: 0 20px 0 60px;
   outline: none;
   transition: all 0.2s ease;
 }
@@ -1212,6 +1220,12 @@ body {
   border-bottom: 1px solid var(--lumiere-gray-200);
   padding: 15px 0;
   box-shadow: var(--shadow-sm);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
 }
 
 .nav-content-simple {
@@ -1219,6 +1233,33 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 30px;
+}
+
+/* Transparent navigation for mobile only */
+@media (max-width: 768px) {
+  .simple-nav {
+    background: rgba(255, 255, 255, 0.3) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Add padding to body to compensate for fixed nav */
+  body {
+    padding-top: 80px;
+  }
+}
+
+/* Desktop keeps normal navigation */
+@media (min-width: 769px) {
+  .simple-nav {
+    position: static;
+  }
+  
+  body {
+    padding-top: 0;
+  }
 }
 
 .nav-logo-simple {
