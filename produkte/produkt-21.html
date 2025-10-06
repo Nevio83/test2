@@ -314,15 +314,15 @@
     <script>
   // Produktdaten für diese Seite
   const product = {
-    id: 11,
-    name: "350ml Elektrischer Mixer Entsafter",
-    nameEn: "350ml Electric Mixer Juicer",
-    price: 24.99,
-    originalPrice: 39.99,
-    image: "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
-    category: "Haushalt und Küche",
-    categoryId: "haushalt-kueche",
-    description: "Kompakter elektrischer Mixer und Entsafter in einem. Perfekt für Smoothies, Säfte und Shakes unterwegs.",
+    id: 21,
+    name: "LED Water Ripple Crystal",
+    nameEn: "LED Water Ripple Crystal",
+    price: 39.99,
+    originalPrice: 59.99,
+    image: "produkt bilder/LED Water Ripple Crystal.jpg",
+    category: "Beleuchtung",
+    categoryId: "beleuchtung",
+    description: "LED Water Ripple Ambient Night Light - USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
     sku: "MIXER011",
     inStock: true,
     shippingTime: "7-15 Werktage",
@@ -340,19 +340,8 @@
         // Fallback: Bundle-Box immer anzeigen
         // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
   setTimeout(() => {
-    if (window.renderBundlesWithColors) {
-      // Lade Farben aus products.json
-      fetch('../products.json')
-        .then(res => res.json())
-        .then(products => {
-          const prod = products.find(p => p.id === product.id);
-          if (prod && prod.colors) {
-            window.renderBundlesWithColors(product.id, prod.colors);
-          } else {
-            renderBundles();
-          }
-        })
-        .catch(() => renderBundles());
+    if (window.renderBundlesWithImages) {
+      window.renderBundlesWithImages();
     } else {
       renderBundles();
     }
@@ -650,19 +639,8 @@
 
   // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
   setTimeout(() => {
-    if (window.renderBundlesWithColors) {
-      // Lade Farben aus products.json
-      fetch('../products.json')
-        .then(res => res.json())
-        .then(products => {
-          const prod = products.find(p => p.id === product.id);
-          if (prod && prod.colors) {
-            window.renderBundlesWithColors(product.id, prod.colors);
-          } else {
-            renderBundles();
-          }
-        })
-        .catch(() => renderBundles());
+    if (window.renderBundlesWithImages) {
+      window.renderBundlesWithImages();
     } else {
       renderBundles();
     }

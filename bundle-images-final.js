@@ -49,28 +49,71 @@ document.addEventListener('DOMContentLoaded', function() {
         let colors = [];
         let productCategory = 'Haushalt und Küche'; // Default
         
-        if (window.imageColorSelection && window.imageColorSelection.productData) {
+        // Hole Produktdaten vom globalen product-Objekt
+        if (window.product) {
+            productCategory = window.product.category || 'Haushalt und Küche';
+            console.log('✅ Produktdaten von window.product geholt:', { category: productCategory, productId: window.product.id });
+            
+            // Hole Farben aus products.json basierend auf der Produkt-ID
+            fetch('../products.json')
+                .then(res => res.json())
+                .then(products => {
+                    const prod = products.find(p => p.id === window.product.id);
+                    if (prod && prod.colors) {
+                        colors = prod.colors;
+                        console.log('✅ Farben aus products.json geholt:', colors);
+                        renderBundleContent(colors, productCategory);
+                    } else {
+                        console.log('⚠️ Keine Farben für Produkt', window.product.id);
+                        renderBundleContent([], productCategory);
+                    }
+                })
+                .catch(err => {
+                    console.error('❌ Fehler beim Laden der products.json:', err);
+                    renderBundleContent([], productCategory);
+                });
+            return; // Früher Return, da async
+        } else if (window.imageColorSelection && window.imageColorSelection.productData) {
             const productData = window.imageColorSelection.productData;
             colors = productData.colors || [];
             productCategory = productData.category || 'Haushalt und Küche';
-            console.log('✅ Produktdaten geholt:', { colors, category: productCategory });
+            console.log('✅ Produktdaten von imageColorSelection geholt:', { colors, category: productCategory });
         } else {
-            // Fallback für Produkt 11
-            colors = [
-                { name: 'Weiß', image: '../produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg' },
-                { name: 'Rosa', image: '../produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png' }
-            ];
-            console.log('⚠️ Verwende Fallback-Farben');
+            console.log('⚠️ Keine Produktdaten gefunden, verwende Standard-Bundle');
+            colors = [];
         }
+        
+        renderBundleContent(colors, productCategory, null);
+    }
+    
+    // Separate Funktion für das eigentliche Rendering
+    function renderBundleContent(colors, productCategory, productData = null) {
         
         const categoryColor = getCategoryColor(productCategory);
         const darkerCategoryColor = getDarkerCategoryColor(productCategory);
         
-        // Bundle-Optionen
+        // Bundle-Optionen basierend auf aktuellem Produkt
+        const currentProduct = productData || window.product;
+        
+        // Hole Produkt-ID aus URL falls window.product nicht vorhanden
+        let productId = currentProduct ? currentProduct.id : null;
+        if (!productId) {
+            const urlPath = window.location.pathname;
+            const productMatch = urlPath.match(/produkt-(\d+)\.html/);
+            if (productMatch) {
+                productId = parseInt(productMatch[1]);
+            }
+        }
+        
+        const basePrice = currentProduct ? currentProduct.price : 24.99;
+        const productName = currentProduct ? currentProduct.name : `Produkt ${productId || ''}`;
+        
+        console.log('🎁 Bundle-Rendering für:', { id: productId, name: productName, price: basePrice, windowProduct: !!window.product });
+        
         const bundles = [
-            { qty: 1, price: 24.99, discount: 0 },
-            { qty: 2, price: 21.24, discount: 15 },
-            { qty: 3, price: 19.99, discount: 20 }
+            { qty: 1, price: basePrice, discount: 0 },
+            { qty: 2, price: (basePrice * 0.85), discount: 15 },
+            { qty: 3, price: (basePrice * 0.80), discount: 20 }
         ];
         
         // Erstelle HTML
@@ -118,9 +161,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="bundle-pricing">
                                 <div class="price-display">
                                     <span class="price">€${(bundle.price * bundle.qty).toFixed(2)}</span>
-                                    ${bundle.discount > 0 ? `<span class="original">€${(24.99 * bundle.qty).toFixed(2)}</span>` : ''}
+                                    ${bundle.discount > 0 ? `<span class="original">€${(basePrice * bundle.qty).toFixed(2)}</span>` : ''}
                                     ${bundle.discount > 0 ? 
-                                        `<span class="savings-text">Spare €${((24.99 - bundle.price) * bundle.qty).toFixed(2)}</span>` : 
+                                        `<span class="savings-text">Spare €${((basePrice - bundle.price) * bundle.qty).toFixed(2)}</span>` : 
                                         ''
                                     }
                                 </div>
@@ -129,13 +172,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `).join('')}
                 
-                <button class="add-bundle-btn" onclick="addSelectedBundleToCart()">
+                <button class="add-bundle-btn" id="bundle-add-btn">
                     <i class="bi bi-cart-plus"></i> Bundle in den Warenkorb
                 </button>
             </div>
         `;
         
-        bundleSection.innerHTML = html;
+        const bundleSection = document.getElementById('bundle-section');
+        if (bundleSection) {
+            bundleSection.innerHTML = html;
+            console.log('✅ Bundle HTML eingefügt');
+            
+            // Event Listener für Bundle-Button hinzufügen
+            const bundleBtn = document.getElementById('bundle-add-btn');
+            if (bundleBtn) {
+                bundleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🛒 Bundle-Button geklickt');
+                    window.addSelectedBundleToCart();
+                });
+                console.log('✅ Bundle-Button Event Listener hinzugefügt');
+            }
+        } else {
+            console.log('❌ Bundle-Section nicht gefunden');
+        }
         
         // Füge CSS hinzu
         if (!document.getElementById('bundle-images-styles')) {
@@ -493,6 +554,133 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`✅ Farbe ${colorName} für Set ${setIndex + 1} ausgewählt`);
     };
     
+    // Globale Funktion für Bundle zum Warenkorb hinzufügen
+    window.addSelectedBundleToCart = function() {
+        console.log('🎯 addSelectedBundleToCart wurde aufgerufen');
+        
+        const selectedBundle = document.querySelector('.bundle-card.selected');
+        if (!selectedBundle) {
+            console.log('❌ Kein Bundle ausgewählt');
+            alert('Bitte wählen Sie ein Bundle aus');
+            return;
+        }
+        
+        const qty = parseInt(selectedBundle.getAttribute('data-bundle-id'));
+        console.log('📦 Bundle-Menge:', qty);
+        
+        // Hole korrekte Produkt-ID und Daten
+        let currentProduct = window.product;
+        let productId = currentProduct ? currentProduct.id : null;
+        
+        // Falls window.product nicht vorhanden, versuche aus URL zu extrahieren
+        if (!productId) {
+            const urlPath = window.location.pathname;
+            const productMatch = urlPath.match(/produkt-(\d+)\.html/);
+            if (productMatch) {
+                productId = parseInt(productMatch[1]);
+                console.log('🔍 URL-basierte Produkt-ID:', productId);
+            }
+        }
+        
+        // Lade Produktdaten aus products.json falls nötig
+        if (!currentProduct || !currentProduct.name) {
+            // Verwende die korrekten Produktdaten basierend auf ID
+            const productData = {
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 49.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg' },
+                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg' },
+                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg' },
+                21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg' },
+                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 10.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg' }
+            };
+            
+            if (productData[productId]) {
+                currentProduct = productData[productId];
+                console.log('✅ Korrekte Produktdaten gesetzt:', currentProduct);
+            } else {
+                console.log('⚠️ Unbekannte Produkt-ID:', productId);
+                // Fallback auf Produkt-ID ohne spezifische Daten
+                currentProduct = { 
+                    id: productId || 11, 
+                    name: `Produkt ${productId || 11}`, 
+                    price: 24.99, 
+                    image: 'produkt bilder/ware.png' 
+                };
+            }
+        }
+        
+        const basePrice = currentProduct.price;
+        const bundlePrice = qty === 1 ? basePrice : (qty === 2 ? basePrice * 0.85 : basePrice * 0.80);
+        
+        // Sammle ausgewählte Farben
+        const selectedColors = [];
+        const colorOptions = selectedBundle.querySelectorAll('.color-image-option.selected');
+        colorOptions.forEach(option => {
+            selectedColors.push(option.getAttribute('data-color'));
+        });
+        
+        const productName = currentProduct.name;
+        const productImage = currentProduct.image;
+        
+        console.log('🎁 Bundle wird erstellt für Produkt:', { 
+            id: currentProduct.id, 
+            name: productName, 
+            colors: selectedColors, 
+            qty: qty,
+            price: bundlePrice * qty
+        });
+        
+        const bundleItem = {
+            id: currentProduct.id,
+            name: `${productName} (${qty} Set${qty > 1 ? 's' : ''})${selectedColors.length > 0 ? ' (' + selectedColors.join(', ') + ')' : ''}`,
+            price: bundlePrice * qty,
+            image: productImage,
+            description: `Bundle: ${qty} Set${qty > 1 ? 's' : ''}`,
+            bundleId: `${currentProduct.id}-qty${qty}`,
+            quantity: 1,
+            isBundle: true
+        };
+        
+        // Füge zum Warenkorb hinzu
+        // Verwende direkt localStorage um sicherzustellen, dass das Bundle hinzugefügt wird
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        // Prüfe ob Bundle bereits im Warenkorb
+        const existingIndex = cart.findIndex(item => 
+            item.bundleId === bundleItem.bundleId && 
+            item.name === bundleItem.name
+        );
+        
+        if (existingIndex > -1) {
+            // Bundle existiert bereits, erhöhe Menge
+            cart[existingIndex].quantity += 1;
+            console.log('📦 Bundle-Menge erhöht:', cart[existingIndex]);
+        } else {
+            // Neues Bundle hinzufügen
+            cart.push(bundleItem);
+            console.log('✅ Neues Bundle hinzugefügt:', bundleItem);
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Trigger cart update event
+        window.dispatchEvent(new Event('storage'));
+        
+        // Update cart count if function exists
+        if (window.updateCartCount) {
+            window.updateCartCount();
+        }
+        
+        console.log('✅ Bundle zum Warenkorb hinzugefügt:', bundleItem);
+        
+        // Zeige Erfolgsmeldung
+        if (window.showBundleSuccessMessage) {
+            window.showBundleSuccessMessage(qty);
+        }
+    };
+    
+    // Exportiere die Funktion global
+    window.renderBundlesWithImages = renderBundlesWithImages;
+    
     // Führe aus
     renderBundlesWithImages();
     
@@ -577,48 +765,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     };
     
-    // Globale Funktion für Bundle zum Warenkorb
-    window.addSelectedBundleToCart = function() {
-        const selectedCard = document.querySelector('.bundle-card.selected');
-        if (!selectedCard) return;
-        
-        const qty = parseInt(selectedCard.dataset.bundleId);
-        const bundleColors = [];
-        
-        // Sammle ausgewählte Farben
-        selectedCard.querySelectorAll('.bundle-set').forEach(set => {
-            const selectedColor = set.querySelector('.color-image-option.selected');
-            if (selectedColor) {
-                bundleColors.push(selectedColor.dataset.color);
-            }
-        });
-        
-        // Erstelle Bundle-Item
-        const bundleItem = {
-            id: 11,
-            name: `350ml Elektrischer Mixer Entsafter (${qty} Sets) ${bundleColors.map(c => `(${c})`).join(' ')}`,
-            price: qty === 1 ? 24.99 : qty === 2 ? 42.48 : 59.98,
-            quantity: 1,
-            image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg',
-            isBundle: true,
-            bundleQuantity: qty,
-            bundleColors: bundleColors
-        };
-        
-        // Füge zum Warenkorb hinzu
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.push(bundleItem);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        
-        // Zeige schöne Erfolgs-Nachricht
-        window.showBundleSuccessMessage(qty);
-        
-        // Debug-Log
-        console.log('🎉 Bundle wurde zum Warenkorb hinzugefügt:', bundleItem);
-        
-        // Optional: Weiterleitung zum Warenkorb nach 2 Sekunden
-        // setTimeout(() => window.location.href = '../cart.html', 2000);
-    };
 });
 
 console.log('✅ Bundle Images Final geladen');
