@@ -321,20 +321,23 @@
     <script>
   // Produktdaten für diese Seite
   const product = {
-  id: 26,  // ← Ändere von 11 zu 26
-  name: "4 In 1 Self Cleaning Hair Brush",  // ← Ändere den Namen
-  nameEn: "4 In 1 Self Cleaning Hair Brush",
-  price: 10.99,  // ← Ändere den Preis
-  originalPrice: 20.99,
-  image: "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",  // ← Ändere das Bild
-  category: "Körperpflege/Wellness",  // ← Ändere die Kategorie
-  categoryId: "koerperpflege-wellness",
-  description: "Revolutionäre 4-in-1 selbstreinigende haarbürste...",  // ← Ändere die Beschreibung
-  sku: "CJHB26001",
-  inStock: true,
-  shippingTime: "7-15 Werktage",
-  tags: ["haarbürste", "selbstreinigend", "massage", "anti-statik"]  // ← Ändere die Tags
-};
+    id: 26,
+    name: "4 In 1 Self Cleaning Hair Brush",
+    nameEn: "4 In 1 Self Cleaning Hair Brush",
+    price: 10.99,
+    originalPrice: 20.99,
+    image: "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",
+    category: "Körperpflege/Wellness",
+    categoryId: "koerperpflege-wellness",
+    description: "Revolutionäre 4-in-1 selbstreinigende haarbürste mit Anti-Statik-Massage-Funktion. Skalierbar, rotierend und selbstreinigend für perfekte haarpflege.",
+    sku: "CJ1711943102027542528",
+    inStock: true,
+    shippingTime: "7-15 Werktage",
+    tags: ["haarbürste", "selbstreinigend", "massage", "anti-statik"]
+  };
+
+  // Mache Produktdaten global verfügbar für Bundle-System
+  window.product = product;
   // Bundles dynamisch laden
   fetch('../products.json')
     .then(res => res.json())

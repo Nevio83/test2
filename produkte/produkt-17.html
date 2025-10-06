@@ -329,6 +329,9 @@
     tags: ["bluetooth", "tracker", "finder", "gadget"]
   };
 
+  // Mache Produktdaten global verfügbar für Bundle-System
+  window.product = product;
+
   // Bundles dynamisch laden
   fetch('../products.json')
     .then(res => res.json())
