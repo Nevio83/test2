@@ -2982,45 +2982,21 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   transform: translateY(0) scale(1);
 }
 
-/* Warenkorb-Dropdown Animationen */
-@keyframes cartDropdownSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  50% {
-    transform: translateY(5px) scale(1.02);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
+/* Warenkorb-Dropdown Animationen entfernt */
 
-/* Cart Item Animations */
+/* Cart Item Animations entfernt */
 .cart-item {
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Keine Animationen */
 }
 
 .cart-item:hover {
-  transform: translateX(5px);
   background: rgba(var(--primary-rgb), 0.02);
 }
 
-@keyframes cartItemFadeIn {
-  0% {
-    opacity: 0;
-    transform: translateX(-20px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
+/* cartItemFadeIn Animation entfernt */
 
-/* Enhanced quantity button animations */
+/* Enhanced quantity button animations entfernt */
 .quantity-btn {
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
 }
@@ -3030,8 +3006,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 }
 
 .quantity-btn:active {
-  transform: scale(0.95);
-  transition: all 0.1s ease;
+  /* Animation entfernt */
 }
 
 .quantity-btn::before {
@@ -6416,32 +6391,14 @@ div#hilfePanel.offen,
   }
 }
 
-/* Animation für neue Empfehlungen */
+/* Animation für neue Empfehlungen entfernt */
 .recommendation-card {
-  animation: recommendationSlideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Keine Animation */
 }
 
-@keyframes recommendationSlideIn {
-  0% {
-    opacity: 0;
-    transform: translateX(-20px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
+/* recommendationSlideIn Animation entfernt */
 
-/* Staggered Animation für mehrere Empfehlungen */
-.recommendation-card:nth-child(1) {
-  animation-delay: 0.1s;
-}
-.recommendation-card:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.recommendation-card:nth-child(3) {
-  animation-delay: 0.3s;
-}
+/* Staggered Animation entfernt */
 
 /* Leerer Warenkorb Empfehlungen - spezielles Layout */
 .empty-cart .cart-recommendations {
@@ -6455,25 +6412,12 @@ div#hilfePanel.offen,
   max-height: 320px;
 }
 
-/* Erfolgreiche Hinzufügung Animation */
+/* Erfolgreiche Hinzufügung Animation entfernt */
 .recommendation-card.added {
-  animation: addedPulse 0.6s ease-out;
+  /* Keine Animation */
 }
 
-@keyframes addedPulse {
-  0% {
-    transform: scale(1);
-    background: var(--card-bg);
-  }
-  50% {
-    transform: scale(1.05);
-    background: var(--success-color);
-  }
-  100% {
-    transform: scale(1);
-    background: var(--card-bg);
-  }
-}
+/* addedPulse Animation entfernt */
 
 /* Verbesserte Hover-Effekte für Touch-Geräte */
 @media (hover: none) and (pointer: coarse) {
@@ -6882,7 +6826,7 @@ div#hilfePanel.offen,
     border: 1px solid #c9a8ff !important;
 }
 
-/* Technik/Gadgets - GR�N wenn aktiv */
+/* Technik/Gadgets - GRÜN wenn aktiv */
 .lumiere-category-tab[data-category="Technik/Gadgets"].active {
     background: linear-gradient(135deg, #43e97b, #38a169) !important;
     color: #ffffff !important;
