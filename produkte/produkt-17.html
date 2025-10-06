@@ -340,20 +340,11 @@
         // Fallback: Bundle-Box immer anzeigen
         // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
   setTimeout(() => {
-    if (window.renderBundlesWithColors) {
-      // Lade Farben aus products.json
-      fetch('../products.json')
-        .then(res => res.json())
-        .then(products => {
-          const prod = products.find(p => p.id === product.id);
-          if (prod && prod.colors) {
-            window.renderBundlesWithColors(product.id, prod.colors);
-          } else {
-            renderBundles();
-          }
-        })
-        .catch(() => renderBundles());
+    if (window.renderBundlesWithImages) {
+      console.log('✅ Verwende neues Bundle-System mit Bildern für Produkt 17');
+      window.renderBundlesWithImages();
     } else {
+      console.log('❌ Neues Bundle-System nicht verfügbar, verwende Fallback');
       renderBundles();
     }
   }, 500);
@@ -650,20 +641,11 @@
 
   // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
   setTimeout(() => {
-    if (window.renderBundlesWithColors) {
-      // Lade Farben aus products.json
-      fetch('../products.json')
-        .then(res => res.json())
-        .then(products => {
-          const prod = products.find(p => p.id === product.id);
-          if (prod && prod.colors) {
-            window.renderBundlesWithColors(product.id, prod.colors);
-          } else {
-            renderBundles();
-          }
-        })
-        .catch(() => renderBundles());
+    if (window.renderBundlesWithImages) {
+      console.log('✅ Verwende neues Bundle-System mit Bildern für Produkt 17');
+      window.renderBundlesWithImages();
     } else {
+      console.log('❌ Neues Bundle-System nicht verfügbar, verwende Fallback');
       renderBundles();
     }
   }, 500);

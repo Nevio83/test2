@@ -73,27 +73,64 @@
     <script src="app.js"></script>
     <script src="cart.js"></script>
     <script src="keyboard-shortcuts.js" defer></script>
-    <script src="bundle-complete.js"></script>
-    <script src="cart-image-colors.js"></script>
-    <!-- cart-colors-complete.js deaktiviert wegen Konflikt mit Bildern -->
-    <!-- <script src="cart-colors-complete.js"></script> -->
+    <script src="cart-color-images-only.js"></script>
+    
     <script>
-        // Entferne alle Farbkreise nach dem Laden
+        // Aggressives Entfernen aller Farbkreise
+        function removeAllColorCircles() {
+            // Alle möglichen Selektoren für Farbkreise
+            const selectors = [
+                '.color-circle',
+                '.color-option:not(.cart-color-option)',
+                '.color-circle-cart',
+                '.cart-color-selector',
+                '[style*="border-radius: 50%"]',
+                '[style*="background-color"][style*="width: 30px"]',
+                '[style*="background-color"][style*="width: 25px"]',
+                '[style*="background-color"][style*="width: 24px"]',
+                'div[onclick*="selectColor"]',
+                'input[type="radio"][name*="color"] + span',
+                '.color-options:not(.cart-color-options)',
+                '.color-options:not(.cart-color-options) > *'
+            ];
+            
+            selectors.forEach(selector => {
+                try {
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach(el => {
+                        // Prüfe ob es ein kleiner runder Kreis ist
+                        const style = window.getComputedStyle(el);
+                        const width = parseInt(style.width) || 0;
+                        const height = parseInt(style.height) || 0;
+                        const borderRadius = style.borderRadius;
+                        
+                        if ((width <= 50 && height <= 50 && width === height) || 
+                            borderRadius.includes('50%') || 
+                            el.classList.contains('color-circle') ||
+                            el.classList.contains('color-option')) {
+                            el.style.display = 'none !important';
+                            el.remove(); // Entferne komplett
+                        }
+                    });
+                } catch (e) {
+                    // Ignoriere Fehler
+                }
+            });
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
-            // Entferne alle Farbkreise
-            setInterval(() => {
-                // Finde alle Elemente die wie Farbkreise aussehen
-                const circles = document.querySelectorAll('[style*="border-radius: 50%"], .color-circle, .color-option:not(.cart-color-option)');
-                circles.forEach(circle => {
-                    // Prüfe ob es wirklich ein Farbkreis ist (klein und rund)
-                    const style = window.getComputedStyle(circle);
-                    const width = parseInt(style.width);
-                    const height = parseInt(style.height);
-                    if (width < 50 && height < 50 && width === height) {
-                        circle.style.display = 'none';
-                    }
-                });
-            }, 100);
+            // Sofort ausführen
+            removeAllColorCircles();
+            
+            // Regelmäßig wiederholen
+            setInterval(removeAllColorCircles, 100);
+            
+            // Bei DOM-Änderungen
+            const observer = new MutationObserver(removeAllColorCircles);
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
         });
     </script>
 </body>

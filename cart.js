@@ -27,27 +27,56 @@ let currentCurrency = currencyByCountry['DE']; // Initialisiere currentCurrency 
 function getCartItemImage(item) {
     console.log('🖼️ getCartItemImage aufgerufen für:', item.name, 'ID:', item.id);
     
-    // Extrahiere Farbe aus dem Namen
-    const colorMatch = item.name.match(/\(([^)]+)\)$/);
+    // Extrahiere Farbe aus dem Namen - suche nach dem letzten Klammerpaar
+    let colorMatch = item.name.match(/\(([^)]+)\)(?!.*\([^)]*\))/);
+    let color = null;
+    
     if (colorMatch) {
-        const color = colorMatch[1];
+        color = colorMatch[1];
         console.log('🎨 Extrahierte Farbe:', color);
+        
+        // Zusätzliches Debugging für Bundle-Namen
+        if (item.name.includes('Sets')) {
+            console.log('⚠️ Bundle-Produkt erkannt, Name:', item.name);
+            // Bei Bundles die erste Farbe extrahieren (nicht "Sets")
+            const allMatches = [...item.name.matchAll(/\(([^)]+)\)/g)];
+            console.log('🔍 Alle gefundenen Klammern:', allMatches.map(m => m[1]));
+            
+            for (const match of allMatches) {
+                if (!match[1].includes('Sets') && !match[1].includes('Set')) {
+                    color = match[1];
+                    console.log('🎨 Bundle Farbe gewählt:', color);
+                    break;
+                }
+            }
+        }
+    }
+    
+    if (color) {
         
         // Produkt 10 - Elektrischer Wasserspender
         if (item.id == 10) {  // Verwende == für Type-Coercion
             if (color === 'Schwarz') {
-                return 'produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg';
+                const path = 'produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg';
+                console.log('💧 Wasserspender Schwarz Bild:', path);
+                return path;
             } else if (color === 'Weiß') {
-                return 'produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg';
+                const path = 'produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg';
+                console.log('💧 Wasserspender Weiß Bild:', path);
+                return path;
             }
         }
         
         // Produkt 11 - Elektrischer Mixer
         if (item.id == 11) {  // Verwende == für Type-Coercion
             if (color === 'Weiß') {
-                return 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg';
-            } else if (color === 'Rosa' || color === 'Pink') {
-                return 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png';
+                const path = 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg';
+                console.log('🥤 Mixer Weiß Bild:', path);
+                return path;
+            } else if (color === 'Rosa') {
+                const path = 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png';
+                console.log('🥤 Mixer Rosa Bild:', path);
+                return path;
             }
         }
         
@@ -62,6 +91,14 @@ function getCartItemImage(item) {
             } else if (color === 'Pink') {
                 return 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png';
             }
+        }
+        
+        // Produkt 18 - Home Electronic Clock
+        if (item.id == 18) {
+            // Beide Farben verwenden das gleiche Bild
+            const path = 'produkt bilder/Home Electronic Clock Digitale Uhr.jpeg';
+            console.log('🕐 Clock Bild für Farbe', color + ':', path);
+            return path;
         }
         
         // Produkt 21 - LED Water Ripple Crystal
@@ -86,11 +123,31 @@ function getCartItemImage(item) {
                 return 'produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg';
             }
         }
+    } else {
+        console.log('❌ Keine Farbe im Namen gefunden:', item.name);
+        console.log('🔍 Regex-Test:', item.name.match(/\(([^)]+)\)/g));
     }
     
     console.log('⚠️ Verwende Standard-Bild:', item.image);
     return item.image;
 }
+
+// Funktion für Bildladen-Fehlerbehandlung
+function handleImageError(imgElement, itemName, attemptedPath) {
+    console.error('❌ Bild konnte nicht geladen werden:', attemptedPath, 'für Produkt:', itemName);
+    
+    // Fallback zu Standard-Bild
+    const fallbackPath = 'produkt bilder/ware.png';
+    console.log('🔄 Verwende Fallback-Bild:', fallbackPath);
+    
+    if (imgElement.src !== fallbackPath) {
+        imgElement.src = fallbackPath;
+        imgElement.alt = itemName + ' (Bild nicht verfügbar)';
+    }
+}
+
+// Globale Funktion für HTML-Template
+window.handleImageError = handleImageError;
 
 // Funktion zum Abrufen des Warenkorbs
 function getCart() {
