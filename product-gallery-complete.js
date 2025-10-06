@@ -666,49 +666,16 @@ class ProductImageFullscreen {
         const prevBtn = document.createElement('button');
         prevBtn.className = 'fullscreen-nav-btn fullscreen-nav-prev';
         prevBtn.innerHTML = '‹';
-        prevBtn.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 20px;
-            transform: translateY(-50%);
-            background: rgba(0,0,0,0.5);
-            color: white;
-            border: 2px solid white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 30px;
-            cursor: pointer;
-            z-index: 100002;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-            padding: 0;
-        `;
+        prevBtn.setAttribute('aria-label', 'Vorheriges Bild');
         
         const nextBtn = document.createElement('button');
         nextBtn.className = 'fullscreen-nav-btn fullscreen-nav-next';
         nextBtn.innerHTML = '›';
-        nextBtn.style.cssText = prevBtn.style.cssText;
-        nextBtn.style.left = 'auto';
-        nextBtn.style.right = '20px';
+        nextBtn.setAttribute('aria-label', 'Nächstes Bild');
         
         // Create counter
         const counter = document.createElement('div');
         counter.className = 'fullscreen-counter';
-        counter.style.cssText = `
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            z-index: 100002;
-        `;
         counter.textContent = `${currentIndex + 1} / ${galleryImages.length}`;
         
         // Navigation function
