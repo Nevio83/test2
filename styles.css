@@ -30,7 +30,7 @@
 /* Mobile responsive for search bar */
 @media (max-width: 768px) {
   .search-icon-btn {
-    width: 250px;
+    width: 180px;
     font-size: 14px;
     padding: 0 10px;
     gap: 8px;
@@ -1232,17 +1232,24 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 30px;
+  gap: 20px;
+  padding: 0 15px;
 }
 
-/* Transparent navigation for mobile only */
+/* Light transparency for mobile navigation */
 @media (max-width: 768px) {
   .simple-nav {
-    background: rgba(255, 255, 255, 0.3) !important;
-    backdrop-filter: blur(15px) !important;
-    -webkit-backdrop-filter: blur(15px) !important;
-    border-bottom: none !important;
-    box-shadow: none !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+  }
+  
+  .simple-nav.scrolled {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
   }
   
   /* Add padding to body to compensate for fixed nav */
