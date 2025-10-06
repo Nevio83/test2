@@ -31,9 +31,12 @@ async function renderImageColorSelection(item, container) {
         console.log('🎨 Aktuelle Farbe:', currentColor);
         
         // Erstelle bildbasierte Farbauswahl HTML
+        const isModelProduct = item.id === 21; // LED Water Ripple Crystal
+        const selectionLabel = isModelProduct ? 'Modell:' : 'Farbe:';
+        
         const colorSelectionHtml = `
             <div class="cart-item-color-selection" data-product-id="${item.id}">
-                <span class="cart-color-label">Farbe:</span>
+                <span class="cart-color-label">${selectionLabel}</span>
                 <div class="cart-color-options">
                     ${product.colors.map(color => `
                         <div class="cart-color-option" title="${color.name}">

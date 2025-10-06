@@ -27,6 +27,7 @@ class ProductImageGallery {
             10: 'Elektrischer Wasserspender für Schreibtisch bilder',
             11: '350ml Elektrischer Mixer Entsafter bilder',
             17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
+            21: 'LED Water Ripple Crystal bilder',
             26: '4 In 1 Self Cleaning Hair Brush bilder'
         };
         
@@ -117,6 +118,36 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/Bluetooth Anti-Lost Finder Wassertropfen pink.png`,
                         alt: 'Bluetooth Anti-Lost Finder - Pink',
                         color: 'Pink'
+                    }
+                ];
+                break;
+                
+            case 21: // LED Water Ripple Crystal
+                this.images = [
+                    {
+                        src: `../produkt bilder/LED Water Ripple Crystal.jpg`,
+                        alt: 'LED Water Ripple Crystal - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/LED Water Ripple Crystal crown.png`,
+                        alt: 'LED Water Ripple Crystal - Crown',
+                        color: 'Crown'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/LED Water Ripple Crystal square.png`,
+                        alt: 'LED Water Ripple Crystal - Square',
+                        color: 'Square'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/LED Water Ripple Crystal crown anleitung.png`,
+                        alt: 'LED Water Ripple Crystal - Crown Anleitung',
+                        color: 'Crown Anleitung'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/LED Water Ripple Crystal square anleitung.png`,
+                        alt: 'LED Water Ripple Crystal - Square Anleitung',
+                        color: 'Square Anleitung'
                     }
                 ];
                 break;
@@ -632,6 +663,7 @@ class ProductImageFullscreen {
                 10: 'Elektrischer Wasserspender für Schreibtisch bilder',
                 11: '350ml Elektrischer Mixer Entsafter bilder',
                 17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
+                21: 'LED Water Ripple Crystal bilder',
                 26: '4 In 1 Self Cleaning Hair Brush bilder'
             };
             
@@ -750,7 +782,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           'Produkt';
         
         // Initialisiere Gallery nur für Produkte mit Bildordnern
-        if ([10, 11, 17, 26].includes(productId)) {
+        if ([10, 11, 17, 21, 26].includes(productId)) {
             new ProductImageGallery(productId, productName);
         }
     }

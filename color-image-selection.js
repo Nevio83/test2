@@ -108,6 +108,11 @@ class ImageColorSelection {
     }
     
     renderColorSelection() {
+        // Prüfe ob es Produkt 21 ist (Modell statt Farbe)
+        const isModelProduct = this.productId === 21;
+        const selectionLabel = isModelProduct ? 'Modell auswählen:' : 'Farbe wählen:';
+        const selectedLabel = isModelProduct ? 'Ausgewähltes Modell:' : 'Ausgewählte Farbe:';
+        
         // Finde oder erstelle Container
         let container = document.getElementById('colorSelection');
         
@@ -181,7 +186,7 @@ class ImageColorSelection {
                     color: #333; 
                     font-weight: 600;
                     margin-top: 0;
-                ">Farbe wählen:</h4>
+                ">${selectionLabel}</h4>
                 <div class="color-options" style="
                     display: flex; 
                     flex-wrap: wrap; 
@@ -272,10 +277,12 @@ class ImageColorSelection {
             // KEIN Checkmark - nur kategorie-spezifischer Rahmen
         }
         
-        // Zeige ausgewählte Farbe Text
+        // Zeige ausgewählte Farbe/Modell Text
         const selectedColorText = document.querySelector('.selected-color-text');
         if (selectedColorText) {
-            selectedColorText.textContent = `Ausgewählte Farbe: ${firstColor.name}`;
+            const isModelProduct = this.productId === 21;
+            const label = isModelProduct ? 'Ausgewähltes Modell:' : 'Ausgewählte Farbe:';
+            selectedColorText.textContent = `${label} ${firstColor.name}`;
             selectedColorText.style.display = 'block';
         }
     }
@@ -320,10 +327,12 @@ class ImageColorSelection {
         this.selectedColor = color;
         const categoryColor = this.getCategoryColor();
         
-        // Update angezeigter Farbname
+        // Update angezeigter Farb-/Modellname
         const selectedColorText = document.querySelector('.selected-color-text');
         if (selectedColorText) {
-            selectedColorText.textContent = `Ausgewählte Farbe: ${color.name}`;
+            const isModelProduct = this.productId === 21;
+            const label = isModelProduct ? 'Ausgewähltes Modell:' : 'Ausgewählte Farbe:';
+            selectedColorText.textContent = `${label} ${color.name}`;
             selectedColorText.style.display = 'block';
         }
         
