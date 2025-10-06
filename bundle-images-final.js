@@ -167,14 +167,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                         ''
                                     }
                                 </div>
+                                <button class="add-individual-bundle-btn" data-bundle-qty="${bundle.qty}">
+                                    <i class="bi bi-cart-plus"></i> Set in den Warenkorb
+                                </button>
                             </div>
                         </div>
                     </div>
                 `).join('')}
-                
-                <button class="add-bundle-btn" id="bundle-add-btn">
-                    <i class="bi bi-cart-plus"></i> Bundle in den Warenkorb
-                </button>
             </div>
         `;
         
@@ -183,17 +182,18 @@ document.addEventListener('DOMContentLoaded', function() {
             bundleSection.innerHTML = html;
             console.log('✅ Bundle HTML eingefügt');
             
-            // Event Listener für Bundle-Button hinzufügen
-            const bundleBtn = document.getElementById('bundle-add-btn');
-            if (bundleBtn) {
-                bundleBtn.addEventListener('click', function(e) {
+            // Event Listener für individuelle Bundle-Buttons hinzufügen
+            const individualBundleBtns = bundleSection.querySelectorAll('.add-individual-bundle-btn');
+            individualBundleBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('🛒 Bundle-Button geklickt');
-                    window.addSelectedBundleToCart();
+                    const bundleQty = parseInt(this.getAttribute('data-bundle-qty'));
+                    console.log(`🛒 Individueller Bundle-Button geklickt für ${bundleQty} Set(s)`);
+                    window.addSpecificBundleToCart(bundleQty);
                 });
-                console.log('✅ Bundle-Button Event Listener hinzugefügt');
-            }
+            });
+            console.log(`✅ ${individualBundleBtns.length} individuelle Bundle-Button Event Listener hinzugefügt`);
         } else {
             console.log('❌ Bundle-Section nicht gefunden');
         }
@@ -471,6 +471,49 @@ document.addEventListener('DOMContentLoaded', function() {
                     font-size: 16px;
                 }
                 
+                .add-individual-bundle-btn {
+                    width: 100%;
+                    padding: 12px 16px;
+                    background: linear-gradient(135deg, ${categoryColor} 0%, ${darkerCategoryColor} 100%);
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    margin-top: 15px;
+                    transition: all 0.3s ease;
+                    position: relative;
+                    overflow: hidden;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+                
+                .add-individual-bundle-btn::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                    transition: left 0.5s;
+                }
+                
+                .add-individual-bundle-btn:hover {
+                    background: linear-gradient(135deg, ${darkerCategoryColor} 0%, ${categoryColor} 100%);
+                    transform: translateY(-2px) scale(1.02);
+                    box-shadow: 0 4px 15px ${categoryColor}40;
+                }
+                
+                .add-individual-bundle-btn:hover::before {
+                    left: 100%;
+                }
+                
+                .add-individual-bundle-btn:active {
+                    transform: translateY(0) scale(0.98);
+                }
+                
                 .add-bundle-btn {
                     width: 100%;
                     padding: 16px;
@@ -554,7 +597,131 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`✅ Farbe ${colorName} für Set ${setIndex + 1} ausgewählt`);
     };
     
-    // Globale Funktion für Bundle zum Warenkorb hinzufügen
+    // Neue Funktion für spezifische Bundle-Menge zum Warenkorb hinzufügen
+    window.addSpecificBundleToCart = function(bundleQty) {
+        console.log(`🎯 addSpecificBundleToCart wurde aufgerufen für ${bundleQty} Set(s)`);
+        
+        // Finde das entsprechende Bundle-Card
+        const bundleCard = document.querySelector(`.bundle-card[data-bundle-id="${bundleQty}"]`);
+        if (!bundleCard) {
+            console.log('❌ Bundle-Card nicht gefunden');
+            alert('Bundle nicht gefunden');
+            return;
+        }
+        
+        console.log('📦 Bundle-Menge:', bundleQty);
+        
+        // Hole korrekte Produkt-ID und Daten
+        let currentProduct = window.product;
+        let productId = currentProduct ? currentProduct.id : null;
+        
+        // Falls window.product nicht vorhanden, versuche aus URL zu extrahieren
+        if (!productId) {
+            const urlPath = window.location.pathname;
+            const productMatch = urlPath.match(/produkt-(\d+)\.html/);
+            if (productMatch) {
+                productId = parseInt(productMatch[1]);
+                console.log('🔍 URL-basierte Produkt-ID:', productId);
+            }
+        }
+        
+        // Lade Produktdaten aus products.json falls nötig
+        if (!currentProduct || !currentProduct.name) {
+            // Verwende die korrekten Produktdaten basierend auf ID
+            const productData = {
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 49.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg' },
+                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg' },
+                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg' },
+                21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg' },
+                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 10.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg' }
+            };
+            
+            if (productData[productId]) {
+                currentProduct = productData[productId];
+                console.log('✅ Korrekte Produktdaten gesetzt:', currentProduct);
+            } else {
+                console.log('⚠️ Unbekannte Produkt-ID:', productId);
+                // Fallback auf Produkt-ID ohne spezifische Daten
+                currentProduct = { 
+                    id: productId || 11, 
+                    name: `Produkt ${productId || 11}`, 
+                    price: 24.99, 
+                    image: 'produkt bilder/ware.png' 
+                };
+            }
+        }
+        
+        const basePrice = currentProduct.price;
+        const bundlePrice = bundleQty === 1 ? basePrice : (bundleQty === 2 ? basePrice * 0.85 : basePrice * 0.80);
+        
+        // Sammle ausgewählte Farben für dieses spezifische Bundle
+        const selectedColors = [];
+        const colorOptions = bundleCard.querySelectorAll('.color-image-option.selected');
+        colorOptions.forEach(option => {
+            selectedColors.push(option.getAttribute('data-color'));
+        });
+        
+        const productName = currentProduct.name;
+        const productImage = currentProduct.image;
+        
+        console.log('🎁 Bundle wird erstellt für Produkt:', { 
+            id: currentProduct.id, 
+            name: productName, 
+            colors: selectedColors, 
+            qty: bundleQty,
+            price: bundlePrice * bundleQty
+        });
+        
+        const bundleItem = {
+            id: currentProduct.id,
+            name: `${productName} (${bundleQty} Set${bundleQty > 1 ? 's' : ''})${selectedColors.length > 0 ? ' (' + selectedColors.join(', ') + ')' : ''}`,
+            price: bundlePrice * bundleQty,
+            image: productImage,
+            description: `Bundle: ${bundleQty} Set${bundleQty > 1 ? 's' : ''}`,
+            bundleId: `${currentProduct.id}-qty${bundleQty}`,
+            quantity: 1,
+            isBundle: true
+        };
+        
+        // Füge zum Warenkorb hinzu
+        // Verwende direkt localStorage um sicherzustellen, dass das Bundle hinzugefügt wird
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        // Prüfe ob Bundle bereits im Warenkorb
+        const existingIndex = cart.findIndex(item => 
+            item.bundleId === bundleItem.bundleId && 
+            item.name === bundleItem.name
+        );
+        
+        if (existingIndex > -1) {
+            // Bundle existiert bereits, erhöhe Menge
+            cart[existingIndex].quantity += 1;
+            console.log('📦 Bundle-Menge erhöht:', cart[existingIndex]);
+        } else {
+            // Neues Bundle hinzufügen
+            cart.push(bundleItem);
+            console.log('✅ Neues Bundle hinzugefügt:', bundleItem);
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Trigger cart update event
+        window.dispatchEvent(new Event('storage'));
+        
+        // Update cart count if function exists
+        if (window.updateCartCount) {
+            window.updateCartCount();
+        }
+        
+        console.log('✅ Bundle zum Warenkorb hinzugefügt:', bundleItem);
+        
+        // Zeige Erfolgsmeldung
+        if (window.showBundleSuccessMessage) {
+            window.showBundleSuccessMessage(bundleQty);
+        }
+    };
+    
+    // Globale Funktion für Bundle zum Warenkorb hinzufügen (alte Funktion für Kompatibilität)
     window.addSelectedBundleToCart = function() {
         console.log('🎯 addSelectedBundleToCart wurde aufgerufen');
         
