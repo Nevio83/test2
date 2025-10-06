@@ -2761,23 +2761,6 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 .cart-rainbow-bounce {
   animation: cart-rainbow-bounce 1s ease-in-out;
 }
-
-.heart-pulse {
-  animation: heart-pulse 1s ease-in-out;
-}
-
-/* Simple notification slide animations */
-@keyframes slideInRight {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
 @keyframes slideOutRight {
   0% {
     transform: translateX(0);
@@ -3011,23 +2994,33 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   position: absolute;
   top: calc(100% + 10px);
   right: 0; /* Korrekte Positionierung am rechten Rand */
-  width: 420px;
-  max-width: calc(100vw - 40px); /* Verhindert Überlauf */
-  max-height: 90vh; /* 90% der Bildschirmhöhe - mehr Platz für Footer */
-  background: var(--lumiere-white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
-  z-index: 1000;
+  width: 380px;
+  max-width: 90vw;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  z-index: 1050;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px) scale(0.95);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid var(--lumiere-gray-200);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
+/* Sicherstellen dass Cart Dropdown ganz rechts am Bildschirmrand ist */
+@media (min-width: 769px) {
+  .cart-dropdown {
+    position: absolute !important;
+    top: calc(100% + 10px) !important; /* Unter dem Warenkorb-Symbol */
+    right: 0 !important; /* Ganz rechts am Bildschirmrand */
+    left: auto !important;
+    transform-origin: top right !important;
+    z-index: 2000 !important;
+    margin-right: -20px !important; /* Erweitert das Dropdown weiter nach rechts */
+  }
+}
 .cart-dropdown.show {
   opacity: 1;
   visibility: visible;
@@ -4354,20 +4347,18 @@ div#hilfePanel.offen,
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  position: relative;
-  overflow: hidden;
   z-index: 10002;
 }
 
 #hilfePanelClose:hover {
   background: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.4);
-  transform: scale(1.1) rotate(90deg);
+  transform: none;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 #hilfePanelClose:active {
-  transform: scale(0.95) rotate(90deg);
+  transform: none;
   transition: all 0.1s ease;
 }
 
@@ -5228,30 +5219,43 @@ div#hilfePanel.offen,
     #scrollToTopBtn,
   /* Zusätzliche Selektoren für mobile */
     body:has(.cart-dropdown.show)
-    #scrollToTopBtn,
-  /* Support Button verstecken */
-  .cart-dropdown.show ~ #hilfeButton,
-  .cart-dropdown.show + #hilfeButton,
-  .cart-dropdown.show ~ * #hilfeButton,
-    body:has(.cart-dropdown.show)
-    #hilfeButton {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    transform: translateY(20px) !important;
-    pointer-events: none !important;
-    position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
-  }
+        /* FORCE HILFE-BUTTON KLICKBARKEIT - ÜBERSCHREIBT ALLE ANDEREN REGELN */
+        #hilfeButton,
+        div#hilfeButton,
+        body #hilfeButton,
+        body.cart-open #hilfeButton,
+        .cart-dropdown.show ~ #hilfeButton,
+        .cart-dropdown.show + #hilfeButton {
+          display: flex !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          position: fixed !important;
+          bottom: 30px !important;
+          right: 30px !important;
+          z-index: 2147483647 !important;
+          pointer-events: auto !important;
+          cursor: pointer !important;
+          transform: none !important;
+          left: auto !important;
+          top: auto !important;
+        }
 
-  /* Verhindere Scrollen auf dem Body wenn Warenkorb offen ist */
-  body.cart-open {
-    overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
+        /* Mobile Hilfe-Panel */
+        @media (max-width: 768px) {
+          .hilfe-panel.offen,
+          div.hilfe-panel.offen,
+          #hilfePanel.offen {
+            width: 100vw !important;
+            height: 100vh !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            transform: none !important;
+            border-radius: 0 !important;
+            overflow-y: auto !important;
+          }
+        }
 
   /* Zusätzliche mobile-spezifische Regeln für Scroll-to-Top Button */
   @media (max-width: 768px) {
@@ -6049,49 +6053,106 @@ div#hilfePanel.offen,
 .helpful-btn {
   border-color: var(--success-color);
   color: var(--success-color);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02));
 }
 
 .helpful-btn:hover {
-  background: var(--success-color);
-  color: white;
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: var(--shadow-medium), 0 8px 25px rgba(34, 197, 94, 0.3);
+  background: var(--success-gradient) !important;
+  color: white !important;
+  border-color: var(--success-color) !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: var(--shadow-medium), 0 8px 25px rgba(16, 185, 129, 0.4) !important;
+  animation: successPulse 0.6s ease-in-out;
+}
+
+.helpful-btn:hover *,
+.helpful-btn:hover span,
+.helpful-btn:hover i,
+.helpful-btn:hover .bi,
+.helpful-btn:hover::before,
+.helpful-btn:hover::after {
+  color: white !important;
+  fill: white !important;
+}
+
+/* Force text color for all possible elements */
+.helpful-btn:hover {
+  background: var(--success-gradient) !important;
+  color: white !important;
+  border-color: var(--success-color) !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: var(--shadow-medium), 0 8px 25px rgba(16, 185, 129, 0.4) !important;
   animation: successPulse 0.6s ease-in-out;
 }
 
 @keyframes successPulse {
   0%,
   100% {
-    transform: translateY(-4px) scale(1.05);
+    transform: translateY(-3px) scale(1.02);
   }
   50% {
-    transform: translateY(-6px) scale(1.08);
+    transform: translateY(-5px) scale(1.05);
   }
 }
 
 .not-helpful-btn {
   border-color: var(--danger-color);
   color: var(--danger-color);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.02));
 }
 
 .not-helpful-btn:hover {
-  background: var(--danger-color);
-  color: white;
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: var(--shadow-medium), 0 8px 25px rgba(239, 68, 68, 0.3);
+  background: var(--danger-gradient) !important;
+  color: white !important;
+  border-color: var(--danger-color) !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: var(--shadow-medium), 0 8px 25px rgba(239, 68, 68, 0.4) !important;
   animation: errorShake 0.6s ease-in-out;
+}
+
+.not-helpful-btn:hover *,
+.not-helpful-btn:hover span,
+.not-helpful-btn:hover i,
+.not-helpful-btn:hover .bi,
+.not-helpful-btn:hover::before,
+.not-helpful-btn:hover::after {
+  color: white !important;
+  fill: white !important;
+}
+
+/* ULTIMATE FORCE - Text muss weiß sein beim Hover */
+.feedback-btn.not-helpful-btn:hover,
+.not-helpful-btn:hover,
+button.not-helpful-btn:hover {
+  background: var(--danger-gradient) !important;
+  color: white !important;
+  border-color: var(--danger-color) !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: var(--shadow-medium), 0 8px 25px rgba(239, 68, 68, 0.4) !important;
+  animation: errorShake 0.6s ease-in-out;
+}
+
+.feedback-btn.helpful-btn:hover,
+.helpful-btn:hover,
+button.helpful-btn:hover {
+  background: var(--success-gradient) !important;
+  color: white !important;
+  border-color: var(--success-color) !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: var(--shadow-medium), 0 8px 25px rgba(16, 185, 129, 0.4) !important;
+  animation: successPulse 0.6s ease-in-out;
 }
 
 @keyframes errorShake {
   0%,
   100% {
-    transform: translateY(-4px) scale(1.05) translateX(0);
+    transform: translateY(-3px) scale(1.02) translateX(0);
   }
   25% {
-    transform: translateY(-4px) scale(1.05) translateX(-2px);
+    transform: translateY(-3px) scale(1.02) translateX(-2px);
   }
   75% {
-    transform: translateY(-4px) scale(1.05) translateX(2px);
+    transform: translateY(-3px) scale(1.02) translateX(2px);
   }
 }
 
@@ -6160,6 +6221,89 @@ div#hilfePanel.offen,
   border-color: transparent !important;
   transform: translateY(-3px) !important;
   box-shadow: var(--shadow-medium) !important;
+}
+
+/* FEEDBACK-BUTTONS IM ORANGE SUPPORT MODUS - SICHTBAR MACHEN */
+.feedback-buttons {
+  display: none;
+  gap: 16px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border-color);
+  background: var(--card-bg);
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Orange Support Mode - Feedback Buttons bleiben normal */
+.orange-support .feedback-buttons,
+.chatbot-interface .feedback-buttons {
+  display: flex !important;
+  background: var(--card-bg) !important;
+}
+
+.orange-support .feedback-btn,
+.chatbot-interface .feedback-btn {
+  background: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+  border: 2px solid var(--border-color) !important;
+}
+
+.orange-support .helpful-btn,
+.chatbot-interface .helpful-btn {
+  border-color: var(--success-color) !important;
+  color: var(--success-color) !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02)) !important;
+}
+
+.orange-support .not-helpful-btn,
+.chatbot-interface .not-helpful-btn {
+  border-color: var(--danger-color) !important;
+  color: var(--danger-color) !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.02)) !important;
+}
+
+/* Hover-Effekte bleiben gleich auch im Orange Mode */
+.orange-support .helpful-btn:hover,
+.chatbot-interface .helpful-btn:hover {
+  background: var(--success-gradient) !important;
+  color: white !important;
+  border-color: var(--success-color) !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: var(--shadow-medium), 0 8px 25px rgba(16, 185, 129, 0.4) !important;
+}
+
+.orange-support .not-helpful-btn:hover,
+.chatbot-interface .not-helpful-btn:hover {
+  background: var(--danger-gradient) !important;
+  color: white !important;
+  border-color: var(--danger-color) !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: var(--shadow-medium), 0 8px 25px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Text-Sichtbarkeit auch im Orange Mode */
+.orange-support .helpful-btn:hover *,
+.orange-support .helpful-btn:hover span,
+.orange-support .helpful-btn:hover i,
+.chatbot-interface .helpful-btn:hover *,
+.chatbot-interface .helpful-btn:hover span,
+.chatbot-interface .helpful-btn:hover i {
+  color: white !important;
+  fill: white !important;
+}
+
+.orange-support .not-helpful-btn:hover *,
+.orange-support .not-helpful-btn:hover span,
+.orange-support .not-helpful-btn:hover i,
+.chatbot-interface .not-helpful-btn:hover *,
+.chatbot-interface .not-helpful-btn:hover span,
+.chatbot-interface .not-helpful-btn:hover i {
+  color: white !important;
+  fill: white !important;
 }
 
 /* Mobile Anpassungen für Chatbot */
@@ -6485,6 +6629,113 @@ div#hilfePanel.offen,
 
 /* ===== ENDE ENHANCED CART DROPDOWN RECOMMENDATIONS =====*/
 
+/* ULTIMATE FEEDBACK BUTTON FIX - JAVASCRIPT INJECTION */
+/* Füge diesen CSS-Block am Ende hinzu, um JavaScript zu injizieren */
+body::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* CSS-basierte Lösung für Feedback-Buttons */
+.feedback-buttons .helpful-btn,
+.feedback-buttons .not-helpful-btn {
+  background: var(--card-bg) !important;
+  border: 2px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  padding: 14px 20px !important;
+  border-radius: var(--border-radius) !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+}
+
+.feedback-buttons .helpful-btn {
+  border-color: var(--success-color) !important;
+  color: var(--success-color) !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02)) !important;
+}
+
+.feedback-buttons .helpful-btn i {
+  color: var(--success-color) !important;
+}
+
+.feedback-buttons .not-helpful-btn {
+  border-color: var(--danger-color) !important;
+  color: var(--danger-color) !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(239, 68, 68, 0.02)) !important;
+}
+
+.feedback-buttons .not-helpful-btn i {
+  color: var(--danger-color) !important;
+}
+/* Hover-Effekte mit maximaler Spezifität */
+.feedback-buttons .helpful-btn:hover,
+.feedback-buttons .helpful-btn:hover *,
+.feedback-buttons .helpful-btn:hover i {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  border-color: #10b981 !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: var(--shadow-medium), 0 8px 25px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* ULTIMATE FORCE für grünen Button - GRÜNER HINTERGRUND */
+button.helpful-btn:hover,
+.helpful-btn:hover,
+#feedbackButtons .helpful-btn:hover {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  border: 2px solid #10b981 !important;
+}
+
+button.helpful-btn:hover *,
+.helpful-btn:hover *,
+#feedbackButtons .helpful-btn:hover *,
+button.helpful-btn:hover i,
+.helpful-btn:hover i,
+#feedbackButtons .helpful-btn:hover i {
+  color: white !important;
+  background: transparent !important;
+}
+
+.feedback-buttons .not-helpful-btn:hover,
+.feedback-buttons .not-helpful-btn:hover *,
+.feedback-buttons .not-helpful-btn:hover i {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+  border-color: #ef4444 !important;
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: var(--shadow-medium), 0 8px 25px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* ULTIMATE FORCE für roten Button */
+button.not-helpful-btn:hover,
+.not-helpful-btn:hover,
+#feedbackButtons .not-helpful-btn:hover {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+  border: 2px solid #ef4444 !important;
+}
+
+button.not-helpful-btn:hover *,
+.not-helpful-btn:hover *,
+#feedbackButtons .not-helpful-btn:hover *,
+button.not-helpful-btn:hover i,
+.not-helpful-btn:hover i,
+#feedbackButtons .not-helpful-btn:hover i {
+  color: white !important;
+  background: transparent !important;
+}
+
 /* ===== NACH OBEN BUTTON & HILFE BUTTON STYLES ===== */
 
 /* Nach oben Button */
@@ -6623,7 +6874,7 @@ div#hilfePanel.offen,
 
 #hilfePanelClose:hover {
   background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.1) rotate(90deg);
+  transform: none;
 }
 
 .hilfe-themen-modern {

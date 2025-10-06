@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <!-- Start cookieyes banner --> <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/8e12f1f6a93c31ea65a1052f/script.js" defer></script> <!-- End cookieyes banner -->
+  <!-- Scripts am Ende laden für bessere Performance -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
     <title>Marktplatz - Startseite</title>
     <meta name="description" content="Online-Marktplatz mit besten Angeboten">
-    <meta name="keywords" content="ecommerce, online shopping, elektronik, mode">
+    <meta name="keywords" content="ecommerce, online shopping, electronic, mode">
+<!-- Start cookieyes banner --> <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/8e12f1f6a93c31ea65a1052f/script.js"></script> <!-- End cookieyes banner -->
     <meta name="cjdropshipping-key" content="6b4d5d2c435d4aceb4473c792e94e5f5">
     
     <!-- Resource Preloading -->
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="//cdn-cookieyes.com">
-    <link rel="preload" href="styles.css?v=23.0&t=1727470000" as="style">
-    <link rel="modulepreload" href="app.js?v=23.0&t=1727470000">
+    <link rel="preload" href="styles.css?v=23.1&t=1727470000" as="style">
+    <link rel="modulepreload" href="app.js?v=23.1&t=1727470000">
     
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -1941,39 +1942,42 @@
     });
   }
   
-  // Hilfe-Themen Buttons
-  document.querySelectorAll('.hilfe-thema-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const topic = btn.getAttribute('data-topic');
+  // Hilfe-Themen Buttons - REPARIERT
+  function initHilfeThemenButtons() {
+    const hilfeThemaBtns = document.querySelectorAll('.hilfe-thema-btn');
+    console.log(' gefundene Hilfe-Themen-Buttons:', hilfeThemaBtns.length);
+    
+    hilfeThemaBtns.forEach((btn, index) => {
+      console.log(`Initialisiere Button ${index + 1}:`, btn.textContent);
       
-      // Spezielle Behandlung für Keyboard Shortcuts
-      if (topic === 'shortcuts') {
-        // Schließe das Hilfe-Panel zuerst
-        hilfePanel.classList.remove('offen');
-        document.body.classList.remove('help-panel-open');
-        hilfePanel.style.display = 'none';
-        document.body.style.overflow = '';
-        document.body.style.height = '';
-        hideChatbot();
+      // Entferne alte Event Listener
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      
+      // Füge neuen Event Listener hinzu
+      newBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log(' Hilfe-Thema geklickt:', newBtn.textContent);
         
-        // Öffne das große Keyboard Shortcuts Modal nach kurzer Verzögerung
+        const topic = newBtn.getAttribute('data-topic');
+        console.log('Topic:', topic);
+        
+        // Aktiviere orange Farben sofort beim Klick
+        activateOrangeSupport();
+        showChatbot();
         setTimeout(() => {
-          if (window.keyboardShortcuts) {
-            window.keyboardShortcuts.showHelpModal();
-          }
-        }, 200);
-        return; // Beende hier, öffne nicht den Chat
-      }
-      
-      // Für alle anderen Themen: normaler Chat-Ablauf
-      // Aktiviere orange Farben sofort beim Klick
-      activateOrangeSupport();
-      showChatbot();
-      setTimeout(() => {
-        handleTopicClick(topic);
-      }, 300);
+          handleTopicClick(topic);
+        }, 300);
+      });
     });
-  });
+    
+    console.log('✅ Hilfe-Themen-Buttons erfolgreich initialisiert!');
+  }
+  
+  // Initialisiere Buttons mit Verzögerung
+  setTimeout(initHilfeThemenButtons, 1000);
+  setTimeout(initHilfeThemenButtons, 3000);
   
   // Quick topic buttons (werden dynamisch erstellt)
   document.addEventListener('click', (e) => {
@@ -2021,3 +2025,11 @@
   
   // Initial call
   updateNavTransparency();
+</script>
+
+<!-- Scripts am Ende laden für bessere Performance -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="app.js"></script>
+<script src="cart.js"></script>
+</body>
+</html>
