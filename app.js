@@ -4458,3 +4458,121 @@ function makeDropdownImagesClickable() {
     setTimeout(() => clearInterval(checkInterval), 5000);
   }
 })();
+
+// Fix: Warenkorb-Dropdown soll offen bleiben bei " Das k�nnte Ihnen gefallen\ Produkten
+(function() {
+ setTimeout(() => {
+ if (window.addRecommendationToCart) {
+ const originalAddRecommendationToCart = window.addRecommendationToCart;
+ 
+ window.addRecommendationToCart = function(productId, buttonElement) {
+ const cartDropdown = document.getElementById('cartDropdown');
+ const wasDropdownOpen = cartDropdown && cartDropdown.classList.contains('show');
+ 
+ originalAddRecommendationToCart(productId, buttonElement);
+ 
+ if (wasDropdownOpen && cartDropdown) {
+ setTimeout(() => {
+ cartDropdown.classList.add('show');
+ cartDropdown.style.display = 'block';
+ if (window.renderCartDropdown) {
+ window.renderCartDropdown();
+ }
+ }, 100);
+ }
+ };
+ }
+ 
+ if (window.addProductToCart) {
+ const originalAddProductToCart = window.addProductToCart;
+ 
+ window.addProductToCart = function(productsParam, productId, fromCartDropdown = false) {
+ const cartDropdown = document.getElementById('cartDropdown');
+ const wasDropdownOpen = cartDropdown && cartDropdown.classList.contains('show');
+ 
+ const result = originalAddProductToCart(productsParam, productId, fromCartDropdown);
+ 
+ if (fromCartDropdown && wasDropdownOpen && cartDropdown) {
+ setTimeout(() => {
+ cartDropdown.classList.add('show');
+ cartDropdown.style.display = 'block';
+ }, 150);
+ }
+ 
+ return result;
+ };
+ }
+ }, 500);
+})();
+// Fix: Warenkorb-Dropdown soll offen bleiben bei "Das könnte Ihnen gefallen" Produkten
+setTimeout(() => {
+    if (window.addRecommendationToCart) {
+        const originalAddRecommendationToCart = window.addRecommendationToCart;
+        
+        window.addRecommendationToCart = function(productId, buttonElement) {
+            const cartDropdown = document.getElementById('cartDropdown');
+            const wasDropdownOpen = cartDropdown && cartDropdown.classList.contains('show');
+            
+            originalAddRecommendationToCart(productId, buttonElement);
+            
+            if (wasDropdownOpen && cartDropdown) {
+                setTimeout(() => {
+                    cartDropdown.classList.add('show');
+                    cartDropdown.style.display = 'block';
+                    if (window.renderCartDropdown) {
+                        window.renderCartDropdown();
+                    }
+                }, 100);
+            }
+        };
+        console.log('✅ Warenkorb-Dropdown Fix aktiviert');
+    }
+}, 1000);
+// Fix: Warenkorb-Dropdown soll offen bleiben bei "Das könnte Ihnen gefallen" Produkten
+setTimeout(() => {
+    if (window.addRecommendationToCart) {
+        const originalAddRecommendationToCart = window.addRecommendationToCart;
+        
+        window.addRecommendationToCart = function(productId, buttonElement) {
+            const cartDropdown = document.getElementById('cartDropdown');
+            const wasDropdownOpen = cartDropdown && cartDropdown.classList.contains('show');
+            
+            originalAddRecommendationToCart(productId, buttonElement);
+            
+            if (wasDropdownOpen && cartDropdown) {
+                setTimeout(() => {
+                    cartDropdown.classList.add('show');
+                    cartDropdown.style.display = 'block';
+                    if (window.renderCartDropdown) {
+                        window.renderCartDropdown();
+                    }
+                }, 100);
+            }
+        };
+        console.log('✅ Warenkorb-Dropdown Fix aktiviert');
+    }
+}, 1000);
+// Fix: Warenkorb-Dropdown soll offen bleiben bei "Das könnte Ihnen gefallen" Produkten
+setTimeout(() => {
+    if (window.addRecommendationToCart) {
+        const originalAddRecommendationToCart = window.addRecommendationToCart;
+        
+        window.addRecommendationToCart = function(productId, buttonElement) {
+            const cartDropdown = document.getElementById('cartDropdown');
+            const wasDropdownOpen = cartDropdown && cartDropdown.classList.contains('show');
+            
+            originalAddRecommendationToCart(productId, buttonElement);
+            
+            if (wasDropdownOpen && cartDropdown) {
+                setTimeout(() => {
+                    cartDropdown.classList.add('show');
+                    cartDropdown.style.display = 'block';
+                    if (window.renderCartDropdown) {
+                        window.renderCartDropdown();
+                    }
+                }, 100);
+            }
+        };
+        console.log('✅ Warenkorb-Dropdown Fix aktiviert');
+    }
+}, 1000);
