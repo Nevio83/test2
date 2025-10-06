@@ -323,11 +323,14 @@
     category: "Beleuchtung",
     categoryId: "beleuchtung",
     description: "LED Water Ripple Ambient Night Light - USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
-    sku: "MIXER011",
+    sku: "CJLED21001",
     inStock: true,
     shippingTime: "7-15 Werktage",
-    tags: ["mixer", "entsafter", "smoothie", "tragbar"]
+    tags: ["led", "beleuchtung", "kristall", "ambient", "nachtlicht"]
   };
+
+  // Mache Produktdaten global verfügbar für Bundle-System
+  window.product = product;
 
   // Bundles dynamisch laden
   fetch('../products.json')

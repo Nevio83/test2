@@ -320,7 +320,7 @@
     price: 49.99,
     originalPrice: 69.99,
     image: "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
-    category: "Elektronik",
+    category: "Technik/Gadgets",
     categoryId: "elektronik",
     description: "Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.",
     sku: "CJ1621032671155597312",
@@ -328,6 +328,9 @@
     shippingTime: "7-15 Werktage",
     tags: ["wasserspender", "elektrisch", "büro", "automatisch"]
   };
+
+  // Mache Produktdaten global verfügbar für Bundle-System
+  window.product = product;
 
   // Bundles dynamisch laden
   fetch('../products.json')
