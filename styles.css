@@ -7637,3 +7637,183 @@ section[data-category="Haushalt und K�che"]::after,
     overflow-x: hidden !important;
   }
 }
+
+/* ===== MOBILE SLIDER ANTI-ZITTER FIX - DIREKT IN STYLES.CSS ===== */
+
+/* Kritische Mobile Fixes - Zittern stoppen */
+@media (max-width: 768px) {
+    /* Hardware-Beschleunigung für Container */
+    .product-scroll-container {
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
+        -webkit-backface-visibility: hidden !important;
+        backface-visibility: hidden !important;
+        -webkit-perspective: 1000px !important;
+        perspective: 1000px !important;
+        will-change: auto !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+    
+    /* Hardware-Beschleunigung für Grid */
+    .product-scroll-grid {
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
+        -webkit-backface-visibility: hidden !important;
+        backface-visibility: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-behavior: auto !important;
+        will-change: scroll-position !important;
+        /* Alle Animationen deaktivieren */
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+    }
+    
+    /* Alle Hover-Effekte auf Mobile komplett deaktivieren */
+    .product-scroll-grid .lumiere-product-card:hover {
+        transform: none !important;
+        -webkit-transform: none !important;
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Scrollbar-Fixes für Mobile - VERBESSERT */
+    .product-scroll-container .custom-scrollbar-track {
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+        /* Sichtbarer auf Mobile */
+        height: 8px !important;
+        background: #b0b0b0 !important;
+        border: 1px solid #999999 !important;
+        bottom: 8px !important;
+    }
+    
+    .product-scroll-container .custom-scrollbar-thumb {
+        -webkit-transform: translateZ(0) !important;
+        transform: translateZ(0) !important;
+        animation: none !important;
+        transition: transform 0.1s ease !important;
+        -webkit-transition: -webkit-transform 0.1s ease !important;
+        /* Sichtbarer auf Mobile */
+        height: 8px !important;
+        background: linear-gradient(135deg, #333333, #000000) !important;
+        border: 1px solid #000000 !important;
+        bottom: 8px !important;
+        min-width: 40px !important;
+        border-radius: 4px !important;
+    }
+    
+    .product-scroll-container .custom-scrollbar-thumb:active {
+        transform: none !important;
+        -webkit-transform: none !important;
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+        background: linear-gradient(135deg, #555555, #222222) !important;
+    }
+    
+    /* Alle Produktkarten-Animationen deaktivieren */
+    .lumiere-product-card,
+    .lumiere-product-card *,
+    .product-scroll-grid *,
+    .product-scroll-container * {
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+        -webkit-animation: none !important;
+    }
+    
+    /* Scroll-Arrows auch ohne Animationen */
+    .scroll-arrow {
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+    }
+    
+    .scroll-arrow:hover {
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+    }
+    
+    /* Kategorie-Tabs ohne Animationen */
+    .lumiere-category-tab {
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+    }
+    
+    .lumiere-category-tab:hover {
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+    }
+    
+    /* Buttons ohne Animationen */
+    .lumiere-add-to-cart-btn,
+    .lumiere-wishlist-btn {
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+    }
+    
+    .lumiere-add-to-cart-btn:hover,
+    .lumiere-wishlist-btn:hover {
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+    }
+}
+
+/* Zusätzliche Fixes für sehr kleine Bildschirme */
+@media (max-width: 480px) {
+    /* Noch aggressivere Anti-Zitter-Maßnahmen */
+    .product-scroll-container,
+    .product-scroll-grid {
+        -webkit-transform: translate3d(0, 0, 0) !important;
+        transform: translate3d(0, 0, 0) !important;
+    }
+}
+
+/* Touch-spezifische Optimierungen */
+@media (hover: none) and (pointer: coarse) {
+    /* Für Touch-Geräte alle Hover-Effekte komplett entfernen */
+    .product-scroll-grid .lumiere-product-card:hover,
+    .scroll-arrow:hover,
+    .lumiere-category-tab:hover,
+    .lumiere-add-to-cart-btn:hover,
+    .lumiere-wishlist-btn:hover {
+        animation: none !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Mobile Scrollbar noch sichtbarer machen */
+    .product-scroll-container .custom-scrollbar-track {
+        height: 10px !important;
+        background: #999999 !important;
+        bottom: 6px !important;
+    }
+    
+    .product-scroll-container .custom-scrollbar-thumb {
+        height: 10px !important;
+        background: #000000 !important;
+        bottom: 6px !important;
+        min-width: 50px !important;
+    }
+}

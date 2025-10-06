@@ -18,7 +18,7 @@
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="styles.css?v=23.0&t=1727470000">
+    <link rel="stylesheet" href="styles.css?v=23.1&t=1727470000">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
@@ -534,15 +534,15 @@
                 bottom: 10px;
                 min-width: 60px;
                 touch-action: manipulation;
-                -webkit-tap-highlight-color: transparent;
                 background: linear-gradient(135deg, #444444, #111111) !important;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
             }
             
             .product-scroll-container .custom-scrollbar-thumb:active {
-                height: 14px !important;
-                bottom: 9px;
-                transform: scale(1.1);
+                height: 12px !important;
+                bottom: 10px;
+                transform: none !important;
+                -webkit-transform: none !important;
                 background: linear-gradient(135deg, #666666, #333333) !important;
             }
             
@@ -1267,6 +1267,82 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="app.js?v=23.0&t=1727470000" defer></script>
+    
+    <!-- Mobile Scrollbar Fix Script -->
+    <script>
+    // Mobile Scrollbar Position Fix
+    document.addEventListener('DOMContentLoaded', function() {
+        // Warte bis app.js geladen ist
+        setTimeout(function() {
+            // Verbesserte Mobile Scrollbar Updates
+            function enhanceMobileScrollbarUpdates() {
+                const scrollContainers = document.querySelectorAll('.product-scroll-container');
+                
+                scrollContainers.forEach(container => {
+                    const grid = container.querySelector('.product-scroll-grid');
+                    const thumb = container.querySelector('.custom-scrollbar-thumb');
+                    
+                    if (!grid || !thumb) return;
+                    
+                    // Mobile-spezifische Scroll-Listener
+                    let isScrolling = false;
+                    
+                    function updateThumbPosition() {
+                        if (!thumb || !grid) return;
+                        
+                        const scrollLeft = grid.scrollLeft;
+                        const maxScroll = grid.scrollWidth - grid.clientWidth;
+                        const trackWidth = container.clientWidth - 120; // Platz für Arrows
+                        const thumbWidth = parseInt(thumb.style.width) || 50;
+                        const maxThumbPosition = trackWidth - thumbWidth;
+                        
+                        if (maxScroll > 0) {
+                            const scrollPercentage = scrollLeft / maxScroll;
+                            const thumbPosition = scrollPercentage * maxThumbPosition;
+                            thumb.style.transform = `translateX(${thumbPosition}px)`;
+                            thumb.style.webkitTransform = `translateX(${thumbPosition}px)`;
+                        }
+                    }
+                    
+                    // Touch Events für Mobile
+                    grid.addEventListener('touchstart', function() {
+                        isScrolling = true;
+                    }, { passive: true });
+                    
+                    grid.addEventListener('touchmove', function() {
+                        if (isScrolling) {
+                            requestAnimationFrame(updateThumbPosition);
+                        }
+                    }, { passive: true });
+                    
+                    grid.addEventListener('touchend', function() {
+                        isScrolling = false;
+                        setTimeout(updateThumbPosition, 50);
+                    }, { passive: true });
+                    
+                    // Scroll Event (für alle Geräte)
+                    grid.addEventListener('scroll', function() {
+                        requestAnimationFrame(updateThumbPosition);
+                    }, { passive: true });
+                    
+                    // Initiale Position setzen
+                    setTimeout(updateThumbPosition, 100);
+                    setTimeout(updateThumbPosition, 500);
+                });
+            }
+            
+            // Mobile Check und Enhancement
+            if (window.innerWidth <= 768 || 'ontouchstart' in window) {
+                enhanceMobileScrollbarUpdates();
+                
+                // Bei Resize auch aktualisieren
+                window.addEventListener('resize', function() {
+                    setTimeout(enhanceMobileScrollbarUpdates, 100);
+                });
+            }
+        }, 1000); // Warte 1 Sekunde bis app.js vollständig geladen ist
+    });
+    </script>
     <script>
       // Fix: Warenkorb-Dropdown soll offen bleiben bei "Das könnte Ihnen gefallen" Produkten
       setTimeout(() => {
