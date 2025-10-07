@@ -825,6 +825,55 @@
             display: none !important;
         }
         
+        /* Alle Produkte klickbar machen */
+        .alle-produkte-clickable {
+            transition: all 0.3s ease !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .alle-produkte-clickable:hover {
+            background: linear-gradient(135deg, #333333 0%, #222222 100%) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .alle-produkte-clickable:active {
+            transform: translateY(0px) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .alle-produkte-clickable .category-title {
+            color: #ffffff !important;
+            margin-bottom: 8px !important;
+        }
+        
+        .alle-produkte-clickable .category-subtitle {
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin-bottom: 0 !important;
+        }
+        
+        .alle-produkte-clickable::before {
+            content: "🔍 Klicken zum Durchsuchen" !important;
+            position: absolute !important;
+            top: 50% !important;
+            right: 20px !important;
+            transform: translateY(-50%) !important;
+            font-size: 0.9rem !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            opacity: 0 !important;
+            transition: opacity 0.3s ease !important;
+        }
+        
+        .alle-produkte-clickable:hover::before {
+            opacity: 1 !important;
+        }
+
         /* Simple animations matching product 4 exactly */
         .success-animation {
             animation: success-animation 1.2s ease-in-out;
@@ -1117,7 +1166,7 @@
 
             <!-- Alle Produkte Section Header -->
             <div class="container">
-                <div class="category-header" style="margin-top: 3rem; margin-bottom: 2rem;">
+                <div class="category-header alle-produkte-clickable" style="margin-top: 3rem; margin-bottom: 2rem; cursor: pointer;" onclick="openSearchFromAlleProdukte()">
                     <h2 class="category-title">Alle Produkte</h2>
                     <p class="category-subtitle">Entdecken Sie unser gesamtes Sortiment nach Kategorien.</p>
                 </div>
@@ -1518,6 +1567,60 @@
             
             setupSearchButton();
         });
+    </script>
+    
+    <script>
+    // Alle Produkte Header klickbar machen
+    function openSearchFromAlleProdukte() {
+        console.log('🔍 Alle Produkte Header clicked - opening search...');
+        
+        const searchOverlay = document.getElementById('fullscreenSearchOverlay');
+        if (searchOverlay) {
+            // Suche öffnen
+            searchOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Alle Kategorien Tab aktivieren und Produkte laden
+            setTimeout(() => {
+                const allCategoryTab = document.querySelector('.lumiere-category-tab[data-category="alle"]');
+                if (allCategoryTab) {
+                    // Alle anderen Tabs deaktivieren
+                    document.querySelectorAll('.lumiere-category-tab').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    // Alle Tab aktivieren
+                    allCategoryTab.classList.add('active');
+                }
+                
+                // Alle Produkte laden - verwende die richtige Funktion
+                if (typeof loadAllProducts === 'function') {
+                    console.log('🔍 Loading all products...');
+                    loadAllProducts();
+                } else {
+                    // Fallback: Versuche die Produkte direkt zu laden
+                    console.log('🔍 Using fallback to load products...');
+                    const allProductsGrid = document.getElementById('searchAllProductsGrid');
+                    if (allProductsGrid && window.products) {
+                        // Rendere alle Produkte direkt
+                        allProductsGrid.innerHTML = '';
+                        window.products.forEach(product => {
+                            const productCard = document.createElement('div');
+                            productCard.className = 'search-product-card';
+                            productCard.innerHTML = `
+                                <img src="${product.image}" alt="${product.name}" class="search-product-image">
+                                <h4 class="search-product-name">${product.name}</h4>
+                                <p class="search-product-price">€${product.price.toFixed(2)}</p>
+                                <button class="search-add-to-cart" onclick="addProductToCart(${product.id})">
+                                    In den Warenkorb
+                                </button>
+                            `;
+                            allProductsGrid.appendChild(productCard);
+                        });
+                    }
+                }
+            }, 200);
+        }
+    }
     </script>
 
 <script>
@@ -2030,6 +2133,7 @@
 <!-- Scripts am Ende laden für bessere Performance -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="app.js"></script>
+<script src="keyboard-shortcuts.js" defer></script>
 <script src="cart.js"></script>
 
 </body>
