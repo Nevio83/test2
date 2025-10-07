@@ -21,7 +21,7 @@ window.clearCart = function() {
     console.log('Cart cleared, hiding dropdown');
     const cartDropdown = document.getElementById('cartDropdown');
     if (cartDropdown) {
-      // Flüssige Schließ-Animation
+      // FlÃ¼ssige SchlieÃŸ-Animation
       cartDropdown.classList.add('hiding');
       cartDropdown.classList.remove('show');
       
@@ -65,20 +65,20 @@ async function loadProducts() {
     // Speichere im localStorage als Backup
     localStorage.setItem('allProducts', JSON.stringify(products));
     
-    console.log('📋 Products loaded with cache-busting:', products.length);
+    console.log('ðŸ“‹ Products loaded with cache-busting:', products.length);
     
     // Validiere kritische Produkte (die 6 problematischen)
     const criticalIds = [10, 11, 19, 20, 24, 25];
     criticalIds.forEach(id => {
       const product = products.find(p => Number(p.id) === id);
       if (product) {
-        console.log(`✅ Critical product ${id} found:`, product.name);
+        console.log(`âœ… Critical product ${id} found:`, product.name);
         // Prüfe auf kaputte Preise
         if (typeof product.price !== 'number' || isNaN(product.price)) {
-          console.error(`❌ Product ${id} has invalid price:`, product.price);
+          console.error(`âŒ Product ${id} has invalid price:`, product.price);
         }
       } else {
-        console.error(`❌ Critical product ${id} NOT FOUND!`);
+        console.error(`âŒ Critical product ${id} NOT FOUND!`);
       }
     });
     
@@ -179,7 +179,7 @@ function updateWishlistButtonState(productId) {
   }
 }
 
-// Produktgrid rendern - Lumière Design Style
+// Produktgrid rendern - LumiÃ¨re Design Style
 function renderProducts(products) {
   const grid = document.getElementById('productGrid');
   if (!grid) {
@@ -249,7 +249,7 @@ function observeProductCards() {
 
 // Add-to-cart Buttons initialisieren
 function initializeAddToCartButtons() {
-  console.log('🛒 Initializing AddToCart buttons...');
+  console.log('ðŸ›’ Initializing AddToCart buttons...');
   
   // Warte kurz, um sicherzustellen, dass alle Elemente gerendert sind
   setTimeout(() => {
@@ -265,16 +265,16 @@ function initializeAddToCartButtons() {
       // Special attention to the problematic products
       const problematicIds = [10, 11, 19, 20, 24, 25];
       if (problematicIds.includes(parseInt(productId))) {
-        console.log(`🔍 SPECIAL: Initializing problematic product button ${productId}`);
-        console.log(`🔍 Button parent:`, button.parentNode?.className);
-        console.log(`🔍 Button data-product-id:`, button.getAttribute('data-product-id'));
+        console.log(`ðŸ” SPECIAL: Initializing problematic product button ${productId}`);
+        console.log(`ðŸ” Button parent:`, button.parentNode?.className);
+        console.log(`ðŸ” Button data-product-id:`, button.getAttribute('data-product-id'));
       }
       
       // Klone Button um alle Event-Listener zu entfernen
       const newButton = button.cloneNode(true);
       button.parentNode.replaceChild(newButton, button);
       
-      // Füge den Event Listener zum neuen Button hinzu
+      // FÃ¼ge den Event Listener zum neuen Button hinzu
       newButton.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -297,7 +297,7 @@ function initializeAddToCartButtons() {
             
             // Visual feedback for cart dropdown buttons
             const originalText = this.innerHTML;
-            this.innerHTML = '<i class="bi bi-check"></i> Hinzugefügt';
+            this.innerHTML = '<i class="bi bi-check"></i> HinzugefÃ¼gt';
             this.style.background = 'var(--success-color)';
             
             setTimeout(() => {
@@ -320,13 +320,13 @@ function initializeAddToCartButtons() {
       });
     });
     
-    console.log('✅ AddToCart buttons initialization completed');
+    console.log('âœ… AddToCart buttons initialization completed');
   }, 100);
 }
 
 // Produktkarten-Klicks initialisieren
 function initializeProductCardClicks() {
-  console.log('🔗 Initializing product card clicks...');
+  console.log('ðŸ”— Initializing product card clicks...');
   
   document.querySelectorAll('.lumiere-product-card').forEach(card => {
     const productId = parseInt(card.dataset.productId);
@@ -342,7 +342,7 @@ function initializeProductCardClicks() {
         return;
       }
       
-      console.log(`🔗 Navigating to product page for ID: ${productId}`);
+      console.log(`ðŸ”— Navigating to product page for ID: ${productId}`);
       
       // Only navigate to existing product pages (10+)
       if (productId >= 10) {
@@ -356,7 +356,7 @@ function initializeProductCardClicks() {
     card.style.cursor = 'pointer';
   });
   
-  console.log('✅ Product card clicks initialized');
+  console.log('âœ… Product card clicks initialized');
 }
 
 // Warenkorb-Funktionen
@@ -391,12 +391,12 @@ function addToCart(productId) {
 function addProductToCart(productsParam, productId, fromCartDropdown = false) {
   // Fallback: Wenn keine Produkte übergeben wurden oder die globale Variable leer ist, lade sie
   if ((!productsParam || productsParam.length === 0) && (!products || products.length === 0)) {
-    console.log('⚠️ Keine Produkte verfügbar, lade aus localStorage oder JSON...');
+    console.log('âš ï¸ Keine Produkte verfügbar, lade aus localStorage oder JSON...');
     // Versuche aus localStorage
     const storedProducts = localStorage.getItem('allProducts');
     if (storedProducts) {
       products = JSON.parse(storedProducts);
-      console.log('📦 Produkte aus localStorage geladen:', products.length);
+      console.log('ðŸ“¦ Produkte aus localStorage geladen:', products.length);
     }
   }
   
@@ -441,26 +441,26 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
       sku: window.product.selectedColorSku,
       price: window.product.price
     };
-    console.log('🎨 Farbe von window.product:', currentColor);
+    console.log('ðŸŽ¨ Farbe von window.product:', currentColor);
   }
   
   // Methode 2: getSelectedColor() (für Produkt 11, 12, 17, 21, 26)
   else if (window.getSelectedColor && typeof window.getSelectedColor === 'function') {
     const selectedColorObj = window.getSelectedColor();
-    console.log('🔍 getSelectedColor() Ergebnis:', selectedColorObj);
+    console.log('ðŸ” getSelectedColor() Ergebnis:', selectedColorObj);
     
     if (selectedColorObj && selectedColorObj.name) {
       currentColor = selectedColorObj.name;
       currentColorData = selectedColorObj;
-      console.log('🎨 Farbe von getSelectedColor():', currentColor, selectedColorObj);
+      console.log(`getSelectedColor() returned color: ${currentColor}, data:`, selectedColorObj);
     } else {
-      console.log('❌ getSelectedColor() lieferte keine gültigen Daten');
+      console.log('getSelectedColor() did not return valid data');
     }
   } else {
-    console.log('❌ getSelectedColor() Funktion nicht gefunden');
+    console.log('getSelectedColor() function not found');
   }
   
-  console.log('🔍 Finale Farbe für Warenkorb:', currentColor);
+  console.log('ðŸ" Finale Farbe für Warenkorb:', currentColor);
   
   if (currentColor) {
     // Bei Produkten mit Farbe: Nur EXAKT gleiche ID + Farbe ist "existing"
@@ -468,14 +468,14 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
       Number(item.id) === Number(productId) && 
       item.selectedColor === currentColor
     );
-    console.log(`🎨 Suche nach Produkt ${productId} mit Farbe "${currentColor}":`, existingItem ? 'GEFUNDEN - Menge erhöhen' : 'NEUER ARTIKEL');
+    console.log(`ðŸŽ¨ Suche nach Produkt ${productId} mit Farbe "${currentColor}":`, existingItem ? 'GEFUNDEN - Menge erhöhen' : 'NEUER ARTIKEL');
   } else {
     // Bei Produkten ohne Farbe: Nur ID prüfen (und keine Farbe vorhanden)
     existingItem = cartItems.find(item => 
       Number(item.id) === Number(productId) && 
       !item.selectedColor
     );
-    console.log(`📦 Suche nach Produkt ${productId} OHNE Farbe:`, existingItem ? 'GEFUNDEN - Menge erhöhen' : 'NEUER ARTIKEL');
+    console.log(`ðŸ“¦ Suche nach Produkt ${productId} OHNE Farbe:`, existingItem ? 'GEFUNDEN - Menge erhöhen' : 'NEUER ARTIKEL');
   }
 
   if (existingItem) {
@@ -499,15 +499,15 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
         // Eindeutige ID für verschiedene Farben
         cartItemId: `${productId}-${currentColor.replace(/\s+/g, '-').toLowerCase()}`
       };
-      console.log('🎨 NEUER Artikel mit Farbe:', productToAdd.name, '- ID:', productToAdd.cartItemId, '- Preis:', productToAdd.price);
+      console.log('ðŸŽ¨ NEUER Artikel mit Farbe:', productToAdd.name, '- ID:', productToAdd.cartItemId, '- Preis:', productToAdd.price);
     } else {
       // Produkt OHNE Farbe
       productToAdd.cartItemId = `${productId}-no-color`;
-      console.log('📦 NEUER Artikel ohne Farbe:', productToAdd.name, '- ID:', productToAdd.cartItemId);
+      console.log('ðŸ“¦ NEUER Artikel ohne Farbe:', productToAdd.name, '- ID:', productToAdd.cartItemId);
     }
     
     cartItems.push(productToAdd);
-    console.log('✅ Artikel zum Warenkorb hinzugefügt:', productToAdd);
+    console.log('âœ… Artikel zum Warenkorb hinzugefügt:', productToAdd);
   }
 
   // Speichere den aktuellen Warenkorb immer im localStorage
@@ -635,7 +635,7 @@ function triggerWishlistButtonAnimation(productId) {
     }, 600);
     
     // Create floating success indicator for wishlist
-    createFloatingSuccessIndicator(wishlistButton, '♥', 'wishlist');
+    createFloatingSuccessIndicator(wishlistButton, 'â™¥', 'wishlist');
   });
   
   // Animate the heart icon in the navigation
@@ -756,7 +756,7 @@ function removeFromCart(productId) {
 
 // RADICAL FIX: Clear and reload all product cards
 function radicalProductReload() {
-  console.log('🚨 RADICAL: Clearing all product grids and reloading...');
+  console.log('ðŸš¨ RADICAL: Clearing all product grids and reloading...');
   
   // Clear all grids completely
   const grids = ['bestsellerGrid', 'technikGrid', 'beleuchtungGrid', 'haushaltGrid', 'wellnessGrid'];
@@ -764,16 +764,16 @@ function radicalProductReload() {
     const grid = document.getElementById(gridId);
     if (grid) {
       grid.innerHTML = '';
-      console.log(`🗑️ Cleared ${gridId}`);
+      console.log(`ðŸ—‘ï¸ Cleared ${gridId}`);
     }
   });
   
   // Force reload products after clearing
   setTimeout(() => {
-    console.log('🔄 Reloading products after clearing...');
+    console.log('ðŸ”„ Reloading products after clearing...');
     loadProducts().then(products => {
       if (products.length > 0) {
-        console.log('✅ Products reloaded, rendering to grids...');
+        console.log('âœ… Products reloaded, rendering to grids...');
         
         // Render bestsellers
         const bestsellerGrid = document.getElementById('bestsellerGrid');
@@ -798,7 +798,7 @@ function radicalProductReload() {
           }
         });
         
-        console.log('🎉 RADICAL reload completed!');
+        console.log('ðŸŽ‰ RADICAL reload completed!');
       }
     });
   }, 100);
@@ -809,7 +809,7 @@ window.radicalProductReload = radicalProductReload;
 
 // NUCLEAR OPTION: Clear everything and start fresh
 function nuclearReset() {
-  console.log('💥 NUCLEAR RESET: Clearing all caches and restarting...');
+  console.log('ðŸ’¥ NUCLEAR RESET: Clearing all caches and restarting...');
   
   // Clear all localStorage
   localStorage.removeItem('allProducts');
@@ -835,12 +835,12 @@ window.nuclearReset = nuclearReset;
 
 // DEEP DIAGNOSIS: Analyze the 6 problematic products
 function deepDiagnosis() {
-  console.log('🔍 DEEP DIAGNOSIS: Analyzing the 6 problematic products...');
+  console.log('ðŸ” DEEP DIAGNOSIS: Analyzing the 6 problematic products...');
   
   const problematicIds = [10, 11, 19, 20, 24, 25];
   
   problematicIds.forEach(id => {
-    console.log(`\n🔍 === ANALYZING PRODUCT ${id} ===`);
+    console.log(`\nðŸ” === ANALYZING PRODUCT ${id} ===`);
     
     // Find all possible selectors for this product
     const selectors = [
@@ -883,7 +883,7 @@ function deepDiagnosis() {
   });
   
   // Compare with a working product (from bestsellers)
-  console.log('\n🔍 === COMPARING WITH WORKING PRODUCT ===');
+  console.log('\nðŸ” === COMPARING WITH WORKING PRODUCT ===');
   const workingButton = document.querySelector('#bestsellerGrid .lumiere-add-to-cart-btn');
   if (workingButton) {
     console.log('Working button classes:', workingButton.className);
@@ -922,7 +922,7 @@ function filterProducts(products, searchText, category) {
     
     // Einfaches Logging nur bei Problemen
     if (category === 'Technik/Gadgets' && product.category === 'Technik/Gadgets') {
-      console.log(`✅ Technik product: ${product.name}`);
+      console.log(`âœ… Technik product: ${product.name}`);
     }
     
     return matchesSearch && matchesCategory;
@@ -1012,7 +1012,7 @@ function initializeCartDropdown() {
   if (closeCartDropdown && cartDropdown) {
     closeCartDropdown.addEventListener('click', (e) => {
       e.preventDefault();
-      // Flüssige Schließ-Animation
+      // FlÃ¼ssige SchlieÃŸ-Animation
       cartDropdown.classList.add('hiding');
       cartDropdown.classList.remove('show');
       
@@ -1028,7 +1028,7 @@ function initializeCartDropdown() {
     if (cartDropdown && cartDropdown.classList.contains('show')) {
       // Check if click is outside the cart dropdown and cart button
       if (!cartDropdown.contains(e.target) && !cartButton.contains(e.target)) {
-        // Flüssige Schließ-Animation
+        // FlÃ¼ssige SchlieÃŸ-Animation
         cartDropdown.classList.add('hiding');
         cartDropdown.classList.remove('show');
         
@@ -1084,9 +1084,9 @@ function initializeCartDropdown() {
       const categorySelected = document.getElementById('categorySelected');
       if (customDropdown && categorySelected) {
         categorySelected.innerHTML = `
-          <span class="category-icon">📋</span>
+          <span class="category-icon">ðŸ“‹</span>
           <span class="category-text">Alle Kategorien</span>
-          <span class="dropdown-arrow">▼</span>
+          <span class="dropdown-arrow">â–¼</span>
         `;
         customDropdown.classList.remove('open');
       }
@@ -1146,7 +1146,7 @@ function renderCartDropdown() {
     footer.style.visibility = 'visible';
     totalElement.textContent = '0.00'; // Gesamt auf 0 setzen bei leerem Warenkorb
     
-    // Bei leerem Warenkorb: 3 zufällige Produktvorschläge anzeigen
+    // Bei leerem Warenkorb: 3 zufÃ¤llige ProduktvorschlÃ¤ge anzeigen
     loadProducts().then(products => {
       if (products.length === 0) {
         body.innerHTML = `
@@ -1158,7 +1158,7 @@ function renderCartDropdown() {
         return;
       }
       
-      // 3 zufällige Produkte auswählen
+      // 3 zufÃ¤llige Produkte auswÃ¤hlen
       const shuffled = [...products].sort(() => 0.5 - Math.random());
       const randomProducts = shuffled.slice(0, 3);
       
@@ -1167,7 +1167,7 @@ function renderCartDropdown() {
           <i class="bi bi-cart-x fs-1 text-muted"></i>
           <p class="text-muted mt-2 mb-3">Ihr Warenkorb ist leer</p>
           
-          <!-- Enhanced Produktvorschläge -->
+          <!-- Enhanced ProduktvorschlÃ¤ge -->
           <div class="cart-recommendations">
             <h6><i class="bi bi-lightbulb"></i> Das könnte Ihnen gefallen</h6>
             <div class="recommendations-grid">
@@ -1352,8 +1352,8 @@ function renderCartDropdown() {
       clearBtn.style.lineHeight = '40px';
       clearBtn.style.textAlign = 'center';
       // Ensure button has text content
-      if (!clearBtn.textContent.includes('Löschen')) {
-        clearBtn.innerHTML = '<i class="bi bi-trash" style="font-size: 16px; margin-right: 4px;"></i> Löschen';
+      if (!clearBtn.textContent.includes('LÃ¶schen')) {
+        clearBtn.innerHTML = '<i class="bi bi-trash" style="font-size: 16px; margin-right: 4px;"></i> LÃ¶schen';
       }
       console.log('Clear button forced visible with full styling and text');
     }
@@ -1455,7 +1455,7 @@ function scrollCategory(gridId, direction) {
         return;
     }
     
-    console.log(`🔧 Scrolling ${gridId} ${direction}`);
+    console.log(`ðŸ”§ Scrolling ${gridId} ${direction}`);
     console.log(`Grid scrollWidth: ${grid.scrollWidth}, clientWidth: ${grid.clientWidth}`);
     
     // Calculate scroll amount - always use a reasonable amount
@@ -1551,7 +1551,7 @@ function initializeScrollbarTracking() {
 
 // Initialize drag scroll functionality for a specific grid
 function initializeDragScrollForGrid(container) {
-    console.log(`🎯 Setting up drag scroll for grid: ${container.id}`);
+    console.log(`ðŸŽ¯ Setting up drag scroll for grid: ${container.id}`);
     
     let isDown = false;
     let startX;
@@ -1576,7 +1576,7 @@ function initializeDragScrollForGrid(container) {
         startX = e.pageX - container.offsetLeft;
         scrollLeft = container.scrollLeft;
         e.preventDefault();
-        console.log('🎯 Container drag started for:', container.id);
+        console.log('ðŸŽ¯ Container drag started for:', container.id);
     });
     
     // Mouse up event
@@ -1584,7 +1584,7 @@ function initializeDragScrollForGrid(container) {
         if (isDown) {
             isDown = false;
             container.style.cursor = 'grab';
-            console.log('🎯 Container drag ended for:', container.id);
+            console.log('ðŸŽ¯ Container drag ended for:', container.id);
         }
     });
     
@@ -1653,12 +1653,12 @@ function initializeDragScrollForGrid(container) {
         container.classList.remove('dragging');
     });
     
-    console.log(`✅ Drag scroll initialized for: ${container.id}`);
+    console.log(`âœ… Drag scroll initialized for: ${container.id}`);
 }
 
 // Create and initialize a custom scrollbar for a specific grid
 function createCustomScrollbarForGrid(gridId) {
-    console.log(`🎯 Creating custom scrollbar for: ${gridId}`);
+    console.log(`ðŸŽ¯ Creating custom scrollbar for: ${gridId}`);
     
     const grid = document.getElementById(gridId);
     if (!grid) return;
@@ -1725,7 +1725,7 @@ function createCustomScrollbarForGrid(gridId) {
         
         e.preventDefault();
         e.stopPropagation();
-        console.log('🎯 Track drag started for:', gridId);
+        console.log('ðŸŽ¯ Track drag started for:', gridId);
     });
     
     // Add click-to-jump functionality for the track (when not dragging)
@@ -1753,7 +1753,7 @@ function createCustomScrollbarForGrid(gridId) {
             behavior: 'smooth'
         });
         
-        console.log(`🎯 Track clicked: jumping to ${newScrollLeft}px`);
+        console.log(`ðŸŽ¯ Track clicked: jumping to ${newScrollLeft}px`);
     });
     
     // Create scrollbar thumb (black draggable part)
@@ -1815,7 +1815,7 @@ function createCustomScrollbarForGrid(gridId) {
 
         event.preventDefault();
         event.stopPropagation();
-        console.log('🎯 Scrollbar thumb drag started for:', gridId);
+        console.log('ðŸŽ¯ Scrollbar thumb drag started for:', gridId);
     }
 
     // Mouse events
@@ -1858,7 +1858,7 @@ function createCustomScrollbarForGrid(gridId) {
                 behavior: 'auto'
             });
             
-            console.log(`🎯 Thumb dragging: thumbPos=${newThumbLeft}px, scrollPos=${newScrollLeft}px`);
+            console.log(`ðŸŽ¯ Thumb dragging: thumbPos=${newThumbLeft}px, scrollPos=${newScrollLeft}px`);
         }
     }
 
@@ -1887,7 +1887,7 @@ function createCustomScrollbarForGrid(gridId) {
                 behavior: 'auto'
             });
             
-            console.log(`🎯 Track dragging: scrollPos=${newScrollLeft}px`);
+            console.log(`ðŸŽ¯ Track dragging: scrollPos=${newScrollLeft}px`);
         }
     });
 
@@ -1909,7 +1909,7 @@ function createCustomScrollbarForGrid(gridId) {
             document.body.style.userSelect = '';
             document.body.style.webkitUserSelect = '';
             
-            console.log('🎯 Scrollbar thumb drag ended for:', gridId);
+            console.log('ðŸŽ¯ Scrollbar thumb drag ended for:', gridId);
         }
         
         if (isTrackDragging) {
@@ -1920,7 +1920,7 @@ function createCustomScrollbarForGrid(gridId) {
             document.body.style.userSelect = '';
             document.body.style.webkitUserSelect = '';
             
-            console.log('🎯 Track drag ended for:', gridId);
+            console.log('ðŸŽ¯ Track drag ended for:', gridId);
         }
     }
 
@@ -1933,7 +1933,7 @@ function createCustomScrollbarForGrid(gridId) {
         updateCustomScrollbarPosition(gridId);
     });
     
-    console.log(`✅ Custom scrollbar created for: ${gridId}`);
+    console.log(`âœ… Custom scrollbar created for: ${gridId}`);
     return scrollbarThumb;
 }
 
@@ -1979,9 +1979,9 @@ function initializeWishlistButtons() {
       // Special attention to the problematic products
       const problematicIds = [10, 11, 19, 20, 24, 25];
       if (problematicIds.includes(parseInt(productId))) {
-        console.log(`🔍 SPECIAL: Initializing problematic wishlist button ${productId}`);
-        console.log(`🔍 Button parent:`, button.parentNode?.className);
-        console.log(`🔍 Button data-product-id:`, button.getAttribute('data-product-id'));
+        console.log(`ðŸ” SPECIAL: Initializing problematic wishlist button ${productId}`);
+        console.log(`ðŸ” Button parent:`, button.parentNode?.className);
+        console.log(`ðŸ” Button data-product-id:`, button.getAttribute('data-product-id'));
       }
       
       // Entferne alle bestehenden Event Listener
@@ -1996,7 +1996,7 @@ function initializeWishlistButtons() {
         icon.className = isInWish ? 'bi bi-heart-fill' : 'bi bi-heart';
       }
       
-      // Füge den Event Listener zum neuen Button hinzu
+      // FÃ¼ge den Event Listener zum neuen Button hinzu
       newButton.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2013,21 +2013,21 @@ function initializeWishlistButtons() {
   }, 100);
 }
 
-// Doppelte Funktion entfernt - verwende nur die geschützte Version oben
+// Doppelte Funktion entfernt - verwende nur die geschÃ¼tzte Version oben
 
 // Initialize category navigation
 function initializeCategoryNavigation() {
   const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
   const categoryTitle = document.querySelector('.category-title');
   
-  console.log('🔧 Initializing category navigation');
-  console.log('🔧 Found category tabs:', categoryTabs.length);
+  console.log('ðŸ”§ Initializing category navigation');
+  console.log('ðŸ”§ Found category tabs:', categoryTabs.length);
   
   categoryTabs.forEach((tab, index) => {
-    console.log(`🔧 Setting up tab ${index}:`, tab.dataset.category);
+    console.log(`ðŸ”§ Setting up tab ${index}:`, tab.dataset.category);
     tab.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log('🔥 Category tab clicked:', tab.dataset.category);
+      console.log('ðŸ”¥ Category tab clicked:', tab.dataset.category);
       
       // Remove active class from all tabs
       categoryTabs.forEach(t => t.classList.remove('active'));
@@ -2045,7 +2045,7 @@ function initializeCategoryNavigation() {
       const allProductsTitle = document.querySelector('.category-header[style*="margin-top: 3rem"] h2.category-title');
       if (allProductsTitle) {
         allProductsTitle.textContent = category === 'alle' ? 'Alle Produkte' : categoryName;
-        console.log('✅ Updated section title to:', allProductsTitle.textContent);
+        console.log('âœ… Updated section title to:', allProductsTitle.textContent);
       }
       
       // Show/hide category sections based on selection
@@ -2064,8 +2064,8 @@ function initializeCategoryNavigation() {
         const categoryMapping = {
           'Technik/Gadgets': 'technikGrid',
           'Beleuchtung': 'beleuchtungGrid', 
-          'Haushalt und Küche': 'haushaltGrid',
-          'Körperpflege/Wellness': 'wellnessGrid'
+          'Haushalt und KÃ¼che': 'haushaltGrid',
+          'KÃ¶rperpflege/Wellness': 'wellnessGrid'
         };
         
         const targetGridId = categoryMapping[category];
@@ -2075,10 +2075,10 @@ function initializeCategoryNavigation() {
             console.log('Scrolling to specific category section:', category);
             targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
           } else {
-            console.error('❌ Target section not found for category:', category);
+            console.error('âŒ Target section not found for category:', category);
           }
         } else {
-          console.error('❌ No mapping found for category:', category);
+          console.error('âŒ No mapping found for category:', category);
         }
       }
     });
@@ -2088,7 +2088,7 @@ function initializeCategoryNavigation() {
 // ... rest of the code remains the same ...
 // Function to show/hide category sections based on selection
 function showCategorySections(selectedCategory) {
-  console.log('🔧 Showing category sections for:', selectedCategory);
+  console.log('ðŸ”§ Showing category sections for:', selectedCategory);
   
   // Get all product category sections (but NOT the bestseller section)
   const categorySections = document.querySelectorAll('.product-category-section');
@@ -2103,8 +2103,8 @@ function showCategorySections(selectedCategory) {
   const categoryMapping = {
     'Technik/Gadgets': 'technikGrid',
     'Beleuchtung': 'beleuchtungGrid', 
-    'Haushalt und Küche': 'haushaltGrid',
-    'Körperpflege/Wellness': 'wellnessGrid'
+    'Haushalt und KÃ¼che': 'haushaltGrid',
+    'KÃ¶rperpflege/Wellness': 'wellnessGrid'
   };
   
   if (selectedCategory === 'alle') {
@@ -2123,7 +2123,7 @@ function showCategorySections(selectedCategory) {
       bestsellerSection.style.display = 'block';
     }
     
-    console.log('✅ All category sections shown');
+    console.log('âœ… All category sections shown');
   } else {
     // Hide "Alle Produkte" header when specific category is selected
     if (alleProduktHeader) {
@@ -2149,12 +2149,12 @@ function showCategorySections(selectedCategory) {
       const targetSection = document.getElementById(targetGridId)?.closest('.product-category-section');
       if (targetSection) {
         targetSection.style.display = 'block';
-        console.log('✅ Showing section for category:', selectedCategory);
+        console.log('âœ… Showing section for category:', selectedCategory);
       } else {
-        console.error('❌ Target section not found for category:', selectedCategory);
+        console.error('âŒ Target section not found for category:', selectedCategory);
       }
     } else {
-      console.error('❌ No mapping found for category:', selectedCategory);
+      console.error('âŒ No mapping found for category:', selectedCategory);
     }
   }
 }
@@ -2181,10 +2181,10 @@ function updateCategoryBodyClass(category) {
     case 'Beleuchtung':
       document.body.classList.add('category-selected-beleuchtung');
       break;
-    case 'Körperpflege/Wellness':
+    case 'KÃ¶rperpflege/Wellness':
       document.body.classList.add('category-selected-koerperpflege');
       break;
-    case 'Haushalt und Küche':
+    case 'Haushalt und KÃ¼che':
       document.body.classList.add('category-selected-haushalt');
       break;
   }
@@ -2206,7 +2206,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize cart counter
   updateCartCounter();
 
-  // Sofortige Platzhalter für fehlende Bilder anwenden
+  // Sofortige Platzhalter fÃ¼r fehlende Bilder anwenden
   applyPlaceholdersForMissingImages();
 
   // SOFORT alle Produkte laden und anzeigen - MEHRFACH VERSUCHEN
@@ -2215,16 +2215,16 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const loadAndShowProducts = () => {
     loadProducts().then(products => {
-      console.log('✅ Products loaded successfully:', products.length);
+      console.log('âœ… Products loaded successfully:', products.length);
       
       if (products.length === 0) {
-        console.error('❌ No products found in JSON file!');
+        console.error('âŒ No products found in JSON file!');
         return;
       }
       
       // Lade Bestseller mit der funktionierenden Methode
       const bestsellerProducts = [];
-      const categories = ['Haushalt und Küche', 'Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness'];
+      const categories = ['Haushalt und KÃ¼che', 'Technik/Gadgets', 'Beleuchtung', 'KÃ¶rperpflege/Wellness'];
       
       // Get 1-2 products from each category for variety
       categories.forEach(category => {
@@ -2240,18 +2240,18 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Limit to 6 products
       const finalBestsellers = bestsellerProducts.slice(0, 6);
-      console.log('📦 Loading bestseller products with variety:', finalBestsellers.length);
+      console.log('ðŸ“¦ Loading bestseller products with variety:', finalBestsellers.length);
       renderBestsellers(finalBestsellers);
       
       // Lade Produkte in alle Kategorie-Container
       loadCategoryProducts(products);
       
-      // Prüfe ob Produkte tatsächlich gerendert wurden
+      // PrÃ¼fe ob Produkte tatsÃ¤chlich gerendert wurden
       setTimeout(() => {
-        console.log('✅ All products loaded into containers');
+        console.log('âœ… All products loaded into containers');
       }, 500);
       
-      console.log('✅ All products loaded successfully!');
+      console.log('âœ… All products loaded successfully!');
       
       // Berechne Kategorie-Anzahlen und aktualisiere die Anzeige
       const counts = calculateCategoryCounts(products);
@@ -2261,7 +2261,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const categoryFilter = document.getElementById('categoryFilter');
       if (categoryFilter) {
         categoryFilter.value = 'Alle Kategorien';
-        console.log('✅ Category filter set to "Alle Kategorien"');
+        console.log('âœ… Category filter set to "Alle Kategorien"');
       }
       
       const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
@@ -2269,7 +2269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tab.classList.remove('active');
         if (tab.dataset.category === 'alle') {
           tab.classList.add('active');
-          console.log('✅ "Alle" tab set as active');
+          console.log('âœ… "Alle" tab set as active');
         }
       });
       
@@ -2279,16 +2279,16 @@ document.addEventListener('DOMContentLoaded', () => {
       // Show all category sections initially
       showCategorySections('alle');
       
-      // Nur den Titel für das Hauptprodukt-Grid setzen, nicht für Bestseller
+      // Nur den Titel fÃ¼r das Hauptprodukt-Grid setzen, nicht fÃ¼r Bestseller
       const categoryTitles = document.querySelectorAll('.category-title');
       categoryTitles.forEach((title, index) => {
         if (index === 1) { // Das zweite Element ist "Alle Produkte"
           title.textContent = 'Alle Produkte';
-          console.log('✅ Category title set to "Alle Produkte"');
+          console.log('âœ… Category title set to "Alle Produkte"');
         }
       });
       
-      console.log('✅ All bestsellers loaded and rendered');
+      console.log('âœ… All bestsellers loaded and rendered');
   }).catch(error => {
     console.error('Error loading bestsellers:', error);
   });
@@ -2302,7 +2302,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     const productGrid = document.getElementById('productGrid');
     if (!productGrid || productGrid.children.length === 0) {
-      console.log('🔄 Backup product load triggered...');
+      console.log('ðŸ”„ Backup product load triggered...');
       loadAndShowProducts();
     }
   }, 500);
@@ -2318,7 +2318,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!hasDeals) {
       dealsNotice.innerHTML = `
         <div class="alert alert-light border rounded-4 d-flex align-items-center" role="alert" style="box-shadow: 0 4px 14px rgba(0,0,0,.04);">
-          <span class="me-2">🛍️</span>
+          <span class="me-2">ðŸ›ï¸</span>
           <div>
             <strong>Es gibt gerade keine Angebote.</strong>
             <a class="ms-2" href="infos/angebote.html">Zur Angebotsseite</a>
@@ -2358,7 +2358,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchInput) {
     searchInput.addEventListener('input', updateFilters);
     
-    // Event-Listener für das manuelle Leeren des Suchfelds
+    // Event-Listener fÃ¼r das manuelle Leeren des Suchfelds
     searchInput.addEventListener('input', function() {
       if (this.value === '') {
         localStorage.removeItem('lastSearch');
@@ -2401,14 +2401,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     
-    // Event-Listener für das Leeren des Suchfelds beim Verlassen der Seite
+    // Event-Listener fÃ¼r das Leeren des Suchfelds beim Verlassen der Seite
     window.addEventListener('beforeunload', function() {
       // Leere das Suchfeld und entferne den localStorage-Wert
       searchInput.value = '';
       localStorage.removeItem('lastSearch');
     });
     
-    // Event-Listener für das Leeren des Suchfelds beim Klicken außerhalb
+    // Event-Listener fÃ¼r das Leeren des Suchfelds beim Klicken auÃŸerhalb
     searchInput.addEventListener('blur', function() {
       // Kurze Verzögerung, um sicherzustellen, dass der Benutzer wirklich weg ist
       setTimeout(() => {
@@ -2426,7 +2426,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Sekundäres Laden für Filter-Setup (falls das erste Laden fehlschlägt)
+  // SekundÃ¤res Laden fÃ¼r Filter-Setup (falls das erste Laden fehlschlÃ¤gt)
   setTimeout(() => {
     console.log('Secondary product loading check...');
     const productGrid = document.getElementById('productGrid');
@@ -2484,7 +2484,7 @@ function initializeCustomDropdown() {
         categorySelected.innerHTML = `
           <span class="category-icon">${icon}</span>
           <span class="category-text">${text}</span>
-          <span class="dropdown-arrow">▼</span>
+          <span class="dropdown-arrow">â–¼</span>
         `;
         
         // Update hidden select
@@ -2528,7 +2528,7 @@ function initializeCustomDropdown() {
         priceSortSelected.innerHTML = `
           <span class="category-icon">${icon}</span>
           <span class="category-text">${text}</span>
-          <span class="dropdown-arrow">▼</span>
+          <span class="dropdown-arrow">â–¼</span>
         `;
         
         // Update hidden select
@@ -2556,9 +2556,9 @@ function initializeCustomDropdown() {
 function optimizeImages() {
   const images = document.querySelectorAll('img');
   images.forEach(img => {
-    // Fallback für fehlende Bilder mit verbessertem Design
+    // Fallback fÃ¼r fehlende Bilder mit verbessertem Design
     img.addEventListener('error', function() {
-      // Prüfe ob das Bild wirklich fehlt (nicht nur noch lädt)
+      // PrÃ¼fe ob das Bild wirklich fehlt (nicht nur noch lÃ¤dt)
       if (this.src && !this.src.includes('data:') && !this.src.includes('blob:')) {
         // Entferne das alte src-Attribut
         this.removeAttribute('src');
@@ -2578,10 +2578,10 @@ function optimizeImages() {
         this.style.objectFit = 'contain';
         this.style.padding = '20px';
         
-        // Füge das große Fragezeichen-Symbol hinzu (wie auf PC)
+        // FÃ¼ge das groÃŸe Fragezeichen-Symbol hinzu (wie auf PC)
         this.innerHTML = '?';
         
-        // Mobile Anpassungen für Platzhalter - aber einheitlich
+        // Mobile Anpassungen fÃ¼r Platzhalter - aber einheitlich
         if (window.innerWidth <= 768) {
           this.style.fontSize = '3rem';
         }
@@ -2625,15 +2625,15 @@ function optimizeImages() {
     img.style.transform = 'scale(0.98)';
     img.style.transition = 'opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease';
     
-    // Bildqualität für mobile Geräte optimieren
+    // BildqualitÃ¤t fÃ¼r mobile GerÃ¤te optimieren
     if (window.innerWidth <= 600) {
       img.style.imageRendering = '-webkit-optimize-contrast';
       img.style.imageRendering = 'crisp-edges';
     }
     
-    // Prüfe ob das Bild bereits fehlerhaft ist (nur bei wirklich fehlenden Bildern)
+    // PrÃ¼fe ob das Bild bereits fehlerhaft ist (nur bei wirklich fehlenden Bildern)
     if (img.complete && img.naturalWidth === 0 && img.src && !img.src.includes('data:') && !img.src.includes('blob:')) {
-      // Warte kurz und prüfe nochmal
+      // Warte kurz und prÃ¼fe nochmal
       setTimeout(() => {
         if (img.naturalWidth === 0) {
           img.dispatchEvent(new Event('error'));
@@ -2643,13 +2643,13 @@ function optimizeImages() {
   });
 }
 
-// Funktion zum sofortigen Anwenden von Platzhaltern für fehlende Bilder
+// Funktion zum sofortigen Anwenden von Platzhaltern fÃ¼r fehlende Bilder
 function applyPlaceholdersForMissingImages() {
   const images = document.querySelectorAll('img');
   images.forEach(img => {
-    // Prüfe ob das Bild bereits fehlerhaft ist (nur bei wirklich fehlenden Bildern)
+    // PrÃ¼fe ob das Bild bereits fehlerhaft ist (nur bei wirklich fehlenden Bildern)
     if (img.complete && img.naturalWidth === 0 && img.src && !img.src.includes('data:') && !img.src.includes('blob:')) {
-      // Warte kurz und prüfe nochmal, um sicherzustellen, dass das Bild wirklich fehlt
+      // Warte kurz und prÃ¼fe nochmal, um sicherzustellen, dass das Bild wirklich fehlt
       setTimeout(() => {
         if (img.naturalWidth === 0) {
           // Entferne das alte src-Attribut
@@ -2670,10 +2670,10 @@ function applyPlaceholdersForMissingImages() {
           img.style.objectFit = 'contain';
           img.style.padding = '20px';
           
-          // Füge das große Fragezeichen-Symbol hinzu (wie auf PC)
+          // FÃ¼ge das groÃŸe Fragezeichen-Symbol hinzu (wie auf PC)
           img.innerHTML = '?';
           
-          // Mobile Anpassungen für Platzhalter - aber einheitlich
+          // Mobile Anpassungen fÃ¼r Platzhalter - aber einheitlich
           if (window.innerWidth <= 768) {
             img.style.fontSize = '3rem';
           }
@@ -2692,7 +2692,7 @@ function applyPlaceholdersForMissingImages() {
   });
 }
 
-// Test-Funktion für die Browser-Konsole
+// Test-Funktion fÃ¼r die Browser-Konsole
 window.testProduct1Button = function() {
   console.log('Testing Product 1 button...');
   const button = document.querySelector('.add-to-cart[data-product-id="1"]');
@@ -2710,7 +2710,7 @@ window.testProduct1Button = function() {
   }
 };
 
-// Test-Funktion für Cart Dropdown
+// Test-Funktion fÃ¼r Cart Dropdown
 window.testCartDropdown = function() {
   console.log('Testing cart dropdown functionality...');
   
@@ -2753,20 +2753,20 @@ window.testCartDropdown = function() {
   console.log('Cart items count:', currentCart.length);
 };
 
-// Test-Funktion für Empty Cart Verhalten
+// Test-Funktion fÃ¼r Empty Cart Verhalten
 window.testEmptyCart = function() {
   console.log('Testing empty cart behavior...');
   
   // Leere den Warenkorb
   clearCart();
   
-  // Prüfe den Zähler
+  // PrÃ¼fe den ZÃ¤hler
   setTimeout(() => {
     const counter = document.getElementById('cartCounter');
     console.log('Cart counter after clearing:', counter ? counter.textContent : 'not found');
     console.log('Cart counter display:', counter ? counter.style.display : 'not found');
     
-    // Füge ein Produkt hinzu
+    // FÃ¼ge ein Produkt hinzu
     testAddProduct17();
     
     setTimeout(() => {
@@ -2776,7 +2776,7 @@ window.testEmptyCart = function() {
   }, 500);
 };
 
-// Direkte Test-Funktion für Produkt 17 (Smart Watch)
+// Direkte Test-Funktion fÃ¼r Produkt 17 (Smart Watch)
 window.testAddProduct17 = function() {
   console.log('Directly adding product 17 to cart...');
   const product17 = {
@@ -2823,7 +2823,7 @@ window.createCustomScrollbarForGrid = createCustomScrollbarForGrid;
 window.updateCustomScrollbarPosition = updateCustomScrollbarPosition;
 // window.testCartDropdown = testCartDropdown;
 // window.testEmptyCart = testEmptyCart;
-// window.testLiveUpdates = testLiveUpdates; // Wird später definiert
+// window.testLiveUpdates = testLiveUpdates; // Wird spÃ¤ter definiert
 // window.testClearCartButton = testClearCartButton; // Auskommentiert - Funktion existiert
 // window.testClearCartSimple = testClearCartSimple;
 
@@ -2859,7 +2859,7 @@ function initializeCategoryTiles(products) {
           category = 'Beleuchtung';
           break;
         case 2:
-          category = 'Haushalt und Küche';
+          category = 'Haushalt und KÃ¼che';
           break;
         default:
           category = 'Alle Kategorien';
@@ -2874,7 +2874,7 @@ function initializeCategoryTiles(products) {
       // Lade Bestseller (erste 8 Produkte)
       const bestsellerGrid = document.getElementById('bestsellerGrid');
       if (bestsellerGrid) {
-        console.log('📦 Loading bestsellers...');
+        console.log('ðŸ“¦ Loading bestsellers...');
         const bestsellers = products.slice(0, 8); // Erste 8 als Bestseller
         renderProductsToGrid(bestsellers, bestsellerGrid);
       }
@@ -2930,7 +2930,7 @@ function initializeCategoryTiles(products) {
   });
 }
 
-// Test-Funktion für Live Updates
+// Test-Funktion fÃ¼r Live Updates
 window.testLiveUpdates = function() {
   console.log('Testing live updates...');
   
@@ -2997,7 +2997,7 @@ window.testLiveUpdates = function() {
   }, 500);
 };
 
-// Test-Funktion für Clear Cart Button
+// Test-Funktion fÃ¼r Clear Cart Button
 window.testClearCartButton = function() {
   console.log('Testing clear cart button...');
   
@@ -3201,11 +3201,11 @@ function getDiscountInfo(product) {
 
 // Erstelle eine Produktkarte
 function createProductCard(product) {
-  console.log('🔧 Creating product card for:', product.name);
+  console.log('ðŸ”§ Creating product card for:', product.name);
   
   const template = document.getElementById('productTemplate');
   if (!template) {
-    console.error('❌ Product template not found!');
+    console.error('âŒ Product template not found!');
     return document.createElement('div');
   }
   
@@ -3213,7 +3213,7 @@ function createProductCard(product) {
   const card = clone.querySelector('.lumiere-product-card');
   
   if (!card) {
-    console.error('❌ Product card element not found in template!');
+    console.error('âŒ Product card element not found in template!');
     return document.createElement('div');
   }
   
@@ -3228,12 +3228,12 @@ function createProductCard(product) {
   if (img) {
     img.src = product.image;
     img.alt = product.name;
-    console.log('✅ Image set for:', product.name, 'Path:', product.image);
+    console.log('âœ… Image set for:', product.name, 'Path:', product.image);
   }
   
   if (title) {
     title.textContent = product.name;
-    console.log('✅ Title set:', product.name);
+    console.log('âœ… Title set:', product.name);
   }
   
   if (description) {
@@ -3260,7 +3260,7 @@ function createProductCard(product) {
     wishlistBtn.setAttribute('data-product-id', product.id);
   }
   
-  // Event-Listener hinzufügen
+  // Event-Listener hinzufÃ¼gen
   if (addToCartBtn) {
     addToCartBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -3286,21 +3286,21 @@ function createProductCard(product) {
     });
   }
   
-  console.log('✅ Product card created successfully for:', product.name);
+  console.log('âœ… Product card created successfully for:', product.name);
   return clone;
 }
 
 // USE THE WORKING renderBestsellers() FOR ALL CATEGORIES
 function renderProductsToGrid(products, gridContainer) {
-  console.log('🚨 USING WORKING renderBestsellers() logic for categories!');
+  console.log('ðŸš¨ USING WORKING renderBestsellers() logic for categories!');
   
   if (!gridContainer) {
-    console.error('❌ Grid container not found!');
+    console.error('âŒ Grid container not found!');
     return;
   }
   
   if (!products || products.length === 0) {
-    console.warn('⚠️ No products to render');
+    console.warn('âš ï¸ No products to render');
     return;
   }
   
@@ -3334,7 +3334,7 @@ function renderProductsToGrid(products, gridContainer) {
     // COPY EXACT INITIALIZATION FROM renderBestsellers()
     initializeWishlistButtons();
     initializeAddToCartButtons();
-    initializeProductCardClicks(); // FÜR NAVIGATION ZU PRODUKTSEITEN
+    initializeProductCardClicks(); // FÃœR NAVIGATION ZU PRODUKTSEITEN
     
     // Initialize scrollbar tracking
     setTimeout(() => {
@@ -3343,7 +3343,7 @@ function renderProductsToGrid(products, gridContainer) {
         }
     }, 100);
 
-    console.log('✅ Categories now use EXACT renderBestsellers() logic!');
+    console.log('âœ… Categories now use EXACT renderBestsellers() logic!');
 }
 
 // Scroll functions for arrow buttons
@@ -3417,10 +3417,10 @@ function initializeCategoryProducts() {
     } else {
         categoryInitAttempts++;
         if (categoryInitAttempts < maxCategoryInitAttempts) {
-            console.log(`⏳ Waiting for products to load... (attempt ${categoryInitAttempts}/${maxCategoryInitAttempts})`);
+            console.log(`â³ Waiting for products to load... (attempt ${categoryInitAttempts}/${maxCategoryInitAttempts})`);
             setTimeout(initializeCategoryProducts, 500);
         } else {
-            console.log('⚠️ Category products initialization stopped after max attempts');
+            console.log('âš ï¸ Category products initialization stopped after max attempts');
         }
     }
 }
@@ -3479,9 +3479,8 @@ function loadCategoryProducts(products) {
     if (window.location.pathname.includes('cart.html')) {
         return;
     }
-    
-    console.log('🔄 Loading products into category containers...');
-    console.log('🔄 Total products available:', products.length);
+    console.log('ðŸ”„ Loading products into category containers...');
+    console.log('ðŸ”„ Total products available:', products.length);
     
     // Define category mappings
     const categoryMappings = {
@@ -3493,13 +3492,13 @@ function loadCategoryProducts(products) {
     
     // For each category
     Object.entries(categoryMappings).forEach(([gridId, categoryName]) => {
-        console.log(`🔧 Processing category: ${categoryName} -> ${gridId}`);
+        console.log(`ðŸ”§ Processing category: ${categoryName} -> ${gridId}`);
         
         const grid = document.getElementById(gridId);
         if (!grid) {
             // Only warn if we're on a page where these grids should exist
             if (!window.location.pathname.includes('cart.html')) {
-                console.warn(`❌ Grid ${gridId} not found`);
+                console.warn(`âŒ Grid ${gridId} not found`);
             }
             return;
         }
@@ -3508,15 +3507,15 @@ function loadCategoryProducts(products) {
         const categoryProducts = products.filter(p => p.category === categoryName);
         
         if (categoryProducts.length > 0) {
-            console.log(`✅ Rendering ${categoryProducts.length} products to ${gridId}`);
+            console.log(`âœ… Rendering ${categoryProducts.length} products to ${gridId}`);
             // Render products to this container
             renderProductsToGrid(categoryProducts, grid);
         } else {
-            console.warn(`⚠️ No products found for category: ${categoryName}`);
+            console.warn(`âš ï¸ No products found for category: ${categoryName}`);
         }
     });
     
-    console.log('✅ Category products loading completed');
+    console.log('âœ… Category products loading completed');
     
     // Initialize scrollbar tracking for all category grids after products are loaded
     setTimeout(() => {
@@ -3545,7 +3544,7 @@ function initializeFullscreenSearch() {
         return;
     }
     
-    console.log('🔍 Initializing fullscreen search...');
+    console.log('ðŸ” Initializing fullscreen search...');
     
     // Wait for DOM elements to be available
     setTimeout(() => {
@@ -3557,7 +3556,7 @@ function initializeFullscreenSearch() {
         searchResults = document.getElementById('searchResults');
         searchResultsGrid = document.getElementById('searchResultsGrid');
         
-        console.log('🔍 Search elements found:', {
+        console.log('ðŸ” Search elements found:', {
             searchBtn: !!fullscreenSearchBtn,
             overlay: !!searchOverlay,
             input: !!searchInput
@@ -3566,7 +3565,7 @@ function initializeFullscreenSearch() {
         if (!fullscreenSearchBtn || !searchOverlay) {
             // Only log error if we're on a page where these elements should exist
             if (!window.location.pathname.includes('cart.html')) {
-                console.error('❌ Fullscreen search elements not found');
+                console.error('âŒ Fullscreen search elements not found');
             }
             return;
         }
@@ -3600,47 +3599,47 @@ function initializeFullscreenSearch() {
         });
         
         // Search input functionality - FORCE TEST
-        console.log('🔧 Looking for search input...');
+        console.log('ðŸ”§ Looking for search input...');
         const testInput = document.getElementById('fullscreenSearchInput');
-        console.log('🔧 Found input:', testInput);
+        console.log('ðŸ”§ Found input:', testInput);
         
         if (testInput) {
-            console.log('✅ Search input found, adding FORCE event listeners');
+            console.log('âœ… Search input found, adding FORCE event listeners');
             
             // Multiple event listeners to catch everything
             testInput.addEventListener('input', function(e) {
-                console.log('🔍 INPUT EVENT:', e.target.value);
+                console.log('ðŸ” INPUT EVENT:', e.target.value);
                 testSearchFunction(e.target.value);
             });
             
             testInput.addEventListener('keyup', function(e) {
-                console.log('🔍 KEYUP EVENT:', e.target.value);
+                console.log('ðŸ” KEYUP EVENT:', e.target.value);
                 testSearchFunction(e.target.value);
             });
             
             testInput.addEventListener('change', function(e) {
-                console.log('🔍 CHANGE EVENT:', e.target.value);
+                console.log('ðŸ” CHANGE EVENT:', e.target.value);
                 testSearchFunction(e.target.value);
             });
             
         } else {
-            console.error('❌ Search input STILL not found!');
+            console.error('âŒ Search input STILL not found!');
             // Try to find it by class
             const inputByClass = document.querySelector('.fullscreen-search-input');
-            console.log('🔧 Input by class:', inputByClass);
+            console.log('ðŸ”§ Input by class:', inputByClass);
         }
         
         // Category buttons now use direct onclick handlers
         
         // Popular search tags (removed - no longer needed)
         
-        console.log('✅ Search button event listener added');
+        console.log('âœ… Search button event listener added');
     }, 100);
 }
 
 // Handle search button click
 function handleSearchButtonClick(e) {
-    console.log('🔍 Search button clicked!');
+    console.log('ðŸ” Search button clicked!');
     e.preventDefault();
     e.stopPropagation();
     openSearchOverlay();
@@ -3648,7 +3647,7 @@ function handleSearchButtonClick(e) {
 
 // Open search overlay
 function openSearchOverlay() {
-    console.log('🔍 Opening search overlay...');
+    console.log('ðŸ” Opening search overlay...');
     
     if (searchOverlay) {
         searchOverlay.classList.add('active');
@@ -3665,7 +3664,7 @@ function openSearchOverlay() {
         if (allProducts.length === 0) {
             loadProducts().then(products => {
                 allProducts = products;
-                console.log('📦 Products loaded for search:', allProducts.length);
+                console.log('ðŸ“¦ Products loaded for search:', allProducts.length);
                 loadAllProducts();
                 
             });
@@ -3677,7 +3676,7 @@ function openSearchOverlay() {
 
 // Close search overlay
 function closeSearchOverlay() {
-    console.log('🔍 Closing search overlay...');
+    console.log('ðŸ” Closing search overlay...');
     
     if (searchOverlay) {
         searchOverlay.classList.remove('active');
@@ -3695,11 +3694,11 @@ function closeSearchOverlay() {
 
 // REAL SEARCH FUNCTION
 function testSearchFunction(query) {
-    console.log('🔍 REAL SEARCH FUNCTION CALLED WITH:', `"${query}"`);
+    console.log('ðŸ” REAL SEARCH FUNCTION CALLED WITH:', `"${query}"`);
     
     const grid = document.getElementById('searchAllProductsGrid');
     if (!grid) {
-        console.error('❌ Grid not found!');
+        console.error('âŒ Grid not found!');
         return;
     }
     
@@ -3708,7 +3707,7 @@ function testSearchFunction(query) {
     allButtons.forEach(btn => btn.classList.remove('active'));
     
     if (query.length === 0) {
-        console.log('🔍 Empty query - loading all products');
+        console.log('ðŸ” Empty query - loading all products');
         const allButton = document.querySelector('.lumiere-category-tab[data-category="alle"]');
         if (allButton) {
             allButton.classList.add('active');
@@ -3724,23 +3723,23 @@ function testSearchFunction(query) {
         return;
     }
     
-    console.log('🔍 Searching for products with:', query);
+    console.log('ðŸ” Searching for products with:', query);
     
     // Load products and filter
     loadProducts().then(products => {
-        console.log('📦 Total products:', products.length);
+        console.log('ðŸ“¦ Total products:', products.length);
         
         const searchText = query.toLowerCase();
         const filtered = products.filter(product => {
             const name = (product.name || '').toLowerCase();
             const match = name.includes(searchText);
             if (match) {
-                console.log('✅ Found match:', product.name);
+                console.log('âœ… Found match:', product.name);
             }
             return match;
         });
         
-        console.log('🔍 Filtered results:', filtered.length);
+        console.log('ðŸ” Filtered results:', filtered.length);
         
         // Clear and render
         grid.innerHTML = '';
@@ -3758,13 +3757,13 @@ function testSearchFunction(query) {
                 groupedProducts[category].push(product);
             });
             
-            console.log('📦 Grouped products:', groupedProducts);
+            console.log('ðŸ“¦ Grouped products:', groupedProducts);
             
             // Create sorted product array (grouped by category but no titles)
             let sortedProducts = [];
             
             // Category order
-            const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness', 'Haushalt und Küche'];
+            const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'KÃ¶rperpflege/Wellness', 'Haushalt und KÃ¼che'];
             
             // Add products in category order
             categoryOrder.forEach(category => {
@@ -3817,74 +3816,74 @@ function testSearchFunction(query) {
         const title = document.querySelector('.search-all-products .search-section-title');
         if (title) {
             title.textContent = filtered.length > 0 
-                ? `SUCHERGEBNISSE FÜR "${query.toUpperCase()}" (${filtered.length})`
-                : `KEINE ERGEBNISSE FÜR "${query.toUpperCase()}"`;
+                ? `SUCHERGEBNISSE FÃœR "${query.toUpperCase()}" (${filtered.length})`
+                : `KEINE ERGEBNISSE FÃœR "${query.toUpperCase()}"`;
         }
         
     }).catch(error => {
-        console.error('❌ Search error:', error);
+        console.error('âŒ Search error:', error);
     });
 }
 
 // Simple and direct search function
 function performSearch(query) {
-    console.log('🔍 performSearch called with:', `"${query}"`);
+    console.log('ðŸ” performSearch called with:', `"${query}"`);
     
     const grid = document.getElementById('searchAllProductsGrid');
     if (!grid) {
-        console.error('❌ Grid not found!');
+        console.error('âŒ Grid not found!');
         return;
     }
     
-    console.log('✅ Grid found:', grid);
+    console.log('âœ… Grid found:', grid);
     
     if (query.length === 0) {
-        console.log('🔍 Empty query - showing all products');
+        console.log('ðŸ” Empty query - showing all products');
         loadAllProducts();
         return;
     }
     
-    console.log('🔍 Filtering products for:', query);
+    console.log('ðŸ” Filtering products for:', query);
     
     // Get all products and filter immediately
     if (window.allProducts && window.allProducts.length > 0) {
-        console.log('📦 Using cached products:', window.allProducts.length);
+        console.log('ðŸ“¦ Using cached products:', window.allProducts.length);
         filterAndDisplay(window.allProducts, query, grid);
     } else {
-        console.log('📦 Loading products from JSON...');
+        console.log('ðŸ“¦ Loading products from JSON...');
         loadProducts().then(products => {
-            console.log('📦 Products loaded:', products.length);
+            console.log('ðŸ“¦ Products loaded:', products.length);
             window.allProducts = products; // Cache for next time
             filterAndDisplay(products, query, grid);
         }).catch(error => {
-            console.error('❌ Error loading products:', error);
+            console.error('âŒ Error loading products:', error);
         });
     }
 }
 
 function filterAndDisplay(products, query, grid) {
-    console.log('🔍 filterAndDisplay called with:', products.length, 'products, query:', `"${query}"`);
+    console.log('ðŸ” filterAndDisplay called with:', products.length, 'products, query:', `"${query}"`);
     
     const searchText = query.toLowerCase();
     const filtered = products.filter(product => {
         const name = (product.name || '').toLowerCase();
         const match = name.includes(searchText);
         if (match) {
-            console.log('✅ Match:', product.name);
+            console.log('âœ… Match:', product.name);
         }
         return match;
     });
     
-    console.log('🔍 Filtered results:', filtered.length);
+    console.log('ðŸ” Filtered results:', filtered.length);
     
     // Clear grid completely
     grid.innerHTML = '';
     
     if (filtered.length === 0) {
         grid.innerHTML = `<div style="color: white; text-align: center; padding: 40px; font-size: 16px;">Keine Produkte mit "${query}" im Namen gefunden</div>`;
-        console.log('❌ No matches - showing empty message');
+        console.log('âŒ No matches - showing empty message');
     } else {
-        console.log('✅ Rendering', filtered.length, 'products');
+        console.log('âœ… Rendering', filtered.length, 'products');
         renderAllProducts(grid, filtered);
     }
     
@@ -3892,14 +3891,14 @@ function filterAndDisplay(products, query, grid) {
     const title = document.querySelector('.search-all-products .search-section-title');
     if (title) {
         title.textContent = filtered.length > 0 
-            ? `SUCHERGEBNISSE FÜR "${query.toUpperCase()}" (${filtered.length})`
-            : `KEINE ERGEBNISSE FÜR "${query.toUpperCase()}"`;
+            ? `SUCHERGEBNISSE FÃœR "${query.toUpperCase()}" (${filtered.length})`
+            : `KEINE ERGEBNISSE FÃœR "${query.toUpperCase()}"`;
     }
 }
 
 // Handle category search
 function handleCategorySearch(category) {
-    console.log('🔍 Category search:', category);
+    console.log('ðŸ” Category search:', category);
     
     // Load products first, then filter
     loadProducts().then(products => {
@@ -3911,14 +3910,14 @@ function handleCategorySearch(category) {
             // Filter products by exact category match
             filteredProducts = products.filter(product => {
                 const productCategory = product.category;
-                console.log(`🔍 Checking product: ${product.name} - Category: "${productCategory}" vs Filter: "${category}"`);
+                console.log(`ðŸ” Checking product: ${product.name} - Category: "${productCategory}" vs Filter: "${category}"`);
                 return productCategory === category;
             });
         }
         
-        console.log('🔍 Found', filteredProducts.length, 'products for category:', category);
-        console.log('🔍 Available categories:', [...new Set(products.map(p => p.category))]);
-        console.log('🔍 Filtered products:', filteredProducts.map(p => p.name));
+        console.log('ðŸ” Found', filteredProducts.length, 'products for category:', category);
+        console.log('ðŸ” Available categories:', [...new Set(products.map(p => p.category))]);
+        console.log('ðŸ” Filtered products:', filteredProducts.map(p => p.name));
         
         // Update the main products grid instead of search results
         const allProductsGrid = document.getElementById('searchAllProductsGrid');
@@ -3935,21 +3934,21 @@ function handleCategorySearch(category) {
                 const categoryNames = {
                     'Technik/Gadgets': 'TECHNIK PRODUKTE',
                     'Beleuchtung': 'BELEUCHTUNG PRODUKTE',
-                    'Körperpflege/Wellness': 'WELLNESS PRODUKTE',
-                    'Haushalt und Küche': 'KÜCHEN PRODUKTE'
+                    'KÃ¶rperpflege/Wellness': 'WELLNESS PRODUKTE',
+                    'Haushalt und KÃ¼che': 'KÃœCHEN PRODUKTE'
                 };
                 sectionTitle.textContent = categoryNames[category] || category.toUpperCase() + ' PRODUKTE';
             }
         }
     }).catch(error => {
-        console.error('❌ Error during category search:', error);
+        console.error('âŒ Error during category search:', error);
     });
 }
 
 // Display search results
 function displaySearchResults(products, query) {
     if (!searchResults || !searchResultsGrid) {
-        console.error('❌ Search results elements not found');
+        console.error('âŒ Search results elements not found');
         return;
     }
     
@@ -3959,7 +3958,7 @@ function displaySearchResults(products, query) {
     // Update title
     const title = searchResults.querySelector('.search-section-title');
     if (title) {
-        title.textContent = `Suchergebnisse für "${query}" (${products.length})`;
+        title.textContent = `Suchergebnisse fÃ¼r "${query}" (${products.length})`;
     }
     
     // Clear previous results
@@ -4004,38 +4003,38 @@ function hideSearchResults() {
 
 // Load all products for search overlay
 function loadAllProducts() {
-    console.log('🔍 Loading all products...');
+    console.log('ðŸ” Loading all products...');
     
     const allProductsGrid = document.getElementById('searchAllProductsGrid');
     if (!allProductsGrid) {
-        console.log('❌ All products grid not found');
+        console.log('âŒ All products grid not found');
         return;
     }
     
     // Always load products fresh
     loadProducts().then(products => {
-        console.log('📦 Products loaded for search grid:', products.length);
+        console.log('ðŸ“¦ Products loaded for search grid:', products.length);
         renderAllProducts(allProductsGrid, products);
     }).catch(error => {
-        console.error('❌ Error loading products:', error);
+        console.error('âŒ Error loading products:', error);
     });
 }
 
 function renderAllProducts(allProductsGrid, products) {
-    console.log('🎨 renderAllProducts called with:', products ? products.length : 'null', 'products');
+    console.log('ðŸŽ¨ renderAllProducts called with:', products ? products.length : 'null', 'products');
     
     if (!allProductsGrid) {
-        console.error('❌ Grid element is null!');
+        console.error('âŒ Grid element is null!');
         return;
     }
     
     if (!products || products.length === 0) {
-        console.log('❌ No products to render - clearing grid');
+        console.log('âŒ No products to render - clearing grid');
         allProductsGrid.innerHTML = '<div style="color: white; text-align: center; padding: 40px; font-size: 16px;">Keine Produkte gefunden</div>';
         return;
     }
     
-    console.log('🎨 Rendering products with category grouping:', products.length);
+    console.log('ðŸŽ¨ Rendering products with category grouping:', products.length);
     
     // Group products by category
     const groupedProducts = {};
@@ -4047,13 +4046,13 @@ function renderAllProducts(allProductsGrid, products) {
         groupedProducts[category].push(product);
     });
     
-    console.log('📦 Grouped products:', groupedProducts);
+    console.log('ðŸ“¦ Grouped products:', groupedProducts);
     
     // Create sorted product array (grouped by category but no titles)
     let sortedProducts = [];
     
     // Category order
-    const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness', 'Haushalt und Küche'];
+    const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'KÃ¶rperpflege/Wellness', 'Haushalt und KÃ¼che'];
     
     // Add products in category order
     categoryOrder.forEach(category => {
@@ -4096,7 +4095,7 @@ function renderAllProducts(allProductsGrid, products) {
         `;
     }).join('');
     
-    console.log('✅ Products rendered with category grouping');
+    console.log('âœ… Products rendered with category grouping');
     
     // Initialize buttons like on main page
     initializeAddToCartButtons();
@@ -4106,7 +4105,7 @@ function renderAllProducts(allProductsGrid, products) {
 
 // Simple onclick function for search categories
 function searchCategoryClick(button, category) {
-    console.log('🔍 Search category clicked:', category);
+    console.log('ðŸ” Search category clicked:', category);
     
     // Remove active class from all buttons
     const allButtons = document.querySelectorAll('.lumiere-category-tab');
@@ -4121,7 +4120,7 @@ function searchCategoryClick(button, category) {
 
 // Navigate to product
 function navigateToProduct(productId) {
-    console.log('🔗 Navigating to product:', productId);
+    console.log('ðŸ”— Navigating to product:', productId);
     
     // Close search overlay first
     closeSearchOverlay();
@@ -4143,7 +4142,208 @@ window.closeSearchOverlay = closeSearchOverlay;
 window.loadAllProducts = loadAllProducts;
 window.searchCategoryClick = searchCategoryClick;
 window.testSearchFunction = testSearchFunction;
+// Funktion zum Öffnen der Suche mit vorausgewählter Kategorie
+window.openSearchWithCategory = function(category) {
+  console.log('🔍 Opening search with category:', category);
+  
+  // Öffne die Suche
+  openSearchOverlay();
+  
+  // Warte kurz, bis die Suche geöffnet ist
+  setTimeout(() => {
+      // Finde das Search Overlay
+      const searchOverlay = document.querySelector('.fullscreen-search-overlay, #fullscreenSearchOverlay');
+      if (!searchOverlay) {
+          console.error('Search overlay not found!');
+          return;
+      }
+      
+      console.log('✅ Search overlay found');
+      
+      // Suche nach Kategorie-Buttons im Search Overlay
+      const categoryTabs = searchOverlay.querySelectorAll('.lumiere-category-tab');
+      console.log('Found category buttons:', categoryTabs.length);
+      
+      if (categoryTabs.length === 0) {
+          console.error('No category tabs found in search overlay!');
+          return;
+      }
+      
+      // Flag ob Button gefunden wurde
+      let buttonFound = false;
+      
+      // Durchlaufe alle Buttons
+      categoryTabs.forEach(button => {
+          const buttonCategory = button.getAttribute('data-category');
+          console.log('Checking button:', buttonCategory, 'against:', category);
+          
+          // Entferne active von allen
+          button.classList.remove('active');
+          
+          // Aktiviere den richtigen Button
+          if (buttonCategory === category) {
+              console.log('✅ Found matching button, activating:', category);
+              button.classList.add('active');
+              buttonFound = true;
+              
+              // Rufe searchCategoryClick direkt auf
+              searchCategoryClick(button, category);
+          }
+      });
+      
+      if (!buttonFound) {
+          console.warn('⚠️ No matching category button found for:', category);
+      }
+  }, 500);
+};
 
+// Funktion zum Überprüfen, ob ein Grid am Ende gescrollt ist
+window.checkScrollEndForMoreProducts = function(gridId) {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+  
+  const container = grid.closest('.product-scroll-container');
+  if (!container) return;
+  
+  let moreButton = container.querySelector('.more-products-button');
+  
+  // Erstelle den Button, wenn er noch nicht existiert
+  if (!moreButton) {
+      moreButton = document.createElement('button');
+      moreButton.className = 'more-products-button';
+      moreButton.innerHTML = `
+          <span>Weitere Produkte</span>
+          <i class="bi bi-arrow-right-circle"></i>
+      `;
+      
+      // Bestimme die Kategorie basierend auf der Grid-ID
+      let category = '';
+      
+      switch(gridId) {
+          case 'technikGrid':
+              category = 'Technik/Gadgets';
+              break;
+          case 'beleuchtungGrid':
+              category = 'Beleuchtung';
+              break;
+          case 'haushaltGrid':
+              category = 'Haushalt und Küche';
+              break;
+          case 'wellnessGrid':
+              category = 'Körperpflege/Wellness';
+              break;
+          default:
+              category = 'alle';
+      }
+      moreButton.setAttribute('data-category', category);
+      moreButton.onclick = function() {
+          openSearchWithCategory(category);
+      };
+      
+      container.appendChild(moreButton);
+  }
+  
+  // Überprüfe, ob das Grid am Ende ist
+  const scrollLeft = grid.scrollLeft;
+  const scrollWidth = grid.scrollWidth;
+  const clientWidth = grid.clientWidth;
+  
+  // Zeige den Button, wenn wir am Ende sind (mit 50px Toleranz)
+  if (scrollLeft + clientWidth >= scrollWidth - 50) {
+      moreButton.classList.add('show');
+  } else {
+      moreButton.classList.remove('show');
+  }
+};
+
+// Initialisiere More Products Buttons
+window.initializeMoreProductsButtons = function() {
+  const grids = ['technikGrid', 'beleuchtungGrid', 'haushaltGrid', 'wellnessGrid'];
+  
+  grids.forEach(gridId => {
+      const grid = document.getElementById(gridId);
+      if (grid) {
+          // Initial check
+          checkScrollEndForMoreProducts(gridId);
+          
+          // Check on scroll
+          grid.addEventListener('scroll', () => {
+              checkScrollEndForMoreProducts(gridId);
+          });
+      }
+  });
+};
+
+// CSS-Styles dynamisch hinzufügen
+function addMoreProductsStyles() {
+  if (document.getElementById('more-products-styles')) return;
+  
+  const style = document.createElement('style');
+  style.id = 'more-products-styles';
+  style.textContent = `
+      .more-products-button {
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          background: linear-gradient(135deg, #667eea, #764ba2);
+          color: white;
+          border: none;
+          padding: 15px 25px;
+          border-radius: 30px 0 0 30px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          display: none;
+          align-items: center;
+          gap: 10px;
+          z-index: 100;
+          box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.2);
+          transition: all 0.3s ease;
+      }
+      
+      .more-products-button:hover {
+          transform: translateY(-50%) translateX(-10px);
+          box-shadow: -10px 5px 30px rgba(0, 0, 0, 0.3);
+          background: linear-gradient(135deg, #764ba2, #667eea);
+      }
+      
+      .more-products-button.show {
+          display: flex;
+      }
+      
+      .more-products-button i {
+          font-size: 20px;
+      }
+      
+      .category-technik .more-products-button {
+          background: linear-gradient(135deg, #43e97b, #38a169);
+      }
+      
+      .category-beleuchtung .more-products-button {
+          background: linear-gradient(135deg, #ffd700, #ffb347);
+          color: #333;
+      }
+      
+      .category-haushalt .more-products-button {
+          background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+          color: #be185d;
+      }
+      
+      .category-koerperpflege .more-products-button {
+          background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      }
+  `;
+  document.head.appendChild(style);
+}
+
+// Initialisierung beim DOM Ready
+document.addEventListener('DOMContentLoaded', function() {
+  addMoreProductsStyles();
+  setTimeout(() => {
+      initializeMoreProductsButtons();
+  }, 1000);
+});
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeFullscreenSearch);
@@ -4153,12 +4353,12 @@ if (document.readyState === 'loading') {
 
 // Additional initialization after window load
 window.addEventListener('load', () => {
-    console.log('🔍 Window loaded, ensuring search is initialized...');
+    console.log('ðŸ” Window loaded, ensuring search is initialized...');
     
     // Double-check initialization
     const searchBtn = document.getElementById('fullscreenSearchBtn');
     if (searchBtn && !searchBtn.hasAttribute('data-initialized')) {
-        console.log('🔍 Re-initializing search...');
+        console.log('ðŸ” Re-initializing search...');
         searchBtn.setAttribute('data-initialized', 'true');
         searchBtn.addEventListener('click', handleSearchButtonClick);
     }
@@ -4167,7 +4367,7 @@ window.addEventListener('load', () => {
 // Emergency fallback - direct event binding
 document.addEventListener('click', (e) => {
     if (e.target.id === 'fullscreenSearchBtn' || e.target.closest('#fullscreenSearchBtn')) {
-        console.log('🔍 Emergency search activation!');
+        console.log('ðŸ” Emergency search activation!');
         e.preventDefault();
         e.stopPropagation();
         openSearchOverlay();
@@ -4208,7 +4408,7 @@ function updateButtonColors(selectedCategory) {
       hoverColor: '#6b5010',
       hoverBorder: '#ffd480'
     },
-    'Körperpflege/Wellness': {
+    'KÃ¶rperpflege/Wellness': {
       bg: 'linear-gradient(135deg, #f0d9ff, #e8c8ff)',
       color: '#7a2e9d',
       border: '#d9b3ff',
@@ -4216,7 +4416,7 @@ function updateButtonColors(selectedCategory) {
       hoverColor: '#5e1d7a',
       hoverBorder: '#cc99ff'
     },
-    'Haushalt und Küche': {
+    'Haushalt und KÃ¼che': {
       bg: 'linear-gradient(135deg, #d4f5e0, #b8ecd0)',
       color: '#0a7a3c',
       border: '#9ce0b8',
@@ -4305,13 +4505,13 @@ window.showCategorySections = function(selectedCategory) {
   updateButtonColors(selectedCategory);
 };
 
-// Lade Cart Color Selector für Farbauswahl im Dropdown
+// Lade Cart Color Selector fÃ¼r Farbauswahl im Dropdown
 function loadCartColorSelector() {
     if (!document.querySelector('script[src="cart-color-selector.js"]')) {
         const script = document.createElement('script');
         script.src = 'cart-color-selector.js';
         script.onload = () => {
-            console.log('✅ Cart Color Selector geladen für Dropdown');
+            console.log('âœ… Cart Color Selector geladen fÃ¼r Dropdown');
             // Rufe die Funktion auf, nachdem das Script geladen wurde
             setTimeout(() => {
                 if (window.addColorSelectorsToCart) {
@@ -4325,7 +4525,7 @@ function loadCartColorSelector() {
 
 // Initialisierung beim Laden der Seite
 document.addEventListener('DOMContentLoaded', function() {
-    // Lade Color Selector für Dropdown
+    // Lade Color Selector fÃ¼r Dropdown
     loadCartColorSelector();
   // Set initial state to 'alle'
   setTimeout(() => {
@@ -4334,7 +4534,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// Lade Default Color Handler f�r index.html
+// Lade Default Color Handler für index.html
 if (!window.location.pathname.includes('produkt-')) {
     const script = document.createElement('script');
     script.src = 'default-color-handler.js';
@@ -4342,7 +4542,7 @@ if (!window.location.pathname.includes('produkt-')) {
     console.log('Default Color Handler wird geladen...');
 }
 // === DROPDOWN-BILDER KLICKBAR MACHEN ===
-// Fügen Sie diesen Code am Ende Ihrer app.js Datei hinzu
+// FÃ¼gen Sie diesen Code am Ende Ihrer app.js Datei hinzu
 
 // Macht Dropdown-Bilder klickbar
 function makeDropdownImagesClickable() {
@@ -4350,11 +4550,11 @@ function makeDropdownImagesClickable() {
     // Produkt-ID Mapping
     const productIdMap = {
       // Technik/Gadgets
-      'Elektrischer Wasserspender für Schreibtisch': 10,
+      'Elektrischer Wasserspender fÃ¼r Schreibtisch': 10,
       '350ml Elektrischer Mixer Entsafter': 11,
       'Bluetooth Anti-Lost Finder Wassertropfen': 17,
       'Home Electronic Clock Digitale Uhr': 18,
-      'Elektronisches Distanzmessgerät Digital': 19,
+      'Elektronisches DistanzmessgerÃ¤t Digital': 19,
       'ZigBee Smart DIY Motorisierte Rollos': 20,
       
       // Beleuchtung
@@ -4366,18 +4566,18 @@ function makeDropdownImagesClickable() {
       'COBLED Arbeitsleuchte': 24,
       'Nachtlichter mit Bewegungsmelder': 25,
       
-      // Haushalt & Küche
-      'Multifunktions Gemüseschneider': 12,
-      'Elektrische Küchenwaage Digital': 13,
+      // Haushalt & KÃ¼che
+      'Multifunktions GemÃ¼seschneider': 12,
+      'Elektrische KÃ¼chenwaage Digital': 13,
       'Automatischer Seifenspender': 14,
       'Vakuum Aufbewahrungsbeutel Set': 15,
       'Silikon Stretch Deckel 6er Set': 16,
       
-      // Wellness & Körperpflege
+      // Wellness & KÃ¶rperpflege
       '4 In 1 Self Cleaning Hair Brush': 26,
       'Volcanic Flame Aroma Essential Oil Diffuser': 27,
       'Mini Muskel Massage Pistole': 28,
-      'Haaröl-Applikator Kopfhaut Massager': 29,
+      'HaarÃ¶l-Applikator Kopfhaut Massager': 29,
       'Mini Electric Shoulder And Neck Massager': 30,
       'Elektrischer Kopfhaut-Massagekamm': 31
     };
@@ -4439,7 +4639,7 @@ function makeDropdownImagesClickable() {
       makeDropdownImagesClickable();
       return result;
     };
-    console.log('✅ renderCartDropdown erweitert - Bilder sind klickbar');
+    console.log('âœ… renderCartDropdown erweitert - Bilder sind klickbar');
   } else {
     // Fallback: Warte auf die Funktion
     const checkInterval = setInterval(() => {
@@ -4451,7 +4651,7 @@ function makeDropdownImagesClickable() {
           makeDropdownImagesClickable();
           return result;
         };
-        console.log('✅ renderCartDropdown erweitert - Bilder sind klickbar');
+        console.log('âœ… renderCartDropdown erweitert - Bilder sind klickbar');
       }
     }, 100);
     
@@ -4459,7 +4659,7 @@ function makeDropdownImagesClickable() {
   }
 })();
 
-// Fix: Warenkorb-Dropdown soll offen bleiben bei " Das k�nnte Ihnen gefallen\ Produkten
+// Fix: Warenkorb-Dropdown soll offen bleiben bei " Das könnte Ihnen gefallen\ Produkten
 (function() {
  setTimeout(() => {
  if (window.addRecommendationToCart) {
@@ -4525,7 +4725,7 @@ setTimeout(() => {
                 }, 100);
             }
         };
-        console.log('✅ Warenkorb-Dropdown Fix aktiviert');
+        console.log('âœ… Warenkorb-Dropdown Fix aktiviert');
     }
 }, 1000);
 // Fix: Warenkorb-Dropdown soll offen bleiben bei "Das könnte Ihnen gefallen" Produkten
@@ -4549,7 +4749,7 @@ setTimeout(() => {
                 }, 100);
             }
         };
-        console.log('✅ Warenkorb-Dropdown Fix aktiviert');
+        console.log('âœ… Warenkorb-Dropdown Fix aktiviert');
     }
 }, 1000);
 // Fix: Warenkorb-Dropdown soll offen bleiben bei "Das könnte Ihnen gefallen" Produkten
@@ -4573,6 +4773,6 @@ setTimeout(() => {
                 }, 100);
             }
         };
-        console.log('✅ Warenkorb-Dropdown Fix aktiviert');
+        console.log('âœ… Warenkorb-Dropdown Fix aktiviert');
     }
 }, 1000);
