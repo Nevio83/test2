@@ -131,7 +131,42 @@
                 childList: true,
                 subtree: true
             });
+            
+            // Müll-Button Verschiebung
+            moveTrashButtonsToQuantityControls();
         });
+        
+        // Script um Müll-Button rechts neben + Button zu verschieben
+        function moveTrashButtonsToQuantityControls() {
+            const cartItems = document.querySelectorAll('.cart-item');
+            
+            cartItems.forEach(cartItem => {
+                const quantityControls = cartItem.querySelector('.quantity-controls');
+                const removeBtn = cartItem.querySelector('.remove-btn');
+                
+                if (quantityControls && removeBtn && !quantityControls.contains(removeBtn)) {
+                    quantityControls.appendChild(removeBtn);
+                    console.log('Müll-Button verschoben für cart-item');
+                }
+            });
+        }
+
+        // Beobachte Änderungen für Müll-Button Verschiebung
+        const trashButtonObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    setTimeout(moveTrashButtonsToQuantityControls, 100);
+                }
+            });
+        });
+
+        const cartContentForTrash = document.getElementById('cartContent');
+        if (cartContentForTrash) {
+            trashButtonObserver.observe(cartContentForTrash, {
+                childList: true,
+                subtree: true
+            });
+        }
     </script>
 </body>
 </html>
