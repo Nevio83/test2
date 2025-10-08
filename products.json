@@ -1057,5 +1057,78 @@
       "digital",
       "led"
     ]
+  },
+  {
+    "id": 32,
+    "name": "Indoor Sensing Wall Lamp",
+    "price": 29.99,
+    "originalPrice": 39.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Indoor Sensing Wall Lamp.jpg",
+    "description": "USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt für Flure, Treppen und Schränke mit automatischer Ein-/Ausschaltung bei Bewegung.",
+    "sku": "CJ1373821404948074496",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#2C2C2C",
+        "sku": "CJSN105028901AZ",
+        "price": 29.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwartz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJSN105028907GT",
+        "price": 29.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg"
+      }
+    ],
+    "features": [
+      "USB-aufladbar für kabellose Nutzung",
+      "Bewegungssensor mit automatischer Aktivierung",
+      "Verschiedene Größen verfügbar (14x6cm, 22x11cm, 29x11cm)",
+      "Weiß- und Warmlicht-Modi",
+      "Einfache Wandmontage ohne Verkabelung"
+    ],
+    "tags": [
+      "wandlampe",
+      "bewegungsmelder",
+      "usb",
+      "sensor",
+      "beleuchtung",
+      "automatisch"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Smart Light Starter",
+        "description": "Wandlampe + Grundzubehör",
+        "items": [
+          "USB-Ladekabel",
+          "Montagezubehör"
+        ],
+        "originalPrice": 39.99,
+        "bundlePrice": 34.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Smart Lighting",
+        "description": "Komplettes Smart-Beleuchtungsset",
+        "items": [
+          "USB-Ladekabel",
+          "Montagezubehör",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 54.99,
+        "bundlePrice": 44.99,
+        "savings": 10
+      }
+    ]
   }
 ]

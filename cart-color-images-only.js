@@ -134,6 +134,8 @@ function extractColorFromName(name) {
 
 // Funktion zum Holen des farbspezifischen Bildpfads
 function getColorSpecificImagePath(product, colorName) {
+    console.log('🖼️ getColorSpecificImagePath aufgerufen für Produkt:', product.id, 'Farbe:', colorName);
+    
     // Mapping basierend auf der products.json und den verfügbaren Bildern
     const colorImageMappings = {
         10: { // Elektrischer Wasserspender
@@ -161,14 +163,20 @@ function getColorSpecificImagePath(product, colorName) {
         26: { // 4 In 1 Self Cleaning Hair Brush
             'Roland Purple': 'produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg',
             'Lunar Rock': 'produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg'
+        },
+        32: { // Indoor Sensing Wall Lamp
+            'Schwarz': 'produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwartz.jpg',
+            'Weiß': 'produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg'
         }
     };
     
     const mapping = colorImageMappings[product.id];
     if (mapping && mapping[colorName]) {
+        console.log('✅ Farbbild gefunden:', mapping[colorName]);
         return mapping[colorName];
     }
     
+    console.log('⚠️ Kein Farbbild gefunden, verwende Hauptbild:', product.image);
     // Fallback zum Hauptbild
     return product.image;
 }
