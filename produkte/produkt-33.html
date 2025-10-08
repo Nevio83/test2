@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aromatherapy Essential Oil Humidifier - Marktplatz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="koerperpflege-wellness.css" rel="stylesheet">
+    <link rel="stylesheet" href="../product-image-fullscreen.css">
+    <link rel="stylesheet" href="../product-image-gallery.css">
+    <link rel="stylesheet" href="../color-image-selection.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                <i class="bi bi-shop"></i> Marktplatz
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a href="../index.html" class="nav-link modern-nav-link">
+                    <i class="bi bi-house-door-fill"></i> Startseite
+                </a>
+                <a href="../cart.html" class="nav-link modern-nav-link cart-nav-link">
+                    <i class="bi bi-cart3-fill"></i> Warenkorb
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Produkt Hero Section -->
+    <section class="product-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-3">Aromatherapy Essential Oil Humidifier</h1>
+                    <p class="lead mb-4">Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.</p>
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <span class="price-tag">€39.99</span>
+                        <span class="text-muted text-decoration-line-through">€59.99</span>
+                        <span class="badge bg-success">Kostenloser Versand in Europa</span>
+                    </div>
+                    <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn">
+                        <i class="bi bi-cart-plus"></i> In den Warenkorb
+                    </button>
+                    <button class="btn btn-outline-light btn-lg wishlist-style-btn wishlist-button" id="wishlistBtn">
+                        <i class="bi bi-heart"></i> Merken
+                    </button>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="../produkt bilder/Aromatherapy Essential Oil Humidifier.jpg" alt="Aromatherapy Essential Oil Humidifier" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Produktdetails -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="mb-4">Produktbeschreibung</h2>
+                    <p class="lead mb-4">Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.</p>
+                    
+                    <h3>Hauptmerkmale</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>10 verschiedene Aromatherapy-Düfte verfügbar</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Ultraschall-Technologie für feine Nebel-Verteilung</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>LED-Beleuchtung mit verschiedenen Farben</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Automatische Abschaltung bei niedrigem Wasserstand</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Leiser Betrieb für Schlafzimmer geeignet</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>300ml Wassertank für bis zu 10 Stunden Betrieb</li>
+                    </ul>
+
+                    <h3 class="mt-4">Technische Spezifikationen</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Kategorie:</strong> Körperpflege/Wellness</p>
+                            <p><strong>Artikelnummer:</strong> 033</p>
+                            <p><strong>Preis:</strong> €39.99</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Verfügbarkeit:</strong> Auf Lager</p>
+                            <p><strong>Lieferzeit:</strong> 7-15 Werktage</p>
+                        </div>
+                    </div>
+
+                    <!-- Bundle-Box -->
+                    <div id="bundle-section" class="mt-5"></div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="quick-order-card d-none d-lg-block">
+                        <div class="quick-order-header">
+                            <h4>Schnellbestellung</h4>
+                        </div>
+                        <div class="quick-order-body">
+                            <div class="quantity-section">
+                                <label class="quantity-label">Menge:</label>
+                                <div class="quantity-input-group">
+                                    <button class="quantity-btn" onclick="decreaseQuantity(event)">-</button>
+                                    <input type="number" class="quantity-input" id="quantity" value="1" min="1" max="999">
+                                    <button class="quantity-btn" onclick="increaseQuantity(event)">+</button>
+                                </div>
+                            </div>
+                            
+                            <div class="price-section">
+                                <div class="current-price">€39.99</div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="buy-now-btn" id="buyNowBtn">
+                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
+                                </button>
+                                <button class="wishlist-btn wishlist-style-btn wishlist-button">
+                                    <i class="bi bi-heart"></i> Zur Wunschliste
+                                </button>
+                            </div>
+                            
+                            <div class="features-section">
+                                <ul class="features-list">
+                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
+                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>&copy; 2024 Marktplatz - Alle Rechte vorbehalten</p>
+        </div>
+    </footer>
+
+    <script>
+        // Produktdaten für diese Seite
+        const product = {
+            id: 33,
+            name: "Aromatherapy Essential Oil Humidifier",
+            price: 39.99,
+            originalPrice: 59.99,
+            image: "produkt bilder/Aromatherapy Essential Oil Humidifier.jpg",
+            category: "Körperpflege/Wellness",
+            description: "Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.",
+            sku: "CJ09477003744E498990DA",
+            inStock: true,
+            shippingTime: "7-15 Werktage",
+            colors: [
+                {
+                    name: "Cherry Blossoms",
+                    code: "#FFB6C1",
+                    sku: "CJBJPFJY00081-Cherry blossoms",
+                    price: 39.99,
+                    originalPrice: 59.99,
+                    image: "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier cherry blossoms.jpg"
+                },
+                {
+                    name: "Green Tea",
+                    code: "#90EE90",
+                    sku: "CJBJPFJY00081-Green Tea",
+                    price: 39.99,
+                    originalPrice: 59.99,
+                    image: "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier green tea.jpg"
+                }
+                // Weitere Farben werden automatisch aus products.json geladen
+            ]
+        };
+
+        // Mache Produktdaten global verfügbar
+        window.product = product;
+
+        // Vollständige Button-Funktionalität
+        function addToCart(product) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existing = cart.find(item => Number(item.id) === Number(product.id) && !item.bundleId);
+            if (existing) {
+                existing.quantity += product.quantity || 1;
+            } else {
+                cart.push({ ...product, quantity: product.quantity || 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function showAlert(message, redirectTo = 'cart.html') {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success position-fixed end-0 m-4 shadow-lg fade show';
+            alert.style.zIndex = '20000';
+            alert.style.fontSize = '1rem';
+            alert.style.minWidth = '160px';
+            alert.style.maxWidth = '320px';
+            alert.style.padding = '0.75rem 2rem';
+            alert.style.textAlign = 'center';
+            alert.style.borderRadius = '2rem';
+            alert.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+            alert.style.background = 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)';
+            alert.style.color = '#fff';
+            alert.style.fontWeight = '500';
+            alert.textContent = message;
+            alert.addEventListener('click', () => {
+                window.location.href = '../' + redirectTo;
+            });
+            document.body.appendChild(alert);
+            setTimeout(() => {
+                if (document.body.contains(alert)) {
+                    alert.remove();
+                }
+            }, 1700);
+        }
+
+        function getWishlist() {
+            return JSON.parse(localStorage.getItem('wishlist')) || [];
+        }
+        
+        function setWishlist(wishlist) {
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+        
+        function isInWishlist(id) {
+            return getWishlist().some(item => Number(item.id) === Number(id));
+        }
+        
+        function toggleWishlistLocal(product) {
+            console.log('🔄 toggleWishlistLocal aufgerufen für Produkt:', product.id);
+            const wasInList = isInWishlist(product.id);
+            console.log('📋 Vorheriger Status:', wasInList);
+            
+            let wishlist = getWishlist();
+            if (wasInList) {
+                wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
+                showAlert('Von der Wunschliste entfernt', 'wishlist.html');
+                console.log('➖ Produkt von Wishlist entfernt');
+            } else {
+                wishlist.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    description: product.description
+                });
+                showAlert('Zur Wunschliste hinzugefügt', 'wishlist.html');
+                console.log('➕ Produkt zur Wishlist hinzugefügt');
+            }
+            setWishlist(wishlist);
+            
+            // Kurze Verzögerung vor Button-Update
+            setTimeout(() => {
+                updateAllWishlistButtons();
+            }, 50);
+        }
+        
+        function updateAllWishlistButtons() {
+            const isInList = isInWishlist(product.id);
+            console.log('🔄 Updating wishlist buttons, isInList:', isInList);
+            
+            // Update Haupt-Wishlist-Button
+            const mainBtn = document.getElementById('wishlistBtn');
+            if (mainBtn) {
+                console.log('🔧 Updating main wishlist button');
+                if (isInList) {
+                    mainBtn.classList.add('active');
+                    mainBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
+                } else {
+                    mainBtn.classList.remove('active');
+                    mainBtn.innerHTML = '<i class="bi bi-heart"></i> Merken';
+                }
+            }
+            
+            // Update Schnellbestellung-Wishlist-Buttons
+            const quickOrderBtns = document.querySelectorAll('.wishlist-button');
+            console.log('🔧 Found', quickOrderBtns.length, 'quick order wishlist buttons');
+            quickOrderBtns.forEach((btn, index) => {
+                console.log(`🔧 Updating quick order button ${index + 1}`);
+                if (isInList) {
+                    btn.classList.add('active');
+                    btn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="bi bi-heart"></i> Zur Wunschliste';
+                }
+            });
+        }
+
+        window.increaseQuantity = function(event) {
+            const input = document.getElementById('quantity');
+            if (input) {
+                const currentValue = parseInt(input.value, 10) || 1;
+                if (currentValue < 999) {
+                    input.value = currentValue + 1;
+                    updateTotalPrice();
+                }
+            }
+        };
+
+        window.decreaseQuantity = function(event) {
+            const input = document.getElementById('quantity');
+            if (input) {
+                const currentValue = parseInt(input.value, 10) || 1;
+                if (currentValue > 1) {
+                    input.value = currentValue - 1;
+                    updateTotalPrice();
+                }
+            }
+        };
+
+        function updateTotalPrice() {
+            const quantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
+            const total = (product.price * quantity).toFixed(2);
+            const priceElements = document.querySelectorAll('.current-price');
+            priceElements.forEach(element => {
+                element.textContent = `€${total}`;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartBtn = document.getElementById('cartBtn');
+            const wishlistBtn = document.getElementById('wishlistBtn');
+            const buyNowBtn = document.getElementById('buyNowBtn');
+            
+            if (cartBtn) {
+                cartBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const selectedColor = window.getSelectedColor ? window.getSelectedColor() : 'Cherry Blossoms';
+                    const colorData = product.colors.find(c => c.name === selectedColor) || product.colors[0];
+                    addToCart({
+                        id: product.id,
+                        name: `${product.name} (${selectedColor})`,
+                        price: colorData.price,
+                        image: colorData.image,
+                        description: product.description,
+                        quantity: 1,
+                        selectedColor: selectedColor
+                    });
+                    showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
+                });
+            }
+            
+            if (wishlistBtn) {
+                // Entferne alle existierenden Event-Listener
+                const newWishlistBtn = wishlistBtn.cloneNode(true);
+                wishlistBtn.parentNode.replaceChild(newWishlistBtn, wishlistBtn);
+                
+                newWishlistBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🖱️ Wishlist-Button geklickt (oberer Button)');
+                    toggleWishlistLocal(product);
+                });
+                
+                // Sofortige Initialisierung
+                updateAllWishlistButtons();
+                console.log('🔄 Wishlist-Button sofort initialisiert');
+            }
+
+            if (buyNowBtn) {
+                buyNowBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const quantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
+                    const selectedColor = window.getSelectedColor ? window.getSelectedColor() : 'Cherry Blossoms';
+                    const colorData = product.colors.find(c => c.name === selectedColor) || product.colors[0];
+                    addToCart({
+                        id: product.id,
+                        name: `${product.name} (${selectedColor})`,
+                        price: colorData.price,
+                        image: colorData.image,
+                        description: product.description,
+                        quantity: quantity,
+                        selectedColor: selectedColor
+                    });
+                    setTimeout(() => {
+                        window.location.href = '../cart.html';
+                    }, 500);
+                });
+            }
+
+            const wishlistButtons = document.querySelectorAll('.wishlist-button');
+            wishlistButtons.forEach((btn, index) => {
+                // Entferne alle existierenden Event-Listener
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log(`🖱️ Wishlist-Button geklickt (Schnellbestellung ${index + 1})`);
+                    toggleWishlistLocal(product);
+                });
+            });
+
+            const quantityInput = document.getElementById('quantity');
+            if (quantityInput) {
+                quantityInput.addEventListener('input', updateTotalPrice);
+                quantityInput.addEventListener('change', updateTotalPrice);
+                updateTotalPrice();
+            }
+
+            setTimeout(() => {
+                // Initialisiere Wishlist-Status mit Verzögerung
+                setTimeout(() => {
+                    updateAllWishlistButtons();
+                    console.log('🔄 Wishlist-Status nach Verzögerung aktualisiert');
+                }, 100);
+                
+                if (window.ProductImageGallery) {
+                    new window.ProductImageGallery(33, 'Aromatherapy Essential Oil Humidifier');
+                }
+            }, 1000);
+
+            console.log('✅ Produkt 33 vollständig geladen mit Button-Funktionalität');
+        });
+    </script>
+
+    <!-- Scripts -->
+    <script src="../app.js" defer></script>
+    <script src="../color-cart-bridge.js"></script>
+    <script src="../color-image-selection.js"></script>
+    <script src="../bundle-images-final.js"></script>
+    <script src="../product-gallery-complete.js"></script>
+</body>
+</html>

@@ -1,8 +1,16 @@
 // Bundle Images Final - Komplette Lösung für Bundle-Bilder
 console.log('🎨 Bundle Images Final wird geladen...');
 
+// Globale Variable um mehrfaches Laden zu verhindern
+let bundleSystemInitialized = false;
+
 // Warte bis DOM bereit ist
 document.addEventListener('DOMContentLoaded', function() {
+    if (bundleSystemInitialized) {
+        console.log('⚠️ Bundle-System bereits initialisiert, überspringe');
+        return;
+    }
+    bundleSystemInitialized = true;
     console.log('🎨 Initialisiere Bundle-Bilder...');
     
     // Funktion zum Bestimmen der Kategorie-Farbe
@@ -45,6 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Verhindere mehrfaches Laden
+        if (bundleSection.dataset.bundleRendered === 'true') {
+            console.log('⚠️ Bundle bereits gerendert, überspringe');
+            return;
+        }
+        
         // Hole Farben und Kategorie vom aktuellen Produkt
         let colors = [];
         let productCategory = 'Haushalt und Küche'; // Default
@@ -61,10 +75,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     const prod = products.find(p => p.id === window.product.id);
                     if (prod && prod.colors) {
                         colors = prod.colors;
-                        console.log('✅ Farben aus products.json geholt:', colors);
+                        console.log('✅ Farben aus products.json geholt:', colors.length, 'Farben:', colors.map(c => c.name));
+                        console.log('🎨 Alle Farbdaten:', colors);
                         renderBundleContent(colors, productCategory);
                     } else {
-                        console.log('⚠️ Keine Farben für Produkt', window.product.id);
+                        console.log('⚠️ Keine Farben für Produkt', window.product.id, 'Gefundenes Produkt:', prod);
                         renderBundleContent([], productCategory);
                     }
                 })
@@ -109,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const productName = currentProduct ? currentProduct.name : `Produkt ${productId || ''}`;
         
         console.log('🎁 Bundle-Rendering für:', { id: productId, name: productName, price: basePrice, windowProduct: !!window.product });
+        console.log('🎨 Verfügbare Farben für Bundle:', colors.length, colors.map(c => c.name));
         
         const bundles = [
             { qty: 1, price: basePrice, discount: 0 },
@@ -180,7 +196,47 @@ document.addEventListener('DOMContentLoaded', function() {
         const bundleSection = document.getElementById('bundle-section');
         if (bundleSection) {
             bundleSection.innerHTML = html;
+            bundleSection.dataset.bundleRendered = 'true';
             console.log('✅ Bundle HTML eingefügt');
+            
+            // Debug: Prüfe ob alle Farbbilder gerendert wurden
+            setTimeout(() => {
+                const colorImages = bundleSection.querySelectorAll('.color-image-option');
+                const colorNames = Array.from(colorImages).map(img => img.querySelector('.color-name')?.textContent);
+                console.log('🖼️ Gerenderte Farbbilder:', colorImages.length, 'Farben:', colorNames);
+                
+                if (colorImages.length < colors.length) {
+                    console.warn('⚠️ Nicht alle Farben wurden gerendert!', 'Erwartet:', colors.length, 'Gefunden:', colorImages.length);
+                }
+                
+                // Debug: Prüfe Scrollbar-Status und erzwinge Scrolling
+                const colorContainers = bundleSection.querySelectorAll('.color-images');
+                colorContainers.forEach((container, index) => {
+                    const scrollWidth = container.scrollWidth;
+                    const clientWidth = container.clientWidth;
+                    const isScrollable = scrollWidth > clientWidth;
+                    console.log(`📏 Container ${index + 1}: scrollWidth=${scrollWidth}, clientWidth=${clientWidth}, scrollable=${isScrollable}`);
+                    
+                    // Erzwinge Scrolling durch Begrenzung der Container-Breite
+                    container.style.maxWidth = '400px';
+                    container.style.overflowX = 'scroll';
+                    container.style.scrollbarWidth = 'auto';
+                    
+                    // Prüfe erneut nach Styling
+                    setTimeout(() => {
+                        const newScrollWidth = container.scrollWidth;
+                        const newClientWidth = container.clientWidth;
+                        const newIsScrollable = newScrollWidth > newClientWidth;
+                        console.log(`📏 Container ${index + 1} nach Fix: scrollWidth=${newScrollWidth}, clientWidth=${newClientWidth}, scrollable=${newIsScrollable}`);
+                        
+                        if (!newIsScrollable) {
+                            console.warn('⚠️ Container ist immer noch nicht scrollbar!');
+                            // Letzte Rettung: Noch kleinere Breite
+                            container.style.maxWidth = '300px';
+                        }
+                    }, 50);
+                });
+            }, 100);
             
             // Event Listener für individuelle Bundle-Buttons hinzufügen
             const individualBundleBtns = bundleSection.querySelectorAll('.add-individual-bundle-btn');
@@ -198,8 +254,9 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('❌ Bundle-Section nicht gefunden');
         }
         
-        // Füge CSS hinzu
+        // Füge CSS hinzu (nur einmal)
         if (!document.getElementById('bundle-images-styles')) {
+            console.log('🎨 Füge Bundle-CSS hinzu');
             const style = document.createElement('style');
             style.id = 'bundle-images-styles';
             style.textContent = `
@@ -208,6 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     max-width: 900px;
                     margin: 0 auto;
                 }
+                
                 
                 .bundle-title {
                     text-align: center;
@@ -254,18 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     color: #333;
                 }
                 
-                .bundle-badges {
-                    display: flex;
-                    gap: 8px;
-                    flex-wrap: wrap;
-                }
-                
-                .bundle-radio {
-                    position: absolute;
-                    left: 20px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                }
                 
                 .bundle-header {
                     display: flex;
@@ -341,19 +387,68 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 .bundle-set {
                     display: flex;
-                    align-items: center;
+                    align-items: flex-start;
                     margin-bottom: 10px;
+                    width: 100%;
                 }
                 
                 .set-label {
                     min-width: 60px;
                     font-size: 14px;
                     color: #666;
+                    flex-shrink: 0;
+                    margin-top: 5px;
                 }
                 
                 .color-images {
-                    display: flex;
-                    gap: 10px;
+                    display: flex !important;
+                    gap: 6px !important;
+                    margin-top: 8px;
+                    overflow-x: scroll !important;
+                    overflow-y: hidden !important;
+                    padding: 5px 0 15px 0 !important;
+                    scroll-behavior: smooth !important;
+                    -webkit-overflow-scrolling: touch !important;
+                    max-width: 400px !important;
+                    width: 100% !important;
+                    flex: 1;
+                    min-width: 0;
+                    /* Force scrollbar to appear */
+                    scrollbar-width: auto !important;
+                    scrollbar-color: ${categoryColor} #f1f1f1 !important;
+                }
+                
+                /* Stelle sicher, dass der Container für alle Düfte scrollbar ist */
+                .color-images > * {
+                    flex-shrink: 0;
+                }
+                
+                .color-images::-webkit-scrollbar {
+                    height: 12px !important;
+                    width: 12px !important;
+                    display: block !important;
+                    -webkit-appearance: none !important;
+                }
+                
+                .color-images::-webkit-scrollbar-track {
+                    background: #f1f1f1 !important;
+                    border-radius: 6px !important;
+                    border: 1px solid #ddd !important;
+                }
+                
+                .color-images::-webkit-scrollbar-thumb {
+                    background: ${categoryColor} !important;
+                    border-radius: 6px !important;
+                    border: 2px solid #fff !important;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+                }
+                
+                .color-images::-webkit-scrollbar-thumb:hover {
+                    background: ${darkerCategoryColor} !important;
+                }
+                
+                .color-images::-webkit-scrollbar-corner {
+                    background: #f1f1f1 !important;
                 }
                 
                 .color-image-option {
@@ -366,6 +461,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     display: inline-block;
                     background: white;
                     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                    flex-shrink: 0;
+                    min-width: 80px;
+                    width: 80px;
+                    max-width: 80px;
                 }
                 
                 .color-image-option:hover {
@@ -380,8 +479,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .color-img {
-                    width: 80px;
-                    height: 80px;
+                    width: 70px;
+                    height: 70px;
                     object-fit: cover;
                     border-radius: 6px;
                     display: block;
@@ -398,17 +497,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 @media (max-width: 768px) {
                     .color-images {
-                        gap: 6px !important;
-                        overflow-x: auto !important;
+                        gap: 4px !important;
+                        overflow-x: scroll !important;
                         overflow-y: hidden !important;
                         -webkit-overflow-scrolling: touch !important;
-                        scrollbar-width: none !important;
-                        -ms-overflow-style: none !important;
+                        scrollbar-width: auto !important;
+                        -ms-overflow-style: auto !important;
                         padding: 5px 0 15px 0 !important;
+                        max-width: 300px !important;
                     }
                     
                     .color-images::-webkit-scrollbar {
-                        display: none !important;
+                        height: 8px !important;
+                        display: block !important;
                     }
                     
                     .color-image-option {
@@ -458,6 +559,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     .color-name {
                         font-size: 10px !important;
                         max-width: 55px !important;
+                    }
+                    
+                    .add-individual-bundle-btn {
+                        padding: 8px 10px !important;
+                        font-size: 11px !important;
+                        letter-spacing: 0.2px !important;
                     }
                 }
                 
@@ -537,13 +644,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .add-individual-bundle-btn {
-                    width: 100%;
-                    padding: 12px 16px;
+                    width: auto;
+                    min-width: 140px;
+                    max-width: 200px;
+                    padding: 10px 16px;
                     background: linear-gradient(135deg, ${categoryColor} 0%, ${darkerCategoryColor} 100%);
                     color: white;
                     border: none;
                     border-radius: 8px;
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: 600;
                     cursor: pointer;
                     margin-top: 15px;
@@ -551,7 +660,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     position: relative;
                     overflow: hidden;
                     text-transform: uppercase;
-                    letter-spacing: 0.5px;
+                    letter-spacing: 0.3px;
+                    white-space: nowrap;
+                    display: inline-block;
                 }
                 
                 .add-individual-bundle-btn::before {
