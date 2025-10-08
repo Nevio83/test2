@@ -1,4 +1,4 @@
-// Image Color Selection - Originale funktionierende Version
+// Image Color Selection - Mobile Optimized Version
 console.log('🎨 Image Color Selection wird geladen...');
 
 class ImageColorSelection {
@@ -127,7 +127,7 @@ class ImageColorSelection {
         
         const categoryColor = this.getCategoryColor();
         
-        // Erstelle HTML für Farbauswahl - RAHMEN NUR UM BILD
+        // Erstelle HTML für Farbauswahl - Desktop Standard, Mobile Optimiert
         const colorOptionsHtml = this.productData.colors.map(color => {
             const imageUrl = this.getColorSpecificImage(color.name);
             return `
@@ -142,7 +142,7 @@ class ImageColorSelection {
                     background: transparent;
                     min-width: 85px;
                 ">
-                    <div style="
+                    <div class="color-image-container" style="
                         position: relative;
                         border: 3px solid #e0e0e0; 
                         border-radius: 12px; 
@@ -162,19 +162,95 @@ class ImageColorSelection {
                         display: block; 
                         text-align: center; 
                         font-size: 14px; 
-                        margin-top: 5px;
-                        margin-bottom: 3px;
+                        margin-top: 2px;
+                        margin-bottom: 1px;
                         color: #333;
                         font-weight: 500;
+                        line-height: 1.2;
+                        word-break: break-word;
                     ">${color.name}</span>
                 </div>
             `;
         }).join('');
         
         const html = `
+            <style>
+                @media (max-width: 768px) {
+                    .color-option {
+                        margin: 0 3px !important;
+                        min-width: 65px !important;
+                        flex-shrink: 0 !important;
+                        height: auto !important;
+                    }
+                    .color-image-container {
+                        border-width: 2px !important;
+                        border-radius: 8px !important;
+                        padding: 2px !important;
+                    }
+                    .color-option-image {
+                        width: 55px !important;
+                        height: 55px !important;
+                        border-radius: 6px !important;
+                    }
+                    .color-name {
+                        display: block !important;
+                        font-size: 11px !important;
+                        margin-top: 3px !important;
+                        margin-bottom: 2px !important;
+                        max-width: 65px !important;
+                        color: #333 !important;
+                        text-align: center !important;
+                        line-height: 1.2 !important;
+                        word-break: break-word !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                    }
+                    .color-options {
+                        flex-wrap: nowrap !important;
+                        overflow-x: auto !important;
+                        overflow-y: visible !important;
+                        -webkit-overflow-scrolling: touch !important;
+                        scrollbar-width: none !important;
+                        -ms-overflow-style: none !important;
+                        padding: 5px 0 15px 0 !important;
+                        margin-left: -5px !important;
+                    }
+                    .color-options::-webkit-scrollbar {
+                        display: none !important;
+                    }
+                }
+                @media (max-width: 480px) {
+                    .color-option {
+                        margin: 0 2px !important;
+                        min-width: 55px !important;
+                        flex-shrink: 0 !important;
+                        height: auto !important;
+                    }
+                    .color-option-image {
+                        width: 50px !important;
+                        height: 50px !important;
+                    }
+                    .color-name {
+                        display: block !important;
+                        font-size: 10px !important;
+                        margin-top: 3px !important;
+                        margin-bottom: 2px !important;
+                        max-width: 55px !important;
+                        color: #333 !important;
+                        text-align: center !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                    }
+                    .color-options {
+                        margin-left: -8px !important;
+                        padding: 5px 0 15px 0 !important;
+                        overflow-y: visible !important;
+                    }
+                }
+            </style>
             <div class="color-selection-wrapper" style="
-                margin: 15px 0; 
-                padding: 18px; 
+                margin: 5px 0 15px 0; 
+                padding: 12px 18px; 
                 background: #ffffff; 
                 border-radius: 12px; 
                 border: 1px solid #e9ecef;
@@ -182,7 +258,7 @@ class ImageColorSelection {
             ">
                 <h4 style="
                     font-size: 16px; 
-                    margin-bottom: 12px; 
+                    margin-bottom: 5px; 
                     color: #333; 
                     font-weight: 600;
                     margin-top: 0;
@@ -197,7 +273,7 @@ class ImageColorSelection {
                     ${colorOptionsHtml}
                 </div>
                 <div class="selected-color-text" style="
-                    margin-top: 12px; 
+                    margin-top: 10px; 
                     font-size: 14px; 
                     color: ${categoryColor}; 
                     font-weight: 500;

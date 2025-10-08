@@ -396,6 +396,71 @@ document.addEventListener('DOMContentLoaded', function() {
                     font-weight: 500;
                 }
                 
+                @media (max-width: 768px) {
+                    .color-images {
+                        gap: 6px !important;
+                        overflow-x: auto !important;
+                        overflow-y: hidden !important;
+                        -webkit-overflow-scrolling: touch !important;
+                        scrollbar-width: none !important;
+                        -ms-overflow-style: none !important;
+                        padding: 5px 0 15px 0 !important;
+                    }
+                    
+                    .color-images::-webkit-scrollbar {
+                        display: none !important;
+                    }
+                    
+                    .color-image-option {
+                        border-width: 2px !important;
+                        border-radius: 8px !important;
+                        padding: 3px !important;
+                        flex-shrink: 0 !important;
+                        min-width: 65px !important;
+                    }
+                    
+                    .color-img {
+                        width: 55px !important;
+                        height: 55px !important;
+                        border-radius: 5px !important;
+                    }
+                    
+                    .color-name {
+                        display: block !important;
+                        font-size: 11px !important;
+                        margin-top: 3px !important;
+                        margin-bottom: 2px !important;
+                        color: #333 !important;
+                        text-align: center !important;
+                        line-height: 1.2 !important;
+                        word-break: break-word !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        max-width: 65px !important;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    .color-images {
+                        gap: 4px !important;
+                    }
+                    
+                    .color-image-option {
+                        min-width: 55px !important;
+                        padding: 2px !important;
+                    }
+                    
+                    .color-img {
+                        width: 50px !important;
+                        height: 50px !important;
+                    }
+                    
+                    .color-name {
+                        font-size: 10px !important;
+                        max-width: 55px !important;
+                    }
+                }
+                
                 .checkmark {
                     position: absolute !important;
                     top: 2px !important;

@@ -394,15 +394,77 @@ const imageColorStyles = `
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
+        width: 100vw !important;
     }
     
     .cart-color-label-image {
-        width: 45px;
-        height: 45px;
+        width: 60px !important;
+        height: 60px !important;
+        border: 4px solid #ffffff !important;
+        border-radius: 12px !important;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15) !important;
+        background: #ffffff !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .cart-color-label-image:hover {
+        transform: scale(1.1) !important;
+        border-color: #007bff !important;
+        box-shadow: 0 6px 16px rgba(0,123,255,0.3) !important;
+    }
+    
+    .cart-color-option input[type="radio"]:checked + .cart-color-label-image {
+        border-color: #007bff !important;
+        border-width: 5px !important;
+        box-shadow: 0 8px 25px rgba(0,123,255,0.4), 0 0 0 2px rgba(0,123,255,0.3) !important;
+        transform: scale(1.05) !important;
+    }
+    
+    .cart-color-option input[type="radio"]:checked + .cart-color-label-image::after {
+        content: '✓' !important;
+        position: absolute !important;
+        top: 2px !important;
+        right: 2px !important;
+        background: #007bff !important;
+        color: white !important;
+        width: 18px !important;
+        height: 18px !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 11px !important;
+        font-weight: bold !important;
     }
     
     .cart-color-options {
-        gap: 6px;
+        gap: 30px !important;
+        padding: 8px 0 !important;
+    }
+    
+    .cart-item-color-selection {
+        padding: 16px 12px !important;
+        margin: 12px 0 !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        border: none !important;
+    }
+    
+    .cart-color-label {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: #495057 !important;
+        margin-bottom: 12px !important;
+        display: block !important;
+    }
+    
+    .cart-color-image {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        padding: 6px !important;
+        max-width: 52px !important;
+        max-height: 52px !important;
     }
 }
 </style>
