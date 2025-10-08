@@ -2,13 +2,13 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Warenkorb - Marktplatz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
     <link href="cart.css" rel="stylesheet">
     <link href="color-image-selection.css" rel="stylesheet">
+    <link href="cart-color-selection-fix.css" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
         /* Verstecke ALLE Farbkreise in cart.html */
@@ -27,10 +27,7 @@
             display: none !important;
         }
         
-        /* Zeige nur Bild-basierte Farbauswahl */
-        .cart-item-color-selection {
-            display: flex !important;
-        }
+        /* Alle Farbauswahl-Styles sind jetzt in cart-color-selection-fix.css */
     </style>
 </head>
 <body>
@@ -73,7 +70,168 @@
     <script src="app.js"></script>
     <script src="cart.js"></script>
     <script src="keyboard-shortcuts.js" defer></script>
-    <script src="cart-color-images-only.js"></script>
+    <script src="cart-color-images-only.js?v=2.0"></script>
+    
+    <script>
+        // SOFORTIGER FIX - Überschreibt alle anderen Styles
+        function forceCartColorStyles() {
+            console.log('🔧 FORCE: Erzwinge Farbauswahl-Styles...');
+            
+            // Warte kurz und dann erzwinge Styles
+            setTimeout(() => {
+                const containers = document.querySelectorAll('.cart-item-color-selection');
+                console.log('🔧 FORCE: Gefundene Container:', containers.length);
+                
+                containers.forEach((container, index) => {
+                    console.log(`🔧 FORCE: Bearbeite Container ${index + 1}`);
+                    
+                    // FORCE - Nutze cart-color-selection-fix.css
+                    // Lass CSS-Datei arbeiten, erzwinge nur Sichtbarkeit
+                    container.classList.add('cart-item-color-selection');
+                    container.style.display = 'flex';
+                    container.style.visibility = 'visible';
+                    container.style.opacity = '1';
+                    
+                    // Lass CSS-Datei die Arbeit machen
+                    const images = container.querySelectorAll('img');
+                    images.forEach(img => {
+                        img.classList.add('cart-color-image');
+                    });
+                    
+                    const options = container.querySelectorAll('.cart-color-option');
+                    options.forEach(option => {
+                        option.classList.add('cart-color-option');
+                    });
+                    
+                    console.log(`✅ FORCE: Container ${index + 1} erfolgreich gestylt`);
+                });
+                
+                // CSS ist jetzt in cart.css - keine Injection nötig
+                console.log('✅ FORCE: Styles aus cart.css werden verwendet');
+            }, 500);
+            
+            // Wiederhole alle 2 Sekunden für 10 Sekunden
+            let attempts = 0;
+            const interval = setInterval(() => {
+                attempts++;
+                if (attempts > 5) {
+                    clearInterval(interval);
+                    return;
+                }
+                
+                const containers = document.querySelectorAll('.cart-item-color-selection');
+                if (containers.length > 0) {
+                    console.log(`🔄 FORCE: Wiederholung ${attempts}/5`);
+                    forceCartColorStyles();
+                }
+            }, 2000);
+        }
+        
+        // Starte sofort
+        document.addEventListener('DOMContentLoaded', forceCartColorStyles);
+        
+        // Starte auch nach Warenkorb-Updates
+        if (window.MutationObserver) {
+            const observer = new MutationObserver(() => {
+                forceCartColorStyles();
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+    </script>
+    
+    <script>
+        // Gezielter Scrollbar Fix nur für Farbauswahl
+        function enforceCartColorScrollbars() {
+            // Nur Farbauswahl-Container
+            const colorContainers = document.querySelectorAll('.cart-item-color-selection');
+            console.log(`🎨 Gefundene Farbauswahl-Container: ${colorContainers.length}`);
+            
+            colorContainers.forEach((container, index) => {
+                // Überprüfe ob bereits konfiguriert
+                if (container.dataset.scrollbarConfigured === 'true') {
+                    console.log(`⏭️ Farbauswahl ${index + 1} bereits konfiguriert, überspringe`);
+                    return;
+                }
+                
+                // Erzwinge Scrolling für alle Farbauswahlen - mit neuer CSS-Datei
+                const images = container.querySelectorAll('img');
+                if (images.length > 0) {
+                    container.style.maxWidth = '700px';
+                    container.style.overflowX = 'scroll';
+                    container.style.display = 'flex';
+                    container.style.gap = '8px';
+                    container.style.width = 'calc(100% - 20px)';
+                    container.style.minHeight = '140px';
+                    container.style.padding = '20px 10px 25px 10px';
+                    container.style.margin = '15px 0';
+                    container.style.alignItems = 'center';
+                    container.style.background = 'rgba(248, 249, 250, 0.3)';
+                    container.style.borderRadius = '10px';
+                    container.style.border = '2px solid #e9ecef';
+                    container.dataset.scrollbarConfigured = 'true';
+                    
+                    console.log(`📏 Farbauswahl ${index + 1} für Vollbreite-Scrolling konfiguriert (${images.length} Bilder)`);
+                    
+                    // Prüfe Scroll-Status nur einmal
+                    setTimeout(() => {
+                        const scrollWidth = container.scrollWidth;
+                        const clientWidth = container.clientWidth;
+                        const isScrollable = scrollWidth > clientWidth;
+                        console.log(`📏 Farbauswahl ${index + 1}: scrollWidth=${scrollWidth}, clientWidth=${clientWidth}, scrollable=${isScrollable}`);
+                    }, 100);
+                }
+            });
+        }
+        
+        // Führe Fix aus wenn DOM geladen ist
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🛒 Warenkorb Farbauswahl-Scrollbar Fix wird initialisiert...');
+            enforceCartColorScrollbars();
+            
+            // Überwache Änderungen im Warenkorb (mit Debouncing)
+            const cartContent = document.getElementById('cartContent');
+            if (cartContent) {
+                let debounceTimer = null;
+                
+                const observer = new MutationObserver(function(mutations) {
+                    let shouldReapply = false;
+                    mutations.forEach(function(mutation) {
+                        // Nur bei echten Inhaltsänderungen, nicht bei Style-Änderungen
+                        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                            const hasNewColorSelection = Array.from(mutation.addedNodes).some(node => 
+                                node.nodeType === 1 && (
+                                    node.classList?.contains('cart-item-color-selection') ||
+                                    node.querySelector?.('.cart-item-color-selection')
+                                )
+                            );
+                            if (hasNewColorSelection) {
+                                shouldReapply = true;
+                            }
+                        }
+                    });
+                    
+                    if (shouldReapply) {
+                        // Debounce um Endlosschleifen zu vermeiden
+                        if (debounceTimer) clearTimeout(debounceTimer);
+                        debounceTimer = setTimeout(() => {
+                            console.log('🔄 Neue Farbauswahl erkannt, wende Scrollbar-Fix an');
+                            enforceCartColorScrollbars();
+                        }, 500);
+                    }
+                });
+                
+                observer.observe(cartContent, {
+                    childList: true,
+                    subtree: true,
+                    attributes: false, // Keine Attribut-Änderungen überwachen
+                    attributeOldValue: false,
+                    characterData: false
+                });
+                
+                console.log('👁️ MutationObserver für Warenkorb-Scrollbars aktiviert (mit Debouncing)');
+            }
+        });
+    </script>
     
     <script>
         // Aggressives Entfernen aller Farbkreise

@@ -5,122 +5,149 @@
 
 console.log('🖼️ Cart Color Images Only geladen');
 
-// Funktion zum Rendern der bildbasierten Farbauswahl
 async function renderImageColorSelection(item, container) {
-    // Skip Bundles - keine Farbauswahl für Bundles
-    if (item.isBundle || item.name.includes('Sets)') || item.name.includes('Bundle')) {
-        console.log('⏭️ Überspringe Bundle:', item.name);
-        return;
-    }
-    
+    // Create a unique ID for this instance to avoid CSS conflicts
+    const uniqueId = `_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Define class names with the unique ID
+    const classNames = {
+        selection: `cart-item-color-selection-${uniqueId}`,
+        mainLabel: `cart-color-main-label-${uniqueId}`,
+        scroll: `cart-color-options-scroll-${uniqueId}`,
+        option: `cart-color-option-${uniqueId}`,
+        selected: `selected-${uniqueId}`
+    };
+
+    // Inject styles for these unique classes
+    const styles = `
+        .${classNames.selection} {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            width: 100%;
+            box-sizing: border-box; /* Stellt sicher, dass Padding die Breite nicht beeinflusst */
+            grid-column: 1 / -1; /* Erstreckt sich über alle Grid-Spalten */
+        }
+        .${classNames.mainLabel} {
+            font-weight: 600; font-size: 16px; margin-bottom: 12px; display: block; color: #333;
+        }
+        .${classNames.scroll} {
+            display: flex; overflow-x: auto; padding-bottom: 15px; gap: 15px;
+            scrollbar-width: thin; scrollbar-color: #E91E63 #f1f1f1;
+        }
+        .${classNames.option} {
+            flex-shrink: 0; position: relative;
+        }
+        .${classNames.option} input { display: none; }
+        .${classNames.option} label {
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+            border: 2px solid #e0e0e0; border-radius: 12px; padding: 8px; width: 100px;
+            background-color: #fff; transition: all 0.2s ease-in-out;
+        }
+        .${classNames.option} label img {
+            width: 80px; height: 80px; object-fit: contain; margin-bottom: 8px; border-radius: 8px;
+        }
+        .${classNames.option} label span { font-size: 14px; font-weight: 500; text-align: center; color: #555; }
+        .${classNames.option}.${classNames.selected} label { border-color: #E91E63; box-shadow: 0 0 10px rgba(233, 30, 99, 0.3); }
+        .${classNames.option}.${classNames.selected} label::after {
+            content: '✓'; position: absolute; top: 5px; right: 5px; background-color: #E91E63; color: white;
+            width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: bold;
+        }
+        .${classNames.scroll}::-webkit-scrollbar { height: 12px; }
+        .${classNames.scroll}::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .${classNames.scroll}::-webkit-scrollbar-thumb { background: #E91E63; border-radius: 10px; }
+        .${classNames.scroll}::-webkit-scrollbar-thumb:hover { background: #c2185b; }
+    `;
+
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+
+    if (item.isBundle || item.name.includes('Sets)') || item.name.includes('Bundle')) return;
+
     try {
-        // Lade Produktdaten
         const response = await fetch('products.json');
         const products = await response.json();
         const product = products.find(p => p.id === parseInt(item.id));
-        
-        if (!product || !product.colors || product.colors.length === 0) {
-            console.log('❌ Keine Farben für Produkt:', item.id);
-            return; // Keine Farbauswahl für dieses Produkt
-        }
-        
-        console.log('✅ Erstelle Farbauswahl für:', product.name, 'Farben:', product.colors.length);
-        
-        // Extrahiere aktuelle Farbe aus dem Produktnamen
-        const currentColor = extractColorFromName(item.name) || product.colors[0].name;
-        console.log('🎨 Aktuelle Farbe:', currentColor);
-        
-        // Erstelle bildbasierte Farbauswahl HTML
-        const isModelProduct = item.id === 21; // LED Water Ripple Crystal
-        const selectionLabel = isModelProduct ? 'Modell:' : 'Farbe:';
-        
-        const colorSelectionHtml = `
-            <div class="cart-item-color-selection" data-product-id="${item.id}">
-                <span class="cart-color-label">${selectionLabel}</span>
-                <div class="cart-color-options">
-                    ${product.colors.map(color => `
-                        <div class="cart-color-option" title="${color.name}">
-                            <input type="radio" 
-                                   id="cart-${item.id}-color-${color.name.toLowerCase().replace(/\s+/g, '-')}" 
-                                   name="cartColor-${item.id}" 
-                                   value="${color.name}"
-                                   data-product-id="${item.id}"
-                                   data-color-code="${color.code}"
-                                   data-color-price="${color.price}"
-                                   ${color.name === currentColor ? 'checked' : ''}>
-                            <label for="cart-${item.id}-color-${color.name.toLowerCase().replace(/\s+/g, '-')}" 
-                                   class="cart-color-label-image">
-                                <img src="${getColorSpecificImagePath(product, color.name)}" 
-                                     alt="${color.name}" 
-                                     class="cart-color-image"
-                                     onerror="this.src='${product.image}'">
-                                <span class="cart-color-tooltip">${color.name}</span>
-                            </label>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-        
-        // Füge Farbauswahl zum Container hinzu
-        const colorDiv = document.createElement('div');
-        colorDiv.innerHTML = colorSelectionHtml;
-        container.appendChild(colorDiv);
-        
-        // Automatisch erste Farbe auswählen und UI aktualisieren wenn noch keine Farbe gewählt
-        const firstRadio = container.querySelector('input[type="radio"]:checked');
-        if (firstRadio) {
-            const selectedColorName = firstRadio.value;
-            console.log('🎯 Erste Farbe automatisch gewählt:', selectedColorName);
-            
-            // Update Hauptbild sofort
-            setTimeout(() => {
-                const imgElement = container.closest('.cart-item').querySelector('.cart-item-image');
-                if (imgElement) {
-                    const newSrc = getColorSpecificImagePath(product, selectedColorName);
-                    console.log('🖼️ Setze initiales Hauptbild:', newSrc);
-                    imgElement.src = newSrc;
-                }
-            }, 200);
-        }
 
-        // Event Listener für Farbwechsel hinzufügen
-        container.querySelectorAll('input[type="radio"]').forEach(radio => {
+        if (!product || !product.colors || product.colors.length === 0) return;
+
+        const currentColor = extractColorFromName(item.name) || product.colors[0].name;
+        const isModelProduct = item.id === 21;
+        const selectionLabel = isModelProduct ? 'Modell:' : 'Set:';
+
+        const selectionContainer = document.createElement('div');
+        selectionContainer.className = classNames.selection;
+
+        const labelSpan = document.createElement('span');
+        labelSpan.className = classNames.mainLabel;
+        labelSpan.textContent = selectionLabel;
+        selectionContainer.appendChild(labelSpan);
+
+        const optionsContainer = document.createElement('div');
+        optionsContainer.className = classNames.scroll;
+        selectionContainer.appendChild(optionsContainer);
+
+        product.colors.forEach(color => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = classNames.option;
+            if (color.name === currentColor) optionDiv.classList.add(classNames.selected);
+
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.id = `cart-${item.id}-color-${color.name.toLowerCase().replace(/\s+/g, '-')}-${uniqueId}`;
+            input.name = `cartColor-${item.id}-${uniqueId}`;
+            input.value = color.name;
+            if (color.name === currentColor) input.checked = true;
+
+            const label = document.createElement('label');
+            label.htmlFor = input.id;
+
+            const img = document.createElement('img');
+            img.src = getColorSpecificImagePath(product, color.name);
+            img.alt = color.name;
+            img.onerror = () => { img.src = product.image; };
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = color.name;
+
+            label.appendChild(img);
+            label.appendChild(nameSpan);
+            optionDiv.appendChild(input);
+            optionDiv.appendChild(label);
+            optionsContainer.appendChild(optionDiv);
+        });
+
+        const oldSelection = container.querySelector(`[class^='cart-item-color-selection-']`);
+        if (oldSelection) oldSelection.remove();
+
+        container.appendChild(selectionContainer);
+
+        optionsContainer.querySelectorAll('input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 const colorName = e.target.value;
-                console.log('🔄 Farbwechsel zu:', colorName);
-                
-                // Update localStorage
+                optionsContainer.querySelectorAll(`.${classNames.option}`).forEach(opt => opt.classList.remove(classNames.selected));
+                e.target.closest(`.${classNames.option}`).classList.add(classNames.selected);
+
                 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 const itemIndex = cart.findIndex(cartItem => cartItem.id == item.id);
                 if (itemIndex !== -1) {
-                    // Update Produktname mit neuer Farbe
                     const baseName = cart[itemIndex].name.replace(/\s*\([^)]*\)$/, '');
                     cart[itemIndex].name = `${baseName} (${colorName})`;
                     cart[itemIndex].selectedColor = colorName;
                     localStorage.setItem('cart', JSON.stringify(cart));
-                    
-                    // Update UI - Produktname
+
                     const nameElement = container.closest('.cart-item').querySelector('h5');
-                    if (nameElement) {
-                        nameElement.textContent = cart[itemIndex].name;
-                    }
-                    
-                    // Update UI - Hauptbild mit kleiner Verzögerung
+                    if (nameElement) nameElement.textContent = cart[itemIndex].name;
+
                     setTimeout(() => {
                         const imgElement = container.closest('.cart-item').querySelector('.cart-item-image');
-                        if (imgElement) {
-                            const newSrc = getColorSpecificImagePath(product, colorName);
-                            console.log('🖼️ Neues Hauptbild:', newSrc);
-                            imgElement.src = newSrc;
-                        }
+                        if (imgElement) imgElement.src = getColorSpecificImagePath(product, colorName);
                     }, 100);
-                    
-                    console.log('✅ Farbe erfolgreich geändert zu:', colorName);
                 }
             });
         });
-        
     } catch (error) {
         console.error('❌ Fehler beim Rendern der Farbauswahl:', error);
     }
@@ -167,6 +194,20 @@ function getColorSpecificImagePath(product, colorName) {
         32: { // Indoor Sensing Wall Lamp
             'Schwarz': 'produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwartz.jpg',
             'Weiß': 'produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg'
+        },
+        33: { // Aromatherapy Essential Oil Humidifier
+            'Cherry Blossoms': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier cherry blossoms.jpg',
+            'Green Tea': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier green tea.jpg',
+            'Jasmine': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier jasmine.jpg',
+            'Lavender': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier lavender.jpg',
+            'Lemon': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier lemon.jpg',
+            'Lily': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier lily.jpg',
+            'Ocean': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier ocean.jpg',
+            'Rose': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier rose.jpg',
+            'Sandalwood': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier sandalwood.jpg',
+            'Sweet': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier sweet.jpg',
+            'Vanilla': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier vanilla.jpg',
+            'Violet': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier violet.jpg'
         }
     };
     
@@ -291,197 +332,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// CSS für bildbasierte Farbauswahl
-const imageColorStyles = `
-<style id="cart-image-color-styles">
-.cart-item-color-selection {
-    margin-top: 12px;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    display: flex !important;
-    align-items: center;
-    gap: 12px;
-}
-
-.cart-color-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #555;
-    white-space: nowrap;
-}
-
-.cart-color-options {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.cart-color-option {
-    position: relative;
-}
-
-.cart-color-option input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.cart-color-label-image {
-    display: block;
-    cursor: pointer;
-    position: relative;
-    width: 50px;
-    height: 50px;
-    border: 2px solid #e0e0e0;
-    border-radius: 6px;
-    overflow: hidden;
-    transition: all 0.2s ease;
-    background: white;
-}
-
-.cart-color-label-image:hover {
-    border-color: #007bff;
-    transform: scale(1.05);
-    box-shadow: 0 2px 8px rgba(0,123,255,0.2);
-}
-
-.cart-color-option input[type="radio"]:checked + .cart-color-label-image {
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
-}
-
-.cart-color-option input[type="radio"]:checked + .cart-color-label-image::after {
-    content: '✓';
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    background: #007bff;
-    color: white;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: bold;
-}
-
-.cart-color-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    padding: 4px;
-}
-
-.cart-color-tooltip {
-    position: absolute;
-    bottom: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #333;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-    z-index: 10;
-}
-
-.cart-color-label-image:hover .cart-color-tooltip {
-    opacity: 1;
-}
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-    .cart-item-color-selection {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        width: 100vw !important;
-    }
-    
-    .cart-color-label-image {
-        width: 60px !important;
-        height: 60px !important;
-        border: 4px solid #ffffff !important;
-        border-radius: 12px !important;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15) !important;
-        background: #ffffff !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    .cart-color-label-image:hover {
-        transform: scale(1.1) !important;
-        border-color: #007bff !important;
-        box-shadow: 0 6px 16px rgba(0,123,255,0.3) !important;
-    }
-    
-    .cart-color-option input[type="radio"]:checked + .cart-color-label-image {
-        border-color: #007bff !important;
-        border-width: 5px !important;
-        box-shadow: 0 8px 25px rgba(0,123,255,0.4), 0 0 0 2px rgba(0,123,255,0.3) !important;
-        transform: scale(1.05) !important;
-    }
-    
-    .cart-color-option input[type="radio"]:checked + .cart-color-label-image::after {
-        content: '✓' !important;
-        position: absolute !important;
-        top: 2px !important;
-        right: 2px !important;
-        background: #007bff !important;
-        color: white !important;
-        width: 18px !important;
-        height: 18px !important;
-        border-radius: 50% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 11px !important;
-        font-weight: bold !important;
-    }
-    
-    .cart-color-options {
-        gap: 30px !important;
-        padding: 8px 0 !important;
-    }
-    
-    .cart-item-color-selection {
-        padding: 16px 12px !important;
-        margin: 12px 0 !important;
-        background: transparent !important;
-        border-radius: 0 !important;
-        border: none !important;
-    }
-    
-    .cart-color-label {
-        font-size: 16px !important;
-        font-weight: 600 !important;
-        color: #495057 !important;
-        margin-bottom: 12px !important;
-        display: block !important;
-    }
-    
-    .cart-color-image {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain !important;
-        padding: 6px !important;
-        max-width: 52px !important;
-        max-height: 52px !important;
-    }
-}
-</style>
-`;
-
-// Füge Styles zum Dokument hinzu
-if (!document.getElementById('cart-image-color-styles')) {
-    document.head.insertAdjacentHTML('beforeend', imageColorStyles);
-}
 
 // Exportiere Funktionen
 window.renderImageColorSelection = renderImageColorSelection;

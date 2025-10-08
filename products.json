@@ -1130,5 +1130,162 @@
         "savings": 10
       }
     ]
+  },
+  {
+    "id": 33,
+    "name": "Aromatherapy Essential Oil Humidifier",
+    "price": 39.99,
+    "originalPrice": 59.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Aromatherapy Essential Oil Humidifier.jpg",
+    "description": "Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.",
+    "sku": "CJ09477003744E498990DA",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Cherry Blossoms",
+        "code": "#FFB6C1",
+        "sku": "CJBJPFJY00081-Cherry blossoms",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier cherry blossoms.jpg"
+      },
+      {
+        "name": "Green Tea",
+        "code": "#90EE90",
+        "sku": "CJBJPFJY00081-Green Tea",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier green tea.jpg"
+      },
+      {
+        "name": "Jasmine",
+        "code": "#F8F8FF",
+        "sku": "CJBJPFJY00081-Jasmine",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier jasmine.jpg"
+      },
+      {
+        "name": "Lavender",
+        "code": "#E6E6FA",
+        "sku": "CJBJPFJY00081-Lavender",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier lavender.jpg"
+      },
+      {
+        "name": "Lemon",
+        "code": "#FFFF99",
+        "sku": "CJBJPFJY00081-Lemon",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier lemon.jpg"
+      },
+      {
+        "name": "Lily",
+        "code": "#87CEEB",
+        "sku": "CJBJPFJY00081-Lily",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier lily.jpg"
+      },
+      {
+        "name": "Ocean",
+        "code": "#FF69B4",
+        "sku": "CJBJPFJY00081-Ocean",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier ocean.jpg"
+      },
+      {
+        "name": "Rose",
+        "code": "#D2B48C",
+        "sku": "CJBJPFJY00081-Rose",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier rose.jpg"
+      },
+      {
+        "name": "Sandalwood",
+        "code": "#F5DEB3",
+        "sku": "CJBJPFJY00081-Sandalwood",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier sandalwood.jpg"
+      },
+      {
+        "name": "Sweet",
+        "code": "#F5DEB3",
+        "sku": "CJBJPFJY00081-Sweet",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier sweet.jpg"
+      },
+      {
+        "name": "Vanilla",
+        "code": "#FFF8DC",
+        "sku": "CJBJPFJY00081-Vanilla",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier vanilla.jpg"
+      },
+      {
+        "name": "Violet",
+        "code": "#8A2BE2",
+        "sku": "CJBJPFJY00081-violet",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier violet.jpg"
+      }
+    ],
+    "features": [
+      "12 verschiedene Aromatherapy-Düfte verfügbar",
+      "Ultraschall-Technologie für feine Nebel-Verteilung",
+      "LED-Beleuchtung mit verschiedenen Farben",
+      "Automatische Abschaltung bei niedrigem Wasserstand",
+      "Leiser Betrieb für Schlafzimmer geeignet",
+      "300ml Wassertank für bis zu 10 Stunden Betrieb"
+    ],
+    "tags": [
+      "aromatherapy",
+      "humidifier",
+      "wellness",
+      "entspannung",
+      "duft",
+      "luftbefeuchter",
+      "essential oil"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Humidifier + 3 Duftöle",
+        "items": [
+          "Aromatherapy Humidifier",
+          "3 Essential Oil Samples",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 79.99,
+        "bundlePrice": 59.99,
+        "savings": 20
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Aromatherapy Set",
+        "description": "Komplettes Wellness-Paket",
+        "items": [
+          "Aromatherapy Humidifier",
+          "5 Essential Oil Samples",
+          "Reinigungsset",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 119.99,
+        "bundlePrice": 89.99,
+        "savings": 30
+      }
+    ]
   }
 ]

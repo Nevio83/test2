@@ -205,123 +205,6 @@ body {
   transform: none !important;
 }
 
-/* Farbauswahl nebeneinander auf Desktop */
-.cart-item-color-selection {
-  display: flex !important;
-  align-items: center !important;
-  gap: 1rem !important;
-  margin-top: 1rem !important;
-  padding: 0.8rem !important;
-  background: #f8f9fa !important;
-  border-radius: 8px !important;
-}
-
-.cart-color-options {
-  display: flex !important;
-  gap: 1rem !important; /* Desktop: Kompakter Abstand */
-  flex-wrap: nowrap !important; /* Keine Umbrüche auf Desktop */
-}
-
-.cart-color-option {
-  flex-shrink: 0 !important; /* Verhindert Schrumpfen */
-}
-
-.cart-color-option img {
-  width: 50px !important;
-  height: 50px !important;
-  border-radius: 8px !important;
-  object-fit: cover !important;
-  border: 2px solid #e3e8f0 !important;
-  transition: all 0.2s ease !important;
-}
-
-.cart-color-option input[type="radio"]:checked + img {
-  border-color: #667eea !important;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
-}
-
-/* Mobile Farbauswahl - linksbündig und größere Bilder */
-@media (max-width: 768px) {
-  .cart-item-color-selection {
-      align-items: flex-start !important;
-      justify-content: flex-start !important;
-      text-align: left !important;
-      padding: 0.8rem !important;
-      margin: 1rem 0 !important;
-      background: #f8f9fa !important;
-      border-radius: 8px !important;
-      width: 100% !important;
-      box-sizing: border-box !important;
-  }
-  
-  .cart-color-options {
-      display: flex !important;
-      justify-content: flex-start !important;
-      align-items: center !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      gap: 1rem !important;
-      flex-wrap: nowrap !important;
-      width: 100% !important;
-  }
-  
-  .cart-color-option {
-      flex-shrink: 0 !important;
-      display: inline-block !important;
-      position: relative !important;
-  }
-  
-  .cart-color-option input[type="radio"] {
-      position: absolute !important;
-      opacity: 0 !important;
-      width: 0 !important;
-      height: 0 !important;
-  }
-  
-  .cart-color-option label {
-      display: block !important;
-      cursor: pointer !important;
-  }
-  
-  .cart-color-option img {
-      width: 60px !important;
-      height: 60px !important;
-      border-radius: 8px !important;
-      object-fit: cover !important;
-      border: 2px solid #e3e8f0 !important;
-      transition: all 0.2s ease !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      background: #ffffff !important;
-      cursor: pointer !important;
-  }
-  
-  .cart-color-option input[type="radio"]:checked + label img {
-      border-color: #667eea !important;
-      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3) !important;
-  }
-  
-  .cart-color-label {
-      text-align: left !important;
-      margin: 0 0 0.8rem 0 !important;
-      padding: 0 !important;
-      font-size: 1.1rem !important;
-      font-weight: 600 !important;
-      color: #2c3e50 !important;
-  }
-  
-  /* Farbnamen unter den Bildern */
-  .cart-color-option::after {
-      content: attr(data-color-name) !important;
-      display: block !important;
-      margin-top: 0.5rem !important;
-      font-size: 0.9rem !important;
-      font-weight: 500 !important;
-      color: #6c757d !important;
-      text-align: center !important;
-  }
-}
 
 .remove-btn {
   width: 40px;
@@ -3863,4 +3746,161 @@ border-bottom: 1px solid #e0e0e0 !important;
   .cart-layout {
     gap: 0.6rem !important;
   }
+}
+
+/* ========================================
+   CART COLOR SELECTION SCROLLBAR STYLES
+   Genau wie bundle-images-final.js
+   ======================================== */
+
+/* Farbauswahl Container - wie bundle-images-final.js */
+.cart-item-color-selection {
+    display: flex !important;
+    gap: 6px !important;
+    overflow-x: scroll !important;
+    overflow-y: hidden !important;
+    padding: 5px 0 15px 0 !important;
+    margin: 8px 0 !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+    max-width: 400px !important;
+    width: 100% !important;
+    scrollbar-width: auto !important;
+    scrollbar-color: #E91E63 #f1f1f1 !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+}
+
+/* Scrollbar Styles - wie bundle-images-final.js */
+.cart-item-color-selection::-webkit-scrollbar {
+    height: 12px !important;
+    width: 12px !important;
+    display: block !important;
+    -webkit-appearance: none !important;
+}
+
+.cart-item-color-selection::-webkit-scrollbar-track {
+    background: #f1f1f1 !important;
+    border-radius: 6px !important;
+    border: 1px solid #ddd !important;
+}
+
+.cart-item-color-selection::-webkit-scrollbar-thumb {
+    background: #E91E63 !important;
+    border-radius: 6px !important;
+    border: 2px solid #fff !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+
+.cart-item-color-selection::-webkit-scrollbar-thumb:hover {
+    background: #c2185b !important;
+}
+
+.cart-item-color-selection::-webkit-scrollbar-corner {
+    background: #f1f1f1 !important;
+}
+
+/* Farboptionen - wie bundle-images-final.js */
+.cart-color-option {
+    position: relative !important;
+    border: 3px solid #e0e0e0 !important;
+    border-radius: 10px !important;
+    padding: 5px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
+    background: white !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+    flex-shrink: 0 !important;
+    min-width: 80px !important;
+    width: 80px !important;
+    max-width: 80px !important;
+}
+
+.cart-color-option:hover {
+    border-color: #E91E6380 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 10px rgba(233,30,99,0.2) !important;
+}
+
+.cart-color-option.selected,
+.cart-color-option input:checked + label {
+    border-color: #E91E63 !important;
+    box-shadow: 0 4px 12px rgba(233,30,99,0.4) !important;
+}
+
+/* Farbbilder - wie bundle-images-final.js */
+.cart-item-color-selection img,
+.cart-color-option img {
+    width: 70px !important;
+    height: 70px !important;
+    object-fit: cover !important;
+    border-radius: 6px !important;
+    display: block !important;
+}
+
+.cart-color-option:hover img {
+    transform: scale(1.05) !important;
+}
+
+/* Stelle sicher, dass Farbbilder nicht umbrechen */
+.cart-item-color-selection > * {
+    flex-shrink: 0;
+}
+
+/* Mobile Optimierungen */
+@media (max-width: 768px) {
+    .cart-item-color-selection {
+        gap: 4px;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: auto;
+        -ms-overflow-style: auto;
+        padding: 5px 0 15px 0;
+        max-width: 300px;
+    }
+    
+    .cart-item-color-selection::-webkit-scrollbar {
+        height: 8px;
+        display: block;
+    }
+    
+    .cart-item-color-selection > *,
+    .cart-color-option {
+        border-width: 2px;
+        border-radius: 8px;
+        padding: 3px;
+        flex-shrink: 0;
+        min-width: 65px;
+        width: 65px;
+        max-width: 65px;
+    }
+    
+    .cart-item-color-selection img,
+    .cart-color-option img {
+        width: 59px;
+        height: 59px;
+        border-radius: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cart-item-color-selection {
+        max-width: 250px;
+        gap: 3px;
+    }
+    
+    .cart-item-color-selection > *,
+    .cart-color-option {
+        min-width: 60px;
+        width: 60px;
+        max-width: 60px;
+    }
+    
+    .cart-item-color-selection img,
+    .cart-color-option img {
+        width: 54px;
+        height: 54px;
+    }
 }
