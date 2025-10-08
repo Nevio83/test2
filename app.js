@@ -2221,20 +2221,19 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('âŒ No products found in JSON file!');
         return;
       }
-      
       // Lade Bestseller mit der funktionierenden Methode
       const bestsellerProducts = [];
       const categories = ['Haushalt und KÃ¼che', 'Technik/Gadgets', 'Beleuchtung', 'KÃ¶rperpflege/Wellness'];
       
-      // Get 1-2 products from each category for variety
+      // Get 1-2 products from each category for variety (exclude products with showInSlider: false)
       categories.forEach(category => {
-        const categoryProducts = products.filter(p => p.category === category).slice(0, 2);
+        const categoryProducts = products.filter(p => p.category === category && p.showInSlider !== false).slice(0, 2);
         bestsellerProducts.push(...categoryProducts);
       });
       
-      // If we don't have enough, fill with remaining products
+      // If we don't have enough, fill with remaining products (exclude products with showInSlider: false)
       if (bestsellerProducts.length < 6) {
-        const remaining = products.filter(p => !bestsellerProducts.includes(p)).slice(0, 6 - bestsellerProducts.length);
+        const remaining = products.filter(p => !bestsellerProducts.includes(p) && p.showInSlider !== false).slice(0, 6 - bestsellerProducts.length);
         bestsellerProducts.push(...remaining);
       }
       
@@ -3503,8 +3502,8 @@ function loadCategoryProducts(products) {
             return;
         }
         
-        // Filter products for this category
-        const categoryProducts = products.filter(p => p.category === categoryName);
+        // Filter products for this category (exclude products with showInSlider: false)
+        const categoryProducts = products.filter(p => p.category === categoryName && p.showInSlider !== false);
         
         if (categoryProducts.length > 0) {
             console.log(`âœ… Rendering ${categoryProducts.length} products to ${gridId}`);

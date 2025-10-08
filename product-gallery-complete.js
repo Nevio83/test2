@@ -17,18 +17,18 @@ class ProductImageGallery {
         this.productId = productId;
         this.productName = productName;
         this.currentImageIndex = 0;
-        this.images = [];
         this.galleryContainer = null;
         this.mainImage = null;
         this.thumbnailsContainer = null;
         
-        // Mapping der Produkt-IDs zu ihren Bildordnern
-        this.productImageFolders = {
+        // Mapping der Produkte-IDs zu ihren Bildordnern
+        const productImageFolders = {
             10: 'Elektrischer Wasserspender für Schreibtisch bilder',
             11: '350ml Elektrischer Mixer Entsafter bilder',
             17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
             21: 'LED Water Ripple Crystal bilder',
-            26: '4 In 1 Self Cleaning Hair Brush bilder'
+            26: '4 In 1 Self Cleaning Hair Brush bilder',
+            32: 'Indoor Sensing Wall Lamp bilder'
         };
         
         this.init();
@@ -38,6 +38,16 @@ class ProductImageGallery {
     }
     
     init() {
+        // Mapping der Produkte-IDs zu ihren Bildordnern
+        this.productImageFolders = {
+            10: 'Elektrischer Wasserspender für Schreibtisch bilder',
+            11: '350ml Elektrischer Mixer Entsafter bilder',
+            17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
+            21: 'LED Water Ripple Crystal bilder',
+            26: '4 In 1 Self Cleaning Hair Brush bilder',
+            32: 'Indoor Sensing Wall Lamp bilder'
+        };
+        
         // Prüfe ob dieses Produkt einen Bildordner hat
         if (this.productImageFolders[this.productId]) {
             this.loadProductImages();
@@ -168,6 +178,36 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/4 In 1 Self Cleaning Hair Brush lunar rock.jpg`,
                         alt: '4 In 1 Self Cleaning Hair Brush - Lunar Rock',
                         color: 'Lunar Rock'
+                    }
+                ];
+                break;
+                
+            case 32: // Indoor Sensing Wall Lamp
+                this.images = [
+                    {
+                        src: `../produkt bilder/Indoor Sensing Wall Lamp.jpg`,
+                        alt: 'Indoor Sensing Wall Lamp - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Indoor Sensing Wall Lamp schwartz.jpg`,
+                        alt: 'Indoor Sensing Wall Lamp - Schwarz',
+                        color: 'Schwarz'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Indoor Sensing Wall Lamp weiß.jpg`,
+                        alt: 'Indoor Sensing Wall Lamp - Weiß',
+                        color: 'Weiß'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Indoor Sensing Wall Lamp anleitung.jpg`,
+                        alt: 'Indoor Sensing Wall Lamp - Anleitung',
+                        color: 'Anleitung'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Indoor Sensing Wall Lamp level.jpg`,
+                        alt: 'Indoor Sensing Wall Lamp - Level',
+                        color: 'Level'
                     }
                 ];
                 break;
@@ -664,7 +704,8 @@ class ProductImageFullscreen {
                 11: '350ml Elektrischer Mixer Entsafter bilder',
                 17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
                 21: 'LED Water Ripple Crystal bilder',
-                26: '4 In 1 Self Cleaning Hair Brush bilder'
+                26: '4 In 1 Self Cleaning Hair Brush bilder',
+                32: 'Indoor Sensing Wall Lamp bilder'
             };
             
             if (tempGallery.productImageFolders[productId]) {
@@ -776,13 +817,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (match) {
         const productId = parseInt(match[1]);
         
-        // Hole Produktname aus dem Seitentitel oder H1
         const productName = document.querySelector('h1')?.textContent || 
                           document.querySelector('.product-title')?.textContent || 
                           'Produkt';
         
         // Initialisiere Gallery nur für Produkte mit Bildordnern
-        if ([10, 11, 17, 21, 26].includes(productId)) {
+        if ([10, 11, 17, 21, 26, 32].includes(productId)) {
             new ProductImageGallery(productId, productName);
         }
     }
