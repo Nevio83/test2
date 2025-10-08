@@ -61,8 +61,8 @@ class ProductImageGallery {
                     },
                     {
                         src: `../produkt bilder/${folderName}/Elektrischer Wasserspender für Schreibtisch schwarz.jpg`,
-                        alt: 'Elektrischer Wasserspender für Schreibtisch - Blau',
-                        color: 'Blau'
+                        alt: 'Elektrischer Wasserspender für Schreibtisch - Schwarz',
+                        color: 'Schwarz'
                     },
                     {
                         src: `../produkt bilder/${folderName}/Elektrischer Wasserspender für Schreibtisch weiß.jpg`,
