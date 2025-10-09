@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Neck Lifting And Tighten Massager - Marktplatz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="koerperpflege-wellness.css" rel="stylesheet">
+    <link rel="stylesheet" href="../product-image-fullscreen.css">
+    <link rel="stylesheet" href="../product-image-gallery.css">
+    <link rel="stylesheet" href="../color-image-selection.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                <i class="bi bi-shop"></i> Marktplatz
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a href="../index.html" class="nav-link modern-nav-link">
+                    <i class="bi bi-house-door-fill"></i> Startseite
+                </a>
+                <a href="../cart.html" class="nav-link modern-nav-link cart-nav-link">
+                    <i class="bi bi-cart3-fill"></i> Warenkorb
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Produkt Hero Section -->
+    <section class="product-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-3">Thermal Neck Lifting And Tighten Massager</h1>
+                    <p class="lead mb-4">Ein EMS Thermal Neck Lifting und Tighten Massager, der mit elektrischem Mikrostrom Falten entfernt und die Haut strafft. Ideal für eine entspannende und verjüngende Nackenmassage.</p>
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <span class="price-tag">€19.99</span>
+                        <span class="text-muted text-decoration-line-through">€29.99</span>
+                        <span class="badge bg-success">Kostenloser Versand in Europa</span>
+                    </div>
+                    <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn">
+                        <i class="bi bi-cart-plus"></i> In den Warenkorb
+                    </button>
+                    <button class="btn btn-outline-light btn-lg wishlist-style-btn wishlist-button" id="wishlistBtn">
+                        <i class="bi bi-heart"></i> Merken
+                    </button>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="../produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg" alt="Thermal Neck Lifting And Tighten Massager" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Produktdetails -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="mb-4">Produktbeschreibung</h2>
+                    <p class="lead mb-4">Ein EMS Thermal Neck Lifting und Tighten Massager, der mit elektrischem Mikrostrom Falten entfernt und die Haut strafft. Ideal für eine entspannende und verjüngende Nackenmassage.</p>
+                    
+                    <h3>Hauptmerkmale</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>EMS Mikrostrom zur Faltenreduzierung</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Thermische Nackenlifting-Funktion</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Fördert die Hautstraffung und Elastizität</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Entspannende und verjüngende Massage</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Tragbar und einfach zu bedienen</li>
+                    </ul>
+
+                    <h3 class="mt-4">Technische Spezifikationen</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Kategorie:</strong> Körperpflege/Wellness</p>
+                            <p><strong>Artikelnummer:</strong> 035</p>
+                            <p><strong>Preis:</strong> €19.99</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Verfügbarkeit:</strong> Auf Lager</p>
+                            <p><strong>Lieferzeit:</strong> 7-15 Werktage</p>
+                        </div>
+                    </div>
+
+                    <!-- Schnellbestellung (Mobile only) -->
+                    <div class="quick-order-card mt-5 d-lg-none">
+                        <div class="quick-order-header">
+                            <h4>Schnellbestellung</h4>
+                        </div>
+                        <div class="quick-order-body">
+                            <div class="quantity-section">
+                                <label class="quantity-label">Menge:</label>
+                                <div class="quantity-input-group" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 12px; padding: 4px; gap: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <button class="quantity-btn" onclick="decreaseMobileQuantity()" style="width: 45px; height: 45px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">−</button>
+                                    <select class="form-select" id="quantity-mobile" onchange="updateTotalPrice()" style="flex: 1; border: none; background: transparent; text-align: center; font-size: 18px; font-weight: 600; padding: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3e%3cpolyline points=%226 9 12 15 18 9%22%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 8px center; background-size: 20px; padding-right: 30px;">
+                                        <!-- Options will be generated by JavaScript -->
+                                    </select>
+                                    <button class="quantity-btn" onclick="increaseMobileQuantity()" style="width: 45px; height: 45px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">+</button>
+                                </div>
+                            </div>
+                            <div class="price-section">
+                                <div class="current-price">€19.99</div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="buy-now-btn" id="buyNowBtnMobile">
+                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
+                                </button>
+                                <button class="wishlist-btn wishlist-style-btn wishlist-button">
+                                    <i class="bi bi-heart"></i> Zur Wunschliste
+                                </button>
+                            </div>
+                            <div class="features-section">
+                                <ul class="features-list">
+                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
+                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bundle-Box -->
+                    <div id="bundle-section" class="mt-5"></div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="quick-order-card d-none d-lg-block">
+                        <div class="quick-order-header">
+                            <h4>Schnellbestellung</h4>
+                        </div>
+                        <div class="quick-order-body">
+                            <div class="quantity-section">
+                                <label class="quantity-label">Menge:</label>
+                                <div class="quantity-input-group">
+                                    <button class="quantity-btn" onclick="decreaseQuantity(event)">-</button>
+                                    <input type="number" class="quantity-input" id="quantity" value="1" min="1" max="999">
+                                    <button class="quantity-btn" onclick="increaseQuantity(event)">+</button>
+                                </div>
+                            </div>
+                            
+                            <div class="price-section">
+                                <div class="current-price">€19.99</div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="buy-now-btn" id="buyNowBtn">
+                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
+                                </button>
+                                <button class="wishlist-btn wishlist-style-btn wishlist-button">
+                                    <i class="bi bi-heart"></i> Zur Wunschliste
+                                </button>
+                            </div>
+                            
+                            <div class="features-section">
+                                <ul class="features-list">
+                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
+                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ähnliche Produkte -->
+    <section class="py-5 similar-products-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Ähnliche Produkte</h2>
+                <p class="section-subtitle">Entdecken Sie weitere Produkte, die Ihnen gefallen könnten</p>
+            </div>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4" id="similar-products-grid">
+                <!-- Similar products will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>&copy; 2024 Marktplatz - Alle Rechte vorbehalten</p>
+        </div>
+    </footer>
+
+    <script>
+        // Produktdaten für diese Seite
+        const product = {
+            id: 35,
+            name: "Thermal Neck Lifting And Tighten Massager",
+            price: 19.99,
+            originalPrice: 29.99,
+            category: "Körperpflege/Wellness",
+            image: "../produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg",
+            description: "Ein EMS Thermal Neck Lifting und Tighten Massager, der mit elektrischem Mikrostrom Falten entfernt und die Haut strafft. Ideal für eine entspannende und verjüngende Nackenmassage.",
+            sku: "CJYD1887254",
+            inStock: true,
+            shippingTime: "7-15 Werktage",
+            colors: [
+              {
+                name: "Schwarz",
+                code: "#000000",
+                sku: "CJYD188725403CX",
+                price: 19.99,
+                originalPrice: 29.99,
+                image: "../produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager schwarz.jpg"
+              },
+              {
+                name: "Weiß",
+                code: "#FFFFFF",
+                sku: "CJYD188725404DW",
+                price: 19.99,
+                originalPrice: 29.99,
+                image: "../produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager weiß.jpg"
+              }
+            ]
+        };
+
+        // Mache Produktdaten global verfügbar
+        window.product = product;
+
+        // Funktion zum Laden ähnlicher Produkte
+        async function loadSimilarProducts(category, currentProductId) {
+            const grid = document.getElementById('similar-products-grid');
+            if (!grid) return;
+
+            try {
+                const response = await fetch('../products.json');
+                const allProducts = await response.json();
+                const similar = allProducts.filter(p => p.category === category && p.id !== currentProductId).slice(0, 4);
+
+                if (similar.length > 0) {
+                    grid.innerHTML = similar.map(p => `
+                        <div class="col">
+                            <div class="similar-product-card" onclick="window.location.href='produkt-${p.id}.html'">
+                                <div class="product-image-wrapper">
+                                    <img src="../${p.image}" class="product-image" alt="${p.name}">
+                                </div>
+                                <div class="product-info">
+                                    <h5 class="product-title">${p.name}</h5>
+                                    <div class="price-container"><span class="current-price">€${p.price.toFixed(2)}</span></div>
+                                    <div class="view-product-btn">
+                                        <span>Jetzt ansehen</span>
+                                        <i class="bi bi-arrow-right"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    grid.innerHTML = '<p>Keine ähnlichen Produkte gefunden.</p>';
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden ähnlicher Produkte:', error);
+                grid.innerHTML = '<p>Fehler beim Laden.</p>';
+            }
+        }
+
+        // Vollständige Button-Funktionalität
+        function addToCart(product) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existing = cart.find(item => Number(item.id) === Number(product.id) && !item.bundleId);
+            if (existing) {
+                existing.quantity += product.quantity || 1;
+            } else {
+                cart.push({ ...product, quantity: product.quantity || 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function showAlert(message, redirectTo = 'cart.html') {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success position-fixed end-0 m-4 shadow-lg fade show';
+            alert.style.zIndex = '20000';
+            alert.style.fontSize = '1rem';
+            alert.style.minWidth = '160px';
+            alert.style.maxWidth = '320px';
+            alert.style.padding = '0.75rem 2rem';
+            alert.style.textAlign = 'center';
+            alert.style.borderRadius = '2rem';
+            alert.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+            alert.style.background = 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)';
+            alert.style.color = '#fff';
+            alert.style.fontWeight = '500';
+            alert.style.letterSpacing = '0.02em';
+            alert.style.pointerEvents = 'auto';
+            alert.style.position = 'fixed';
+            alert.style.right = '2.5rem';
+            alert.style.top = 'calc(56px + 1.2rem)';
+            alert.style.cursor = 'pointer';
+            alert.textContent = message;
+            alert.addEventListener('click', () => {
+                window.location.href = '../' + redirectTo;
+            });
+            document.body.appendChild(alert);
+            setTimeout(() => {
+                if (document.body.contains(alert)) {
+                    alert.classList.remove('show');
+                    alert.classList.add('fade');
+                    setTimeout(() => alert.remove(), 400);
+                }
+            }, 1700);
+        }
+
+        function getWishlist() {
+            return JSON.parse(localStorage.getItem('wishlist')) || [];
+        }
+        
+        function setWishlist(wishlist) {
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+        
+        function isInWishlist(id) {
+            return getWishlist().some(item => Number(item.id) === Number(id));
+        }
+        
+        function toggleWishlistLocal(product) {
+            let wishlist = getWishlist();
+            const wasInList = isInWishlist(product.id);
+            if (wasInList) {
+                wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
+                showAlert('Von der Wunschliste entfernt', 'wishlist.html');
+            } else {
+                wishlist.push({ id: product.id, name: product.name, price: product.price, image: product.image, description: product.description });
+                showAlert('Zur Wunschliste hinzugefügt', 'wishlist.html');
+            }
+            setWishlist(wishlist);
+            updateAllWishlistButtons();
+        }
+        
+        function updateAllWishlistButtons() {
+            const isInList = isInWishlist(product.id);
+            document.querySelectorAll('.wishlist-button').forEach(btn => {
+                if (isInList) {
+                    btn.classList.add('active');
+                    btn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="bi bi-heart"></i> Zur Wunschliste';
+                }
+            });
+        }
+
+        function updateTotalPrice() {
+            const mobileQuantity = parseInt(document.getElementById('quantity-mobile')?.value, 10) || 1;
+            const desktopQuantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
+            const mobileTotal = (product.price * mobileQuantity).toFixed(2);
+            const desktopTotal = (product.price * desktopQuantity).toFixed(2);
+            document.querySelectorAll('.d-lg-none .current-price').forEach(el => el.textContent = `€${mobileTotal}`);
+            document.querySelectorAll('.d-none.d-lg-block .current-price').forEach(el => el.textContent = `€${desktopTotal}`);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileSelect = document.getElementById('quantity-mobile');
+            if (mobileSelect) {
+                for (let i = 1; i <= 10; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i;
+                    mobileSelect.appendChild(option);
+                }
+            }
+
+            document.getElementById('cartBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const selectedColor = window.getSelectedColor ? window.getSelectedColor() : 'Blau';
+                const colorData = product.colors.find(c => c.name === selectedColor) || product.colors[0];
+                addToCart({ id: product.id, name: `${product.name} (${selectedColor})`, price: colorData.price, image: colorData.image, description: product.description, quantity: 1, selectedColor: selectedColor });
+                showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
+            });
+
+            document.querySelectorAll('.wishlist-button').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleWishlistLocal(product);
+                });
+            });
+
+            document.getElementById('buyNowBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const quantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
+                const selectedColor = window.getSelectedColor ? window.getSelectedColor() : 'Blau';
+                addToCart({ id: product.id, name: `${product.name} (${selectedColor})`, price: product.price, image: product.image, description: product.description, quantity: quantity });
+                setTimeout(() => { window.location.href = '../cart.html'; }, 500);
+            });
+
+            document.getElementById('buyNowBtnMobile').addEventListener('click', function(e) {
+                e.preventDefault();
+                const quantity = parseInt(document.getElementById('quantity-mobile')?.value, 10) || 1;
+                const selectedColor = window.getSelectedColor ? window.getSelectedColor() : 'Blau';
+                addToCart({ id: product.id, name: `${product.name} (${selectedColor})`, price: product.price, image: product.image, description: product.description, quantity: quantity });
+                setTimeout(() => { window.location.href = '../cart.html'; }, 500);
+            });
+
+            document.getElementById('quantity')?.addEventListener('input', updateTotalPrice);
+            document.getElementById('quantity-mobile')?.addEventListener('change', updateTotalPrice);
+            updateTotalPrice();
+
+            setTimeout(() => {
+                if (window.ProductImageGallery) {
+                    new window.ProductImageGallery(35, 'Thermal Neck Lifting And Tighten Massager');
+                }
+                updateAllWishlistButtons();
+                loadSimilarProducts(product.category, product.id);
+            }, 100);
+        });
+    </script>
+
+    <!-- Scripts -->
+    <script src="../app.js" defer></script>
+    <script src="../color-cart-bridge.js"></script>
+    <script src="../color-image-selection.js"></script>
+    <script src="../bundle-images-final.js"></script>
+    <script src="../product-gallery-complete.js"></script>
+</body>
+</html>
