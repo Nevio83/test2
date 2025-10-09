@@ -124,6 +124,12 @@ async function renderImageColorSelection(item, container) {
 
         container.appendChild(selectionContainer);
 
+        // Update the main image immediately
+        const mainImage = container.closest('.cart-item').querySelector('.cart-item-image');
+        if (mainImage) {
+            mainImage.src = getColorSpecificImagePath(product, currentColor);
+        }
+
         optionsContainer.querySelectorAll('input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 const colorName = e.target.value;
@@ -192,7 +198,7 @@ function getColorSpecificImagePath(product, colorName) {
             'Lunar Rock': 'produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg'
         },
         32: { // Indoor Sensing Wall Lamp
-            'Schwarz': 'produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwartz.jpg',
+            'Schwarz': 'produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwarz.jpg',
             'Weiß': 'produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg'
         },
         33: { // Aromatherapy Essential Oil Humidifier
