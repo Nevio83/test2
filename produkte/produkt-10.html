@@ -908,6 +908,75 @@
       }
     }
   }
+
+    // Fullscreen-Funktionalität für Hauptproduktbild
+    const mainProductImage = document.querySelector('.main-product-image');
+    if (mainProductImage) {
+        mainProductImage.style.cursor = 'zoom-in';
+        mainProductImage.addEventListener('click', function() {
+            // Erstelle Fullscreen Modal
+            const modal = document.createElement('div');
+            modal.className = 'image-fullscreen-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: zoom-out;
+            `;
+            
+            const img = document.createElement('img');
+            img.src = this.src;
+            img.alt = this.alt;
+            img.style.cssText = `
+                max-width: 90%;
+                max-height: 90%;
+                object-fit: contain;
+                border-radius: 8px;
+            `;
+            
+            const closeBtn = document.createElement('span');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 20px;
+                right: 30px;
+                color: white;
+                font-size: 40px;
+                font-weight: bold;
+                cursor: pointer;
+            `;
+            
+            modal.appendChild(img);
+            modal.appendChild(closeBtn);
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+            
+            // Event-Listener zum Schließen
+            const closeModal = () => {
+                document.body.removeChild(modal);
+                document.body.style.overflow = 'auto';
+            };
+            
+            modal.addEventListener('click', closeModal);
+            closeBtn.addEventListener('click', closeModal);
+            
+            // ESC-Taste zum Schließen
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
+        });
+    }
 </script>
 
 <!-- App.js für globale Funktionen -->
