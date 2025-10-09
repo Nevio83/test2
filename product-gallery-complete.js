@@ -48,9 +48,7 @@ class ProductImageGallery {
             32: 'Indoor Sensing Wall Lamp bilder',
             33: 'Aromatherapy essential oil humidifier bilder',
             34: 'Moisturizing Face Steamer bilder',
-            35: 'Thermal Neck Lifting And Tighten Massager bilder',
-            38: 'Jade Massager bilder',
-            40: 'Mug Warmer Pad bilder'
+            35: 'Thermal Neck Lifting And Tighten Massager bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -322,101 +320,6 @@ class ProductImageGallery {
                     {
                         src: `../produkt bilder/${folderName}/Thermal Neck Lifting And Tighten Massager weiß.jpg`,
                         alt: 'Thermal Neck Lifting And Tighten Massager - Weiß',
-                        color: 'Weiß'
-                    }
-                ];
-                break;
-
-            case 38: // Jade Massager
-                this.images = [
-                    {
-                        src: `../produkt bilder/Jade Massager.jpg`,
-                        alt: 'Jade Massager - Hauptbild',
-                        color: 'Standard'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager schwarz.jpg`,
-                        alt: 'Jade Massager - Schwarz',
-                        color: 'Schwarz'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager grün.jpg`,
-                        alt: 'Jade Massager - Grün',
-                        color: 'Grün'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager hell grün.jpg`,
-                        alt: 'Jade Massager - Hellgrün',
-                        color: 'Hellgrün'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager pink.jpg`,
-                        alt: 'Jade Massager - Pink',
-                        color: 'Pink'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager lila.jpg`,
-                        alt: 'Jade Massager - Lila',
-                        color: 'Lila'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager weiß.jpg`,
-                        alt: 'Jade Massager - Weiß',
-                        color: 'Weiß'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager gelb.jpg`,
-                        alt: 'Jade Massager - Gelb',
-                        color: 'Gelb'
-                    }
-                ];
-                break;
-
-            case 40: // Mug Warmer Pad
-                this.images = [
-                    {
-                        src: `../produkt bilder/Mug Warmer Pad.jpg`,
-                        alt: 'Mug Warmer Pad - Hauptbild',
-                        color: 'Standard'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad pink.jpg`,
-                        alt: 'Mug Warmer Pad - Pink',
-                        color: 'Pink'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad grün.jpg`,
-                        alt: 'Mug Warmer Pad - Grün',
-                        color: 'Grün'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad weiß.jpg`,
-                        alt: 'Mug Warmer Pad - Weiß',
-                        color: 'Weiß'
-                    }
-                ];
-                break;
-
-            case 40: // Mug Warmer Pad
-                this.images = [
-                    {
-                        src: `../produkt bilder/Mug Warmer Pad.jpg`,
-                        alt: 'Mug Warmer Pad - Hauptbild',
-                        color: 'Standard'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad pink.jpg`,
-                        alt: 'Mug Warmer Pad - Pink',
-                        color: 'Pink'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad grün.jpg`,
-                        alt: 'Mug Warmer Pad - Grün',
-                        color: 'Grün'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad weiß.jpg`,
-                        alt: 'Mug Warmer Pad - Weiß',
                         color: 'Weiß'
                     }
                 ];
