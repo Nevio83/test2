@@ -46,7 +46,7 @@ class ProductImageGallery {
             21: 'LED Water Ripple Crystal bilder',
             26: '4 In 1 Self Cleaning Hair Brush bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
-            33: 'Aromatherapy Essential Oil Humidifier bilder'
+            33: 'Aromatherapy essential oil humidifier bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -216,68 +216,68 @@ class ProductImageGallery {
             case 33: // Aromatherapy Essential Oil Humidifier
                 this.images = [
                     {
-                        src: `../produkt bilder/Aromatherapy Essential Oil Humidifier.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Hauptbild',
+                        src: `../produkt bilder/Aromatherapy essential oil humidifier.jpg`,
+                        alt: 'Aromatherapy Humidifier - Hauptansicht',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier cherry blossoms.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Cherry Blossoms',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier Cherry blossoms.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Kirschblüte',
                         color: 'Cherry Blossoms'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier green tea.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Green Tea',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier green tea.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Grüner Tee',
                         color: 'Green Tea'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier jasmine.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Jasmine',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier jasmine.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Jasmin',
                         color: 'Jasmine'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier lavender.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Lavender',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier lavender.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Lavendel',
                         color: 'Lavender'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier lemon.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Lemon',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier lemon.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Zitrone',
                         color: 'Lemon'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier lily.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Lily',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier lily.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Lilie',
                         color: 'Lily'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier ocean.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Ocean',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier ocean.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Ozean',
                         color: 'Ocean'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier rose.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Rose',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier rose.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Rose',
                         color: 'Rose'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier sandalwood.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Sandalwood',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier sandalwood.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Sandelholz',
                         color: 'Sandalwood'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier sweet.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Sweet',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier sweet.jpg`,
+                        alt: 'Aromatherapy Humidifier - Süßlicher Duft',
                         color: 'Sweet'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier vanilla.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Vanilla',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier vanilla.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Vanille',
                         color: 'Vanilla'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Aromatherapy Essential Oil Humidifier violet.jpg`,
-                        alt: 'Aromatherapy Essential Oil Humidifier - Violet',
+                        src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier violet.jpg`,
+                        alt: 'Aromatherapy Humidifier - Duftrichtung Veilchen',
                         color: 'Violet'
                     }
                 ];
