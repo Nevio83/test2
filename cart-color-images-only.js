@@ -196,18 +196,18 @@ function getColorSpecificImagePath(product, colorName) {
             'Weiß': 'produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg'
         },
         33: { // Aromatherapy Essential Oil Humidifier
-            'Cherry Blossoms': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier cherry blossoms.jpg',
-            'Green Tea': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier green tea.jpg',
-            'Jasmine': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier jasmine.jpg',
-            'Lavender': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier lavender.jpg',
-            'Lemon': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier lemon.jpg',
-            'Lily': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier lily.jpg',
-            'Ocean': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier ocean.jpg',
-            'Rose': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier rose.jpg',
-            'Sandalwood': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier sandalwood.jpg',
-            'Sweet': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier sweet.jpg',
-            'Vanilla': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier vanilla.jpg',
-            'Violet': 'produkt bilder/Aromatherapy Essential Oil Humidifier bilder/Aromatherapy Essential Oil Humidifier violet.jpg'
+            'Cherry Blossoms': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg',
+            'Green Tea': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg',
+            'Jasmine': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier jasmine.jpg',
+            'Lavender': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lavender.jpg',
+            'Lemon': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lemon.jpg',
+            'Lily': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lily.jpg',
+            'Ocean': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier ocean.jpg',
+            'Rose': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier rose.jpg',
+            'Sandalwood': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sandalwood.jpg',
+            'Sweet': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sweet.jpg',
+            'Vanilla': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier vanilla.jpg',
+            'Violet': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier violet.jpg'
         }
     };
     
