@@ -23,6 +23,10 @@
             gap: 0.5rem;
             margin-bottom: 0.75rem;
         }
+        /* Überschreibe alte Styles - keine runden Buttons mehr */
+        .old-color-option {
+            /* Alte Styles deaktiviert */
+        }
         .color-option[data-color="#FFFFFF"],
         .color-option[data-color="#FFF0F5"] {
             border: 2px solid #ddd;
@@ -57,7 +61,63 @@
             animation: colorChange 0.3s ease;
         }
         @keyframes colorChange {
+            0% { transform: scale(1); }
             50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+    <style>
+        .product-hero {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 4rem 0;
+        }
+        .product-image {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .product-image:hover {
+            transform: scale(1.02);
+        }
+        .price-tag {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        /* Added animation CSS classes for consistent animations */
+        .success-animation {
+            animation: successAnimation 0.6s ease;
+        }
+        @keyframes successAnimation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .heart-pulse {
+            animation: heartPulse 0.6s ease;
+        }
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .cart-rainbow-bounce {
+            animation: cartRainbowBounce 1s ease;
+        }
+        @keyframes cartRainbowBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .cart-icon-pulse {
+            animation: cartIconPulse 0.6s ease;
+        }
+        @keyframes cartIconPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
     </style>
@@ -140,13 +200,13 @@
                         </div>
                     </div>
 
-                    <p><strong>Material:</strong> ABS Kunststoff</p>
-                    <p><strong>Stromversorgung:</strong> USB wiederaufladbar</p>
-                    <p><strong>Kapazität:</strong> Für 5L Flaschen geeignet</p>
-                    <p><strong>Leistung:</strong> 5W</p>
-                    <p><strong>Pumpenleistung:</strong> 1.2L/min</p>
-                    <p><strong>Gewicht:</strong> 800 Gramm</p>
-                    <p><strong>Abmessungen:</strong> 30 x 12 x 10 cm</p>
+                    <p><strong>Material:</strong> Edelstahl + ABS Kunststoff</p>
+                    <p><strong>Druck:</strong> 15 Bar</p>
+                    <p><strong>Kapazität:</strong> 350ml</p>
+                    <p><strong>Leistung:</strong> 300 Watt</p>
+                    <p><strong>Material:</strong> BPA-freier Kunststoff</p>
+                    <p><strong>Gewicht:</strong> 600 Gramm</p>
+                    <p><strong>Abmessungen:</strong> 22 x 8 cm</p>
 
                     <!-- Schnellbestellung (Mobile only) -->
                     <div class="quick-order-card mt-5 d-lg-none">
@@ -164,7 +224,8 @@
                                 </div>
                             </div>
                             <div class="price-section">
-                                <div class="current-price">€49.99</div>
+                                <div class="current-price">€19.99</div>
+                                <div class="total-price">Gesamt: <span id="totalPrice-mobile" class="text-success">€19.99</span></div>
                             </div>
                             <div class="action-buttons">
                                 <button class="buy-now-btn" id="buyNowBtnMobile">
@@ -205,7 +266,8 @@
                             </div>
                             
                             <div class="price-section">
-                                <div class="current-price">€49.99</div>
+                                <div class="current-price">€19.99</div>
+                                <div class="total-price">Gesamt: <span id="totalPrice">€19.99</span></div>
                             </div>
                             
                             <div class="action-buttons">
@@ -329,9 +391,6 @@
     tags: ["mixer", "entsafter", "smoothie", "tragbar"]
   };
 
-  // Mache Produktdaten global verfügbar für Bundle-System
-  window.product = product;
-
   // Bundles dynamisch laden
   fetch('../products.json')
     .then(res => res.json())
@@ -343,11 +402,20 @@
         // Fallback: Bundle-Box immer anzeigen
         // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
   setTimeout(() => {
-    if (window.renderBundlesWithImages) {
-      console.log('✅ Verwende neues Bundle-System mit Bildern für Produkt 10');
-      window.renderBundlesWithImages();
+    if (window.renderBundlesWithColors) {
+      // Lade Farben aus products.json
+      fetch('../products.json')
+        .then(res => res.json())
+        .then(products => {
+          const prod = products.find(p => p.id === product.id);
+          if (prod && prod.colors) {
+            window.renderBundlesWithColors(product.id, prod.colors);
+          } else {
+            renderBundles();
+          }
+        })
+        .catch(() => renderBundles());
     } else {
-      console.log('❌ Neues Bundle-System nicht verfügbar, verwende Fallback');
       renderBundles();
     }
   }, 500);
@@ -562,7 +630,7 @@
 }
 
   function renderBundles() {
-    const einzelpreis = 49.99;
+    const einzelpreis = 24.99;
     const staffel = [
       {qty:1, price:einzelpreis, original:einzelpreis},
       {qty:2, price:(einzelpreis*0.85), original:einzelpreis},
@@ -644,11 +712,20 @@
 
   // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
   setTimeout(() => {
-    if (window.renderBundlesWithImages) {
-      console.log('✅ Verwende neues Bundle-System mit Bildern für Produkt 10');
-      window.renderBundlesWithImages();
+    if (window.renderBundlesWithColors) {
+      // Lade Farben aus products.json
+      fetch('../products.json')
+        .then(res => res.json())
+        .then(products => {
+          const prod = products.find(p => p.id === product.id);
+          if (prod && prod.colors) {
+            window.renderBundlesWithColors(product.id, prod.colors);
+          } else {
+            renderBundles();
+          }
+        })
+        .catch(() => renderBundles());
     } else {
-      console.log('❌ Neues Bundle-System nicht verfügbar, verwende Fallback');
       renderBundles();
     }
   }, 500);
@@ -908,75 +985,6 @@
       }
     }
   }
-
-    // Fullscreen-Funktionalität für Hauptproduktbild
-    const mainProductImage = document.querySelector('.main-product-image');
-    if (mainProductImage) {
-        mainProductImage.style.cursor = 'zoom-in';
-        mainProductImage.addEventListener('click', function() {
-            // Erstelle Fullscreen Modal
-            const modal = document.createElement('div');
-            modal.className = 'image-fullscreen-modal';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.9);
-                z-index: 10000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: zoom-out;
-            `;
-            
-            const img = document.createElement('img');
-            img.src = this.src;
-            img.alt = this.alt;
-            img.style.cssText = `
-                max-width: 90%;
-                max-height: 90%;
-                object-fit: contain;
-                border-radius: 8px;
-            `;
-            
-            const closeBtn = document.createElement('span');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = `
-                position: absolute;
-                top: 20px;
-                right: 30px;
-                color: white;
-                font-size: 40px;
-                font-weight: bold;
-                cursor: pointer;
-            `;
-            
-            modal.appendChild(img);
-            modal.appendChild(closeBtn);
-            document.body.appendChild(modal);
-            document.body.style.overflow = 'hidden';
-            
-            // Event-Listener zum Schließen
-            const closeModal = () => {
-                document.body.removeChild(modal);
-                document.body.style.overflow = 'auto';
-            };
-            
-            modal.addEventListener('click', closeModal);
-            closeBtn.addEventListener('click', closeModal);
-            
-            // ESC-Taste zum Schließen
-            const handleEsc = (e) => {
-                if (e.key === 'Escape') {
-                    closeModal();
-                    document.removeEventListener('keydown', handleEsc);
-                }
-            };
-            document.addEventListener('keydown', handleEsc);
-        });
-    }
 </script>
 
 <!-- App.js für globale Funktionen -->
@@ -1018,6 +1026,26 @@ document.addEventListener('DOMContentLoaded', () => {
 <!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
 
     <script src="../product-gallery-complete.js"></script>
+
+<script>
+// Fullscreen-Funktionalität für Hauptproduktbild
+const mainImg = document.querySelector('.main-product-image');
+if (mainImg) {
+    mainImg.style.cursor = 'zoom-in';
+    mainImg.onclick = () => {
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:zoom-out';
+        const img = document.createElement('img');
+        img.src = mainImg.src; img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;border-radius:8px';
+        const close = document.createElement('span');
+        close.innerHTML = '&times;'; close.style.cssText = 'position:absolute;top:20px;right:30px;color:white;font-size:40px;cursor:pointer';
+        modal.append(img, close); document.body.appendChild(modal); document.body.style.overflow = 'hidden';
+        const closeModal = () => { document.body.removeChild(modal); document.body.style.overflow = 'auto'; };
+        modal.onclick = closeModal; close.onclick = closeModal;
+        document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
+    };
+}
+</script>
 </body>
 </html>
 

@@ -222,20 +222,6 @@ function getColorSpecificImagePath(product, colorName) {
         35: { // Thermal Neck Lifting And Tighten Massager
             'Schwarz': 'produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager schwarz.jpg',
             'Weiß': 'produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager weiß.jpg'
-        },
-        38: { // Jade Massager
-            'Schwarz': 'produkt bilder/Jade Massager bilder/Jade Massager schwarz.jpg',
-            'Grün': 'produkt bilder/Jade Massager bilder/Jade Massager grün.jpg',
-            'Hellgrün': 'produkt bilder/Jade Massager bilder/Jade Massager hell grün.jpg',
-            'Pink': 'produkt bilder/Jade Massager bilder/Jade Massager pink.jpg',
-            'Lila': 'produkt bilder/Jade Massager bilder/Jade Massager lila.jpg',
-            'Weiß': 'produkt bilder/Jade Massager bilder/Jade Massager weiß.jpg',
-            'Gelb': 'produkt bilder/Jade Massager bilder/Jade Massager gelb.jpg'
-        },
-        40: { // Mug Warmer Pad
-            'Pink': 'produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad pink.jpg',
-            'Grün': 'produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad grün.jpg',
-            'Weiß': 'produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad weiß.jpg'
         }
     };
     
