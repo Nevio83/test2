@@ -1402,5 +1402,149 @@
       "wellness",
       "beauty"
     ]
+  },
+  {
+    "id": 38,
+    "name": "Jade Massager",
+    "price": 14.99,
+    "originalPrice": 24.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Jade Massager.jpg",
+    "description": "Natürlicher Jade-Massager und Gua Sha Stein zur Förderung der Durchblutung, Reduzierung von Schwellungen und zur Entspannung der Gesichtsmuskulatur. Ideal für die tägliche Hautpflege-Routine.",
+    "sku": "CJPF1011351",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJPF101135114NM",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager schwarz.jpg"
+      },
+      {
+        "name": "Grün",
+        "code": "#008000",
+        "sku": "CJPF101135122VE",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager grün.jpg"
+      },
+      {
+        "name": "Hellgrün",
+        "code": "#90EE90",
+        "sku": "CJPF101135120TG",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager hell grün.jpg"
+      },
+      {
+        "name": "Pink",
+        "code": "#FFC0CB",
+        "sku": "CJPF101135116PK",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager pink.jpg"
+      },
+      {
+        "name": "Lila",
+        "code": "#800080",
+        "sku": "CJPF101135118RI",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager lila.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJPF101135124XC",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager weiß.jpg"
+      },
+      {
+        "name": "Gelb",
+        "code": "#FFFF00",
+        "sku": "CJPF101135127AZ",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager gelb.jpg"
+      }
+    ],
+    "tags": [
+      "jade",
+      "massager",
+      "gua sha",
+      "wellness",
+      "hautpflege"
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Electric Guasha Massager",
+    "price": 29.99,
+    "originalPrice": 49.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Electric Guasha Massager.jpg",
+    "description": "Elektrisches Guasha-Massagegerät mit EMS-Mikrostrom, Heiß- und Kalt-Modus sowie 3-Farben-Lichttherapie zur Hautstraffung, Faltenreduzierung und Förderung der Aufnahme von Hautpflegeprodukten.",
+    "sku": "CJPF203924202BY",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "tags": [
+      "guasha",
+      "ems",
+      "face lifting",
+      "hautpflege",
+      "wellness"
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Mug Warmer Pad",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Haushalt/Küche",
+    "image": "produkt bilder/Mug Warmer Pad.jpg",
+    "description": "Halten Sie Ihr Getränk mit diesem intelligenten Tassenwärmer-Untersetzer konstant auf der perfekten Temperatur. Ideal für Kaffee, Tee oder Kakao am Schreibtisch oder zu Hause.",
+    "sku": "CJJT1723382",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Pink",
+        "code": "#FFC0CB",
+        "sku": "CJJT172338202BY",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad pink.jpg"
+      },
+      {
+        "name": "Grün",
+        "code": "#008000",
+        "sku": "CJJT172338203CX",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad grün.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJT172338201AZ",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad weiß.jpg"
+      }
+    ],
+    "tags": [
+      "mug warmer",
+      "tassenwärmer",
+      "kaffee",
+      "tee",
+      "haushalt"
+    ]
   }
 ]

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric Guasha Massager - Marktplatz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="koerperpflege-wellness.css" rel="stylesheet">
+    <style>
+        .success-animation {
+            animation: success-animation 0.8s ease-in-out;
+        }
+        .cart-icon-pulse {
+            animation: cart-icon-pulse 0.5s ease-in-out;
+        }
+        .cart-rainbow-bounce {
+            animation: cart-rainbow-bounce 0.8s ease-in-out;
+        }
+        .heart-pulse {
+            animation: heart-pulse 0.5s ease-in-out;
+        }
+        @keyframes success-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes cart-icon-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        @keyframes cart-rainbow-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes heart-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+    <link rel="stylesheet" href="../product-image-fullscreen.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                <i class="bi bi-shop"></i> Marktplatz
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a href="../index.html" class="nav-link modern-nav-link">
+                    <i class="bi bi-house-door-fill"></i> Startseite
+                </a>
+                <a href="../cart.html" class="nav-link modern-nav-link cart-nav-link">
+                    <i class="bi bi-cart3-fill"></i> Warenkorb
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Produkt Hero Section -->
+    <section class="product-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-3">Electric Guasha Massager</h1>
+                    <p class="lead mb-4">Elektrisches Guasha-Massagegerät mit EMS-Mikrostrom, Heiß- und Kalt-Modus sowie 3-Farben-Lichttherapie zur Hautstraffung und Faltenreduzierung.</p>
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <span class="price-tag">€29.99</span>
+                        <span class="text-muted text-decoration-line-through">€49.99</span>
+                        <span class="badge bg-success">Kostenloser Versand in Europa</span>
+                    </div>
+                    <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn" onclick="addToCartAndRedirect()">
+                        <i class="bi bi-cart-plus"></i> In den Warenkorb
+                    </button>
+                    <button class="btn btn-outline-light btn-lg" id="wishlistBtn">
+                        <i class="bi bi-heart"></i> Zur Wunschliste
+                    </button>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="../produkt bilder/Electric Guasha Massager.jpg" alt="Electric Guasha Massager" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Produkt Details -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="mb-4">Produktbeschreibung</h2>
+                    <p class="lead mb-4">Elektrisches Guasha-Massagegerät mit EMS-Mikrostrom, Heiß- und Kalt-Modus sowie 3-Farben-Lichttherapie zur Hautstraffung, Faltenreduzierung und Förderung der Aufnahme von Hautpflegeprodukten.</p>
+                    
+                    <h3>Hauptmerkmale</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>EMS-Mikrostrom zur Hautstraffung</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Heiß- & Kalt-Modus zur Porenbehandlung</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>3-Farben-Lichttherapie (Rot, Blau, Lila)</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Fördert die Aufnahme von Hautpflegeprodukten</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>USB-aufladbar und tragbar</li>
+                    </ul>
+
+                    <h3 class="mt-4">Technische Spezifikationen</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Kategorie:</strong> Körperpflege/Wellness</p>
+                            <p><strong>Artikelnummer:</strong> 039</p>
+                            <p><strong>Preis:</strong> €29.99</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Verfügbarkeit:</strong> Auf Lager</p>
+                            <p><strong>Lieferzeit:</strong> 7-15 Werktage</p>
+                        </div>
+                    </div>
+
+                    
+                    <!-- Schnellbestellung (Mobile only) -->
+                    <div class="quick-order-card mt-5 d-lg-none">
+                        <div class="quick-order-header">
+                            <h4>Schnellbestellung</h4>
+                        </div>
+                        <div class="quick-order-body">
+                            <div class="quantity-section">
+                                <label class="quantity-label">Menge:</label>                                <div class="quantity-input-group" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 12px; padding: 4px; gap: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <button class="quantity-btn" onclick="decreaseMobileQuantity()" style="width: 45px; height: 45px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">−</button>
+                                    <select class="form-select" id="quantity-mobile" onchange="updateTotalPrice()" style="flex: 1; border: none; background: transparent; text-align: center; font-size: 18px; font-weight: 600; padding: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3e%3cpolyline points=%226 9 12 15 18 9%22%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 8px center; background-size: 20px; padding-right: 30px;">
+                                        <!-- Options will be generated by JavaScript -->
+                                    </select>
+                                    <button class="quantity-btn" onclick="increaseMobileQuantity()" style="width: 45px; height: 45px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">+</button>
+                                </div>
+                            </div>
+                            <div class="price-section">
+                                <div class="current-price">€12.99</div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="buy-now-btn wishlist-style-btn" onclick="addToCartWithQuantity(event)">
+                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
+                                </button>
+                                <button class="wishlist-btn wishlist-button" onclick="toggleWishlist(product)" data-product-id="39">
+                                    <i class="bi bi-heart"></i> Zur Wunschliste
+                                </button>
+                            </div>
+                            
+                            <div class="features-section">
+                                <ul class="features-list">
+                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
+                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bundle-Box -->
+                    <div id="bundle-section" class="mt-5"></div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="quick-order-card d-none d-lg-block">
+                        <div class="quick-order-header">
+                            <h4>Schnellbestellung</h4>
+                        </div>
+                        <div class="quick-order-body">
+                            <div class="quantity-section">
+                                <label class="quantity-label">Menge:</label>
+                                <div class="quantity-input-group">
+                                    <button class="quantity-btn" onclick="decreaseQuantity(event)">-</button>
+                                    <input type="number" class="quantity-input" id="quantity-desktop" value="1" min="1" max="999" maxlength="3" oninput="if(this.value.length > 3) this.value = this.value.slice(0,3); if(this.value > 999) this.value = 999;">
+                                    <button class="quantity-btn" onclick="increaseQuantity(event)">+</button>
+                                </div>
+                            </div>
+                            
+                            <div class="price-section">
+                                <div class="current-price">€12.99</div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="buy-now-btn wishlist-style-btn" onclick="addToCartWithQuantity(event)">
+                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
+                                </button>
+                                <button class="wishlist-btn wishlist-button" onclick="toggleWishlist(product)" data-product-id="39">
+                                    <i class="bi bi-heart"></i> Zur Wunschliste
+                                </button>
+                            </div>
+                            
+                            <div class="features-section">
+                                <ul class="features-list">
+                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
+                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ähnliche Produkte -->
+    <section class="py-5 similar-products-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Ähnliche Produkte</h2>
+                <p class="section-subtitle">Entdecken Sie weitere Produkte, die Ihnen gefallen könnten</p>
+            </div>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-20.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg" class="product-image" alt="ZigBee Smart DIY Motorisierte Rollos">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">ZigBee Smart DIY Motorisierte Rollos</h5>
+                            <div class="price-container"><span class="current-price">€89.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-17.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg" class="product-image" alt="Bluetooth Anti-Lost Finder Wassertropfen">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Bluetooth Anti-Lost Finder Wassertropfen</h5>
+                            <div class="price-container"><span class="current-price">€14.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-18.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Home Electronic Clock Digitale Uhr.jpg" class="product-image" alt="Home Electronic Clock Digitale Uhr">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Home Electronic Clock Digitale Uhr</h5>
+                            <div class="price-container"><span class="current-price">€24.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-24.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/COBLED Arbeitsleuchte.jpeg" class="product-image" alt="COB LED Arbeitsleuchte Wiederaufladbar">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">COB LED Arbeitsleuchte Wiederaufladbar</h5>
+                            <div class="price-container"><span class="current-price">€29.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>&copy; 2024 Marktplatz - Alle Rechte vorbehalten</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../cart.js"></script>
+    
+    <script>
+  // Produktdaten für diese Seite
+  const product = {
+    "id": 39,
+    "name": "Electric Guasha Massager",
+    "price": 29.99,
+    "originalPrice": 49.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Electric Guasha Massager.jpg",
+    "description": "Elektrisches Guasha-Massagegerät mit EMS-Mikrostrom, Heiß- und Kalt-Modus sowie 3-Farben-Lichttherapie zur Hautstraffung, Faltenreduzierung und Förderung der Aufnahme von Hautpflegeprodukten.",
+    "sku": "CJPF203924202BY",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "tags": ["guasha", "ems", "face lifting", "hautpflege", "wellness"]
+  };
+
+  // Bundles dynamisch laden
+  fetch('../products.json')
+    .then(res => res.json())
+    .then(products => {
+      const prod = products.find(p => p.id === product.id);
+      if (prod && prod.bundles && prod.bundles.length > 0) {
+        renderBundles(prod.bundles);
+      }
+    });
+
+  function renderBundles() {
+    // Preisstaffel: [ {menge, preisProSet, originalProSet} ]
+    const staffel = [
+      {qty: 1, price: product.price, original: product.price},
+      {qty: 2, price: product.price * 0.85, original: product.price},
+      {qty: 3, price: product.price * 0.80, original: product.price}
+    ];
+    const section = document.getElementById('bundle-section');
+    if (!section) return;
+    
+    let selected = 1; // Standard: 2 Sets
+    section.innerHTML = `
+      <div class="bundle-box">
+        <div class="bundle-header">BUNDLE & SPARE</div>
+        <form id="bundleForm">
+          ${staffel.map((s, i) => `
+            <div class="bundle-card${i===selected?' selected':''}" data-index="${i}">
+              <input type="radio" name="bundle" class="bundle-radio" id="bundleRadio${i}" value="${i}" ${i===selected?'checked':''}>
+              <div class="bundle-info">
+                <div class="bundle-title">
+                  ${s.qty} Set${s.qty>1?'s':''} kaufen
+                  ${i===1 ? '<span class="bundle-badge popular">Am beliebtesten</span>' : ''}
+                  ${i===2 ? '<span class="bundle-badge savings">Meiste Ersparnis</span>' : ''}
+                  ${i>0 ? `<span class="bundle-label">EXTRA ${i===1?'15':i===2?'20':'0'}% RABATT</span>` : ''}
+                </div>
+                <div class="bundle-prices">
+                  €${s.price.toFixed(2)} pro Set
+                  <span class="savings">Spare €${((s.original-s.price)*s.qty).toFixed(2)}</span>
+                </div>
+                ${s.qty>1?`<div style='margin-top:.7em;font-size:.97rem;'>Gesamt: <b>€${(s.price*s.qty).toFixed(2)}</b></div>`:''}
+              </div>
+            </div>
+          `).join('')}
+          <button type="submit" class="btn bundle-add-btn wishlist-style-btn" onclick="addBundleAndRedirect(event)">In den Warenkorb</button>
+        </form>
+      </div>
+    `;
+    // Interaktive Auswahl
+    const cards = section.querySelectorAll('.bundle-card');
+    const radios = section.querySelectorAll('.bundle-radio');
+    
+    // Event-Listener für Radio-Buttons
+    radios.forEach((radio, i) => {
+      radio.addEventListener('change', () => {
+        cards.forEach(c => c.classList.remove('selected'));
+        cards[i].classList.add('selected');
+      });
+    });
+
+    // Event-Listener für Bundle-Cards
+    cards.forEach((card, i) => {
+      card.addEventListener('click', (e) => {
+        // Verhindere Bubbling wenn auf Radio geklickt wurde
+        if (e.target === radios[i]) return;
+        
+        // Wähle Radio-Button aus
+        radios[i].checked = true;
+        
+        // Aktualisiere Selected-Status
+        cards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        
+        // Trigger change Event auf Radio
+        radios[i].dispatchEvent(new Event('change'));
+      });
+    });
+  }
+  
+  // Initialize bundles on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    renderBundles();
+  });
+
+  function addBundleToCart(bundle) {
+    let cart = getCart();
+    // Bundle als eigenes Cart-Item mit bundleId
+    const bundleId = bundle.bundleId;
+    const existing = cart.find(item => item.bundleId === bundleId);
+    if (existing) {
+      // Erhöhe die Menge bei wiederholtem Hinzufügen
+      existing.quantity++;
+    } else {
+      cart.push({
+        id: product.id,
+        name: bundle.name,
+        price: bundle.price,
+        image: product.image,
+        description: bundle.description,
+        bundleId: bundleId,
+        bundleItems: [], // Keine Items für die neue Staffel
+        quantity: 1
+      });
+    }
+    setCart(cart);
+  }
+
+  function addBundleAndRedirect(event) {
+    event.preventDefault();
+    const form = event.target.closest('form');
+    const selectedRadio = form.querySelector('input[name="bundle"]:checked');
+    if (!selectedRadio) return;
+    
+    const idx = parseInt(selectedRadio.value);
+    const staffel = [
+      {qty: 1, price: product.price, original: product.price},
+      {qty: 2, price: product.price * 0.85, original: product.price},
+      {qty: 3, price: product.price * 0.80, original: product.price}
+    ];
+    const s = staffel[idx];
+    
+    addBundleToCart({
+      id: product.id,
+      name: product.name + ` (${s.qty} Set${s.qty>1?'s':''})`,
+      price: s.price * s.qty, // Gesamtpreis für das Bundle
+      image: product.image,
+      description: product.description + ` (Bundle: ${s.qty} Set${s.qty>1?'s':''})`,
+      bundleId: `${product.id}-qty${s.qty}`,
+      quantity: 1
+    });
+    
+    // Enhanced animations for bundle
+    triggerBundleButtonAnimation(event.target);
+    triggerNavCartAnimation();
+    
+    // Popup anzeigen statt direkter Weiterleitung
+    if (typeof showAlert === 'function') {
+      showAlert('Bundle zum Warenkorb hinzugefügt', 'cart.html');
+    } else {
+      showNotification('Bundle zum Warenkorb hinzugefügt');
+    }
+  }
+
+  function getWishlist() {
+    return JSON.parse(localStorage.getItem('wishlist')) || [];
+  }
+  function setWishlist(wishlist) {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  }
+  function isInWishlist(id) {
+    return getWishlist().some(item => Number(item.id) === Number(id));
+  }
+  function toggleWishlist(product) {
+    let wishlist = getWishlist();
+    if (isInWishlist(product.id)) {
+      wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
+      setWishlist(wishlist);
+      updateAllWishlistButtons(); // Update all wishlist buttons
+      
+      if (typeof showAlert === 'function') {
+        showAlert('Produkt von der Wunschliste entfernt', 'wishlist.html');
+      } else {
+        showNotification('Produkt von der Wunschliste entfernt');
+      }
+    } else {
+      wishlist.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        description: product.description
+      });
+      setWishlist(wishlist);
+      updateAllWishlistButtons(); // Update all wishlist buttons
+      
+      if (typeof showAlert === 'function') {
+        showAlert('Produkt zur Wunschliste hinzugefügt', 'wishlist.html');
+      } else {
+        showNotification('Produkt zur Wunschliste hinzugefügt');
+      }
+    }
+  }
+
+  function updateAllWishlistButtons() {
+    const isInList = isInWishlist(product.id);
+    
+    // Update main wishlist button
+    const mainBtn = document.getElementById('wishlistBtn');
+    if (mainBtn) {
+      if (isInList) {
+        mainBtn.classList.add('active');
+        mainBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
+      } else {
+        mainBtn.classList.remove('active');
+        mainBtn.innerHTML = '<i class="bi bi-heart"></i> Zur Wunschliste';
+      }
+    }
+    
+    // Update all quick order wishlist buttons
+    const quickOrderBtns = document.querySelectorAll('.wishlist-button');
+    quickOrderBtns.forEach(btn => {
+      if (isInList) {
+        btn.classList.add('active');
+        btn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
+      } else {
+        btn.classList.remove('active');
+        btn.innerHTML = '<i class="bi bi-heart"></i> Zur Wunschliste';
+      }
+    });
+  }
+  
+  function getCart() {
+    return JSON.parse(localStorage.getItem('cart')) || [];
+  }
+  function setCart(cart) {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+  function addToCart(product) {
+    let cart = getCart();
+    // Only match regular products (items without bundleId)
+    const existing = cart.find(item => Number(item.id) === Number(product.id) && !item.bundleId);
+    if (existing) {
+      existing.quantity += product.quantity || 1;
+    } else {
+      cart.push({ ...product, quantity: product.quantity || 1 });
+    }
+    setCart(cart);
+    // Keine direkte Weiterleitung mehr, da wir das Popup verwenden
+  }
+
+  function addToCartAndRedirect() {
+    const productToAdd = {
+      ...product,
+      quantity: 1
+    };
+    addToCart(productToAdd);
+    
+    // Enhanced animations for product page
+    triggerCartButtonAnimation();
+    triggerNavCartAnimation();
+    
+    // Popup anzeigen statt direkter Weiterleitung für "In den Warenkorb" Button
+    if (typeof showAlert === 'function') {
+      showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
+    } else {
+      showNotification('Zum Warenkorb hinzugefügt');
+    }
+  }
+
+  // Animation functions for product page
+  function triggerCartButtonAnimation() {
+    const cartButton = document.getElementById('cartBtn');
+    if (cartButton) {
+        cartButton.classList.add('add-to-cart', 'success-animation');
+        setTimeout(() => {
+            cartButton.classList.remove('success-animation');
+        }, 800);
+        
+        // Add cart icon pulse animation (red effect)
+        const cartIcon = cartButton.querySelector('i');
+        if (cartIcon) {
+            cartIcon.classList.add('cart-icon-pulse');
+            setTimeout(() => {
+                cartIcon.classList.remove('cart-icon-pulse');
+            }, 500);
+        }
+    }
+  }
+
+  function triggerQuickOrderAnimation() {
+    const quickOrderButtons = document.querySelectorAll('.wishlist-style-btn');
+    quickOrderButtons.forEach(button => {
+        button.classList.add('add-to-cart', 'success-animation');
+        setTimeout(() => {
+            button.classList.remove('success-animation');
+        }, 800);
+        
+        // Add cart icon pulse animation to button icon (red effect)
+        const buttonIcon = button.querySelector('i');
+        if (buttonIcon) {
+            buttonIcon.classList.add('cart-icon-pulse');
+            setTimeout(() => {
+                buttonIcon.classList.remove('cart-icon-pulse');
+            }, 500);
+        }
+    });
+  }
+
+  function triggerNavCartAnimation() {
+    const navCartButton = document.querySelector('.cart-nav-link');
+    if (navCartButton) {
+        navCartButton.classList.add('cart-rainbow-bounce');
+        setTimeout(() => {
+            navCartButton.classList.remove('cart-rainbow-bounce');
+        }, 800);
+    }
+  }
+
+  function triggerBundleButtonAnimation(button) {
+    if (button) {
+        button.classList.add('add-to-cart', 'success-animation');
+        setTimeout(() => {
+            button.classList.remove('success-animation');
+        }, 800);
+        
+        // Add cart icon pulse animation to bundle button icon (red effect)
+        const buttonIcon = button.querySelector('i');
+        if (buttonIcon) {
+            buttonIcon.classList.add('cart-icon-pulse');
+            setTimeout(() => {
+                buttonIcon.classList.remove('cart-icon-pulse');
+            }, 500);
+        }
+    }
+  }
+
+  // Enhanced wishlist animation (only for main button, not quick order)
+  function triggerWishlistButtonAnimation(productId) {
+    // Only animate the main wishlist button, not the quick order ones
+    const wishlistButton = document.getElementById('wishlistBtn');
+    
+    if (wishlistButton) {
+      wishlistButton.classList.add('success-animation');
+      setTimeout(() => {
+        wishlistButton.classList.remove('success-animation');
+      }, 800);
+      
+      // Heart pulse animation
+      const heartIcon = wishlistButton.querySelector('i');
+      if (heartIcon) {
+        heartIcon.classList.add('heart-pulse');
+        setTimeout(() => {
+          heartIcon.classList.remove('heart-pulse');
+        }, 500);
+      }
+    }
+  }
+  
+  // showAlert function for cart popup
+  function showAlert(message, redirectTo = 'cart.html') {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success position-fixed end-0 m-4 shadow-lg fade show';
+    alert.style.zIndex = '20000';
+    alert.style.fontSize = '1rem';
+    alert.style.minWidth = '160px';
+    alert.style.maxWidth = '320px';
+    alert.style.padding = '0.75rem 2rem';
+    alert.style.textAlign = 'center';
+    alert.style.borderRadius = '2rem';
+    alert.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+    alert.style.background = 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)';
+    alert.style.color = '#fff';
+    alert.style.fontWeight = '500';
+    alert.style.letterSpacing = '0.02em';
+    alert.style.pointerEvents = 'auto';
+    alert.style.position = 'fixed';
+    alert.style.right = '2.5rem';
+    alert.style.top = 'calc(56px + 1.2rem)';
+    alert.style.cursor = 'pointer';
+    alert.textContent = message;
+    alert.addEventListener('click', () => {
+      window.location.href = '../' + redirectTo;
+    });
+    document.body.appendChild(alert);
+    setTimeout(() => {
+      if (document.body.contains(alert)) {
+        alert.classList.remove('show');
+        alert.classList.add('fade');
+        setTimeout(() => alert.remove(), 400);
+      }
+    }, 1700);
+  }
+  
+  function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} position-fixed end-0 m-4 shadow-lg fade show`;
+    notification.style.zIndex = '20000';
+    notification.style.fontSize = '1rem';
+    notification.style.minWidth = '160px';
+    notification.style.maxWidth = '320px';
+    notification.style.padding = '0.75rem 2rem';
+    notification.style.textAlign = 'center';
+    notification.style.borderRadius = '2rem';
+    notification.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+    notification.style.background = type === 'success' 
+      ? 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)' 
+      : 'linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%)';
+    notification.style.color = '#fff';
+    notification.style.fontWeight = '500';
+    notification.style.letterSpacing = '0.02em';
+    notification.style.pointerEvents = 'auto';
+    notification.style.position = 'fixed';
+    notification.style.right = '2.5rem';
+    notification.style.top = 'calc(56px + 1.2rem)';
+    notification.style.cursor = 'pointer';
+    notification.textContent = message;
+    
+    // Klick-Event hinzufügen
+    notification.addEventListener('click', function() {
+      notification.classList.remove('show');
+      notification.classList.add('fade');
+      setTimeout(() => notification.remove(), 400);
+      // Zur Wishlist-Seite weiterleiten (aus dem produkte/ Ordner)
+      window.location.href = '../wishlist.html';
+    });
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      if (document.body.contains(notification)) {
+        notification.classList.remove('show');
+        notification.classList.add('fade');
+        setTimeout(() => notification.remove(), 400);
+      }
+    }, 2000);
+  }
+
+  // Funktionen für die neue Schnellbestellung
+  function increaseQuantity(event) {
+    // Determine which quantity input to use based on the clicked button
+    const button = event ? event.target : null;
+    const isDesktop = button && button.closest('.d-none.d-lg-block');
+    
+    const inputId = isDesktop ? 'quantity-desktop' : 'quantity';
+    const input = document.getElementById(inputId);
+    
+    if (input) {
+      const currentValue = parseInt(input.value, 10) || 1;
+      if (currentValue < 999) {
+        input.value = currentValue + 1;
+        updateTotalPrice();
+      }
+    }
+  }
+
+  function decreaseQuantity(event) {
+    // Determine which quantity input to use based on the clicked button
+    const button = event ? event.target : null;
+    const isDesktop = button && button.closest('.d-none.d-lg-block');
+    
+    const inputId = isDesktop ? 'quantity-desktop' : 'quantity';
+    const input = document.getElementById(inputId);
+    
+    if (input) {
+      const currentValue = parseInt(input.value, 10) || 1;
+      if (currentValue > 1) {
+        input.value = currentValue - 1;
+        updateTotalPrice();
+      }
+    }
+  }
+
+  function updateTotalPrice() {
+    // Update both mobile and desktop total prices
+    const mobileQuantity = parseInt(document.getElementById('quantity-mobile')?.value, 10) || 1;
+    const desktopQuantity = parseInt(document.getElementById('quantity')?.value, 10) || parseInt(document.getElementById('quantity-desktop')?.value, 10) || 1;
+    
+    // Calculate total prices
+    const mobileTotal = (product.price * mobileQuantity).toFixed(2);
+    const desktopTotal = (product.price * desktopQuantity).toFixed(2);
+    
+    // Update mobile price displays
+    const mobilePriceSection = document.querySelector('.d-lg-none .price-section');
+    if (mobilePriceSection) {
+      const currentPriceElement = mobilePriceSection.querySelector('.current-price');
+      const totalPriceElement = document.getElementById('totalPrice-mobile');
+      
+      if (currentPriceElement) {
+        currentPriceElement.textContent = `€${mobileTotal}`;
+      }
+      if (totalPriceElement) {
+        totalPriceElement.textContent = `€${mobileTotal}`;
+      }
+    }
+    
+    // Update desktop price displays
+    const desktopPriceSection = document.querySelector('.d-none.d-lg-block .price-section');
+    if (desktopPriceSection) {
+      const currentPriceElement = desktopPriceSection.querySelector('.current-price');
+      const totalPriceElement = document.getElementById('totalPrice');
+      
+      if (currentPriceElement) {
+        currentPriceElement.textContent = `€${desktopTotal}`;
+      }
+      if (totalPriceElement) {
+        totalPriceElement.textContent = `€${desktopTotal}`;
+      }
+    }
+  }
+
+  function addToCartWithQuantity(event) {
+    // Determine which quantity input to use based on the clicked button
+    const button = event ? event.target : null;
+    const isDesktop = button && button.closest('.d-none.d-lg-block');
+    
+    const inputId = isDesktop ? 'quantity-desktop' : 'quantity';
+    const quantityInput = document.getElementById(inputId);
+    const quantity = quantityInput ? parseInt(quantityInput.value, 10) || 1 : 1;
+    
+    const productToCart = {
+      ...product,
+      quantity: quantity
+    };
+    addToCart(productToCart);
+    
+    // Enhanced animations for product page - wishlist style for quick order
+    triggerQuickOrderAnimation();
+    triggerNavCartAnimation();
+    
+    // Direkt zum Warenkorb weiterleiten
+    setTimeout(() => {
+      window.location.href = '../cart.html';
+    }, 500); // Kurze Verzögerung für die Animation
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    // Wishlist-Button
+    let wishlistBtn = document.getElementById('wishlistBtn');
+    if (!wishlistBtn) {
+      // Fallback: Erstelle Button, falls nicht vorhanden
+      const hero = document.querySelector('.product-hero .col-lg-6');
+      if (hero) {
+        wishlistBtn = document.createElement('button');
+        wishlistBtn.id = 'wishlistBtn';
+        wishlistBtn.className = 'btn btn-outline-light btn-lg ms-2';
+        hero.appendChild(wishlistBtn);
+      }
+    }
+    if (wishlistBtn) {
+      wishlistBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleWishlist(product);
+      });
+    }
+
+    // Event-Listener für Quantity-Input (Mobile)
+    const quantityInput = document.getElementById('quantity');
+    if (quantityInput) {
+      quantityInput.addEventListener('input', updateTotalPrice);
+      quantityInput.addEventListener('change', updateTotalPrice);
+    }
+
+    // Event-Listener für Quantity-Input (Desktop)
+    const quantityInputDesktop = document.getElementById('quantity-desktop');
+    if (quantityInputDesktop) {
+      quantityInputDesktop.addEventListener('input', updateTotalPrice);
+      quantityInputDesktop.addEventListener('change', updateTotalPrice);
+    }
+
+    // Initialisiere die Preise
+    updateTotalPrice();
+    
+    // Initialize all wishlist buttons with correct status
+    updateAllWishlistButtons();
+  });
+    </script>
+    <script src="../keyboard-shortcuts.js"></script>
+<script>
+  // Populate mobile quantity dropdown on page load
+  function populateMobileQuantityDropdown() {
+    const select = document.getElementById('quantity-mobile');
+    if (select && select.options.length === 0) {
+      // Generate all options from 1 to 999
+      for (let i = 1; i <= 999; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        select.appendChild(option);
+      }
+    }
+  }
+
+  // Call on page load
+  document.addEventListener('DOMContentLoaded', populateMobileQuantityDropdown);
+  // Also call immediately in case DOM is already loaded
+  populateMobileQuantityDropdown();
+
+  // Mobile-specific quantity functions
+  function increaseMobileQuantity() {
+    const select = document.getElementById('quantity-mobile');
+    if (select) {
+      const currentValue = parseInt(select.value, 10) || 1;
+      if (currentValue < 999) {
+        select.value = currentValue + 1;
+        updateTotalPrice();
+      }
+    }
+  }
+
+  function decreaseMobileQuantity() {
+    const select = document.getElementById('quantity-mobile');
+    if (select) {
+      const currentValue = parseInt(select.value, 10) || 1;
+      if (currentValue > 1) {
+        select.value = currentValue - 1;
+        updateTotalPrice();
+      }
+    }
+  }
+</script>
+<!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
+
+</body>
+</html>
