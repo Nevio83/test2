@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                                      data-color="${color.name}"
                                                      onclick="selectBundleColor(${bundle.qty}, ${i}, '${color.name}', this)">
                                                     ${colorIndex === 0 ? '<span class="checkmark">✓</span>' : ''}
-                                                    <img src="${color.image && !color.image.startsWith('../') ? '../' + color.image : color.image}" alt="${color.name}" class="color-img">
+                                                    <img src="${getImagePathForBundle(productId, color)}" alt="${color.name}" class="color-img">
                                                     <span class="color-name">${color.name}</span>
                                                 </div>
                                             `).join('')}
@@ -732,7 +732,34 @@ document.addEventListener('DOMContentLoaded', function() {
             document.head.appendChild(style);
         }
         
-        // Card-Klick Handler
+            // Funktion zum Abrufen des korrekten Bildpfads für Bundles
+    function getImagePathForBundle(productId, color) {
+        const imagePathMappings = {
+            33: { // Aromatherapy Essential Oil Humidifier
+                'Cherry Blossoms': '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg',
+                'Green Tea':       '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg',
+                'Jasmine':         '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier jasmine.jpg',
+                'Lavender':        '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lavender.jpg',
+                'Lemon':           '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lemon.jpg',
+                'Lily':            '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lily.jpg',
+                'Ocean':           '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier ocean.jpg',
+                'Rose':            '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier rose.jpg',
+                'Sandalwood':      '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sandalwood.jpg',
+                'Sweet':           '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sweet.jpg',
+                'Vanilla':         '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier vanilla.jpg',
+                'Violet':          '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier violet.jpg'
+            }
+        };
+
+        if (imagePathMappings[productId] && imagePathMappings[productId][color.name]) {
+            return imagePathMappings[productId][color.name];
+        }
+
+        // Fallback-Logik
+        return color.image && !color.image.startsWith('../') ? '../' + color.image : color.image;
+    }
+
+    // Card-Klick Handler
         document.querySelectorAll('.bundle-card').forEach(card => {
             card.addEventListener('click', function(e) {
                 if (!e.target.closest('.color-image-option')) {
