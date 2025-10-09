@@ -214,6 +214,10 @@ function getColorSpecificImagePath(product, colorName) {
             'Sweet': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sweet.jpg',
             'Vanilla': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier vanilla.jpg',
             'Violet': 'produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier violet.jpg'
+        },
+        34: { // Moisturizing Face Steamer
+            'Blau': 'produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer blau.jpg',
+            'Weiß': 'produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer weiß.jpg'
         }
     };
     
