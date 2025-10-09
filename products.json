@@ -1325,5 +1325,43 @@
       "hautpflege",
       "beauty"
     ]
+  },
+  {
+    "id": 35,
+    "name": "Thermal Neck Lifting And Tighten Massager",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg",
+    "description": "Ein EMS Thermal Neck Lifting und Tighten Massager, der mit elektrischem Mikrostrom Falten entfernt und die Haut strafft. Ideal für eine entspannende und verjüngende Nackenmassage.",
+    "sku": "CJYD1887254",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJYD188725403CX",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJYD188725404DW",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager weiß.jpg"
+      }
+    ],
+    "tags": [
+      "neck massager",
+      "wellness",
+      "hautpflege",
+      "faltenentferner",
+      "ems"
+    ]
   }
 ]

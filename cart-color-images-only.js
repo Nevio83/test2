@@ -218,6 +218,10 @@ function getColorSpecificImagePath(product, colorName) {
         34: { // Moisturizing Face Steamer
             'Blau': 'produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer blau.jpg',
             'Weiß': 'produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer weiß.jpg'
+        },
+        35: { // Thermal Neck Lifting And Tighten Massager
+            'Schwarz': 'produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager schwarz.jpg',
+            'Weiß': 'produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager weiß.jpg'
         }
     };
     

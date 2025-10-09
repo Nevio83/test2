@@ -47,7 +47,8 @@ class ProductImageGallery {
             26: '4 In 1 Self Cleaning Hair Brush bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
             33: 'Aromatherapy essential oil humidifier bilder',
-            34: 'Moisturizing Face Steamer bilder'
+            34: 'Moisturizing Face Steamer bilder',
+            35: 'Thermal Neck Lifting And Tighten Massager bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -299,6 +300,26 @@ class ProductImageGallery {
                     {
                         src: `../produkt bilder/${folderName}/Moisturizing Face Steamer weiß.jpg`,
                         alt: 'Moisturizing Face Steamer - Weiß',
+                        color: 'Weiß'
+                    }
+                ];
+                break;
+
+            case 35: // Thermal Neck Lifting And Tighten Massager
+                this.images = [
+                    {
+                        src: `../produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg`,
+                        alt: 'Thermal Neck Lifting And Tighten Massager - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Thermal Neck Lifting And Tighten Massager schwarz.jpg`,
+                        alt: 'Thermal Neck Lifting And Tighten Massager - Schwarz',
+                        color: 'Schwarz'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Thermal Neck Lifting And Tighten Massager weiß.jpg`,
+                        alt: 'Thermal Neck Lifting And Tighten Massager - Weiß',
                         color: 'Weiß'
                     }
                 ];
