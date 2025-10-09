@@ -1287,5 +1287,43 @@
         "savings": 30
       }
     ]
+  },
+  {
+    "id": 34,
+    "name": "Moisturizing Face Steamer",
+    "price": 14.99,
+    "originalPrice": 24.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Moisturizing Face Steamer.jpg",
+    "description": "Ein 2-in-1-Gesichts- und Augendampfer mit Nano-Zerstäubungstechnologie. Spendet effektiv Feuchtigkeit, lindert trockene Haut und reduziert die Ermüdung der Augen. Klein, tragbar und über USB aufladbar - perfekt für die Hautpflege unterwegs.",
+    "sku": "CJMB1545970",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Blau",
+        "code": "#A0C4FF",
+        "sku": "CJMB154597002BY",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer blau.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJMB154597001AZ",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer weiß.jpg"
+      }
+    ],
+    "tags": [
+      "face steamer",
+      "moisturizer",
+      "wellness",
+      "hautpflege",
+      "beauty"
+    ]
   }
 ]

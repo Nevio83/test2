@@ -46,7 +46,8 @@ class ProductImageGallery {
             21: 'LED Water Ripple Crystal bilder',
             26: '4 In 1 Self Cleaning Hair Brush bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
-            33: 'Aromatherapy essential oil humidifier bilder'
+            33: 'Aromatherapy essential oil humidifier bilder',
+            34: 'Moisturizing Face Steamer bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -279,6 +280,26 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/Aromatherapy essential oil humidifier violet.jpg`,
                         alt: 'Aromatherapy Humidifier - Duftrichtung Veilchen',
                         color: 'Violet'
+                    }
+                ];
+                break;
+
+            case 34: // Moisturizing Face Steamer
+                this.images = [
+                    {
+                        src: `../produkt bilder/Moisturizing Face Steamer.jpg`,
+                        alt: 'Moisturizing Face Steamer - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Moisturizing Face Steamer blau.jpg`,
+                        alt: 'Moisturizing Face Steamer - Blau',
+                        color: 'Blau'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Moisturizing Face Steamer weiß.jpg`,
+                        alt: 'Moisturizing Face Steamer - Weiß',
+                        color: 'Weiß'
                     }
                 ];
                 break;
