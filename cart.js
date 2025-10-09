@@ -518,7 +518,7 @@ function updateCartPage() {
                     ${cartItems.map(item => `
                         <div class="cart-item" data-id="${item.id}">
                             <a href="produkte/produkt-${item.id}.html" style="text-decoration: none;">
-                                <img src="${getCartItemImage(item)}" alt="${item.name}" class="cart-item-image" style="cursor: pointer;" onerror="handleImageError(this, '${item.name}', '${getCartItemImage(item)}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
+                                <img src="${item.image}" alt="${item.name}" class="cart-item-image" style="cursor: pointer;" onerror="handleImageError(this, '${item.name}', '${item.image}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
                             </a>
                             <div class="cart-item-details">
                                 <h5>${item.name}</h5>
