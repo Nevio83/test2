@@ -1363,5 +1363,44 @@
       "faltenentferner",
       "ems"
     ]
+  },
+  {
+    "id": 36,
+    "name": "Cleaning Blackhead Instrument",
+    "price": 12.99,
+    "originalPrice": 22.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Cleaning Blackhead Instrument.jpg",
+    "description": "Elektrisches Mitesser-Entferner-Instrument mit Saugfunktion zur Gesichtsreinigung. Entfernt effektiv Akne und Mitesser für eine reinere Haut.",
+    "sku": "CJBJMRDD00019-White",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "tags": [
+      "blackhead remover",
+      "hautpflege",
+      "gesichtsreinigung",
+      "wellness"
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Professional 5 In 1 Hair Dryer",
+    "price": 39.99,
+    "originalPrice": 69.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Professional 5 In 1 Hair Dryer.jpg",
+    "description": "Professioneller 5-in-1 Haartrockner mit Bürste, Glätter und Lockenwickler. Elektrisches Haarstyling-Tool für alle Haartypen.",
+    "sku": "CJTF141037804DW",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "tags": [
+      "hair dryer",
+      "haarstyling",
+      "föhn",
+      "wellness",
+      "beauty"
+    ]
   }
 ]
