@@ -76,10 +76,17 @@ function updateAllWishlistButtonsStates(productId) {
     const isInList = isInWishlist(productId);
     document.querySelectorAll(`[data-product-id="${productId}"]`).forEach(btn => {
         if (btn.classList.contains('wishlist-button') || btn.classList.contains('lumiere-wishlist-btn')) {
+            // Toggle active state and icon
             btn.classList.toggle('active', isInList);
             const icon = btn.querySelector('i');
             if (icon) {
                 icon.className = isInList ? 'bi bi-heart-fill' : 'bi bi-heart';
+            }
+            // If this is a product page wishlist button with text, update the label like product 10
+            if (btn.classList.contains('wishlist-button')) {
+                btn.innerHTML = isInList
+                    ? '<i class="bi bi-heart-fill"></i> Entfernen'
+                    : '<i class="bi bi-heart"></i> Zur Wunschliste';
             }
         }
     });
@@ -208,6 +215,10 @@ function handleWishlistToggle(product) {
       }
     }
   });
+  // Also update product page wishlist buttons instantly
+  try {
+    updateAllWishlistButtonsStates(product.id);
+  } catch (_) {}
   
   // Update navigation wishlist counter if it exists
   updateWishlistCounter();
@@ -290,6 +301,18 @@ function renderProducts(products) {
   
   // No need to optimize images anymore
 }
+
+// Ensure product page wishlist init runs on product pages too
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (window.product) {
+      initializeProductPageWishlist();
+      updateAllWishlistButtonsStates(window.product.id);
+    }
+  } catch (e) {
+    console.warn('Product page wishlist init failed:', e);
+  }
+});
 
 function observeProductCards() {
   const cards = document.querySelectorAll('.lumiere-product-card');
