@@ -10,20 +10,42 @@
     <link href="color-image-selection.css" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-        /* Verstecke ALLE Farbkreise in cart.html */
+        /* Verstecke nur Farbkreise, NICHT die bildbasierte Farbauswahl */
         .color-circle,
-        .color-option:not(.cart-color-option),
-        div[style*="border-radius: 50%"][style*="background"],
-        div[style*="border-radius: 50%"][style*="background-color"],
-        .color-options:not(.cart-color-options) .color-option,
-        div[onclick*="selectColor"],
-        div[class*="color"][style*="width: 30px"],
-        div[class*="color"][style*="height: 30px"],
-        .cart-item-details > div[style*="background-color"],
-        .cart-item-details > div[style*="border-radius"],
-        [style*="width: 30px"][style*="height: 30px"][style*="border-radius"],
-        [style*="width: 25px"][style*="height: 25px"][style*="border-radius"] {
+        div[style*="border-radius: 50%"][style*="background"]:not(.cart-color-option):not([class*="cart-item-color"]),
+        div[style*="border-radius: 50%"][style*="background-color"]:not(.cart-color-option):not([class*="cart-item-color"]),
+        div[onclick*="selectColor"]:not(.cart-color-option),
+        div[class*="color"][style*="width: 30px"]:not(.cart-color-option):not([class*="cart-item-color"]),
+        div[class*="color"][style*="height: 30px"]:not(.cart-color-option):not([class*="cart-item-color"]),
+        [style*="width: 30px"][style*="height: 30px"][style*="border-radius"]:not(.cart-color-option):not([class*="cart-item-color"]),
+        [style*="width: 25px"][style*="height: 25px"][style*="border-radius"]:not(.cart-color-option):not([class*="cart-item-color"]) {
             display: none !important;
+        }
+        
+        /* Stelle sicher, dass bildbasierte Farbauswahl sichtbar bleibt */
+        .cart-item-color-selection,
+        [class*="cart-item-color-selection"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        
+        .cart-color-option,
+        .cart-color-image,
+        [class*="cart-color-option"] {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Farbauswahl-Container für Scrolling */
+        [class*="cart-color-options-scroll"] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            overflow-x: auto !important;
         }
         
         /* Alle Farbauswahl-Styles sind jetzt in cart-color-selection-fix.css */
