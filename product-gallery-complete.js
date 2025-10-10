@@ -396,31 +396,6 @@ class ProductImageGallery {
                     }
                 ];
                 break;
-
-            case 40: // Mug Warmer Pad
-                this.images = [
-                    {
-                        src: `../produkt bilder/Mug Warmer Pad.jpg`,
-                        alt: 'Mug Warmer Pad - Hauptbild',
-                        color: 'Standard'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad pink.jpg`,
-                        alt: 'Mug Warmer Pad - Pink',
-                        color: 'Pink'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad grün.jpg`,
-                        alt: 'Mug Warmer Pad - Grün',
-                        color: 'Grün'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad weiß.jpg`,
-                        alt: 'Mug Warmer Pad - Weiß',
-                        color: 'Weiß'
-                    }
-                ];
-                break;
         }
     }
     
