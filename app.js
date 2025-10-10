@@ -51,6 +51,40 @@ let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
 // Globale Produktliste
 let products = [];
 
+function initializeProductPageWishlist() {
+    const productPageButtons = document.querySelectorAll('.wishlist-button');
+    if (productPageButtons.length > 0 && window.product) {
+        console.log(`ðŸ’œ Initializing ${productPageButtons.length} wishlist buttons on product page...`);
+        productPageButtons.forEach(button => {
+            // Remove old listeners to be safe
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+
+            newButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                // Use the global product object defined on the page
+                toggleWishlist(window.product);
+            });
+        });
+        // Update state on load
+        updateAllWishlistButtonsStates(window.product.id);
+    }
+}
+
+function updateAllWishlistButtonsStates(productId) {
+    const isInList = isInWishlist(productId);
+    document.querySelectorAll(`[data-product-id="${productId}"]`).forEach(btn => {
+        if (btn.classList.contains('wishlist-button') || btn.classList.contains('lumiere-wishlist-btn')) {
+            btn.classList.toggle('active', isInList);
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.className = isInList ? 'bi bi-heart-fill' : 'bi bi-heart';
+            }
+        }
+    });
+}
+
 // Produktdaten laden mit Cache-Busting
 async function loadProducts() {
   try {
@@ -109,52 +143,74 @@ function isInWishlist(productId) {
   return getWishlist().some(item => Number(item.id) === Number(productId));
 }
 
-function toggleWishlist(productId) {
-  // Trigger animation immediately for better responsiveness
-  triggerWishlistButtonAnimation(productId);
+function toggleWishlist(productOrId) {
+  // Handle both product object and product ID
+  let productId, productObj;
   
-  loadProducts().then(products => {
-    const product = products.find(p => Number(p.id) === Number(productId));
-    if (!product) {
-      console.error('Produkt für die Wunschliste nicht gefunden! ID:', productId, products);
-      alert('Produkt konnte nicht zur Wunschliste hinzugefügt werden.');
-      return;
-    }
-    
-    let wishlist = getWishlist();
-    const wasInWishlist = isInWishlist(productId);
-    
-    if (wasInWishlist) {
-      wishlist = wishlist.filter(item => Number(item.id) !== Number(productId));
-      showAlert('Produkt von der Wunschliste entfernt', 'wishlist.html');
-    } else {
-      wishlist.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        description: product.description
-      });
-      showAlert('Produkt zur Wunschliste hinzugefügt', 'wishlist.html');
-    }
-    
-    setWishlist(wishlist);
-    
-    // Update all wishlist button states for this product - NEW: Direct selector
-    const wishlistButtons = document.querySelectorAll(`.lumiere-wishlist-btn[data-product-id="${productId}"]`);
-    wishlistButtons.forEach(wishlistButton => {
-      if (wishlistButton) {
-        wishlistButton.classList.toggle('active', !wasInWishlist);
-        const icon = wishlistButton.querySelector('i');
-        if (icon) {
-          icon.className = wasInWishlist ? 'bi bi-heart' : 'bi bi-heart-fill';
-        }
+  if (typeof productOrId === 'object' && productOrId !== null) {
+    // It's a product object
+    productObj = productOrId;
+    productId = productOrId.id;
+  } else {
+    // It's a product ID
+    productId = productOrId;
+    productObj = null;
+  }
+  
+  // Trigger animation immediately for better responsiveness
+  //triggerWishlistButtonAnimation(productId);
+  
+  // If we already have the product object, use it directly
+  if (productObj) {
+    handleWishlistToggle(productObj);
+  } else {
+    // Load products and find the one we need
+    loadProducts().then(products => {
+      const product = products.find(p => Number(p.id) === Number(productId));
+      if (!product) {
+        console.error('Produkt für die Wunschliste nicht gefunden! ID:', productId, products);
+        alert('Produkt konnte nicht zur Wunschliste hinzugefügt werden.');
+        return;
       }
+      handleWishlistToggle(product);
     });
-    
-    // Update navigation wishlist counter if it exists
-    updateWishlistCounter();
+  }
+}
+
+function handleWishlistToggle(product) {
+  let wishlist = getWishlist();
+  const wasInWishlist = isInWishlist(product.id);
+  
+  if (wasInWishlist) {
+    wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
+    showAlert('Produkt von der Wunschliste entfernt', 'wishlist.html');
+  } else {
+    wishlist.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      description: product.description
+    });
+    showAlert('Produkt zur Wunschliste hinzugefügt', 'wishlist.html');
+  }
+  
+  setWishlist(wishlist);
+  
+  // Update all wishlist button states for this product - NEW: Direct selector
+  const wishlistButtons = document.querySelectorAll(`.lumiere-wishlist-btn[data-product-id="${product.id}"]`);
+  wishlistButtons.forEach(wishlistButton => {
+    if (wishlistButton) {
+      wishlistButton.classList.toggle('active', !wasInWishlist);
+      const icon = wishlistButton.querySelector('i');
+      if (icon) {
+        icon.className = wasInWishlist ? 'bi bi-heart' : 'bi bi-heart-fill';
+      }
+    }
   });
+  
+  // Update navigation wishlist counter if it exists
+  updateWishlistCounter();
 }
 
 function updateWishlistCounter() {
@@ -227,6 +283,7 @@ function renderProducts(products) {
   initializeAddToCartButtons();
   initializeWishlistButtons();
   initializeProductCardClicks();
+  initializeProductPageWishlist(); // <-- HIER HINZUGEFÜGT
   observeProductCards();
   
   // Images are now loaded directly with native lazy loading
@@ -2366,27 +2423,23 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  if (categoryFilter) categoryFilter.addEventListener('change', () => {
-    // Force immediate filter update
-    const searchText = searchInput ? searchInput.value.trim() : '';
-    const category = categoryFilter ? categoryFilter.value : 'Alle Kategorien';
-    
-    loadProducts().then(products => {
-      updateDealsNotice(products);
-      const filtered = filterProducts(products, searchText, category);
+  if (filterSelect) {
+    filterSelect.addEventListener('change', () => {
+      const filterValue = filterSelect.value;
+      loadAndFilterProducts({ category: filterValue });
       const sorted = sortProducts(
         filtered,
         priceSort ? priceSort.value : 'Aufsteigend'
       );
       renderProducts(sorted);
+      
+      // Scroll to products when category changes
+      const productGrid = document.getElementById('productGrid');
+      if (productGrid) {
+        productGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     });
-    
-    // Scroll to products when category changes
-    const productGrid = document.getElementById('productGrid');
-    if (productGrid) {
-      productGrid.scrollIntoView({ behavior: 'smooth' });
-    }
-  });
+  }
   if (priceSort) priceSort.addEventListener('change', debounce(updateFilters, 50));
 
   // Speichere die Sucheingabe bei Enter und verhindere Seitenreload
@@ -4774,4 +4827,4 @@ setTimeout(() => {
         };
         console.log('âœ… Warenkorb-Dropdown Fix aktiviert');
     }
-}, 1000);
+}, 1000)

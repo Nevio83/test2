@@ -827,15 +827,17 @@
     });
     }
     
-    if (wishlistBtn) {
-      wishlistBtn.addEventListener('click', function(e) {
+    // Standardized wishlist implementation like Produkt 24
+    const allWishlistButtons = document.querySelectorAll('.wishlist-button');
+    allWishlistButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
         e.preventDefault();
-        // Added wishlist animation trigger
-        triggerWishlistButtonAnimation(this);
         toggleWishlist(product);
       });
-      updateAllWishlistButtons();
-    }
+    });
+    
+    // Update all wishlist buttons on page load
+    updateAllWishlistButtons();
 
     // Event-Listener für Quantity-Input
     const quantityInput = document.getElementById('quantity');

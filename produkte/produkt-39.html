@@ -75,7 +75,7 @@
                     <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn" onclick="addToCartAndRedirect()">
                         <i class="bi bi-cart-plus"></i> In den Warenkorb
                     </button>
-                    <button class="btn btn-outline-light btn-lg" id="wishlistBtn">
+                    <button class="btn btn-outline-light btn-lg wishlist-button" id="wishlistBtn" data-product-id="39">
                         <i class="bi bi-heart"></i> Zur Wunschliste
                     </button>
                 </div>
@@ -140,7 +140,7 @@
                                 <button class="buy-now-btn wishlist-style-btn" onclick="addToCartWithQuantity(event)">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
-                                <button class="wishlist-btn wishlist-button" onclick="toggleWishlist(product)" data-product-id="39">
+                                <button class="wishlist-btn wishlist-button" data-product-id="39">   
                                     <i class="bi bi-heart"></i> Zur Wunschliste
                                 </button>
                             </div>
@@ -182,7 +182,7 @@
                                 <button class="buy-now-btn wishlist-style-btn" onclick="addToCartWithQuantity(event)">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
-                                <button class="wishlist-btn wishlist-button" onclick="toggleWishlist(product)" data-product-id="39">
+                                <button class="wishlist-btn wishlist-button" data-product-id="39">
                                     <i class="bi bi-heart"></i> Zur Wunschliste
                                 </button>
                             </div>
@@ -822,24 +822,32 @@
       if (hero) {
         wishlistBtn = document.createElement('button');
         wishlistBtn.id = 'wishlistBtn';
-        wishlistBtn.className = 'btn btn-outline-light btn-lg ms-2';
+        wishlistBtn.className = 'btn btn-outline-light btn-lg ms-2 wishlist-button';
         hero.appendChild(wishlistBtn);
       }
     }
-    if (wishlistBtn) {
-      wishlistBtn.addEventListener('click', function(e) {
+    
+    // Standardized wishlist implementation like Produkt 24
+    const allWishlistButtons = document.querySelectorAll('.wishlist-button');
+    allWishlistButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
         e.preventDefault();
         toggleWishlist(product);
       });
+    });
+    
+    // Update all wishlist buttons on page load
+    updateAllWishlistButtons();
+    
+    // Cart Button Event-Listener hinzufügen
+    const cartBtn = document.getElementById('cartBtn');
+    if (cartBtn) {
+      cartBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        addToCartAndRedirect();
+      });
     }
-
-    // Event-Listener für Quantity-Input (Mobile)
-    const quantityInput = document.getElementById('quantity');
-    if (quantityInput) {
-      quantityInput.addEventListener('input', updateTotalPrice);
-      quantityInput.addEventListener('change', updateTotalPrice);
-    }
-
+    
     // Event-Listener für Quantity-Input (Desktop)
     const quantityInputDesktop = document.getElementById('quantity-desktop');
     if (quantityInputDesktop) {

@@ -978,20 +978,38 @@ function addAddonToCart(productId) {
     
     // Aktualisiere die Anzeige
     updateCartPage();
-    
     // Sofort zur cart.html navigieren
     window.location.href = 'cart.html';
 }
 
-// Stripe initialisieren
-const stripe = Stripe('pk_test_XXXXXXXXXXXXXXXXXXXXXXXX');
-let elements, cardNumber, cardExpiry, cardCvc;
+// Stripe initialisieren - mit Fehlerbehandlung
+let stripe, elements, cardNumber, cardExpiry, cardCvc;
 let stripeInitialized = false;
+
+// Stripe sicher initialisieren
+function initializeStripe() {
+  try {
+    if (typeof Stripe !== 'undefined') {
+      stripe = Stripe('pk_test_XXXXXXXXXXXXXXXXXXXXXXXX');
+      return true;
+    } else {
+      console.warn('Stripe is not loaded yet');
+      return false;
+    }
+  } catch (error) {
+    console.warn('Stripe initialization failed:', error);
+    return false;
+  }
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     updateCartPage();
-    setupStripeForm(); // Stripe einmalig initialisieren
-
+    
+    // Stripe sicher initialisieren
+    if (initializeStripe()) {
+        setupStripeForm();
+    }
+    
     document.addEventListener('click', function(event) {
         const dropdown = document.getElementById('card-dropdown');
         const button = event.target.closest('button');
