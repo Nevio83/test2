@@ -1,3 +1,4 @@
+
 [
   {
     "id": 10,
@@ -1547,4 +1548,1555 @@
       "haushalt"
     ]
   }
+=======
+[
+  {
+    "id": 10,
+    "name": "Elektrischer Wasserspender für Schreibtisch",
+    "price": 49.99,
+    "originalPrice": 69.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
+    "description": "Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.",
+    "sku": "CJ1621032671155597312",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#2C2C2C",
+        "sku": "CJHS167415803CX",
+        "price": 49.99,
+        "originalPrice": 69.99,
+        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJHS167415804DW",
+        "price": 49.99,
+        "originalPrice": 69.99,
+        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg"
+      }
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Büro Bundle",
+        "description": "Wasserspender + Bürozubehör",
+        "items": [
+          "Ersatzpumpe",
+          "Reinigungsset"
+        ],
+        "originalPrice": 75,
+        "bundlePrice": 65,
+        "savings": 10
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Hydration",
+        "description": "Komplettes Hydration-Set",
+        "items": [
+          "Ersatzpumpe",
+          "Reinigungsset",
+          "Wasserfilterset"
+        ],
+        "originalPrice": 120,
+        "bundlePrice": 89,
+        "savings": 31
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "350ml Elektrischer Mixer Entsafter",
+    "price": 24.99,
+    "originalPrice": 49.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
+    "description": "Kompakter elektrischer Mixer und Entsafter. Perfekt für Smoothies und frische Säfte unterwegs.",
+    "sku": "CJ1621032671155597313",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJMX350ML001WH",
+        "price": 24.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg"
+      },
+      {
+        "name": "Rosa",
+        "code": "#FFC0CB",
+        "sku": "CJMX350ML002PK",
+        "price": 24.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png"
+      }
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Smoothie Starter",
+        "description": "Mixer + Zubehör",
+        "items": [
+          "Ersatzbecher",
+          "Reinigungsbürste"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 29,
+        "savings": 6
+      },
+      {
+        "id": "bundle2",
+        "name": "Fitness Bundle",
+        "description": "Komplettes Smoothie-Set",
+        "items": [
+          "2x Ersatzbecher",
+          "Reinigungsbürste",
+          "Rezeptbuch"
+        ],
+        "originalPrice": 60,
+        "bundlePrice": 45,
+        "savings": 15
+      },
+      {
+        "id": "bundle3",
+        "name": "Family Pack",
+        "description": "Alles für die Familie",
+        "items": [
+          "3x Ersatzbecher",
+          "2x Reinigungsbürste",
+          "Rezeptbuch",
+          "Transporttasche"
+        ],
+        "originalPrice": 85,
+        "bundlePrice": 59,
+        "savings": 26
+      },
+      {
+        "id": "bundle4",
+        "name": "Professional Set",
+        "description": "Für tägliche Nutzung",
+        "items": [
+          "4x Ersatzbecher",
+          "3x Reinigungsbürste",
+          "Rezeptbuch",
+          "Transporttasche",
+          "Ersatzklingen"
+        ],
+        "originalPrice": 120,
+        "bundlePrice": 79,
+        "savings": 41
+      }
+    ],
+    "tags": [
+      "mixer",
+      "entsafter",
+      "smoothie",
+      "350ml",
+      "elektrisch",
+      "tragbar"
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Multifunktions Gemüseschneider",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Multifunktions Gemüseschneider.jpg",
+    "description": "Vielseitiger Gemüseschneider mit austauschbaren Klingen. Spart Zeit und Mühe beim Kochen.",
+    "sku": "CJ1621032671155597314",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "gemüse",
+      "schneider",
+      "küche",
+      "multifunktion"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Küchen Starter",
+        "description": "Schneider + Zubehör",
+        "items": [
+          "Extra Klingen",
+          "Reinigungsbürste"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 28,
+        "savings": 7
+      },
+      {
+        "id": "bundle2",
+        "name": "Profi Küche",
+        "description": "Professionelles Küchen-Set",
+        "items": [
+          "Extra Klingen",
+          "Reinigungsbürste",
+          "Aufbewahrungsbox"
+        ],
+        "originalPrice": 55,
+        "bundlePrice": 40,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Luft Wasser Flasche mit Pumpe",
+    "price": 24.99,
+    "originalPrice": 34.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Luft Wasser Flasche mit Pumpe.jpeg",
+    "description": "Innovative Wasserflasche mit integrierter Luftpumpe. Perfekt für Sport, Reisen und den täglichen Gebrauch.",
+    "sku": "ALI1005007209",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "wasser",
+      "sport",
+      "pumpe",
+      "flasche"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Sport Bundle",
+        "description": "Flasche + Sport Zubehör",
+        "items": [
+          "Trageschlaufe",
+          "Reinigungsset"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 30,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Active Lifestyle",
+        "description": "Komplettes Sport-Set",
+        "items": [
+          "Trageschlaufe",
+          "Reinigungsset",
+          "Ersatzventil"
+        ],
+        "originalPrice": 50,
+        "bundlePrice": 40,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "name": "10-1 Stück Aroma-Pads",
+    "price": 12.99,
+    "originalPrice": 18.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/10-1 Stück Aroma-Pads.jpeg",
+    "description": "Hochwertige Aroma-Pads für Kaffeemaschinen. Wiederverwendbar und umweltfreundlich für perfekten Kaffeegenuss.",
+    "sku": "ALI1005008666",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "kaffee",
+      "pads",
+      "wiederverwendbar",
+      "umweltfreundlich"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Kaffee Starter",
+        "description": "Pads + Kaffee Zubehör",
+        "items": [
+          "Reinigungsbürste",
+          "Aufbewahrungsbox"
+        ],
+        "originalPrice": 20,
+        "bundlePrice": 17,
+        "savings": 3
+      },
+      {
+        "id": "bundle2",
+        "name": "Barista Set",
+        "description": "Professionelles Kaffee-Set",
+        "items": [
+          "Reinigungsbürste",
+          "Aufbewahrungsbox",
+          "Premium Kaffeebohnen"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 25,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Drahtlose elektrische tragbare Espressomaschine",
+    "price": 89.99,
+    "originalPrice": 119.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Drahtlose elektrische tragbare Espressomaschine.jpeg",
+    "description": "Premium tragbare Espressomaschine mit drahtloser Technologie. Perfekter Espresso überall und jederzeit.",
+    "sku": "ALI1005007317",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "espresso",
+      "kaffee",
+      "tragbar",
+      "drahtlos"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Espresso Starter",
+        "description": "Maschine + Grundausstattung",
+        "items": [
+          "Reinigungsset",
+          "Ersatzkapseln"
+        ],
+        "originalPrice": 110,
+        "bundlePrice": 99,
+        "savings": 11
+      },
+      {
+        "id": "bundle2",
+        "name": "Barista Professional",
+        "description": "Professionelles Espresso-Set",
+        "items": [
+          "Reinigungsset",
+          "Ersatzkapseln",
+          "Premium Kaffeebohnen",
+          "Milchaufschäumer"
+        ],
+        "originalPrice": 150,
+        "bundlePrice": 125,
+        "savings": 25
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Elektrische Küchenwaage Digital",
+    "price": 49.99,
+    "originalPrice": 39.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Präzise digitale Küchenwaage mit LCD-Display. Ideal für genaues Wiegen beim Kochen und Backen.",
+    "sku": "ALI1005007542",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "waage",
+      "küche",
+      "digital",
+      "präzise"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Baking Starter",
+        "description": "Waage + Back-Zubehör",
+        "items": [
+          "Messbecher Set",
+          "Rezeptbuch"
+        ],
+        "originalPrice": 40,
+        "bundlePrice": 35,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Master Baker",
+        "description": "Professionelles Back-Set",
+        "items": [
+          "Messbecher Set",
+          "Rezeptbuch",
+          "Silikon Backformen",
+          "Digitaler Timer"
+        ],
+        "originalPrice": 70,
+        "bundlePrice": 55,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Elektronisches Distanzmessgerät Digital",
+    "price": 39.99,
+    "originalPrice": 59.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Elektronisches Distanzmessgerät Digital.jpg",
+    "description": "Präzises elektronisches Distanzmessgerät mit LCD-Display. Ideal für Handwerker, Architekten und Heimwerker.",
+    "sku": "CJ0E94A308",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "messen",
+      "werkzeug",
+      "elektronisch",
+      "digital"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 49.99,
+        "bundlePrice": 44.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 64.99,
+        "bundlePrice": 54.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "name": "ZigBee Smart DIY Motorisierte Rollos",
+    "price": 89.99,
+    "originalPrice": 129.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg",
+    "description": "Intelligente motorisierte Rollos mit ZigBee-Technologie. Einfache Installation und Smart Home Integration für automatische Lichtsteuerung.",
+    "sku": "ALI1005005801",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "smart",
+      "automation"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 99.99,
+        "bundlePrice": 94.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 114.99,
+        "bundlePrice": 104.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "name": "COBLED Arbeitsleuchte",
+    "price": 29.99,
+    "originalPrice": 49.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/COBLED Arbeitsleuchte.jpeg",
+    "description": "Professionelle COBLED Arbeitsleuchte mit COB LED-Technologie. Ideal für Werkstatt, Garage, Camping und alle Arbeiten die helles, gleichmäßiges Licht benötigen.",
+    "features": [
+      "COB LED-Technologie für gleichmäßiges Licht",
+      "Bis zu 1000 Lumen Helligkeit",
+      "Wiederaufladbar über USB",
+      "Magnetische Befestigung und Haken",
+      "Wasserdicht (IP54) für Outdoor-Einsatz"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Work Starter",
+        "description": "Arbeitsleuchte + Ladezubehör",
+        "items": [
+          "USB-Ladekabel",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 49.99,
+        "bundlePrice": 39.99,
+        "savings": 10
+      },
+      {
+        "id": "bundle2",
+        "name": "Professional Work",
+        "description": "Komplettes Arbeitsbeleuchtungsset",
+        "items": [
+          "USB-Ladekabel",
+          "Bedienungsanleitung",
+          "Zusätzliche Halterung"
+        ],
+        "originalPrice": 64.99,
+        "bundlePrice": 49.99,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Nachtlichter mit Bewegungsmelder",
+    "price": 16.99,
+    "originalPrice": 24.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Nachtlichter mit Bewegungsmelder.jpeg",
+    "description": "Automatische Nachtlichter mit Bewegungsmelder für sicheres Navigieren in der Dunkelheit. Perfekt für Schlafzimmer, Badezimmer, Flure und Kinderzimmer.",
+    "features": [
+      "Automatischer Bewegungsmelder",
+      "Warmes, augenschonendes Licht",
+      "Batteriebetrieben - bis zu 12 Monate",
+      "Klebestreifen für einfache Montage",
+      "Kompaktes, unauffälliges Design"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Night Safety",
+        "description": "Nachtlicht + Batterien",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen"
+        ],
+        "originalPrice": 24.99,
+        "bundlePrice": 19.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Night Safety",
+        "description": "Komplettes Nachtbeleuchtungsset",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen",
+          "Zusätzliche Befestigungsoptionen"
+        ],
+        "originalPrice": 34.99,
+        "bundlePrice": 24.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "name": "4 In 1 Self Cleaning Hair Brush",
+    "price": 10.99,
+    "originalPrice": 20.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",
+    "description": "Revolutionäre 4-in-1 selbstreinigende haarbürste mit Anti-Statik-Massage-Funktion. Skalierbar, rotierend und selbstreinigend für perfekte haarpflege.",
+    "sku": "CJ1711943102027542528",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Roland Purple",
+        "code": "#663399",
+        "sku": "CJHB26001RP",
+        "price": 10.99,
+        "originalPrice": 20.99,
+        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg"
+      },
+      {
+        "name": "Lunar Rock",
+        "code": "#708090",
+        "sku": "CJHB26002LG",
+        "price": 11.99,
+        "originalPrice": 21.99,
+        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg"
+      }
+    ],
+    "features": [
+      "4-in-1 Multifunktions-Design",
+      "Selbstreinigende Technologie",
+      "Anti-Statik-Massage-Funktion",
+      "Skalierbar und rotierend",
+      "Ergonomischer Griff"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 20.99,
+        "bundlePrice": 15.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 35.99,
+        "bundlePrice": 25.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Volcanic Flame Aroma Essential Oil Diffuser",
+    "price": 15.99,
+    "originalPrice": 29.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg",
+    "description": "USB-betriebener Vulkanflammen-Aromadiffuser mit Quallen-Luftbefeuchter und Nachtlicht. Perfekt für entspannende Atmosphäre und Wellness.",
+    "sku": "CJ1602125961166860288",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "aromadiffuser",
+      "luftbefeuchter",
+      "nachtlicht",
+      "wellness"
+    ],
+    "features": [
+      "Vulkanflammen-Design für entspannende Atmosphäre",
+      "USB-betrieben für einfache Nutzung",
+      "Quallen-Luftbefeuchter-Funktion",
+      "Integriertes Nachtlicht",
+      "Tragbar und kompakt"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 25.99,
+        "bundlePrice": 20.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 40.99,
+        "bundlePrice": 30.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Mini Muskel Massage Pistole",
+    "price": 24.99,
+    "originalPrice": 44.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Mini Muskel Massage Pistole.jpeg",
+    "description": "Kompakte Mini-Massage-Pistole für Muskelentspannung und Regeneration. Ideal für Sport, Fitness und tägliche Wellness-Routine.",
+    "sku": "ALI1005007060455752",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "massage",
+      "muskel",
+      "regeneration",
+      "sport"
+    ],
+    "features": [
+      "Kompaktes Mini-Design",
+      "Verschiedene Massage-Aufsätze",
+      "Einstellbare Geschwindigkeitsstufen",
+      "Wiederaufladbar über USB",
+      "Leise Betriebsgeräusche"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 34.99,
+        "bundlePrice": 29.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 49.99,
+        "bundlePrice": 39.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Haaröl-Applikator Kopfhaut Massager",
+    "price": 8.99,
+    "originalPrice": 16.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Haaröl-Applikator Kopfhaut Massager.jpeg",
+    "description": "Innovativer Haaröl-Applikator mit Kopfhaut-Massage-Funktion. Gleichmäßige Verteilung von Haarölen und entspannende Kopfhautmassage in einem Gerät.",
+    "sku": "ALI1005007010671073",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "haaröl",
+      "kopfhaut",
+      "massage",
+      "haarpflege"
+    ],
+    "features": [
+      "Präzise Haaröl-Verteilung",
+      "Integrierte Kopfhautmassage",
+      "Ergonomisches Design",
+      "Einfache Reinigung",
+      "Für alle Haartypen geeignet"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 18.99,
+        "bundlePrice": 13.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 33.99,
+        "bundlePrice": 23.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Mini Electric Shoulder And Neck Massager",
+    "price": 19.99,
+    "originalPrice": 35.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Mini Electric Shoulder And Neck Massager.jpg",
+    "description": "Kompakter elektrischer Schulter- und Nackenmassager für die Halswirbelsäule. Perfekt für Büroarbeiter und zur Entspannung nach langen Arbeitstagen.",
+    "sku": "CJ08528DD9-69BF-4E58-9B32-A0BDE765DE33",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "nackenmassage",
+      "schulter",
+      "halswirbelsäule",
+      "entspannung"
+    ],
+    "features": [
+      "Speziell für Nacken und Schultern entwickelt",
+      "Elektrische Massage-Funktion",
+      "Kompakt und tragbar",
+      "Verschiedene Massage-Modi",
+      "Ideal für Büroarbeiter"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 29.99,
+        "bundlePrice": 24.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 44.99,
+        "bundlePrice": 34.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "name": "LED Water Ripple Crystal",
+    "price": 39.99,
+    "originalPrice": 59.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/LED Water Ripple Crystal.jpg",
+    "description": "LED Water Ripple Ambient Night Light - USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
+    "sku": "CJLED21001",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Crown",
+        "code": "#FFD700",
+        "sku": "CJLED21001CR",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal crown.png"
+      },
+      {
+        "name": "Square",
+        "code": "#C0C0C0",
+        "sku": "CJLED21002SQ",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal square.png"
+      }
+    ],
+    "features": [
+      "USB-betrieben für einfache Nutzung",
+      "Rotierende Projektion für dynamische Effekte",
+      "16 verschiedene Farben verfügbar",
+      "RGB dimmbar für perfekte Atmosphäre",
+      "Kristall-Design für elegante Optik"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Ambient Starter",
+        "description": "Lampe + Grundzubehör",
+        "items": [
+          "USB-Kabel",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 49.99,
+        "bundlePrice": 44.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Ambience",
+        "description": "Komplettes Beleuchtungs-Set",
+        "items": [
+          "USB-Kabel",
+          "Bedienungsanleitung",
+          "Fernbedienung"
+        ],
+        "originalPrice": 69.99,
+        "bundlePrice": 54.99,
+        "savings": 15
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Waterproof RGB LED Solar Light",
+    "price": 24.99,
+    "originalPrice": 34.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Waterproof RGB LED Solar Light.jpg",
+    "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung."
+  },
+  {
+    "id": 23,
+    "name": "LED Motion Sensor Licht Drahtlose",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/LED Motion Sensor Licht Drahtlose.jpeg",
+    "description": "Drahtloses LED Motion Sensor Licht mit Bewegungsmelder. Perfekt für Flure, Treppen, Schränke und andere Bereiche wo automatische Beleuchtung benötigt wird.",
+    "features": [
+      "Drahtlos - einfache Installation überall",
+      "Bewegungsmelder mit 3m Reichweite",
+      "Batteriebetrieben - bis zu 6 Monate Laufzeit",
+      "Automatische Ein-/Ausschaltung",
+      "Kompaktes Design für unauffällige Montage"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Motion Starter",
+        "description": "Sensor-Licht + Batterien",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen"
+        ],
+        "originalPrice": 29.99,
+        "bundlePrice": 24.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Smart Home Pack",
+        "description": "Komplettes Sensor-Beleuchtungsset",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen",
+          "Zusätzliche Montageoption"
+        ],
+        "originalPrice": 39.99,
+        "bundlePrice": 29.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Elektrischer Kopfhaut-Massagekamm",
+    "price": 12.99,
+    "originalPrice": 22.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Elektrischer Kopfhaut-Massagekamm.jpeg",
+    "description": "Elektrischer Kopfhaut-Massagekamm für entspannende Kopfmassage und verbesserte Durchblutung. Fördert Haarwachstum und Entspannung.",
+    "sku": "ALI1005007987737586",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": [
+      "kopfhautmassage",
+      "elektrisch",
+      "haarwachstum",
+      "entspannung"
+    ],
+    "features": [
+      "Elektrische Vibrations-Massage",
+      "Fördert die Durchblutung der Kopfhaut",
+      "Unterstützt natürliches Haarwachstum",
+      "Wasserdicht für Duschnutzung",
+      "Ergonomischer Griff"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
+        "originalPrice": 22.99,
+        "bundlePrice": 17.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
+        "originalPrice": 37.99,
+        "bundlePrice": 27.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Bluetooth Anti-Lost Finder Wassertropfen",
+    "price": 14.99,
+    "originalPrice": 24.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg",
+    "description": "Kompakter Bluetooth-Tracker in Wassertropfen-Design. Finden Sie verlorene Gegenstände schnell und einfach über Ihr Smartphone.",
+    "sku": "CJ9FA9912D",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#2C2C2C",
+        "sku": "CJBT17006BK",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png"
+      },
+      {
+        "name": "Weiß",
+        "code": "#F8F8F8",
+        "sku": "CJBT17007WH",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png"
+      },
+      {
+        "name": "Grün",
+        "code": "#7ED321",
+        "sku": "CJBT17008GR",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png"
+      },
+      {
+        "name": "Pink",
+        "code": "#E91E63",
+        "sku": "CJBT17009PK",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png"
+      }
+    ],
+    "tags": [
+      "bluetooth",
+      "tracker",
+      "finder"
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Home Electronic Clock Digitale Uhr",
+    "price": 24.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Home Electronic Clock Digitale Uhr.jpg",
+    "description": "Moderne digitale Wanduhr mit LED-Display. Perfekt für Wohnzimmer, Büro oder Küche mit großer, gut lesbarer Anzeige.",
+    "sku": "CJ135B501D",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "uhr",
+      "digital",
+      "led"
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Indoor Sensing Wall Lamp",
+    "price": 29.99,
+    "originalPrice": 39.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Indoor Sensing Wall Lamp.jpg",
+    "description": "USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt für Flure, Treppen und Schränke mit automatischer Ein-/Ausschaltung bei Bewegung.",
+    "sku": "CJ1373821404948074496",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#2C2C2C",
+        "sku": "CJSN105028901AZ",
+        "price": 29.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJSN105028907GT",
+        "price": 29.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg"
+      }
+    ],
+    "features": [
+      "USB-aufladbar für kabellose Nutzung",
+      "Bewegungssensor mit automatischer Aktivierung",
+      "Verschiedene Größen verfügbar (14x6cm, 22x11cm, 29x11cm)",
+      "Weiß- und Warmlicht-Modi",
+      "Einfache Wandmontage ohne Verkabelung"
+    ],
+    "tags": [
+      "wandlampe",
+      "bewegungsmelder",
+      "usb",
+      "sensor",
+      "beleuchtung",
+      "automatisch"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Smart Light Starter",
+        "description": "Wandlampe + Grundzubehör",
+        "items": [
+          "USB-Ladekabel",
+          "Montagezubehör"
+        ],
+        "originalPrice": 39.99,
+        "bundlePrice": 34.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Smart Lighting",
+        "description": "Komplettes Smart-Beleuchtungsset",
+        "items": [
+          "USB-Ladekabel",
+          "Montagezubehör",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 54.99,
+        "bundlePrice": 44.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Aromatherapy Essential Oil Humidifier",
+    "price": 39.99,
+    "originalPrice": 59.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Aromatherapy essential oil humidifier.jpg",
+    "description": "Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.",
+    "sku": "CJ09477003744E498990DA",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Cherry Blossoms",
+        "code": "#FFB6C1",
+        "sku": "CJBJPFJY00081-Cherry blossoms",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg"
+      },
+      {
+        "name": "Green Tea",
+        "code": "#90EE90",
+        "sku": "CJBJPFJY00081-Green Tea",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg"
+      },
+      {
+        "name": "Jasmine",
+        "code": "#F8F8FF",
+        "sku": "CJBJPFJY00081-Jasmine",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier jasmine.jpg"
+      },
+      {
+        "name": "Lavender",
+        "code": "#E6E6FA",
+        "sku": "CJBJPFJY00081-Lavender",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lavender.jpg"
+      },
+      {
+        "name": "Lemon",
+        "code": "#FFFF99",
+        "sku": "CJBJPFJY00081-Lemon",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lemon.jpg"
+      },
+      {
+        "name": "Lily",
+        "code": "#87CEEB",
+        "sku": "CJBJPFJY00081-Lily",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lily.jpg"
+      },
+      {
+        "name": "Ocean",
+        "code": "#FF69B4",
+        "sku": "CJBJPFJY00081-Ocean",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier ocean.jpg"
+      },
+      {
+        "name": "Rose",
+        "code": "#D2B48C",
+        "sku": "CJBJPFJY00081-Rose",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier rose.jpg"
+      },
+      {
+        "name": "Sandalwood",
+        "code": "#F5DEB3",
+        "sku": "CJBJPFJY00081-Sandalwood",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sandalwood.jpg"
+      },
+      {
+        "name": "Sweet",
+        "code": "#F5DEB3",
+        "sku": "CJBJPFJY00081-Sweet",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sweet.jpg"
+      },
+      {
+        "name": "Vanilla",
+        "code": "#FFF8DC",
+        "sku": "CJBJPFJY00081-Vanilla",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier vanilla.jpg"
+      },
+      {
+        "name": "Violet",
+        "code": "#8A2BE2",
+        "sku": "CJBJPFJY00081-violet",
+        "price": 39.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier violet.jpg"
+      }
+    ],
+    "features": [
+      "12 verschiedene Aromatherapy-Düfte verfügbar",
+      "Ultraschall-Technologie für feine Nebel-Verteilung",
+      "LED-Beleuchtung mit verschiedenen Farben",
+      "Automatische Abschaltung bei niedrigem Wasserstand",
+      "Leiser Betrieb für Schlafzimmer geeignet",
+      "300ml Wassertank für bis zu 10 Stunden Betrieb"
+    ],
+    "tags": [
+      "aromatherapy",
+      "humidifier",
+      "wellness",
+      "entspannung",
+      "duft",
+      "luftbefeuchter",
+      "essential oil"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Humidifier + 3 Duftöle",
+        "items": [
+          "Aromatherapy Humidifier",
+          "3 Essential Oil Samples",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 79.99,
+        "bundlePrice": 59.99,
+        "savings": 20
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Aromatherapy Set",
+        "description": "Komplettes Wellness-Paket",
+        "items": [
+          "Aromatherapy Humidifier",
+          "5 Essential Oil Samples",
+          "Reinigungsset",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 119.99,
+        "bundlePrice": 89.99,
+        "savings": 30
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Moisturizing Face Steamer",
+    "price": 14.99,
+    "originalPrice": 24.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Moisturizing Face Steamer.jpg",
+    "description": "Ein 2-in-1-Gesichts- und Augendampfer mit Nano-Zerstäubungstechnologie. Spendet effektiv Feuchtigkeit, lindert trockene Haut und reduziert die Ermüdung der Augen. Klein, tragbar und über USB aufladbar - perfekt für die Hautpflege unterwegs.",
+    "sku": "CJMB1545970",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Blau",
+        "code": "#A0C4FF",
+        "sku": "CJMB154597002BY",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer blau.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJMB154597001AZ",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer weiß.jpg"
+      }
+    ],
+    "tags": [
+      "face steamer",
+      "moisturizer",
+      "wellness",
+      "hautpflege",
+      "beauty"
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Thermal Neck Lifting And Tighten Massager",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg",
+    "description": "Ein EMS Thermal Neck Lifting und Tighten Massager, der mit elektrischem Mikrostrom Falten entfernt und die Haut strafft. Ideal für eine entspannende und verjüngende Nackenmassage.",
+    "sku": "CJYD1887254",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJYD188725403CX",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJYD188725404DW",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager weiß.jpg"
+      }
+    ],
+    "tags": [
+      "neck massager",
+      "wellness",
+      "hautpflege",
+      "faltenentferner",
+      "ems"
+    ]
+  },
+  {
+    "id": 36,
+    "name": "Cleaning Blackhead Instrument",
+    "price": 12.99,
+    "originalPrice": 22.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Cleaning Blackhead Instrument.jpg",
+    "description": "Elektrisches Mitesser-Entferner-Instrument mit Saugfunktion zur Gesichtsreinigung. Entfernt effektiv Akne und Mitesser für eine reinere Haut.",
+    "sku": "CJBJMRDD00019-White",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "tags": [
+      "blackhead remover",
+      "hautpflege",
+      "gesichtsreinigung",
+      "wellness"
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Professional 5 In 1 Hair Dryer",
+    "price": 39.99,
+    "originalPrice": 69.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Professional 5 In 1 Hair Dryer.jpg",
+    "description": "Professioneller 5-in-1 Haartrockner mit Bürste, Glätter und Lockenwickler. Elektrisches Haarstyling-Tool für alle Haartypen.",
+    "sku": "CJTF141037804DW",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "tags": [
+      "hair dryer",
+      "haarstyling",
+      "föhn",
+      "wellness",
+      "beauty"
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Jade Massager",
+    "price": 14.99,
+    "originalPrice": 24.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Jade Massager.jpg",
+    "description": "Natürlicher Jade-Massager und Gua Sha Stein zur Förderung der Durchblutung, Reduzierung von Schwellungen und zur Entspannung der Gesichtsmuskulatur. Ideal für die tägliche Hautpflege-Routine.",
+    "sku": "CJPF1011351",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJPF101135114NM",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager schwarz.jpg"
+      },
+      {
+        "name": "Grün",
+        "code": "#008000",
+        "sku": "CJPF101135122VE",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager grün.jpg"
+      },
+      {
+        "name": "Hellgrün",
+        "code": "#90EE90",
+        "sku": "CJPF101135120TG",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager hell grün.jpg"
+      },
+      {
+        "name": "Pink",
+        "code": "#FFC0CB",
+        "sku": "CJPF101135116PK",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager pink.jpg"
+      },
+      {
+        "name": "Lila",
+        "code": "#800080",
+        "sku": "CJPF101135118RI",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager lila.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJPF101135124XC",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager weiß.jpg"
+      },
+      {
+        "name": "Gelb",
+        "code": "#FFFF00",
+        "sku": "CJPF101135127AZ",
+        "price": 14.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager gelb.jpg"
+      }
+    ],
+    "tags": [
+      "jade",
+      "massager",
+      "gua sha",
+      "wellness",
+      "hautpflege"
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Electric Guasha Massager",
+    "price": 29.99,
+    "originalPrice": 49.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Electric Guasha Massager.jpg",
+    "description": "Elektrisches Guasha-Massagegerät mit EMS-Mikrostrom, Heiß- und Kalt-Modus sowie 3-Farben-Lichttherapie zur Hautstraffung, Faltenreduzierung und Förderung der Aufnahme von Hautpflegeprodukten.",
+    "sku": "CJPF203924202BY",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "tags": [
+      "guasha",
+      "ems",
+      "face lifting",
+      "hautpflege",
+      "wellness"
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Mug Warmer Pad",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Mug Warmer Pad.jpg",
+    "description": "Halten Sie Ihr Getränk mit diesem intelligenten Tassenwärmer-Untersetzer konstant auf der perfekten Temperatur. Ideal für Kaffee, Tee oder Kakao am Schreibtisch oder zu Hause.",
+    "sku": "CJJT1723382",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Pink",
+        "code": "#FFC0CB",
+        "sku": "CJJT172338202BY",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad pink.jpg"
+      },
+      {
+        "name": "Grün",
+        "code": "#008000",
+        "sku": "CJJT172338203CX",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad grün.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJT172338201AZ",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad weiß.jpg"
+      }
+    ],
+    "tags": [
+      "mug warmer",
+      "tassenwärmer",
+      "kaffee",
+      "tee",
+      "haushalt"
+    ]
+  }
+>>>>>>> 3f469a4c0bd924741fa8aa47c3dc16ee5e5203aa
 ]
