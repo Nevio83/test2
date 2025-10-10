@@ -99,8 +99,8 @@
                     <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn">
                         <i class="bi bi-cart-plus"></i> In den Warenkorb
                     </button>
-                    <button class="btn btn-outline-light btn-lg wishlist-style-btn wishlist-button" id="wishlistBtn">
-                        <i class="bi bi-heart"></i> Merken
+                    <button class="btn btn-outline-light btn-lg wishlist-button" id="wishlistBtn" data-product-id="40">
+                        <i class="bi bi-heart"></i> Zur Wunschliste
                     </button>
                 </div>
                 <div class="col-lg-6 text-center">
@@ -167,7 +167,7 @@
                                 <button class="buy-now-btn" id="buyNowBtnMobile">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
-                                <button class="wishlist-btn wishlist-style-btn wishlist-button" onclick="toggleWishlist(product)">
+                                <button class="wishlist-btn wishlist-button" data-product-id="40">
                                     <i class="bi bi-heart"></i> Zur Wunschliste
                                 </button>
                             </div>
@@ -210,8 +210,8 @@
                                 <button class="buy-now-btn" id="buyNowBtn">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
-                                <button class="wishlist-btn wishlist-style-btn wishlist-button" onclick="toggleWishlist(product)">
-                                    <i class="bi bi-heart"></i> Zur Wunschliste hinzufügen
+                                <button class="wishlist-btn wishlist-button" data-product-id="40">
+                                    <i class="bi bi-heart"></i> Zur Wunschliste
                                 </button>
                             </div>
                             
@@ -368,10 +368,13 @@
     let wishlist = getWishlist();
     if (isInWishlist(product.id)) {
       wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
+      setWishlist(wishlist);
+      updateAllWishlistButtons(); // SOFORT nach setWishlist aufrufen
+      
       if (typeof showAlert === 'function') {
         showAlert('Produkt von der Wunschliste entfernt', 'wishlist.html');
       } else {
-        showNotification('Von der Wunschliste entfernt', 'info');
+        showNotification('Produkt von der Wunschliste entfernt');
       }
     } else {
       wishlist.push({
@@ -381,14 +384,15 @@
         image: product.image,
         description: product.description
       });
+      setWishlist(wishlist);
+      updateAllWishlistButtons(); // SOFORT nach setWishlist aufrufen
+      
       if (typeof showAlert === 'function') {
         showAlert('Produkt zur Wunschliste hinzugefügt', 'wishlist.html');
       } else {
-        showNotification('Zur Wunschliste hinzugefügt');
+        showNotification('Produkt zur Wunschliste hinzugefügt');
       }
     }
-    setWishlist(wishlist);
-    updateAllWishlistButtons();
   }
   function updateAllWishlistButtons() {
     const isInList = isInWishlist(product.id);
@@ -826,12 +830,22 @@
         });
     }
     
-    // Standardized wishlist implementation like Produkt 24
+    // Standardized wishlist implementation like Produkt 10
     const allWishlistButtons = document.querySelectorAll('.wishlist-button');
+    console.log('Found wishlist buttons:', allWishlistButtons.length);
+    
     allWishlistButtons.forEach(button => {
       button.addEventListener('click', function(e) {
         e.preventDefault();
+        console.log('Wishlist button clicked for product:', product.id);
+        
+        // Call toggleWishlist and force immediate update
         toggleWishlist(product);
+        
+        // Force immediate visual update
+        setTimeout(() => {
+          updateAllWishlistButtons();
+        }, 10);
       });
     });
     
