@@ -391,7 +391,21 @@ document.addEventListener('DOMContentLoaded', () => {
         window.updateCartPage = function() {
             console.log('🔄 updateCartPage überschrieben');
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+            
+            let result;
+            try {
+                // Rufe originale Funktion auf
+                result = originalUpdateCartPage.apply(this, arguments);
+            } catch (error) {
+                console.warn('⚠️ Fehler in originalUpdateCartPage:', error);
+                // Trotzdem weitermachen mit Farbauswahl
+            }
+            
+            console.log('🔄 Füge Farbauswahl-Timeout hinzu...');
+>>>>>>> Stashed changes
             
             let result;
             try {
