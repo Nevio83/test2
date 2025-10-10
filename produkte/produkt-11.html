@@ -99,9 +99,7 @@
                     <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn">
                         <i class="bi bi-cart-plus"></i> In den Warenkorb
                     </button>
-                    <button class="btn btn-outline-light btn-lg wishlist-style-btn wishlist-button" id="wishlistBtn">
-                        <i class="bi bi-heart"></i> Merken
-                    </button>
+                    <button class="btn btn-outline-light btn-lg wishlist-style-btn wishlist-button" id="wishlistBtn" data-product-id="11">
                 </div>
                 <div class="col-lg-6 text-center">
                     <img src="../produkt bilder/350ml Elektrischer Mixer Entsafter.jpg" alt="350ml Elektrischer Mixer Entsafter" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
@@ -213,9 +211,7 @@
                                 <button class="buy-now-btn" id="buyNowBtn">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
-                                <button class="wishlist-btn wishlist-style-btn wishlist-button" onclick="toggleWishlist(product)">
-                                    <i class="bi bi-heart"></i> Zur Wunschliste hinzufügen
-                                </button>
+                                <button class="wishlist-btn wishlist-style-btn wishlist-button" data-product-id="11">
                             </div>
                             
                             <div class="features-section">
@@ -866,118 +862,22 @@
   });
     </script>
     <script src="../keyboard-shortcuts.js"></script>
-<script>
-  // Populate mobile quantity dropdown on page load
-  function populateMobileQuantityDropdown() {
-    const select = document.getElementById('quantity-mobile');
-    if (select && select.options.length === 0) {
-      // Generate all options from 1 to 999
-      for (let i = 1; i <= 999; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        select.appendChild(option);
-      }
-    }
-  }
-
-  // Call on page load
-  document.addEventListener('DOMContentLoaded', populateMobileQuantityDropdown);
-  // Also call immediately in case DOM is already loaded
-  populateMobileQuantityDropdown();
-
-  // Mobile-specific quantity functions
-  function increaseMobileQuantity() {
-    const select = document.getElementById('quantity-mobile');
-    if (select) {
-      const currentValue = parseInt(select.value, 10) || 1;
-      if (currentValue < 999) {
-        select.value = currentValue + 1;
-        updateTotalPrice();
-      }
-    }
-  }
-
-  function decreaseMobileQuantity() {
-    const select = document.getElementById('quantity-mobile');
-    if (select) {
-      const currentValue = parseInt(select.value, 10) || 1;
-      if (currentValue > 1) {
-        select.value = currentValue - 1;
-        updateTotalPrice();
-      }
-    }
-  }
-
-    // Fullscreen-Funktionalität für Hauptproduktbild
-    const mainProductImage = document.querySelector('.main-product-image');
-    if (mainProductImage) {
-        mainProductImage.style.cursor = 'zoom-in';
-        mainProductImage.addEventListener('click', function() {
-            // Erstelle Fullscreen Modal
-            const modal = document.createElement('div');
-            modal.className = 'image-fullscreen-modal';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.9);
-                z-index: 10000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: zoom-out;
-            `;
-            
-            const img = document.createElement('img');
-            img.src = this.src;
-            img.alt = this.alt;
-            img.style.cssText = `
-                max-width: 90%;
-                max-height: 90%;
-                object-fit: contain;
-                border-radius: 8px;
-            `;
-            
-            const closeBtn = document.createElement('span');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = `
-                position: absolute;
-                top: 20px;
-                right: 30px;
-                color: white;
-                font-size: 40px;
-                font-weight: bold;
-                cursor: pointer;
-            `;
-            
-            modal.appendChild(img);
-            modal.appendChild(closeBtn);
-            document.body.appendChild(modal);
-            document.body.style.overflow = 'hidden';
-            
-            // Event-Listener zum Schließen
-            const closeModal = () => {
-                document.body.removeChild(modal);
-                document.body.style.overflow = 'auto';
-            };
-            
-            modal.addEventListener('click', closeModal);
-            closeBtn.addEventListener('click', closeModal);
-            
-            // ESC-Taste zum Schließen
-            const handleEsc = (e) => {
-                if (e.key === 'Escape') {
-                    closeModal();
-                    document.removeEventListener('keydown', handleEsc);
-                }
-            };
-            document.addEventListener('keydown', handleEsc);
-        });
-    }
-</script>
+    // Produktdaten für diese Seite, damit app.js darauf zugreifen kann
+    window.product = {
+        id: 11,
+        name: "350ml Elektrischer Mixer Entsafter",
+        nameEn: "350ml Electric Mixer Juicer",
+        price: 24.99,
+        originalPrice: 39.99,
+        image: "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
+        category: "Haushalt und Küche",
+        categoryId: "haushalt-kueche",
+        description: "Kompakter elektrischer Mixer und Entsafter in einem. Perfekt für Smoothies, Säfte und Shakes unterwegs.",
+        sku: "MIXER011",
+        inStock: true,
+        shippingTime: "7-15 Werktage",
+        tags: ["mixer", "entsafter", "smoothie", "tragbar"]
+    };
 
 <!-- App.js für globale Funktionen -->
 <script src="../app.js"></script>
@@ -1020,4 +920,3 @@ document.addEventListener('DOMContentLoaded', () => {
     <script src="../product-gallery-complete.js"></script>
 </body>
 </html>
-

@@ -91,19 +91,26 @@
     animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+@keyframes addToWishlistSuccess {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.05);
+        color: #e74c3c;
+    }
+    50% {
+        transform: scale(1.1);
+        color: #e74c3c;
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
-/* Bundle-Boxen mit modernem Design */
-.bundle-box {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border-radius: 20px;
-    padding: 2rem;
-    margin: 2rem auto;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+/* Heart pulse animation */
+.heart-pulse {
+    animation: heartPulse 0.5s ease-in-out;
     border: 1px solid rgba(255,255,255,0.2);
     backdrop-filter: blur(10px);
 }
@@ -1981,4 +1988,37 @@
     .modern-nav-link:active {
         transform: scale(0.95);
     }
+}
+
+/* Heart pulse animation */
+.heart-pulse {
+    animation: heartPulse 0.5s ease-in-out;
+}
+
+@keyframes heartPulse {
+    0% {
+        transform: scale(1);
+        color: inherit;
+    }
+    50% {
+        transform: scale(1.3);
+        color: #e74c3c;
+    }
+    100% {
+        transform: scale(1);
+        color: #ffffff;
+    }
+}
+
+/* Active state for wishlist buttons */
+.wishlist-button.active,
+.wishlist-btn.active {
+    background-color: #ffffff !important; /* Weißer Hintergrund */
+    color: #000000 !important; /* Schwarze Schrift */
+    border-color: #dddddd !important; /* Heller grauer Rand */
+}
+
+.wishlist-button.active i,
+.wishlist-btn.active i {
+    color: #000000 !important; /* Schwarzes Icon */
 }
