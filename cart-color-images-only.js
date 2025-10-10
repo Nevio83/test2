@@ -130,27 +130,69 @@ async function renderImageColorSelection(item, container) {
             mainImage.src = getColorSpecificImagePath(product, currentColor);
         }
 
+        // Event-Listener für Farbauswahl - sowohl auf Radio als auch auf Label
         optionsContainer.querySelectorAll('input[type="radio"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 const colorName = e.target.value;
+                console.log('🎨 Farbe ausgewählt:', colorName);
                 optionsContainer.querySelectorAll(`.${classNames.option}`).forEach(opt => opt.classList.remove(classNames.selected));
                 e.target.closest(`.${classNames.option}`).classList.add(classNames.selected);
 
                 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 const itemIndex = cart.findIndex(cartItem => cartItem.id == item.id);
                 if (itemIndex !== -1) {
+                    // Entferne bestehende Farbangabe aus dem Namen
                     const baseName = cart[itemIndex].name.replace(/\s*\([^)]*\)$/, '');
-                    cart[itemIndex].name = `${baseName} (${colorName})`;
+                    const newName = `${baseName} (${colorName})`;
+                    
+                    cart[itemIndex].name = newName;
                     cart[itemIndex].selectedColor = colorName;
                     localStorage.setItem('cart', JSON.stringify(cart));
 
-                    const nameElement = container.closest('.cart-item').querySelector('h5');
-                    if (nameElement) nameElement.textContent = cart[itemIndex].name;
+                    // Update Name im DOM - alle möglichen Selektoren versuchen
+                    const cartItem = container.closest('.cart-item');
+                    console.log('🔍 Suche Name-Element in:', cartItem);
+                    
+                    const possibleSelectors = [
+                        'h5', 'h4', 'h3', 'h2', 'h1',
+                        '.product-name', '.cart-item-name', '.item-name',
+                        '[class*="name"]', '[class*="title"]',
+                        'strong', 'b', '.fw-bold'
+                    ];
+                    
+                    let nameElement = null;
+                    for (const selector of possibleSelectors) {
+                        nameElement = cartItem.querySelector(selector);
+                        if (nameElement && nameElement.textContent.includes('Elektrischer Wasserspender')) {
+                            console.log('✅ Name-Element gefunden mit Selektor:', selector);
+                            break;
+                        }
+                    }
+                    
+                    if (nameElement) {
+                        nameElement.textContent = newName;
+                        console.log('📝 Produktname aktualisiert:', newName);
+                    } else {
+                        console.warn('⚠️ Name-Element nicht gefunden, verfügbare Elemente:');
+                        console.log(cartItem.innerHTML);
+                    }
 
                     setTimeout(() => {
                         const imgElement = container.closest('.cart-item').querySelector('.cart-item-image');
                         if (imgElement) imgElement.src = getColorSpecificImagePath(product, colorName);
                     }, 100);
+                }
+            });
+        });
+        
+        // Zusätzliche Event-Listener für Labels (falls Radio-Buttons nicht funktionieren)
+        optionsContainer.querySelectorAll('label').forEach(label => {
+            label.addEventListener('click', (e) => {
+                const radio = label.querySelector('input[type="radio"]') || document.getElementById(label.getAttribute('for'));
+                if (radio && !radio.checked) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change'));
+                    console.log('🖱️ Label geklickt, Radio aktiviert:', radio.value);
                 }
             });
         });
@@ -277,14 +319,36 @@ function ensureFirstColorSelected() {
                         const itemIndex = updatedCart.findIndex(cartItem => cartItem.id == item.id);
                         if (itemIndex !== -1) {
                             const baseName = updatedCart[itemIndex].name.replace(/\s*\([^)]*\)$/, '');
-                            updatedCart[itemIndex].name = `${baseName} (${colorName})`;
+                            const newName = `${baseName} (${colorName})`;
+                            updatedCart[itemIndex].name = newName;
                             updatedCart[itemIndex].selectedColor = colorName;
                             localStorage.setItem('cart', JSON.stringify(updatedCart));
                             
-                            // Update UI
-                            const nameElement = itemElement.querySelector('h5');
-                            if (nameElement) {
-                                nameElement.textContent = updatedCart[itemIndex].name;
+                            // Update UI - alle möglichen Selektoren versuchen
+                            console.log('🔍 Suche Name-Element für automatische Aktualisierung...');
+                            
+                            const possibleSelectors = [
+                                'h5', 'h4', 'h3', 'h2', 'h1',
+                                '.product-name', '.cart-item-name', '.item-name',
+                                '[class*="name"]', '[class*="title"]',
+                                'strong', 'b', '.fw-bold'
+                            ];
+                            
+                            let nameElement = null;
+                            for (const selector of possibleSelectors) {
+                                nameElement = itemElement.querySelector(selector);
+                                if (nameElement && (nameElement.textContent.includes(baseName) || nameElement.textContent.includes('Wasserspender'))) {
+                                    console.log('✅ Name-Element für Auto-Update gefunden mit:', selector);
+                                    nameElement.textContent = newName;
+                                    console.log('📝 Produktname automatisch aktualisiert:', newName);
+                                    break;
+                                }
+                            }
+                            
+                            if (!nameElement) {
+                                console.warn('⚠️ Name-Element für automatische Aktualisierung nicht gefunden');
+                                console.log('🔍 Verfügbare Elemente im Cart-Item:');
+                                console.log(itemElement.innerHTML);
                             }
                             
                             // Update Hauptbild
@@ -322,21 +386,65 @@ document.addEventListener('DOMContentLoaded', () => {
     if (originalUpdateCartPage) {
         window.updateCartPage = function() {
             console.log('🔄 updateCartPage überschrieben');
-            // Rufe originale Funktion auf
-            const result = originalUpdateCartPage.apply(this, arguments);
             
-            // Füge bildbasierte Farbauswahl hinzu
+            // SOFORT Farbauswahl hinzufügen, bevor originale Funktion
             setTimeout(() => {
                 const cartItems = document.querySelectorAll('.cart-item');
                 const cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 
                 console.log('🛒 Füge Farbauswahl zu', cartItems.length, 'Cart Items hinzu');
+                console.log('🛒 Cart Inhalt:', cart);
                 
                 cartItems.forEach((itemElement, index) => {
                     if (cart[index]) {
+                        console.log(`🛒 Prüfe Item ${index}:`, cart[index].name, 'ID:', cart[index].id);
+                        
                         // Prüfe ob bereits Farbauswahl vorhanden
                         if (!itemElement.querySelector('.cart-item-color-selection')) {
+                            console.log(`🎨 Starte Farbauswahl für Item ${index}`);
                             renderImageColorSelection(cart[index], itemElement);
+                            
+                            // Sofort nach dem Rendern prüfen ob Name aktualisiert werden muss
+                            setTimeout(() => {
+                                const item = cart[index];
+                                const hasColorInName = item.name.match(/\(([^)]+)\)$/);
+                                
+                                if (!hasColorInName) {
+                                    console.log('🎯 SOFORT-CHECK: Produkt hat keine Farbe im Namen:', item.name);
+                                    
+                                    const colorSelection = itemElement.querySelector('[class*="cart-item-color-selection"]');
+                                    if (colorSelection) {
+                                        const firstRadio = colorSelection.querySelector('input[type="radio"]:checked');
+                                        if (firstRadio) {
+                                            const colorName = firstRadio.value;
+                                            const baseName = item.name.replace(/\s*\([^)]*\)$/, '');
+                                            const newName = `${baseName} (${colorName})`;
+                                            
+                                            console.log('🔄 Aktualisiere Name von', baseName, 'zu', newName);
+                                            
+                                            // Update localStorage
+                                            let updatedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+                                            const itemIndex = updatedCart.findIndex(cartItem => cartItem.id == item.id);
+                                            if (itemIndex !== -1) {
+                                                updatedCart[itemIndex].name = newName;
+                                                updatedCart[itemIndex].selectedColor = colorName;
+                                                localStorage.setItem('cart', JSON.stringify(updatedCart));
+                                                
+                                                // Update UI - einfacher Ansatz
+                                                const nameElement = itemElement.querySelector('h5') || itemElement.querySelector('h4') || itemElement.querySelector('strong');
+                                                if (nameElement) {
+                                                    nameElement.textContent = newName;
+                                                    console.log('✅ Name erfolgreich aktualisiert!');
+                                                } else {
+                                                    console.warn('⚠️ Name-Element nicht gefunden');
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }, 500);
+                        } else {
+                            console.log(`⏭️ Farbauswahl bereits vorhanden für Item ${index}`);
                         }
                     }
                 });
@@ -344,6 +452,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Korrigiere erste Farbauswahl nach dem Rendern
                 ensureFirstColorSelected();
             }, 200);
+            
+            // Dann versuche originale Funktion (mit Try-Catch)
+            let result;
+            try {
+                result = originalUpdateCartPage.apply(this, arguments);
+            } catch (error) {
+                console.warn('⚠️ Fehler in originalUpdateCartPage:', error);
+                // Farbauswahl läuft trotzdem weiter
+            }
             
             return result;
         };
