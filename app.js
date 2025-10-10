@@ -2121,8 +2121,8 @@ function initializeCategoryNavigation() {
         const categoryMapping = {
           'Technik/Gadgets': 'technikGrid',
           'Beleuchtung': 'beleuchtungGrid', 
-          'Haushalt und KÃ¼che': 'haushaltGrid',
-          'KÃ¶rperpflege/Wellness': 'wellnessGrid'
+          'Haushalt und Küche': 'haushaltGrid',
+          'Körperpflege/Wellness': 'wellnessGrid'
         };
         
         const targetGridId = categoryMapping[category];
@@ -2155,13 +2155,12 @@ function showCategorySections(selectedCategory) {
   
   // Get the "Alle Produkte" header section
   const alleProduktHeader = document.querySelector('.category-header[style*="margin-top: 3rem"]');
-  
   // Define category mapping for section identification
   const categoryMapping = {
     'Technik/Gadgets': 'technikGrid',
     'Beleuchtung': 'beleuchtungGrid', 
-    'Haushalt und KÃ¼che': 'haushaltGrid',
-    'KÃ¶rperpflege/Wellness': 'wellnessGrid'
+    'Haushalt und Küche': 'haushaltGrid',
+    'Körperpflege/Wellness': 'wellnessGrid'
   };
   
   if (selectedCategory === 'alle') {
@@ -3558,16 +3557,21 @@ function loadCategoryProducts(products) {
         // Filter products for this category (exclude products with showInSlider: false)
         const categoryProducts = products.filter(p => p.category === categoryName && p.showInSlider !== false);
         
+        console.log(`🔍 Category: ${categoryName}`);
+        console.log(`🔍 All products in category:`, products.filter(p => p.category === categoryName).map(p => `${p.id}: ${p.name} (showInSlider: ${p.showInSlider})`));
+        console.log(`🔍 Filtered products:`, categoryProducts.map(p => `${p.id}: ${p.name}`));
+        
         if (categoryProducts.length > 0) {
-            console.log(`âœ… Rendering ${categoryProducts.length} products to ${gridId}`);
+            console.log(`✅ Rendering ${categoryProducts.length} products to ${gridId}`);
             // Render products to this container
             renderProductsToGrid(categoryProducts, grid);
         } else {
-            console.warn(`âš ï¸ No products found for category: ${categoryName}`);
+            console.warn(`⚠️ No products found for category: ${categoryName}`);
+            console.warn(`⚠️ Total products in this category (including hidden):`, products.filter(p => p.category === categoryName).length);
         }
     });
     
-    console.log('âœ… Category products loading completed');
+    console.log('✅ Category products loading completed');
     
     // Initialize scrollbar tracking for all category grids after products are loaded
     setTimeout(() => {

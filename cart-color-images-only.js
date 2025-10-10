@@ -6,6 +6,8 @@
 console.log('🖼️ Cart Color Images Only geladen');
 
 async function renderImageColorSelection(item, container) {
+    console.log('🎨 renderImageColorSelection aufgerufen für:', item.name, 'ID:', item.id);
+    
     // Create a unique ID for this instance to avoid CSS conflicts
     const uniqueId = `_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -91,7 +93,7 @@ async function renderImageColorSelection(item, container) {
 
         product.colors.forEach(color => {
             const optionDiv = document.createElement('div');
-            optionDiv.className = classNames.option;
+            optionDiv.className = `${classNames.option} cart-color-option`;
             if (color.name === currentColor) optionDiv.classList.add(classNames.selected);
 
             const input = document.createElement('input');
@@ -107,9 +109,11 @@ async function renderImageColorSelection(item, container) {
             const img = document.createElement('img');
             img.src = getColorSpecificImagePath(product, color.name);
             img.alt = color.name;
+            img.className = 'cart-color-image';
             img.onerror = () => { img.src = product.image; };
 
             const nameSpan = document.createElement('span');
+            nameSpan.className = 'cart-color-name';
             nameSpan.textContent = color.name;
 
             label.appendChild(img);
@@ -386,9 +390,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (originalUpdateCartPage) {
         window.updateCartPage = function() {
             console.log('🔄 updateCartPage überschrieben');
+<<<<<<< Updated upstream
+=======
+            
+            let result;
+            try {
+                // Rufe originale Funktion auf
+                result = originalUpdateCartPage.apply(this, arguments);
+            } catch (error) {
+                console.warn('⚠️ Fehler in originalUpdateCartPage:', error);
+                // Trotzdem weitermachen mit Farbauswahl
+            }
+            
+            console.log('🔄 Füge Farbauswahl-Timeout hinzu...');
+>>>>>>> Stashed changes
             
             // SOFORT Farbauswahl hinzufügen, bevor originale Funktion
             setTimeout(() => {
+                console.log('🔄 Timeout erreicht, suche nach Cart Items...');
                 const cartItems = document.querySelectorAll('.cart-item');
                 const cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 
