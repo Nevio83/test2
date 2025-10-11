@@ -61,6 +61,11 @@ class ImageColorSelection {
             
             // Lade farbspezifische Bilder
             this.loadColorImages();
+            
+            // Aktualisiere Farbauswahl-Bilder nach dem Laden
+            setTimeout(() => {
+                this.updateColorSelectionImages();
+            }, 200);
         } catch (error) {
             console.error('Fehler beim Laden der Produktdaten:', error);
             throw error;
@@ -71,12 +76,21 @@ class ImageColorSelection {
         if (!this.productData.colors) return;
         
         this.productData.colors.forEach(color => {
-            // Verwende das Bild aus products.json wenn vorhanden
-            let colorImagePath = this.productData.image;
+            let colorImagePath;
             
             if (color.image) {
-                // Füge ../ hinzu für Pfade aus products.json (da wir im produkte/ Ordner sind)
-                colorImagePath = '../' + color.image;
+                // Verwende das spezifische Farbbild
+                colorImagePath = color.image;
+                // Stelle sicher, dass der Pfad mit ../ beginnt für Produktseiten
+                if (!colorImagePath.startsWith('../') && !colorImagePath.startsWith('http')) {
+                    colorImagePath = '../' + colorImagePath;
+                }
+            } else {
+                // Fallback auf Hauptbild
+                colorImagePath = this.productData.image;
+                if (!colorImagePath.startsWith('../') && !colorImagePath.startsWith('http')) {
+                    colorImagePath = '../' + colorImagePath;
+                }
             }
             
             // Speichere den Bildpfad für diese Farbe
@@ -86,7 +100,19 @@ class ImageColorSelection {
     }
     
     getColorSpecificImage(colorName) {
-        return this.productImages[colorName] || this.productData.image;
+        const imagePath = this.productImages[colorName];
+        if (imagePath) {
+            console.log(`🎨 Lade Bild für ${colorName}: ${imagePath}`);
+            return imagePath;
+        }
+        
+        // Fallback auf Hauptbild
+        let fallbackPath = this.productData.image;
+        if (!fallbackPath.startsWith('../') && !fallbackPath.startsWith('http')) {
+            fallbackPath = '../' + fallbackPath;
+        }
+        console.log(`🎨 Fallback Bild für ${colorName}: ${fallbackPath}`);
+        return fallbackPath;
     }
     
     getCategoryColor() {
@@ -128,8 +154,10 @@ class ImageColorSelection {
         const categoryColor = this.getCategoryColor();
         
         // Erstelle HTML für Farbauswahl - Desktop Standard, Mobile Optimiert
+        console.log('🎨 Rendere Farbauswahl für:', this.productData.colors.map(c => c.name));
         const colorOptionsHtml = this.productData.colors.map(color => {
             const imageUrl = this.getColorSpecificImage(color.name);
+            console.log(`🎨 Rendere ${color.name} mit Bild: ${imageUrl}`);
             return `
                 <div class="color-option" data-color="${color.name}" style="
                     position: relative; 
@@ -333,6 +361,22 @@ class ImageColorSelection {
         }
         
         return null;
+    }
+    
+    updateColorSelectionImages() {
+        // Aktualisiere alle Farbauswahl-Bilder mit den korrekten Pfaden
+        const colorOptions = document.querySelectorAll('.color-option');
+        colorOptions.forEach(option => {
+            const colorName = option.getAttribute('data-color');
+            const img = option.querySelector('.color-option-image');
+            if (img && colorName) {
+                const correctImagePath = this.getColorSpecificImage(colorName);
+                if (img.src !== correctImagePath) {
+                    console.log(`🔄 Aktualisiere Bild für ${colorName}: ${correctImagePath}`);
+                    img.src = correctImagePath;
+                }
+            }
+        });
     }
     
     markFirstColorAsSelected() {

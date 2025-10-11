@@ -72,28 +72,42 @@ async function renderImageColorSelection(item, container) {
           const baseName = cart[itemIndex].name.replace(/\s*\([^)]*\)$/, "");
           cart[itemIndex].name = `${baseName} (${colorName})`;
           cart[itemIndex].selectedColor = colorName;
+          
+          // Aktualisiere Preis basierend auf der gewählten Farbe
+          if (color.price) {
+            cart[itemIndex].price = color.price;
+            console.log(`💰 Preis aktualisiert für ${colorName}: €${color.price}`);
+          }
+          
           localStorage.setItem("cart", JSON.stringify(cart));
 
           const cartItem = container.closest(".cart-item");
           const nameElement = cartItem?.querySelector("h5");
           if (nameElement) nameElement.textContent = cart[itemIndex].name;
+          
+          // Aktualisiere Preisanzeige im DOM
+          if (color.price) {
+            const priceElement = cartItem?.querySelector(".cart-item-price, .price, .item-price");
+            if (priceElement) {
+              priceElement.textContent = `€${color.price.toFixed(2)}`;
+              console.log(`💰 Preisanzeige aktualisiert: €${color.price.toFixed(2)}`);
+            }
+          }
 
-          const imgElement = cartItem?.querySelector(".cart-item-image, img");
+          const imgElement = cartItem?.querySelector(".cart-item-image");
           if (imgElement) {
             const newImagePath = getColorSpecificImagePath(product, colorName);
             imgElement.src = newImagePath;
             console.log('🖼️ Hauptbild aktualisiert auf:', newImagePath);
           }
           
-          // Zusätzlicher Fix: Setze das Bild auch über alle möglichen Selektoren
+          // Aktualisiere nur das Hauptproduktbild, NICHT die Farbauswahl-Thumbnails
           setTimeout(() => {
-            const allImages = cartItem?.querySelectorAll('img');
-            allImages?.forEach(img => {
-              if (img.src && !img.src.includes(currentColor?.toLowerCase())) {
-                const correctPath = getColorSpecificImagePath(product, currentColor);
-                img.src = correctPath;
-                console.log('🔄 Bild-Fix angewendet auf:', img, 'Neuer Pfad:', correctPath);
-              }
+            const mainImages = cartItem?.querySelectorAll('.cart-item-image');
+            mainImages?.forEach(img => {
+              const correctPath = getColorSpecificImagePath(product, colorName);
+              img.src = correctPath;
+              console.log('🔄 Hauptbild aktualisiert auf:', correctPath);
             });
           }, 100);
         }

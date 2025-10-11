@@ -1649,5 +1649,131 @@
         "Perfekt für Schlafzimmer, Wohnzimmer und Büro"
       ],
       "showInSlider": false
+    },
+    {
+      "id": 43,
+      "name": "Portable Mini Thermal Label Printer",
+      "price": 39.99,
+      "originalPrice": 59.99,
+      "category": "Technik/Gadgets",
+      "image": "produkt bilder/Portable Mini Thermal Label Printer.jpg",
+      "description": "Tragbarer Mini-Thermodrucker für Etiketten, Fotos und Notizen. Bluetooth-kompatibel mit verschiedenen Papierrollen und Farben verfügbar.",
+      "sku": "CJJT1365880",
+      "inStock": true,
+      "shippingTime": "7-15 Werktage",
+      "colors": [
+        {
+          "name": "Grün",
+          "code": "#008000",
+          "sku": "CJJT136588021UF",
+          "price": 39.99,
+          "originalPrice": 59.99,
+          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer grün.jpg"
+        },
+        {
+          "name": "Blau",
+          "code": "#0066CC",
+          "sku": "CJJT136588022VE",
+          "price": 39.99,
+          "originalPrice": 59.99,
+          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer blau.jpg"
+        },
+        {
+          "name": "Pink",
+          "code": "#FFC0CB",
+          "sku": "CJJT136588034HS",
+          "price": 39.99,
+          "originalPrice": 59.99,
+          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer pink.jpg"
+        },
+        {
+          "name": "Gelb",
+          "code": "#FFD700",
+          "sku": "CJJT136588024XC",
+          "price": 39.99,
+          "originalPrice": 59.99,
+          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer gelb.jpg"
+        },
+        {
+          "name": "Weiß",
+          "code": "#FFFFFF",
+          "sku": "CJJT136588038LO",
+          "price": 39.99,
+          "originalPrice": 59.99,
+          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer weiß.jpg"
+        },
+        {
+          "name": "Style A Rollen",
+          "code": "#FFE4B5",
+          "sku": "CJJT136588011KP",
+          "price": 12.99,
+          "originalPrice": 18.99,
+          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen A.jpg"
+        },
+        {
+          "name": "Style B Rollen",
+          "code": "#E6E6FA",
+          "sku": "CJJT136588012LO",
+          "price": 12.99,
+          "originalPrice": 18.99,
+          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen B.jpg"
+        },
+        {
+          "name": "Style C Rollen",
+          "code": "#F0F8FF",
+          "sku": "CJJT136588013MN",
+          "price": 12.99,
+          "originalPrice": 18.99,
+          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen C.jpg"
+        }
+      ],
+      "bundles": [
+        {
+          "id": "bundle1",
+          "name": "Starter Set",
+          "description": "Drucker + Papierrollen Style A",
+          "items": [
+            "Papierrollen Style A (3 Rollen)",
+            "USB-Kabel"
+          ],
+          "originalPrice": 55,
+          "bundlePrice": 49,
+          "savings": 6
+        },
+        {
+          "id": "bundle2",
+          "name": "Complete Print Kit",
+          "description": "Drucker + alle Papierrollen-Styles",
+          "items": [
+            "Papierrollen Style A (3 Rollen)",
+            "Papierrollen Style B (3 Rollen)",
+            "Papierrollen Style C (3 Rollen)",
+            "USB-Kabel",
+            "Tragetasche"
+          ],
+          "originalPrice": 85,
+          "bundlePrice": 69,
+          "savings": 16
+        }
+      ],
+      "tags": [
+        "thermal printer",
+        "label printer",
+        "bluetooth",
+        "portable",
+        "mini printer",
+        "photo printer",
+        "gadget"
+      ],
+      "features": [
+        "Bluetooth-kompatibel",
+        "Tragbares Design",
+        "Verschiedene Papierrollen verfügbar",
+        "Für Etiketten, Fotos und Notizen",
+        "Einfache App-Steuerung",
+        "Wiederaufladbar",
+        "Kompakt und leicht"
+      ],
+      "showInSlider": false
     }
   ]
