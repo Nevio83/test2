@@ -92,6 +92,14 @@ async function renderImageColorSelection(item, container) {
               priceElement.textContent = `€${color.price.toFixed(2)}`;
               console.log(`💰 Preisanzeige aktualisiert: €${color.price.toFixed(2)}`);
             }
+            
+            // Aktualisiere Warenkorb-Gesamtsumme
+            setTimeout(() => {
+              if (typeof updateCartDisplay === 'function') {
+                updateCartDisplay();
+                console.log('🔄 Warenkorb-Gesamtsumme aktualisiert');
+              }
+            }, 200);
           }
 
           const imgElement = cartItem?.querySelector(".cart-item-image");
