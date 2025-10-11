@@ -31,7 +31,8 @@ class ProductImageGallery {
             27: 'Volcanic Flame Aroma Essential Oil Diffuser bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
             41: '2 In 1 Oil Sprayer Bottle bilder',
-            42: 'RGB Flame Aroma Diffuser Volcano bilder'
+            42: 'RGB Flame Aroma Diffuser Volcano bilder',
+            43: 'Portable Mini Thermal Label Printer bilder'
         };
         
         this.init();
@@ -53,7 +54,8 @@ class ProductImageGallery {
             34: 'Moisturizing Face Steamer bilder',
             35: 'Thermal Neck Lifting And Tighten Massager bilder',
             38: 'Jade Massager bilder',
-            40: 'Mug Warmer Pad bilder'
+            40: 'Mug Warmer Pad bilder',
+            43: 'Portable Mini Thermal Label Printer bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -436,6 +438,56 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano weiß.jpg`,
                         alt: 'RGB Flame Aroma Diffuser Volcano - Weiß',
                         color: 'Weiß'
+                    }
+                ];
+                break;
+                
+            case 43: // Portable Mini Thermal Label Printer
+                this.images = [
+                    {
+                        src: `../produkt bilder/Portable Mini Thermal Label Printer.jpg`,
+                        alt: 'Portable Mini Thermal Label Printer - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer grün.jpg`,
+                        alt: 'Portable Mini Thermal Label Printer - Grün',
+                        color: 'Grün'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer blau.jpg`,
+                        alt: 'Portable Mini Thermal Label Printer - Blau',
+                        color: 'Blau'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer pink.jpg`,
+                        alt: 'Portable Mini Thermal Label Printer - Pink',
+                        color: 'Pink'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer gelb.jpg`,
+                        alt: 'Portable Mini Thermal Label Printer - Gelb',
+                        color: 'Gelb'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer weiß.jpg`,
+                        alt: 'Portable Mini Thermal Label Printer - Weiß',
+                        color: 'Weiß'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer rollen A.jpg`,
+                        alt: 'Portable Mini Thermal Label Printer - Style A Rollen',
+                        color: 'Style A Rollen'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer rollen B.jpg`,
+                        alt: 'Portable Mini Thermal Label Printer - Style B Rollen',
+                        color: 'Style B Rollen'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer rollen C.jpg`,
+                        alt: 'Portable Mini Thermal Label Printer - Style C Rollen',
+                        color: 'Style C Rollen'
                     }
                 ];
                 break;
@@ -1055,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           'Produkt';
         
         // Initialisiere Gallery nur für Produkte mit Bildordnern
-        if ([10, 11, 17, 21, 26, 32, 33].includes(productId)) {
+        if ([10, 11, 17, 21, 26, 32, 33, 43].includes(productId)) {
             new ProductImageGallery(productId, productName);
         }
     }
