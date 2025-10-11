@@ -33,7 +33,8 @@ class ProductImageGallery {
             41: '2 In 1 Oil Sprayer Bottle bilder',
             42: 'RGB Flame Aroma Diffuser Volcano bilder',
             43: 'Portable Mini Thermal Label Printer bilder',
-            44: 'Portable Projector For Home bilder'
+            44: 'Portable Projector For Home bilder',
+            45: 'Air Conditioner bilder'
         };
         
         this.init();
@@ -57,7 +58,8 @@ class ProductImageGallery {
             38: 'Jade Massager bilder',
             40: 'Mug Warmer Pad bilder',
             43: 'Portable Mini Thermal Label Printer bilder',
-            44: 'Portable Projector For Home bilder'
+            44: 'Portable Projector For Home bilder',
+            45: 'Air Conditioner bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -525,6 +527,36 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/Portable Projector For Home.jpg`,
                         alt: 'Portable Projector For Home - Detailansicht',
                         color: 'Detail'
+                    }
+                ];
+                break;
+                
+            case 45: // Air Conditioner
+                this.images = [
+                    {
+                        src: `../produkt bilder/Air Conditioner.jpg`,
+                        alt: 'Air Conditioner - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Air Conditioner funktion.jpg`,
+                        alt: 'Air Conditioner - Funktion',
+                        color: 'Funktion'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Air Conditioner anschluss.jpg`,
+                        alt: 'Air Conditioner - Anschluss',
+                        color: 'Anschluss'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Air Conditioner lautstärke.jpg`,
+                        alt: 'Air Conditioner - Lautstärke',
+                        color: 'Lautstärke'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Air Conditioner wasser.jpg`,
+                        alt: 'Air Conditioner - Wasser',
+                        color: 'Wasser'
                     }
                 ];
                 break;
