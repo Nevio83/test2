@@ -30,7 +30,8 @@ class ProductImageGallery {
             26: '4 In 1 Self Cleaning Hair Brush bilder',
             27: 'Volcanic Flame Aroma Essential Oil Diffuser bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
-            41: '2 In 1 Oil Sprayer Bottle bilder'
+            41: '2 In 1 Oil Sprayer Bottle bilder',
+            42: 'RGB Flame Aroma Diffuser Volcano bilder'
         };
         
         this.init();
@@ -415,6 +416,26 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/2 In 1 Oil Sprayer Bottle maße.jpg`,
                         alt: '2 In 1 Oil Sprayer Bottle - Maße',
                         color: 'Maße'
+                    }
+                ];
+                break;
+
+            case 42: // RGB Flame Aroma Diffuser Volcano
+                this.images = [
+                    {
+                        src: `../produkt bilder/RGB Flame Aroma Diffuser Volcano.jpg`,
+                        alt: 'RGB Flame Aroma Diffuser Volcano - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano schwarz.jpg`,
+                        alt: 'RGB Flame Aroma Diffuser Volcano - Schwarz',
+                        color: 'Schwarz'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano weiß.jpg`,
+                        alt: 'RGB Flame Aroma Diffuser Volcano - Weiß',
+                        color: 'Weiß'
                     }
                 ];
                 break;

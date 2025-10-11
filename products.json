@@ -1573,5 +1573,81 @@
         "Modernes Design für jede Küche"
       ],
       "showInSlider": false
+    },
+    {
+      "id": 42,
+      "name": "RGB Flame Aroma Diffuser Volcano",
+      "price": 29.99,
+      "originalPrice": 49.99,
+      "category": "Körperpflege/Wellness",
+      "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano.jpg",
+      "description": "Innovativer RGB Flame Aroma Diffuser mit realistischem 3D-Vulkan-Flammeneffekt. 130ml Kapazität mit bunter LED-Beleuchtung für entspannende Aromatherapie und stimmungsvolle Beleuchtung.",
+      "sku": "CJJD1582742",
+      "inStock": true,
+      "shippingTime": "7-15 Werktage",
+      "colors": [
+        {
+          "name": "Schwarz",
+          "code": "#2C2C2C",
+          "sku": "CJJD1582742-Black",
+          "price": 29.99,
+          "originalPrice": 49.99,
+          "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano bilder/RGB Flame Aroma Diffuser Volcano schwarz.jpg"
+        },
+        {
+          "name": "Weiß",
+          "code": "#FFFFFF",
+          "sku": "CJJD1582742-White",
+          "price": 29.99,
+          "originalPrice": 49.99,
+          "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano bilder/RGB Flame Aroma Diffuser Volcano weiß.jpg"
+        }
+      ],
+      "bundles": [
+        {
+          "id": "bundle1",
+          "name": "Wellness Starter",
+          "description": "Diffuser + Aromatherapie Grundausstattung",
+          "items": [
+            "Ätherische Öle Set (3x 10ml)",
+            "Reinigungsset"
+          ],
+          "originalPrice": 45,
+          "bundlePrice": 39,
+          "savings": 6
+        },
+        {
+          "id": "bundle2",
+          "name": "Complete Aromatherapy",
+          "description": "Komplettes Aromatherapie-Set",
+          "items": [
+            "Ätherische Öle Set (6x 10ml)",
+            "Reinigungsset",
+            "Aromatherapie Ratgeber"
+          ],
+          "originalPrice": 65,
+          "bundlePrice": 55,
+          "savings": 10
+        }
+      ],
+      "tags": [
+        "aroma diffuser",
+        "rgb beleuchtung",
+        "vulkan effekt",
+        "aromatherapie",
+        "wellness",
+        "entspannung",
+        "luftbefeuchter"
+      ],
+      "features": [
+        "3D Vulkan-Flammeneffekt mit RGB-Beleuchtung",
+        "130ml Wassertank für bis zu 6 Stunden Betrieb",
+        "Ultraschall-Vernebelungstechnologie",
+        "7 verschiedene LED-Farbmodi",
+        "Automatische Abschaltung bei leerem Tank",
+        "Whisper-leise Technologie",
+        "Perfekt für Schlafzimmer, Wohnzimmer und Büro"
+      ],
+      "showInSlider": false
     }
   ]
