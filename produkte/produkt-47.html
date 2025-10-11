@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>40 Oz Tumbler With Handle Straw Insulated - Marktplatz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="haushalt-kueche.css" rel="stylesheet">
+    <link rel="stylesheet" href="../product-image-gallery.css">
+    <link rel="stylesheet" href="../color-image-selection.css">
+    <link rel="stylesheet" href="../product-image-fullscreen.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                <i class="bi bi-shop"></i> Marktplatz
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a href="../index.html" class="nav-link modern-nav-link">
+                    <i class="bi bi-house-door-fill"></i> Startseite
+                </a>
+                <a href="../cart.html" class="nav-link modern-nav-link cart-nav-link">
+                    <i class="bi bi-cart3-fill"></i> Warenkorb
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Produkt Hero Section -->
+    <section class="product-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-3">40 Oz Tumbler With Handle Straw Insulated</h1>
+                    <p class="lead mb-4">Isolierter 40 Oz Tumbler mit Griff und Strohhalm. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.</p>
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <span class="price-tag">€19.99</span>
+                        <span class="text-muted text-decoration-line-through">€34.99</span>
+                        <span class="badge bg-success">Kostenloser Versand in Europa</span>
+                    </div>
+                    <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn">
+                        <i class="bi bi-cart-plus"></i> In den Warenkorb
+                    </button>
+                    <button class="btn btn-outline-light btn-lg wishlist-button" id="wishlistBtn" data-product-id="47">
+                        <i class="bi bi-heart"></i> Zur Wunschliste
+                    </button>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="../produkt bilder/ware.png" alt="40 Oz Tumbler With Handle Straw Insulated" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Produktdetails -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="mb-4">Produktbeschreibung</h2>
+                    <p class="lead mb-4">Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.</p>
+                    
+                    <h3>Hauptmerkmale</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Elektrischer Wasserspender</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Kompaktes Design</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>USB-Aufladung</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Leise Pumpe</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Einfache Bedienung</li>
+                    </ul>
+
+                    <h3 class="mt-4">Technische Spezifikationen</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Kategorie:</strong> Haushalt und Küche</p>
+                            <p><strong>Artikelnummer:</strong> 010</p>
+                            <p><strong>Preis:</strong> €19.99</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Verfügbarkeit:</strong> Auf Lager</p>
+                            <p><strong>Lieferzeit:</strong> 7-15 Werktage</p>
+                        </div>
+                    </div>
+
+                    <p><strong>Material:</strong> ABS Kunststoff</p>
+                    <p><strong>Stromversorgung:</strong> USB wiederaufladbar</p>
+                    <p><strong>Kapazität:</strong> Für 5L Flaschen geeignet</p>
+                    <p><strong>Leistung:</strong> 5W</p>
+                    <p><strong>Pumpenleistung:</strong> 1.2L/min</p>
+                    <p><strong>Gewicht:</strong> 800 Gramm</p>
+                    <p><strong>Abmessungen:</strong> 30 x 12 x 10 cm</p>
+
+                    <!-- Bundle-Box -->
+                    <div id="bundle-section" class="mt-5"></div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="quick-order-card d-none d-lg-block">
+                        <div class="quick-order-header">
+                            <h4>Schnellbestellung</h4>
+                        </div>
+                        <div class="quick-order-body">
+                            <div class="quantity-section">
+                                <label class="quantity-label">Menge:</label>
+                                <div class="quantity-input-group">
+                                    <button class="quantity-btn" onclick="decreaseQuantity(event)">-</button>
+                                    <input type="number" class="quantity-input" id="quantity" value="1" min="1" max="999" maxlength="3" oninput="if(this.value.length > 3) this.value = this.value.slice(0,3); if(this.value > 999) this.value = 999;">
+                                    <button class="quantity-btn" onclick="increaseQuantity(event)">+</button>
+                                </div>
+                            </div>
+                            
+                            <div class="price-section">
+                                <div class="current-price">€19.99</div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="buy-now-btn" id="buyNowBtn">
+                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
+                                </button>
+                                <button class="wishlist-btn wishlist-button" data-product-id="10">
+                                    <i class="bi bi-heart"></i> Zur Wunschliste
+                                </button>
+                            </div>
+                            
+                            <div class="features-section">
+                                <ul class="features-list">
+                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
+                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ähnliche Produkte -->
+    <section class="py-5 similar-products-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Ähnliche Produkte</h2>
+                <p class="section-subtitle">Entdecken Sie weitere Produkte, die Ihnen gefallen könnten</p>
+            </div>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-20.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg" class="product-image" alt="ZigBee Smart DIY Motorisierte Rollos">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">ZigBee Smart DIY Motorisierte Rollos</h5>
+                            <div class="price-container"><span class="current-price">€89.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-17.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg" class="product-image" alt="Bluetooth Anti-Lost Finder Wassertropfen">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Bluetooth Anti-Lost Finder Wassertropfen</h5>
+                            <div class="price-container"><span class="current-price">€14.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-18.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Home Electronic Clock Digitale Uhr.jpg" class="product-image" alt="Home Electronic Clock Digitale Uhr">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Home Electronic Clock Digitale Uhr</h5>
+                            <div class="price-container"><span class="current-price">€24.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-24.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/COBLED Arbeitsleuchte.jpeg" class="product-image" alt="COB LED Arbeitsleuchte Wiederaufladbar">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">COB LED Arbeitsleuchte Wiederaufladbar</h5>
+                            <div class="price-container"><span class="current-price">€29.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>&copy; 2024 Marktplatz - Alle Rechte vorbehalten</p>
+        </div>
+    </footer>
+
+    <script>
+        // Produktdaten für diese Seite
+        const product = {
+            id: 47,
+            name: "40 Oz Tumbler With Handle Straw Insulated",
+            price: 19.99,
+            originalPrice: 34.99,
+            image: "produkt bilder/ware.png",
+            category: "Haushalt und Küche",
+            description: "Isolierter 40 Oz Tumbler mit Griff und Strohhalm. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
+            sku: "CJJT165633304DW",
+            inStock: true,
+            colors: [
+                {
+                    name: "Schwarz",
+                    code: "#000000",
+                    sku: "CJJT165633304DW",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated schwarz.jpg"
+                },
+                {
+                    name: "Cream Weiß",
+                    code: "#FFF8DC",
+                    sku: "CJJT165633305EV",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated cream white.jpg"
+                },
+                {
+                    name: "Hell Blau",
+                    code: "#87CEEB",
+                    sku: "CJJT165633399UF",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated hell blau.jpg"
+                },
+                {
+                    name: "Bay Leaves",
+                    code: "#8FBC8F",
+                    sku: "CJJT165633312LO",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated bay leaves.jpg"
+                },
+                {
+                    name: "Red Rust",
+                    code: "#B7410E",
+                    sku: "CJJT165633311KP",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated red rust.jpg"
+                },
+                {
+                    name: "Pink Love B",
+                    code: "#FFB6C1",
+                    sku: "CJJT165633336JQ",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated pink love b.jpg"
+                },
+                {
+                    name: "Peony Color",
+                    code: "#DA70D6",
+                    sku: "CJJT1656333101WD",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated peony color.jpg"
+                },
+                {
+                    name: "Hell Lila",
+                    code: "#DDA0DD",
+                    sku: "CJJT165633389KP",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated hell lila.jpg"
+                },
+                {
+                    name: "Storm Sea",
+                    code: "#4682B4",
+                    sku: "CJJT165633310JQ",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated storm sea.jpg"
+                },
+                {
+                    name: "Straw",
+                    code: "#F5DEB3",
+                    sku: "CJJT165633324XC",
+                    price: 1.00,
+                    originalPrice: 2.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated straw.jpg"
+                },
+                {
+                    name: "Thermal Sublimation",
+                    code: "#FF69B4",
+                    sku: "CJJT165633302BY",
+                    price: 19.99,
+                    originalPrice: 34.99,
+                    image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated thermal sublimation.jpg"
+                }
+            ],
+            tags: ["tumbler", "isoliert", "40 oz", "strohhalm", "griff", "bpa-frei", "spülmaschinenfest"]
+        };
+
+        // Mache Produktdaten global verfügbar
+        window.product = product;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wishlist-Button Event Listener
+            const allWishlistButtons = document.querySelectorAll('.wishlist-button');
+            allWishlistButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleWishlist(product);
+                    setTimeout(() => {
+                        updateAllWishlistButtons();
+                    }, 10);
+                });
+            });
+
+            // Cart-Button Event Listener
+            const cartBtn = document.getElementById('cartBtn');
+            if (cartBtn) {
+                cartBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const selectedColor = window.getSelectedColor ? window.getSelectedColor().name : product.colors[0].name;
+                    const colorData = product.colors.find(c => c.name === selectedColor) || product.colors[0];
+                    
+                    // Korrekte addProductToCart Funktion aufrufen
+                    if (window.addProductToCart && typeof window.addProductToCart === 'function') {
+                        window.addProductToCart(null, product.id);
+                        showNotification(`${product.name} (${selectedColor}) wurde zum Warenkorb hinzugefügt!`);
+                    } else {
+                        console.error('addProductToCart Funktion nicht gefunden');
+                    }
+                });
+            }
+
+            // Buy Now Button Event Listener
+            const buyNowBtn = document.getElementById('buyNowBtn');
+            if (buyNowBtn) {
+                buyNowBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    addToCartWithQuantity(e);
+                });
+            }
+
+            // Farbauswahl initialisieren
+            if (window.ColorSelection) {
+                new window.ColorSelection(47);
+            }
+
+            // Bundle-System initialisieren
+            if (typeof renderBundlesWithImages === 'function') {
+                const einzelpreis = 19.99;
+                renderBundlesWithImages(einzelpreis);
+            }
+
+            updateAllWishlistButtons();
+        });
+
+        // Wishlist Functions
+        function getWishlist() {
+            return JSON.parse(localStorage.getItem('wishlist')) || [];
+        }
+        function setWishlist(wishlist) {
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+        function isInWishlist(id) {
+            return getWishlist().some(item => Number(item.id) === Number(id));
+        }
+        function toggleWishlist(product) {
+            let wishlist = getWishlist();
+            if (isInWishlist(product.id)) {
+                wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
+                setWishlist(wishlist);
+                updateAllWishlistButtons();
+                showNotification('Produkt von der Wunschliste entfernt');
+            } else {
+                wishlist.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    description: product.description
+                });
+                setWishlist(wishlist);
+                updateAllWishlistButtons();
+                showNotification('Produkt zur Wunschliste hinzugefügt');
+            }
+        }
+        function updateAllWishlistButtons() {
+            const isInList = isInWishlist(product.id);
+            const allWishlistButtons = document.querySelectorAll('.wishlist-button');
+            allWishlistButtons.forEach(btn => {
+                if (isInList) {
+                    btn.classList.add('active');
+                    btn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="bi bi-heart"></i> Zur Wunschliste';
+                }
+            });
+        }
+
+        // Quantity Functions
+        function increaseQuantity(event) {
+            const input = document.getElementById('quantity');
+            if (input) {
+                const currentValue = parseInt(input.value, 10) || 1;
+                if (currentValue < 999) {
+                    input.value = currentValue + 1;
+                    updateTotalPrice();
+                }
+            }
+        }
+        function decreaseQuantity(event) {
+            const input = document.getElementById('quantity');
+            if (input) {
+                const currentValue = parseInt(input.value, 10) || 1;
+                if (currentValue > 1) {
+                    input.value = currentValue - 1;
+                    updateTotalPrice();
+                }
+            }
+        }
+        function updateTotalPrice() {
+            const quantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
+            const total = (product.price * quantity).toFixed(2);
+            const currentPriceElement = document.querySelector('.current-price');
+            if (currentPriceElement) {
+                currentPriceElement.textContent = `€${total}`;
+            }
+        }
+        function addToCartWithQuantity(event) {
+            const quantityInput = document.getElementById('quantity');
+            const quantity = quantityInput ? parseInt(quantityInput.value, 10) || 1 : 1;
+            const selectedColor = window.getSelectedColor ? window.getSelectedColor().name : product.colors[0].name;
+            const colorData = product.colors.find(c => c.name === selectedColor) || product.colors[0];
+            
+            // Füge mehrere Artikel hinzu
+            for (let i = 0; i < quantity; i++) {
+                if (window.addProductToCart && typeof window.addProductToCart === 'function') {
+                    window.addProductToCart(null, product.id);
+                }
+            }
+            showNotification(`${quantity}x ${product.name} (${selectedColor}) wurde zum Warenkorb hinzugefügt!`);
+        }
+
+        // Notification Function
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} position-fixed end-0 m-4 shadow-lg fade show`;
+            notification.style.zIndex = '20000';
+            notification.style.cursor = 'pointer';
+            notification.textContent = message;
+            notification.addEventListener('click', function() {
+                notification.remove();
+                if (message.includes('Wunschliste')) {
+                    window.location.href = '../wishlist.html';
+                } else {
+                    window.location.href = '../cart.html';
+                }
+            });
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+    </script>
+
+    <!-- App.js für globale Funktionen -->
+    <script src="../app.js"></script>
+
+    <!-- Color Cart Bridge für Farbauswahl-Integration -->
+    <script src="../color-cart-bridge.js"></script>
+
+    <!-- Bundle mit Bildern -->
+    <script src="../bundle-images-final.js"></script>
+
+    <!-- Bild-basierte Farbauswahl -->
+    <script src="../color-image-selection.js"></script>
+
+    <!-- Product Gallery -->
+    <script src="../product-gallery-complete.js"></script>
+    <script>
+        // Initialisiere die Bildergalerie für Produkt 47
+        document.addEventListener('DOMContentLoaded', function() {
+            new window.ProductImageGallery(47, '40 Oz Tumbler With Handle Straw Insulated');
+        });
+    </script>
+</body>
+</html>

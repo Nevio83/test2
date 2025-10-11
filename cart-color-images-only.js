@@ -6,6 +6,8 @@ console.log("🖼️ Cart Color Images Only geladen");
 
 async function renderImageColorSelection(item, container) {
   if (!item || !container) return;
+  // Bundles sollen KEINE Farbauswahl im Warenkorb haben
+  if (item.isBundle === true) return;
 
   try {
     const response = await fetch("products.json");
@@ -60,6 +62,8 @@ async function renderImageColorSelection(item, container) {
 
       label.addEventListener("click", (e) => {
         e.preventDefault();
+        // Sicherheit: Bei Bundles keine Interaktion erlauben
+        if (item.isBundle === true) return;
         const colorName = color.name;
         optionsContainer
           .querySelectorAll(".cart-color-option")
@@ -137,7 +141,7 @@ async function renderImageColorSelection(item, container) {
       console.log('🎯 INITIALES Hauptbild gesetzt für Farbe', currentColor, ':', initialImagePath);
     }
     
-    if (nameElement && currentColor) {
+    if (nameElement && currentColor && item.isBundle !== true) {
       // Aktualisiere auch den Produktnamen mit der Farbe
       let baseName = product.name.replace(/\s*\([^)]*\)$/, '');
       const newName = `${baseName} (${currentColor})`;
@@ -187,6 +191,8 @@ function initCartColorSelection() {
   cartItemElements.forEach((element, index) => {
     const itemData = cartItems[index];
     if (itemData) {
+      // Für Bundles KEINE Farbauswahl rendern
+      if (itemData.isBundle === true) return;
       if (!element.querySelector(".cart-item-color-selection")) {
         renderImageColorSelection(itemData, element);
       }
@@ -205,6 +211,8 @@ async function fixAllCartImages() {
     document.querySelectorAll(".cart-item").forEach((cartElement, index) => {
       const cartItem = cartItems[index];
       if (!cartItem) return;
+      // Bundles nicht verändern
+      if (cartItem.isBundle === true) return;
       
       const currentColor = extractColorFromName(cartItem.name);
       const product = products.find(p => p.id === parseInt(cartItem.id));

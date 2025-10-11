@@ -544,14 +544,18 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
   
   if (currentColor) {
     // Bei Produkten mit Farbe: Nur EXAKT gleiche ID + Farbe ist "existing"
+    // WICHTIG: Bundles NIE zusammenführen
     existingItem = cartItems.find(item => 
+      item.isBundle !== true &&
       Number(item.id) === Number(productId) && 
       item.selectedColor === currentColor
     );
     console.log(`ðŸŽ¨ Suche nach Produkt ${productId} mit Farbe "${currentColor}":`, existingItem ? 'GEFUNDEN - Menge erhöhen' : 'NEUER ARTIKEL');
   } else {
     // Bei Produkten ohne Farbe: Nur ID prüfen (und keine Farbe vorhanden)
+    // WICHTIG: Bundles NIE zusammenführen
     existingItem = cartItems.find(item => 
+      item.isBundle !== true &&
       Number(item.id) === Number(productId) && 
       !item.selectedColor
     );

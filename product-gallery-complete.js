@@ -35,7 +35,8 @@ class ProductImageGallery {
             43: 'Portable Mini Thermal Label Printer bilder',
             44: 'Portable Projector For Home bilder',
             45: 'Air Conditioner bilder',
-            46: 'Nordic Crystal Lamp bilder'
+            46: 'Nordic Crystal Lamp bilder',
+            47: '40 Oz Tumbler With Handle Straw Insulated bilder'
         };
         
         this.init();
@@ -61,7 +62,10 @@ class ProductImageGallery {
             43: 'Portable Mini Thermal Label Printer bilder',
             44: 'Portable Projector For Home bilder',
             45: 'Air Conditioner bilder',
-            46: 'Nordic Crystal Lamp bilder'
+            46: 'Nordic Crystal Lamp bilder',
+            47: '40 Oz Tumbler With Handle Straw Insulated bilder',
+            48: '40 Oz Tumbler With Handle Straw Insulated Winter bilder',
+            49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -592,6 +596,126 @@ class ProductImageGallery {
                     }
                 ];
                 break;
+                
+            case 47: // 40 Oz Tumbler With Handle Straw Insulated
+                this.images = [
+                    {
+                        src: `../produkt bilder/ware.png`,
+                        alt: '40 Oz Tumbler With Handle Straw Insulated - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated schwarz.jpg`,
+                        alt: '40 Oz Tumbler - Schwarz',
+                        color: 'Schwarz'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated cream white.jpg`,
+                        alt: '40 Oz Tumbler - Cream Weiß',
+                        color: 'Cream Weiß'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated hell blau.jpg`,
+                        alt: '40 Oz Tumbler - Hell Blau',
+                        color: 'Hell Blau'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated bay leaves.jpg`,
+                        alt: '40 Oz Tumbler - Bay Leaves',
+                        color: 'Bay Leaves'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated red rust.jpg`,
+                        alt: '40 Oz Tumbler - Red Rust',
+                        color: 'Red Rust'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated pink love b.jpg`,
+                        alt: '40 Oz Tumbler - Pink Love B',
+                        color: 'Pink Love B'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated peony color.jpg`,
+                        alt: '40 Oz Tumbler - Peony Color',
+                        color: 'Peony Color'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated hell lila.jpg`,
+                        alt: '40 Oz Tumbler - Hell Lila',
+                        color: 'Hell Lila'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated storm sea.jpg`,
+                        alt: '40 Oz Tumbler - Storm Sea',
+                        color: 'Storm Sea'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated straw.jpg`,
+                        alt: '40 Oz Tumbler - Straw',
+                        color: 'Straw'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated thermal sublimation.jpg`,
+                        alt: '40 Oz Tumbler - Thermal Sublimation',
+                        color: 'Thermal Sublimation'
+                    }
+                ];
+                break;
+                
+            case 48: // 40 Oz Tumbler With Handle Straw Insulated Winter
+                this.images = [
+                    {
+                        src: `../produkt bilder/ware.png`,
+                        alt: '40 Oz Tumbler With Handle Straw Insulated Winter - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red.jpg`,
+                        alt: '40 Oz Tumbler Winter - Christmas Red',
+                        color: 'Christmas Red'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red B.jpg`,
+                        alt: '40 Oz Tumbler Winter - Christmas Red B',
+                        color: 'Christmas Red B'
+                    }
+                ];
+                break;
+                
+            case 49: // 40 Oz Tumbler With Handle Straw Insulated Halloween
+                this.images = [
+                    {
+                        src: `../produkt bilder/ware.png`,
+                        alt: '40 Oz Tumbler With Handle Straw Insulated Halloween - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Cream Black.jpg`,
+                        alt: '40 Oz Tumbler Halloween - Cream Black',
+                        color: 'Halloween Cream Black'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White.jpg`,
+                        alt: '40 Oz Tumbler Halloween - Cream White',
+                        color: 'Halloween Cream White'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White B.jpg`,
+                        alt: '40 Oz Tumbler Halloween - Cream White B',
+                        color: 'Halloween Cream White B'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue.jpg`,
+                        alt: '40 Oz Tumbler Halloween - Dark Blue',
+                        color: 'Halloween Dark Blue'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue B.jpg`,
+                        alt: '40 Oz Tumbler Halloween - Dark Blue B',
+                        color: 'Halloween Dark Blue B'
+                    }
+                ];
+                break;
         }
     }
     
@@ -1091,7 +1215,10 @@ class ProductImageFullscreen {
                 17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
                 21: 'LED Water Ripple Crystal bilder',
                 26: '4 In 1 Self Cleaning Hair Brush bilder',
-                32: 'Indoor Sensing Wall Lamp bilder'
+                32: 'Indoor Sensing Wall Lamp bilder',
+                47: '40 Oz Tumbler With Handle Straw Insulated bilder',
+                48: '40 Oz Tumbler With Handle Straw Insulated Winter bilder',
+                49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder'
             };
             
             if (tempGallery.productImageFolders[productId]) {
