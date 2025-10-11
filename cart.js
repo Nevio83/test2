@@ -460,13 +460,20 @@ function updateCartPage() {
                     <i class="bi bi-bag-check"></i> Ihre Artikel (${cartItems.length})
                 </h3>
                 <div id="cartItemsList">
-                    ${cartItems.map(item => `
-                        <div class="cart-item" data-id="${item.id}">
-                            <a href="produkte/produkt-${item.id}.html" style="text-decoration: none;">
+                    ${cartItems.map(item => {
+                        // Prüfe ob es ein Bundle ist - NUR wenn explizit als Bundle markiert
+                        const isBundle = item.isBundle === true;
+                        const linkHref = isBundle ? '#' : `produkte/produkt-${item.id}.html`;
+                        const clickHandler = isBundle ? 'onclick="event.preventDefault(); return false;"' : '';
+                        
+                        return `
+                        <div class="cart-item" data-id="${item.id}" ${isBundle ? 'data-bundle="true"' : ''}>
+                            <a href="${linkHref}" style="text-decoration: none;" ${clickHandler}>
                                 <img src="${item.image}" alt="${item.name}" class="cart-item-image" style="cursor: pointer;" onerror="handleImageError(this, '${item.name}', '${item.image}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
                             </a>
                             <div class="cart-item-details">
                                 <h5>${item.name}</h5>
+                                ${isBundle ? '<div class="bundle-badge" title="Bundle" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 4px; display:inline-flex; align-items:center; gap:6px;"><i class="bi bi-box-seam"></i> Bundle</div>' : ''}
                                 <div class="cart-item-price">${currentCurrency.symbol}${convertPrice(item.price, currentCurrency.code).toFixed(2)}</div>
                             </div>
                             <div class="quantity-controls">
@@ -482,7 +489,7 @@ function updateCartPage() {
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
                 <!-- Add-ons Bereich -->
                 ${addonProducts.length > 0 ? `

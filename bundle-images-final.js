@@ -832,11 +832,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentProduct || !currentProduct.name) {
             // Verwende die korrekten Produktdaten basierend auf ID
             const productData = {
-                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 49.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg' },
-                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg' },
-                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg' },
-                21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg' },
-                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 10.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg' }
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 49.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
+                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
+                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
+                21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg', category: 'Beleuchtung' },
+                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 10.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
+                47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 29.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated.jpg', category: 'Haushalt und Küche' }
             };
             
             if (productData[productId]) {
@@ -849,7 +850,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     id: productId || 11, 
                     name: `Produkt ${productId || 11}`, 
                     price: 24.99, 
-                    image: 'produkt bilder/ware.png' 
+                    image: 'produkt bilder/ware.png',
+                    category: 'Haushalt und Küche'
                 };
             }
         }
@@ -883,7 +885,8 @@ document.addEventListener('DOMContentLoaded', function() {
             description: `Bundle: ${bundleQty} Set${bundleQty > 1 ? 's' : ''}`,
             bundleId: `${currentProduct.id}-qty${bundleQty}`,
             quantity: 1,
-            isBundle: true
+            isBundle: true,
+            category: currentProduct.category || window.product?.category || 'Haushalt und Küche'
         };
         
         // Füge zum Warenkorb hinzu
@@ -956,11 +959,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentProduct || !currentProduct.name) {
             // Verwende die korrekten Produktdaten basierend auf ID
             const productData = {
-                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 49.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg' },
-                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg' },
-                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg' },
-                21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg' },
-                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 10.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg' }
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 49.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
+                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
+                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
+                21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg', category: 'Beleuchtung' },
+                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 10.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
+                47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 29.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated.jpg', category: 'Haushalt und Küche' }
             };
             
             if (productData[productId]) {
@@ -973,7 +977,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     id: productId || 11, 
                     name: `Produkt ${productId || 11}`, 
                     price: 24.99, 
-                    image: 'produkt bilder/ware.png' 
+                    image: 'produkt bilder/ware.png',
+                    category: 'Haushalt und Küche'
                 };
             }
         }
@@ -1007,7 +1012,8 @@ document.addEventListener('DOMContentLoaded', function() {
             description: `Bundle: ${qty} Set${qty > 1 ? 's' : ''}`,
             bundleId: `${currentProduct.id}-qty${qty}`,
             quantity: 1,
-            isBundle: true
+            isBundle: true,
+            category: currentProduct.category || window.product?.category || 'Haushalt und Küche'
         };
         
         // Füge zum Warenkorb hinzu

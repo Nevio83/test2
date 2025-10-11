@@ -1885,5 +1885,232 @@
         "Nordisch"
       ],
       "showInSlider": false
+    },
+    {
+      "id": 47,
+      "name": "40 Oz Tumbler With Handle Straw Insulated",
+      "price": 19.99,
+      "originalPrice": 34.99,
+      "category": "Haushalt und Küche",
+      "image": "produkt bilder/ware.png",
+      "description": "Isolierter 40 Oz Tumbler mit Griff und Strohhalm. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
+      "sku": "CJJT165633304DW",
+      "inStock": true,
+      "colors": [
+        {
+          "name": "Schwarz",
+          "code": "#000000",
+          "sku": "CJJT165633304DW",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated schwarz.jpg"
+        },
+        {
+          "name": "Cream Weiß",
+          "code": "#FFF8DC",
+          "sku": "CJJT165633305EV",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated cream white.jpg"
+        },
+        {
+          "name": "Hell Blau",
+          "code": "#87CEEB",
+          "sku": "CJJT165633399UF",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated hell blau.jpg"
+        },
+        {
+          "name": "Bay Leaves",
+          "code": "#8FBC8F",
+          "sku": "CJJT165633312LO",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated bay leaves.jpg"
+        },
+        {
+          "name": "Red Rust",
+          "code": "#B7410E",
+          "sku": "CJJT165633311KP",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated red rust.jpg"
+        },
+        {
+          "name": "Pink Love B",
+          "code": "#FFB6C1",
+          "sku": "CJJT165633336JQ",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated pink love b.jpg"
+        },
+        {
+          "name": "Peony Color",
+          "code": "#DA70D6",
+          "sku": "CJJT1656333101WD",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated peony color.jpg"
+        },
+        {
+          "name": "Hell Lila",
+          "code": "#DDA0DD",
+          "sku": "CJJT165633389KP",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated hell lila.jpg"
+        },
+        {
+          "name": "Storm Sea",
+          "code": "#4682B4",
+          "sku": "CJJT165633310JQ",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated storm sea.jpg"
+        },
+        {
+          "name": "Straw",
+          "code": "#F5DEB3",
+          "sku": "CJJT165633324XC",
+          "price": 1.00,
+          "originalPrice": 2.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated straw.jpg"
+        },
+        {
+          "name": "Thermal Sublimation",
+          "code": "#FF69B4",
+          "sku": "CJJT165633302BY",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated thermal sublimation.jpg"
+        }
+      ],
+      "tags": [
+        "Tumbler",
+        "Isoliert",
+        "40 Oz",
+        "Strohhalm",
+        "Griff",
+        "BPA-frei",
+        "Spülmaschinenfest",
+        "Thermobecher",
+        "Küche",
+        "Getränke"
+      ],
+      "showInSlider": false
+    },
+    {
+      "id": 48,
+      "name": "40 Oz Tumbler With Handle Straw Insulated Winter",
+      "price": 19.99,
+      "originalPrice": 34.99,
+      "category": "Haushalt und Küche",
+      "image": "produkt bilder/ware.png",
+      "description": "Isolierter 40 Oz Winter Tumbler mit Griff und Strohhalm in festlichen Weihnachtsfarben. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
+      "sku": "CJJT165633330DW",
+      "inStock": true,
+      "colors": [
+        {
+          "name": "Christmas Red",
+          "code": "#DC143C",
+          "sku": "CJJT165633330DW",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter bilder/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red.jpg"
+        },
+        {
+          "name": "Christmas Red B",
+          "code": "#B22222",
+          "sku": "CJJT165633331EV",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter bilder/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red B.jpg"
+        }
+      ],
+      "tags": [
+        "Tumbler",
+        "Isoliert",
+        "40 Oz",
+        "Strohhalm",
+        "Griff",
+        "BPA-frei",
+        "Spülmaschinenfest",
+        "Winter",
+        "Weihnachten",
+        "Christmas",
+        "Thermobecher",
+        "Küche",
+        "Getränke"
+      ],
+      "showInSlider": false
+    },
+    {
+      "id": 49,
+      "name": "40 Oz Tumbler With Handle Straw Insulated Halloween",
+      "price": 19.99,
+      "originalPrice": 34.99,
+      "category": "Haushalt und Küche",
+      "image": "produkt bilder/ware.png",
+      "description": "Isolierter 40 Oz Halloween Tumbler mit Griff und Strohhalm in gruseligen Halloween-Farben. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
+      "sku": "CJJT165633329CX",
+      "inStock": true,
+      "colors": [
+        {
+          "name": "Halloween Cream Black",
+          "code": "#2F2F2F",
+          "sku": "CJJT165633329CX",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Cream Black.jpg"
+        },
+        {
+          "name": "Halloween Cream White",
+          "code": "#F5F5DC",
+          "sku": "CJJT165633327AZ",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White.jpg"
+        },
+        {
+          "name": "Halloween Cream White B",
+          "code": "#FFFAF0",
+          "sku": "CJJT165633328BY",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White B.jpg"
+        },
+        {
+          "name": "Halloween Dark Blue",
+          "code": "#191970",
+          "sku": "CJJT165633326ZA",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue.jpg"
+        },
+        {
+          "name": "Halloween Dark Blue B",
+          "code": "#000080",
+          "sku": "CJJT165633325YB",
+          "price": 19.99,
+          "originalPrice": 34.99,
+          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue B.jpg"
+        }
+      ],
+      "tags": [
+        "Tumbler",
+        "Isoliert",
+        "40 Oz",
+        "Strohhalm",
+        "Griff",
+        "BPA-frei",
+        "Spülmaschinenfest",
+        "Halloween",
+        "Gruselig",
+        "Thermobecher",
+        "Küche",
+        "Getränke"
+      ],
+      "showInSlider": false
     }
   ]
