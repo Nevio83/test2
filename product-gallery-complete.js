@@ -34,7 +34,8 @@ class ProductImageGallery {
             42: 'RGB Flame Aroma Diffuser Volcano bilder',
             43: 'Portable Mini Thermal Label Printer bilder',
             44: 'Portable Projector For Home bilder',
-            45: 'Air Conditioner bilder'
+            45: 'Air Conditioner bilder',
+            46: 'Nordic Crystal Lamp bilder'
         };
         
         this.init();
@@ -59,7 +60,8 @@ class ProductImageGallery {
             40: 'Mug Warmer Pad bilder',
             43: 'Portable Mini Thermal Label Printer bilder',
             44: 'Portable Projector For Home bilder',
-            45: 'Air Conditioner bilder'
+            45: 'Air Conditioner bilder',
+            46: 'Nordic Crystal Lamp bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -557,6 +559,36 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/Air Conditioner wasser.jpg`,
                         alt: 'Air Conditioner - Wasser',
                         color: 'Wasser'
+                    }
+                ];
+                break;
+                
+            case 46: // Nordic Crystal Lamp
+                this.images = [
+                    {
+                        src: `../produkt bilder/Nordic Crystal Lamp.jpg`,
+                        alt: 'Nordic Crystal Lamp - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Nordic Crystal Lamp schwarz.jpg`,
+                        alt: 'Nordic Crystal Lamp - Schwarz',
+                        color: 'Schwarz'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Nordic Crystal Lamp weiß.jpg`,
+                        alt: 'Nordic Crystal Lamp - Weiß',
+                        color: 'Weiß'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Nordic Crystal Lamp gelb.jpg`,
+                        alt: 'Nordic Crystal Lamp - Gelb',
+                        color: 'Gelb'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Nordic Crystal Lamp beispiel.jpg`,
+                        alt: 'Nordic Crystal Lamp - Beispiel',
+                        color: 'Beispiel'
                     }
                 ];
                 break;

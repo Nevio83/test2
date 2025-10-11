@@ -1837,5 +1837,53 @@
         "Energiesparend"
       ],
       "showInSlider": false
+    },
+    {
+      "id": 46,
+      "name": "Nordic Crystal Lamp",
+      "price": 24.99,
+      "originalPrice": 39.99,
+      "category": "Beleuchtung",
+      "image": "produkt bilder/Nordic Crystal Lamp.jpg",
+      "description": "Elegante nordische Kristalllampe mit USB-Anschluss und Touch-Dimming. Perfekte Atmosphärenbeleuchtung für Schlafzimmer mit Diamant-Nachtlicht-Effekt.",
+      "sku": "CJJT122932909IR",
+      "inStock": true,
+      "colors": [
+        {
+          "name": "Schwarz",
+          "code": "#000000",
+          "sku": "CJJT122932909IR",
+          "price": 24.99,
+          "originalPrice": 39.99,
+          "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp schwarz.jpg"
+        },
+        {
+          "name": "Weiß",
+          "code": "#FFFFFF",
+          "sku": "CJJT122932910JQ",
+          "price": 26.99,
+          "originalPrice": 41.99,
+          "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp weiß.jpg"
+        },
+        {
+          "name": "Gelb",
+          "code": "#FFD700",
+          "sku": "CJJT122932915OL",
+          "price": 25.99,
+          "originalPrice": 40.99,
+          "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp gelb.jpg"
+        }
+      ],
+      "tags": [
+        "Kristalllampe",
+        "USB Lampe",
+        "Touch Dimming",
+        "Nachtlicht",
+        "Atmosphäre",
+        "Schlafzimmer",
+        "Diamant Effekt",
+        "Nordisch"
+      ],
+      "showInSlider": false
     }
   ]
