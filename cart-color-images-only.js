@@ -78,9 +78,24 @@ async function renderImageColorSelection(item, container) {
           const nameElement = cartItem?.querySelector("h5");
           if (nameElement) nameElement.textContent = cart[itemIndex].name;
 
-          const imgElement = cartItem?.querySelector(".cart-item-image");
-          if (imgElement)
-            imgElement.src = getColorSpecificImagePath(product, colorName);
+          const imgElement = cartItem?.querySelector(".cart-item-image, img");
+          if (imgElement) {
+            const newImagePath = getColorSpecificImagePath(product, colorName);
+            imgElement.src = newImagePath;
+            console.log('🖼️ Hauptbild aktualisiert auf:', newImagePath);
+          }
+          
+          // Zusätzlicher Fix: Setze das Bild auch über alle möglichen Selektoren
+          setTimeout(() => {
+            const allImages = cartItem?.querySelectorAll('img');
+            allImages?.forEach(img => {
+              if (img.src && !img.src.includes(currentColor?.toLowerCase())) {
+                const correctPath = getColorSpecificImagePath(product, currentColor);
+                img.src = correctPath;
+                console.log('🔄 Bild-Fix angewendet auf:', img, 'Neuer Pfad:', correctPath);
+              }
+            });
+          }, 100);
         }
       });
     });
@@ -88,6 +103,35 @@ async function renderImageColorSelection(item, container) {
     const oldSelection = container.querySelector(".cart-item-color-selection");
     if (oldSelection) oldSelection.remove();
     container.appendChild(selectionContainer);
+
+    // WICHTIG: Setze das initiale Hauptbild UND Produktname basierend auf der aktuell ausgewählten Farbe
+    const cartItem = container.closest(".cart-item");
+    const mainImage = cartItem?.querySelector(".cart-item-image, img");
+    const nameElement = cartItem?.querySelector("h5, .cart-item-name, .product-name");
+    
+    if (mainImage && currentColor) {
+      const initialImagePath = getColorSpecificImagePath(product, currentColor);
+      mainImage.src = initialImagePath;
+      console.log('🎯 INITIALES Hauptbild gesetzt für Farbe', currentColor, ':', initialImagePath);
+    }
+    
+    if (nameElement && currentColor) {
+      // Aktualisiere auch den Produktnamen mit der Farbe
+      let baseName = product.name.replace(/\s*\([^)]*\)$/, '');
+      const newName = `${baseName} (${currentColor})`;
+      nameElement.textContent = newName;
+      console.log('📝 INITIALER Produktname gesetzt:', newName);
+      
+      // Aktualisiere auch den localStorage
+      let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const itemIndex = cart.findIndex((cartItem) => cartItem.id == item.id);
+      if (itemIndex !== -1) {
+        cart[itemIndex].name = newName;
+        cart[itemIndex].selectedColor = currentColor;
+        localStorage.setItem("cart", JSON.stringify(cart));
+        console.log('💾 Warenkorb aktualisiert mit Farbe:', currentColor);
+      }
+    }
   } catch (error) {
     console.error("Fehler beim Rendern der Farbauswahl:", error);
   }
@@ -99,26 +143,18 @@ function extractColorFromName(name) {
 }
 
 function getColorSpecificImagePath(product, colorName) {
-  const colorImageMappings = {
-    33: {
-      "Cherry Blossoms":
-        "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg",
-      "Green Tea":
-        "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg",
-      Jasmine:
-        "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier jasmine.jpg",
-      Lavender:
-        "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lavender.jpg",
-      Lemon:
-        "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lemon.jpg",
-    },
-  };
-  const mapping = colorImageMappings[product.id];
-  if (mapping && mapping[colorName]) return mapping[colorName];
+  console.log('🖼️ GLOBALER getColorSpecificImagePath für Produkt', product.id, 'Farbe:', colorName);
+  
+  // GLOBALER ANSATZ: Verwende immer die Farb-Daten aus products.json
+  if (product.colors && Array.isArray(product.colors)) {
+    const colorData = product.colors.find((c) => c.name === colorName);
+    if (colorData && colorData.image) {
+      console.log('✅ Globale Farb-Daten gefunden:', colorData.image);
+      return colorData.image;
+    }
+  }
 
-  const colorData = product.colors.find((c) => c.name === colorName);
-  if (colorData && colorData.image) return colorData.image;
-
+  console.log('⚠️ Fallback zum Hauptbild:', product.image);
   return product.image;
 }
 
@@ -136,14 +172,84 @@ function initCartColorSelection() {
   });
 }
 
+// Funktion zum Korrigieren aller Hauptbilder UND Produktnamen basierend auf Farben
+async function fixAllCartImages() {
+  try {
+    const response = await fetch("products.json");
+    const products = await response.json();
+    const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
+    let cartUpdated = false;
+    
+    document.querySelectorAll(".cart-item").forEach((cartElement, index) => {
+      const cartItem = cartItems[index];
+      if (!cartItem) return;
+      
+      const currentColor = extractColorFromName(cartItem.name);
+      const product = products.find(p => p.id === parseInt(cartItem.id));
+      
+      if (product) {
+        // Korrigiere das Hauptbild
+        const mainImage = cartElement.querySelector(".cart-item-image, img");
+        if (mainImage && currentColor) {
+          const correctImagePath = getColorSpecificImagePath(product, currentColor);
+          mainImage.src = correctImagePath;
+          console.log('🔧 Bild korrigiert für', cartItem.name, ':', correctImagePath);
+        }
+        
+        // Korrigiere den Produktnamen falls nötig
+        const nameElement = cartElement.querySelector("h5, .cart-item-name, .product-name");
+        if (nameElement && product.colors && product.colors.length > 0) {
+          let shouldUpdateName = false;
+          let newName = cartItem.name;
+          
+          // Wenn keine Farbe im Namen, aber Produkt hat Farben -> erste Farbe hinzufügen
+          if (!currentColor) {
+            const firstColor = product.colors[0].name;
+            newName = `${product.name} (${firstColor})`;
+            shouldUpdateName = true;
+            console.log('🎨 Erste Farbe hinzugefügt:', newName);
+          }
+          // Wenn Farbe im Namen, aber Name nicht korrekt formatiert
+          else if (!cartItem.name.includes(`(${currentColor})`)) {
+            const baseName = product.name.replace(/\s*\([^)]*\)$/, '');
+            newName = `${baseName} (${currentColor})`;
+            shouldUpdateName = true;
+            console.log('📝 Produktname korrigiert:', newName);
+          }
+          
+          if (shouldUpdateName) {
+            nameElement.textContent = newName;
+            cartItems[index].name = newName;
+            cartItems[index].selectedColor = currentColor || product.colors[0].name;
+            cartUpdated = true;
+          }
+        }
+      }
+    });
+    
+    // Speichere aktualisierte Warenkorb-Daten
+    if (cartUpdated) {
+      localStorage.setItem("cart", JSON.stringify(cartItems));
+      console.log('💾 Warenkorb global aktualisiert');
+    }
+  } catch (error) {
+    console.error('❌ Fehler beim Korrigieren der Bilder und Namen:', error);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const observer = new MutationObserver(() => {
     const cartContent = document.getElementById("cartContent");
     if (cartContent && cartContent.querySelector(".cart-item")) {
       initCartColorSelection();
+      // Zusätzlich: Korrigiere alle Bilder
+      setTimeout(fixAllCartImages, 500);
     }
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
-  setTimeout(initCartColorSelection, 1000);
+  setTimeout(() => {
+    initCartColorSelection();
+    fixAllCartImages();
+  }, 1000);
 });
