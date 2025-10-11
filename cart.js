@@ -23,9 +23,9 @@ const COUNTRIES = currencyByCountry;
 let currentCountry = 'DE';
 let currentCurrency = currencyByCountry['DE']; // Initialisiere currentCurrency mit Deutschland als Standard
 
-// Funktion zum Abrufen des farbspezifischen Bildes
-function getCartItemImage(item) {
-    console.log('🖼️ getCartItemImage aufgerufen für:', item.name, 'ID:', item.id);
+// GLOBALE Funktion zum Abrufen des farbspezifischen Bildes
+async function getCartItemImage(item) {
+    console.log('🖼️ GLOBALER getCartItemImage für:', item.name, 'ID:', item.id);
     
     // Extrahiere Farbe aus dem Namen - suche nach dem letzten Klammerpaar
     let colorMatch = item.name.match(/\(([^)]+)\)(?!.*\([^)]*\))/);
@@ -53,79 +53,24 @@ function getCartItemImage(item) {
     }
     
     if (color) {
-        
-        // Produkt 10 - Elektrischer Wasserspender
-        if (item.id == 10) {  // Verwende == für Type-Coercion
-            if (color === 'Schwarz') {
-                const path = 'produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg';
-                console.log('💧 Wasserspender Schwarz Bild:', path);
-                return path;
-            } else if (color === 'Weiß') {
-                const path = 'produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg';
-                console.log('💧 Wasserspender Weiß Bild:', path);
-                return path;
+        try {
+            // GLOBALER ANSATZ: Lade Produktdaten aus products.json
+            const response = await fetch('products.json');
+            const products = await response.json();
+            const product = products.find(p => p.id == item.id);
+            
+            if (product && product.colors && Array.isArray(product.colors)) {
+                const colorData = product.colors.find(c => c.name === color);
+                if (colorData && colorData.image) {
+                    console.log('✅ GLOBALES Farbbild gefunden:', colorData.image);
+                    return colorData.image;
+                }
             }
-        }
-        
-        // Produkt 11 - Elektrischer Mixer
-        if (item.id == 11) {  // Verwende == für Type-Coercion
-            if (color === 'Weiß') {
-                const path = 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg';
-                console.log('🥤 Mixer Weiß Bild:', path);
-                return path;
-            } else if (color === 'Rosa') {
-                const path = 'produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png';
-                console.log('🥤 Mixer Rosa Bild:', path);
-                return path;
-            }
-        }
-        
-        // Produkt 17 - Bluetooth Finder
-        if (item.id == 17) {  // Verwende == für Type-Coercion
-            if (color === 'Schwarz') {
-                return 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png';
-            } else if (color === 'Weiß') {
-                return 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png';
-            } else if (color === 'Grün') {
-                return 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png';
-            } else if (color === 'Pink') {
-                return 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png';
-            }
-        }
-        
-        // Produkt 18 - Home Electronic Clock
-        if (item.id == 18) {
-            // Beide Farben verwenden das gleiche Bild
-            const path = 'produkt bilder/Home Electronic Clock Digitale Uhr.jpeg';
-            console.log('🕐 Clock Bild für Farbe', color + ':', path);
-            return path;
-        }
-        
-        // Produkt 21 - LED Water Ripple Crystal
-        if (item.id == 21) {  // Verwende == statt === für Type-Coercion
-            console.log('🔮 Produkt 21 erkannt, Farbe:', color);
-            if (color === 'Crown') {
-                const path = 'produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal crown.png';
-                console.log('👑 Crown Bild gewählt:', path);
-                return path;
-            } else if (color === 'Square') {
-                const path = 'produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal square.png';
-                console.log('⬜ Square Bild gewählt:', path);
-                return path;
-            }
-        }
-        
-        // Produkt 26 - Hair Brush
-        if (item.id == 26) {  // Verwende == für Type-Coercion
-            if (color === 'Roland Purple') {
-                return 'produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg';
-            } else if (color === 'Lunar Rock') {
-                return 'produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg';
-            }
+        } catch (error) {
+            console.error('❌ Fehler beim Laden der Produktdaten:', error);
         }
     } else {
         console.log('❌ Keine Farbe im Namen gefunden:', item.name);
-        console.log('🔍 Regex-Test:', item.name.match(/\(([^)]+)\)/g));
     }
     
     console.log('⚠️ Verwende Standard-Bild:', item.image);
