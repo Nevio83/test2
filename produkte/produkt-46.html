@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nordic Crystal Lamp - Marktplatz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="beleuchtung.css" rel="stylesheet">
+    <style>
+        /* Farbauswahl-Komponente CSS */
+        .color-selection {
+            margin: 1rem 0;
+        }
+        .color-selection h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .color-option[data-color="#FFFFFF"],
+        .color-option[data-color="#FFF0F5"] {
+            border: 2px solid #ddd;
+        }
+        .color-option[data-color="#FFFFFF"].selected::after,
+        .color-option[data-color="#FFF0F5"].selected::after {
+            color: #333;
+            text-shadow: none;
+        }
+        .selected-color-info {
+            font-size: 1rem;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .selected-color-info span {
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        @media (max-width: 768px) {
+            .color-option {
+                width: 40px;
+                height: 40px;
+            }
+            .color-options {
+                gap: 0.4rem;
+            }
+        }
+        .color-change-animation {
+            animation: colorChange 0.3s ease;
+        }
+        @keyframes colorChange {
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+    <link rel="stylesheet" href="../product-image-fullscreen.css">
+    <link rel="stylesheet" href="../product-image-gallery.css">
+    <link rel="stylesheet" href="../color-image-selection.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                <i class="bi bi-shop"></i> Marktplatz
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a href="../index.html" class="nav-link modern-nav-link">
+                    <i class="bi bi-house-door-fill"></i> Startseite
+                </a>
+                <a href="../cart.html" class="nav-link modern-nav-link cart-nav-link">
+                    <i class="bi bi-cart3-fill"></i> Warenkorb
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Produkt Hero Section -->
+    <section class="product-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-3">Nordic Crystal Lamp</h1>
+                    <p class="lead mb-4">Elegante nordische Kristalllampe mit USB-Anschluss und Touch-Dimming. Perfekte Atmosphärenbeleuchtung für Schlafzimmer mit Diamant-Nachtlicht-Effekt.</p>
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <span class="price-tag">€24.99</span>
+                        <span class="text-muted text-decoration-line-through">€39.99</span>
+                        <span class="badge bg-success">Kostenloser Versand in Europa</span>
+                    </div>
+                    <!-- Added proper CSS classes for animations -->
+                    <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn">
+                        <i class="bi bi-cart-plus"></i> In den Warenkorb
+                    </button>
+                    <button class="btn btn-outline-light btn-lg wishlist-style-btn wishlist-button" id="wishlistBtn" data-product-id="46">
+                        <i class="bi bi-heart"></i> Merken
+                    </button>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="../produkt bilder/Nordic Crystal Lamp.jpg" alt="Nordic Crystal Lamp" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Produktdetails -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="mb-4">Produktbeschreibung</h2>
+                    <p class="lead mb-4">Elegante nordische Kristalllampe mit USB-Anschluss und Touch-Dimming. Perfekte Atmosphärenbeleuchtung für Schlafzimmer mit Diamant-Nachtlicht-Effekt.</p>
+                    
+                    <h3>Hauptmerkmale</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>USB-Anschluss für einfache Stromversorgung</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Touch-Dimming für stufenlose Helligkeit</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Kristall-Design mit Diamant-Effekt</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Nordisches elegantes Design</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Energieeffiziente LED-Technologie</li>
+                    </ul>
+
+                    <h3 class="mt-4">Technische Spezifikationen</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Kategorie:</strong> Beleuchtung</p>
+                            <p><strong>Artikelnummer:</strong> 046</p>
+                            <p><strong>Preis:</strong> €24.99</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Verfügbarkeit:</strong> Auf Lager</p>
+                            <p><strong>Lieferzeit:</strong> 7-15 Werktage</p>
+                        </div>
+                    </div>
+
+                    <p><strong>Material:</strong> Edelstahl + ABS Kunststoff</p>
+                    <p><strong>Druck:</strong> 15 Bar</p>
+                    <p><strong>Kapazität:</strong> 350ml</p>
+                    <p><strong>Leistung:</strong> 300 Watt</p>
+                    <p><strong>Material:</strong> BPA-freier Kunststoff</p>
+                    <p><strong>Gewicht:</strong> 600 Gramm</p>
+                    <p><strong>Abmessungen:</strong> 22 x 8 cm</p>
+
+                    <!-- Schnellbestellung (Mobile only) -->
+                    <div class="quick-order-card mt-5 d-lg-none">
+                        <div class="quick-order-header">
+                            <h4>Schnellbestellung</h4>
+                        </div>
+                        <div class="quick-order-body">
+                            <div class="quantity-section">
+                                <label class="quantity-label">Menge:</label>                                <div class="quantity-input-group" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 12px; padding: 4px; gap: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                    <button class="quantity-btn" onclick="decreaseMobileQuantity()" style="width: 45px; height: 45px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">−</button>
+                                    <select class="form-select" id="quantity-mobile" onchange="updateTotalPrice()" style="flex: 1; border: none; background: transparent; text-align: center; font-size: 18px; font-weight: 600; padding: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3e%3cpolyline points=%226 9 12 15 18 9%22%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 8px center; background-size: 20px; padding-right: 30px;">
+                                        <!-- Options will be generated by JavaScript -->
+                                    </select>
+                                    <button class="quantity-btn" onclick="increaseMobileQuantity()" style="width: 45px; height: 45px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">+</button>
+                                </div>
+                            </div>
+                            <div class="price-section">
+                                <div class="current-price">€24.99</div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="buy-now-btn" id="buyNowBtnMobile">
+                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
+                                </button>
+                                <button class="wishlist-btn wishlist-style-btn wishlist-button" data-product-id="46">
+                                    <i class="bi bi-heart"></i> Zur Wunschliste
+                                </button>
+                            </div>
+                            <div class="features-section">
+                                <ul class="features-list">
+                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
+                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bundle-Box -->
+                    <div id="bundle-section" class="mt-5"></div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="quick-order-card d-none d-lg-block">
+                        <div class="quick-order-header">
+                            <h4>Schnellbestellung</h4>
+                        </div>
+                        <div class="quick-order-body">
+                            <div class="quantity-section">
+                                <label class="quantity-label">Menge:</label>
+                                <div class="quantity-input-group">
+                                    <!-- Added event parameter to +/- buttons -->
+                                    <button class="quantity-btn" onclick="decreaseQuantity(event)">-</button>
+                                    <input type="number" class="quantity-input" id="quantity" value="1" min="1" max="999" maxlength="3" oninput="if(this.value.length > 3) this.value = this.value.slice(0,3); if(this.value > 999) this.value = 999;">
+                                    <button class="quantity-btn" onclick="increaseQuantity(event)">+</button>
+                                </div>
+                            </div>
+                            
+                            <div class="price-section">
+                                <div class="current-price">€24.99</div>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <!-- Added proper CSS classes for animations -->
+                                <button class="buy-now-btn" id="buyNowBtn">
+                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
+                                </button>
+                                <button class="wishlist-btn wishlist-style-btn wishlist-button" data-product-id="46">
+                                    <i class="bi bi-heart"></i> Zur Wunschliste hinzufügen
+                                </button>
+                            </div>
+                            
+                            <div class="features-section">
+                                <ul class="features-list">
+                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
+                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ähnliche Produkte -->
+        <section class="py-5 similar-products-section">
+            <div class="container">
+                <div class="section-header text-center mb-5">
+                    <h2 class="section-title">Ähnliche Produkte</h2>
+                    <p class="section-subtitle">Entdecken Sie weitere Produkte, die Ihnen gefallen könnten</p>
+                </div>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-10.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg" class="product-image" alt="Elektrischer Wasserspender für Schreibtisch">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Elektrischer Wasserspender für Schreibtisch</h5>
+                            <div class="price-container"><span class="current-price">€49.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-12.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Multifunktions Gemüseschneider.jpg" class="product-image" alt="Multifunktions Gemüseschneider">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Multifunktions Gemüseschneider</h5>
+                            <div class="price-container"><span class="current-price">€19.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-15.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Drahtlose elektrische tragbare Espressomaschine.jpeg" class="product-image" alt="Drahtlose elektrische tragbare Espressomaschine">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Drahtlose elektrische tragbare Espressomaschine</h5>
+                            <div class="price-container"><span class="current-price">€89.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-16.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/ware.png" class="product-image" alt="Elektrische Küchenwaage Digital">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Elektrische Küchenwaage Digital</h5>
+                            <div class="price-container"><span class="current-price">€49.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p>&copy; 2024 Marktplatz - Alle Rechte vorbehalten</p>
+        </div>
+    </footer>
+
+    <script>
+  // Produktdaten für diese Seite
+  const product = {
+    id: 46,
+    name: "Nordic Crystal Lamp",
+    nameEn: "Nordic Crystal Lamp",
+    price: 24.99,
+    originalPrice: 39.99,
+    image: "produkt bilder/Nordic Crystal Lamp.jpg",
+    category: "Beleuchtung",
+    categoryId: "beleuchtung",
+    description: "Elegante nordische Kristalllampe mit USB-Anschluss und Touch-Dimming. Perfekte Atmosphärenbeleuchtung für Schlafzimmer mit Diamant-Nachtlicht-Effekt.",
+    sku: "CJJT122932909IR",
+    inStock: true,
+    shippingTime: "7-15 Werktage",
+    colors: [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJJT122932909IR",
+        "price": 24.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJT122932910JQ",
+        "price": 26.99,
+        "originalPrice": 41.99,
+        "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp weiß.jpg"
+      },
+      {
+        "name": "Gelb",
+        "code": "#FFD700",
+        "sku": "CJJT122932915OL",
+        "price": 25.99,
+        "originalPrice": 40.99,
+        "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp gelb.jpg"
+      }
+    ],
+    tags: ["kristalllampe", "usb lampe", "touch dimming", "nachtlicht", "atmosphäre"]
+  };
+
+  // Mache Produktdaten global verfügbar für Bundle-System
+  window.product = product;
+
+  // Bundles dynamisch laden
+  fetch('../products.json')
+    .then(res => res.json())
+    .then(products => {
+      const prod = products.find(p => p.id === product.id);
+      if (prod && prod.bundles && prod.bundles.length > 0) {
+        renderBundles(prod.bundles);
+      } else {
+        // Fallback: Bundle-Box immer anzeigen
+        // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
+  setTimeout(() => {
+    if (window.renderBundlesWithImages) {
+      window.renderBundlesWithImages();
+    } else {
+      renderBundles();
+    }
+  }, 500);
+      }
+    });
+
+  function getWishlist() {
+    return JSON.parse(localStorage.getItem('wishlist')) || [];
+  }
+  function setWishlist(wishlist) {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  }
+  function isInWishlist(id) {
+    return getWishlist().some(item => Number(item.id) === Number(id));
+  }
+  function toggleWishlist(product) {
+    let wishlist = getWishlist();
+    if (isInWishlist(product.id)) {
+      wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
+      if (typeof showAlert === 'function') {
+        showAlert('Produkt von der Wunschliste entfernt', 'wishlist.html');
+      } else {
+        showNotification('Von der Wunschliste entfernt', 'info');
+      }
+    } else {
+      wishlist.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        description: product.description
+      });
+      if (typeof showAlert === 'function') {
+        showAlert('Produkt zur Wunschliste hinzugefügt', 'wishlist.html');
+      } else {
+        showNotification('Zur Wunschliste hinzugefügt');
+      }
+    }
+    setWishlist(wishlist);
+    updateAllWishlistButtons();
+  }
+  function updateAllWishlistButtons() {
+    const isInList = isInWishlist(product.id);
+    
+    // Update main wishlist button
+    const mainBtn = document.getElementById('wishlistBtn');
+    if (mainBtn) {
+        if (isInList) {
+            mainBtn.classList.add('active');
+            mainBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
+        } else {
+            mainBtn.classList.remove('active');
+            mainBtn.innerHTML = '<i class="bi bi-heart"></i> Zur Wunschliste';
+        }
+    }
+    
+    // Update all quick order wishlist buttons
+    const quickOrderBtns = document.querySelectorAll('.wishlist-button');
+    quickOrderBtns.forEach(btn => {
+        if (isInList) {
+            btn.classList.add('active');
+            btn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
+        } else {
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="bi bi-heart"></i> Zur Wunschliste';
+        }
+    });
+  }
+  function getCart() {
+    return JSON.parse(localStorage.getItem('cart')) || [];
+            }
+  function setCart(cart) {
+            localStorage.setItem('cart', JSON.stringify(cart));
+  }
+  function addToCart(product) {
+    let cart = getCart();
+    // Only match regular products (items without bundleId)
+    const existing = cart.find(item => Number(item.id) === Number(product.id) && !item.bundleId);
+    if (existing) {
+      existing.quantity += product.quantity || 1;
+    } else {
+      cart.push({ ...product, quantity: product.quantity || 1 });
+    }
+    setCart(cart);
+    // Keine direkte Weiterleitung mehr, da wir das Popup verwenden
+  }
+  
+  // showAlert function for cart popup
+  function showAlert(message, redirectTo = 'cart.html') {
+    const alert = document.createElement('div');
+    alert.className = 'alert alert-success position-fixed end-0 m-4 shadow-lg fade show';
+    alert.style.zIndex = '20000';
+    alert.style.fontSize = '1rem';
+    alert.style.minWidth = '160px';
+    alert.style.maxWidth = '320px';
+    alert.style.padding = '0.75rem 2rem';
+    alert.style.textAlign = 'center';
+    alert.style.borderRadius = '2rem';
+    alert.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+    alert.style.background = 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)';
+    alert.style.color = '#fff';
+    alert.style.fontWeight = '500';
+    alert.style.letterSpacing = '0.02em';
+    alert.style.pointerEvents = 'auto';
+    alert.style.position = 'fixed';
+    alert.style.right = '2.5rem';
+    alert.style.top = 'calc(56px + 1.2rem)';
+    alert.style.cursor = 'pointer';
+    alert.textContent = message;
+    alert.addEventListener('click', () => {
+      window.location.href = '../' + redirectTo;
+    });
+    document.body.appendChild(alert);
+    setTimeout(() => {
+      if (document.body.contains(alert)) {
+        alert.classList.remove('show');
+        alert.classList.add('fade');
+        setTimeout(() => alert.remove(), 400);
+      }
+    }, 1700);
+  }
+
+  function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} position-fixed end-0 m-4 shadow-lg fade show`;
+    notification.style.zIndex = '20000';
+    notification.style.fontSize = '1rem';
+    notification.style.minWidth = '160px';
+    notification.style.maxWidth = '320px';
+    notification.style.padding = '0.75rem 2rem';
+    notification.style.textAlign = 'center';
+    notification.style.borderRadius = '2rem';
+    notification.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+    notification.style.background = type === 'success' 
+      ? 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)' 
+      : 'linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%)';
+    notification.style.color = '#fff';
+    notification.style.fontWeight = '500';
+    notification.style.letterSpacing = '0.02em';
+    notification.style.pointerEvents = 'auto';
+    notification.style.position = 'fixed';
+    notification.style.right = '2.5rem';
+    notification.style.top = 'calc(56px + 1.2rem)';
+    notification.style.cursor = 'pointer';
+    notification.textContent = message;
+    
+    // Klick-Event hinzufügen
+    notification.addEventListener('click', function() {
+      notification.classList.remove('show');
+      notification.classList.add('fade');
+      setTimeout(() => notification.remove(), 400);
+      // Zur Wishlist-Seite weiterleiten (aus dem produkte/ Ordner)
+      window.location.href = '../wishlist.html';
+    });
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      if (document.body.contains(notification)) {
+        notification.classList.remove('show');
+        notification.classList.add('fade');
+        setTimeout(() => notification.remove(), 400);
+      }
+    }, 2000);
+  }
+
+  function addBundleToCart(bundle) {
+    let cart = getCart();
+    const bundleId = bundle.bundleId;
+    const existing = cart.find(item => item.bundleId === bundleId);
+    if (existing) {
+        // Erhöhe die Menge bei wiederholtem Hinzufügen
+        existing.quantity++;
+    } else {
+        cart.push({
+            id: product.id,
+            name: bundle.name,
+            price: bundle.price,
+            image: product.image,
+            description: bundle.description,
+            bundleId: bundleId,
+            bundleItems: [], // Keine Items für die neue Staffel
+            quantity: 1
+        });
+    }
+    setCart(cart);
+    
+    // Trigger same animations as regular cart buttons
+    const bundleButton = document.querySelector('.bundle-add-btn');
+    if (bundleButton) {
+      bundleButton.classList.add('success-animation');
+      setTimeout(() => {
+        bundleButton.classList.remove('success-animation');
+      }, 600);
+    }
+    
+    // Animate navigation cart
+    const cartNavLink = document.querySelector('.cart-nav-link');
+    if (cartNavLink) {
+      cartNavLink.classList.add('cart-rainbow-bounce');
+      setTimeout(() => {
+        cartNavLink.classList.remove('cart-rainbow-bounce');
+      }, 1000);
+    }
+    
+    // Popup anzeigen statt direkter Weiterleitung für Bundle
+    if (typeof showAlert === 'function') {
+      showAlert('Bundle zum Warenkorb hinzugefügt', 'cart.html');
+    } else {
+      showNotification('Bundle zum Warenkorb hinzugefügt');
+    }
+}
+
+  function renderBundles() {
+    const einzelpreis = 24.99;
+    const staffel = [
+      {qty:1, price:einzelpreis, original:einzelpreis},
+      {qty:2, price:(einzelpreis*0.85), original:einzelpreis},
+      {qty:3, price:(einzelpreis*0.80), original:einzelpreis}
+    ];
+    const section = document.getElementById('bundle-section');
+    let selected = 1;
+    section.innerHTML = `
+      <div class="bundle-box">
+        <div class="bundle-header">BUNDLE & SPARE</div>
+        <form id="bundleForm">
+          ${staffel.map((s, i) => `
+            <div class="bundle-card${i===selected?' selected':''}" data-index="${i}">
+              <input type="radio" name="bundle" class="bundle-radio" id="bundleRadio${i}" value="${i}" ${i===selected?'checked':''}>
+              <div class="bundle-info">
+                <div class="bundle-title">
+                  ${s.qty} Set${s.qty>1?'s':''} kaufen
+                  ${i===1 ? '<span class="bundle-badge popular">Am beliebtesten</span>' : ''}
+                  ${i===2 ? '<span class="bundle-badge savings">Meiste Ersparnis</span>' : ''}
+                  ${i>0 ? `<span class="bundle-label">EXTRA ${i===1?'15':i===2?'20':'0'}% RABATT</span>` : ''}
+                </div>
+                <div class="bundle-prices">
+                  €${s.price.toFixed(2)} pro Set
+                  <span class="savings">Spare €${((s.original-s.price)*s.qty).toFixed(2)}</span>
+                </div>
+                ${s.qty>1?`<div class='bundle-total'>Gesamt: <b>€${(s.price*s.qty).toFixed(2)}</b></div>`:''}
+              </div>
+            </div>
+          `).join('')}
+          <button type="submit" class="btn bundle-add-btn">In den Warenkorb</button>
+        </form>
+      </div>
+    `;
+    // Interaktive Auswahl
+    const cards = section.querySelectorAll('.bundle-card');
+    const radios = section.querySelectorAll('.bundle-radio');
+    
+    // Event-Listener für Radio-Buttons
+    radios.forEach((radio, i) => {
+      radio.addEventListener('change', () => {
+        cards.forEach(c => c.classList.remove('selected'));
+        cards[i].classList.add('selected');
+      });
+    });
+
+    // Event-Listener für Bundle-Cards
+    cards.forEach((card, i) => {
+      card.addEventListener('click', (e) => {
+        // Verhindere Bubbling wenn auf Radio geklickt wurde
+        if (e.target === radios[i]) return;
+        
+        // Wähle Radio-Button aus
+        radios[i].checked = true;
+        
+        // Aktualisiere Selected-Status
+        cards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        
+        // Trigger change Event auf Radio
+        radios[i].dispatchEvent(new Event('change'));
+      });
+    });
+
+    section.querySelector('#bundleForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const idx = Array.from(radios).findIndex(r => r.checked);
+      const s = staffel[idx];
+      addBundleToCart({
+        id: product.id,
+        name: product.name + ` (${s.qty} Set${s.qty>1?'s':''})`,
+        price: s.price * s.qty,
+        image: product.image,
+        description: product.description + ` (Bundle: ${s.qty} Set${s.qty>1?'s':''})`,
+        bundleId: `${product.id}-qty${s.qty}`,
+        quantity: s.qty
+      });
+    });
+  }
+
+  // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
+  setTimeout(() => {
+    if (window.renderBundlesWithImages) {
+      window.renderBundlesWithImages();
+    } else {
+      renderBundles();
+    }
+  }, 500);
+
+  // Funktionen für die neue Schnellbestellung
+  function increaseQuantity(event) {
+    // Determine which input to use based on the clicked button
+    const button = event ? event.target : null;
+    const isDesktop = button && button.closest('.d-none.d-lg-block');
+    
+    const inputId = isDesktop ? 'quantity' : 'quantity-mobile';
+    const input = document.getElementById(inputId);
+    
+    if (input) {
+      const currentValue = parseInt(input.value, 10) || 1;
+      if (currentValue < 999) {
+        input.value = currentValue + 1;
+        updateTotalPrice();
+      }
+    }
+  }
+
+  function decreaseQuantity(event) {
+    // Determine which input to use based on the clicked button
+    const button = event ? event.target : null;
+    const isDesktop = button && button.closest('.d-none.d-lg-block');
+    
+    const inputId = isDesktop ? 'quantity' : 'quantity-mobile';
+    const input = document.getElementById(inputId);
+    
+    if (input) {
+      const currentValue = parseInt(input.value, 10) || 1;
+      if (currentValue > 1) {
+        input.value = currentValue - 1;
+        updateTotalPrice();
+      }
+    }
+  }
+
+  function updateTotalPrice() {
+    // Update both mobile and desktop total prices
+    const mobileQuantity = parseInt(document.getElementById('quantity-mobile')?.value, 10) || 1;
+    const desktopQuantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
+    
+    // Einfache Berechnung: Gesamtpreis = Menge × Einzelpreis
+    const mobileTotal = (product.price * mobileQuantity).toFixed(2);
+    const desktopTotal = (product.price * desktopQuantity).toFixed(2);
+    
+    // Update current price displays (zeigt jetzt den Gesamtpreis)
+    const mobileCurrentPriceElements = document.querySelectorAll('.d-lg-none .current-price');
+    const desktopCurrentPriceElements = document.querySelectorAll('.d-none.d-lg-block .current-price');
+    
+    mobileCurrentPriceElements.forEach(element => {
+      element.textContent = `€${mobileTotal}`;
+    });
+    
+    desktopCurrentPriceElements.forEach(element => {
+      element.textContent = `€${desktopTotal}`;
+    });
+    
+    // Update total prices
+    const mobileTotalElement = document.getElementById('totalPrice-mobile');
+    const desktopTotalElement = document.getElementById('totalPrice');
+    
+    if (mobileTotalElement) mobileTotalElement.textContent = `€${mobileTotal}`;
+    if (desktopTotalElement) desktopTotalElement.textContent = `€${desktopTotal}`;
+  }
+
+  function addToCartWithQuantity(event) {
+  // Verhindere doppelte Ausführung
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  // Determine which quantity input to use based on the clicked button
+  const button = event ? event.target : null;
+  const isDesktop = button && button.closest('.d-none.d-lg-block');
+  
+  const inputId = isDesktop ? 'quantity' : 'quantity-mobile';
+  const quantityInput = document.getElementById(inputId);
+  const quantity = quantityInput ? parseInt(quantityInput.value, 10) || 1 : 1;
+  
+  const productToCart = {
+    ...product,
+    quantity: quantity
+  };
+  addToCart(productToCart);
+  
+  // Enhanced animations for product page - only animate the clicked button
+  triggerQuickOrderAnimation(button);
+  triggerNavCartAnimation();
+  
+  // Direkt zum Warenkorb weiterleiten
+  setTimeout(() => {
+    window.location.href = '../cart.html';
+  }, 500); // Kurze Verzögerung für die Animation
+}
+
+  function triggerQuickOrderAnimation(button) {
+    // Only animate the specific button that was clicked
+    if (button) {
+      button.classList.add('success-animation');
+      setTimeout(() => {
+        button.classList.remove('success-animation');
+      }, 600);
+    }
+  }
+
+  // Added animation functions for consistent behavior
+  function triggerCartButtonAnimation(button) {
+    if (!button) return;
+    button.classList.add('success-animation');
+    setTimeout(() => {
+      button.classList.remove('success-animation');
+    }, 600);
+  }
+
+  function triggerWishlistButtonAnimation(button) {
+    if (!button) return;
+    button.classList.add('heart-pulse');
+    setTimeout(() => {
+      button.classList.remove('heart-pulse');
+    }, 600);
+  }
+
+  function triggerNavCartAnimation() {
+    const cartNavLink = document.querySelector('.cart-nav-link');
+    if (cartNavLink) {
+      cartNavLink.classList.add('cart-rainbow-bounce');
+      setTimeout(() => {
+        cartNavLink.classList.remove('cart-rainbow-bounce');
+      }, 1000);
+    }
+  }
+
+  function triggerCartIconPulse() {
+    const cartIcon = document.querySelector('.cart-nav-link i');
+    if (cartIcon) {
+      cartIcon.classList.add('cart-icon-pulse');
+      setTimeout(() => {
+        cartIcon.classList.remove('cart-icon-pulse');
+      }, 600);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Event-Listener für Hero-Buttons
+    const cartBtn = document.getElementById('cartBtn');
+    const wishlistBtn = document.getElementById('wishlistBtn');
+    const buyNowBtn = document.getElementById('buyNowBtn');
+    const buyNowBtnMobile = document.getElementById('buyNowBtnMobile');
+    
+    if (cartBtn) {
+      cartBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            description: product.description,
+            quantity: 1
+        });
+        
+        // Added animation triggers
+        triggerCartButtonAnimation(this);
+        triggerNavCartAnimation();
+        triggerCartIconPulse();
+        
+        // Popup anzeigen statt direkter Weiterleitung
+        if (typeof showAlert === 'function') {
+          showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
+        } else {
+          showNotification('Zum Warenkorb hinzugefügt');
+        }
+    });
+    }
+    
+    // Standardized wishlist implementation like Produkt 24
+    const allWishlistButtons = document.querySelectorAll('.wishlist-button');
+    allWishlistButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        toggleWishlist(product);
+      });
+    });
+    
+    // Update all wishlist buttons on page load
+    updateAllWishlistButtons();
+
+    // Event-Listener für Quantity-Input
+    const quantityInput = document.getElementById('quantity');
+    
+    if (quantityInput) {
+      quantityInput.addEventListener('input', updateTotalPrice);
+      quantityInput.addEventListener('change', updateTotalPrice);
+      updateTotalPrice(); // Initialisiere den Preis
+    }
+    
+    // Desktop Button
+    if (buyNowBtn) {
+      buyNowBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        addToCartWithQuantity(e);
+        triggerCartButtonAnimation(this);
+        triggerNavCartAnimation();
+        triggerCartIconPulse();
+        if (typeof showAlert === 'function') {
+          showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
+        } else {
+          showNotification('Zum Warenkorb hinzugefügt');
+        }
+      });
+    }
+  });
+    </script>
+    <script src="../keyboard-shortcuts.js"></script>
+<script>
+  // Populate mobile quantity dropdown on page load
+  function populateMobileQuantityDropdown() {
+    const select = document.getElementById('quantity-mobile');
+    if (select && select.options.length === 0) {
+      // Generate all options from 1 to 999
+      for (let i = 1; i <= 999; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        select.appendChild(option);
+      }
+    }
+  }
+
+  // Call on page load
+  document.addEventListener('DOMContentLoaded', populateMobileQuantityDropdown);
+  // Also call immediately in case DOM is already loaded
+  populateMobileQuantityDropdown();
+
+  // Mobile-specific quantity functions
+  function increaseMobileQuantity() {
+    const select = document.getElementById('quantity-mobile');
+    if (select) {
+      const currentValue = parseInt(select.value, 10) || 1;
+      if (currentValue < 999) {
+        select.value = currentValue + 1;
+        updateTotalPrice();
+      }
+    }
+  }
+
+  function decreaseMobileQuantity() {
+    const select = document.getElementById('quantity-mobile');
+    if (select) {
+      const currentValue = parseInt(select.value, 10) || 1;
+      if (currentValue > 1) {
+        select.value = currentValue - 1;
+        updateTotalPrice();
+      }
+    }
+  }
+</script>
+
+<!-- App.js für globale Funktionen -->
+<script src="../app.js"></script>
+
+<!-- Color Cart Bridge für Farbauswahl-Integration -->
+<script src="../color-cart-bridge.js"></script>
+
+
+<!-- Bundle mit Bildern -->
+<script src="../bundle-images-final.js"></script>
+<script>
+    // Überschreibe lokale addBundleToCart mit der globalen Version
+    if (window.addBundleToCart) {
+        // Globale Version ist verfügbar
+        console.log('Bundle-System bereit');
+    }
+</script>
+
+<!-- Bild-basierte Farbauswahl (zeigt automatisch "Modell" für Produkt 21) -->
+<script src="../color-image-selection.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Warte bis ImageColorSelection initialisiert ist
+    setTimeout(() => {
+        if (window.imageColorSelection && window.imageColorSelection.productData) {
+            const product = window.imageColorSelection.productData;
+            const colors = product.colors;
+            const productImage = product.image;
+            
+            // Initialisiere Bundle mit Bildern
+            if (window.renderBundlesWithImageColors) {
+                window.renderBundlesWithImageColors(product.id, colors, productImage);
+            }
+        }
+    }, 500);
+});
+</script>
+<!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
+
+    <script src="../product-gallery-complete.js"></script>
+
+<script>
+// Initialisiere die Bildergalerie für Produkt 46
+document.addEventListener('DOMContentLoaded', function() {
+    new window.ProductImageGallery(46, 'Nordic Crystal Lamp');
+});
+</script>
+<script>
+// Fullscreen-Funktionalität
+const mainImg = document.querySelector('.main-product-image');
+if (mainImg) {
+    mainImg.style.cursor = 'zoom-in';
+    mainImg.onclick = () => {
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:zoom-out';
+        const img = document.createElement('img');
+        img.src = mainImg.src; img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;border-radius:8px';
+        const close = document.createElement('span');
+        close.innerHTML = '&times;'; close.style.cssText = 'position:absolute;top:20px;right:30px;color:white;font-size:40px;cursor:pointer';
+        modal.append(img, close); document.body.appendChild(modal); document.body.style.overflow = 'hidden';
+        const closeModal = () => { document.body.removeChild(modal); document.body.style.overflow = 'auto'; };
+        modal.onclick = closeModal; close.onclick = closeModal;
+        document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
+    };
+}
+</script>
+</body>
+</html>
+
