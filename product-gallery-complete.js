@@ -32,7 +32,8 @@ class ProductImageGallery {
             32: 'Indoor Sensing Wall Lamp bilder',
             41: '2 In 1 Oil Sprayer Bottle bilder',
             42: 'RGB Flame Aroma Diffuser Volcano bilder',
-            43: 'Portable Mini Thermal Label Printer bilder'
+            43: 'Portable Mini Thermal Label Printer bilder',
+            44: 'Portable Projector For Home bilder'
         };
         
         this.init();
@@ -55,7 +56,8 @@ class ProductImageGallery {
             35: 'Thermal Neck Lifting And Tighten Massager bilder',
             38: 'Jade Massager bilder',
             40: 'Mug Warmer Pad bilder',
-            43: 'Portable Mini Thermal Label Printer bilder'
+            43: 'Portable Mini Thermal Label Printer bilder',
+            44: 'Portable Projector For Home bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -488,6 +490,41 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer rollen C.jpg`,
                         alt: 'Portable Mini Thermal Label Printer - Style C Rollen',
                         color: 'Style C Rollen'
+                    }
+                ];
+                break;
+                
+            case 44: // Portable Projector For Home
+                this.images = [
+                    {
+                        src: `../produkt bilder/Portable Projector For Home.jpg`,
+                        alt: 'Portable Projector For Home - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Projector For Home weiß.jpg`,
+                        alt: 'Portable Projector For Home - Weiß',
+                        color: 'Weiß'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Projector For Home silber.jpg`,
+                        alt: 'Portable Projector For Home - Silber',
+                        color: 'Silber'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Projector For Home auflösung.jpg`,
+                        alt: 'Portable Projector For Home - Auflösung',
+                        color: 'Auflösung'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Projector For Home anschlüsse.jpg`,
+                        alt: 'Portable Projector For Home - Anschlüsse',
+                        color: 'Anschlüsse'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Portable Projector For Home.jpg`,
+                        alt: 'Portable Projector For Home - Detailansicht',
+                        color: 'Detail'
                     }
                 ];
                 break;
