@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestellverfolgung - Smart Home Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .tracking-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        
+        .tracking-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .tracking-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .tracking-header h1 {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .tracking-form {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .tracking-timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 30px;
+            height: calc(100% + 20px);
+            width: 2px;
+            background: #dee2e6;
+        }
+        
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 10px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dee2e6;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item.completed .timeline-dot {
+            background: #28a745;
+        }
+        
+        .timeline-item.active .timeline-dot {
+            background: #007bff;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+        }
+        
+        .timeline-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item.completed .timeline-content {
+            background: #f0f8f0;
+        }
+        
+        .timeline-item.active .timeline-content {
+            background: #e7f3ff;
+            border: 1px solid #007bff;
+        }
+        
+        .order-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-processing { background: #cce5ff; color: #004085; }
+        .status-shipped { background: #d1ecf1; color: #0c5460; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        
+        .no-order {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .no-order i {
+            font-size: 64px;
+            color: #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="tracking-container">
+        <div class="tracking-card">
+            <div class="tracking-header">
+                <h1><i class="bi bi-truck"></i> Bestellverfolgung</h1>
+                <p class="text-muted">Verfolgen Sie den Status Ihrer Bestellung</p>
+            </div>
+
+            <!-- Suchformular -->
+            <div class="tracking-form">
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" id="tracking-input" 
+                               placeholder="Bestellnummer oder E-Mail-Adresse eingeben...">
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-primary w-100" onclick="trackOrder()">
+                            <i class="bi bi-search"></i> Suchen
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tracking-Ergebnis -->
+            <div id="tracking-result" style="display: none;">
+                <!-- Bestellinfo -->
+                <div class="order-info" id="order-info">
+                    <!-- Wird dynamisch gefüllt -->
+                </div>
+
+                <!-- Timeline -->
+                <h5 class="mb-3"><i class="bi bi-clock-history"></i> Sendungsverlauf</h5>
+                <div class="tracking-timeline" id="tracking-timeline">
+                    <!-- Wird dynamisch gefüllt -->
+                </div>
+
+                <!-- Aktionen -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-outline-primary" onclick="downloadReceipt()">
+                        <i class="bi bi-download"></i> Kassenbon herunterladen
+                    </button>
+                    <button class="btn btn-outline-secondary ms-2" onclick="contactSupport()">
+                        <i class="bi bi-headset"></i> Support kontaktieren
+                    </button>
+                </div>
+            </div>
+
+            <!-- Keine Bestellung gefunden -->
+            <div id="no-order" class="no-order" style="display: none;">
+                <i class="bi bi-inbox"></i>
+                <h4 class="mt-3">Keine Bestellung gefunden</h4>
+                <p class="text-muted">Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut.</p>
+            </div>
+        </div>
+
+        <!-- Zurück zum Shop -->
+        <div class="text-center mt-4">
+            <a href="index.html" class="btn btn-light">
+                <i class="bi bi-arrow-left"></i> Zurück zum Shop
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let currentOrder = null;
+
+        // URL-Parameter prüfen
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('order');
+            
+            if (orderId) {
+                document.getElementById('tracking-input').value = orderId;
+                trackOrder();
+            }
+        });
+
+        async function trackOrder() {
+            const input = document.getElementById('tracking-input').value.trim();
+            
+            if (!input) {
+                alert('Bitte geben Sie eine Bestellnummer oder E-Mail-Adresse ein.');
+                return;
+            }
+
+            // Verstecke vorherige Ergebnisse
+            document.getElementById('tracking-result').style.display = 'none';
+            document.getElementById('no-order').style.display = 'none';
+
+            try {
+                let response;
+                
+                // Prüfe ob es eine E-Mail oder Bestellnummer ist
+                if (input.includes('@')) {
+                    // E-Mail-Suche
+                    response = await fetch(`/api/receipt/orders/email/${encodeURIComponent(input)}`);
+                    const orders = await response.json();
+                    
+                    if (orders && orders.length > 0) {
+                        // Zeige die neueste Bestellung
+                        showOrder(orders[0]);
+                    } else {
+                        showNoOrder();
+                    }
+                } else {
+                    // Bestellnummer-Suche
+                    response = await fetch(`/api/receipt/order/${encodeURIComponent(input)}`);
+                    
+                    if (response.ok) {
+                        const order = await response.json();
+                        showOrder(order);
+                    } else {
+                        showNoOrder();
+                    }
+                }
+            } catch (error) {
+                console.error('Tracking-Fehler:', error);
+                showNoOrder();
+            }
+        }
+
+        function showOrder(order) {
+            currentOrder = order;
+            
+            // Zeige Bestellinfo
+            const infoHtml = `
+                <div class="info-row">
+                    <span><strong>Bestellnummer:</strong></span>
+                    <span>${order.order_id}</span>
+                </div>
+                <div class="info-row">
+                    <span><strong>Kassenbon-Nr:</strong></span>
+                    <span>${order.receipt_number}</span>
+                </div>
+                <div class="info-row">
+                    <span><strong>Bestelldatum:</strong></span>
+                    <span>${new Date(order.created_at).toLocaleString('de-DE')}</span>
+                </div>
+                <div class="info-row">
+                    <span><strong>Kunde:</strong></span>
+                    <span>${order.customer_name}</span>
+                </div>
+                <div class="info-row">
+                    <span><strong>Gesamtbetrag:</strong></span>
+                    <span><strong>€ ${order.total_amount.toFixed(2)}</strong></span>
+                </div>
+                <div class="info-row">
+                    <span><strong>Status:</strong></span>
+                    <span class="status-badge status-${order.order_status}">${getStatusText(order.order_status)}</span>
+                </div>
+            `;
+            document.getElementById('order-info').innerHTML = infoHtml;
+
+            // Zeige Timeline
+            const timeline = getOrderTimeline(order);
+            document.getElementById('tracking-timeline').innerHTML = timeline;
+
+            // Zeige Ergebnis
+            document.getElementById('tracking-result').style.display = 'block';
+        }
+
+        function showNoOrder() {
+            document.getElementById('no-order').style.display = 'block';
+        }
+
+        function getOrderTimeline(order) {
+            const steps = [
+                { 
+                    status: 'pending', 
+                    title: 'Bestellung eingegangen',
+                    description: 'Ihre Bestellung wurde erfolgreich aufgenommen.',
+                    icon: 'bi-cart-check'
+                },
+                { 
+                    status: 'processing', 
+                    title: 'In Bearbeitung',
+                    description: 'Ihre Bestellung wird vorbereitet.',
+                    icon: 'bi-box-seam'
+                },
+                { 
+                    status: 'shipped', 
+                    title: 'Versendet',
+                    description: 'Ihre Bestellung wurde versendet.',
+                    icon: 'bi-truck'
+                },
+                { 
+                    status: 'delivered', 
+                    title: 'Zugestellt',
+                    description: 'Ihre Bestellung wurde zugestellt.',
+                    icon: 'bi-house-check'
+                }
+            ];
+
+            const currentStatusIndex = steps.findIndex(s => s.status === order.order_status);
+            
+            return steps.map((step, index) => {
+                let itemClass = 'timeline-item';
+                if (index <= currentStatusIndex) itemClass += ' completed';
+                if (index === currentStatusIndex) itemClass += ' active';
+                
+                return `
+                    <div class="${itemClass}">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <h6><i class="bi ${step.icon}"></i> ${step.title}</h6>
+                            <p class="mb-0 text-muted">${step.description}</p>
+                            ${index <= currentStatusIndex ? `
+                                <small class="text-muted">
+                                    ${index === 0 ? new Date(order.created_at).toLocaleString('de-DE') : ''}
+                                </small>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'pending': 'Ausstehend',
+                'processing': 'In Bearbeitung',
+                'shipped': 'Versendet',
+                'delivered': 'Zugestellt',
+                'cancelled': 'Storniert'
+            };
+            return texts[status] || status;
+        }
+
+        function downloadReceipt() {
+            if (currentOrder) {
+                window.open(`/receipts/receipt_${currentOrder.receipt_number}.pdf`, '_blank');
+            }
+        }
+
+        function contactSupport() {
+            window.location.href = '/infos/kontakt.html';
+        }
+    </script>
+</body>
+</html>

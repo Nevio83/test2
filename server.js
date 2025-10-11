@@ -26,6 +26,15 @@ if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendg
 const CJDropshippingAPI = require('./cj-dropshipping-api');
 const cjAPI = new CJDropshippingAPI();
 
+// Initialize Receipt System
+const { dbOperations } = require('./database');
+const ReceiptGenerator = require('./receipt-generator');
+const EmailService = require('./email-service');
+const { v4: uuidv4 } = require('uuid');
+
+const receiptGenerator = new ReceiptGenerator();
+const emailService = new EmailService();
+
 const app = express();
 
 // Enable gzip compression
@@ -457,7 +466,258 @@ app.get('/api/cj/methods', (req, res) => {
   }
 });
 
+// ==========================================
+// KASSENBON SYSTEM API ROUTES
+// ==========================================
 
+// Neue Bestellung mit Kassenbon erstellen
+app.post('/api/receipt/create', async (req, res) => {
+  try {
+    const { cart, customer, payment, shipping } = req.body;
+    
+    // Generiere eindeutige IDs
+    const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    const receiptNumber = `KB-${new Date().getFullYear()}${String(Date.now()).slice(-6)}`;
+    const receiptId = uuidv4();
+    
+    // Berechne Summen
+    let subtotal = 0;
+    const orderItems = cart.map(item => {
+      const itemTotal = item.price * item.quantity;
+      subtotal += itemTotal;
+      
+      return {
+        product_id: item.id,
+        product_name: item.name,
+        product_sku: item.sku || null,
+        product_image: item.image || null,
+        color: item.color || null,
+        quantity: item.quantity,
+        unit_price: item.price,
+        total_price: itemTotal
+      };
+    });
+    
+    const shippingCost = shipping?.cost || 0;
+    const taxRate = 0.19;
+    const taxAmount = (subtotal + shippingCost) * taxRate / (1 + taxRate);
+    const totalAmount = subtotal + shippingCost;
+    
+    // Erstelle Bestelldaten
+    const orderData = {
+      order_id: orderId,
+      receipt_number: receiptNumber,
+      customer_email: customer.email,
+      customer_name: customer.name,
+      customer_phone: customer.phone || null,
+      shipping_address: JSON.stringify(shipping?.address || {}),
+      billing_address: JSON.stringify(customer.billingAddress || shipping?.address || {}),
+      payment_method: payment?.method || 'card',
+      payment_status: payment?.status || 'pending',
+      subtotal: subtotal,
+      shipping_cost: shippingCost,
+      tax_amount: taxAmount,
+      total_amount: totalAmount,
+      currency: 'EUR',
+      notes: null,
+      items: orderItems,
+      created_at: new Date().toISOString()
+    };
+    
+    // Speichere Bestellung in Datenbank
+    await dbOperations.createOrder(orderData);
+    await dbOperations.addOrderItems(orderId, orderItems);
+    
+    // Generiere PDF-Kassenbon
+    const pdfResult = await receiptGenerator.generateReceipt(orderData);
+    
+    // Speichere Kassenbon-Info in Datenbank
+    await dbOperations.saveReceipt({
+      receipt_id: receiptId,
+      order_id: orderId,
+      receipt_number: receiptNumber,
+      pdf_path: pdfResult.filePath
+    });
+    
+    // Generiere HTML-Version für E-Mail
+    const receiptHTML = receiptGenerator.generateHTMLReceipt(orderData);
+    
+    // Sende E-Mails
+    try {
+      // Kunde
+      await emailService.sendReceiptToCustomer(orderData, receiptHTML, pdfResult.filePath);
+      await dbOperations.updateEmailStatus(receiptId, 'customer');
+      
+      // Admin
+      await emailService.sendAdminNotification(orderData, receiptHTML, pdfResult.filePath);
+      await dbOperations.updateEmailStatus(receiptId, 'admin');
+    } catch (emailError) {
+      console.error('E-Mail-Versand Fehler:', emailError);
+      // Fahre fort auch wenn E-Mail fehlschlägt
+    }
+    
+    res.json({
+      success: true,
+      orderId: orderId,
+      receiptNumber: receiptNumber,
+      receiptUrl: pdfResult.relativePath,
+      trackingUrl: `/tracking/${orderId}`,
+      message: 'Bestellung erfolgreich erstellt und Kassenbon generiert'
+    });
+    
+  } catch (error) {
+    console.error('Kassenbon-Erstellung Fehler:', error);
+    res.status(500).json({ 
+      error: 'Fehler bei der Kassenbon-Erstellung',
+      details: error.message 
+    });
+  }
+});
+
+// Bestellung abrufen
+app.get('/api/receipt/order/:orderId', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await dbOperations.getOrder(orderId);
+    
+    if (!order) {
+      return res.status(404).json({ error: 'Bestellung nicht gefunden' });
+    }
+    
+    res.json(order);
+  } catch (error) {
+    console.error('Bestellabruf Fehler:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Alle Bestellungen abrufen (Admin)
+app.get('/api/receipt/orders', async (req, res) => {
+  try {
+    const { limit = 50, offset = 0 } = req.query;
+    const orders = await dbOperations.getAllOrders(parseInt(limit), parseInt(offset));
+    res.json(orders);
+  } catch (error) {
+    console.error('Bestellungen abrufen Fehler:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Bestellstatus aktualisieren
+app.put('/api/receipt/order/:orderId/status', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    
+    const result = await dbOperations.updateOrderStatus(orderId, status);
+    
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'Bestellung nicht gefunden' });
+    }
+    
+    // Tracking hinzufügen
+    await dbOperations.addTracking({
+      order_id: orderId,
+      status: status,
+      description: `Status geändert zu: ${status}`,
+      tracking_number: null,
+      carrier: null
+    });
+    
+    res.json({ success: true, message: 'Status aktualisiert' });
+  } catch (error) {
+    console.error('Status-Update Fehler:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Tracking-Info hinzufügen
+app.post('/api/receipt/order/:orderId/tracking', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { trackingNumber, carrier, status, description } = req.body;
+    
+    await dbOperations.addTracking({
+      order_id: orderId,
+      status: status || 'shipped',
+      description: description || 'Sendung wurde verschickt',
+      tracking_number: trackingNumber,
+      carrier: carrier
+    });
+    
+    res.json({ success: true, message: 'Tracking-Info hinzugefügt' });
+  } catch (error) {
+    console.error('Tracking-Update Fehler:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Bestellungen nach E-Mail suchen
+app.get('/api/receipt/orders/email/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    const orders = await dbOperations.getOrdersByEmail(email);
+    res.json(orders);
+  } catch (error) {
+    console.error('E-Mail-Suche Fehler:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Statistiken abrufen
+app.get('/api/receipt/statistics', async (req, res) => {
+  try {
+    const stats = await dbOperations.getStatistics();
+    res.json(stats);
+  } catch (error) {
+    console.error('Statistik-Fehler:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Kassenbon erneut senden
+app.post('/api/receipt/resend/:orderId', async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { email } = req.body;
+    
+    const order = await dbOperations.getOrder(orderId);
+    if (!order) {
+      return res.status(404).json({ error: 'Bestellung nicht gefunden' });
+    }
+    
+    // Generiere HTML-Version
+    const receiptHTML = receiptGenerator.generateHTMLReceipt(order);
+    
+    // Finde PDF-Pfad
+    const pdfPath = `receipts/receipt_${order.receipt_number}.pdf`;
+    const fullPdfPath = require('path').join(__dirname, pdfPath);
+    
+    // Sende E-Mail
+    await emailService.sendReceiptToCustomer(
+      { ...order, customer_email: email || order.customer_email },
+      receiptHTML,
+      fullPdfPath
+    );
+    
+    res.json({ success: true, message: 'Kassenbon erneut gesendet' });
+  } catch (error) {
+    console.error('Kassenbon erneut senden Fehler:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Test E-Mail-System
+app.post('/api/receipt/test-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const result = await emailService.sendTestEmail(email);
+    res.json(result);
+  } catch (error) {
+    console.error('Test-E-Mail Fehler:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
