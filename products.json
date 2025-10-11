@@ -1775,5 +1775,45 @@
         "Kompakt und leicht"
       ],
       "showInSlider": false
+    },
+    {
+      "id": 44,
+      "name": "Portable Projector For Home",
+      "price": 149.99,
+      "originalPrice": 199.99,
+      "category": "Technik/Gadgets",
+      "image": "produkt bilder/Portable Projector For Home.jpg",
+      "description": "Kompakter tragbarer Projektor für den Heimgebrauch mit 180° Projektionswinkel und automatischem Fokus. Perfekt für Filme, Präsentationen und Gaming.",
+      "sku": "CJYD1808029",
+      "inStock": true,
+      "colors": [
+        {
+          "name": "Weiß",
+          "code": "#FFFFFF",
+          "sku": "CJYD1808029",
+          "price": 149.99,
+          "originalPrice": 199.99,
+          "image": "produkt bilder/Portable Projector For Home bilder/Portable Projector For Home weiß.jpg"
+        },
+        {
+          "name": "Silber",
+          "code": "#C0C0C0",
+          "sku": "CJYD180802918RI",
+          "price": 159.99,
+          "originalPrice": 209.99,
+          "image": "produkt bilder/Portable Projector For Home bilder/Portable Projector For Home silber.jpg"
+        }
+      ],
+      "tags": [
+        "Projektor",
+        "Heimkino",
+        "Tragbar",
+        "180° Winkel",
+        "Automatischer Fokus",
+        "HD Qualität",
+        "Kompakt",
+        "Multimedia"
+      ],
+      "showInSlider": false
     }
   ]
