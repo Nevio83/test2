@@ -28,7 +28,9 @@ class ProductImageGallery {
             17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
             21: 'LED Water Ripple Crystal bilder',
             26: '4 In 1 Self Cleaning Hair Brush bilder',
-            32: 'Indoor Sensing Wall Lamp bilder'
+            27: 'Volcanic Flame Aroma Essential Oil Diffuser bilder',
+            32: 'Indoor Sensing Wall Lamp bilder',
+            41: '2 In 1 Oil Sprayer Bottle bilder'
         };
         
         this.init();
@@ -396,16 +398,41 @@ class ProductImageGallery {
                     }
                 ];
                 break;
+
+            case 41: // 2 In 1 Oil Sprayer Bottle
+                this.images = [
+                    {
+                        src: `../produkt bilder/2 In 1 Oil Sprayer Bottle.jpg`,
+                        alt: '2 In 1 Oil Sprayer Bottle - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/2 In 1 Oil Sprayer Bottle.jpg`,
+                        alt: '2 In 1 Oil Sprayer Bottle - Detailansicht',
+                        color: 'Detail'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/2 In 1 Oil Sprayer Bottle maße.jpg`,
+                        alt: '2 In 1 Oil Sprayer Bottle - Maße',
+                        color: 'Maße'
+                    }
+                ];
+                break;
         }
     }
     
     createGalleryStructure() {
         // Finde das existierende Produktbild
+        console.log('Suche nach existierendem Produktbild...');
         const existingImage = document.querySelector('.product-image, .main-product-image');
-        if (!existingImage) return;
+        console.log('Gefundenes Bild:', existingImage);
+        console.log('Alle Bilder auf der Seite:', document.querySelectorAll('img'));
+        if (!existingImage) {
+            console.error('Kein existierendes Produktbild gefunden!');
+            return;
+        }
         
         const parentContainer = existingImage.parentElement;
-        
         // Erstelle Gallery Container
         this.galleryContainer = document.createElement('div');
         this.galleryContainer.className = 'product-gallery-container';

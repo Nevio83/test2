@@ -1546,5 +1546,32 @@
         "tee",
         "haushalt"
       ]
+    },
+    {
+      "id": 41,
+      "name": "2 In 1 Oil Sprayer Bottle",
+      "price": 14.99,
+      "originalPrice": 24.99,
+      "category": "Körperpflege/Wellness",
+      "image": "produkt bilder/2 In 1 Oil Sprayer Bottle.jpg",
+      "description": "Praktische 2-in-1-Ölsprühflasche für die Küche. Perfekt zum Kochen, Grillen und für Salate. Ermöglicht einfaches Sprühen und Ausgießen von Öl und Essig.",
+      "sku": "CJYD187611401AZ",
+      "inStock": true,
+      "shippingTime": "7-15 Werktage",
+      "tags": [
+        "öl",
+        "sprayer",
+        "küche",
+        "kochen",
+        "grillen"
+      ],
+      "features": [
+        "2-in-1-Funktion: Sprühen und Ausgießen",
+        "Geeignet für Öl, Essig und andere Flüssigkeiten",
+        "Einfach zu befüllen und zu reinigen",
+        "Gleichmäßiges Sprühen für gesünderes Kochen",
+        "Modernes Design für jede Küche"
+      ],
+      "showInSlider": false
     }
   ]
