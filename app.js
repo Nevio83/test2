@@ -2449,6 +2449,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  const filterSelect = document.getElementById('filter-select');
   if (filterSelect) {
     filterSelect.addEventListener('change', () => {
       const filterValue = filterSelect.value;

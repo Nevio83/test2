@@ -4,32 +4,53 @@ const path = require('path');
 
 class EmailService {
   constructor() {
+    // Prüfe ob echte E-Mail-Konfiguration vorhanden ist
+    this.hasRealConfig = this.checkEmailConfig();
+    
     // Verwende SendGrid wenn verfügbar, sonst Nodemailer mit SMTP
     this.useSendGrid = process.env.SENDGRID_API_KEY && 
-                       process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here';
+                       process.env.SENDGRID_API_KEY !== 'SG.your_sendgrid_api_key_here';
     
-    if (this.useSendGrid) {
-      this.sgMail = require('@sendgrid/mail');
-      this.sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-      console.log('📧 E-Mail-Service: SendGrid aktiviert');
+    if (this.hasRealConfig) {
+      if (this.useSendGrid) {
+        this.sgMail = require('@sendgrid/mail');
+        this.sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        console.log('📧 E-Mail-Service: SendGrid aktiviert');
+      } else {
+        // Fallback zu Nodemailer mit Gmail oder anderem SMTP
+        this.transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST || 'smtp.gmail.com',
+          port: process.env.SMTP_PORT || 587,
+          secure: false,
+          auth: {
+            user: process.env.SMTP_USER || process.env.ADMIN_EMAIL,
+            pass: process.env.SMTP_PASS || process.env.SMTP_PASSWORD
+          }
+        });
+        console.log('📧 E-Mail-Service: SMTP/Nodemailer aktiviert');
+      }
     } else {
-      // Fallback zu Nodemailer mit Gmail oder anderem SMTP
-      this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: process.env.SMTP_PORT || 587,
-        secure: false,
-        auth: {
-          user: process.env.SMTP_USER || process.env.ADMIN_EMAIL,
-          pass: process.env.SMTP_PASS || process.env.SMTP_PASSWORD
-        }
-      });
-      console.log('📧 E-Mail-Service: SMTP/Nodemailer aktiviert');
+      console.log('📧 E-Mail-Service: Demo-Modus (keine echte E-Mail-Konfiguration)');
     }
 
     // Admin-E-Mail für Benachrichtigungen
     this.adminEmail = process.env.ADMIN_EMAIL || 'admin@smarthomeshop.de';
     this.fromEmail = process.env.FROM_EMAIL || 'noreply@smarthomeshop.de';
     this.fromName = process.env.FROM_NAME || 'Smart Home Shop';
+  }
+
+  checkEmailConfig() {
+    // Prüfe ob echte E-Mail-Konfiguration vorhanden ist
+    const hasValidSendGrid = process.env.SENDGRID_API_KEY && 
+                            process.env.SENDGRID_API_KEY !== 'SG.your_sendgrid_api_key_here' &&
+                            process.env.SENDGRID_API_KEY.startsWith('SG.');
+    
+    const hasValidSMTP = process.env.SMTP_USER && 
+                        process.env.SMTP_PASSWORD &&
+                        process.env.SMTP_USER !== 'your_email@gmail.com' &&
+                        process.env.SMTP_PASSWORD !== 'your_app_specific_password';
+    
+    return hasValidSendGrid || hasValidSMTP;
   }
 
   // Kassenbon an Kunden senden
@@ -63,6 +84,14 @@ Ihr ${this.fromName} Team
     }
 
     try {
+      if (!this.hasRealConfig) {
+        // Demo-Modus: Simuliere E-Mail-Versand
+        console.log(`📧 DEMO: Kassenbon würde an ${orderData.customer_email} gesendet werden`);
+        console.log(`📧 DEMO: Betreff: ${subject}`);
+        console.log(`📧 DEMO: PDF-Anhang: ${pdfPath}`);
+        return { success: true, method: 'demo', message: 'E-Mail im Demo-Modus simuliert' };
+      }
+
       if (this.useSendGrid) {
         // SendGrid
         const msg = {
@@ -103,6 +132,11 @@ Ihr ${this.fromName} Team
       }
     } catch (error) {
       console.error('❌ Fehler beim E-Mail-Versand an Kunden:', error);
+      // Im Demo-Modus trotzdem erfolgreich zurückgeben
+      if (!this.hasRealConfig) {
+        console.log('📧 DEMO: E-Mail-Fehler ignoriert (Demo-Modus)');
+        return { success: true, method: 'demo-fallback', message: 'E-Mail-Fehler im Demo-Modus ignoriert' };
+      }
       throw error;
     }
   }
@@ -253,6 +287,13 @@ Bestellung anzeigen: ${process.env.SITE_URL || 'http://localhost:5000'}/admin/or
     }
 
     try {
+      if (!this.hasRealConfig) {
+        // Demo-Modus: Simuliere Admin-Benachrichtigung
+        console.log(`📧 DEMO: Admin-Benachrichtigung würde an ${this.adminEmail} gesendet werden`);
+        console.log(`📧 DEMO: Neue Bestellung: ${orderData.order_id}`);
+        return { success: true, method: 'demo', message: 'Admin-Benachrichtigung im Demo-Modus simuliert' };
+      }
+
       if (this.useSendGrid) {
         // SendGrid
         const msg = {
@@ -293,6 +334,11 @@ Bestellung anzeigen: ${process.env.SITE_URL || 'http://localhost:5000'}/admin/or
       }
     } catch (error) {
       console.error('❌ Fehler beim E-Mail-Versand an Admin:', error);
+      // Im Demo-Modus trotzdem erfolgreich zurückgeben
+      if (!this.hasRealConfig) {
+        console.log('📧 DEMO: Admin-E-Mail-Fehler ignoriert (Demo-Modus)');
+        return { success: true, method: 'demo-fallback', message: 'Admin-E-Mail-Fehler im Demo-Modus ignoriert' };
+      }
       throw error;
     }
   }
@@ -308,6 +354,12 @@ Bestellung anzeigen: ${process.env.SITE_URL || 'http://localhost:5000'}/admin/or
     `;
 
     try {
+      if (!this.hasRealConfig) {
+        // Demo-Modus: Simuliere Test-E-Mail
+        console.log(`📧 DEMO: Test-E-Mail würde an ${to} gesendet werden`);
+        return { success: true, message: 'Test-E-Mail im Demo-Modus simuliert', method: 'demo' };
+      }
+
       if (this.useSendGrid) {
         await this.sgMail.send({
           to: to,
@@ -325,6 +377,10 @@ Bestellung anzeigen: ${process.env.SITE_URL || 'http://localhost:5000'}/admin/or
       }
       return { success: true, message: 'Test-E-Mail gesendet' };
     } catch (error) {
+      if (!this.hasRealConfig) {
+        console.log('📧 DEMO: Test-E-Mail-Fehler ignoriert (Demo-Modus)');
+        return { success: true, message: 'Test-E-Mail-Fehler im Demo-Modus ignoriert', method: 'demo-fallback' };
+      }
       return { success: false, error: error.message };
     }
   }

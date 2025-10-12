@@ -198,6 +198,7 @@ function showAddressSuggestions(addresses) {
         };
     });
 }
+
 window.showAddressSuggestions = showAddressSuggestions;
 
 function selectAddress(address) {
@@ -712,7 +713,7 @@ function updateCartPage() {
                         </div>
                     </div>
                     
-                    <button type="submit" id="submit-button" class="btn btn-primary w-100 checkout-btn">
+                    <button type="button" id="submit-button" class="btn btn-primary w-100 checkout-btn" onclick="handleCheckout()">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
                         <span class="button-text"><i class="bi bi-lock"></i> Jetzt bestellen - ${currentCurrency.symbol}${total.toFixed(2)}</span>
                     </button>
@@ -735,8 +736,71 @@ function updateCartPage() {
             this.classList.remove('is-invalid');
         });
     }
-    setupStripeForm(); // Diese Zeile hinzufügen
-    mountStripeElements();
+    
+    // Stripe Elements nach DOM-Update initialisieren
+    setTimeout(() => {
+        if (typeof Stripe !== 'undefined') {
+            if (!stripe) {
+                stripe = Stripe('pk_test_XXXXXXXXXXXXXXXXXXXXXXXX');
+                elements = stripe.elements({
+                    appearance: {
+                        theme: 'stripe',
+                        variables: {
+                            colorPrimary: '#667eea',
+                            colorBackground: '#ffffff',
+                            colorText: '#30313d',
+                            colorDanger: '#df1b41',
+                            fontFamily: 'system-ui, sans-serif',
+                            spacingUnit: '4px',
+                            borderRadius: '8px'
+                        }
+                    }
+                });
+            }
+            
+            // Stripe Elements mounten
+            const cardNumberElement = document.getElementById('card-number-element');
+            const cardExpiryElement = document.getElementById('card-expiry-element');
+            const cardCvcElement = document.getElementById('card-cvc-element');
+            
+            if (cardNumberElement && !cardNumber) {
+                cardNumber = elements.create('cardNumber', {
+                    placeholder: 'Kartennummer',
+                    showIcon: true
+                });
+                cardNumber.mount('#card-number-element');
+                
+                cardNumber.on('change', function(event) {
+                    const displayError = document.getElementById('card-errors');
+                    if (displayError) {
+                        if (event.error) {
+                            displayError.textContent = event.error.message;
+                        } else {
+                            displayError.textContent = '';
+                        }
+                    }
+                });
+            }
+            
+            if (cardExpiryElement && !cardExpiry) {
+                cardExpiry = elements.create('cardExpiry', {
+                    placeholder: 'MM/JJ'
+                });
+                cardExpiry.mount('#card-expiry-element');
+            }
+            
+            if (cardCvcElement && !cardCvc) {
+                cardCvc = elements.create('cardCvc', {
+                    placeholder: 'CVC'
+                });
+                cardCvc.mount('#card-cvc-element');
+            }
+            
+            console.log('✅ Stripe Elements erfolgreich initialisiert');
+        } else {
+            console.warn('Stripe.js ist nicht geladen');
+        }
+    }, 1000);
     
     // Füge Farbauswahl zu Warenkorb-Artikeln hinzu (falls verfügbar)
     setTimeout(async () => {
@@ -764,6 +828,134 @@ function updateCartPage() {
         }
     }, 500);
 }
+
+// Globale Checkout-Funktion
+window.handleCheckout = async function() {
+    console.log('🛒 handleCheckout aufgerufen');
+    
+    // Debug: Prüfe ob Button existiert
+    const submitButton = document.getElementById('submit-button');
+    console.log('🔍 Submit Button gefunden:', !!submitButton);
+    
+    // Formular-Validierung
+    const form = document.getElementById('stripe-form');
+    if (!form) {
+        console.error('Formular nicht gefunden');
+        return;
+    }
+    
+    // Prüfe ob alle Pflichtfelder ausgefüllt sind
+    const email = document.getElementById('email').value.trim();
+    const firstname = document.getElementById('firstname').value.trim();
+    const lastname = document.getElementById('lastname').value.trim();
+    const country = document.getElementById('country').value;
+    const city = document.getElementById('city').value.trim();
+    const address = document.getElementById('address').value.trim();
+    const postcode = document.getElementById('postcode').value.trim();
+    
+    if (!email || !firstname || !lastname || !country || !city || !address || !postcode) {
+        alert('Bitte füllen Sie alle Pflichtfelder aus.');
+        return;
+    }
+    
+    // Email-Validierung
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+        return;
+    }
+    const spinner = submitButton.querySelector('.spinner-border');
+    const buttonText = submitButton.querySelector('.button-text');
+    
+    console.log('✅ Validierung erfolgreich, starte Checkout...');
+    
+    // Button deaktivieren und Spinner anzeigen
+    submitButton.disabled = true;
+    spinner.style.display = 'inline-block';
+    buttonText.innerHTML = '<i class="bi bi-hourglass-split"></i> Verarbeitung...';
+    
+    try {
+        // Sammle Bestelldaten für Kassenbon
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const orderData = {
+            cart: cart,
+            customer: {
+                name: `${firstname} ${lastname}`,
+                email: email,
+                phone: '', // Telefon-Feld könnte hinzugefügt werden
+                billingAddress: {
+                    street: address,
+                    city: city,
+                    zip: postcode,
+                    country: country
+                }
+            },
+            shipping: {
+                cost: 0, // Wird aus der Berechnung übernommen
+                address: {
+                    street: address,
+                    city: city,
+                    zip: postcode,
+                    country: country
+                }
+            },
+            payment: {
+                method: 'card',
+                status: 'completed'
+            }
+        };
+        
+        console.log('💳 Erstelle Kassenbon...');
+        
+        // Erstelle Kassenbon über API
+        try {
+            const response = await fetch('/api/receipt/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            });
+            
+            if (response.ok) {
+                const receiptData = await response.json();
+                console.log('✅ Kassenbon erstellt:', receiptData.orderId);
+                
+                // Speichere Bestellnummer für Success-Seite
+                localStorage.setItem('lastOrderId', receiptData.orderId);
+                localStorage.setItem('lastReceiptNumber', receiptData.receiptNumber);
+            } else {
+                console.warn('⚠️ Kassenbon-Erstellung fehlgeschlagen, fahre trotzdem fort');
+            }
+        } catch (receiptError) {
+            console.warn('⚠️ Kassenbon-API nicht erreichbar:', receiptError.message);
+        }
+        
+        // Zeige Erfolgsmeldung nach 2 Sekunden
+        setTimeout(() => {
+            console.log('✅ Zahlung erfolgreich, leere Warenkorb...');
+            localStorage.removeItem('cart');
+            console.log('🔄 Weiterleitung zur Erfolgsseite...');
+            window.location.href = 'success.html';
+        }, 2000);
+        
+    } catch (error) {
+        console.error('❌ Zahlungsfehler:', error);
+        
+        // Fehler anzeigen
+        const errorElement = document.getElementById('card-errors');
+        if (errorElement) {
+            errorElement.textContent = error.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+        }
+        
+        // Button wieder aktivieren
+        submitButton.disabled = false;
+        spinner.style.display = 'none';
+        const total = document.querySelector('.total span:last-child');
+        const totalText = total ? total.textContent : '0.00';
+        buttonText.innerHTML = '<i class="bi bi-lock"></i> Jetzt bestellen - ' + totalText;
+    }
+};
 
 async function handleRedirectCheckout(methodName) {
     const form = document.getElementById('stripe-form');
@@ -943,6 +1135,21 @@ function initializeStripe() {
   try {
     if (typeof Stripe !== 'undefined') {
       stripe = Stripe('pk_test_XXXXXXXXXXXXXXXXXXXXXXXX');
+      elements = stripe.elements({
+        appearance: {
+          theme: 'stripe',
+          variables: {
+            colorPrimary: '#667eea',
+            colorBackground: '#ffffff',
+            colorText: '#30313d',
+            colorDanger: '#df1b41',
+            fontFamily: 'system-ui, sans-serif',
+            spacingUnit: '4px',
+            borderRadius: '8px'
+          }
+        }
+      });
+      stripeInitialized = true;
       return true;
     } else {
       console.warn('Stripe is not loaded yet');
@@ -952,6 +1159,127 @@ function initializeStripe() {
     console.warn('Stripe initialization failed:', error);
     return false;
   }
+}
+
+// Stripe Elements mounten
+function mountStripeElements() {
+    if (!stripe || !elements) {
+        console.error('Stripe nicht initialisiert');
+        return;
+    }
+    
+    // Card Number Element
+    const cardNumberElement = document.getElementById('card-number-element');
+    if (cardNumberElement && !cardNumber) {
+        cardNumber = elements.create('cardNumber', {
+            placeholder: 'Kartennummer',
+            showIcon: true
+        });
+        cardNumber.mount('#card-number-element');
+        
+        cardNumber.on('change', function(event) {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+    }
+    
+    // Card Expiry Element
+    const cardExpiryElement = document.getElementById('card-expiry-element');
+    if (cardExpiryElement && !cardExpiry) {
+        cardExpiry = elements.create('cardExpiry', {
+            placeholder: 'MM/JJ'
+        });
+        cardExpiry.mount('#card-expiry-element');
+    }
+    
+    // Card CVC Element
+    const cardCvcElement = document.getElementById('card-cvc-element');
+    if (cardCvcElement && !cardCvc) {
+        cardCvc = elements.create('cardCvc', {
+            placeholder: 'CVC'
+        });
+        cardCvc.mount('#card-cvc-element');
+    }
+}
+
+// Stripe Form Setup
+function setupStripeForm() {
+    const form = document.getElementById('stripe-form');
+    if (!form) return;
+    
+    // Entferne bestehende Event Listener
+    const newForm = form.cloneNode(true);
+    form.parentNode.replaceChild(newForm, form);
+    
+    newForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        if (!stripe || !cardNumber) {
+            alert('Zahlungssystem wird geladen, bitte warten Sie einen Moment...');
+            return;
+        }
+        
+        const submitButton = document.getElementById('submit-button');
+        const spinner = submitButton.querySelector('.spinner-border');
+        const buttonText = submitButton.querySelector('.button-text');
+        
+        // Button deaktivieren und Spinner anzeigen
+        submitButton.disabled = true;
+        spinner.style.display = 'inline-block';
+        buttonText.innerHTML = '<i class="bi bi-hourglass-split"></i> Verarbeitung...';
+        
+        // Formulardaten sammeln
+        const formData = new FormData(newForm);
+        const billingDetails = {
+            name: `${formData.get('firstname') || ''} ${formData.get('lastname') || ''}`.trim(),
+            email: formData.get('email'),
+            address: {
+                line1: formData.get('address'),
+                city: formData.get('city'),
+                postal_code: formData.get('postcode'),
+                country: formData.get('country')
+            }
+        };
+        
+        try {
+            // Payment Method erstellen
+            const {error, paymentMethod} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardNumber,
+                billing_details: billingDetails
+            });
+            
+            if (error) {
+                throw error;
+            }
+            
+            // Hier würdest du normalerweise eine Server-Anfrage machen
+            // Für Demo-Zwecke simulieren wir eine erfolgreiche Zahlung
+            console.log('Payment Method erstellt:', paymentMethod);
+            
+            // Warenkorb leeren und zur Erfolgsseite weiterleiten
+            localStorage.removeItem('cart');
+            window.location.href = 'success.html';
+            
+        } catch (error) {
+            console.error('Zahlungsfehler:', error);
+            const errorElement = document.getElementById('card-errors');
+            if (errorElement) {
+                errorElement.textContent = error.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+            }
+            
+            // Button wieder aktivieren
+            submitButton.disabled = false;
+            spinner.style.display = 'none';
+            const total = document.querySelector('.total span:last-child');
+            const totalText = total ? total.textContent : '0.00';
+            buttonText.innerHTML = '<i class="bi bi-lock"></i> Jetzt bestellen - ' + totalText;
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1003,58 +1331,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function setupStripeForm() {
-    if (stripeInitialized) return;
-
-    elements = stripe.elements({
-        locale: 'de'
-    });
-
-    // Stil für das Innere der Stripe-Elemente (iFrames)
-    const style = {
-        base: {
-            fontSize: '16px',
-            color: '#32325d',
-            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-            '::placeholder': {
-                color: '#aab7c4'
-            }
-        },
-        invalid: {
-            color: '#fa755a',
-            iconColor: '#fa755a'
-        }
-    };
-
-    cardNumber = elements.create('cardNumber', { style: style, placeholder: 'Kartennummer' });
-    cardExpiry = elements.create('cardExpiry', { style: style });
-    cardCvc = elements.create('cardCvc', { style: style, placeholder: 'CVC' });
-
-    [cardNumber, cardExpiry, cardCvc].forEach(element => {
-        element.on('change', event => {
-            const errorDiv = document.getElementById('card-errors');
-            if (!errorDiv) return;
-            if (event.error) {
-                errorDiv.textContent = event.error.message;
-            } else {
-                errorDiv.textContent = '';
-            }
-        });
-    });
-
-    const form = document.getElementById('stripe-form');
-    if (form) {
-        form.addEventListener('submit', handleStripeSubmit);
-    }
-    stripeInitialized = true;
-}
-
-function mountStripeElements() {
-    if (!stripeInitialized || !document.getElementById('card-number-element')) return;
-    cardNumber.mount('#card-number-element');
-    cardExpiry.mount('#card-expiry-element');
-    cardCvc.mount('#card-cvc-element');
-}
 
 async function handleStripeSubmit(event) {
     event.preventDefault();

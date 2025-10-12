@@ -9,91 +9,54 @@ if (!fs.existsSync(dbDir)) {
 }
 
 // Initialisiere SQLite Datenbank
-const db = new sqlite3.Database(path.join(dbDir, 'orders.db'));
+const db = new sqlite3.Database(path.join(dbDir, 'orders.db'), (err) => {
+  if (err) {
+    console.error('DB Verbindungsfehler:', err.message);
+  }
+});
 
-// Erstelle Tabellen
-db.serialize(() => {
-  // Bestellungen Tabelle
-  db.run(`
-    CREATE TABLE IF NOT EXISTS orders (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id TEXT UNIQUE NOT NULL,
-      receipt_number TEXT UNIQUE NOT NULL,
-      customer_email TEXT NOT NULL,
-      customer_name TEXT NOT NULL,
-      customer_phone TEXT,
-      shipping_address TEXT,
-      billing_address TEXT,
-      payment_method TEXT,
-      payment_status TEXT DEFAULT 'pending',
-      order_status TEXT DEFAULT 'processing',
-      subtotal REAL NOT NULL,
-      shipping_cost REAL DEFAULT 0,
-      tax_amount REAL DEFAULT 0,
-      total_amount REAL NOT NULL,
-      currency TEXT DEFAULT 'EUR',
-      notes TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
+// Funktion zur Initialisierung der Datenbank
+const initializeDatabase = () => {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      const queries = [
+        `CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT UNIQUE NOT NULL, receipt_number TEXT UNIQUE NOT NULL, customer_email TEXT NOT NULL, customer_name TEXT NOT NULL, customer_phone TEXT, shipping_address TEXT, billing_address TEXT, payment_method TEXT, payment_status TEXT DEFAULT 'pending', order_status TEXT DEFAULT 'processing', subtotal REAL NOT NULL, shipping_cost REAL DEFAULT 0, tax_amount REAL DEFAULT 0, total_amount REAL NOT NULL, currency TEXT DEFAULT 'EUR', notes TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
+        `CREATE TABLE IF NOT EXISTS order_items (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT NOT NULL, product_id INTEGER NOT NULL, product_name TEXT NOT NULL, product_sku TEXT, product_image TEXT, color TEXT, quantity INTEGER NOT NULL, unit_price REAL NOT NULL, total_price REAL NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (order_id) REFERENCES orders(order_id))`,
+        `CREATE TABLE IF NOT EXISTS receipts (id INTEGER PRIMARY KEY AUTOINCREMENT, receipt_id TEXT UNIQUE NOT NULL, order_id TEXT NOT NULL, receipt_number TEXT NOT NULL, pdf_path TEXT, email_sent BOOLEAN DEFAULT 0, email_sent_at DATETIME, admin_notified BOOLEAN DEFAULT 0, admin_notified_at DATETIME, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (order_id) REFERENCES orders(order_id))`,
+        `CREATE TABLE IF NOT EXISTS order_tracking (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT NOT NULL, status TEXT NOT NULL, description TEXT, tracking_number TEXT, carrier TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (order_id) REFERENCES orders(order_id))`,
+        `CREATE INDEX IF NOT EXISTS idx_orders_order_id ON orders(order_id)`,
+        `CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(customer_email)`,
+        `CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at)`,
+        `CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id)`,
+        `CREATE INDEX IF NOT EXISTS idx_receipts_order_id ON receipts(order_id)`,
+        `CREATE INDEX IF NOT EXISTS idx_tracking_order_id ON order_tracking(order_id)`
+      ];
 
-  // Bestellpositionen Tabelle
-  db.run(`
-    CREATE TABLE IF NOT EXISTS order_items (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id TEXT NOT NULL,
-      product_id INTEGER NOT NULL,
-      product_name TEXT NOT NULL,
-      product_sku TEXT,
-      product_image TEXT,
-      color TEXT,
-      quantity INTEGER NOT NULL,
-      unit_price REAL NOT NULL,
-      total_price REAL NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (order_id) REFERENCES orders(order_id)
-    )
-  `);
+      db.parallelize(() => {
+        queries.forEach(sql => {
+          db.run(sql, (err) => {
+            if (err) {
+              console.error('DB Init Fehler bei Query:', sql);
+            }
+          });
+        });
+      });
 
-  // Kassenbons Tabelle
-  db.run(`
-    CREATE TABLE IF NOT EXISTS receipts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      receipt_id TEXT UNIQUE NOT NULL,
-      order_id TEXT NOT NULL,
-      receipt_number TEXT NOT NULL,
-      pdf_path TEXT,
-      email_sent BOOLEAN DEFAULT 0,
-      email_sent_at DATETIME,
-      admin_notified BOOLEAN DEFAULT 0,
-      admin_notified_at DATETIME,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (order_id) REFERENCES orders(order_id)
-    )
-  `);
+      db.wait((err) => {
+          if (err) {
+              return reject(err);
+          }
+          console.log('✅ Datenbank initialisiert und Tabellen überprüft.');
+          resolve();
+      });
+    });
+  });
+};
 
-  // Bestell-Tracking Tabelle
-  db.run(`
-    CREATE TABLE IF NOT EXISTS order_tracking (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      order_id TEXT NOT NULL,
-      status TEXT NOT NULL,
-      description TEXT,
-      tracking_number TEXT,
-      carrier TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (order_id) REFERENCES orders(order_id)
-    )
-  `);
-
-  // Indizes für bessere Performance
-  db.run(`CREATE INDEX IF NOT EXISTS idx_orders_order_id ON orders(order_id)`);
-  db.run(`CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(customer_email)`);
-  db.run(`CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at)`);
-  db.run(`CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id)`);
-  db.run(`CREATE INDEX IF NOT EXISTS idx_receipts_order_id ON receipts(order_id)`);
-  db.run(`CREATE INDEX IF NOT EXISTS idx_tracking_order_id ON order_tracking(order_id)`);
+// Führe Initialisierung aus
+initializeDatabase().catch(err => {
+  console.error('FATAL: Datenbank-Initialisierung fehlgeschlagen:', err);
+  process.exit(1);
 });
 
 // Hilfsfunktionen für Datenbank-Operationen
