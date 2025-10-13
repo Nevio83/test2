@@ -3459,6 +3459,7 @@ function scrollCategory(gridId, direction) {
     
     const scrollAmount = 300;
     const currentScroll = grid.scrollLeft;
+    const maxScroll = grid.scrollWidth - grid.clientWidth;
     
     if (direction === 'left') {
         grid.scrollTo({
@@ -3466,10 +3467,39 @@ function scrollCategory(gridId, direction) {
             behavior: 'smooth'
         });
     } else {
-        grid.scrollTo({
-            left: Math.min(grid.scrollWidth - grid.clientWidth, currentScroll + scrollAmount),
-            behavior: 'smooth'
-        });
+        // Prüfe ob bereits am Ende des Sliders
+        const isAtEnd = currentScroll >= maxScroll - 10; // 10px Toleranz
+        
+        if (isAtEnd) {
+            // Am Ende angekommen - öffne Suche basierend auf Kategorie
+            let categoryName = '';
+            if (gridId === 'technikGrid') categoryName = 'Technik/Gadgets';
+            else if (gridId === 'beleuchtungGrid') categoryName = 'Beleuchtung';
+            else if (gridId === 'haushaltGrid') categoryName = 'Haushalt/Küche';
+            else if (gridId === 'wellnessGrid') categoryName = 'Körperpflege/Wellness';
+            
+            // Öffne Vollbild-Suche mit der entsprechenden Kategorie
+            if (typeof openSearchFromCategory === 'function') {
+                openSearchFromCategory(categoryName);
+            } else if (typeof openFullscreenSearch === 'function') {
+                openFullscreenSearch();
+                // Aktiviere den entsprechenden Tab nach dem Öffnen
+                setTimeout(() => {
+                    const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
+                    categoryTabs.forEach(tab => {
+                        if (tab.textContent.trim() === categoryName.split('/')[0]) {
+                            tab.click();
+                        }
+                    });
+                }, 100);
+            }
+        } else {
+            // Normal scrollen
+            grid.scrollTo({
+                left: Math.min(maxScroll, currentScroll + scrollAmount),
+                behavior: 'smooth'
+            });
+        }
     }
     
     // Update scrollbar if function exists
@@ -3727,6 +3757,90 @@ function handleSearchButtonClick(e) {
     e.preventDefault();
     e.stopPropagation();
     openSearchOverlay();
+}
+
+// Open search overlay with specific category selected
+function openSearchFromCategory(categoryName) {
+    console.log('ðŸ” Opening search overlay for category:', categoryName);
+    
+    if (searchOverlay) {
+        searchOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        
+        // Load products if not already loaded
+        if (allProducts.length === 0) {
+            loadProducts().then(products => {
+                allProducts = products;
+                console.log('ðŸ"¦ Products loaded for category search:', allProducts.length);
+                
+                // Load all products first, then activate category
+                loadAllProducts();
+                
+                // Aktiviere den entsprechenden Kategorie-Tab nach dem Laden
+                setTimeout(() => {
+                    activateCategoryTab(categoryName);
+                }, 500);
+            });
+        } else {
+            // Load all products first
+            loadAllProducts();
+            
+            // Aktiviere den entsprechenden Kategorie-Tab
+            setTimeout(() => {
+                activateCategoryTab(categoryName);
+            }, 300);
+        }
+        
+        // Focus on search input after animation
+        setTimeout(() => {
+            if (searchInput) {
+                searchInput.focus();
+            }
+        }, 300);
+        
+        console.log('âœ… Search overlay opened with category:', categoryName);
+    } else {
+        console.error('âŒ Search overlay not found');
+    }
+}
+
+// Helper function to activate category tab
+function activateCategoryTab(categoryName) {
+    console.log('ðŸ"§ Activating category tab for:', categoryName);
+    
+    const categoryTabs = document.querySelectorAll('.lumiere-category-tab');
+    console.log('ðŸ"§ Found category tabs:', categoryTabs.length);
+    
+    // Entferne active von allen Tabs zuerst
+    categoryTabs.forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Finde und aktiviere den richtigen Tab (nur visuell)
+    categoryTabs.forEach(tab => {
+        const tabText = tab.textContent.trim().toUpperCase();
+        console.log('ðŸ"§ Checking tab:', tabText, 'against category:', categoryName);
+        
+        let shouldActivate = false;
+        
+        if (categoryName === 'Technik/Gadgets' && tabText === 'TECHNIK') {
+            shouldActivate = true;
+        } else if (categoryName === 'Beleuchtung' && tabText === 'LICHT') {
+            shouldActivate = true;
+        } else if (categoryName === 'Körperpflege/Wellness' && tabText === 'WELLNESS') {
+            shouldActivate = true;
+        } else if (categoryName === 'Haushalt/Küche' && tabText === 'KÜCHE') {
+            shouldActivate = true;
+        }
+        
+        if (shouldActivate) {
+            console.log('âœ… Found matching tab, activating visually:', tabText);
+            tab.classList.add('active');
+            
+            // Direkt die Kategorie-Filterung auslösen, OHNE den Button zu klicken
+            handleCategorySearch(categoryName);
+        }
+    });
 }
 
 // Open search overlay
@@ -4222,6 +4336,7 @@ function navigateToProduct(productId) {
 // Make functions globally available
 window.navigateToProduct = navigateToProduct;
 window.openSearchOverlay = openSearchOverlay;
+window.openSearchFromCategory = openSearchFromCategory;
 window.closeSearchOverlay = closeSearchOverlay;
 window.loadAllProducts = loadAllProducts;
 window.searchCategoryClick = searchCategoryClick;
