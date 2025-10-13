@@ -59,6 +59,7 @@ class ProductImageGallery {
             35: 'Thermal Neck Lifting And Tighten Massager bilder',
             38: 'Jade Massager bilder',
             40: 'Mug Warmer Pad bilder',
+            42: 'RGB Flame Aroma Diffuser Volcano bilder',
             43: 'Portable Mini Thermal Label Printer bilder',
             44: 'Portable Projector For Home bilder',
             45: 'Air Conditioner bilder',
@@ -210,7 +211,7 @@ class ProductImageGallery {
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Indoor Sensing Wall Lamp schwartz.jpg`,
+                        src: `../produkt bilder/${folderName}/Indoor Sensing Wall Lamp schwarz.jpg`,
                         alt: 'Indoor Sensing Wall Lamp - Schwarz',
                         color: 'Schwarz'
                     },
@@ -448,6 +449,21 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano weiß.jpg`,
                         alt: 'RGB Flame Aroma Diffuser Volcano - Weiß',
                         color: 'Weiß'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano schwarz an.jpg`,
+                        alt: 'RGB Flame Aroma Diffuser Volcano - Schwarz An',
+                        color: 'Schwarz An'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano weiß an.jpg`,
+                        alt: 'RGB Flame Aroma Diffuser Volcano - Weiß An',
+                        color: 'Weiß An'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano ansicht.jpg`,
+                        alt: 'RGB Flame Aroma Diffuser Volcano - Ansicht',
+                        color: 'Ansicht'
                     }
                 ];
                 break;
@@ -1216,6 +1232,7 @@ class ProductImageFullscreen {
                 21: 'LED Water Ripple Crystal bilder',
                 26: '4 In 1 Self Cleaning Hair Brush bilder',
                 32: 'Indoor Sensing Wall Lamp bilder',
+                42: 'RGB Flame Aroma Diffuser Volcano bilder',
                 47: '40 Oz Tumbler With Handle Straw Insulated bilder',
                 48: '40 Oz Tumbler With Handle Straw Insulated Winter bilder',
                 49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder'
