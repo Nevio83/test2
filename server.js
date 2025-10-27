@@ -137,7 +137,7 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         to: session.customer_details.email,
         from: process.env.SENDER_EMAIL,
         reply_to: process.env.SUPPORT_EMAIL,
-        subject: 'Zahlungsbestätigung - Marktplatz',
+        subject: 'Zahlungsbestätigung - Maios',
         text: `Vielen Dank für Ihre Bestellung #${session.id}!\n\nIhre Zahlung wurde erfolgreich verarbeitet.`,        html: `<strong>Bestellbestätigung #${session.id}</strong>
           <p>Ihre Zahlung wurde erfolgreich verarbeitet und wir bereiten den Versand vor.</p>`
       };
@@ -159,7 +159,7 @@ app.post('/api/send-confirmation', async (req, res) => {
       to: email,
       from: process.env.SENDER_EMAIL,
       reply_to: process.env.SUPPORT_EMAIL,
-      subject: 'Bestellbestätigung - Marktplatz',
+      subject: 'Bestellbestätigung - Maios',
       text: `Vielen Dank für Ihre Bestellung #${orderId}!\n\nWir bearbeiten Ihre Bestellung und senden sie innerhalb von 2 Werktagen zu.`,
       html: `<strong>Bestellbestätigung #${orderId}</strong>
         <p>Wir haben Ihre Zahlung erhalten und bearbeiten den Versand.</p>`
@@ -197,7 +197,7 @@ app.post('/api/create-payment-intent', async (req, res) => {
       amount,
       currency: 'eur',
       receipt_email: email,
-      description: 'Marktplatz Bestellung',
+      description: 'Maios Bestellung',
       payment_method_types: ['card'],
       metadata: {
         customer_name: `${firstname || ''} ${lastname || ''}`.trim(),
@@ -223,7 +223,7 @@ app.post('/api/contact', async (req, res) => {
       to: 'marktplatzcontact@gmail.com',
       from: process.env.SENDER_EMAIL,
       reply_to: email,
-      subject: 'Kontaktanfrage – Marktplatz',
+      subject: 'Kontaktanfrage – Maios',
       text: `Von: ${name} <${email}>
 Nachricht:\n${message}`,
       html: `<p><strong>Von:</strong> ${name} &lt;${email}&gt;</p><p>${message.replace(/\n/g, '<br>')}</p>`

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kontakt – Marktplatz</title>
+  <title>Kontakt – Maios</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="../styles.css" rel="stylesheet" />
   <link href="./info.css" rel="stylesheet" />
@@ -13,7 +13,7 @@
 <body>
   <header class="header-bar py-3">
     <div class="container d-flex align-items-center gap-3">
-      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">Marktplatz</a>
+      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">Maios</a>
       <a href="../index.html" class="ms-auto back-btn"><i class="bi bi-arrow-left"></i> Zurück zum Shop</a>
     </div>
   </header>
@@ -79,7 +79,7 @@
         
         const formData = new FormData(form);
         const templateParams = {
-          to_name: 'Marktplatz Support',
+          to_name: 'Maios Support',
           to_email: 'marktplatzcontact@gmail.com',
           from_name: formData.get('name'),
           from_email: formData.get('email'),
@@ -96,7 +96,7 @@
         } catch (error) {
           console.error('EmailJS Fehler:', error);
           // Fallback: mailto-Link öffnen
-          const subject = encodeURIComponent('Kontaktanfrage - Marktplatz');
+          const subject = encodeURIComponent('Kontaktanfrage - Maios');
           const body = encodeURIComponent(`Name: ${templateParams.from_name}\nE-Mail: ${templateParams.from_email}\n\nNachricht:\n${templateParams.message}`);
           const mailtoLink = `mailto:marktplatzcontact@gmail.com?subject=${subject}&body=${body}`;
           
