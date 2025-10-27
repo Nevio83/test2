@@ -1,3 +1,12 @@
+/* Produktseiten - Responsive Design System */
+:root {
+  --product-spacing-xs: 0.5rem;
+  --product-spacing-sm: 1rem;
+  --product-spacing-md: 1.5rem;
+  --product-spacing-lg: 2rem;
+  --product-spacing-xl: 4rem;
+}
+
 /* Moderne Navigation für Produktseiten */
 .modern-nav-link {
     display: flex;
@@ -39,7 +48,7 @@
 }
 
 .modern-nav-link i {
-    font-size: 1.2rem;
+    font-size: clamp(1.1rem, 2.5vw, 1.2rem);
     transition: transform 0.3s ease;
 }
 
@@ -63,7 +72,7 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 700;
-    font-size: 1.5rem;
+    font-size: clamp(1.25rem, 3vw, 1.5rem);
 }
 
 .navbar-brand i {
@@ -76,16 +85,26 @@
 .product-hero {
     background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
     color: white;
-    padding: 4rem 0;
+    padding: clamp(2.5rem, 6vw, 4rem) 0;
+}
+
+.product-hero h1 {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+
+.product-hero .lead {
+    font-size: clamp(1rem, 2.5vw, 1.125rem);
+    line-height: 1.7;
 }
 
 .price-tag {
     background: linear-gradient(45deg, #51cf66, #40c057);
     color: white;
-    padding: 0.5rem 1.5rem;
-    border-radius: 25px;
+    padding: clamp(0.4rem, 1vw, 0.5rem) clamp(1.2rem, 3vw, 1.5rem);
+    border-radius: clamp(20px, 3vw, 25px);
     font-weight: 700;
-    font-size: 1.3rem;
+    font-size: clamp(1.15rem, 3vw, 1.3rem);
     display: inline-block;
     box-shadow: 0 4px 15px rgba(81, 207, 102, 0.3);
     animation: pulse 2s infinite;

@@ -949,6 +949,186 @@
         .cart-dropdown-footer .clear-cart-btn i {
             margin-right: 6px !important;
         }
+        
+        /* ===== BURGER MENU STYLES ===== */
+        .burger-menu-btn {
+            background: none;
+            border: none;
+            color: #333;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin-left: 8px;
+        }
+        
+        .burger-menu-btn:hover {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            transform: scale(1.05);
+        }
+        
+        .burger-menu-overlay {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            transition: right 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .burger-menu-overlay.active {
+            right: 0;
+        }
+        
+        .burger-menu-container {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 380px;
+            max-width: 90%;
+            height: 100%;
+            background: white;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .burger-menu-overlay.active .burger-menu-container {
+            transform: translateX(0);
+        }
+        
+        .burger-menu-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .burger-menu-header h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .burger-menu-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 28px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .burger-menu-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .burger-menu-content {
+            padding: 12px 0;
+        }
+        
+        .burger-menu-section {
+            padding: 8px 0;
+        }
+        
+        .burger-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            gap: 16px;
+        }
+        
+        .burger-menu-item:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.08) 0%, transparent 100%);
+            color: #667eea;
+            padding-left: 28px;
+        }
+        
+        .burger-menu-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        
+        .burger-menu-text {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .burger-menu-counter {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            min-width: 32px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        
+        .burger-menu-badge {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+        
+        .burger-menu-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+            margin: 12px 24px;
+        }
+        
+        /* Mobile Optimierung */
+        @media (max-width: 768px) {
+            .burger-menu-container {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .burger-menu-btn {
+                font-size: 26px;
+                padding: 6px 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1027,9 +1207,111 @@
         </div>
             </div>
           </div>
+            
+            <!-- Burger Menu Button -->
+            <button class="burger-menu-btn" id="burgerMenuBtn" aria-label="Menü öffnen">
+              <i class="bi bi-list"></i>
+            </button>
+          </div>
         </div>
       </div>
     </nav>
+
+    <!-- Burger Menu Overlay -->
+    <div class="burger-menu-overlay" id="burgerMenuOverlay">
+      <div class="burger-menu-container">
+        <div class="burger-menu-header">
+          <h3>Menü</h3>
+          <button class="burger-menu-close" id="burgerMenuClose">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <div class="burger-menu-content">
+          <!-- Mit Zählern -->
+          <div class="burger-menu-section">
+            <a href="cart.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <i class="bi bi-cart3"></i>
+              </div>
+              <span class="burger-menu-text">Warenkorb</span>
+              <span class="burger-menu-counter" id="burgerCartCounter">0</span>
+            </a>
+            
+            <a href="wishlist.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <i class="bi bi-heart"></i>
+              </div>
+              <span class="burger-menu-text">Favoriten</span>
+              <span class="burger-menu-counter" id="burgerWishlistCounter">0</span>
+            </a>
+            
+            <a href="gutscheine.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <img src="infos/Gutschein.jpg" alt="Gutscheine" style="width: 24px; height: 24px; object-fit: contain;">
+              </div>
+              <span class="burger-menu-text">Gutscheine</span>
+              <span class="burger-menu-counter" id="burgerGutscheineCounter">0</span>
+            </a>
+          </div>
+          
+          <div class="burger-menu-divider"></div>
+          
+          <!-- Ohne Zähler -->
+          <div class="burger-menu-section">
+            <a href="infos/angebote.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <i class="bi bi-tag"></i>
+              </div>
+              <span class="burger-menu-text">Angebote</span>
+            </a>
+            
+            <a href="infos/neue-produkte.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <i class="bi bi-stars"></i>
+              </div>
+              <span class="burger-menu-text">Neue Produkte</span>
+            </a>
+            
+            <a href="infos/kategorien.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <i class="bi bi-grid-3x3-gap"></i>
+              </div>
+              <span class="burger-menu-text">Kategorien</span>
+            </a>
+            
+            <a href="infos/retouren.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <i class="bi bi-arrow-return-left"></i>
+              </div>
+              <span class="burger-menu-text">Retouren</span>
+            </a>
+            
+            <a href="infos/kontakt.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <i class="bi bi-envelope"></i>
+              </div>
+              <span class="burger-menu-text">Kontakt</span>
+            </a>
+            
+            <a href="infos/versand.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <i class="bi bi-truck"></i>
+              </div>
+              <span class="burger-menu-text">Versand</span>
+            </a>
+            
+            <a href="infos/mitteilungen.html" class="burger-menu-item">
+              <div class="burger-menu-icon">
+                <i class="bi bi-bell"></i>
+              </div>
+              <span class="burger-menu-text">Mitteilungen</span>
+              <span class="burger-menu-badge" id="burgerMitteilungenBadge" style="display: none;">Neu</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Fullscreen Search Overlay -->
     <div class="fullscreen-search-overlay" id="fullscreenSearchOverlay">
@@ -2493,6 +2775,95 @@ Tawk_API.onChatMessageAgent = function(message){
   EMPFEHLUNG: Tawk.to ist 100% kostenlos und hat alle Features, die Sie brauchen!
 ═══════════════════════════════════════════════════════════════════════════════
 -->
+
+<script>
+// ===== BURGER MENU FUNCTIONALITY =====
+document.addEventListener('DOMContentLoaded', function() {
+    const burgerMenuBtn = document.getElementById('burgerMenuBtn');
+    const burgerMenuOverlay = document.getElementById('burgerMenuOverlay');
+    const burgerMenuClose = document.getElementById('burgerMenuClose');
+    
+    // Öffne Burger-Menü
+    if (burgerMenuBtn) {
+        burgerMenuBtn.addEventListener('click', function() {
+            burgerMenuOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+    
+    // Schließe Burger-Menü
+    function closeBurgerMenuFunc() {
+        burgerMenuOverlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
+    if (burgerMenuClose) {
+        burgerMenuClose.addEventListener('click', closeBurgerMenuFunc);
+    }
+    
+    // Schließe beim Klick auf Overlay
+    burgerMenuOverlay.addEventListener('click', function(e) {
+        if (e.target === burgerMenuOverlay) {
+            closeBurgerMenuFunc();
+        }
+    });
+    
+    // Globale Funktion für onclick-Attribute
+    window.closeBurgerMenu = closeBurgerMenuFunc;
+    
+    // Update Zähler
+    function updateBurgerCounters() {
+        // Warenkorb
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const cartCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+        const burgerCartCounter = document.getElementById('burgerCartCounter');
+        if (burgerCartCounter) {
+            burgerCartCounter.textContent = cartCount;
+        }
+        
+        // Wishlist
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        const burgerWishlistCounter = document.getElementById('burgerWishlistCounter');
+        if (burgerWishlistCounter) {
+            burgerWishlistCounter.textContent = wishlist.length;
+        }
+        
+        // Gutscheine
+        const myVouchers = JSON.parse(localStorage.getItem('myVouchers') || '[]');
+        const burgerGutscheineCounter = document.getElementById('burgerGutscheineCounter');
+        if (burgerGutscheineCounter) {
+            burgerGutscheineCounter.textContent = myVouchers.length;
+        }
+    }
+    
+    // Initial update
+    updateBurgerCounters();
+    
+    // Update bei Storage-Änderungen
+    window.addEventListener('storage', updateBurgerCounters);
+    
+    // Update bei Cart-Änderungen
+    const originalSetCart = window.setCart;
+    if (originalSetCart) {
+        window.setCart = function(cart) {
+            originalSetCart(cart);
+            updateBurgerCounters();
+        };
+    }
+    
+    // Update bei Wishlist-Änderungen
+    const originalSetWishlist = window.setWishlist;
+    if (originalSetWishlist) {
+        window.setWishlist = function(wishlist) {
+            originalSetWishlist(wishlist);
+            updateBurgerCounters();
+        };
+    }
+    
+    // Periodisches Update alle 2 Sekunden
+    setInterval(updateBurgerCounters, 2000);
+});
+</script>
 
 </body>
 </html>
