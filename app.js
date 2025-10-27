@@ -1150,7 +1150,7 @@ function initializeCartDropdown() {
     });
   }
 
-  // Reset category filter when clicking on Marktplatz logo
+  // Reset category filter when clicking on Maios logo
   const navbarBrand = document.querySelector('.navbar-brand');
   if (navbarBrand) {
     navbarBrand.addEventListener('click', (e) => {
