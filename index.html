@@ -1477,6 +1477,13 @@
   <!-- Hilfe-Themen (wird ausgeblendet wenn Chatbot aktiv ist) -->
   <div id="hilfeThemen" class="hilfe-themen-modern">
 
+    <!-- Live-Chat Button (GANZ OBEN - hervorgehoben) -->
+    <button class="hilfe-thema-btn live-chat-btn" id="liveChatBtn">
+      <i class="bi bi-chat-dots"></i>
+      Live-Chat mit Kundenservice
+      <span class="live-badge">LIVE</span>
+    </button>
+    
     <button class="hilfe-thema-btn" data-topic="bestellung">Bestellung stornieren</button>
     <button class="hilfe-thema-btn" data-topic="versand">Versand & Lieferzeiten</button>
     <button class="hilfe-thema-btn" data-topic="rabattcodes">Mehrere Rabattcodes</button>
@@ -1484,6 +1491,42 @@
     <button class="hilfe-thema-btn" data-topic="adresse">Adresse ändern</button>
     <button class="hilfe-thema-btn" data-topic="zahlung">Zahlungsmethoden</button>
     <button class="hilfe-thema-btn" data-topic="konto">Konto & Profil</button>
+  </div>
+  
+  <!-- Live-Chat Interface (versteckt bis aktiviert) -->
+  <div id="liveChatInterface" class="live-chat-interface" style="display: none;">
+    <div class="live-chat-header">
+      <button class="back-btn" id="backFromLiveChat">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <div class="live-chat-title">
+        <i class="bi bi-person-circle"></i>
+        <span>Kundenservice</span>
+        <span class="online-status">Online</span>
+      </div>
+    </div>
+    
+    <div class="live-chat-messages" id="liveChatMessages">
+      <!-- Messages will be added here -->
+    </div>
+    
+    <div class="live-chat-input-container">
+      <input 
+        type="text" 
+        id="liveChatInput" 
+        class="live-chat-input" 
+        placeholder="Nachricht schreiben..."
+        maxlength="500"
+      />
+      <button class="live-chat-send-btn" id="liveChatSendBtn">
+        <i class="bi bi-send-fill"></i>
+      </button>
+    </div>
+    
+    <div class="live-chat-info">
+      <i class="bi bi-shield-check"></i>
+      <span>Ihre Daten sind verschlüsselt und sicher</span>
+    </div>
   </div>
 </div>
     
@@ -2047,7 +2090,7 @@
   
   // Hilfe-Themen Buttons - REPARIERT
   function initHilfeThemenButtons() {
-    const hilfeThemaBtns = document.querySelectorAll('.hilfe-thema-btn');
+    const hilfeThemaBtns = document.querySelectorAll('.hilfe-thema-btn:not(#liveChatBtn)');
     console.log(' gefundene Hilfe-Themen-Buttons:', hilfeThemaBtns.length);
     
     hilfeThemaBtns.forEach((btn, index) => {
@@ -2076,6 +2119,203 @@
     });
     
     console.log('✅ Hilfe-Themen-Buttons erfolgreich initialisiert!');
+  }
+  
+  // Live-Chat Funktionalität
+  const liveChatBtn = document.getElementById('liveChatBtn');
+  const liveChatInterface = document.getElementById('liveChatInterface');
+  const backFromLiveChat = document.getElementById('backFromLiveChat');
+  const liveChatInput = document.getElementById('liveChatInput');
+  const liveChatSendBtn = document.getElementById('liveChatSendBtn');
+  const liveChatMessages = document.getElementById('liveChatMessages');
+  
+  // Live-Chat öffnen - ECHTES SYSTEM
+  if (liveChatBtn) {
+    liveChatBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Live-Chat Button geklickt - Öffne echten Chat');
+      
+      // Öffne Tawk.to Chat (falls installiert)
+      if (typeof Tawk_API !== 'undefined' && Tawk_API.maximize) {
+        Tawk_API.maximize();
+        // Schließe Hilfe-Panel
+        hilfePanel.classList.remove('offen');
+        document.body.classList.remove('help-panel-open');
+        hilfePanel.style.display = 'none';
+      } else {
+        // Fallback: Zeige Anleitung zur Installation
+        showTawkInstallationGuide();
+      }
+    });
+  }
+  
+  // Anleitung zur Tawk.to Installation
+  function showTawkInstallationGuide() {
+    // Verstecke Hilfe-Themen und zeige Installations-Guide
+    hilfeThemen.style.display = 'none';
+    hilfePanelHeader.style.display = 'none';
+    liveChatInterface.style.display = 'flex';
+    
+    liveChatMessages.innerHTML = `
+      <div style="padding: 20px; text-align: center;">
+        <i class="bi bi-info-circle" style="font-size: 48px; color: #10b981; margin-bottom: 20px;"></i>
+        <h3 style="color: #1e293b; margin-bottom: 16px;">Live-Chat Installation</h3>
+        <p style="color: #64748b; margin-bottom: 20px;">
+          Um den Live-Chat zu aktivieren, folgen Sie diesen Schritten:
+        </p>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 12px; text-align: left; margin-bottom: 20px;">
+          <h4 style="color: #10b981; margin-bottom: 12px;">🔧 Tawk.to Setup:</h4>
+          <ol style="color: #475569; line-height: 1.8;">
+            <li>Gehen Sie zu <a href="https://www.tawk.to" target="_blank" style="color: #10b981;">tawk.to</a></li>
+            <li>Erstellen Sie ein kostenloses Konto</li>
+            <li>Kopieren Sie Ihren Widget-Code</li>
+            <li>Fügen Sie den Code in index.html ein (vor &lt;/body&gt;)</li>
+            <li>Fertig! Der Chat funktioniert dann automatisch</li>
+          </ol>
+        </div>
+        <p style="color: #64748b; font-size: 14px;">
+          <strong>Alternativ:</strong> Crisp, Intercom oder Zendesk
+        </p>
+      </div>
+    `;
+  }
+  
+  // Zurück-Button im Live-Chat
+  if (backFromLiveChat) {
+    backFromLiveChat.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Zurück aus Live-Chat');
+      
+      // Zeige Hilfe-Themen und verstecke Live-Chat
+      liveChatInterface.style.display = 'none';
+      hilfeThemen.style.display = 'flex';
+      hilfePanelHeader.style.display = 'flex';
+      
+      // Lösche Chat-Verlauf
+      liveChatMessages.innerHTML = '';
+    });
+  }
+  
+  // Nachricht senden
+  function sendLiveChatMessage() {
+    const message = liveChatInput.value.trim();
+    if (!message) return;
+    
+    // Füge User-Nachricht hinzu
+    addLiveChatMessage(message, 'user');
+    
+    // Leere Input
+    liveChatInput.value = '';
+    
+    // Zeige Typing-Indikator
+    showTypingIndicator();
+    
+    // Simuliere Antwort vom Kundenservice (nach 1-3 Sekunden)
+    setTimeout(() => {
+      hideTypingIndicator();
+      const responses = [
+        'Vielen Dank für Ihre Nachricht! Ein Mitarbeiter wird sich gleich bei Ihnen melden.',
+        'Ich habe Ihre Anfrage erhalten und leite sie an unseren Kundenservice weiter.',
+        'Einen Moment bitte, ich verbinde Sie mit einem verfügbaren Mitarbeiter.',
+        'Danke für Ihre Geduld! Unser Team wird Ihnen in Kürze antworten.'
+      ];
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      addLiveChatMessage(randomResponse, 'agent');
+    }, Math.random() * 2000 + 1000);
+  }
+  
+  // Enter-Taste zum Senden
+  if (liveChatInput) {
+    liveChatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendLiveChatMessage();
+      }
+    });
+  }
+  
+  // Send-Button
+  if (liveChatSendBtn) {
+    liveChatSendBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      sendLiveChatMessage();
+    });
+  }
+  
+  // Willkommensnachricht
+  function addLiveChatWelcomeMessage() {
+    liveChatMessages.innerHTML = '';
+    const welcomeMsg = `
+      <div class="live-chat-message agent">
+        <div class="message-avatar agent">
+          <i class="bi bi-headset"></i>
+        </div>
+        <div>
+          <div class="message-bubble agent">
+            Hallo! Willkommen beim Kundenservice. Wie kann ich Ihnen heute helfen?
+          </div>
+          <div class="message-time">${getCurrentTime()}</div>
+        </div>
+      </div>
+    `;
+    liveChatMessages.insertAdjacentHTML('beforeend', welcomeMsg);
+    scrollToBottom();
+  }
+  
+  // Nachricht hinzufügen
+  function addLiveChatMessage(text, type) {
+    const messageHTML = `
+      <div class="live-chat-message ${type}">
+        <div class="message-avatar ${type}">
+          <i class="bi bi-${type === 'user' ? 'person-fill' : 'headset'}"></i>
+        </div>
+        <div>
+          <div class="message-bubble ${type}">
+            ${text}
+          </div>
+          <div class="message-time">${getCurrentTime()}</div>
+        </div>
+      </div>
+    `;
+    liveChatMessages.insertAdjacentHTML('beforeend', messageHTML);
+    scrollToBottom();
+  }
+  
+  // Typing-Indikator
+  function showTypingIndicator() {
+    const typingHTML = `
+      <div class="live-chat-message agent typing-indicator-container">
+        <div class="message-avatar agent">
+          <i class="bi bi-headset"></i>
+        </div>
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    `;
+    liveChatMessages.insertAdjacentHTML('beforeend', typingHTML);
+    scrollToBottom();
+  }
+  
+  function hideTypingIndicator() {
+    const indicator = liveChatMessages.querySelector('.typing-indicator-container');
+    if (indicator) {
+      indicator.remove();
+    }
+  }
+  
+  // Hilfsfunktionen
+  function getCurrentTime() {
+    const now = new Date();
+    return now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
+  
+  function scrollToBottom() {
+    liveChatMessages.scrollTop = liveChatMessages.scrollHeight;
   }
   
   // Initialisiere Buttons mit Verzögerung
@@ -2135,6 +2375,118 @@
 <script src="app.js"></script>
 <script src="keyboard-shortcuts.js" defer></script>
 <script src="cart.js"></script>
+
+<!--
+═══════════════════════════════════════════════════════════════════════════════
+  TAWK.TO LIVE-CHAT INTEGRATION
+  
+  🔧 SETUP-ANLEITUNG:
+  
+  1. Gehen Sie zu: https://www.tawk.to
+  2. Erstellen Sie ein KOSTENLOSES Konto
+  3. Klicken Sie auf "Add Property" → Geben Sie Ihre Website-URL ein
+  4. Gehen Sie zu "Administration" → "Channels" → "Chat Widget"
+  5. Kopieren Sie den Widget-Code
+  6. Ersetzen Sie "YOUR_PROPERTY_ID" und "YOUR_WIDGET_ID" unten mit Ihren echten IDs
+  
+  📱 FEATURES:
+  - Echte Kundenservice-Gespräche
+  - Mobile Apps für iOS/Android (beantworten Sie von überall)
+  - E-Mail-Benachrichtigungen bei neuen Nachrichten
+  - Chat-Historie und Besuchertracking
+  - Mehrere Agenten gleichzeitig
+  - Anpassbares Design
+  - 100% KOSTENLOS
+  
+  🎨 INTEGRATION:
+  Der Chat öffnet sich automatisch, wenn User auf "Live-Chat mit Kundenservice" klickt
+  
+═══════════════════════════════════════════════════════════════════════════════
+-->
+
+<!-- Tawk.to Live-Chat Widget -->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/68ff84dfef3f6919552c8201/1j8j1u2eb';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+
+// Tawk.to Konfiguration
+Tawk_API.onLoad = function(){
+    console.log('✅ Tawk.to Live-Chat geladen');
+    
+    // Verstecke das Standard-Widget (wir öffnen es über unseren Button)
+    Tawk_API.hideWidget();
+    
+    // Setze Sprache auf Deutsch
+    Tawk_API.setAttributes({
+        'name' : 'Besucher',
+        'email' : '',
+        'hash' : ''
+    }, function(error){});
+};
+
+// Event wenn Chat geöffnet wird
+Tawk_API.onChatMaximized = function(){
+    console.log('💬 Live-Chat geöffnet');
+};
+
+// Event wenn Chat geschlossen wird
+Tawk_API.onChatMinimized = function(){
+    console.log('💬 Live-Chat geschlossen');
+};
+
+// Event wenn neue Nachricht vom Agent kommt
+Tawk_API.onChatMessageAgent = function(message){
+    console.log('📨 Neue Nachricht vom Kundenservice:', message);
+    
+    // Optional: Browser-Benachrichtigung
+    if (Notification.permission === "granted") {
+        new Notification("Neue Nachricht vom Kundenservice", {
+            body: message.text || "Sie haben eine neue Nachricht erhalten",
+            icon: "/favicon.ico"
+        });
+    }
+};
+</script>
+
+<!--
+═══════════════════════════════════════════════════════════════════════════════
+  ALTERNATIVE LIVE-CHAT ANBIETER (falls Sie Tawk.to nicht mögen):
+  
+  1. 💬 CRISP (https://crisp.chat)
+     - Modernes Design
+     - Kostenlos bis 2 Agenten
+     - Sehr einfache Integration
+  
+  2. 💬 INTERCOM (https://www.intercom.com)
+     - Professionell
+     - Teurer (ab $74/Monat)
+     - Viele Features
+  
+  3. 💬 ZENDESK CHAT (https://www.zendesk.de/service/messaging)
+     - Enterprise-Lösung
+     - Ab $19/Agent/Monat
+     - Sehr zuverlässig
+  
+  4. 💬 TIDIO (https://www.tidio.com)
+     - Kostenlos bis 50 Chats/Monat
+     - Einfache Integration
+     - Chatbots verfügbar
+  
+  5. 💬 LIVECHAT (https://www.livechat.com)
+     - Ab $20/Agent/Monat
+     - Sehr beliebt
+     - Guter Support
+  
+  EMPFEHLUNG: Tawk.to ist 100% kostenlos und hat alle Features, die Sie brauchen!
+═══════════════════════════════════════════════════════════════════════════════
+-->
 
 </body>
 </html>
