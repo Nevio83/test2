@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gutscheine</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="styles.css" rel="stylesheet">
+  <link href="gutscheine.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-light bg-light shadow-sm">
+    <div class="container-fluid nav-flex">
+      <a class="navbar-brand fw-bold mb-0 h1" href="index.html">Gutscheine</a>
+   
+      <a href="index.html" class="back-to-shop-btn d-inline-flex align-items-center ms-auto">
+        <i class="bi bi-arrow-left me-2"></i> Zurück zum Shop
+      </a>
+    </div>
+  </nav>
+  <main>
+    <div class="container mt-2">
+      <h2 class="mb-4">Meine Gutscheine</h2>
+      
+      <!-- Gutschein-Grid -->
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="gutscheineGrid">
+        <!-- Gutscheine werden hier per JS eingefügt -->
+      </div>
+      
+      <!-- Leere Nachricht -->
+      <div id="gutscheineEmpty" class="text-center text-muted mt-5" style="display:none;">
+        <i class="bi bi-ticket-perforated fs-1"></i>
+        <p>Du hast noch keine Gutscheine gesammelt.</p>
+        <p class="small">Gutscheine erhältst du bei Bestellungen, Aktionen oder als Willkommensgeschenk!</p>
+        <a href="index.html" class="btn btn-primary mt-3">
+          <i class="bi bi-shop me-2"></i>Jetzt einkaufen
+        </a>
+      </div>
+        
+    </div>
+  </main>
+
+  <script>
+    // Verfügbare Gutscheine (Datenbank)
+    const availableVouchers = [
+      {
+        id: 1,
+        code: 'SAVE10',
+        title: '10% Rabatt',
+        description: 'Spare 10% auf deine Bestellung ab 50€',
+        icon: 'bi-gift',
+        minOrder: '50€',
+        validUntil: '31.12.2025',
+        type: 'normal'
+      },
+      {
+        id: 2,
+        code: 'SAVE15',
+        title: '15% Rabatt',
+        description: 'Spare 15% auf deine Bestellung ab 100€',
+        icon: 'bi-gift',
+        minOrder: '100€',
+        validUntil: '31.12.2025',
+        type: 'featured',
+        badge: 'Beliebt'
+      },
+      {
+        id: 3,
+        code: 'SAVE20',
+        title: '20% Rabatt',
+        description: 'Spare 20% auf deine Bestellung ab 150€',
+        icon: 'bi-gift',
+        minOrder: '150€',
+        validUntil: '31.12.2025',
+        type: 'premium',
+        badge: 'Premium'
+      },
+      {
+        id: 4,
+        code: 'FREESHIP',
+        title: 'Kostenloser Versand',
+        description: 'Kostenloser Versand für alle Bestellungen',
+        icon: 'bi-truck',
+        minOrder: 'Kein Mindestbestellwert',
+        validUntil: '31.12.2025',
+        type: 'normal'
+      },
+      {
+        id: 5,
+        code: 'WELCOME25',
+        title: 'Neukunden Bonus',
+        description: '25% Rabatt für Neukunden auf die erste Bestellung',
+        icon: 'bi-person-plus',
+        minOrder: 'Nur für Neukunden',
+        validUntil: '31.12.2025',
+        type: 'normal'
+      },
+      {
+        id: 6,
+        code: 'BUNDLE30',
+        title: 'Bundle Deal',
+        description: '30% Rabatt beim Kauf von 3 oder mehr Produkten',
+        icon: 'bi-box-seam',
+        minOrder: 'Min. 3 Produkte',
+        validUntil: '31.12.2025',
+        type: 'normal'
+      }
+    ];
+
+    // Gutscheine aus localStorage laden
+    function getMyVouchers() {
+      const vouchers = localStorage.getItem('myVouchers');
+      return vouchers ? JSON.parse(vouchers) : [];
+    }
+
+    // Gutscheine rendern
+    function renderVouchers() {
+      const grid = document.getElementById('gutscheineGrid');
+      const emptyMsg = document.getElementById('gutscheineEmpty');
+      const myVoucherIds = getMyVouchers();
+      
+      if (myVoucherIds.length === 0) {
+        grid.innerHTML = '';
+        emptyMsg.style.display = 'block';
+        return;
+      }
+      
+      emptyMsg.style.display = 'none';
+      
+      // Filtere nur die Gutscheine, die der User hat
+      const myVouchers = availableVouchers.filter(v => myVoucherIds.includes(v.id));
+      
+      grid.innerHTML = myVouchers.map(voucher => {
+        const badgeHtml = voucher.badge ? `
+          <div class="featured-badge ${voucher.type === 'premium' ? 'premium-badge' : ''}">
+            <i class="bi bi-${voucher.type === 'premium' ? 'gem' : 'star-fill'}"></i> ${voucher.badge}
+          </div>
+        ` : '';
+        
+        return `
+          <div class="col">
+            <div class="gutschein-card ${voucher.type}">
+              ${badgeHtml}
+              <div class="gutschein-header">
+                <i class="bi ${voucher.icon}"></i>
+                <h3>${voucher.title}</h3>
+              </div>
+              <div class="gutschein-body">
+                <div class="gutschein-code">
+                  <span class="code-label">Code:</span>
+                  <span class="code-value" id="code${voucher.id}">${voucher.code}</span>
+                  <button class="copy-btn" onclick="copyCode('code${voucher.id}', this)">
+                    <i class="bi bi-clipboard"></i>
+                  </button>
+                </div>
+                <p class="gutschein-description">
+                  ${voucher.description}
+                </p>
+                <div class="gutschein-details">
+                  <div class="detail-item">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Gültig bis: ${voucher.validUntil}</span>
+                  </div>
+                  <div class="detail-item">
+                    <i class="bi bi-cart-check"></i>
+                    <span>${voucher.minOrder}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="gutschein-footer">
+                <button class="apply-btn" onclick="applyVoucher('${voucher.code}')">
+                  <i class="bi bi-check-circle me-2"></i>Jetzt einlösen
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Notification anzeigen
+    function showNotification(message, type = 'success') {
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${type} position-fixed end-0 m-4 shadow-lg fade show`;
+      notification.style.zIndex = '20000';
+      notification.style.fontSize = '1rem';
+      notification.style.minWidth = '160px';
+      notification.style.maxWidth = '320px';
+      notification.style.padding = '0.75rem 2rem';
+      notification.style.textAlign = 'center';
+      notification.style.borderRadius = '2rem';
+      notification.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+      notification.style.background = type === 'success' 
+        ? 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)' 
+        : 'linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%)';
+      notification.style.color = '#fff';
+      notification.style.fontWeight = '500';
+      notification.style.letterSpacing = '0.02em';
+      notification.style.pointerEvents = 'auto';
+      notification.style.position = 'fixed';
+      notification.style.right = '2.5rem';
+      notification.style.top = 'calc(56px + 1.2rem)';
+      notification.style.cursor = 'pointer';
+      notification.textContent = message;
+      
+      notification.addEventListener('click', function() {
+        notification.classList.remove('show');
+        notification.classList.add('fade');
+        setTimeout(() => notification.remove(), 400);
+      });
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          notification.classList.remove('show');
+          notification.classList.add('fade');
+          setTimeout(() => notification.remove(), 400);
+        }
+      }, 2000);
+    }
+
+    // Code kopieren
+    function copyCode(codeId, button) {
+      const codeElement = document.getElementById(codeId);
+      const code = codeElement.textContent;
+      
+      navigator.clipboard.writeText(code).then(() => {
+        // Button-Feedback
+        const originalIcon = button.innerHTML;
+        button.innerHTML = '<i class="bi bi-check"></i>';
+        button.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+        
+        showNotification(`Code "${code}" kopiert!`, 'success');
+        
+        setTimeout(() => {
+          button.innerHTML = originalIcon;
+          button.style.background = '';
+        }, 2000);
+      }).catch(err => {
+        showNotification('Fehler beim Kopieren', 'danger');
+        console.error('Fehler beim Kopieren:', err);
+      });
+    }
+
+    // Gutschein anwenden
+    function applyVoucher(code) {
+      // Speichere den Gutscheincode in localStorage
+      localStorage.setItem('appliedVoucher', code);
+      
+      showNotification(`Gutschein "${code}" wurde angewendet!`, 'success');
+      
+      // Nach kurzer Verzögerung zum Warenkorb weiterleiten
+      setTimeout(() => {
+        window.location.href = 'cart.html';
+      }, 1500);
+    }
+
+    // Gutschein zum User hinzufügen (wird von außen aufgerufen)
+    window.addVoucherToUser = function(voucherId) {
+      const myVouchers = getMyVouchers();
+      if (!myVouchers.includes(voucherId)) {
+        myVouchers.push(voucherId);
+        localStorage.setItem('myVouchers', JSON.stringify(myVouchers));
+        renderVouchers();
+        return true;
+      }
+      return false;
+    };
+
+    // Animation beim Laden
+    document.addEventListener('DOMContentLoaded', function() {
+      renderVouchers();
+      
+      // Animation für Karten
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.gutschein-card');
+        cards.forEach((card, index) => {
+          setTimeout(() => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+              card.style.transition = 'all 0.5s ease';
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+            }, 50);
+          }, index * 100);
+        });
+      }, 100);
+    });
+  </script>
+</body>
+</html>
