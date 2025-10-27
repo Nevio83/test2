@@ -985,6 +985,11 @@
 
           <!-- Right Side Icons -->
           <div class="nav-actions-simple">
+            <a href="gutscheine.html" id="gutscheineButton" class="nav-icon-simple position-relative">
+              <img src="infos/Gutschein.jpg" alt="Gutscheine" style="width: 24px; height: 24px; object-fit: contain; margin-right: 5px;">
+              <span>Gutscheine</span>
+              <span id="gutscheineCounter" class="cart-counter" style="display: none;">0</span>
+            </a>
             <a href="wishlist.html" id="wishlistButton" class="nav-icon-simple position-relative">
               <i class="bi bi-heart"></i>
               <span id="wishlistCounter" class="cart-counter" style="display: none;">0</span>
@@ -1016,7 +1021,7 @@
               <i class="bi bi-credit-card" style="margin-right: 8px !important;"></i>Zur Kasse
             </a>
             <button class="btn btn-outline-danger clear-cart-btn" id="clearCart" style="display: flex !important; align-items: center !important; justify-content: center !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; height: 48px !important; border: 2px solid #dc3545 !important; color: #dc3545 !important; background: white !important; border-radius: 12px !important; cursor: pointer !important; font-size: 16px !important; font-weight: 600 !important; transition: all 0.3s ease !important;">
-              <i class="bi bi-trash"></i> Löschen
+              <i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px;"></i> Löschen
             </button>
           </div>
         </div>
@@ -2373,6 +2378,7 @@
 <!-- Scripts am Ende laden für bessere Performance -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="app.js"></script>
+<script src="gutschein-system.js"></script>
 <script src="keyboard-shortcuts.js" defer></script>
 <script src="cart.js"></script>
 
