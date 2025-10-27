@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mitteilungen – Maios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="../styles.css" rel="stylesheet" />
+  <link href="./info.css" rel="stylesheet" />
+  <link href="./mitteilungen.css" rel="stylesheet" />
+</head>
+<body>
+  <header class="header-bar py-3">
+    <div class="container d-flex align-items-center gap-3">
+      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">Maios</a>
+      <a href="../index.html" class="ms-auto back-btn"><i class="bi bi-arrow-left"></i> Zurück zum Shop</a>
+    </div>
+  </header>
+
+  <main class="container py-4 py-md-5">
+    <h1 class="page-title display-5 mb-3">
+      <i class="bi bi-bell-fill" style="color: #667eea;"></i> Mitteilungen
+    </h1>
+    <p class="lead mb-4">Bleiben Sie über Neuigkeiten, Angebote und wichtige Updates informiert.</p>
+
+    <!-- Keine Mitteilungen -->
+    <div id="noNotifications" class="info-card p-5 text-center">
+      <i class="bi bi-bell-slash" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+      <h3 class="h5 mb-2">Keine neuen Mitteilungen</h3>
+      <p class="text-muted mb-0">Sie haben derzeit keine neuen Benachrichtigungen.</p>
+    </div>
+
+    <!-- Mitteilungen Container (versteckt wenn leer) -->
+    <div id="notificationsList" style="display: none;">
+      <!-- Neue Angebote -->
+      <div class="notification-card new">
+        <div class="notification-header">
+          <div class="notification-icon offer">
+            <i class="bi bi-tag-fill"></i>
+          </div>
+          <div class="notification-meta">
+            <h3 class="notification-title">Neue Angebote verfügbar!</h3>
+            <span class="notification-time">Vor 2 Stunden</span>
+          </div>
+          <span class="notification-badge">Neu</span>
+        </div>
+        <p class="notification-text">Entdecken Sie unsere neuesten Rabattaktionen mit bis zu 50% Ersparnis auf ausgewählte Produkte.</p>
+        <a href="angebote.html" class="notification-action">Angebote ansehen <i class="bi bi-arrow-right"></i></a>
+      </div>
+
+      <!-- Bestellstatus -->
+      <div class="notification-card">
+        <div class="notification-header">
+          <div class="notification-icon order">
+            <i class="bi bi-box-seam"></i>
+          </div>
+          <div class="notification-meta">
+            <h3 class="notification-title">Bestellung versendet</h3>
+            <span class="notification-time">Gestern</span>
+          </div>
+        </div>
+        <p class="notification-text">Ihre Bestellung #12345 wurde versendet und ist unterwegs zu Ihnen.</p>
+        <a href="../tracking.html" class="notification-action">Sendung verfolgen <i class="bi bi-arrow-right"></i></a>
+      </div>
+
+      <!-- Neue Produkte -->
+      <div class="notification-card">
+        <div class="notification-header">
+          <div class="notification-icon product">
+            <i class="bi bi-stars"></i>
+          </div>
+          <div class="notification-meta">
+            <h3 class="notification-title">Neue Produkte eingetroffen</h3>
+            <span class="notification-time">Vor 3 Tagen</span>
+          </div>
+        </div>
+        <p class="notification-text">Schauen Sie sich unsere neuesten Produkte in allen Kategorien an.</p>
+        <a href="neue-produkte.html" class="notification-action">Neue Produkte <i class="bi bi-arrow-right"></i></a>
+      </div>
+
+      <!-- Gutschein -->
+      <div class="notification-card">
+        <div class="notification-header">
+          <div class="notification-icon voucher">
+            <i class="bi bi-gift-fill"></i>
+          </div>
+          <div class="notification-meta">
+            <h3 class="notification-title">Exklusiver Gutschein für Sie</h3>
+            <span class="notification-time">Vor 1 Woche</span>
+          </div>
+        </div>
+        <p class="notification-text">Sie haben einen neuen 15% Gutschein erhalten. Gültig bis Ende des Monats!</p>
+        <a href="../gutscheine.html" class="notification-action">Gutscheine ansehen <i class="bi bi-arrow-right"></i></a>
+      </div>
+    </div>
+
+    <!-- Benachrichtigungseinstellungen -->
+    <div class="info-card p-4 p-md-5 mt-4">
+      <h2 class="section-title h5 mb-3">
+        <i class="bi bi-gear-fill"></i> Benachrichtigungseinstellungen
+      </h2>
+      <div class="notification-settings">
+        <div class="setting-item">
+          <div>
+            <strong>Neue Angebote</strong>
+            <p class="text-muted small mb-0">Erhalten Sie Benachrichtigungen über neue Rabattaktionen</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="notifyOffers" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <div>
+            <strong>Bestellupdates</strong>
+            <p class="text-muted small mb-0">Informationen über Ihre Bestellungen und Lieferungen</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="notifyOrders" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <div>
+            <strong>Neue Produkte</strong>
+            <p class="text-muted small mb-0">Benachrichtigungen über neue Produkteinführungen</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="notifyProducts" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        
+        <div class="setting-item">
+          <div>
+            <strong>Newsletter</strong>
+            <p class="text-muted small mb-0">Wöchentliche Updates und exklusive Angebote per E-Mail</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="notifyNewsletter">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <a class="back-btn mt-4" href="../index.html"><i class="bi bi-house-fill"></i> Zurück zur Startseite</a>
+
+    <div class="footer-spacer"></div>
+  </main>
+
+  <script>
+    // Lade Einstellungen aus localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+      const settings = ['notifyOffers', 'notifyOrders', 'notifyProducts', 'notifyNewsletter'];
+      
+      settings.forEach(setting => {
+        const checkbox = document.getElementById(setting);
+        const saved = localStorage.getItem(setting);
+        if (saved !== null) {
+          checkbox.checked = saved === 'true';
+        }
+        
+        checkbox.addEventListener('change', function() {
+          localStorage.setItem(setting, this.checked);
+          showSaveNotification();
+        });
+      });
+    });
+
+    function showSaveNotification() {
+      // Zeige kurze Bestätigung
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+      `;
+      notification.innerHTML = '<i class="bi bi-check-circle-fill"></i> Einstellungen gespeichert';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
