@@ -128,8 +128,15 @@
       
       emptyMsg.style.display = 'none';
       
-      // Filtere nur die Gutscheine, die der User hat
-      const myVouchers = availableVouchers.filter(v => myVoucherIds.includes(v.id));
+      // Zähle wie oft jeder Gutschein vorhanden ist
+      const voucherCounts = {};
+      myVoucherIds.forEach(id => {
+        voucherCounts[id] = (voucherCounts[id] || 0) + 1;
+      });
+      
+      // Filtere nur die einzigartigen Gutscheine, die der User hat
+      const uniqueVoucherIds = [...new Set(myVoucherIds)];
+      const myVouchers = availableVouchers.filter(v => uniqueVoucherIds.includes(v.id));
       
       grid.innerHTML = myVouchers.map(voucher => {
         const badgeHtml = voucher.badge ? `
@@ -138,13 +145,19 @@
           </div>
         ` : '';
         
+        const count = voucherCounts[voucher.id] || 1;
+        const countBadge = count > 1 ? `
+          <div class="count-badge" style="position: absolute; top: 10px; right: 10px; background: #667eea; color: white; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 14px; z-index: 10; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);">x${count}</div>
+        ` : '';
+        
         return `
           <div class="col">
-            <div class="gutschein-card ${voucher.type}">
+            <div class="gutschein-card ${voucher.type}" style="position: relative;">
+              ${countBadge}
               ${badgeHtml}
               <div class="gutschein-header">
                 <i class="bi ${voucher.icon}"></i>
-                <h3>${voucher.title}</h3>
+                <h3>${voucher.title}${count > 1 ? ` <span style="color: #667eea; font-size: 0.85em;">(${count}x)</span>` : ''}</h3>
               </div>
               <div class="gutschein-body">
                 <div class="gutschein-code">
@@ -260,13 +273,12 @@
     // Gutschein zum User hinzufügen (wird von außen aufgerufen)
     window.addVoucherToUser = function(voucherId) {
       const myVouchers = getMyVouchers();
-      if (!myVouchers.includes(voucherId)) {
-        myVouchers.push(voucherId);
-        localStorage.setItem('myVouchers', JSON.stringify(myVouchers));
-        renderVouchers();
-        return true;
-      }
-      return false;
+      // Erlaube mehrfache Gutscheine
+      myVouchers.push(voucherId);
+      localStorage.setItem('myVouchers', JSON.stringify(myVouchers));
+      renderVouchers();
+      console.log('✅ Gutschein hinzugefügt:', voucherId, '(Gesamt:', myVouchers.length, ')');
+      return true;
     };
 
     // Animation beim Laden

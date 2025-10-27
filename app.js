@@ -1436,8 +1436,8 @@ function renderCartDropdown() {
       clearBtn.style.lineHeight = '40px';
       clearBtn.style.textAlign = 'center';
       // Ensure button has text content
-      if (!clearBtn.textContent.includes('LÃ¶schen')) {
-        clearBtn.innerHTML = '<i class="bi bi-trash" style="font-size: 16px; margin-right: 4px;"></i> LÃ¶schen';
+      if (!clearBtn.textContent.includes('Löschen')) {
+        clearBtn.innerHTML = '<i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px;"></i> Löschen';
       }
       console.log('Clear button forced visible with full styling and text');
     }
