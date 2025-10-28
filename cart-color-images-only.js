@@ -23,6 +23,15 @@ async function renderImageColorSelection(item, container) {
       if (window && window.innerWidth >= 1000) {
         selectionContainer.classList.add("full-bleed");
       }
+      // Mobile-spezifische Verbesserungen
+      if (window && window.innerWidth <= 768) {
+        selectionContainer.style.background = 'white';
+        selectionContainer.style.border = '2px solid #e8e8e8';
+        selectionContainer.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06)';
+        selectionContainer.style.padding = '14px';
+        selectionContainer.style.borderRadius = '14px';
+        selectionContainer.style.margin = '12px 0';
+      }
     } catch (e) {
       // window might not be available in some contexts
     }
@@ -50,6 +59,16 @@ async function renderImageColorSelection(item, container) {
       img.src = getColorSpecificImagePath(product, color.name);
       img.alt = color.name;
       img.className = "cart-color-image";
+      
+      // Mobile-spezifische Bildverbesserungen
+      if (window.innerWidth <= 768) {
+        img.style.width = '68px';
+        img.style.height = '68px';
+        img.style.borderRadius = '8px';
+        img.style.objectFit = 'cover';
+        img.style.boxShadow = '0 3px 10px rgba(0,0,0,0.12)';
+        img.style.border = '1px solid #f0f0f0';
+      }
 
       const nameSpan = document.createElement("span");
       nameSpan.className = "cart-color-name";

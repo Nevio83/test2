@@ -485,10 +485,10 @@ function updateCartPage() {
                                 <button class="quantity-btn" onclick="changeQuantity(${item.id}, 1)">
                                     <i class="bi bi-plus"></i>
                                 </button>
+                                <button class="remove-btn" onclick="removeFromCart('${item.id}')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
-                            <button class="remove-btn" onclick="removeFromCart('${item.id}')">
-                                <i class="bi bi-trash"></i>
-                            </button>
                         </div>
                     `}).join('')}
                 </div>
@@ -732,12 +732,7 @@ function updateCartPage() {
                             <div class="form-check" style="margin: 0; padding-left: 1.8rem;">
                                 <input class="form-check-input" type="checkbox" id="newsletterCheckbox" style="width: 20px; height: 20px; border: 2px solid #dee2e6; border-radius: 4px; position: absolute; left: 0; top: 0.2rem; cursor: pointer;">
                                 <label class="form-check-label" for="newsletterCheckbox" style="display: block; margin: 0; font-size: 0.95rem; line-height: 1.6; color: #495057; cursor: pointer;">
-                                    Ich bin damit einverstanden, dass MAIOS und Verbundunternehmen Daten, die bei der Nutzung der 
-                                    Webseite und der Services entstehen, zur besseren Gestaltung von Webseiten, Produkten 
-                                    und Dienstleistungen sowie für personalisierte Werbung verwenden dürfen. Mein Einverständnis gilt 
-                                    auch für die Übermittlung von gehashelten, personenbezogenen Bestell-Daten zum Zweck der 
-                                    zielgerichteten und personalisierten Werbung via Marketing-Partner, auch in Drittländer, sowie an 
-                                    Verbundunternehmen.
+                                    Ich bin einverstanden, dass MAIOS meine Daten für personalisierte Werbung und zur Verbesserung der Services nutzt. Dies umfasst auch die Weitergabe an Marketing-Partner.
                                 </label>
                             </div>
                         </div>

@@ -5280,6 +5280,76 @@ div#hilfePanel.offen,
     overflow: hidden;
     padding-top: 0 !important;
   }
+  
+  /* MOBILE FIX: Zur Kasse Button korrekt darstellen */
+  .cart-dropdown-footer {
+    padding: 16px !important;
+    background: white !important;
+    border-top: 1px solid #e0e0e0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .cart-dropdown-footer .d-grid {
+    display: grid !important;
+    grid-template-rows: auto auto !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  
+  .cart-dropdown-footer .checkout-btn,
+  .cart-dropdown-footer a.btn-primary {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 48px !important;
+    max-height: none !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+  
+  .cart-dropdown-footer .checkout-btn span,
+  .cart-dropdown-footer a.btn-primary span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    line-height: 1.4 !important;
+  }
+  
+  .cart-dropdown-footer .clear-cart-btn,
+  .cart-dropdown-footer button.btn-outline-danger {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 48px !important;
+    max-height: none !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+  
+  .cart-dropdown-footer .clear-cart-btn span,
+  .cart-dropdown-footer button.btn-outline-danger span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    line-height: 1.4 !important;
+  }
 
   /* Verstecke Scroll-to-Top Button und Support Button wenn Warenkorb offen ist */
   .cart-dropdown.show ~ #scrollToTopBtn,
