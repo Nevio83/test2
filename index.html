@@ -1129,6 +1129,26 @@
                 padding: 6px 10px;
             }
         }
+        
+        /* Gutschein-Counter Styling für perfekte Symmetrie wie Warenkorb */
+        #gutscheineButton .cart-counter {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #333 !important;
+            color: white !important;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0;
+            border: 2px solid #f5f5f5;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -1165,10 +1185,12 @@
 
           <!-- Right Side Icons -->
           <div class="nav-actions-simple">
-            <a href="gutscheine.html" id="gutscheineButton" class="nav-icon-simple position-relative">
-              <img src="infos/Gutschein.jpg" alt="Gutscheine" style="width: 24px; height: 24px; object-fit: contain; margin-right: 5px;">
-              <span>Gutscheine</span>
-              <span id="gutscheineCounter" class="cart-counter" style="display: none;">0</span>
+            <a href="gutscheine.html" id="gutscheineButton" class="nav-icon-simple position-relative" style="background: #f5f5f5; color: #333 !important; padding: 8px 15px; border-radius: 8px; font-weight: 600; font-size: 16px; transition: all 0.3s ease; border: 1px solid #e0e0e0; gap: 8px;" 
+               onmouseover="this.style.background='#e8e8e8'; this.style.borderColor='#d0d0d0';" 
+               onmouseout="this.style.background='#f5f5f5'; this.style.borderColor='#e0e0e0';">
+              <img src="infos/Gutschein.jpg" alt="Gutscheine" style="width: 18px; height: 18px; object-fit: contain;">
+              <span style="font-weight: 600;">Gutscheine</span>
+              <span id="gutscheineCounter" class="cart-counter">0</span>
             </a>
             <a href="wishlist.html" id="wishlistButton" class="nav-icon-simple position-relative">
               <i class="bi bi-heart"></i>
@@ -1196,12 +1218,18 @@
           <div class="d-flex justify-content-between align-items-center mb-3" style="width: 100% !important;">
             <strong>Gesamt: €<span id="cartTotal">0.00</span></strong>
           </div>
-          <div class="d-grid gap-2" style="width: 100% !important; display: grid !important; grid-template-rows: auto auto !important; gap: 12px !important;">
-            <a href="cart.html" class="btn btn-primary checkout-btn" style="display: flex !important; align-items: center !important; justify-content: center !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; height: 48px !important; text-align: center !important; text-decoration: none !important; color: white !important; background: linear-gradient(135deg, #667eea, #764ba2) !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important; font-size: 16px !important; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important; transition: all 0.3s ease !important;">
-              <i class="bi bi-credit-card" style="margin-right: 8px !important;"></i>Zur Kasse
+          <div class="d-grid gap-2" style="width: 100% !important; display: grid !important; grid-template-rows: 48px 48px !important; gap: 12px !important; align-items: stretch !important;">
+            <a href="cart.html" class="btn btn-primary checkout-btn" style="display: flex !important; align-items: center !important; justify-content: center !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; text-align: center !important; text-decoration: none !important; color: white !important; background: linear-gradient(135deg, #667eea, #764ba2) !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important; font-size: 16px !important; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important; transition: all 0.3s ease !important; line-height: 1 !important; padding: 0 !important; box-sizing: border-box !important;">
+              <span style="display: inline-flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; height: 48px !important;">
+                <i class="bi bi-credit-card" style="margin-right: 8px !important; line-height: 1 !important; display: inline-block !important;"></i>
+                <span style="line-height: 1 !important; display: inline-block !important;">Zur Kasse</span>
+              </span>
             </a>
-            <button class="btn btn-outline-danger clear-cart-btn" id="clearCart" style="display: flex !important; align-items: center !important; justify-content: center !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; height: 48px !important; border: 2px solid #dc3545 !important; color: #dc3545 !important; background: white !important; border-radius: 12px !important; cursor: pointer !important; font-size: 16px !important; font-weight: 600 !important; transition: all 0.3s ease !important;">
-              <i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px;"></i> Löschen
+            <button class="btn btn-outline-danger clear-cart-btn" id="clearCart" style="display: flex !important; align-items: center !important; justify-content: center !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; border: 2px solid #dc3545 !important; color: #dc3545 !important; background: white !important; border-radius: 12px !important; cursor: pointer !important; font-size: 16px !important; font-weight: 600 !important; transition: all 0.3s ease !important; line-height: 1 !important; padding: 0 !important; box-sizing: border-box !important;">
+              <span style="display: inline-flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; height: 48px !important;">
+                <i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px; line-height: 1 !important; display: inline-block !important;"></i>
+                <span style="line-height: 1 !important; display: inline-block !important;">Löschen</span>
+              </span>
             </button>
           </div>
         </div>
@@ -2743,38 +2771,6 @@ Tawk_API.onChatMessageAgent = function(message){
 };
 </script>
 
-<!--
-═══════════════════════════════════════════════════════════════════════════════
-  ALTERNATIVE LIVE-CHAT ANBIETER (falls Sie Tawk.to nicht mögen):
-  
-  1. 💬 CRISP (https://crisp.chat)
-     - Modernes Design
-     - Kostenlos bis 2 Agenten
-     - Sehr einfache Integration
-  
-  2. 💬 INTERCOM (https://www.intercom.com)
-     - Professionell
-     - Teurer (ab $74/Monat)
-     - Viele Features
-  
-  3. 💬 ZENDESK CHAT (https://www.zendesk.de/service/messaging)
-     - Enterprise-Lösung
-     - Ab $19/Agent/Monat
-     - Sehr zuverlässig
-  
-  4. 💬 TIDIO (https://www.tidio.com)
-     - Kostenlos bis 50 Chats/Monat
-     - Einfache Integration
-     - Chatbots verfügbar
-  
-  5. 💬 LIVECHAT (https://www.livechat.com)
-     - Ab $20/Agent/Monat
-     - Sehr beliebt
-     - Guter Support
-  
-  EMPFEHLUNG: Tawk.to ist 100% kostenlos und hat alle Features, die Sie brauchen!
-═══════════════════════════════════════════════════════════════════════════════
--->
 
 <script>
 // ===== BURGER MENU FUNCTIONALITY =====
@@ -2836,11 +2832,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Gutscheine Counter aktualisieren
+    function updateGutscheineCounter() {
+        const myVouchers = JSON.parse(localStorage.getItem('myVouchers') || '[]');
+        const gutscheineCounter = document.getElementById('gutscheineCounter');
+        if (gutscheineCounter) {
+            gutscheineCounter.textContent = myVouchers.length;
+            gutscheineCounter.style.display = myVouchers.length > 0 ? 'flex' : 'none';
+        }
+    }
+    
     // Initial update
     updateBurgerCounters();
+    updateGutscheineCounter();
     
     // Update bei Storage-Änderungen
     window.addEventListener('storage', updateBurgerCounters);
+    window.addEventListener('storage', updateGutscheineCounter);
     
     // Update bei Cart-Änderungen
     const originalSetCart = window.setCart;
@@ -2861,7 +2869,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Periodisches Update alle 2 Sekunden
-    setInterval(updateBurgerCounters, 2000);
+    setInterval(() => {
+        updateBurgerCounters();
+        updateGutscheineCounter();
+    }, 2000);
 });
 </script>
 

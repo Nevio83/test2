@@ -8215,12 +8215,34 @@ section[data-category="Haushalt und K�che"]::after,
     justify-content: center !important;
     text-align: center !important;
     gap: 6px !important;
+    line-height: 1 !important;
+    padding-top: 13px !important;
+    padding-bottom: 13px !important;
 }
 
 #cartDropdown .cart-dropdown-footer .clear-cart-btn i,
 .cart-dropdown .cart-dropdown-footer .clear-cart-btn i {
     margin: 0 !important;
     padding: 0 !important;
+    line-height: 1 !important;
+}
+
+/* Fix für konsistente Button-Höhe und Text-Zentrierung */
+.cart-dropdown-footer button.clear-cart-btn {
+    min-height: 48px !important;
+    box-sizing: border-box !important;
+}
+
+/* Sicherstellen, dass der Text vertikal zentriert bleibt */
+.cart-dropdown-footer .clear-cart-btn {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+}
+
+/* Fix für den Container um die Buttons */
+.cart-dropdown-footer > div.d-grid {
+    min-height: auto !important;
+    grid-template-rows: 48px 48px !important;
 }
 
 
