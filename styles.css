@@ -1156,25 +1156,23 @@ body {
 /* Responsive Design for Simplified Navigation */
 @media (max-width: 768px) {
   .nav-content-simple {
-    flex-direction: column;
-    gap: 15px;
+    flex-direction: row;
+    gap: 10px;
   }
   
   .search-bar-center {
-    order: 3;
-    max-width: 100%;
-    margin: 0;
+    display: none !important;
   }
   
   .nav-actions-simple {
-    order: 2;
-    gap: 15px;
+    order: 3;
+    gap: 10px;
   }
   
   .nav-logo-simple {
     order: 1;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
   }
 }
 
@@ -1184,24 +1182,19 @@ body {
   }
   
   .nav-content-simple {
-    gap: 10px;
+    gap: 8px;
   }
   
   .nav-logo-simple a {
-    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-size: clamp(1.3rem, 3.5vw, 1.5rem);
   }
   
   .nav-tagline {
-    font-size: 10px;
+    display: none;
   }
   
-  .search-field {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-  
-  .search-button {
-    padding: 10px 15px;
+  .search-bar-center {
+    display: none !important;
   }
   
   .cart-link {
@@ -1239,22 +1232,24 @@ body {
 /* Light transparency for mobile navigation */
 @media (max-width: 768px) {
   .simple-nav {
-    background: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(5px) !important;
-    -webkit-backdrop-filter: blur(5px) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    padding: 10px 0 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
   }
   
   .simple-nav.scrolled {
-    background: rgba(255, 255, 255, 0.6) !important;
+    background: rgba(255, 255, 255, 0.98) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
   }
   
   /* Add padding to body to compensate for fixed nav */
   body {
-    padding-top: 80px;
+    padding-top: 60px !important;
   }
 }
 
@@ -5104,83 +5099,157 @@ div#hilfePanel.offen,
   }
 }
 
-/* MOBILE NAVIGATION LAYOUT FIX */
+/* MOBILE NAVIGATION LAYOUT FIX - KOMPAKT */
 @media (max-width: 768px) {
   .simple-nav {
-    padding: 8px 0;
+    padding: 10px 0 !important;
+    min-height: auto !important;
   }
 
   .nav-content-simple {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    padding: 0 12px !important;
   }
 
-  /* Maios Logo ganz oben */
+  /* Logo kompakt links */
   .nav-logo-simple {
-    order: 1;
-    width: 100%;
-    text-align: center;
+    order: 1 !important;
+    flex: 0 0 auto !important;
+    text-align: left !important;
   }
 
   .nav-logo-simple a {
-    font-size: clamp(1.75rem, 4vw, 2.25rem);
-    font-weight: 800;
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    margin: 0 !important;
+  }
+  
+  .nav-tagline {
+    display: none !important;
   }
 
-  /* Untere Reihe: Suche links, Icons rechts */
-  .nav-bottom-row {
-    order: 2;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 0 16px;
+  /* Suche in der Mitte */
+  .search-bar-center {
+    order: 2 !important;
+    flex: 1 !important;
+    max-width: none !important;
+    margin: 0 8px !important;
+    display: none !important; /* Verstecke Suchleiste, nur Icon zeigen */
   }
-
+  
   .search-icon-center {
-    order: 1;
-    flex: 0 0 auto;
+    order: 2 !important;
+    flex: 0 0 auto !important;
+    position: static !important;
+  }
+  
+  .search-icon-center button {
+    padding: 6px 8px !important;
+    font-size: 16px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #333 !important;
   }
 
+  /* Icons größer rechts */
   .nav-actions-simple {
-    order: 2;
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    order: 3 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    position: static !important;
   }
-
-  /* Reorganisiere die Struktur */
-  .nav-content-simple {
-    display: block;
+  
+  .nav-actions-simple .btn,
+  .nav-actions-simple button,
+  .nav-actions-simple a {
+    padding: 10px 12px !important;
+    font-size: 20px !important;
+    min-width: auto !important;
   }
-
-  .nav-content-simple::after {
-    content: '';
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 8px 16px 0;
+  
+  .nav-actions-simple .btn span:not(.cart-counter):not(.bi),
+  .nav-actions-simple button span:not(.cart-counter):not(.bi),
+  .nav-actions-simple a span:not(.cart-counter):not(.bi) {
+    display: none !important;
   }
-
-  /* Positioniere Suche und Icons in der unteren Reihe */
-  .search-icon-center {
-    position: absolute;
-    left: 16px;
-    bottom: 8px;
+  
+  /* Cart Counter sichtbar halten */
+  .cart-counter {
+    display: flex !important;
+    position: absolute !important;
+    top: -5px !important;
+    right: -5px !important;
+    background: #e91e63 !important;
+    color: white !important;
+    font-size: 10px !important;
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 50% !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
   }
-
-  .nav-actions-simple {
-    position: absolute;
-    right: 16px;
-    bottom: 8px;
+  
+  /* Gutscheine Button kompakt */
+  .gutschein-link {
+    padding: 6px 8px !important;
+    font-size: 16px !important;
+  }
+  
+  .gutschein-link i {
+    font-size: 16px !important;
   }
 
   .simple-nav .container {
-    position: relative;
-    min-height: 80px;
+    position: relative !important;
+    min-height: auto !important;
+    padding: 0 !important;
+  }
+  
+  /* Body Padding reduzieren */
+  body {
+    padding-top: 60px !important;
+  }
+}
+
+/* Extra kleine Geräte */
+@media (max-width: 480px) {
+  .simple-nav {
+    padding: 8px 0 !important;
+  }
+  
+  .nav-content-simple {
+    padding: 0 10px !important;
+    gap: 8px !important;
+  }
+  
+  .nav-logo-simple a {
+    font-size: 1.3rem !important;
+  }
+  
+  .search-icon-center button {
+    padding: 5px 7px !important;
+    font-size: 15px !important;
+  }
+  
+  .nav-actions-simple {
+    gap: 8px !important;
+  }
+  
+  .nav-actions-simple .btn,
+  .nav-actions-simple button,
+  .nav-actions-simple a {
+    padding: 9px 11px !important;
+    font-size: 19px !important;
+  }
+  
+  body {
+    padding-top: 55px !important;
   }
 }
 
