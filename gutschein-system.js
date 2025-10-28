@@ -299,13 +299,45 @@
         }
 
         const voucherHTML = `
+            <style>
+                @media (max-width: 768px) {
+                    #voucherSection {
+                        padding: 15px !important;
+                        margin: 10px 0 !important;
+                        max-width: 100% !important;
+                    }
+                    
+                    #voucherSection h3 {
+                        font-size: 1.1rem !important;
+                    }
+                    
+                    #voucherSection .voucher-input-wrapper {
+                        flex-direction: column !important;
+                        gap: 0 !important;
+                    }
+                    
+                    #voucherSection input {
+                        width: 100% !important;
+                        margin-bottom: 10px !important;
+                        box-sizing: border-box !important;
+                        font-size: 0.95rem !important;
+                    }
+                    
+                    #voucherSection button {
+                        width: 100% !important;
+                        padding: 12px !important;
+                        box-sizing: border-box !important;
+                        font-size: 0.95rem !important;
+                    }
+                }
+            </style>
             <div id="voucherSection" style="background: white; border-radius: 12px; padding: 20px; margin: 20px auto; max-width: 800px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                 <h3 style="margin-bottom: 15px; color: #333;">
                     <i class="bi bi-ticket-perforated" style="color: #667eea;"></i>
                     Gutschein einlösen
                 </h3>
                 
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <div class="voucher-input-wrapper" style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <input 
                         type="text" 
                         id="voucherInput" 
