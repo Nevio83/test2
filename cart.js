@@ -706,10 +706,48 @@ function updateCartPage() {
                                         <div class="form-group">
                                             <div id="card-cvc-element" class="stripe-element-container"></div>
                                         </div>
-                                    </div>
-                                </div>
                                 <div id="card-errors" role="alert" class="text-danger mt-2"></div>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AGB und Datenschutz Checkboxen -->
+                    <div class="agb-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border: 2px solid #e9ecef; border-radius: 16px; padding: 1.8rem; margin: 2rem 0 1.5rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                        <h5 style="color: #2c3e50; font-size: 1.1rem; font-weight: 600; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="bi bi-shield-check" style="color: #667eea; font-size: 1.3rem;"></i>
+                            Rechtliche Vereinbarungen
+                        </h5>
+                        
+                        <div style="background: white; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; border: 1px solid #e3e8f0; position: relative;">
+                            <div class="form-check" style="margin: 0; padding-left: 1.8rem;">
+                                <input class="form-check-input" type="checkbox" id="agbCheckbox" required style="width: 20px; height: 20px; border: 2px solid #dee2e6; border-radius: 4px; position: absolute; left: 0; top: 0.2rem; cursor: pointer;">
+                                <label class="form-check-label" for="agbCheckbox" style="display: block; margin: 0; font-size: 0.95rem; line-height: 1.6; color: #495057; cursor: pointer;">
+                                    Ich habe die <a href="infos/agb.html" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500; border-bottom: 1px solid #667eea;">Allgemeinen Geschäftsbedingungen</a> und die 
+                                    <a href="infos/datenschutz.html" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500; border-bottom: 1px solid #667eea;">Datenschutzbestimmungen</a> gelesen und bin mit deren Geltung einverstanden.
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; border: 1px solid #e3e8f0; position: relative;">
+                            <div class="form-check" style="margin: 0; padding-left: 1.8rem;">
+                                <input class="form-check-input" type="checkbox" id="newsletterCheckbox" style="width: 20px; height: 20px; border: 2px solid #dee2e6; border-radius: 4px; position: absolute; left: 0; top: 0.2rem; cursor: pointer;">
+                                <label class="form-check-label" for="newsletterCheckbox" style="display: block; margin: 0; font-size: 0.95rem; line-height: 1.6; color: #495057; cursor: pointer;">
+                                    Ich bin damit einverstanden, dass MAIOS und Verbundunternehmen Daten, die bei der Nutzung der 
+                                    Webseite und der Services entstehen, zur besseren Gestaltung von Webseiten, Produkten 
+                                    und Dienstleistungen sowie für personalisierte Werbung verwenden dürfen. Mein Einverständnis gilt 
+                                    auch für die Übermittlung von gehashelten, personenbezogenen Bestell-Daten zum Zweck der 
+                                    zielgerichteten und personalisierten Werbung via Marketing-Partner, auch in Drittländer, sowie an 
+                                    Verbundunternehmen.
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <small style="color: #6c757d;">
+                                Weitere Informationen: 
+                                <a href="infos/datenschutz.html" target="_blank" style="color: #667eea; text-decoration: none;">Datenschutzerklärung</a> • 
+                                <a href="infos/cookies.html" target="_blank" style="color: #667eea; text-decoration: none;">Cookie-Richtlinie</a>
+                            </small>
                         </div>
                     </div>
                     
@@ -853,15 +891,64 @@ window.handleCheckout = async function() {
     const address = document.getElementById('address').value.trim();
     const postcode = document.getElementById('postcode').value.trim();
     
+    // Prüfe ob AGB akzeptiert wurden
+    const agbCheckbox = document.getElementById('agbCheckbox');
+    if (!agbCheckbox || !agbCheckbox.checked) {
+        showErrorToast('Bitte akzeptieren Sie die Allgemeinen Geschäftsbedingungen und Datenschutzbestimmungen.');
+        agbCheckbox?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Checkbox visuell hervorheben
+        const agbContainer = agbCheckbox.closest('div[style*="background: white"]');
+        if (agbContainer) {
+            agbContainer.style.border = '2px solid #dc3545';
+            agbContainer.style.boxShadow = '0 0 10px rgba(220, 53, 69, 0.2)';
+            setTimeout(() => {
+                agbContainer.style.border = '1px solid #e3e8f0';
+                agbContainer.style.boxShadow = 'none';
+            }, 3000);
+        }
+        return;
+    }
+    
     if (!email || !firstname || !lastname || !country || !city || !address || !postcode) {
-        alert('Bitte füllen Sie alle Pflichtfelder aus.');
+        showErrorToast('Bitte füllen Sie alle Pflichtfelder aus.');
+        // Finde das erste leere Pflichtfeld und scrolle dorthin
+        const emptyField = [
+            { value: email, id: 'email' },
+            { value: firstname, id: 'firstname' },
+            { value: lastname, id: 'lastname' },
+            { value: country, id: 'country' },
+            { value: city, id: 'city' },
+            { value: address, id: 'address' },
+            { value: postcode, id: 'postcode' }
+        ].find(field => !field.value);
+        
+        if (emptyField) {
+            const element = document.getElementById(emptyField.id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                element.focus();
+                element.style.borderColor = '#dc3545';
+                setTimeout(() => {
+                    element.style.borderColor = '';
+                }, 3000);
+            }
+        }
         return;
     }
     
     // Email-Validierung
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+        showErrorToast('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+        const emailField = document.getElementById('email');
+        if (emailField) {
+            emailField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            emailField.focus();
+            emailField.style.borderColor = '#dc3545';
+            setTimeout(() => {
+                emailField.style.borderColor = '';
+            }, 3000);
+        }
         return;
     }
     const spinner = submitButton.querySelector('.spinner-border');
@@ -1219,7 +1306,7 @@ function setupStripeForm() {
         event.preventDefault();
         
         if (!stripe || !cardNumber) {
-            alert('Zahlungssystem wird geladen, bitte warten Sie einen Moment...');
+            showErrorToast('Zahlungssystem wird geladen, bitte warten Sie einen Moment...');
             return;
         }
         
@@ -1280,6 +1367,121 @@ function setupStripeForm() {
             buttonText.innerHTML = '<i class="bi bi-lock"></i> Jetzt bestellen - ' + totalText;
         }
     });
+}
+
+// Funktion für Toast-Benachrichtigungen
+function showErrorToast(message) {
+    // Entferne eventuell vorhandene Toasts
+    const existingToast = document.querySelector('.error-toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    // Erstelle Toast-Container
+    const toast = document.createElement('div');
+    toast.className = 'error-toast';
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(255, 107, 107, 0.3);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 320px;
+        max-width: 450px;
+        animation: slideInRight 0.3s ease-out;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    `;
+    
+    // Icon
+    const icon = document.createElement('i');
+    icon.className = 'bi bi-exclamation-circle-fill';
+    icon.style.cssText = 'font-size: 20px; flex-shrink: 0;';
+    
+    // Message
+    const messageDiv = document.createElement('div');
+    messageDiv.style.cssText = 'flex: 1; font-size: 14px; line-height: 1.5; font-weight: 500;';
+    messageDiv.textContent = message;
+    
+    // Close Button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.cssText = `
+        background: none;
+        border: none;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+        flex-shrink: 0;
+    `;
+    closeBtn.onmouseover = () => closeBtn.style.opacity = '1';
+    closeBtn.onmouseout = () => closeBtn.style.opacity = '0.8';
+    closeBtn.onclick = () => removeToast(toast);
+    
+    // Füge Elemente zusammen
+    toast.appendChild(icon);
+    toast.appendChild(messageDiv);
+    toast.appendChild(closeBtn);
+    
+    // CSS-Animation hinzufügen
+    const style = document.createElement('style');
+    if (!document.querySelector('#toast-animations')) {
+        style.id = 'toast-animations';
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Füge Toast zum Body hinzu
+    document.body.appendChild(toast);
+    
+    // Automatisches Entfernen nach 5 Sekunden
+    setTimeout(() => removeToast(toast), 5000);
+}
+
+function removeToast(toast) {
+    if (!toast || !document.body.contains(toast)) return;
+    
+    toast.style.animation = 'slideOutRight 0.3s ease-in';
+    setTimeout(() => {
+        if (document.body.contains(toast)) {
+            toast.remove();
+        }
+    }, 300);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
