@@ -15,6 +15,31 @@ body {
   line-height: 1.6;
 }
 
+/* Mobile Navigation Fix */
+@media (max-width: 768px) {
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .navbar {
+    padding: 0.75rem 0 !important;
+    margin: 0 !important;
+  }
+  
+  .container.mt-2,
+  .container.mt-3,
+  .container.mt-4 {
+    margin-top: 0 !important;
+    padding-top: 1rem !important;
+  }
+  
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
 /* Warenkorb Navbar Brand - größeres Maios Logo */
 .navbar-brand {
   font-size: clamp(1.75rem, 4vw, 2.25rem) !important;

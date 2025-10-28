@@ -25,6 +25,45 @@ body {
   line-height: 1.6;
 }
 
+/* Mobile Navigation Fix */
+@media (max-width: 768px) {
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .header-bar,
+  .navbar {
+    padding: 0.75rem 0 !important;
+    margin: 0 !important;
+  }
+  
+  .nav-flex {
+    padding: 0 1rem !important;
+  }
+  
+  .navbar-brand {
+    font-size: 1.3rem !important;
+  }
+  
+  .back-to-shop-btn {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+  
+  .container.mt-2,
+  .container.mt-3,
+  .container.mt-4 {
+    margin-top: 0 !important;
+    padding-top: 1rem !important;
+  }
+  
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
 .header-bar {
   background: var(--card-bg);
   border-bottom: 1px solid var(--border-color);
