@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standort Analytics Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 500;
+        }
+        
+        .country-list {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .country-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        
+        .country-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .country-item:last-child {
+            border-bottom: none;
+        }
+        
+        .country-flag {
+            font-size: 32px;
+            margin-right: 15px;
+        }
+        
+        .country-info {
+            flex: 1;
+        }
+        
+        .country-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 3px;
+        }
+        
+        .country-details {
+            font-size: 13px;
+            color: #718096;
+        }
+        
+        .country-count {
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-clear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+        }
+        
+        .btn-refresh {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-2">🌍 Standort Analytics Dashboard</h1>
+                    <p class="text-muted mb-0">Echtzeit-Tracking von Besucherstandorten</p>
+                </div>
+                <div>
+                    <button class="btn btn-refresh me-2" onclick="loadDashboard()">
+                        <i class="bi bi-arrow-clockwise"></i> Aktualisieren
+                    </button>
+                    <button class="btn btn-clear" onclick="clearAllData()">
+                        <i class="bi bi-trash"></i> Daten löschen
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        🌍
+                    </div>
+                    <div class="stat-value" id="totalVisits">0</div>
+                    <div class="stat-label">Gesamte Besuche</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);">
+                        🗺️
+                    </div>
+                    <div class="stat-value" id="uniqueCountries">0</div>
+                    <div class="stat-label">Verschiedene Länder</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);">
+                        🏙️
+                    </div>
+                    <div class="stat-value" id="uniqueCities">0</div>
+                    <div class="stat-label">Verschiedene Städte</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);">
+                        🇪🇺
+                    </div>
+                    <div class="stat-value" id="europeanPercentage">0%</div>
+                    <div class="stat-label">Europäische Besucher</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Location -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="chart-container">
+                    <h4 class="mb-3">📍 Aktueller Standort</h4>
+                    <div id="currentLocation" class="p-4 bg-light rounded">
+                        <p class="text-muted mb-0">Lade Standortdaten...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Country Statistics -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="country-list">
+                    <h4 class="mb-3">🏆 Top Länder</h4>
+                    <div id="topCountries">
+                        <p class="text-muted">Keine Daten verfügbar</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="country-list">
+                    <h4 class="mb-3">🏙️ Top Städte</h4>
+                    <div id="topCities">
+                        <p class="text-muted">Keine Daten verfügbar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Visits -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="country-list">
+                    <h4 class="mb-3">🕐 Letzte Besuche</h4>
+                    <div id="recentVisits">
+                        <p class="text-muted">Keine Daten verfügbar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadDashboard() {
+            const stats = JSON.parse(localStorage.getItem('locationStats') || '[]');
+            const currentLocation = JSON.parse(localStorage.getItem('userLocation') || 'null');
+            
+            if (stats.length === 0 && !currentLocation) {
+                alert('Keine Standortdaten verfügbar. Bitte besuche zuerst die Hauptseite.');
+                return;
+            }
+            
+            // Total Visits
+            document.getElementById('totalVisits').textContent = stats.length;
+            
+            // Unique Countries
+            const uniqueCountries = [...new Set(stats.map(s => s.countryCode))];
+            document.getElementById('uniqueCountries').textContent = uniqueCountries.length;
+            
+            // Unique Cities
+            const uniqueCities = [...new Set(stats.map(s => s.city).filter(c => c))];
+            document.getElementById('uniqueCities').textContent = uniqueCities.length;
+            
+            // European Percentage
+            const europeanCountries = ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'GB', 'NL', 'BE', 'PL', 'CZ', 'DK', 'SE', 'NO', 'FI'];
+            const europeanVisits = stats.filter(s => europeanCountries.includes(s.countryCode));
+            const percentage = stats.length > 0 ? Math.round((europeanVisits.length / stats.length) * 100) : 0;
+            document.getElementById('europeanPercentage').textContent = percentage + '%';
+            
+            // Current Location
+            if (currentLocation) {
+                const flag = getCountryFlag(currentLocation.countryCode);
+                document.getElementById('currentLocation').innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <span style="font-size: 48px; margin-right: 20px;">${flag}</span>
+                        <div>
+                            <h5 class="mb-1">${currentLocation.country}</h5>
+                            <p class="text-muted mb-1">${currentLocation.city ? currentLocation.city + ', ' : ''}${currentLocation.region || ''}</p>
+                            <p class="text-muted mb-0"><small>IP: ${currentLocation.ip} | Zeitzone: ${currentLocation.timezone || 'N/A'}</small></p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Top Countries
+            const countryCounts = {};
+            stats.forEach(s => {
+                countryCounts[s.countryCode] = (countryCounts[s.countryCode] || 0) + 1;
+            });
+            
+            const topCountries = Object.entries(countryCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            if (topCountries.length > 0) {
+                document.getElementById('topCountries').innerHTML = topCountries.map(([code, count]) => {
+                    const country = stats.find(s => s.countryCode === code)?.country || code;
+                    return `
+                        <div class="country-item">
+                            <span class="country-flag">${getCountryFlag(code)}</span>
+                            <div class="country-info">
+                                <div class="country-name">${country}</div>
+                                <div class="country-details">${code}</div>
+                            </div>
+                            <div class="country-count">${count}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Top Cities
+            const cityCounts = {};
+            stats.forEach(s => {
+                if (s.city) {
+                    const key = `${s.city}, ${s.country}`;
+                    cityCounts[key] = (cityCounts[key] || 0) + 1;
+                }
+            });
+            
+            const topCities = Object.entries(cityCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            if (topCities.length > 0) {
+                document.getElementById('topCities').innerHTML = topCities.map(([city, count]) => {
+                    return `
+                        <div class="country-item">
+                            <span class="country-flag">🏙️</span>
+                            <div class="country-info">
+                                <div class="country-name">${city}</div>
+                            </div>
+                            <div class="country-count">${count}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Recent Visits
+            const recentVisits = stats.slice(-10).reverse();
+            if (recentVisits.length > 0) {
+                document.getElementById('recentVisits').innerHTML = recentVisits.map(visit => {
+                    const date = new Date(visit.timestamp);
+                    const timeAgo = getTimeAgo(visit.timestamp);
+                    return `
+                        <div class="country-item">
+                            <span class="country-flag">${getCountryFlag(visit.countryCode)}</span>
+                            <div class="country-info">
+                                <div class="country-name">${visit.country}</div>
+                                <div class="country-details">
+                                    ${visit.city ? visit.city + ' | ' : ''}${visit.ip} | ${timeAgo}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+        
+        function getCountryFlag(countryCode) {
+            const flags = {
+                'DE': '🇩🇪', 'AT': '🇦🇹', 'CH': '🇨🇭', 'FR': '🇫🇷',
+                'IT': '🇮🇹', 'ES': '🇪🇸', 'GB': '🇬🇧', 'US': '🇺🇸',
+                'NL': '🇳🇱', 'BE': '🇧🇪', 'PL': '🇵🇱', 'CZ': '🇨🇿',
+                'DK': '🇩🇰', 'SE': '🇸🇪', 'NO': '🇳🇴', 'FI': '🇫🇮'
+            };
+            return flags[countryCode] || '🌍';
+        }
+        
+        function getTimeAgo(timestamp) {
+            const seconds = Math.floor((Date.now() - timestamp) / 1000);
+            
+            if (seconds < 60) return 'Gerade eben';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' Min. her';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' Std. her';
+            return Math.floor(seconds / 86400) + ' Tage her';
+        }
+        
+        function clearAllData() {
+            if (confirm('Möchtest du wirklich alle Standortdaten löschen?')) {
+                localStorage.removeItem('locationStats');
+                localStorage.removeItem('userLocation');
+                localStorage.removeItem('locationBannerClosed');
+                alert('Alle Standortdaten wurden gelöscht!');
+                loadDashboard();
+            }
+        }
+        
+        // Initial Load
+        loadDashboard();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(loadDashboard, 30000);
+    </script>
+</body>
+</html>

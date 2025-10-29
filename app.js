@@ -4704,28 +4704,8 @@ window.showCategorySections = function(selectedCategory) {
   updateButtonColors(selectedCategory);
 };
 
-// Lade Cart Color Selector fÃ¼r Farbauswahl im Dropdown
-function loadCartColorSelector() {
-    if (!document.querySelector('script[src="cart-color-selector.js"]')) {
-        const script = document.createElement('script');
-        script.src = 'cart-color-selector.js';
-        script.onload = () => {
-            console.log('âœ… Cart Color Selector geladen fÃ¼r Dropdown');
-            // Rufe die Funktion auf, nachdem das Script geladen wurde
-            setTimeout(() => {
-                if (window.addColorSelectorsToCart) {
-                    window.addColorSelectorsToCart();
-                }
-            }, 500);
-        };
-        document.body.appendChild(script);
-    }
-}
-
 // Initialisierung beim Laden der Seite
 document.addEventListener('DOMContentLoaded', function() {
-    // Lade Color Selector fÃ¼r Dropdown
-    loadCartColorSelector();
   // Set initial state to 'alle'
   setTimeout(() => {
     updateButtonColors('alle');
@@ -4733,13 +4713,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// Lade Default Color Handler für index.html
-if (!window.location.pathname.includes('produkt-')) {
-    const script = document.createElement('script');
-    script.src = 'default-color-handler.js';
-    document.head.appendChild(script);
-    console.log('Default Color Handler wird geladen...');
-}
 // === DROPDOWN-BILDER KLICKBAR MACHEN ===
 // FÃ¼gen Sie diesen Code am Ende Ihrer app.js Datei hinzu
 
