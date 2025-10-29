@@ -374,8 +374,9 @@ function updateCartPage() {
             return;
         }
         
-        // 3 zufällige Produkte auswählen
-        const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
+        // 3 zufällige Produkte auswählen (ohne AliExpress)
+        const filteredProducts = allProducts.filter(p => p.showInSlider !== false);
+        const shuffled = [...filteredProducts].sort(() => 0.5 - Math.random());
         const randomProducts = shuffled.slice(0, 3);
         
         cartContent.innerHTML = `
@@ -430,9 +431,9 @@ function updateCartPage() {
     }
     const cartIds = cartItems.map(item => item.id);
     const cartCategories = [...new Set(cartItems.map(item => item.category))];
-    // Für jede Kategorie ein zufälliges Add-on, das nicht im Warenkorb ist
+    // Für jede Kategorie ein zufälliges Add-on, das nicht im Warenkorb ist (ohne AliExpress)
     let categoryAddons = cartCategories.map(cat => {
-        const candidates = allProducts.filter(p => p.category === cat && !cartIds.includes(p.id));
+        const candidates = allProducts.filter(p => p.category === cat && !cartIds.includes(p.id) && p.showInSlider !== false);
         if (candidates.length === 0) return null;
         return candidates[Math.floor(Math.random() * candidates.length)];
     }).filter(Boolean);

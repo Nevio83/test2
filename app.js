@@ -1004,12 +1004,15 @@ function filterProducts(products, searchText, category) {
       matchesCategory = product.category === category; // Exact match only
     }
     
+    // Filter AliExpress products (showInSlider: false)
+    const notHidden = product.showInSlider !== false;
+    
     // Einfaches Logging nur bei Problemen
     if (category === 'Technik/Gadgets' && product.category === 'Technik/Gadgets') {
       console.log(`âœ… Technik product: ${product.name}`);
     }
     
-    return matchesSearch && matchesCategory;
+    return matchesSearch && matchesCategory && notHidden;
   });
   
   console.log('Filtered result:', filtered.length, 'products');
@@ -1242,8 +1245,9 @@ function renderCartDropdown() {
         return;
       }
       
-      // 3 zufÃ¤llige Produkte auswÃ¤hlen
-      const shuffled = [...products].sort(() => 0.5 - Math.random());
+      // 3 zufällige Produkte auswählen (ohne AliExpress)
+      const filteredProducts = products.filter(p => p.showInSlider !== false);
+      const shuffled = [...filteredProducts].sort(() => 0.5 - Math.random());
       const randomProducts = shuffled.slice(0, 3);
       
       body.innerHTML = `
@@ -1251,7 +1255,7 @@ function renderCartDropdown() {
           <i class="bi bi-cart-x fs-1 text-muted"></i>
           <p class="text-muted mt-2 mb-3">Ihr Warenkorb ist leer</p>
           
-          <!-- Enhanced ProduktvorschlÃ¤ge -->
+          <!-- Enhanced Produktvorschläge -->
           <div class="cart-recommendations">
             <h6><i class="bi bi-lightbulb"></i> Das könnte Ihnen gefallen</h6>
             <div class="recommendations-grid">
@@ -1309,7 +1313,7 @@ function renderCartDropdown() {
   // Add recommendations when cart has items
   loadProducts().then(products => {
     const cartProductIds = cartItems.map(item => item.id);
-    const availableProducts = products.filter(product => !cartProductIds.includes(product.id));
+    const availableProducts = products.filter(product => !cartProductIds.includes(product.id) && product.showInSlider !== false);
     const shuffled = [...availableProducts].sort(() => 0.5 - Math.random());
     const randomProducts = shuffled.slice(0, 2); // Show 2 recommendations when cart has items
     

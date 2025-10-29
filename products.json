@@ -238,7 +238,8 @@
           "bundlePrice": 40,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": false
     },
     {
       "id": 14,
@@ -283,7 +284,8 @@
           "bundlePrice": 25,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": false
     },
     {
       "id": 15,
@@ -329,7 +331,8 @@
           "bundlePrice": 125,
           "savings": 25
         }
-      ]
+      ],
+      "showInSlider": false
     },
     {
       "id": 16,
@@ -375,7 +378,8 @@
           "bundlePrice": 55,
           "savings": 15
         }
-      ]
+      ],
+      "showInSlider": false
     },
     {
       "id": 19,
@@ -463,7 +467,8 @@
           "bundlePrice": 104.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": false
     },
     {
       "id": 24,
@@ -717,7 +722,8 @@
           "bundlePrice": 39.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": false
     },
     {
       "id": 29,
@@ -769,7 +775,8 @@
           "bundlePrice": 23.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": false
     },
     {
       "id": 30,
@@ -989,7 +996,8 @@
           "bundlePrice": 27.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": false
     },
     {
       "id": 17,
