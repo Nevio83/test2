@@ -115,21 +115,8 @@ class TranslateWidget {
         }
     }
     
-    doTranslate(langCode) {
-        // Prüfe ob localhost
-        const isLocalhost = window.location.hostname === 'localhost' || 
-                           window.location.hostname === '127.0.0.1' ||
-                           window.location.hostname === '';
-        
-        if (isLocalhost) {
-            const langName = this.availableLanguages[langCode];
-            this.showNotification(`⚠️ Funktioniert nur auf echter Domain`, '🌐');
-            console.log('⚠️ Google Translate funktioniert nicht auf localhost');
-            console.log('✅ Auf echter Domain (z.B. maios.de) wird es automatisch funktionieren');
-            
-            alert(`Übersetzung zu ${langName}:\n\n⚠️ Google Translate funktioniert nicht auf localhost!\n\n✅ Auf deiner echten Website wird es automatisch funktionieren.\n\n💡 Teste es nach dem Upload.`);
-            return;
-        }
+    doTranslate(langCode, attempts = 0) {
+        const maxAttempts = 20; // 10 Sekunden max
         
         const select = document.querySelector('.goog-te-combo');
         if (select) {
@@ -139,9 +126,16 @@ class TranslateWidget {
             
             const langName = this.availableLanguages[langCode];
             this.showNotification(`✅ Übersetzt zu ${langName}`, this.getLanguageFlag(langCode));
+        } else if (attempts < maxAttempts) {
+            console.log(`⏳ Warte auf Google Translate... (${attempts + 1}/${maxAttempts})`);
+            setTimeout(() => this.doTranslate(langCode, attempts + 1), 500);
         } else {
-            console.log('⏳ Warte auf Google Translate...');
-            setTimeout(() => this.doTranslate(langCode), 500);
+            // Nach 20 Versuchen: Zeige Fehler
+            const langName = this.availableLanguages[langCode];
+            console.error('❌ Google Translate konnte nicht geladen werden');
+            this.showNotification(`❌ Übersetzung fehlgeschlagen`, '⚠️');
+            
+            alert(`Übersetzung zu ${langName} fehlgeschlagen.\n\n💡 Mögliche Lösungen:\n\n1. Seite neu laden und nochmal versuchen\n2. Adblocker deaktivieren\n3. Andere Browser testen\n\nGoogle Translate hat Probleme beim Laden.`);
         }
     }
     
