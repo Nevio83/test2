@@ -22,12 +22,13 @@
         {
           "name": "Weiß",
           "code": "#FFFFFF",
-          "sku": "CJHS167415804DW",
+          "sku": "CJHS167415802BY",
           "price": 49.99,
           "originalPrice": 69.99,
           "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg"
         }
       ],
+      "showInSlider": true,
       "bundles": [
         {
           "id": "bundle1",
@@ -71,7 +72,7 @@
         {
           "name": "Weiß",
           "code": "#FFFFFF",
-          "sku": "CJMX350ML001WH",
+          "sku": "CJJD112318801AZ",
           "price": 24.99,
           "originalPrice": 49.99,
           "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg"
@@ -79,7 +80,7 @@
         {
           "name": "Rosa",
           "code": "#FFC0CB",
-          "sku": "CJMX350ML002PK",
+          "sku": "CJJD112318803CX",
           "price": 24.99,
           "originalPrice": 49.99,
           "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png"
@@ -148,7 +149,8 @@
         "350ml",
         "elektrisch",
         "tragbar"
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 12,
@@ -158,7 +160,7 @@
       "category": "Haushalt und Küche",
       "image": "produkt bilder/Multifunktions Gemüseschneider.jpg",
       "description": "Vielseitiger Gemüseschneider mit austauschbaren Klingen. Spart Zeit und Mühe beim Kochen.",
-      "sku": "CJ1621032671155597314",
+      "sku": "CJCJ170137301AZ",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
       "tags": [
@@ -193,7 +195,8 @@
           "bundlePrice": 40,
           "savings": 15
         }
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 13,
@@ -389,7 +392,7 @@
       "category": "Technik/Gadgets",
       "image": "produkt bilder/Elektronisches Distanzmessgerät Digital.jpg",
       "description": "Präzises elektronisches Distanzmessgerät mit LCD-Display. Ideal für Handwerker, Architekten und Heimwerker.",
-      "sku": "CJ0E94A308",
+      "sku": "CJXFLPJY00674-Black",
       "inStock": true,
       "shippingTime": "10-20 Werktage",
       "tags": [
@@ -424,7 +427,8 @@
           "bundlePrice": 54.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 20,
@@ -511,7 +515,8 @@
           "bundlePrice": 49.99,
           "savings": 15
         }
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 25,
@@ -554,7 +559,8 @@
           "bundlePrice": 24.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 26,
@@ -571,7 +577,7 @@
         {
           "name": "Roland Purple",
           "code": "#663399",
-          "sku": "CJHB26001RP",
+          "sku": "CJYD186774301AZ",
           "price": 10.99,
           "originalPrice": 20.99,
           "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg"
@@ -579,7 +585,7 @@
         {
           "name": "Lunar Rock",
           "code": "#708090",
-          "sku": "CJHB26002LG",
+          "sku": "CJYD186774302BY",
           "price": 11.99,
           "originalPrice": 21.99,
           "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg"
@@ -618,7 +624,8 @@
           "bundlePrice": 25.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 27,
@@ -628,7 +635,7 @@
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg",
       "description": "USB-betriebener Vulkanflammen-Aromadiffuser mit Quallen-Luftbefeuchter und Nachtlicht. Perfekt für entspannende Atmosphäre und Wellness.",
-      "sku": "CJ1602125961166860288",
+      "sku": "CJJT163563001AZ",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
       "tags": [
@@ -670,7 +677,8 @@
           "bundlePrice": 30.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 28,
@@ -786,7 +794,7 @@
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Mini Electric Shoulder And Neck Massager.jpg",
       "description": "Kompakter elektrischer Schulter- und Nackenmassager für die Halswirbelsäule. Perfekt für Büroarbeiter und zur Entspannung nach langen Arbeitstagen.",
-      "sku": "CJ08528DD9-69BF-4E58-9B32-A0BDE765DE33",
+      "sku": "CJBJMRAM00871-Black-Recharge",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
       "tags": [
@@ -828,7 +836,8 @@
           "bundlePrice": 34.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 21,
@@ -845,7 +854,7 @@
         {
           "name": "Crown",
           "code": "#FFD700",
-          "sku": "CJLED21001CR",
+          "sku": "CJYD188109101AZ",
           "price": 39.99,
           "originalPrice": 59.99,
           "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal crown.png"
@@ -853,7 +862,7 @@
         {
           "name": "Square",
           "code": "#C0C0C0",
-          "sku": "CJLED21002SQ",
+          "sku": "CJYD188109102BY",
           "price": 39.99,
           "originalPrice": 59.99,
           "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal square.png"
@@ -892,7 +901,8 @@
           "bundlePrice": 54.99,
           "savings": 15
         }
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 22,
@@ -901,7 +911,11 @@
       "originalPrice": 34.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/Waterproof RGB LED Solar Light.jpg",
-      "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung."
+      "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.",
+      "sku": "CJLE101693101AZ",
+      "inStock": true,
+      "shippingTime": "7-15 Werktage",
+      "showInSlider": true
     },
     {
       "id": 23,
@@ -944,7 +958,8 @@
           "bundlePrice": 29.99,
           "savings": 10
         }
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 31,
@@ -1014,7 +1029,7 @@
         {
           "name": "Schwarz",
           "code": "#2C2C2C",
-          "sku": "CJBT17006BK",
+          "sku": "CJJSAQJK00001-Black Opp",
           "price": 14.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png"
@@ -1022,7 +1037,7 @@
         {
           "name": "Weiß",
           "code": "#F8F8F8",
-          "sku": "CJBT17007WH",
+          "sku": "CJJSAQJK00001-White Opp",
           "price": 14.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png"
@@ -1030,7 +1045,7 @@
         {
           "name": "Grün",
           "code": "#7ED321",
-          "sku": "CJBT17008GR",
+          "sku": "CJJSAQJK00001-Green Opp",
           "price": 14.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png"
@@ -1038,7 +1053,7 @@
         {
           "name": "Pink",
           "code": "#E91E63",
-          "sku": "CJBT17009PK",
+          "sku": "CJJSAQJK00001-Pink Opp",
           "price": 14.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png"
@@ -1048,7 +1063,8 @@
         "bluetooth",
         "tracker",
         "finder"
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 18,
@@ -1057,14 +1073,15 @@
       "category": "Technik/Gadgets",
       "image": "produkt bilder/Home Electronic Clock Digitale Uhr.jpg",
       "description": "Moderne digitale Wanduhr mit LED-Display. Perfekt für Wohnzimmer, Büro oder Küche mit großer, gut lesbarer Anzeige.",
-      "sku": "CJ135B501D",
+      "sku": "CJXFZNZN00532-Black USB",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
       "tags": [
         "uhr",
         "digital",
         "led"
-      ]
+      ],
+      "showInSlider": true
     },
     {
       "id": 32,
