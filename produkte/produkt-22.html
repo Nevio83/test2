@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -1167,12 +1167,12 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <!-- Farbauswahl JavaScript inline -->
-
+<script>
   // Populate mobile quantity dropdown on page load
   function populateMobileQuantityDropdown() {
     const select = document.getElementById('quantity-mobile');
     if (select && select.options.length === 0) {
-{{ ... }}
+      for (let i = 1; i <= 999; i++) {
         const option = document.createElement('option');
         option.value = i;
         option.textContent = i;
