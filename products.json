@@ -1094,7 +1094,7 @@
       "sku": "CJ1373821404948074496",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
-      "showInSlider": false,
+      "showInSlider": true,
       "colors": [
         {
           "name": "Schwarz",
@@ -1167,7 +1167,7 @@
       "sku": "CJ09477003744E498990DA",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
-      "showInSlider": false,
+      "showInSlider": true,
       "colors": [
         {
           "name": "Cherry Blossoms",
@@ -1324,7 +1324,7 @@
       "sku": "CJMB1545970",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
-      "showInSlider": false,
+      "showInSlider": true,
       "colors": [
         {
           "name": "Blau",
@@ -1439,7 +1439,7 @@
       "sku": "CJPF1011351",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
-      "showInSlider": false,
+      "showInSlider": true,
       "colors": [
         {
           "name": "Schwarz",
@@ -1537,7 +1537,7 @@
       "sku": "CJJT1723382",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
-      "showInSlider": false,
+      "showInSlider": true,
       "colors": [
         {
           "name": "Pink",
@@ -1799,7 +1799,7 @@
         "Wiederaufladbar",
         "Kompakt und leicht"
       ],
-      "showInSlider": false
+      "showInSlider": true
     },
     {
       "id": 44,
@@ -1839,7 +1839,7 @@
         "Kompakt",
         "Multimedia"
       ],
-      "showInSlider": false
+      "showInSlider": true
     },
     {
       "id": 45,
@@ -2023,7 +2023,7 @@
         "Küche",
         "Getränke"
       ],
-      "showInSlider": false
+      "showInSlider": true
     },
     {
       "id": 48,
@@ -2068,7 +2068,7 @@
         "Küche",
         "Getränke"
       ],
-      "showInSlider": false
+      "showInSlider": true
     },
     {
       "id": 49,
@@ -2136,6 +2136,6 @@
         "Küche",
         "Getränke"
       ],
-      "showInSlider": false
+      "showInSlider": true
     }
   ]
