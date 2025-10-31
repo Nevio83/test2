@@ -60,7 +60,7 @@
     {
       "id": 11,
       "name": "350ml Elektrischer Mixer Entsafter",
-      "price": 24.99,
+      "price": 32.99,
       "originalPrice": 49.99,
       "category": "Haushalt und Küche",
       "image": "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
@@ -73,7 +73,7 @@
           "name": "Weiß",
           "code": "#FFFFFF",
           "sku": "CJJD112318801AZ",
-          "price": 24.99,
+          "price": 32.99,
           "originalPrice": 49.99,
           "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg"
         },
@@ -81,7 +81,7 @@
           "name": "Rosa",
           "code": "#FFC0CB",
           "sku": "CJJD112318812LO",
-          "price": 24.99,
+          "price": 32.99,
           "originalPrice": 49.99,
           "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png"
         }
@@ -155,7 +155,7 @@
     {
       "id": 12,
       "name": "Multifunktions Gemüseschneider",
-      "price": 19.99,
+      "price": 16.99,
       "originalPrice": 29.99,
       "category": "Haushalt und Küche",
       "image": "produkt bilder/Multifunktions Gemüseschneider.jpg",
@@ -387,7 +387,7 @@
     {
       "id": 19,
       "name": "Elektronisches Distanzmessgerät Digital",
-      "price": 39.99,
+      "price": 19.99,
       "originalPrice": 59.99,
       "category": "Technik/Gadgets",
       "image": "produkt bilder/Elektronisches Distanzmessgerät Digital.jpg",
@@ -477,7 +477,7 @@
     {
       "id": 24,
       "name": "COBLED Arbeitsleuchte",
-      "price": 29.99,
+      "price": 12.99,
       "originalPrice": 49.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/COBLED Arbeitsleuchte.jpeg",
@@ -521,11 +521,13 @@
     {
       "id": 25,
       "name": "Nachtlichter mit Bewegungsmelder",
-      "price": 16.99,
+      "price": 23.99,
       "originalPrice": 24.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/Nachtlichter mit Bewegungsmelder.jpeg",
       "description": "Automatische Nachtlichter mit Bewegungsmelder für sicheres Navigieren in der Dunkelheit. Perfekt für Schlafzimmer, Badezimmer, Flure und Kinderzimmer.",
+      "sku": "ALI1005007025",
+      "inStock": true,
       "features": [
         "Automatischer Bewegungsmelder",
         "Warmes, augenschonendes Licht",
@@ -560,12 +562,12 @@
           "savings": 10
         }
       ],
-      "showInSlider": true
+      "showInSlider": false
     },
     {
       "id": 26,
       "name": "4 In 1 Self Cleaning Hair Brush",
-      "price": 10.99,
+      "price": 13.99,
       "originalPrice": 20.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",
@@ -630,7 +632,7 @@
     {
       "id": 27,
       "name": "Volcanic Flame Aroma Essential Oil Diffuser",
-      "price": 15.99,
+      "price": 31.99,
       "originalPrice": 29.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg",
@@ -789,7 +791,7 @@
     {
       "id": 30,
       "name": "Mini Electric Shoulder And Neck Massager",
-      "price": 19.99,
+      "price": 16.99,
       "originalPrice": 35.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Mini Electric Shoulder And Neck Massager.jpg",
@@ -842,7 +844,7 @@
     {
       "id": 21,
       "name": "LED Water Ripple Crystal",
-      "price": 39.99,
+      "price": 21.99,
       "originalPrice": 59.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/LED Water Ripple Crystal.jpg",
@@ -907,7 +909,7 @@
     {
       "id": 22,
       "name": "Waterproof RGB LED Solar Light",
-      "price": 24.99,
+      "price": 9.99,
       "originalPrice": 34.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/Waterproof RGB LED Solar Light.jpg",
@@ -920,7 +922,7 @@
     {
       "id": 23,
       "name": "LED Motion Sensor Licht Drahtlose",
-      "price": 19.99,
+      "price": 3.99,
       "originalPrice": 29.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/LED Motion Sensor Licht Drahtlose.jpeg",
@@ -1017,7 +1019,7 @@
     {
       "id": 17,
       "name": "Bluetooth Anti-Lost Finder Wassertropfen",
-      "price": 14.99,
+      "price": 4.99,
       "originalPrice": 24.99,
       "category": "Technik/Gadgets",
       "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg",
@@ -1030,7 +1032,7 @@
           "name": "Schwarz",
           "code": "#2C2C2C",
           "sku": "CJJSAQJK00001-Black Opp",
-          "price": 14.99,
+          "price": 4.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png"
         },
@@ -1038,7 +1040,7 @@
           "name": "Weiß",
           "code": "#F8F8F8",
           "sku": "CJJSAQJK00001-White Opp",
-          "price": 14.99,
+          "price": 4.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png"
         },
@@ -1046,7 +1048,7 @@
           "name": "Grün",
           "code": "#7ED321",
           "sku": "CJJSAQJK00001-Green Opp",
-          "price": 14.99,
+          "price": 4.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png"
         },
@@ -1054,7 +1056,7 @@
           "name": "Pink",
           "code": "#E91E63",
           "sku": "CJJSAQJK00001-Pink Opp",
-          "price": 14.99,
+          "price": 4.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png"
         }
@@ -1069,7 +1071,7 @@
     {
       "id": 18,
       "name": "Home Electronic Clock Digitale Uhr",
-      "price": 24.99,
+      "price": 14.99,
       "category": "Technik/Gadgets",
       "image": "produkt bilder/Home Electronic Clock Digitale Uhr.jpg",
       "description": "Moderne digitale Wanduhr mit LED-Display. Perfekt für Wohnzimmer, Büro oder Küche mit großer, gut lesbarer Anzeige.",
@@ -1086,7 +1088,7 @@
     {
       "id": 32,
       "name": "Indoor Sensing Wall Lamp",
-      "price": 29.99,
+      "price": 23.99,
       "originalPrice": 39.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/Indoor Sensing Wall Lamp.jpg",
@@ -1159,7 +1161,7 @@
     {
       "id": 33,
       "name": "Aromatherapy Essential Oil Humidifier",
-      "price": 39.99,
+      "price": 8.99,
       "originalPrice": 59.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Aromatherapy essential oil humidifier.jpg",
@@ -1316,7 +1318,7 @@
     {
       "id": 34,
       "name": "Moisturizing Face Steamer",
-      "price": 14.99,
+      "price": 19.99,
       "originalPrice": 24.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Moisturizing Face Steamer.jpg",
@@ -1330,7 +1332,7 @@
           "name": "Blau",
           "code": "#A0C4FF",
           "sku": "CJMB154597002BY",
-          "price": 14.99,
+          "price": 19.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer blau.jpg"
         },
@@ -1338,7 +1340,7 @@
           "name": "Weiß",
           "code": "#FFFFFF",
           "sku": "CJMB154597001AZ",
-          "price": 14.99,
+          "price": 19.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer weiß.jpg"
         }
@@ -1354,7 +1356,7 @@
     {
       "id": 35,
       "name": "Thermal Neck Lifting And Tighten Massager",
-      "price": 19.99,
+      "price": 16.99,
       "originalPrice": 29.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg",
@@ -1368,7 +1370,7 @@
           "name": "Schwarz",
           "code": "#000000",
           "sku": "CJYD188725403CX",
-          "price": 19.99,
+          "price": 16.99,
           "originalPrice": 29.99,
           "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager schwarz.jpg"
         },
@@ -1376,7 +1378,7 @@
           "name": "Weiß",
           "code": "#FFFFFF",
           "sku": "CJYD188725404DW",
-          "price": 19.99,
+          "price": 16.99,
           "originalPrice": 29.99,
           "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager weiß.jpg"
         }
@@ -1392,7 +1394,7 @@
     {
       "id": 36,
       "name": "Cleaning Blackhead Instrument",
-      "price": 12.99,
+      "price": 17.99,
       "originalPrice": 22.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Cleaning Blackhead Instrument.jpg",
@@ -1411,7 +1413,7 @@
     {
       "id": 37,
       "name": "Professional 5 In 1 Hair Dryer",
-      "price": 39.99,
+      "price": 64.99,
       "originalPrice": 69.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Professional 5 In 1 Hair Dryer.jpg",
@@ -1431,7 +1433,7 @@
     {
       "id": 38,
       "name": "Jade Massager",
-      "price": 14.99,
+      "price": 10.99,
       "originalPrice": 24.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Jade Massager.jpg",
@@ -1445,7 +1447,7 @@
           "name": "Schwarz",
           "code": "#000000",
           "sku": "CJPF101135114NM",
-          "price": 14.99,
+          "price": 10.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Jade Massager bilder/Jade Massager schwarz.jpg"
         },
@@ -1453,7 +1455,7 @@
           "name": "Grün",
           "code": "#008000",
           "sku": "CJPF101135122VE",
-          "price": 14.99,
+          "price": 10.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Jade Massager bilder/Jade Massager grün.jpg"
         },
@@ -1461,7 +1463,7 @@
           "name": "Hellgrün",
           "code": "#90EE90",
           "sku": "CJPF101135120TG",
-          "price": 14.99,
+          "price": 10.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Jade Massager bilder/Jade Massager hell grün.jpg"
         },
@@ -1469,7 +1471,7 @@
           "name": "Pink",
           "code": "#FFC0CB",
           "sku": "CJPF101135116PK",
-          "price": 14.99,
+          "price": 10.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Jade Massager bilder/Jade Massager pink.jpg"
         },
@@ -1477,7 +1479,7 @@
           "name": "Lila",
           "code": "#800080",
           "sku": "CJPF101135118RI",
-          "price": 14.99,
+          "price": 10.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Jade Massager bilder/Jade Massager lila.jpg"
         },
@@ -1485,7 +1487,7 @@
           "name": "Weiß",
           "code": "#FFFFFF",
           "sku": "CJPF101135124XC",
-          "price": 14.99,
+          "price": 10.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Jade Massager bilder/Jade Massager weiß.jpg"
         },
@@ -1493,7 +1495,7 @@
           "name": "Gelb",
           "code": "#FFFF00",
           "sku": "CJPF101135127AZ",
-          "price": 14.99,
+          "price": 10.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Jade Massager bilder/Jade Massager gelb.jpg"
         }
@@ -1509,7 +1511,7 @@
     {
       "id": 39,
       "name": "Electric Guasha Massager",
-      "price": 29.99,
+      "price": 32.99,
       "originalPrice": 49.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Electric Guasha Massager.jpg",
@@ -1575,7 +1577,7 @@
     {
       "id": 41,
       "name": "2 In 1 Oil Sprayer Bottle",
-      "price": 14.99,
+      "price": 18.99,
       "originalPrice": 24.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/2 In 1 Oil Sprayer Bottle.jpg",
@@ -1678,7 +1680,7 @@
     {
       "id": 43,
       "name": "Portable Mini Thermal Label Printer",
-      "price": 39.99,
+      "price": 21.99,
       "originalPrice": 59.99,
       "category": "Technik/Gadgets",
       "image": "produkt bilder/Portable Mini Thermal Label Printer.jpg",
@@ -1998,7 +2000,7 @@
           "name": "Straw",
           "code": "#F5DEB3",
           "sku": "CJJT165633324XC",
-          "price": 1.00,
+          "price": 2.00,
           "originalPrice": 2.99,
           "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated straw.jpg"
         },
