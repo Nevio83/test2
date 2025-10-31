@@ -1004,15 +1004,15 @@ function filterProducts(products, searchText, category) {
       matchesCategory = product.category === category; // Exact match only
     }
     
-    // Filter AliExpress products (showInSlider: false)
-    const notHidden = product.showInSlider !== false;
+    // Filter AliExpress products (SKU starts with "ALI")
+    const isNotAliExpress = !product.sku || !product.sku.startsWith('ALI');
     
     // Einfaches Logging nur bei Problemen
     if (category === 'Technik/Gadgets' && product.category === 'Technik/Gadgets') {
-      console.log(`âœ… Technik product: ${product.name}`);
+      console.log(`âœ… Technik product: ${product.name}, SKU: ${product.sku}, isNotAli: ${isNotAliExpress}`);
     }
     
-    return matchesSearch && matchesCategory && notHidden;
+    return matchesSearch && matchesCategory && isNotAliExpress;
   });
   
   console.log('Filtered result:', filtered.length, 'products');
@@ -4216,9 +4216,12 @@ function loadAllProducts() {
     // Always load products fresh
     loadProducts().then(products => {
         console.log('ðŸ“¦ Products loaded for search grid:', products.length);
-        renderAllProducts(allProductsGrid, products);
+        // Filter out AliExpress products (SKU starts with "ALI")
+        const filteredProducts = products.filter(p => !p.sku || !p.sku.startsWith('ALI'));
+        console.log('ðŸ“¦ After filtering AliExpress:', filteredProducts.length);
+        renderAllProducts(allProductsGrid, filteredProducts);
     }).catch(error => {
-        console.error('âŒ Error loading products:', error);
+        console.error('âŒ Error loading products:', error);
     });
 }
 
