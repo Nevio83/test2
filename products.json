@@ -2,7 +2,7 @@
     {
       "id": 10,
       "name": "Elektrischer Wasserspender für Schreibtisch",
-      "price": 49.99,
+      "price": 28.99,
       "originalPrice": 69.99,
       "category": "Technik/Gadgets",
       "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
@@ -15,7 +15,7 @@
           "name": "Schwarz",
           "code": "#2C2C2C",
           "sku": "CJHS167415803CX",
-          "price": 49.99,
+          "price": 28.99,
           "originalPrice": 69.99,
           "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg"
         },
@@ -23,7 +23,7 @@
           "name": "Weiß",
           "code": "#FFFFFF",
           "sku": "CJHS167415802BY",
-          "price": 49.99,
+          "price": 28.99,
           "originalPrice": 69.99,
           "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg"
         }
