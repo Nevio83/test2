@@ -2116,5 +2116,117 @@
         "Getränke"
       ],
       "showInSlider": true
+    },
+    {
+      "id": 50,
+      "name": "Luminous Crystal Ball",
+      "price": 15.99,
+      "originalPrice": 29.99,
+      "category": "Beleuchtung",
+      "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball.jpg",
+      "description": "Leuchtende Kristallkugel mit verschiedenen Motiven - Sternenhimmel, Planeten, Mond und mehr. Perfekte Dekoration für Zuhause oder als Geschenk.",
+      "sku": "CJJT153840401AZ",
+      "inStock": true,
+      "shippingTime": "7-15 Werktage",
+      "colors": [
+        {
+          "name": "Ferris Wheel",
+          "code": "#FFB6C1",
+          "sku": "CJJT153840405EV",
+          "price": 15.99,
+          "originalPrice": 29.99,
+          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Ferris Wheel.jpg"
+        },
+        {
+          "name": "Newt",
+          "code": "#98D8C8",
+          "sku": "CJJT153840435IR",
+          "price": 15.99,
+          "originalPrice": 29.99,
+          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Newt.jpg"
+        },
+        {
+          "name": "Moon",
+          "code": "#F4E4C1",
+          "sku": "CJJT153840404DW",
+          "price": 15.99,
+          "originalPrice": 29.99,
+          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Moon.jpg"
+        },
+        {
+          "name": "Saturn",
+          "code": "#E6B87E",
+          "sku": "CJJT153840412LO",
+          "price": 15.99,
+          "originalPrice": 29.99,
+          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Saturn.jpg"
+        },
+        {
+          "name": "Smooth sailing",
+          "code": "#87CEEB",
+          "sku": "CJJT153840418RI",
+          "price": 15.99,
+          "originalPrice": 29.99,
+          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Smooth sailing.jpg"
+        },
+        {
+          "name": "Snowman",
+          "code": "#FFFFFF",
+          "sku": "CJJT153840433GT",
+          "price": 15.99,
+          "originalPrice": 29.99,
+          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Snowman.jpg"
+        },
+        {
+          "name": "Through the starry",
+          "code": "#4B0082",
+          "sku": "CJJT153840408HS",
+          "price": 15.99,
+          "originalPrice": 29.99,
+          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Through the starry.jpg"
+        }
+      ],
+      "tags": [
+        "kristallkugel",
+        "leuchtend",
+        "dekoration",
+        "geschenk",
+        "sternenhimmel"
+      ],
+      "features": [
+        "Leuchtende Kristallkugel",
+        "7 verschiedene Motive",
+        "Perfekte Dekoration",
+        "Ideal als Geschenk",
+        "Hochwertige Verarbeitung"
+      ],
+      "bundles": [
+        {
+          "id": "bundle1",
+          "name": "Crystal Starter",
+          "description": "Kristallkugel + Basis",
+          "items": [
+            "LED-Basis",
+            "USB-Kabel"
+          ],
+          "originalPrice": 24.99,
+          "bundlePrice": 19.99,
+          "savings": 5
+        },
+        {
+          "id": "bundle2",
+          "name": "Crystal Premium",
+          "description": "Komplettes Deko-Set",
+          "items": [
+            "LED-Basis",
+            "USB-Kabel",
+            "Geschenkbox"
+          ],
+          "originalPrice": 34.99,
+          "bundlePrice": 24.99,
+          "savings": 10
+        }
+      ],
+      "showInSlider": true
     }
   ]
