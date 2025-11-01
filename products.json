@@ -482,6 +482,9 @@
       "category": "Beleuchtung",
       "image": "produkt bilder/COBLED Arbeitsleuchte.jpeg",
       "description": "Professionelle COBLED Arbeitsleuchte mit COB LED-Technologie. Ideal für Werkstatt, Garage, Camping und alle Arbeiten die helles, gleichmäßiges Licht benötigen.",
+      "sku": "ALI1005007024",
+      "inStock": true,
+      "shippingTime": "10-20 Werktage",
       "features": [
         "COB LED-Technologie für gleichmäßiges Licht",
         "Bis zu 1000 Lumen Helligkeit",
@@ -516,7 +519,7 @@
           "savings": 15
         }
       ],
-      "showInSlider": true
+      "showInSlider": false
     },
     {
       "id": 25,
@@ -680,7 +683,7 @@
           "savings": 10
         }
       ],
-      "showInSlider": true
+      "showInSlider": false
     },
     {
       "id": 28,
@@ -922,11 +925,14 @@
     {
       "id": 23,
       "name": "LED Motion Sensor Licht Drahtlose",
-      "price": 3.99,
+      "price": 19.99,
       "originalPrice": 29.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/LED Motion Sensor Licht Drahtlose.jpeg",
       "description": "Drahtloses LED Motion Sensor Licht mit Bewegungsmelder. Perfekt für Flure, Treppen, Schränke und andere Bereiche wo automatische Beleuchtung benötigt wird.",
+      "sku": "ALI1005007023",
+      "inStock": true,
+      "shippingTime": "10-20 Werktage",
       "features": [
         "Drahtlos - einfache Installation überall",
         "Bewegungsmelder mit 3m Reichweite",
@@ -961,7 +967,7 @@
           "savings": 10
         }
       ],
-      "showInSlider": true
+      "showInSlider": false
     },
     {
       "id": 31,
@@ -1162,7 +1168,7 @@
       "id": 33,
       "name": "Aromatherapy Essential Oil Humidifier",
       "price": 8.99,
-      "originalPrice": 59.99,
+      "originalPrice": 14.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Aromatherapy essential oil humidifier.jpg",
       "description": "Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.",
@@ -1175,96 +1181,96 @@
           "name": "Cherry Blossoms",
           "code": "#FFB6C1",
           "sku": "CJBJPFJY00081-Cherry blossoms",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg"
         },
         {
           "name": "Green Tea",
           "code": "#90EE90",
           "sku": "CJBJPFJY00081-Green Tea",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg"
         },
         {
           "name": "Jasmine",
           "code": "#F8F8FF",
           "sku": "CJBJPFJY00081-Jasmine",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier jasmine.jpg"
         },
         {
           "name": "Lavender",
           "code": "#E6E6FA",
           "sku": "CJBJPFJY00081-Lavender",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lavender.jpg"
         },
         {
           "name": "Lemon",
           "code": "#FFFF99",
           "sku": "CJBJPFJY00081-Lemon",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lemon.jpg"
         },
         {
           "name": "Lily",
           "code": "#87CEEB",
           "sku": "CJBJPFJY00081-Lily",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lily.jpg"
         },
         {
           "name": "Ocean",
           "code": "#FF69B4",
           "sku": "CJBJPFJY00081-Ocean",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier ocean.jpg"
         },
         {
           "name": "Rose",
           "code": "#D2B48C",
           "sku": "CJBJPFJY00081-Rose",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier rose.jpg"
         },
         {
           "name": "Sandalwood",
           "code": "#F5DEB3",
           "sku": "CJBJPFJY00081-Sandalwood",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sandalwood.jpg"
         },
         {
           "name": "Sweet",
           "code": "#F5DEB3",
           "sku": "CJBJPFJY00081-Sweet",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sweet.jpg"
         },
         {
           "name": "Vanilla",
           "code": "#FFF8DC",
           "sku": "CJBJPFJY00081-Vanilla",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier vanilla.jpg"
         },
         {
           "name": "Violet",
           "code": "#8A2BE2",
           "sku": "CJBJPFJY00081-violet",
-          "price": 39.99,
-          "originalPrice": 59.99,
+          "price": 8.99,
+          "originalPrice": 14.99,
           "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier violet.jpg"
         }
       ],
@@ -1413,7 +1419,7 @@
     {
       "id": 37,
       "name": "Professional 5 In 1 Hair Dryer",
-      "price": 64.99,
+      "price": 39.99,
       "originalPrice": 69.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Professional 5 In 1 Hair Dryer.jpg",
@@ -1421,7 +1427,7 @@
       "sku": "CJTF141037804DW",
       "inStock": true,
       "shippingTime": "7-15 Werktage",
-      "showInSlider": false,
+      "showInSlider": true,
       "tags": [
         "hair dryer",
         "haarstyling",
@@ -1911,7 +1917,7 @@
         "Diamant Effekt",
         "Nordisch"
       ],
-      "showInSlider": false
+      "showInSlider": true
     },
     {
       "id": 47,

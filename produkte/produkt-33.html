@@ -38,13 +38,13 @@
                     <p class="lead mb-4">Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.</p>
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <span class="price-tag">€8.99</span>
-                        <span class="text-muted text-decoration-line-through">€59.99</span>
+                        <span class="text-muted text-decoration-line-through">€14.99</span>
                         <span class="badge bg-success">Kostenloser Versand in Europa</span>
                     </div>
                     <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn">
                         <i class="bi bi-cart-plus"></i> In den Warenkorb
                     </button>
-                    <button class="btn btn-outline-light btn-lg wishlist-style-btn wishlist-button" id="wishlistBtn">
+                    <button class="btn btn-outline-light btn-lg wishlist-style-btn wishlist-button" id="wishlistBtn" data-product-id="33">
                         <i class="bi bi-heart"></i> Merken
                     </button>
                 </div>
@@ -78,7 +78,7 @@
                         <div class="col-md-6">
                             <p><strong>Kategorie:</strong> Körperpflege/Wellness</p>
                             <p><strong>Artikelnummer:</strong> 033</p>
-                            <p><strong>Preis:</strong> €39.99</p>
+                            <p><strong>Preis:</strong> €8.99</p>
                         </div>
                         <div class="col-md-6">
                             <p><strong>Verfügbarkeit:</strong> Auf Lager</p>
@@ -106,14 +106,14 @@
                             </div>
                             
                             <div class="price-section">
-                                <div class="current-price">€39.99</div>
+                                <div class="current-price">€8.99</div>
                             </div>
                             
                             <div class="action-buttons">
                                 <button class="buy-now-btn" id="buyNowBtn">
                                     <i class="bi bi-cart-plus"></i> Jetzt kaufen
                                 </button>
-                                <button class="wishlist-btn wishlist-style-btn wishlist-button">
+                                <button class="wishlist-btn wishlist-style-btn wishlist-button" data-product-id="33">
                                     <i class="bi bi-heart"></i> Zur Wunschliste
                                 </button>
                             </div>
@@ -124,6 +124,78 @@
                                     <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
                                     <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ähnliche Produkte -->
+    <section class="py-5 similar-products-section">
+        <div class="container">
+            <div class="section-header text-center mb-5">
+                <h2 class="section-title">Ähnliche Produkte</h2>
+                <p class="section-subtitle">Entdecken Sie weitere Produkte, die Ihnen gefallen könnten</p>
+            </div>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-26.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg" class="product-image" alt="4 In 1 Self Cleaning Hair Brush">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">4 In 1 Self Cleaning Hair Brush</h5>
+                            <div class="price-container"><span class="current-price">€13.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-27.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg" class="product-image" alt="Volcanic Flame Aroma Essential Oil Diffuser">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Volcanic Flame Aroma Essential Oil Diffuser</h5>
+                            <div class="price-container"><span class="current-price">€31.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-34.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Moisturizing Face Steamer.jpg" class="product-image" alt="Moisturizing Face Steamer">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Moisturizing Face Steamer</h5>
+                            <div class="price-container"><span class="current-price">€19.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="similar-product-card" onclick="window.location.href='produkt-39.html'">
+                        <div class="product-image-wrapper">
+                            <img src="../produkt bilder/Electric Guasha Massager.jpg" class="product-image" alt="Electric Guasha Massager">
+                        </div>
+                        <div class="product-info">
+                            <h5 class="product-title">Electric Guasha Massager</h5>
+                            <div class="price-container"><span class="current-price">€32.99</span></div>
+                            <div class="view-product-btn">
+                                <span>Jetzt ansehen</span>
+                                <i class="bi bi-arrow-right"></i>
                             </div>
                         </div>
                     </div>
@@ -144,8 +216,8 @@
         const product = {
             id: 33,
             name: "Aromatherapy Essential Oil Humidifier",
-            price: 39.99,
-            originalPrice: 59.99,
+            price: 8.99,
+            originalPrice: 14.99,
             image: "produkt bilder/Aromatherapy essential oil humidifier.jpg",
             category: "Körperpflege/Wellness",
             description: "Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.",
@@ -157,16 +229,16 @@
                     name: "Cherry Blossoms",
                     code: "#FFB6C1",
                     sku: "CJBJPFJY00081-Cherry blossoms",
-                    price: 39.99,
-                    originalPrice: 59.99,
+                    price: 8.99,
+                    originalPrice: 14.99,
                     image: "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg"
                 },
                 {
                     name: "Green Tea",
                     code: "#90EE90",
                     sku: "CJBJPFJY00081-Green Tea",
-                    price: 39.99,
-                    originalPrice: 59.99,
+                    price: 8.99,
+                    originalPrice: 14.99,
                     image: "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg"
                 }
                 // Weitere Farben werden automatisch aus products.json geladen
@@ -226,16 +298,13 @@
             return getWishlist().some(item => Number(item.id) === Number(id));
         }
         
-        function toggleWishlistLocal(product) {
-            console.log('🔄 toggleWishlistLocal aufgerufen für Produkt:', product.id);
-            const wasInList = isInWishlist(product.id);
-            console.log('📋 Vorheriger Status:', wasInList);
-            
+        function toggleWishlist(product) {
             let wishlist = getWishlist();
-            if (wasInList) {
+            if (isInWishlist(product.id)) {
                 wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
+                setWishlist(wishlist);
+                updateAllWishlistButtons();
                 showAlert('Von der Wunschliste entfernt', 'wishlist.html');
-                console.log('➖ Produkt von Wishlist entfernt');
             } else {
                 wishlist.push({
                     id: product.id,
@@ -244,25 +313,18 @@
                     image: product.image,
                     description: product.description
                 });
-                showAlert('Zur Wunschliste hinzugefügt', 'wishlist.html');
-                console.log('➕ Produkt zur Wishlist hinzugefügt');
-            }
-            setWishlist(wishlist);
-            
-            // Kurze Verzögerung vor Button-Update
-            setTimeout(() => {
+                setWishlist(wishlist);
                 updateAllWishlistButtons();
-            }, 50);
+                showAlert('Zur Wunschliste hinzugefügt', 'wishlist.html');
+            }
         }
         
         function updateAllWishlistButtons() {
             const isInList = isInWishlist(product.id);
-            console.log('🔄 Updating wishlist buttons, isInList:', isInList);
             
-            // Update Haupt-Wishlist-Button
+            // Update main wishlist button
             const mainBtn = document.getElementById('wishlistBtn');
             if (mainBtn) {
-                console.log('🔧 Updating main wishlist button');
                 if (isInList) {
                     mainBtn.classList.add('active');
                     mainBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
@@ -272,11 +334,9 @@
                 }
             }
             
-            // Update Schnellbestellung-Wishlist-Buttons
+            // Update all quick order wishlist buttons
             const quickOrderBtns = document.querySelectorAll('.wishlist-button');
-            console.log('🔧 Found', quickOrderBtns.length, 'quick order wishlist buttons');
-            quickOrderBtns.forEach((btn, index) => {
-                console.log(`🔧 Updating quick order button ${index + 1}`);
+            quickOrderBtns.forEach(btn => {
                 if (isInList) {
                     btn.classList.add('active');
                     btn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
@@ -312,7 +372,8 @@
         function updateTotalPrice() {
             const quantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
             const total = (product.price * quantity).toFixed(2);
-            const priceElements = document.querySelectorAll('.current-price');
+            // Nur Schnellbestellungs-Preis aktualisieren, NICHT die "Ähnliche Produkte"
+            const priceElements = document.querySelectorAll('.quick-order-card .current-price');
             priceElements.forEach(element => {
                 element.textContent = `€${total}`;
             });

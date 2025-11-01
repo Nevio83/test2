@@ -26,6 +26,46 @@ if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendg
 const CJDropshippingAPI = require('./cj-dropshipping-api');
 const cjAPI = new CJDropshippingAPI();
 
+// Initialize Exchange Rate Service
+const ExchangeRateService = require('./exchange-rate-service');
+const exchangeRateService = new ExchangeRateService();
+
+// Währungs-Mapping basierend auf Land
+function getCurrencyByCountry(countryCode) {
+  const currencyMap = {
+    // Eurozone
+    'DE': 'EUR', 'AT': 'EUR', 'BE': 'EUR', 'ES': 'EUR', 'FR': 'EUR',
+    'IT': 'EUR', 'NL': 'EUR', 'PT': 'EUR', 'GR': 'EUR', 'IE': 'EUR',
+    'FI': 'EUR', 'LU': 'EUR', 'SK': 'EUR', 'SI': 'EUR', 'EE': 'EUR',
+    'LV': 'EUR', 'LT': 'EUR', 'CY': 'EUR', 'MT': 'EUR',
+    // Andere europäische Länder
+    'CH': 'CHF', // Schweiz
+    'GB': 'GBP', // UK
+    'PL': 'PLN', // Polen
+    'CZ': 'CZK', // Tschechien
+    'DK': 'DKK', // Dänemark
+    'SE': 'SEK', // Schweden
+    'NO': 'NOK', // Norwegen
+    'HU': 'HUF', // Ungarn
+    'RO': 'RON', // Rumänien
+    // Nordamerika
+    'US': 'USD', 'CA': 'CAD',
+    // Asien
+    'JP': 'JPY', 'CN': 'CNY', 'IN': 'INR', 'KR': 'KRW',
+    // Ozeanien
+    'AU': 'AUD', 'NZ': 'NZD',
+    // Andere
+    'BR': 'BRL', 'MX': 'MXN', 'TR': 'TRY', 'RU': 'RUB'
+  };
+  
+  return currencyMap[countryCode?.toUpperCase()] || 'EUR'; // Standard: EUR
+}
+
+// Wrapper-Funktionen für Exchange Rate Service (async)
+async function convertPrice(priceInEUR, targetCurrency) {
+  return await exchangeRateService.convertPrice(priceInEUR, targetCurrency);
+}
+
 // Initialize Receipt System
 const { dbOperations } = require('./database');
 const ReceiptGenerator = require('./receipt-generator');
@@ -81,23 +121,31 @@ app.post('/api/create-checkout-session', async (req, res) => {
   if (!stripe) {
     return res.status(503).json({ error: 'Payment system not configured. Please set up Stripe API key.' });
   }
-  const { cart } = req.body;
-  const line_items = cart.map(item => {
+  const { cart, country } = req.body;
+  const currency = getCurrencyByCountry(country);
+  
+  // Konvertiere alle Preise parallel
+  const line_items = await Promise.all(cart.map(async (item) => {
     if (item.id === 1) {
       return {
         price: 'price_XXXXXXXXXXXXXXXXXXXXXXXX',
         quantity: item.quantity,
       };
     }
+    
+    // Rechne Preis von EUR in Zielwährung um
+    const convertedPrice = await convertPrice(item.price, currency);
+    const amountInCents = Math.round(convertedPrice * 100);
+    
     return {
       price_data: {
-        currency: 'eur',
+        currency: currency.toLowerCase(),
         product_data: { name: item.name },
-        unit_amount: Math.round(item.price * 100),
+        unit_amount: amountInCents,
       },
       quantity: item.quantity,
     };
-  });
+  }));
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -175,19 +223,26 @@ app.post('/api/send-confirmation', async (req, res) => {
 
 app.post('/api/create-payment-intent', async (req, res) => {
   const { cart, email, country, city, firstname, lastname } = req.body;
-  let amount = 0;
+  const currency = getCurrencyByCountry(country);
+  
+  // Berechne Gesamtbetrag in EUR
+  let amountInEUR = 0;
   for (const item of cart) {
     if (item.id === 1) {
-      amount += 1000 * item.quantity; // 10.00 EUR * 100
+      amountInEUR += 10.00 * item.quantity;
     } else {
-      amount += Math.round((item.price || 0) * 100) * item.quantity;
+      amountInEUR += (item.price || 0) * item.quantity;
     }
   }
 
-  // Versandkosten serverseitig basierend auf dem Land berechnen
+  // Versandkosten in EUR
   const europeanCountries = ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'GB'];
-  const shippingCost = europeanCountries.includes(country) ? 0 : 499;
-  amount += shippingCost;
+  const shippingCostEUR = europeanCountries.includes(country) ? 0 : 4.99;
+  amountInEUR += shippingCostEUR;
+  
+  // Rechne Gesamtbetrag in Zielwährung um
+  const convertedAmount = await convertPrice(amountInEUR, currency);
+  const amount = Math.round(convertedAmount * 100);
 
   try {
     if (amount < 50) {
@@ -195,7 +250,7 @@ app.post('/api/create-payment-intent', async (req, res) => {
     }
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
-      currency: 'eur',
+      currency: currency.toLowerCase(),
       receipt_email: email,
       description: 'Maios Bestellung',
       payment_method_types: ['card'],
@@ -503,6 +558,10 @@ app.post('/api/receipt/create', async (req, res) => {
     const taxAmount = (subtotal + shippingCost) * taxRate / (1 + taxRate);
     const totalAmount = subtotal + shippingCost;
     
+    // Ermittle Währung basierend auf Lieferland
+    const shippingCountry = shipping?.address?.country || customer.country || 'DE';
+    const currency = getCurrencyByCountry(shippingCountry);
+    
     // Erstelle Bestelldaten
     const orderData = {
       order_id: orderId,
@@ -518,7 +577,7 @@ app.post('/api/receipt/create', async (req, res) => {
       shipping_cost: shippingCost,
       tax_amount: taxAmount,
       total_amount: totalAmount,
-      currency: 'EUR',
+      currency: currency,
       notes: null,
       items: orderItems,
       created_at: new Date().toISOString()
@@ -715,6 +774,106 @@ app.post('/api/receipt/test-email', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('Test-E-Mail Fehler:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==========================================
+// EXCHANGE RATE API ROUTES
+// ==========================================
+
+// Hole aktuelle Wechselkurse
+app.get('/api/exchange-rates', async (req, res) => {
+  try {
+    const rates = await exchangeRateService.fetchLiveRates();
+    const cacheStatus = exchangeRateService.getCacheStatus();
+    
+    res.json({
+      success: true,
+      baseCurrency: 'EUR',
+      rates: rates,
+      cache: cacheStatus
+    });
+  } catch (error) {
+    console.error('Exchange Rates Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Konvertiere Preis
+app.post('/api/exchange-rates/convert', async (req, res) => {
+  try {
+    const { amount, from, to } = req.body;
+    
+    if (!amount || !from || !to) {
+      return res.status(400).json({ error: 'Amount, from, and to currency required' });
+    }
+    
+    const convertedAmount = await exchangeRateService.convertBetweenCurrencies(
+      parseFloat(amount),
+      from,
+      to
+    );
+    
+    const formatted = exchangeRateService.formatPrice(convertedAmount, to);
+    
+    res.json({
+      success: true,
+      original: {
+        amount: parseFloat(amount),
+        currency: from
+      },
+      converted: {
+        amount: convertedAmount,
+        currency: to,
+        formatted: formatted
+      }
+    });
+  } catch (error) {
+    console.error('Currency Conversion Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Hole unterstützte Währungen
+app.get('/api/exchange-rates/currencies', async (req, res) => {
+  try {
+    const currencies = await exchangeRateService.getSupportedCurrencies();
+    res.json({
+      success: true,
+      count: currencies.length,
+      currencies: currencies
+    });
+  } catch (error) {
+    console.error('Currencies Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Cache-Status abrufen
+app.get('/api/exchange-rates/cache-status', (req, res) => {
+  try {
+    const status = exchangeRateService.getCacheStatus();
+    res.json({
+      success: true,
+      cache: status
+    });
+  } catch (error) {
+    console.error('Cache Status Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Cache leeren (Admin)
+app.post('/api/exchange-rates/clear-cache', (req, res) => {
+  try {
+    exchangeRateService.clearCache();
+    res.json({
+      success: true,
+      message: 'Exchange rate cache cleared successfully'
+    });
+  } catch (error) {
+    console.error('Clear Cache Error:', error);
     res.status(500).json({ error: error.message });
   }
 });
