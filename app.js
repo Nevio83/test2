@@ -4107,13 +4107,15 @@ function handleCategorySearch(category) {
         let filteredProducts = [];
         
         if (category === 'alle') {
-            filteredProducts = products;
+            // Filter out AliExpress products even for "alle"
+            filteredProducts = products.filter(product => !product.sku || !product.sku.startsWith('ALI'));
         } else {
-            // Filter products by exact category match
+            // Filter products by exact category match AND exclude AliExpress
             filteredProducts = products.filter(product => {
                 const productCategory = product.category;
-                console.log(`ðŸ” Checking product: ${product.name} - Category: "${productCategory}" vs Filter: "${category}"`);
-                return productCategory === category;
+                const isNotAliExpress = !product.sku || !product.sku.startsWith('ALI');
+                console.log(`ðŸ” Checking product: ${product.name} - Category: "${productCategory}" vs Filter: "${category}", isNotAli: ${isNotAliExpress}`);
+                return productCategory === category && isNotAliExpress;
             });
         }
         
