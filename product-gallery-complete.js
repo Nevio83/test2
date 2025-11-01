@@ -66,7 +66,8 @@ class ProductImageGallery {
             46: 'Nordic Crystal Lamp bilder',
             47: '40 Oz Tumbler With Handle Straw Insulated bilder',
             48: '40 Oz Tumbler With Handle Straw Insulated Winter bilder',
-            49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder'
+            49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder',
+            50: 'Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -244,6 +245,52 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/Indoor Sensing Wall Lamp level.jpg`,
                         alt: 'Indoor Sensing Wall Lamp - Level',
                         color: 'Level'
+                    }
+                ];
+                break;
+                
+            case 50: // Luminous Crystal Ball
+                const folderName50 = 'Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder';
+                this.images = [
+                    {
+                        src: `../produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball.jpg`,
+                        alt: 'Luminous Crystal Ball - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName50}/Luminous Starry Sky And Planets Moon Moon Crystal Ball Ferris Wheel.jpg`,
+                        alt: 'Luminous Crystal Ball - Ferris Wheel',
+                        color: 'Ferris Wheel'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName50}/Luminous Starry Sky And Planets Moon Moon Crystal Ball Newt.jpg`,
+                        alt: 'Luminous Crystal Ball - Newt',
+                        color: 'Newt'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName50}/Luminous Starry Sky And Planets Moon Moon Crystal Ball Moon.jpg`,
+                        alt: 'Luminous Crystal Ball - Moon',
+                        color: 'Moon'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName50}/Luminous Starry Sky And Planets Moon Moon Crystal Ball Saturn.jpg`,
+                        alt: 'Luminous Crystal Ball - Saturn',
+                        color: 'Saturn'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName50}/Luminous Starry Sky And Planets Moon Moon Crystal Ball Smooth sailing.jpg`,
+                        alt: 'Luminous Crystal Ball - Smooth sailing',
+                        color: 'Smooth sailing'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName50}/Luminous Starry Sky And Planets Moon Moon Crystal Ball Snowman.jpg`,
+                        alt: 'Luminous Crystal Ball - Snowman',
+                        color: 'Snowman'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName50}/Luminous Starry Sky And Planets Moon Moon Crystal Ball Through the starry.jpg`,
+                        alt: 'Luminous Crystal Ball - Through the starry',
+                        color: 'Through the starry'
                     }
                 ];
                 break;
@@ -1367,7 +1414,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           'Produkt';
         
         // Initialisiere Gallery nur für Produkte mit Bildordnern
-        if ([10, 11, 17, 21, 26, 32, 33, 43].includes(productId)) {
+        if ([10, 11, 17, 21, 26, 32, 33, 43, 50].includes(productId)) {
             new ProductImageGallery(productId, productName);
         }
     }
