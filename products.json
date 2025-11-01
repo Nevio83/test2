@@ -84,6 +84,14 @@
           "price": 32.99,
           "originalPrice": 49.99,
           "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png"
+        },
+        {
+          "name": "Blau",
+          "code": "#4A90E2",
+          "sku": "CJJD112318814NM",
+          "price": 32.99,
+          "originalPrice": 49.99,
+          "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Blau.jpg"
         }
       ],
       "bundles": [
@@ -683,7 +691,7 @@
           "savings": 10
         }
       ],
-      "showInSlider": false
+      "showInSlider": true
     },
     {
       "id": 28,
@@ -790,59 +798,6 @@
         }
       ],
       "showInSlider": false
-    },
-    {
-      "id": 30,
-      "name": "Mini Electric Shoulder And Neck Massager",
-      "price": 16.99,
-      "originalPrice": 35.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Mini Electric Shoulder And Neck Massager.jpg",
-      "description": "Kompakter elektrischer Schulter- und Nackenmassager für die Halswirbelsäule. Perfekt für Büroarbeiter und zur Entspannung nach langen Arbeitstagen.",
-      "sku": "CJBJMRAM00871-Black-Recharge",
-      "inStock": true,
-      "shippingTime": "7-15 Werktage",
-      "tags": [
-        "nackenmassage",
-        "schulter",
-        "halswirbelsäule",
-        "entspannung"
-      ],
-      "features": [
-        "Speziell für Nacken und Schultern entwickelt",
-        "Elektrische Massage-Funktion",
-        "Kompakt und tragbar",
-        "Verschiedene Massage-Modi",
-        "Ideal für Büroarbeiter"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Wellness Starter",
-          "description": "Produkt + Wellness Zubehör",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte"
-          ],
-          "originalPrice": 29.99,
-          "bundlePrice": 24.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Wellness",
-          "description": "Komplettes Wellness-Set",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte",
-            "Premium Support"
-          ],
-          "originalPrice": 44.99,
-          "bundlePrice": 34.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": true
     },
     {
       "id": 21,
@@ -1065,6 +1020,22 @@
           "price": 4.99,
           "originalPrice": 24.99,
           "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png"
+        },
+        {
+          "name": "Gold",
+          "code": "#FFD700",
+          "sku": "CJJSAQJK00001-1PC Gold",
+          "price": 4.99,
+          "originalPrice": 24.99,
+          "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen gold.jpg"
+        },
+        {
+          "name": "Silber",
+          "code": "#C0C0C0",
+          "sku": "CJJSAQJK00001-1PC Silver",
+          "price": 4.99,
+          "originalPrice": 24.99,
+          "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen Silber.jpg"
         }
       ],
       "tags": [

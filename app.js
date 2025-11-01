@@ -4759,7 +4759,6 @@ function makeDropdownImagesClickable() {
       'Volcanic Flame Aroma Essential Oil Diffuser': 27,
       'Mini Muskel Massage Pistole': 28,
       'HaarÃ¶l-Applikator Kopfhaut Massager': 29,
-      'Mini Electric Shoulder And Neck Massager': 30,
       'Elektrischer Kopfhaut-Massagekamm': 31
     };
     

@@ -119,6 +119,11 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/350ml Elektrischer Mixer Entsafter Rosa.png`,
                         alt: '350ml Elektrischer Mixer Entsafter - Rosa/Pink',
                         color: 'Pink'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/350ml Elektrischer Mixer Entsafter Blau.jpg`,
+                        alt: '350ml Elektrischer Mixer Entsafter - Blau',
+                        color: 'Blau'
                     }
                 ];
                 break;
@@ -149,6 +154,16 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/Bluetooth Anti-Lost Finder Wassertropfen pink.png`,
                         alt: 'Bluetooth Anti-Lost Finder - Pink',
                         color: 'Pink'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Bluetooth Anti-Lost Finder Wassertropfen gold.jpg`,
+                        alt: 'Bluetooth Anti-Lost Finder - Gold',
+                        color: 'Gold'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/Bluetooth Anti-Lost Finder Wassertropfen Silber.jpg`,
+                        alt: 'Bluetooth Anti-Lost Finder - Silber',
+                        color: 'Silber'
                     }
                 ];
                 break;
