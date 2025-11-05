@@ -4312,7 +4312,7 @@ function renderAllProducts(allProductsGrid, products) {
 
 // Simple onclick function for search categories
 function searchCategoryClick(button, category) {
-    console.log('ðŸ” Search category clicked:', category);
+    console.log('🔍 Search category clicked:', category);
     
     // Remove active class from all buttons
     const allButtons = document.querySelectorAll('.lumiere-category-tab');
