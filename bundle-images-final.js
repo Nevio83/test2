@@ -835,68 +835,58 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log(`✅ Farbe ${colorName} für Set ${setIndex + 1} ausgewählt`);
         
-        // WICHTIG: Aktualisiere window.product.price und rendere Bundles neu
-        if (window.product && window.product.colors) {
-            const selectedColor = window.product.colors.find(c => c.name === colorName);
-            if (selectedColor && selectedColor.price !== window.product.price) {
-                const oldPrice = window.product.price;
-                window.product.price = selectedColor.price;
-                console.log(`🔄 Bundle-Farbwechsel: ${oldPrice} → ${selectedColor.price}`);
-                
-                // Rendere Bundles mit neuem Preis neu
-                if (typeof window.renderBundlesWithImages === 'function') {
-                    console.log('🔄 Rendere Bundles mit neuem Preis neu...');
-                    
-                    // Speichere die aktuell ausgewählten Farben für jedes Set
-                    const selectedColors = [];
-                    document.querySelectorAll('.bundle-card').forEach((card, index) => {
-                        const selected = card.querySelector('.color-image-option.selected');
-                        if (selected) {
-                            const colorName = selected.querySelector('.color-name')?.textContent || '';
-                            selectedColors[index] = colorName;
-                        }
-                    });
-                    
-                    // WICHTIG: Setze das Flag zurück damit Neu-Rendering erlaubt wird
-                    const bundleSection = document.getElementById('bundle-section');
-                    if (bundleSection) {
-                        bundleSection.dataset.bundleRendered = 'false';
+        // Aktualisiere den Bundle-Preis basierend auf allen ausgewählten Farben
+        updateBundlePriceDisplay();
+    };
+    
+    // Neue Funktion: Berechne Gesamtpreis basierend auf ausgewählten Farben in allen Sets
+    function updateBundlePriceDisplay() {
+        const allBundleCards = document.querySelectorAll('.bundle-card');
+        
+        allBundleCards.forEach((card) => {
+            const selectedOptions = card.querySelectorAll('.color-image-option.selected');
+            let totalPrice = 0;
+            let qty = selectedOptions.length;
+            
+            // Berechne Gesamtpreis aller ausgewählten Farben
+            selectedOptions.forEach(opt => {
+                const colorName = opt.querySelector('.color-name')?.textContent;
+                if (colorName && window.product && window.product.colors) {
+                    const color = window.product.colors.find(c => c.name === colorName);
+                    if (color) {
+                        totalPrice += color.price;
                     }
-                    
-                    window.renderBundlesWithImages();
-                    
-                    // Stelle die Auswahl nach dem Rendern wieder her (OHNE Click um Endlosschleife zu vermeiden)
-                    setTimeout(() => {
-                        selectedColors.forEach((colorName, index) => {
-                            if (colorName) {
-                                const bundleCard = document.querySelectorAll('.bundle-card')[index];
-                                if (bundleCard) {
-                                    // Entferne selected von allen Optionen
-                                    bundleCard.querySelectorAll('.color-image-option').forEach(opt => {
-                                        opt.classList.remove('selected');
-                                        const checkmark = opt.querySelector('.checkmark');
-                                        if (checkmark) checkmark.remove();
-                                    });
-                                    
-                                    // Finde und markiere die richtige Option (OHNE Click)
-                                    const colorOption = Array.from(bundleCard.querySelectorAll('.color-image-option'))
-                                        .find(opt => opt.querySelector('.color-name')?.textContent === colorName);
-                                    if (colorOption) {
-                                        colorOption.classList.add('selected');
-                                        if (!colorOption.querySelector('.checkmark')) {
-                                            const checkmark = document.createElement('span');
-                                            checkmark.className = 'checkmark';
-                                            checkmark.textContent = '✓';
-                                            colorOption.insertBefore(checkmark, colorOption.firstChild);
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    }, 100);
                 }
+            });
+            
+            // Wende Bundle-Rabatt an
+            let discount = 0;
+            if (qty === 2) discount = 0.15;
+            if (qty === 3) discount = 0.20;
+            
+            const discountedPrice = totalPrice * (1 - discount);
+            
+            // Update Preis-Anzeige in der Bundle-Card
+            const priceDisplay = card.querySelector('.price');
+            if (priceDisplay && totalPrice > 0) {
+                priceDisplay.textContent = `€${discountedPrice.toFixed(2)}`;
             }
-        }
+            
+            // Update Original-Preis
+            const originalDisplay = card.querySelector('.original');
+            if (originalDisplay && discount > 0) {
+                originalDisplay.textContent = `€${totalPrice.toFixed(2)}`;
+            }
+            
+            // Update Savings
+            const savingsDisplay = card.querySelector('.savings-text');
+            if (savingsDisplay && discount > 0) {
+                const savings = totalPrice - discountedPrice;
+                savingsDisplay.textContent = `Spare €${savings.toFixed(2)}`;
+            }
+        });
+        
+        console.log('✅ Bundle-Preise aktualisiert basierend auf Auswahl');
     };
     
     // Neue Funktion für spezifische Bundle-Menge zum Warenkorb hinzufügen
