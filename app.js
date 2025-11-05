@@ -4955,4 +4955,70 @@ setTimeout(() => {
         };
         console.log('âœ… Warenkorb-Dropdown Fix aktiviert');
     }
-}, 1000)
+}, 1000);
+
+// Kategorie-Buttons auf der Hauptseite
+document.addEventListener('DOMContentLoaded', function() {
+    const mainCategoryTabs = document.querySelectorAll('main .lumiere-category-tab');
+    mainCategoryTabs.forEach(tab => {
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            const category = this.getAttribute('data-category');
+            mainCategoryTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            const mainBanner = document.getElementById('alleProdukteBanner');
+            const categoryBanners = document.querySelectorAll('.category-alle-produkte-banner');
+            const technikSection = document.querySelector('.category-technik');
+            const beleuchtungSection = document.querySelector('.category-beleuchtung');
+            const haushaltSection = document.querySelector('.category-haushalt');
+            const wellnessSection = document.querySelector('.category-wellness');
+            const bestsellerSection = document.querySelector('.category-bestseller');
+            
+            if (category === 'alle') {
+                if (mainBanner) mainBanner.style.display = 'block';
+                if (technikSection) technikSection.style.display = 'block';
+                if (beleuchtungSection) beleuchtungSection.style.display = 'block';
+                if (haushaltSection) haushaltSection.style.display = 'block';
+                if (wellnessSection) wellnessSection.style.display = 'block';
+                if (bestsellerSection) bestsellerSection.style.display = 'block';
+                categoryBanners.forEach(banner => banner.style.display = 'none');
+            } else {
+                if (mainBanner) mainBanner.style.display = 'none';
+                if (bestsellerSection) bestsellerSection.style.display = 'none';
+                
+                if (category === 'Technik/Gadgets') {
+                    if (technikSection) technikSection.style.display = 'block';
+                    if (beleuchtungSection) beleuchtungSection.style.display = 'none';
+                    if (haushaltSection) haushaltSection.style.display = 'none';
+                    if (wellnessSection) wellnessSection.style.display = 'none';
+                } else if (category === 'Beleuchtung') {
+                    if (technikSection) technikSection.style.display = 'none';
+                    if (beleuchtungSection) beleuchtungSection.style.display = 'block';
+                    if (haushaltSection) haushaltSection.style.display = 'none';
+                    if (wellnessSection) wellnessSection.style.display = 'none';
+                } else if (category === 'Haushalt und Küche') {
+                    if (technikSection) technikSection.style.display = 'none';
+                    if (beleuchtungSection) beleuchtungSection.style.display = 'none';
+                    if (haushaltSection) haushaltSection.style.display = 'block';
+                    if (wellnessSection) wellnessSection.style.display = 'none';
+                } else if (category === 'Körperpflege/Wellness') {
+                    if (technikSection) technikSection.style.display = 'none';
+                    if (beleuchtungSection) beleuchtungSection.style.display = 'none';
+                    if (haushaltSection) haushaltSection.style.display = 'none';
+                    if (wellnessSection) wellnessSection.style.display = 'block';
+                }
+                
+                categoryBanners.forEach(banner => {
+                    if (banner.getAttribute('data-category') === category) {
+                        banner.style.display = 'block';
+                        banner.style.opacity = '0';
+                        banner.style.transition = 'opacity 0.5s ease-in-out';
+                        setTimeout(() => banner.style.opacity = '1', 10);
+                    } else {
+                        banner.style.display = 'none';
+                    }
+                });
+            }
+        });
+    });
+})
