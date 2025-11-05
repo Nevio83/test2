@@ -4,6 +4,42 @@ console.log('🎨 Bundle Images Final wird geladen...');
 // Globale Variable um mehrfaches Laden zu verhindern
 let bundleSystemInitialized = false;
 
+// Globale Funktion zum Aktualisieren der Bundle-Preise (sofort verfügbar)
+window.updateBundlePricesWithNewPrice = function(newPrice) {
+    if (!window.product) {
+        console.log('⚠️ window.product nicht verfügbar');
+        return;
+    }
+    
+    console.log('🔄 Aktualisiere Bundle-Preise auf:', newPrice);
+    
+    // Update product price
+    window.product.price = newPrice;
+    
+    // Setze das Flag zurück damit Neu-Rendering erlaubt wird
+    const bundleSection = document.getElementById('bundle-section');
+    if (bundleSection) {
+        bundleSection.dataset.bundleRendered = 'false';
+    }
+    
+    // Re-render bundles with new price if function exists
+    if (typeof window.renderBundlesWithImages === 'function') {
+        window.renderBundlesWithImages();
+        console.log('✅ Bundles mit neuem Preis neu gerendert:', newPrice);
+    } else {
+        console.log('⚠️ renderBundlesWithImages noch nicht verfügbar, versuche später...');
+        setTimeout(() => {
+            if (typeof window.renderBundlesWithImages === 'function') {
+                // Setze Flag auch hier zurück
+                if (bundleSection) {
+                    bundleSection.dataset.bundleRendered = 'false';
+                }
+                window.renderBundlesWithImages();
+            }
+        }, 100);
+    }
+};
+
 // Warte bis DOM bereit ist
 document.addEventListener('DOMContentLoaded', function() {
     if (bundleSystemInitialized) {
@@ -798,6 +834,69 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         console.log(`✅ Farbe ${colorName} für Set ${setIndex + 1} ausgewählt`);
+        
+        // WICHTIG: Aktualisiere window.product.price und rendere Bundles neu
+        if (window.product && window.product.colors) {
+            const selectedColor = window.product.colors.find(c => c.name === colorName);
+            if (selectedColor && selectedColor.price !== window.product.price) {
+                const oldPrice = window.product.price;
+                window.product.price = selectedColor.price;
+                console.log(`🔄 Bundle-Farbwechsel: ${oldPrice} → ${selectedColor.price}`);
+                
+                // Rendere Bundles mit neuem Preis neu
+                if (typeof window.renderBundlesWithImages === 'function') {
+                    console.log('🔄 Rendere Bundles mit neuem Preis neu...');
+                    
+                    // Speichere die aktuell ausgewählten Farben für jedes Set
+                    const selectedColors = [];
+                    document.querySelectorAll('.bundle-card').forEach((card, index) => {
+                        const selected = card.querySelector('.color-image-option.selected');
+                        if (selected) {
+                            const colorName = selected.querySelector('.color-name')?.textContent || '';
+                            selectedColors[index] = colorName;
+                        }
+                    });
+                    
+                    // WICHTIG: Setze das Flag zurück damit Neu-Rendering erlaubt wird
+                    const bundleSection = document.getElementById('bundle-section');
+                    if (bundleSection) {
+                        bundleSection.dataset.bundleRendered = 'false';
+                    }
+                    
+                    window.renderBundlesWithImages();
+                    
+                    // Stelle die Auswahl nach dem Rendern wieder her (OHNE Click um Endlosschleife zu vermeiden)
+                    setTimeout(() => {
+                        selectedColors.forEach((colorName, index) => {
+                            if (colorName) {
+                                const bundleCard = document.querySelectorAll('.bundle-card')[index];
+                                if (bundleCard) {
+                                    // Entferne selected von allen Optionen
+                                    bundleCard.querySelectorAll('.color-image-option').forEach(opt => {
+                                        opt.classList.remove('selected');
+                                        const checkmark = opt.querySelector('.checkmark');
+                                        if (checkmark) checkmark.remove();
+                                    });
+                                    
+                                    // Finde und markiere die richtige Option (OHNE Click)
+                                    const colorOption = Array.from(bundleCard.querySelectorAll('.color-image-option'))
+                                        .find(opt => opt.querySelector('.color-name')?.textContent === colorName);
+                                    if (colorOption) {
+                                        colorOption.classList.add('selected');
+                                        if (!colorOption.querySelector('.checkmark')) {
+                                            const checkmark = document.createElement('span');
+                                            checkmark.className = 'checkmark';
+                                            checkmark.textContent = '✓';
+                                            colorOption.insertBefore(checkmark, colorOption.firstChild);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }, 100);
+                }
+            }
+        }
     };
     
     // Neue Funktion für spezifische Bundle-Menge zum Warenkorb hinzufügen
