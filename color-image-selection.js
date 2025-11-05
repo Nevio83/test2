@@ -526,12 +526,83 @@ class ImageColorSelection {
             el.textContent = `€${(color.price * quantity).toFixed(2)}`;
         });
         
-        // Update window.product.price für andere Funktionen
+        console.log(`Preis aktualisiert auf: €${color.price.toFixed(2)}`);
+        
+        // WICHTIG: Erst window.product.price aktualisieren, DANN Bundles neu rendern
         if (window.product) {
+            const oldPrice = window.product.price;
             window.product.price = color.price;
+            console.log(`✅ window.product.price aktualisiert: ${oldPrice} → ${color.price}`);
         }
         
-        console.log(`Preis aktualisiert auf: €${color.price.toFixed(2)}`);
+        // Update Bundle-Preise wenn Bundle-System vorhanden
+        this.updateBundlePrices(color.price);
+    }
+    
+    updateBundlePrices(newPrice) {
+        console.log('🔄 updateBundlePrices aufgerufen mit:', newPrice);
+        console.log('📦 window.product.price ist jetzt:', window.product?.price);
+        console.log('🔍 Verfügbare Funktionen:', {
+            renderBundlesWithImages: typeof window.renderBundlesWithImages,
+            updateBundlePricesWithNewPrice: typeof window.updateBundlePricesWithNewPrice
+        });
+        
+        // Versuche renderBundlesWithImages direkt aufzurufen
+        if (typeof window.renderBundlesWithImages === 'function') {
+            console.log('✅ Rufe renderBundlesWithImages auf mit window.product.price:', window.product.price);
+            window.renderBundlesWithImages();
+            console.log('✅ renderBundlesWithImages abgeschlossen');
+            return;
+        }
+        
+        // Fallback: Verwende updateBundlePricesWithNewPrice
+        if (typeof window.updateBundlePricesWithNewPrice === 'function') {
+            console.log('✅ Rufe updateBundlePricesWithNewPrice auf');
+            window.updateBundlePricesWithNewPrice(newPrice);
+            return;
+        }
+        
+        console.log('⚠️ Keine Bundle-Update-Funktion verfügbar, verwende Fallback');
+        
+        // Fallback: Manuelle Aktualisierung
+        const bundleOptions = document.querySelectorAll('.bundle-option');
+        if (bundleOptions.length === 0) {
+            console.log('⚠️ Keine .bundle-option Elemente gefunden');
+        }
+        
+        bundleOptions.forEach((option) => {
+            const qtyMatch = option.textContent.match(/(\d+)\s*Set/);
+            if (!qtyMatch) return;
+            
+            const qty = parseInt(qtyMatch[1]);
+            let discount = 0;
+            if (qty === 2) discount = 0.15;
+            if (qty === 3) discount = 0.20;
+            
+            const pricePerSet = newPrice * (1 - discount);
+            const totalPrice = pricePerSet * qty;
+            const savings = (newPrice - pricePerSet) * qty;
+            
+            // Update Hauptpreis
+            const priceEl = option.querySelector('.price');
+            if (priceEl) {
+                priceEl.textContent = `€${totalPrice.toFixed(2)}`;
+            }
+            
+            // Update Original-Preis
+            const originalEl = option.querySelector('.original');
+            if (originalEl && discount > 0) {
+                originalEl.textContent = `€${(newPrice * qty).toFixed(2)}`;
+            }
+            
+            // Update Savings
+            const savingsEl = option.querySelector('.savings-text');
+            if (savingsEl && savings > 0) {
+                savingsEl.textContent = `Spare €${savings.toFixed(2)}`;
+            }
+        });
+        
+        console.log(`✅ Bundle-Preise manuell aktualisiert auf: €${newPrice.toFixed(2)}`);
     }
 }
 

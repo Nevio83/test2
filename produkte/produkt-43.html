@@ -316,7 +316,7 @@
   const product = {
     "id": 43,
     "name": "Portable Mini Thermal Label Printer",
-    "price": 39.99,
+    "price": 21.99,
     "originalPrice": 59.99,
     "category": "Technik/Gadgets",
     "image": "../produkt bilder/Portable Mini Thermal Label Printer.jpg",
@@ -326,14 +326,14 @@
     "shippingTime": "7-15 Werktage",
     "showInSlider": false,
     "colors": [
-      {"name": "Grün", "code": "#008000", "sku": "CJJT136588021UF", "price": 39.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer grün.jpg"},
-      {"name": "Blau", "code": "#0066CC", "sku": "CJJT136588022VE", "price": 39.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer blau.jpg"},
-      {"name": "Pink", "code": "#FFC0CB", "sku": "CJJT136588034HS", "price": 39.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer pink.jpg"},
-      {"name": "Gelb", "code": "#FFD700", "sku": "CJJT136588024XC", "price": 39.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer gelb.jpg"},
-      {"name": "Weiß", "code": "#FFFFFF", "sku": "CJJT136588038LO", "price": 39.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer weiß.jpg"},
-      {"name": "Style A Rollen", "code": "#FFE4B5", "sku": "CJJT136588011KP", "price": 12.99, "originalPrice": 18.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen A.jpg"},
-      {"name": "Style B Rollen", "code": "#E6E6FA", "sku": "CJJT136588012LO", "price": 12.99, "originalPrice": 18.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen B.jpg"},
-      {"name": "Style C Rollen", "code": "#F0F8FF", "sku": "CJJT136588013MN", "price": 12.99, "originalPrice": 18.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen C.jpg"}
+      {"name": "Grün", "code": "#008000", "sku": "CJJT136588021UF", "price": 21.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer grün.jpg"},
+      {"name": "Blau", "code": "#0066CC", "sku": "CJJT136588022VE", "price": 21.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer blau.jpg"},
+      {"name": "Pink", "code": "#FFC0CB", "sku": "CJJT136588034HS", "price": 21.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer pink.jpg"},
+      {"name": "Gelb", "code": "#FFD700", "sku": "CJJT136588024XC", "price": 21.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer gelb.jpg"},
+      {"name": "Weiß", "code": "#FFFFFF", "sku": "CJJT136588038LO", "price": 21.99, "originalPrice": 59.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer weiß.jpg"},
+      {"name": "Style A Rollen", "code": "#FFE4B5", "sku": "CJJT136588011KP", "price": 3.99, "originalPrice": 18.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen A.jpg"},
+      {"name": "Style B Rollen", "code": "#E6E6FA", "sku": "CJJT136588012LO", "price": 3.99, "originalPrice": 18.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen B.jpg"},
+      {"name": "Style C Rollen", "code": "#F0F8FF", "sku": "CJJT136588013MN", "price": 3.99, "originalPrice": 18.99, "image": "../produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen C.jpg"}
     ],
     "tags": ["thermal printer", "label printer", "bluetooth", "portable", "mini printer", "photo printer", "gadget"]
   };
@@ -1022,19 +1022,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Warte bis ImageColorSelection initialisiert ist
-    setTimeout(() => {
-        if (window.imageColorSelection && window.imageColorSelection.productData) {
-            const product = window.imageColorSelection.productData;
-            const colors = product.colors;
-            const productImage = product.image;
-            
-            // Initialisiere Bundle mit Bildern
-            if (window.renderBundlesWithImageColors) {
-                window.renderBundlesWithImageColors(product.id, colors, productImage);
-            }
-        }
-    }, 500);
+    // Bundle-System wird automatisch von bundle-images-final.js initialisiert
+    console.log('✅ Produkt 43 geladen - Bundle-System aktiv');
 });
 </script>
 <!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
