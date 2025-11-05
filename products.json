@@ -591,7 +591,7 @@
           "name": "Roland Purple",
           "code": "#663399",
           "sku": "CJYD186774301AZ",
-          "price": 10.99,
+          "price": 13.99,
           "originalPrice": 20.99,
           "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg"
         },
@@ -599,7 +599,7 @@
           "name": "Lunar Rock",
           "code": "#708090",
           "sku": "CJYD186774302BY",
-          "price": 11.99,
+          "price": 13.99,
           "originalPrice": 21.99,
           "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg"
         }
@@ -815,7 +815,7 @@
           "name": "Crown",
           "code": "#FFD700",
           "sku": "CJYD188109101AZ",
-          "price": 39.99,
+          "price": 21.99,
           "originalPrice": 59.99,
           "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal crown.png"
         },
@@ -823,7 +823,7 @@
           "name": "Square",
           "code": "#C0C0C0",
           "sku": "CJYD188109102BY",
-          "price": 39.99,
+          "price": 21.99,
           "originalPrice": 59.99,
           "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal square.png"
         }
@@ -1670,7 +1670,7 @@
           "name": "Grün",
           "code": "#008000",
           "sku": "CJJT136588021UF",
-          "price": 39.99,
+          "price": 21.99,
           "originalPrice": 59.99,
           "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer grün.jpg"
         },
@@ -1678,7 +1678,7 @@
           "name": "Blau",
           "code": "#0066CC",
           "sku": "CJJT136588022VE",
-          "price": 39.99,
+          "price": 21.99,
           "originalPrice": 59.99,
           "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer blau.jpg"
         },
@@ -1686,7 +1686,7 @@
           "name": "Pink",
           "code": "#FFC0CB",
           "sku": "CJJT136588034HS",
-          "price": 39.99,
+          "price": 21.99,
           "originalPrice": 59.99,
           "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer pink.jpg"
         },
@@ -1694,7 +1694,7 @@
           "name": "Gelb",
           "code": "#FFD700",
           "sku": "CJJT136588024XC",
-          "price": 39.99,
+          "price": 21.99,
           "originalPrice": 59.99,
           "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer gelb.jpg"
         },
@@ -1702,7 +1702,7 @@
           "name": "Weiß",
           "code": "#FFFFFF",
           "sku": "CJJT136588038LO",
-          "price": 39.99,
+          "price": 21.99,
           "originalPrice": 59.99,
           "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer weiß.jpg"
         },
@@ -1710,7 +1710,7 @@
           "name": "Style A Rollen",
           "code": "#FFE4B5",
           "sku": "CJJT136588011KP",
-          "price": 12.99,
+          "price": 3.99,
           "originalPrice": 18.99,
           "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen A.jpg"
         },
@@ -1718,7 +1718,7 @@
           "name": "Style B Rollen",
           "code": "#E6E6FA",
           "sku": "CJJT136588012LO",
-          "price": 12.99,
+          "price": 3.99,
           "originalPrice": 18.99,
           "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen B.jpg"
         },
@@ -1726,7 +1726,7 @@
           "name": "Style C Rollen",
           "code": "#F0F8FF",
           "sku": "CJJT136588013MN",
-          "price": 12.99,
+          "price": 3.99,
           "originalPrice": 18.99,
           "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen C.jpg"
         }
