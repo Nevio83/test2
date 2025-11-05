@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -232,7 +232,12 @@
             try {
                 const response = await fetch('../products.json');
                 const allProducts = await response.json();
-                const similar = allProducts.filter(p => p.category === category && p.id !== currentProductId).slice(0, 4);
+                // Filter: gleiche Kategorie, nicht aktuelles Produkt, KEINE Ali-Produkte
+                const similar = allProducts.filter(p => 
+                    p.category === category && 
+                    p.id !== currentProductId && 
+                    (!p.sku || !p.sku.startsWith('ALI'))
+                ).slice(0, 4);
 
                 if (similar.length > 0) {
                     grid.innerHTML = similar.map(p => `
