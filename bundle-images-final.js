@@ -836,7 +836,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
                 17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
                 21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg', category: 'Beleuchtung' },
-                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 10.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
+                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 13.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
                 47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 29.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated.jpg', category: 'Haushalt und Küche' }
             };
             
@@ -963,7 +963,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
                 17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
                 21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg', category: 'Beleuchtung' },
-                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 10.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
+                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 13.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
                 47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 29.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated.jpg', category: 'Haushalt und Küche' }
             };
             
