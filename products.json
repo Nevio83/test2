@@ -1079,7 +1079,7 @@
           "name": "Schwarz",
           "code": "#2C2C2C",
           "sku": "CJSN105028901AZ",
-          "price": 29.99,
+          "price": 23.99,
           "originalPrice": 39.99,
           "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwarz.jpg"
         },
@@ -1087,7 +1087,7 @@
           "name": "Weiß",
           "code": "#FFFFFF",
           "sku": "CJSN105028907GT",
-          "price": 29.99,
+          "price": 23.99,
           "originalPrice": 39.99,
           "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg"
         }
@@ -1865,16 +1865,16 @@
           "name": "Weiß",
           "code": "#FFFFFF",
           "sku": "CJJT122932910JQ",
-          "price": 26.99,
-          "originalPrice": 41.99,
+          "price": 24.99,
+          "originalPrice": 39.99,
           "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp weiß.jpg"
         },
         {
           "name": "Gelb",
           "code": "#FFD700",
           "sku": "CJJT122932915OL",
-          "price": 25.99,
-          "originalPrice": 40.99,
+          "price": 24.99,
+          "originalPrice": 39.99,
           "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp gelb.jpg"
         }
       ],

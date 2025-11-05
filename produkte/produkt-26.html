@@ -338,36 +338,6 @@
 
   // Mache Produktdaten global verfügbar für Bundle-System
   window.product = product;
-  // Bundles dynamisch laden
-  fetch('../products.json')
-    .then(res => res.json())
-    .then(products => {
-      const prod = products.find(p => p.id === product.id);
-      if (prod && prod.bundles && prod.bundles.length > 0) {
-        renderBundles(prod.bundles);
-      } else {
-        // Fallback: Bundle-Box immer anzeigen
-        // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
-  setTimeout(() => {
-    if (window.renderBundlesWithColors) {
-      // Lade Farben aus products.json
-      fetch('../products.json')
-        .then(res => res.json())
-        .then(products => {
-          const prod = products.find(p => p.id === product.id);
-          if (prod && prod.colors) {
-            window.renderBundlesWithColors(product.id, prod.colors);
-          } else {
-            renderBundles();
-          }
-        })
-        .catch(() => renderBundles());
-    } else {
-      renderBundles();
-    }
-  }, 500);
-      }
-    });
 
   function getWishlist() {
     return JSON.parse(localStorage.getItem('wishlist')) || [];
@@ -575,107 +545,6 @@
       showNotification('Bundle zum Warenkorb hinzugefügt');
     }
 }
-
-  function renderBundles() {
-    const einzelpreis = 13.99;
-    const staffel = [
-      {qty:1, price:einzelpreis, original:einzelpreis},
-      {qty:2, price:(einzelpreis*0.85), original:einzelpreis},
-      {qty:3, price:(einzelpreis*0.80), original:einzelpreis}
-    ];
-    const section = document.getElementById('bundle-section');
-    let selected = 1;
-    section.innerHTML = `
-      <div class="bundle-box">
-        <div class="bundle-header">BUNDLE & SPARE</div>
-        <form id="bundleForm">
-          ${staffel.map((s, i) => `
-            <div class="bundle-card${i===selected?' selected':''}" data-index="${i}">
-              <input type="radio" name="bundle" class="bundle-radio" id="bundleRadio${i}" value="${i}" ${i===selected?'checked':''}>
-              <div class="bundle-info">
-                <div class="bundle-title">
-                  ${s.qty} Set${s.qty>1?'s':''} kaufen
-                  ${i===1 ? '<span class="bundle-badge popular">Am beliebtesten</span>' : ''}
-                  ${i===2 ? '<span class="bundle-badge savings">Meiste Ersparnis</span>' : ''}
-                  ${i>0 ? `<span class="bundle-label">EXTRA ${i===1?'15':i===2?'20':'0'}% RABATT</span>` : ''}
-                </div>
-                <div class="bundle-prices">
-                  €${s.price.toFixed(2)} pro Set
-                  <span class="savings">Spare €${((s.original-s.price)*s.qty).toFixed(2)}</span>
-                </div>
-                ${s.qty>1?`<div class='bundle-total'>Gesamt: <b>€${(s.price*s.qty).toFixed(2)}</b></div>`:''}
-              </div>
-            </div>
-          `).join('')}
-          <button type="submit" class="btn bundle-add-btn">In den Warenkorb</button>
-        </form>
-      </div>
-    `;
-    // Interaktive Auswahl
-    const cards = section.querySelectorAll('.bundle-card');
-    const radios = section.querySelectorAll('.bundle-radio');
-    
-    // Event-Listener für Radio-Buttons
-    radios.forEach((radio, i) => {
-      radio.addEventListener('change', () => {
-        cards.forEach(c => c.classList.remove('selected'));
-        cards[i].classList.add('selected');
-      });
-    });
-
-    // Event-Listener für Bundle-Cards
-    cards.forEach((card, i) => {
-      card.addEventListener('click', (e) => {
-        // Verhindere Bubbling wenn auf Radio geklickt wurde
-        if (e.target === radios[i]) return;
-        
-        // Wähle Radio-Button aus
-        radios[i].checked = true;
-        
-        // Aktualisiere Selected-Status
-        cards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        
-        // Trigger change Event auf Radio
-        radios[i].dispatchEvent(new Event('change'));
-      });
-    });
-
-    section.querySelector('#bundleForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const idx = Array.from(radios).findIndex(r => r.checked);
-      const s = staffel[idx];
-      addBundleToCart({
-        id: product.id,
-        name: product.name + ` (${s.qty} Set${s.qty>1?'s':''})`,
-        price: s.price * s.qty,
-        image: product.image,
-        description: product.description + ` (Bundle: ${s.qty} Set${s.qty>1?'s':''})`,
-        bundleId: `${product.id}-qty${s.qty}`,
-        quantity: s.qty
-      });
-    });
-  }
-
-  // Verwende die erweiterte Bundle-Funktion mit Farbauswahl wenn verfügbar
-  setTimeout(() => {
-    if (window.renderBundlesWithColors) {
-      // Lade Farben aus products.json
-      fetch('../products.json')
-        .then(res => res.json())
-        .then(products => {
-          const prod = products.find(p => p.id === product.id);
-          if (prod && prod.colors) {
-            window.renderBundlesWithColors(product.id, prod.colors);
-          } else {
-            renderBundles();
-          }
-        })
-        .catch(() => renderBundles());
-    } else {
-      renderBundles();
-    }
-  }, 500);
 
   // Funktionen für die neue Schnellbestellung
   function increaseQuantity(event) {
@@ -936,45 +805,12 @@
   }
 </script>
 
-<!-- App.js für globale Funktionen -->
-<script src="../app.js"></script>
-
-<!-- Color Cart Bridge für Farbauswahl-Integration -->
+<!-- Scripts -->
+<script src="../app.js" defer></script>
 <script src="../color-cart-bridge.js"></script>
-
-<!-- Bundle mit Bildern -->
-<script src="../bundle-images-final.js"></script>
-<script>
-    // Überschreibe lokale addBundleToCart mit der globalen Version
-    if (window.addBundleToCart) {
-        // Globale Version ist verfügbar
-        console.log('Bundle-System bereit');
-    }
-</script>
-
-<!-- Bild-basierte Farbauswahl -->
 <script src="../color-image-selection.js"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Warte bis ImageColorSelection initialisiert ist
-    setTimeout(() => {
-        if (window.imageColorSelection && window.imageColorSelection.productData) {
-            const product = window.imageColorSelection.productData;
-            const colors = product.colors;
-            const productImage = product.image;
-            
-            // Initialisiere Bundle mit Bildern
-            if (window.renderBundlesWithImageColors) {
-                window.renderBundlesWithImageColors(product.id, colors, productImage);
-            }
-        }
-    }, 500);
-});
-</script>
-<!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
-
-    <script src="../product-gallery-complete.js"></script>
+<script src="../bundle-images-final.js"></script>
+<script src="../product-gallery-complete.js"></script>
 
 <script>
 // Fullscreen-Funktionalität

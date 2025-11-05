@@ -507,12 +507,31 @@ class ImageColorSelection {
     }
     
     updatePrice(color) {
-        if (color.price !== this.productData.price) {
-            const priceElements = document.querySelectorAll('.price-tag, .product-price');
-            priceElements.forEach(el => {
-                el.textContent = `€${color.price.toFixed(2)}`;
-            });
+        // Update Hero Section Preise
+        const priceElements = document.querySelectorAll('.price-tag, .product-price');
+        priceElements.forEach(el => {
+            el.textContent = `€${color.price.toFixed(2)}`;
+        });
+        
+        // Update Quick Order Preise (current-price)
+        const currentPriceElements = document.querySelectorAll('.current-price');
+        currentPriceElements.forEach(el => {
+            el.textContent = `€${color.price.toFixed(2)}`;
+        });
+        
+        // Update Total Preise
+        const totalPriceElements = document.querySelectorAll('#totalPrice, #totalPrice-mobile');
+        totalPriceElements.forEach(el => {
+            const quantity = parseInt(document.getElementById('quantity')?.value || document.getElementById('quantity-mobile')?.value || 1);
+            el.textContent = `€${(color.price * quantity).toFixed(2)}`;
+        });
+        
+        // Update window.product.price für andere Funktionen
+        if (window.product) {
+            window.product.price = color.price;
         }
+        
+        console.log(`Preis aktualisiert auf: €${color.price.toFixed(2)}`);
     }
 }
 
