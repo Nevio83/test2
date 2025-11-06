@@ -21,7 +21,7 @@ window.clearCart = function() {
     console.log('Cart cleared, hiding dropdown');
     const cartDropdown = document.getElementById('cartDropdown');
     if (cartDropdown) {
-      // FlÃ¼ssige SchlieÃŸ-Animation
+      // Flüssige Schließ-Animation
       cartDropdown.classList.add('hiding');
       cartDropdown.classList.remove('show');
       
@@ -354,7 +354,7 @@ function initializeAddToCartButtons() {
       const newButton = button.cloneNode(true);
       button.parentNode.replaceChild(newButton, button);
       
-      // FÃ¼ge den Event Listener zum neuen Button hinzu
+      // Füge den Event Listener zum neuen Button hinzu
       newButton.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -377,7 +377,7 @@ function initializeAddToCartButtons() {
             
             // Visual feedback for cart dropdown buttons
             const originalText = this.innerHTML;
-            this.innerHTML = '<i class="bi bi-check"></i> HinzugefÃ¼gt';
+            this.innerHTML = '<i class="bi bi-check"></i> Hinzugefügt';
             this.style.background = 'var(--success-color)';
             
             setTimeout(() => {
@@ -1099,7 +1099,7 @@ function initializeCartDropdown() {
   if (closeCartDropdown && cartDropdown) {
     closeCartDropdown.addEventListener('click', (e) => {
       e.preventDefault();
-      // FlÃ¼ssige SchlieÃŸ-Animation
+      // Flüssige Schließ-Animation
       cartDropdown.classList.add('hiding');
       cartDropdown.classList.remove('show');
       
@@ -1115,7 +1115,7 @@ function initializeCartDropdown() {
     if (cartDropdown && cartDropdown.classList.contains('show')) {
       // Check if click is outside the cart dropdown and cart button
       if (!cartDropdown.contains(e.target) && !cartButton.contains(e.target)) {
-        // FlÃ¼ssige SchlieÃŸ-Animation
+        // Flüssige Schließ-Animation
         cartDropdown.classList.add('hiding');
         cartDropdown.classList.remove('show');
         
@@ -1233,7 +1233,7 @@ function renderCartDropdown() {
     footer.style.visibility = 'visible';
     totalElement.textContent = '0.00'; // Gesamt auf 0 setzen bei leerem Warenkorb
     
-    // Bei leerem Warenkorb: 3 zufÃ¤llige ProduktvorschlÃ¤ge anzeigen
+    // Bei leerem Warenkorb: 3 zufällige Produktvorschläge anzeigen
     loadProducts().then(products => {
       if (products.length === 0) {
         body.innerHTML = `
@@ -2084,7 +2084,7 @@ function initializeWishlistButtons() {
         icon.className = isInWish ? 'bi bi-heart-fill' : 'bi bi-heart';
       }
       
-      // FÃ¼ge den Event Listener zum neuen Button hinzu
+      // Füge den Event Listener zum neuen Button hinzu
       newButton.addEventListener('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -2101,7 +2101,7 @@ function initializeWishlistButtons() {
   }, 100);
 }
 
-// Doppelte Funktion entfernt - verwende nur die geschÃ¼tzte Version oben
+// Doppelte Funktion entfernt - verwende nur die geschützte Version oben
 
 // Initialize category navigation
 function initializeCategoryNavigation() {
@@ -2281,10 +2281,10 @@ function updateCategoryBodyClass(category) {
     case 'Beleuchtung':
       document.body.classList.add('category-selected-beleuchtung');
       break;
-    case 'KÃ¶rperpflege/Wellness':
+    case 'Körperpflege/Wellness':
       document.body.classList.add('category-selected-koerperpflege');
       break;
-    case 'Haushalt und KÃ¼che':
+    case 'Haushalt und Küche':
       document.body.classList.add('category-selected-haushalt');
       break;
   }
@@ -2306,7 +2306,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize cart counter
   updateCartCounter();
 
-  // Sofortige Platzhalter fÃ¼r fehlende Bilder anwenden
+  // Sofortige Platzhalter für fehlende Bilder anwenden
   applyPlaceholdersForMissingImages();
 
   // SOFORT alle Produkte laden und anzeigen - MEHRFACH VERSUCHEN
@@ -2323,7 +2323,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       // Lade Bestseller mit der funktionierenden Methode
       const bestsellerProducts = [];
-      const categories = ['Haushalt und KÃ¼che', 'Technik/Gadgets', 'Beleuchtung', 'KÃ¶rperpflege/Wellness'];
+      const categories = ['Haushalt und Küche', 'Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness'];
       
       // Get 1-2 products from each category for variety (exclude products with showInSlider: false)
       categories.forEach(category => {
@@ -2345,7 +2345,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Lade Produkte in alle Kategorie-Container
       loadCategoryProducts(products);
       
-      // PrÃ¼fe ob Produkte tatsÃ¤chlich gerendert wurden
+      // Prüfe ob Produkte tatsächlich gerendert wurden
       setTimeout(() => {
         console.log('âœ… All products loaded into containers');
       }, 500);
@@ -2378,7 +2378,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Show all category sections initially
       showCategorySections('alle');
       
-      // Nur den Titel fÃ¼r das Hauptprodukt-Grid setzen, nicht fÃ¼r Bestseller
+      // Nur den Titel für das Hauptprodukt-Grid setzen, nicht für Bestseller
       const categoryTitles = document.querySelectorAll('.category-title');
       categoryTitles.forEach((title, index) => {
         if (index === 1) { // Das zweite Element ist "Alle Produkte"
@@ -2457,7 +2457,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchInput) {
     searchInput.addEventListener('input', updateFilters);
     
-    // Event-Listener fÃ¼r das manuelle Leeren des Suchfelds
+    // Event-Listener für das manuelle Leeren des Suchfelds
     searchInput.addEventListener('input', function() {
       if (this.value === '') {
         localStorage.removeItem('lastSearch');
@@ -2497,14 +2497,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
     
-    // Event-Listener fÃ¼r das Leeren des Suchfelds beim Verlassen der Seite
+    // Event-Listener für das Leeren des Suchfelds beim Verlassen der Seite
     window.addEventListener('beforeunload', function() {
       // Leere das Suchfeld und entferne den localStorage-Wert
       searchInput.value = '';
       localStorage.removeItem('lastSearch');
     });
     
-    // Event-Listener fÃ¼r das Leeren des Suchfelds beim Klicken auÃŸerhalb
+    // Event-Listener für das Leeren des Suchfelds beim Klicken außerhalb
     searchInput.addEventListener('blur', function() {
       // Kurze Verzögerung, um sicherzustellen, dass der Benutzer wirklich weg ist
       setTimeout(() => {
@@ -2522,7 +2522,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // SekundÃ¤res Laden fÃ¼r Filter-Setup (falls das erste Laden fehlschlÃ¤gt)
+  // Sekundäres Laden für Filter-Setup (falls das erste Laden fehlschlägt)
   setTimeout(() => {
     console.log('Secondary product loading check...');
     const productGrid = document.getElementById('productGrid');
@@ -2652,9 +2652,9 @@ function initializeCustomDropdown() {
 function optimizeImages() {
   const images = document.querySelectorAll('img');
   images.forEach(img => {
-    // Fallback fÃ¼r fehlende Bilder mit verbessertem Design
+    // Fallback für fehlende Bilder mit verbessertem Design
     img.addEventListener('error', function() {
-      // PrÃ¼fe ob das Bild wirklich fehlt (nicht nur noch lÃ¤dt)
+      // Prüfe ob das Bild wirklich fehlt (nicht nur noch lädt)
       if (this.src && !this.src.includes('data:') && !this.src.includes('blob:')) {
         // Entferne das alte src-Attribut
         this.removeAttribute('src');
@@ -2674,10 +2674,10 @@ function optimizeImages() {
         this.style.objectFit = 'contain';
         this.style.padding = '20px';
         
-        // FÃ¼ge das groÃŸe Fragezeichen-Symbol hinzu (wie auf PC)
+        // Füge das große Fragezeichen-Symbol hinzu (wie auf PC)
         this.innerHTML = '?';
         
-        // Mobile Anpassungen fÃ¼r Platzhalter - aber einheitlich
+        // Mobile Anpassungen für Platzhalter - aber einheitlich
         if (window.innerWidth <= 768) {
           this.style.fontSize = '3rem';
         }
@@ -2721,15 +2721,15 @@ function optimizeImages() {
     img.style.transform = 'scale(0.98)';
     img.style.transition = 'opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease';
     
-    // BildqualitÃ¤t fÃ¼r mobile GerÃ¤te optimieren
+    // Bildqualität für mobile Geräte optimieren
     if (window.innerWidth <= 600) {
       img.style.imageRendering = '-webkit-optimize-contrast';
       img.style.imageRendering = 'crisp-edges';
     }
     
-    // PrÃ¼fe ob das Bild bereits fehlerhaft ist (nur bei wirklich fehlenden Bildern)
+    // Prüfe ob das Bild bereits fehlerhaft ist (nur bei wirklich fehlenden Bildern)
     if (img.complete && img.naturalWidth === 0 && img.src && !img.src.includes('data:') && !img.src.includes('blob:')) {
-      // Warte kurz und prÃ¼fe nochmal
+      // Warte kurz und prüfe nochmal
       setTimeout(() => {
         if (img.naturalWidth === 0) {
           img.dispatchEvent(new Event('error'));
@@ -2739,13 +2739,13 @@ function optimizeImages() {
   });
 }
 
-// Funktion zum sofortigen Anwenden von Platzhaltern fÃ¼r fehlende Bilder
+// Funktion zum sofortigen Anwenden von Platzhaltern für fehlende Bilder
 function applyPlaceholdersForMissingImages() {
   const images = document.querySelectorAll('img');
   images.forEach(img => {
-    // PrÃ¼fe ob das Bild bereits fehlerhaft ist (nur bei wirklich fehlenden Bildern)
+    // Prüfe ob das Bild bereits fehlerhaft ist (nur bei wirklich fehlenden Bildern)
     if (img.complete && img.naturalWidth === 0 && img.src && !img.src.includes('data:') && !img.src.includes('blob:')) {
-      // Warte kurz und prÃ¼fe nochmal, um sicherzustellen, dass das Bild wirklich fehlt
+      // Warte kurz und prüfe nochmal, um sicherzustellen, dass das Bild wirklich fehlt
       setTimeout(() => {
         if (img.naturalWidth === 0) {
           // Entferne das alte src-Attribut
@@ -2766,10 +2766,10 @@ function applyPlaceholdersForMissingImages() {
           img.style.objectFit = 'contain';
           img.style.padding = '20px';
           
-          // FÃ¼ge das groÃŸe Fragezeichen-Symbol hinzu (wie auf PC)
+          // Füge das große Fragezeichen-Symbol hinzu (wie auf PC)
           img.innerHTML = '?';
           
-          // Mobile Anpassungen fÃ¼r Platzhalter - aber einheitlich
+          // Mobile Anpassungen für Platzhalter - aber einheitlich
           if (window.innerWidth <= 768) {
             img.style.fontSize = '3rem';
           }
@@ -2788,7 +2788,7 @@ function applyPlaceholdersForMissingImages() {
   });
 }
 
-// Test-Funktion fÃ¼r die Browser-Konsole
+// Test-Funktion für die Browser-Konsole
 window.testProduct1Button = function() {
   console.log('Testing Product 1 button...');
   const button = document.querySelector('.add-to-cart[data-product-id="1"]');
@@ -2806,7 +2806,7 @@ window.testProduct1Button = function() {
   }
 };
 
-// Test-Funktion fÃ¼r Cart Dropdown
+// Test-Funktion für Cart Dropdown
 window.testCartDropdown = function() {
   console.log('Testing cart dropdown functionality...');
   
@@ -2849,20 +2849,20 @@ window.testCartDropdown = function() {
   console.log('Cart items count:', currentCart.length);
 };
 
-// Test-Funktion fÃ¼r Empty Cart Verhalten
+// Test-Funktion für Empty Cart Verhalten
 window.testEmptyCart = function() {
   console.log('Testing empty cart behavior...');
   
   // Leere den Warenkorb
   clearCart();
   
-  // PrÃ¼fe den ZÃ¤hler
+  // Prüfe den Zähler
   setTimeout(() => {
     const counter = document.getElementById('cartCounter');
     console.log('Cart counter after clearing:', counter ? counter.textContent : 'not found');
     console.log('Cart counter display:', counter ? counter.style.display : 'not found');
     
-    // FÃ¼ge ein Produkt hinzu
+    // Füge ein Produkt hinzu
     testAddProduct17();
     
     setTimeout(() => {
@@ -2872,7 +2872,7 @@ window.testEmptyCart = function() {
   }, 500);
 };
 
-// Direkte Test-Funktion fÃ¼r Produkt 17 (Smart Watch)
+// Direkte Test-Funktion für Produkt 17 (Smart Watch)
 window.testAddProduct17 = function() {
   console.log('Directly adding product 17 to cart...');
   const product17 = {
@@ -2919,7 +2919,7 @@ window.createCustomScrollbarForGrid = createCustomScrollbarForGrid;
 window.updateCustomScrollbarPosition = updateCustomScrollbarPosition;
 // window.testCartDropdown = testCartDropdown;
 // window.testEmptyCart = testEmptyCart;
-// window.testLiveUpdates = testLiveUpdates; // Wird spÃ¤ter definiert
+// window.testLiveUpdates = testLiveUpdates; // Wird später definiert
 // window.testClearCartButton = testClearCartButton; // Auskommentiert - Funktion existiert
 // window.testClearCartSimple = testClearCartSimple;
 
@@ -2955,7 +2955,7 @@ function initializeCategoryTiles(products) {
           category = 'Beleuchtung';
           break;
         case 2:
-          category = 'Haushalt und KÃ¼che';
+          category = 'Haushalt und Küche';
           break;
         default:
           category = 'Alle Kategorien';
@@ -3026,7 +3026,7 @@ function initializeCategoryTiles(products) {
   });
 }
 
-// Test-Funktion fÃ¼r Live Updates
+// Test-Funktion für Live Updates
 window.testLiveUpdates = function() {
   console.log('Testing live updates...');
   
@@ -3093,7 +3093,7 @@ window.testLiveUpdates = function() {
   }, 500);
 };
 
-// Test-Funktion fÃ¼r Clear Cart Button
+// Test-Funktion für Clear Cart Button
 window.testClearCartButton = function() {
   console.log('Testing clear cart button...');
   
@@ -3356,7 +3356,7 @@ function createProductCard(product) {
     wishlistBtn.setAttribute('data-product-id', product.id);
   }
   
-  // Event-Listener hinzufÃ¼gen
+  // Event-Listener hinzufügen
   if (addToCartBtn) {
     addToCartBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -3430,7 +3430,7 @@ function renderProductsToGrid(products, gridContainer) {
     // COPY EXACT INITIALIZATION FROM renderBestsellers()
     initializeWishlistButtons();
     initializeAddToCartButtons();
-    initializeProductCardClicks(); // FÃœR NAVIGATION ZU PRODUKTSEITEN
+    initializeProductCardClicks(); // FÜR NAVIGATION ZU PRODUKTSEITEN
     
     // Initialize scrollbar tracking
     setTimeout(() => {
@@ -3978,7 +3978,7 @@ function testSearchFunction(query) {
             let sortedProducts = [];
             
             // Category order
-            const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'KÃ¶rperpflege/Wellness', 'Haushalt und KÃ¼che'];
+            const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness', 'Haushalt und Küche'];
             
             // Add products in category order
             categoryOrder.forEach(category => {
@@ -4031,8 +4031,8 @@ function testSearchFunction(query) {
         const title = document.querySelector('.search-all-products .search-section-title');
         if (title) {
             title.textContent = filtered.length > 0 
-                ? `SUCHERGEBNISSE FÃœR "${query.toUpperCase()}" (${filtered.length})`
-                : `KEINE ERGEBNISSE FÃœR "${query.toUpperCase()}"`;
+                ? `SUCHERGEBNISSE FÜR "${query.toUpperCase()}" (${filtered.length})`
+                : `KEINE ERGEBNISSE FÜR "${query.toUpperCase()}"`;
         }
         
     }).catch(error => {
@@ -4106,8 +4106,8 @@ function filterAndDisplay(products, query, grid) {
     const title = document.querySelector('.search-all-products .search-section-title');
     if (title) {
         title.textContent = filtered.length > 0 
-            ? `SUCHERGEBNISSE FÃœR "${query.toUpperCase()}" (${filtered.length})`
-            : `KEINE ERGEBNISSE FÃœR "${query.toUpperCase()}"`;
+            ? `SUCHERGEBNISSE FÜR "${query.toUpperCase()}" (${filtered.length})`
+            : `KEINE ERGEBNISSE FÜR "${query.toUpperCase()}"`;
     }
 }
 
@@ -4151,8 +4151,8 @@ function handleCategorySearch(category) {
                 const categoryNames = {
                     'Technik/Gadgets': 'TECHNIK PRODUKTE',
                     'Beleuchtung': 'BELEUCHTUNG PRODUKTE',
-                    'KÃ¶rperpflege/Wellness': 'WELLNESS PRODUKTE',
-                    'Haushalt und KÃ¼che': 'KÃœCHEN PRODUKTE'
+                    'Körperpflege/Wellness': 'WELLNESS PRODUKTE',
+                    'Haushalt und Küche': 'KÜCHEN PRODUKTE'
                 };
                 sectionTitle.textContent = categoryNames[category] || category.toUpperCase() + ' PRODUKTE';
             }
@@ -4175,7 +4175,7 @@ function displaySearchResults(products, query) {
     // Update title
     const title = searchResults.querySelector('.search-section-title');
     if (title) {
-        title.textContent = `Suchergebnisse fÃ¼r "${query}" (${products.length})`;
+        title.textContent = `Suchergebnisse für "${query}" (${products.length})`;
     }
     
     // Clear previous results
@@ -4272,7 +4272,7 @@ function renderAllProducts(allProductsGrid, products) {
     let sortedProducts = [];
     
     // Category order
-    const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'KÃ¶rperpflege/Wellness', 'Haushalt und KÃ¼che'];
+    const categoryOrder = ['Technik/Gadgets', 'Beleuchtung', 'Körperpflege/Wellness', 'Haushalt und Küche'];
     
     // Add products in category order
     categoryOrder.forEach(category => {
@@ -4629,7 +4629,7 @@ function updateButtonColors(selectedCategory) {
       hoverColor: '#6b5010',
       hoverBorder: '#ffd480'
     },
-    'KÃ¶rperpflege/Wellness': {
+    'Körperpflege/Wellness': {
       bg: 'linear-gradient(135deg, #f0d9ff, #e8c8ff)',
       color: '#7a2e9d',
       border: '#d9b3ff',
@@ -4637,7 +4637,7 @@ function updateButtonColors(selectedCategory) {
       hoverColor: '#5e1d7a',
       hoverBorder: '#cc99ff'
     },
-    'Haushalt und KÃ¼che': {
+    'Haushalt und Küche': {
       bg: 'linear-gradient(135deg, #d4f5e0, #b8ecd0)',
       color: '#0a7a3c',
       border: '#9ce0b8',
@@ -4736,7 +4736,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // === DROPDOWN-BILDER KLICKBAR MACHEN ===
-// FÃ¼gen Sie diesen Code am Ende Ihrer app.js Datei hinzu
+// Fügen Sie diesen Code am Ende Ihrer app.js Datei hinzu
 
 // Macht Dropdown-Bilder klickbar
 function makeDropdownImagesClickable() {
@@ -4744,11 +4744,11 @@ function makeDropdownImagesClickable() {
     // Produkt-ID Mapping
     const productIdMap = {
       // Technik/Gadgets
-      'Elektrischer Wasserspender fÃ¼r Schreibtisch': 10,
+      'Elektrischer Wasserspender für Schreibtisch': 10,
       '350ml Elektrischer Mixer Entsafter': 11,
       'Bluetooth Anti-Lost Finder Wassertropfen': 17,
       'Home Electronic Clock Digitale Uhr': 18,
-      'Elektronisches DistanzmessgerÃ¤t Digital': 19,
+      'Elektronisches Distanzmessgerät Digital': 19,
       'ZigBee Smart DIY Motorisierte Rollos': 20,
       
       // Beleuchtung
@@ -4760,18 +4760,18 @@ function makeDropdownImagesClickable() {
       'COBLED Arbeitsleuchte': 24,
       'Nachtlichter mit Bewegungsmelder': 25,
       
-      // Haushalt & KÃ¼che
-      'Multifunktions GemÃ¼seschneider': 12,
-      'Elektrische KÃ¼chenwaage Digital': 13,
+      // Haushalt & Küche
+      'Multifunktions Gemüseschneider': 12,
+      'Elektrische Küchenwaage Digital': 13,
       'Automatischer Seifenspender': 14,
       'Vakuum Aufbewahrungsbeutel Set': 15,
       'Silikon Stretch Deckel 6er Set': 16,
       
-      // Wellness & KÃ¶rperpflege
+      // Wellness & Körperpflege
       '4 In 1 Self Cleaning Hair Brush': 26,
       'Volcanic Flame Aroma Essential Oil Diffuser': 27,
       'Mini Muskel Massage Pistole': 28,
-      'HaarÃ¶l-Applikator Kopfhaut Massager': 29,
+      'Haaröl-Applikator Kopfhaut Massager': 29,
       'Elektrischer Kopfhaut-Massagekamm': 31
     };
     
