@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -10,6 +10,32 @@
     <link rel="stylesheet" href="../product-image-fullscreen.css">
     <link rel="stylesheet" href="../product-image-gallery.css">
     <link rel="stylesheet" href="../color-image-selection.css">
+    <style>
+        /* LIQUID GLASS BUNDLE DESIGN - BELEUCHTUNG */
+        .bundle-box, .bundle-container { position: relative; padding: 2.5rem; border-radius: 28px; overflow: hidden; margin: 2rem 0; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2), inset 0 1px 0 0 rgba(255, 255, 255, 0.25); }
+        .bundle-box::before, .bundle-container::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; opacity: 0.7; background: linear-gradient(135deg, rgba(255, 107, 107, 0.85) 0%, rgba(238, 90, 36, 0.85) 25%, rgba(255, 71, 87, 0.85) 50%, rgba(255, 99, 72, 0.85) 75%, rgba(255, 107, 107, 0.85) 100%); animation: gradientShift 10s ease infinite; background-size: 200% 200%; }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .bundle-box::after, .bundle-container::after { content: ''; position: absolute; font-size: 4rem; top: 20px; right: 30px; opacity: 0.15; pointer-events: none; animation: float 6s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+        .bundle-header, .bundle-title { font-size: 2rem; font-weight: 900; text-align: center; margin-bottom: 2rem; color: #ffffff; text-transform: uppercase; letter-spacing: 4px; text-shadow: 0 2px 15px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 255, 255, 0.3); position: relative; z-index: 1; }
+        .bundle-card { position: relative; padding: 1.8rem; margin-bottom: 1.2rem; border-radius: 20px; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+        .bundle-card:hover { transform: translateY(-6px) scale(1.02); background: rgba(255, 255, 255, 0.22); border: 1px solid rgba(255, 255, 255, 0.35); box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 25px rgba(255, 255, 255, 0.15); }
+        .bundle-card.selected { background: rgba(255, 255, 255, 0.3); border: 2px solid rgba(255, 255, 255, 0.6); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), inset 0 2px 0 rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.4); transform: scale(1.04); }
+        .bundle-card.selected::before { content: 'âœ“'; position: absolute; top: 15px; right: 15px; width: 35px; height: 35px; background: rgba(255, 255, 255, 0.95); color: #ff6b6b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+        .bundle-radio { position: absolute; opacity: 0; pointer-events: none; }
+        .bundle-info { position: relative; z-index: 1; }
+        .bundle-title { font-size: 1.4rem; font-weight: 800; color: #ffffff; margin-bottom: 0.8rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+        .bundle-badge { display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
+        .bundle-badge.popular { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .bundle-badge.savings { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .bundle-label { display: inline-block; background: rgba(255, 255, 255, 0.25); color: #ffffff; padding: 0.4rem 1rem; border-radius: 25px; font-size: 0.85rem; font-weight: 700; letter-spacing: 1.5px; border: 1px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); }
+        .bundle-prices { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+        .bundle-prices .savings { display: block; font-size: 1rem; color: #ffeb3b; font-weight: 600; margin-top: 0.3rem; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
+        .bundle-total { margin-top: 0.8rem; font-size: 1.1rem; color: rgba(255, 255, 255, 0.95); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3); }
+        .bundle-add-btn { width: 100%; padding: 1.2rem; margin-top: 1.5rem; font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; border: none; border-radius: 16px; background: rgba(255, 255, 255, 0.95); color: #ff6b6b; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 1); }
+        .bundle-add-btn:hover { transform: translateY(-3px); background: #ffffff; box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 1); }
+        @media (max-width: 768px) { .bundle-box, .bundle-container { padding: 1.5rem; border-radius: 20px; } .bundle-header, .bundle-title { font-size: 1.5rem; letter-spacing: 2px; } .bundle-card { padding: 1.2rem; } .bundle-title { font-size: 1.1rem; } .bundle-prices { font-size: 1.2rem; } }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -35,10 +61,10 @@
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <h1 class="display-4 fw-bold mb-3">Indoor Sensing Wall Lamp</h1>
-                    <p class="lead mb-4">USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt für Flure, Treppen und Schränke mit automatischer Ein-/Ausschaltung bei Bewegung.</p>
+                    <p class="lead mb-4">USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt fï¿½r Flure, Treppen und Schrï¿½nke mit automatischer Ein-/Ausschaltung bei Bewegung.</p>
                     <div class="d-flex align-items-center gap-3 mb-4">
-                        <span class="price-tag">€23.99</span>
-                        <span class="text-muted text-decoration-line-through">€39.99</span>
+                        <span class="price-tag">ï¿½23.99</span>
+                        <span class="text-muted text-decoration-line-through">ï¿½39.99</span>
                         <span class="badge bg-success">Kostenloser Versand in Europa</span>
                     </div>
                     <button class="btn btn-light btn-lg me-3 add-to-cart" id="cartBtn">
@@ -61,14 +87,14 @@
             <div class="row">
                 <div class="col-lg-8">
                     <h2 class="mb-4">Produktbeschreibung</h2>
-                    <p class="lead mb-4">USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt für Flure, Treppen und Schränke mit automatischer Ein-/Ausschaltung bei Bewegung.</p>
+                    <p class="lead mb-4">USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt fï¿½r Flure, Treppen und Schrï¿½nke mit automatischer Ein-/Ausschaltung bei Bewegung.</p>
                     
                     <h3>Hauptmerkmale</h3>
                     <ul class="list-unstyled">
-                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>USB-aufladbar für kabellose Nutzung</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>USB-aufladbar fï¿½r kabellose Nutzung</li>
                         <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Bewegungssensor mit automatischer Aktivierung</li>
-                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Verschiedene Größen verfügbar (14x6cm, 22x11cm, 29x11cm)</li>
-                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Weiß- und Warmlicht-Modi</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Verschiedene Grï¿½ï¿½en verfï¿½gbar (14x6cm, 22x11cm, 29x11cm)</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Weiï¿½- und Warmlicht-Modi</li>
                         <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Einfache Wandmontage ohne Verkabelung</li>
                     </ul>
 
@@ -77,10 +103,10 @@
                         <div class="col-md-6">
                             <p><strong>Kategorie:</strong> Beleuchtung</p>
                             <p><strong>Artikelnummer:</strong> 032</p>
-                            <p><strong>Preis:</strong> €29.99</p>
+                            <p><strong>Preis:</strong> ï¿½29.99</p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Verfügbarkeit:</strong> Auf Lager</p>
+                            <p><strong>Verfï¿½gbarkeit:</strong> Auf Lager</p>
                             <p><strong>Lieferzeit:</strong> 7-15 Werktage</p>
                         </div>
                     </div>
@@ -94,7 +120,7 @@
                             <div class="quantity-section">
                                 <label class="quantity-label">Menge:</label>
                                 <div class="quantity-input-group" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 12px; padding: 4px; gap: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                                    <button class="quantity-btn" onclick="decreaseMobileQuantity()" style="width: 45px; height: 45px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">−</button>
+                                    <button class="quantity-btn" onclick="decreaseMobileQuantity()" style="width: 45px; height: 45px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">-</button>
                                     <select class="form-select" id="quantity-mobile" onchange="updateTotalPrice()" style="flex: 1; border: none; background: transparent; text-align: center; font-size: 18px; font-weight: 600; padding: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3e%3cpolyline points=%226 9 12 15 18 9%22%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 8px center; background-size: 20px; padding-right: 30px;">
                                         <!-- Options will be generated by JavaScript -->
                                     </select>
@@ -102,7 +128,7 @@
                                 </div>
                             </div>
                             <div class="price-section">
-                                <div class="current-price">€29.99</div>
+                                <div class="current-price">ï¿½29.99</div>
                             </div>
                             <div class="action-buttons">
                                 <button class="buy-now-btn" id="buyNowBtnMobile">
@@ -116,7 +142,7 @@
                                 <ul class="features-list">
                                     <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
                                     <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
-                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rï¿½ckgaberecht</li>
                                 </ul>
                             </div>
                         </div>
@@ -142,7 +168,7 @@
                             </div>
                             
                             <div class="price-section">
-                                <div class="current-price">€29.99</div>
+                                <div class="current-price">ï¿½29.99</div>
                             </div>
                             
                             <div class="action-buttons">
@@ -158,7 +184,7 @@
                                 <ul class="features-list">
                                     <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
                                     <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
-                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rï¿½ckgaberecht</li>
                                 </ul>
                             </div>
                         </div>
@@ -168,12 +194,12 @@
         </div>
     </section>
 
-    <!-- Ähnliche Produkte -->
+    <!-- ï¿½hnliche Produkte -->
     <section class="py-5 similar-products-section">
         <div class="container">
             <div class="section-header text-center mb-5">
-                <h2 class="section-title">Ähnliche Produkte</h2>
-                <p class="section-subtitle">Entdecken Sie weitere Produkte, die Ihnen gefallen könnten</p>
+                <h2 class="section-title">ï¿½hnliche Produkte</h2>
+                <p class="section-subtitle">Entdecken Sie weitere Produkte, die Ihnen gefallen kï¿½nnten</p>
             </div>
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
                 <div class="col">
@@ -183,7 +209,7 @@
                         </div>
                         <div class="product-info">
                             <h5 class="product-title">LED Water Ripple Crystal</h5>
-                            <div class="price-container"><span class="current-price">€21.99</span></div>
+                            <div class="price-container"><span class="current-price">ï¿½21.99</span></div>
                             <div class="view-product-btn">
                                 <span>Jetzt ansehen</span>
                                 <i class="bi bi-arrow-right"></i>
@@ -198,7 +224,7 @@
                         </div>
                         <div class="product-info">
                             <h5 class="product-title">Waterproof RGB LED Solar Light</h5>
-                            <div class="price-container"><span class="current-price">€9.99</span></div>
+                            <div class="price-container"><span class="current-price">ï¿½9.99</span></div>
                             <div class="view-product-btn">
                                 <span>Jetzt ansehen</span>
                                 <i class="bi bi-arrow-right"></i>
@@ -213,7 +239,7 @@
                         </div>
                         <div class="product-info">
                             <h5 class="product-title">Nordic Crystal Lamp</h5>
-                            <div class="price-container"><span class="current-price">€24.99</span></div>
+                            <div class="price-container"><span class="current-price">ï¿½24.99</span></div>
                             <div class="view-product-btn">
                                 <span>Jetzt ansehen</span>
                                 <i class="bi bi-arrow-right"></i>
@@ -224,11 +250,11 @@
                 <div class="col">
                     <div class="similar-product-card" onclick="window.location.href='produkt-19.html'">
                         <div class="product-image-wrapper">
-                            <img src="../produkt bilder/Elektronisches Distanzmessgerät Digital.jpg" class="product-image" alt="Elektronisches Distanzmessgerät">
+                            <img src="../produkt bilder/Elektronisches Distanzmessgerï¿½t Digital.jpg" class="product-image" alt="Elektronisches Distanzmessgerï¿½t">
                         </div>
                         <div class="product-info">
-                            <h5 class="product-title">Elektronisches Distanzmessgerät</h5>
-                            <div class="price-container"><span class="current-price">€19.99</span></div>
+                            <h5 class="product-title">Elektronisches Distanzmessgerï¿½t</h5>
+                            <div class="price-container"><span class="current-price">ï¿½19.99</span></div>
                             <div class="view-product-btn">
                                 <span>Jetzt ansehen</span>
                                 <i class="bi bi-arrow-right"></i>
@@ -248,7 +274,7 @@
     </footer>
 
     <script>
-        // Produktdaten für diese Seite
+        // Produktdaten fï¿½r diese Seite
         const product = {
             id: 32,
             name: "Indoor Sensing Wall Lamp",
@@ -256,7 +282,7 @@
             originalPrice: 39.99,
             image: "produkt bilder/Indoor Sensing Wall Lamp.jpg",
             category: "Beleuchtung",
-            description: "USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt für Flure, Treppen und Schränke mit automatischer Ein-/Ausschaltung bei Bewegung.",
+            description: "USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt fï¿½r Flure, Treppen und Schrï¿½nke mit automatischer Ein-/Ausschaltung bei Bewegung.",
             sku: "CJ1373821404948074496",
             inStock: true,
             shippingTime: "7-15 Werktage",
@@ -270,20 +296,20 @@
                     image: "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwartz.jpg"
                 },
                 {
-                    name: "Weiß",
+                    name: "Weiï¿½",
                     code: "#FFFFFF",
                     sku: "CJSN105028907GT",
                     price: 29.99,
                     originalPrice: 39.99,
-                    image: "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg"
+                    image: "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiï¿½.jpg"
                 }
             ]
         };
 
-        // Mache Produktdaten global verfügbar
+        // Mache Produktdaten global verfï¿½gbar
         window.product = product;
 
-        // Vollständige Button-Funktionalität wie bei Produkt 21
+        // Vollstï¿½ndige Button-Funktionalitï¿½t wie bei Produkt 21
         function addToCart(product) {
             let cart = JSON.parse(localStorage.getItem('cart')) || [];
             const existing = cart.find(item => Number(item.id) === Number(product.id) && !item.bundleId);
@@ -342,15 +368,15 @@
         }
         
         function toggleWishlistLocal(product) {
-            console.log('🔄 toggleWishlistLocal aufgerufen für Produkt:', product.id);
+            console.log('?? toggleWishlistLocal aufgerufen fï¿½r Produkt:', product.id);
             const wasInList = isInWishlist(product.id);
-            console.log('📋 Vorheriger Status:', wasInList);
+            console.log('?? Vorheriger Status:', wasInList);
             
             let wishlist = getWishlist();
             if (wasInList) {
                 wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
                 showAlert('Von der Wunschliste entfernt', 'wishlist.html');
-                console.log('➖ Produkt von Wishlist entfernt');
+                console.log('? Produkt von Wishlist entfernt');
             } else {
                 wishlist.push({
                     id: product.id,
@@ -359,12 +385,12 @@
                     image: product.image,
                     description: product.description
                 });
-                showAlert('Zur Wunschliste hinzugefügt', 'wishlist.html');
-                console.log('➕ Produkt zur Wishlist hinzugefügt');
+                showAlert('Zur Wunschliste hinzugefï¿½gt', 'wishlist.html');
+                console.log('? Produkt zur Wishlist hinzugefï¿½gt');
             }
             setWishlist(wishlist);
             
-            // Kurze Verzögerung vor Button-Update
+            // Kurze Verzï¿½gerung vor Button-Update
             setTimeout(() => {
                 updateAllWishlistButtons();
             }, 50);
@@ -372,12 +398,12 @@
         
         function updateAllWishlistButtons() {
             const isInList = isInWishlist(product.id);
-            console.log('🔄 Updating wishlist buttons, isInList:', isInList);
+            console.log('?? Updating wishlist buttons, isInList:', isInList);
             
             // Update Haupt-Wishlist-Button
             const mainBtn = document.getElementById('wishlistBtn');
             if (mainBtn) {
-                console.log('🔧 Updating main wishlist button');
+                console.log('?? Updating main wishlist button');
                 if (isInList) {
                     mainBtn.classList.add('active');
                     mainBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
@@ -389,9 +415,9 @@
             
             // Update Schnellbestellung-Wishlist-Buttons
             const quickOrderBtns = document.querySelectorAll('.wishlist-button');
-            console.log('🔧 Found', quickOrderBtns.length, 'quick order wishlist buttons');
+            console.log('?? Found', quickOrderBtns.length, 'quick order wishlist buttons');
             quickOrderBtns.forEach((btn, index) => {
-                console.log(`🔧 Updating quick order button ${index + 1}`);
+                console.log(`?? Updating quick order button ${index + 1}`);
                 if (isInList) {
                     btn.classList.add('active');
                     btn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
@@ -459,11 +485,11 @@
             const desktopCurrentPriceElements = document.querySelectorAll('.d-none.d-lg-block .current-price');
             
             mobileCurrentPriceElements.forEach(element => {
-                element.textContent = `€${mobileTotal}`;
+                element.textContent = `ï¿½${mobileTotal}`;
             });
             
             desktopCurrentPriceElements.forEach(element => {
-                element.textContent = `€${desktopTotal}`;
+                element.textContent = `ï¿½${desktopTotal}`;
             });
         }
 
@@ -479,7 +505,7 @@
                 }
             }
 
-            // Event-Listener für Hero-Buttons
+            // Event-Listener fï¿½r Hero-Buttons
             const cartBtn = document.getElementById('cartBtn');
             const wishlistBtn = document.getElementById('wishlistBtn');
             const buyNowBtn = document.getElementById('buyNowBtn');
@@ -499,7 +525,7 @@
                         quantity: 1,
                         selectedColor: selectedColor
                     });
-                    showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
+                    showAlert('Produkt zum Warenkorb hinzugefï¿½gt', 'cart.html');
                 });
             }
             
@@ -511,13 +537,13 @@
                 newWishlistBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('🖱️ Wishlist-Button geklickt (oberer Button)');
+                    console.log('??? Wishlist-Button geklickt (oberer Button)');
                     toggleWishlistLocal(product);
                 });
                 
                 // Sofortige Initialisierung
                 updateAllWishlistButtons();
-                console.log('🔄 Wishlist-Button sofort initialisiert');
+                console.log('?? Wishlist-Button sofort initialisiert');
             }
 
             if (buyNowBtn) {
@@ -568,7 +594,7 @@
                 newBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log(`🖱️ Wishlist-Button geklickt (Schnellbestellung ${index + 1})`);
+                    console.log(`??? Wishlist-Button geklickt (Schnellbestellung ${index + 1})`);
                     toggleWishlistLocal(product);
                 });
             });
@@ -590,48 +616,48 @@
             // Initialisiere Bildgalerie manuell falls nicht automatisch geladen
             setTimeout(() => {
                 if (!document.querySelector('.gallery-thumbnails')) {
-                    console.log('🖼️ Initialisiere Bildgalerie manuell für Produkt 32');
+                    console.log('??? Initialisiere Bildgalerie manuell fï¿½r Produkt 32');
                     if (window.ProductImageGallery) {
                         new window.ProductImageGallery(32, 'Indoor Sensing Wall Lamp');
                     }
                 }
                 
-                // Initialisiere Wishlist-Status mit Verzögerung
+                // Initialisiere Wishlist-Status mit Verzï¿½gerung
                 setTimeout(() => {
                     updateAllWishlistButtons();
-                    console.log('🔄 Wishlist-Status nach Verzögerung aktualisiert');
+                    console.log('?? Wishlist-Status nach Verzï¿½gerung aktualisiert');
                 }, 100);
                 
-                // Setze Standard-Farbe falls keine ausgewählt
+                // Setze Standard-Farbe falls keine ausgewï¿½hlt
                 if (!window.getSelectedColor || !window.getSelectedColor()) {
-                    console.log('🎨 Setze Standard-Farbe: Schwarz');
+                    console.log('?? Setze Standard-Farbe: Schwarz');
                     if (window.setSelectedColor) {
                         window.setSelectedColor('Schwarz');
                     }
                 }
             }, 1000);
 
-            // Debug: Überprüfe ob alle Scripts geladen sind
-            console.log('🔧 Scripts Status:', {
+            // Debug: ï¿½berprï¿½fe ob alle Scripts geladen sind
+            console.log('?? Scripts Status:', {
                 ProductImageGallery: !!window.ProductImageGallery,
                 addProductToCart: !!window.addProductToCart,
                 getSelectedColor: !!window.getSelectedColor
             });
 
-            // Debug-Funktion für Tests
+            // Debug-Funktion fï¿½r Tests
             window.debugProduct32 = function() {
-                console.log('🔍 Debug Produkt 32:');
+                console.log('?? Debug Produkt 32:');
                 console.log('- Wishlist Status:', isInWishlist(32));
                 console.log('- Bildgalerie vorhanden:', !!document.querySelector('.gallery-thumbnails'));
                 console.log('- Farbauswahl vorhanden:', !!document.querySelector('.color-selection'));
-                console.log('- Ausgewählte Farbe:', window.getSelectedColor ? window.getSelectedColor() : 'Keine');
+                console.log('- Ausgewï¿½hlte Farbe:', window.getSelectedColor ? window.getSelectedColor() : 'Keine');
                 console.log('- Buttons gefunden:', {
                     cartBtn: !!document.getElementById('cartBtn'),
                     wishlistBtn: !!document.getElementById('wishlistBtn'),
                     buyNowBtn: !!document.getElementById('buyNowBtn')
                 });
                 
-                // Test Warenkorb-Hinzufügung
+                // Test Warenkorb-Hinzufï¿½gung
                 const selectedColor = window.getSelectedColor ? window.getSelectedColor() : 'Schwarz';
                 const colorData = product.colors.find(c => c.name === selectedColor) || product.colors[0];
                 console.log('- Test Warenkorb-Daten:', {
@@ -651,7 +677,7 @@
     <script src="../bundle-images-final.js"></script>
     <script src="../product-gallery-complete.js"></script>
 <script>
-// Fullscreen-Funktionalität
+// Fullscreen-Funktionalitï¿½t
 const mainImg = document.querySelector('.main-product-image');
 if (mainImg) {
     mainImg.style.cursor = 'zoom-in';

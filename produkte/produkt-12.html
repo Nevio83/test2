@@ -25,7 +25,270 @@
             color: #ffffff !important;
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
-        .color-selection{margin:1rem 0}.color-selection h5{font-size:1.1rem;font-weight:600;margin-bottom:0.75rem}.color-options{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem}.color-option{width:45px;height:45px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all 0.3s ease;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.1)}.color-option:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(0,0,0,0.2)}.color-option.selected{border-color:#fff;box-shadow:0 0 0 2px #007bff,0 4px 12px rgba(0,0,0,0.2);transform:scale(1.1)}.color-option.selected::after{content:"✓";color:white;font-weight:bold;font-size:18px;text-shadow:0 0 3px rgba(0,0,0,0.5)}.color-option[data-color="#FFFFFF"],.color-option[data-color="#FFF0F5"]{border:2px solid #ddd}.color-option[data-color="#FFFFFF"].selected::after,.color-option[data-color="#FFF0F5"].selected::after{color:#333;text-shadow:none}.selected-color-info{font-size:0.9rem;opacity:0.8}.selected-color-info span{font-weight:600}@media (max-width:768px){.color-option{width:40px;height:40px}.color-options{gap:0.4rem}}.color-change-animation{animation:colorChange 0.3s ease}@keyframes colorChange{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+        .color-selection{margin:1rem 0}.color-selection h5{font-size:1.1rem;font-weight:600;margin-bottom:0.75rem}.color-options{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem}.color-option{width:45px;height:45px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all 0.3s ease;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.1)}.color-option:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(0,0,0,0.2)}.color-option.selected{border-color:#fff;box-shadow:0 0 0 2px #007bff,0 4px 12px rgba(0,0,0,0.2);transform:scale(1.1)}.color-option.selected::after{content:"âœ“";color:white;font-weight:bold;font-size:18px;text-shadow:0 0 3px rgba(0,0,0,0.5)}.color-option[data-color="#FFFFFF"],.color-option[data-color="#FFF0F5"]{border:2px solid #ddd}.color-option[data-color="#FFFFFF"].selected::after,.color-option[data-color="#FFF0F5"].selected::after{color:#333;text-shadow:none}.selected-color-info{font-size:0.9rem;opacity:0.8}.selected-color-info span{font-weight:600}@media (max-width:768px){.color-option{width:40px;height:40px}.color-options{gap:0.4rem}}.color-change-animation{animation:colorChange 0.3s ease}@keyframes colorChange{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+        /* ============================================
+           LIQUID GLASS BUNDLE DESIGN - HAUSHALT
+           ============================================ */
+        .bundle-box,
+        .bundle-container {
+            position: relative;
+            padding: 2.5rem;
+            border-radius: 28px;
+            overflow: hidden;
+            margin: 2rem 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 
+                0 8px 32px 0 rgba(31, 38, 135, 0.2),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .bundle-box::before,
+        .bundle-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            opacity: 0.7;
+            background: linear-gradient(135deg, 
+                rgba(81, 207, 102, 0.85) 0%, 
+                rgba(64, 192, 87, 0.85) 25%, 
+                rgba(55, 178, 77, 0.85) 50%, 
+                rgba(47, 158, 68, 0.85) 75%, 
+                rgba(81, 207, 102, 0.85) 100%
+            );
+            animation: gradientShift 10s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bundle-box::after,
+        .bundle-container::after {
+            content: '';
+            position: absolute;
+            font-size: 4rem;
+            top: 20px;
+            right: 30px;
+            opacity: 0.15;
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .bundle-header,
+        .bundle-title {
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 
+                0 2px 15px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .bundle-card {
+            position: relative;
+            padding: 1.8rem;
+            margin-bottom: 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .bundle-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 
+                0 12px 35px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                0 0 25px rgba(255, 255, 255, 0.15);
+        }
+
+        .bundle-card.selected {
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.5),
+                0 0 40px rgba(255, 255, 255, 0.4);
+            transform: scale(1.04);
+        }
+
+        .bundle-card.selected::before {
+            content: 'âœ“';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #51cf66;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .bundle-radio {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .bundle-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .bundle-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .bundle-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .bundle-badge.popular {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .bundle-badge.savings {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .bundle-label {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .bundle-prices {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .bundle-prices .savings {
+            display: block;
+            font-size: 1rem;
+            color: #a8ff78;
+            font-weight: 600;
+            margin-top: 0.3rem;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .bundle-total {
+            margin-top: 0.8rem;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .bundle-add-btn {
+            width: 100%;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #51cf66;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 6px 25px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .bundle-add-btn:hover {
+            transform: translateY(-3px);
+            background: #ffffff;
+            box-shadow: 
+                0 10px 35px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        @media (max-width: 768px) {
+            .bundle-box,
+            .bundle-container {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+            .bundle-header,
+            .bundle-title {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+            .bundle-card {
+                padding: 1.2rem;
+            }
+            .bundle-title {
+                font-size: 1.1rem;
+            }
+            .bundle-prices {
+                font-size: 1.2rem;
+            }
+        }
     </style>
     <style>
         .product-hero {
@@ -80,6 +343,269 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
+        }
+
+        /* ============================================
+           LIQUID GLASS BUNDLE DESIGN - HAUSHALT
+           ============================================ */
+        .bundle-box,
+        .bundle-container {
+            position: relative;
+            padding: 2.5rem;
+            border-radius: 28px;
+            overflow: hidden;
+            margin: 2rem 0;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 
+                0 8px 32px 0 rgba(31, 38, 135, 0.2),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .bundle-box::before,
+        .bundle-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            opacity: 0.7;
+            background: linear-gradient(135deg, 
+                rgba(81, 207, 102, 0.85) 0%, 
+                rgba(64, 192, 87, 0.85) 25%, 
+                rgba(55, 178, 77, 0.85) 50%, 
+                rgba(47, 158, 68, 0.85) 75%, 
+                rgba(81, 207, 102, 0.85) 100%
+            );
+            animation: gradientShift 10s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bundle-box::after,
+        .bundle-container::after {
+            content: '';
+            position: absolute;
+            font-size: 4rem;
+            top: 20px;
+            right: 30px;
+            opacity: 0.15;
+            pointer-events: none;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .bundle-header,
+        .bundle-title {
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 
+                0 2px 15px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .bundle-card {
+            position: relative;
+            padding: 1.8rem;
+            margin-bottom: 1.2rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 4px 20px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .bundle-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            background: rgba(255, 255, 255, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 
+                0 12px 35px rgba(0, 0, 0, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                0 0 25px rgba(255, 255, 255, 0.15);
+        }
+
+        .bundle-card.selected {
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.5),
+                0 0 40px rgba(255, 255, 255, 0.4);
+            transform: scale(1.04);
+        }
+
+        .bundle-card.selected::before {
+            content: 'âœ“';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #51cf66;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .bundle-radio {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .bundle-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .bundle-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .bundle-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .bundle-badge.popular {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .bundle-badge.savings {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .bundle-label {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .bundle-prices {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .bundle-prices .savings {
+            display: block;
+            font-size: 1rem;
+            color: #a8ff78;
+            font-weight: 600;
+            margin-top: 0.3rem;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .bundle-total {
+            margin-top: 0.8rem;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .bundle-add-btn {
+            width: 100%;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: none;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #51cf66;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 6px 25px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        .bundle-add-btn:hover {
+            transform: translateY(-3px);
+            background: #ffffff;
+            box-shadow: 
+                0 10px 35px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 1);
+        }
+
+        @media (max-width: 768px) {
+            .bundle-box,
+            .bundle-container {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+            .bundle-header,
+            .bundle-title {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+            .bundle-card {
+                padding: 1.2rem;
+            }
+            .bundle-title {
+                font-size: 1.1rem;
+            }
+            .bundle-prices {
+                font-size: 1.2rem;
+            }
         }
     </style>
     <link rel="stylesheet" href="../product-image-fullscreen.css">
@@ -174,7 +700,7 @@
                         <div class="quick-order-body">
                             <div class="quantity-section">
                                 <label class="quantity-label">Menge:</label>                                <div class="quantity-input-group" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 12px; padding: 4px; gap: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                                    <button class="quantity-btn" onclick="decreaseMobileQuantity()" style="width: 45px; height: 45px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">−</button>
+                                    <button class="quantity-btn" onclick="decreaseMobileQuantity()" style="width: 45px; height: 45px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">âˆ’</button>
                                     <select class="form-select" id="quantity-mobile" onchange="updateTotalPrice()" style="flex: 1; border: none; background: transparent; text-align: center; font-size: 18px; font-weight: 600; padding: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3e%3cpolyline points=%226 9 12 15 18 9%22%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 8px center; background-size: 20px; padding-right: 30px;">
                                         <!-- Options will be generated by JavaScript -->
                                     </select>
@@ -692,7 +1218,7 @@
     const mobileQuantity = parseInt(document.getElementById('quantity-mobile')?.value, 10) || 1;
     const desktopQuantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
     
-    // Einfache Berechnung: Gesamtpreis = Menge × Einzelpreis
+    // Einfache Berechnung: Gesamtpreis = Menge Ã— Einzelpreis
     const mobileTotal = (product.price * mobileQuantity).toFixed(2);
     const desktopTotal = (product.price * desktopQuantity).toFixed(2);
     
@@ -925,7 +1451,7 @@ function populateMobileQuantityDropdown() {
 <!-- Color Cart Bridge für Farbauswahl-Integration -->
 <script src="../color-cart-bridge.js"></script>
 
-<!-- Bundle Color Integration f�r Farbauswahl in Bundles -->
+<!-- Bundle Color Integration fï¿½r Farbauswahl in Bundles -->
 <script src="../bundle-complete.js"></script>
 
 <!-- Farbauswahl JavaScript - EXAKTE Kopie von Produkt 11 -->
@@ -956,30 +1482,30 @@ class ColorSelection {
 
     async initializeColorSelection() {
         try {
-            console.log('🎨 Farbauswahl wird initialisiert...');
+            console.log('ðŸŽ¨ Farbauswahl wird initialisiert...');
             this.productId = this.extractProductIdFromUrl();
-            console.log('📍 Produkt-ID:', this.productId);
+            console.log('ðŸ“ Produkt-ID:', this.productId);
             
             if (!this.productId) {
-                console.log('❌ Keine Produkt-ID gefunden, Farbauswahl wird übersprungen');
+                console.log('âŒ Keine Produkt-ID gefunden, Farbauswahl wird übersprungen');
                 return;
             }
 
             const productData = await this.loadProductData(this.productId);
-            console.log('📦 Produktdaten geladen:', productData);
+            console.log('ðŸ“¦ Produktdaten geladen:', productData);
             
             if (!productData || !productData.colors || productData.colors.length === 0) {
-                console.log(`❌ Keine Farboptionen für Produkt ${this.productId} gefunden`);
+                console.log(`âŒ Keine Farboptionen für Produkt ${this.productId} gefunden`);
                 return;
             }
 
             this.colors = productData.colors;
-            console.log('🎨 Farben gefunden:', this.colors.length);
+            console.log('ðŸŽ¨ Farben gefunden:', this.colors.length);
             this.renderColorSelection();
-            console.log('✅ Farbauswahl erfolgreich gerendert');
+            console.log('âœ… Farbauswahl erfolgreich gerendert');
             
         } catch (error) {
-            console.error('❌ Fehler beim Initialisieren der Farbauswahl:', error);
+            console.error('âŒ Fehler beim Initialisieren der Farbauswahl:', error);
         }
     }
 
@@ -1146,7 +1672,7 @@ class ColorSelection {
             window.product.selectedColorSku = color.sku;
             window.product.price = color.price || window.product.price;
             window.product.originalPrice = color.originalPrice || window.product.originalPrice;
-            console.log('📦 window.product aktualisiert:', window.product);
+            console.log('ðŸ“¦ window.product aktualisiert:', window.product);
         }
     }
 
@@ -1169,7 +1695,7 @@ class ColorSelection {
                     const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
                     const totalPrice = (color.price * quantity).toFixed(2);
                     
-                    console.log('🎯 Schnellbestellung Update:', selector, 'von', element.textContent, 'zu €' + (selector.includes('total') ? totalPrice : color.price));
+                    console.log('ðŸŽ¯ Schnellbestellung Update:', selector, 'von', element.textContent, 'zu €' + (selector.includes('total') ? totalPrice : color.price));
                     
                     if (selector.includes('total') || selector.includes('Total')) {
                         element.textContent = `€${totalPrice}`;
@@ -1191,7 +1717,7 @@ const colorSelection = new ColorSelection();
 window.getSelectedColor = () => colorSelection.getSelectedColor();
 </script>
 
-<!-- Fix Bundle Naming f�r korrekte Sets-Angabe -->
+<!-- Fix Bundle Naming fï¿½r korrekte Sets-Angabe -->
 
 <script>
 // Fullscreen-Funktionalität für Hauptproduktbild

@@ -68,7 +68,7 @@
   flex-direction: column;
 }
 
-/* Lumière Category Tabs in Search - Exact Copy from Main Page */
+/* LumiÃ¨re Category Tabs in Search - Exact Copy from Main Page */
 .lumiere-category-tabs {
   display: flex;
   gap: 12px;
@@ -450,7 +450,7 @@
   font-size: 14px;
 }
 
-/* Override Lumière cards in search to match black design */
+/* Override LumiÃ¨re cards in search to match black design */
 .search-all-products .lumiere-product-card {
   background: #2a2a2a;
   border-radius: 12px;
@@ -677,7 +677,7 @@ body {
   max-width: 100vw;
 }
 
-/* Verhindere horizontales Scrollen nur auf mobilen Geräten */
+/* Verhindere horizontales Scrollen nur auf mobilen GerÃ¤ten */
 @media (max-width: 768px) {
   html,
   body {
@@ -686,9 +686,9 @@ body {
   }
 }
 
-/* Lumière Design Exact Color Palette */
+/* LumiÃ¨re Design Exact Color Palette */
 :root {
-  /* Exact Lumière colors */
+  /* Exact LumiÃ¨re colors */
   --lumiere-black: #000000;
   --lumiere-white: #ffffff;
   --lumiere-gray-50: #fafafa;
@@ -741,14 +741,14 @@ body {
   --orange-light: #ffa726;
   --orange-dark: #e65100;
 
-  /* Lumière feature colors */
+  /* LumiÃ¨re feature colors */
   --lumiere-accent: var(--lumiere-gray-800);
   --lumiere-accent-light: var(--lumiere-gray-600);
   --lumiere-feature-bg: var(--lumiere-gray-900);
   --lumiere-feature-gradient: linear-gradient(135deg, var(--lumiere-gray-900) 0%, var(--lumiere-gray-800) 100%);
 }
 
-/* Lumière Design Exact Base Styles */
+/* LumiÃ¨re Design Exact Base Styles */
 body {
   background: var(--body-bg);
   color: var(--text-primary);
@@ -762,7 +762,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Lumière Adapted Top Banner */
+/* LumiÃ¨re Adapted Top Banner */
 .lumiere-top-banner {
   background: linear-gradient(135deg, var(--lumiere-black) 0%, var(--lumiere-gray-800) 100%);
   border-radius: var(--radius-xl);
@@ -833,7 +833,7 @@ body {
   border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Lumière Feature Banners Row */
+/* LumiÃ¨re Feature Banners Row */
 .lumiere-feature-row {
   margin: 30px 0;
 }
@@ -891,7 +891,7 @@ body {
   color: var(--lumiere-white);
 }
 
-/* Lumière Category Navigation */
+/* LumiÃ¨re Category Navigation */
 .lumiere-category-nav {
   background: var(--lumiere-gray-50);
   padding: 20px 0;
@@ -974,14 +974,14 @@ body {
   box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25);
 }
 
-.lumiere-category-tab[data-category="Körperpflege/Wellness"]:hover {
+.lumiere-category-tab[data-category="KÃ¶rperpflege/Wellness"]:hover {
   background: var(--category-koerperpflege-light);
   color: var(--category-koerperpflege);
   border-color: var(--category-koerperpflege);
   box-shadow: 0 4px 20px rgba(255, 107, 157, 0.25);
 }
 
-.lumiere-category-tab[data-category="Haushalt und Küche"]:hover {
+.lumiere-category-tab[data-category="Haushalt und KÃ¼che"]:hover {
   background: var(--category-haushalt-light);
   color: var(--category-haushalt);
   border-color: var(--category-haushalt);
@@ -1013,13 +1013,13 @@ body {
   box-shadow: 0 6px 25px rgba(255, 215, 0, 0.4);
 }
 
-.lumiere-category-tab[data-category="Körperpflege/Wellness"].active {
+.lumiere-category-tab[data-category="KÃ¶rperpflege/Wellness"].active {
   background: linear-gradient(135deg, var(--category-koerperpflege), #ed64a6);
   border-color: var(--category-koerperpflege);
   box-shadow: 0 6px 25px rgba(255, 107, 157, 0.4);
 }
 
-.lumiere-category-tab[data-category="Haushalt und Küche"].active {
+.lumiere-category-tab[data-category="Haushalt und KÃ¼che"].active {
   background: linear-gradient(135deg, var(--category-haushalt), #38a169);
   border-color: var(--category-haushalt);
   box-shadow: 0 6px 25px rgba(67, 233, 123, 0.4);
@@ -1060,19 +1060,19 @@ body {
   box-shadow: 0 8px 30px rgba(255, 215, 0, 0.5) !important;
 }
 
-.lumiere-category-tab[data-category="Körperpflege/Wellness"].active:hover {
+.lumiere-category-tab[data-category="KÃ¶rperpflege/Wellness"].active:hover {
   background: linear-gradient(135deg, #ed64a6, var(--category-koerperpflege)) !important;
   color: var(--lumiere-white) !important;
   box-shadow: 0 8px 30px rgba(255, 107, 157, 0.5) !important;
 }
 
-.lumiere-category-tab[data-category="Haushalt und Küche"].active:hover {
+.lumiere-category-tab[data-category="Haushalt und KÃ¼che"].active:hover {
   background: linear-gradient(135deg, #38a169, var(--category-haushalt)) !important;
   color: var(--lumiere-white) !important;
   box-shadow: 0 8px 30px rgba(67, 233, 123, 0.5) !important;
 }
 
-/* Responsive Design for Lumière Adapted Elements */
+/* Responsive Design for LumiÃ¨re Adapted Elements */
 @media (max-width: 768px) {
   .lumiere-hero-main {
     flex-direction: column;
@@ -1409,7 +1409,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   line-height: 1.2;
 }
 
-/* Lumière Design Announcement Bar */
+/* LumiÃ¨re Design Announcement Bar */
 .announcement-bar {
   background: var(--lumiere-black);
   color: var(--lumiere-white);
@@ -1438,7 +1438,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   100% { transform: translateX(-100%); }
 }
 
-/* Lumière Navigation */
+/* LumiÃ¨re Navigation */
 .lumiere-nav {
   background: var(--body-bg);
   border-bottom: 1px solid var(--border-color);
@@ -1598,7 +1598,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   margin-left: 0;
 }
 
-/* Lumière Product Grid */
+/* LumiÃ¨re Product Grid */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1634,7 +1634,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   font-weight: 500;
 }
 
-/* Product Grid - Lumière Style */
+/* Product Grid - LumiÃ¨re Style */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1681,7 +1681,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
-/* Lumière Product Card Styles - Exact Match */
+/* LumiÃ¨re Product Card Styles - Exact Match */
 .lumiere-product-card {
     background: #ffffff;
     border-radius: 8px;
@@ -1704,8 +1704,8 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 /* All product cards are white - no category-specific backgrounds */
 .lumiere-product-card[data-category="Technik/Gadgets"],
 .lumiere-product-card[data-category="Beleuchtung"],
-.lumiere-product-card[data-category="Körperpflege/Wellness"],
-.lumiere-product-card[data-category="Haushalt und Küche"] {
+.lumiere-product-card[data-category="KÃ¶rperpflege/Wellness"],
+.lumiere-product-card[data-category="Haushalt und KÃ¼che"] {
     background: #ffffff;
     border: 1px solid #f0f0f0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -1714,8 +1714,8 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 /* Simple hover effects - white background like in the image */
 .lumiere-product-card[data-category="Technik/Gadgets"]:hover,
 .lumiere-product-card[data-category="Beleuchtung"]:hover,
-.lumiere-product-card[data-category="Körperpflege/Wellness"]:hover,
-.lumiere-product-card[data-category="Haushalt und Küche"]:hover {
+.lumiere-product-card[data-category="KÃ¶rperpflege/Wellness"]:hover,
+.lumiere-product-card[data-category="Haushalt und KÃ¼che"]:hover {
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     transform: translateY(-1px);
     background: #ffffff;
@@ -1738,21 +1738,21 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
 }
 
-.lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn {
+.lumiere-product-card[data-category="KÃ¶rperpflege/Wellness"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, var(--category-koerperpflege-bg), var(--category-koerperpflege-bg-dark));
     color: #c41e5a;
     border: 1px solid #ffb8d4;
     box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
 }
 
-.lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn {
+.lumiere-product-card[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, var(--category-haushalt-bg), var(--category-haushalt-bg-dark));
     color: #b8006b;
     border: 1px solid #ffb8e1;
     box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
 }
 
-/* Hover-Effekte für kategorie-spezifische Buttons - DARKER BACKGROUNDS */
+/* Hover-Effekte fÃ¼r kategorie-spezifische Buttons - DARKER BACKGROUNDS */
 .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, var(--category-technik-bg-dark), #b8e8d8);
     color: #086a8a;
@@ -1769,7 +1769,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
 }
 
-.lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
+.lumiere-product-card[data-category="KÃ¶rperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, var(--category-koerperpflege-bg-dark), #ffcce0);
     color: #a01848;
     border-color: #ff9cc0;
@@ -1777,7 +1777,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
 }
 
-.lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn:hover {
+.lumiere-product-card[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, var(--category-haushalt-bg-dark), #ffbdd8);
     color: #900055;
     border-color: #ff9ccd;
@@ -2092,7 +2092,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   margin-left: 8px;
 }
 
-/* Add to Cart Button - Lumière Style */
+/* Add to Cart Button - LumiÃ¨re Style */
 .product-card .btn.add-to-cart {
   background: var(--lumiere-black);
   color: var(--lumiere-white);
@@ -2115,7 +2115,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 }
 
 
-/* Responsive Anpassungen für Produktkarten */
+/* Responsive Anpassungen fÃ¼r Produktkarten */
 @media (max-width: 576px) {
   .product-card .card-body {
     padding: 16px;
@@ -2135,7 +2135,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   }
 }
 
-/* Animationen für Produktkarten */
+/* Animationen fÃ¼r Produktkarten */
 .product-card {
   animation: fadeIn 0.5s ease-out;
 }
@@ -2151,7 +2151,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   }
 }
 
-/* Hero Section - Lumière Style */
+/* Hero Section - LumiÃ¨re Style */
 .hero-section {
     background: #ffffff;
     padding: 80px 0 60px;
@@ -2193,7 +2193,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     }
 }
 
-/* Categories Section - Lumière Style */
+/* Categories Section - LumiÃ¨re Style */
 .categories-section {
     background-color: #ffffff;
     padding: 40px 0;
@@ -2292,7 +2292,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   margin: 0;
 }
 
-/* Products Section - Lumière Style */
+/* Products Section - LumiÃ¨re Style */
 .products-section {
     padding: 60px 0 80px;
     background: #ffffff;
@@ -2308,7 +2308,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     margin-bottom: 0;
 }
 
-/* Hintergrundfarben für die verschiedenen Kategorien */
+/* Hintergrundfarben fÃ¼r die verschiedenen Kategorien */
 .product-category-section {
     width: 100%;
 }
@@ -2318,7 +2318,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     background: linear-gradient(135deg, #e8f4ff 0%, #f0e8ff 100%);
 }
 
-/* Technik/Gadgets - Hellgrün/Mint */
+/* Technik/Gadgets - HellgrÃ¼n/Mint */
 .category-technik {
     background: linear-gradient(135deg, #e8fff4 0%, #f0fffa 100%);
 }
@@ -2328,12 +2328,12 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     background: linear-gradient(135deg, #fff9e8 0%, #ffefe8 100%);
 }
 
-/* Haushalt und Küche - Hellrosa/Pink */
+/* Haushalt und KÃ¼che - Hellrosa/Pink */
 .category-haushalt {
     background: linear-gradient(135deg, #ffe8f5 0%, #ffeef8 100%);
 }
 
-/* Körperpflege/Wellness - Hellviolett/Lila */
+/* KÃ¶rperpflege/Wellness - Hellviolett/Lila */
 .category-wellness {
     background: linear-gradient(135deg, #f5e8ff 0%, #f8eeff 100%);
 }
@@ -2359,7 +2359,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Horizontal Scroll Grid - Lumière Style (Bestseller Slider) */
+/* Horizontal Scroll Grid - LumiÃ¨re Style (Bestseller Slider) */
 .product-scroll-container {
     position: relative;
     overflow: hidden;
@@ -2458,8 +2458,8 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 /* Bestseller grid uses same white design as other categories */
 #bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"],
 #bestsellerGrid .lumiere-product-card[data-category="Beleuchtung"],
-#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"],
-#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] {
+#bestsellerGrid .lumiere-product-card[data-category="KÃ¶rperpflege/Wellness"],
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und KÃ¼che"] {
     background: #ffffff !important;
     border: 1px solid #f0f0f0 !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
@@ -2482,21 +2482,21 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     box-shadow: 0 2px 8px rgba(146, 64, 14, 0.2) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn {
+#bestsellerGrid .lumiere-product-card[data-category="KÃ¶rperpflege/Wellness"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
     color: #6b21a8 !important;
     border: 1px solid #c4b5fd !important;
     box-shadow: 0 2px 8px rgba(107, 33, 168, 0.2) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn {
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
     box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
 }
 
-/* Hover-Effekte für Bestseller-Buttons - PASTEL FARBEN */
+/* Hover-Effekte fÃ¼r Bestseller-Buttons - PASTEL FARBEN */
 #bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #bbf7d0, #86efac) !important;
     transform: translateY(-2px) !important;
@@ -2509,19 +2509,19 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     box-shadow: 0 4px 15px rgba(146, 64, 14, 0.3) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="Körperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
+#bestsellerGrid .lumiere-product-card[data-category="KÃ¶rperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #e9d5ff, #c4b5fd) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(107, 33, 168, 0.3) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Küche"] .lumiere-add-to-cart-btn:hover {
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
 }
 
-/* Remove fade effects to match Lumière design */
+/* Remove fade effects to match LumiÃ¨re design */
 
 @media (max-width: 768px) {
     .products-section {
@@ -2604,7 +2604,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   }
 }
 
-/* Lumière Footer */
+/* LumiÃ¨re Footer */
 .lumiere-footer {
   background-color: var(--lumiere-black);
   color: var(--lumiere-white);
@@ -2890,7 +2890,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   }
 }
 
-/* Herz-Symbol in der Navigation rot einfärben */
+/* Herz-Symbol in der Navigation rot einfÃ¤rben */
 #wishlistButton {
   color: var(--danger-color) !important;
 }
@@ -2957,7 +2957,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   z-index: 1001;
 }
 
-/* Mobile Anpassungen für Warenkorb-Counter */
+/* Mobile Anpassungen fÃ¼r Warenkorb-Counter */
 @media (max-width: 768px) {
   #cartCounter {
     top: -6px;
@@ -3106,7 +3106,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   font-weight: bold;
   opacity: 1;
   visibility: visible;
-  /* Entferne absolute Positionierung für Desktop */
+  /* Entferne absolute Positionierung fÃ¼r Desktop */
 }
 
 .cart-dropdown .btn-close:hover {
@@ -3120,10 +3120,10 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 }
 
 .cart-dropdown-body {
-  max-height: 60vh; /* 60% der Bildschirmhöhe - mehr Platz für Footer */
+  max-height: 60vh; /* 60% der BildschirmhÃ¶he - mehr Platz fÃ¼r Footer */
   overflow-y: auto;
   padding: 0;
-  flex: 1; /* Nimmt verfügbaren Platz ein */
+  flex: 1; /* Nimmt verfÃ¼gbaren Platz ein */
 }
 
 .cart-item {
@@ -3222,7 +3222,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   border-top: 1px solid var(--border-color);
   background: var(--light-bg);
   flex-shrink: 0; /* Footer soll nicht schrumpfen */
-  min-height: 140px !important; /* Mindesthöhe für Footer */
+  min-height: 140px !important; /* MindesthÃ¶he fÃ¼r Footer */
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
@@ -3247,15 +3247,15 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   text-align: center !important;
 }
 
-/* Spezielle Regeln für Desktop/PC */
+/* Spezielle Regeln fÃ¼r Desktop/PC */
 @media (min-width: 769px) {
   .cart-dropdown {
-    max-height: 700px !important; /* Mehr Höhe für Desktop */
+    max-height: 700px !important; /* Mehr HÃ¶he fÃ¼r Desktop */
     min-height: 400px !important;
   }
   
   .cart-dropdown-body {
-    max-height: 450px !important; /* Mehr Platz für Inhalt */
+    max-height: 450px !important; /* Mehr Platz fÃ¼r Inhalt */
   }
   
   .cart-dropdown-footer {
@@ -3267,7 +3267,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     background: white !important;
     border-top: 1px solid #ddd !important;
     padding: 20px !important;
-    min-height: 140px !important; /* Garantierte Mindesthöhe für Footer */
+    min-height: 140px !important; /* Garantierte MindesthÃ¶he fÃ¼r Footer */
   }
   
   .cart-dropdown-footer .btn {
@@ -3310,7 +3310,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   text-align: center !important;
 }
 
-/* Schöne Hover-Effekte für Buttons */
+/* SchÃ¶ne Hover-Effekte fÃ¼r Buttons */
 .cart-dropdown-footer .checkout-btn:hover {
   background: linear-gradient(135deg, #5a6fd8, #6a4190) !important;
   transform: translateY(-2px) !important;
@@ -3348,7 +3348,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   visibility: visible !important;
 }
 
-/* Müll-Button spezifische Styles */
+/* MÃ¼ll-Button spezifische Styles */
 #clearCart {
   border: 2px solid #dc3545 !important;
   color: #dc3545 !important;
@@ -3442,7 +3442,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 
 .form-select option[value="Alle Kategorien"]::before {
   background: linear-gradient(135deg, #667eea, #764ba2);
-  content: '📋';
+  content: 'ðŸ“‹';
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3451,7 +3451,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 
 .form-select option[value="Technik/Gadgets"]::before {
   background: linear-gradient(135deg, #4facfe, #00f2fe);
-  content: '⚡';
+  content: 'âš¡';
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3460,7 +3460,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 
 .form-select option[value="Fitness"]::before {
   background: linear-gradient(135deg, #43e97b, #38f9d7);
-  content: '💪';
+  content: 'ðŸ’ª';
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3469,7 +3469,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 
 .form-select option[value="Mode"]::before {
   background: linear-gradient(135deg, #fa709a, #fee140);
-  content: '👕';
+  content: 'ðŸ‘•';
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3478,7 +3478,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 
 .form-select option[value="Haushalt"]::before {
   background: linear-gradient(135deg, #a8edea, #fed6e3);
-  content: '🏠';
+  content: 'ðŸ ';
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3841,7 +3841,7 @@ div#hilfeButton,
   transition: all 0.15s ease !important;
 }
 
-/* Glassmorphism Effect für Button */
+/* Glassmorphism Effect fÃ¼r Button */
 #hilfeButton::before {
   content: "" !important;
   position: absolute !important;
@@ -3965,7 +3965,7 @@ div#hilfeButton,
     display: flex !important;
   }
   
-  /* Nach oben Button für Mobile weiter runter */
+  /* Nach oben Button fÃ¼r Mobile weiter runter */
   #scrollToTopBtn {
     bottom: 30px !important;
   }
@@ -4174,7 +4174,7 @@ body:has(.hilfe-panel.offen) {
   height: 100vh;
 }
 
-/* Fallback für Browser ohne :has() Support */
+/* Fallback fÃ¼r Browser ohne :has() Support */
 .help-panel-open {
   overflow: hidden !important;
   height: 100vh !important;
@@ -4309,7 +4309,7 @@ div#hilfePanel.offen,
   }
 }
 
-/* Ultra-Moderne Header für Hauptseite */
+/* Ultra-Moderne Header fÃ¼r Hauptseite */
 .hilfe-panel-header {
   padding: 24px 28px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%),
@@ -4398,7 +4398,7 @@ div#hilfePanel.offen,
   position: relative;
 }
 
-/* Scrollbar Styling für moderne Optik */
+/* Scrollbar Styling fÃ¼r moderne Optik */
 .hilfe-themen-modern::-webkit-scrollbar {
   width: 6px;
 }
@@ -4418,7 +4418,7 @@ div#hilfePanel.offen,
   background: linear-gradient(135deg, #764ba2, #f093fb);
 }
 
-/* Staggered Animation für Hilfe-Themen-Buttons */
+/* Staggered Animation fÃ¼r Hilfe-Themen-Buttons */
 .hilfe-panel.offen .hilfe-thema-btn {
   animation: staggerFadeInUp 0.3s ease-out both;
 }
@@ -4620,7 +4620,7 @@ div#hilfePanel.offen,
   }
 }
 
-/* GITHUB PAGES MOBILE FIX - HÖCHSTE PRIORITÄT */
+/* GITHUB PAGES MOBILE FIX - HÃ–CHSTE PRIORITÃ„T */
 @media (max-width: 768px) {
   html,
   body {
@@ -4704,7 +4704,7 @@ div#hilfePanel.offen,
     font-size: 1.2rem;
   }
 
-  /* Touch-optimierte Hinzufügen-Buttons für Mobile */
+  /* Touch-optimierte HinzufÃ¼gen-Buttons fÃ¼r Mobile */
   .product-card .btn.add-to-cart {
     padding: 6px 8px;
     font-size: 0.7rem;
@@ -4802,7 +4802,7 @@ div#hilfePanel.offen,
     padding: 10px 12px;
   }
 
-  /* Kleinere Touch-optimierte Hinzufügen-Buttons für kleine Mobile */
+  /* Kleinere Touch-optimierte HinzufÃ¼gen-Buttons fÃ¼r kleine Mobile */
   .product-card .btn.add-to-cart {
     padding: 5px 6px;
     font-size: 0.65rem;
@@ -4949,7 +4949,7 @@ div#hilfePanel.offen,
     padding: 8px 10px;
   }
 
-  /* Kleine Touch-optimierte Hinzufügen-Buttons für sehr kleine Mobile */
+  /* Kleine Touch-optimierte HinzufÃ¼gen-Buttons fÃ¼r sehr kleine Mobile */
   .product-card .btn.add-to-cart {
     padding: 4px 5px;
     font-size: 0.6rem;
@@ -5063,7 +5063,7 @@ div#hilfePanel.offen,
     padding: 6px 8px;
   }
 
-  /* Minimale Touch-optimierte Hinzufügen-Buttons für sehr kleine Mobile */
+  /* Minimale Touch-optimierte HinzufÃ¼gen-Buttons fÃ¼r sehr kleine Mobile */
   .product-card .btn.add-to-cart {
     padding: 3px 4px;
     font-size: 0.55rem;
@@ -5155,7 +5155,7 @@ div#hilfePanel.offen,
     color: #333 !important;
   }
 
-  /* Icons größer rechts */
+  /* Icons grÃ¶ÃŸer rechts */
   .nav-actions-simple {
     order: 3 !important;
     display: flex !important;
@@ -5217,7 +5217,7 @@ div#hilfePanel.offen,
   }
 }
 
-/* Extra kleine Geräte */
+/* Extra kleine GerÃ¤te */
 @media (max-width: 480px) {
   .simple-nav {
     padding: 8px 0 !important;
@@ -5253,7 +5253,7 @@ div#hilfePanel.offen,
   }
 }
 
-/* FULLSCREEN WARENKORB-DROPDOWN FÜR MOBILE */
+/* FULLSCREEN WARENKORB-DROPDOWN FÃœR MOBILE */
 @media (max-width: 768px) {
   .cart-dropdown {
     position: fixed !important;
@@ -5356,13 +5356,13 @@ div#hilfePanel.offen,
   .cart-dropdown.show + #scrollToTopBtn,
   .cart-dropdown.show ~ * #scrollToTopBtn,
   #scrollToTopBtn[style*="display: none"],
-  /* Direkte Selektoren für bessere Kompatibilität */
+  /* Direkte Selektoren fÃ¼r bessere KompatibilitÃ¤t */
     .cart-dropdown.show
     ~ *
     #scrollToTopBtn,
-  /* Zusätzliche Selektoren für mobile */
+  /* ZusÃ¤tzliche Selektoren fÃ¼r mobile */
     body:has(.cart-dropdown.show)
-        /* FORCE HILFE-BUTTON KLICKBARKEIT - ÜBERSCHREIBT ALLE ANDEREN REGELN */
+        /* FORCE HILFE-BUTTON KLICKBARKEIT - ÃœBERSCHREIBT ALLE ANDEREN REGELN */
         #hilfeButton,
         div#hilfeButton,
         body #hilfeButton,
@@ -5400,13 +5400,13 @@ div#hilfePanel.offen,
           }
         }
 
-  /* Zusätzliche mobile-spezifische Regeln für Scroll-to-Top Button */
+  /* ZusÃ¤tzliche mobile-spezifische Regeln fÃ¼r Scroll-to-Top Button */
   @media (max-width: 768px) {
     .cart-dropdown.show ~ #scrollToTopBtn,
     .cart-dropdown.show + #scrollToTopBtn,
     .cart-dropdown.show ~ * #scrollToTopBtn,
     body:has(.cart-dropdown.show) #scrollToTopBtn,
-    /* Fallback für ältere Browser */
+    /* Fallback fÃ¼r Ã¤ltere Browser */
       .cart-open
       #scrollToTopBtn {
       display: none !important;
@@ -5494,7 +5494,7 @@ div#hilfePanel.offen,
     justify-content: center !important;
   }
 
-  /* Größere Touch-Buttons im Mobile-Warenkorb */
+  /* GrÃ¶ÃŸere Touch-Buttons im Mobile-Warenkorb */
   .cart-item .quantity-btn {
     width: 40px !important;
     height: 40px !important;
@@ -5577,7 +5577,7 @@ div#hilfePanel.offen,
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* PRODUKTBILDER POSITION FIX FÜR MOBILE */
+  /* PRODUKTBILDER POSITION FIX FÃœR MOBILE */
   .product-card .product-image-container,
   .product-card .ratio {
     position: relative;
@@ -5598,7 +5598,7 @@ div#hilfePanel.offen,
     border-radius: 12px 12px 0 0;
   }
 
-  /* Spezifische Fixes für Suchergebnisse - KLEINERE BILDER FÜR MOBILE */
+  /* Spezifische Fixes fÃ¼r Suchergebnisse - KLEINERE BILDER FÃœR MOBILE */
   .search-results .product-card .product-image-container,
   .search-results .product-card .ratio,
   #fullscreenSearchOverlay .product-card .product-image-container,
@@ -5653,7 +5653,7 @@ div#hilfePanel.offen,
     margin-bottom: 20px;
   }
 
-  /* KRITISCHER FIX: Spezielle Fixes für abgeschnittene Bilder in der Suche */
+  /* KRITISCHER FIX: Spezielle Fixes fÃ¼r abgeschnittene Bilder in der Suche */
   #fullscreenSearchOverlay .product-card .product-image-container,
   #fullscreenSearchOverlay .product-card .ratio,
   #fullscreenSearchOverlay .ratio.ratio-4x3,
@@ -5684,7 +5684,7 @@ div#hilfePanel.offen,
     transform: translateY(0) !important;
   }
 
-  /* Zusätzlicher Fix für alle Suchcontainer */
+  /* ZusÃ¤tzlicher Fix fÃ¼r alle Suchcontainer */
   [id*="search"] .product-card .product-image-container,
   [class*="search"] .product-card .product-image-container {
     height: 180px !important;
@@ -5704,7 +5704,7 @@ div#hilfePanel.offen,
     transform: translateY(0) !important;
   }
 
-  /* SPEZIFISCHER FIX FÜR SEARCH-ALL-PRODUCTS-GRID */
+  /* SPEZIFISCHER FIX FÃœR SEARCH-ALL-PRODUCTS-GRID */
   .search-all-products-grid .lumiere-product-card .product-image-container,
   .search-all-products-grid .lumiere-product-card .ratio,
   .search-all-products-grid .product-card .product-image-container,
@@ -5731,7 +5731,7 @@ div#hilfePanel.offen,
   }
 }
 
-/* Noch größere Mengen- und Entfernen-Buttons im Produktbereich (Startseite) */
+/* Noch grÃ¶ÃŸere Mengen- und Entfernen-Buttons im Produktbereich (Startseite) */
 .product-card .quantity-btn,
 .product-card .remove-item {
   width: 56px !important;
@@ -5758,7 +5758,7 @@ div#hilfePanel.offen,
   color: #fff !important;
 }
 
-/* Extra große + und - Buttons im Produktbereich (Startseite) */
+/* Extra groÃŸe + und - Buttons im Produktbereich (Startseite) */
 .product-card .quantity-btn {
   width: 68px !important;
   height: 68px !important;
@@ -5773,7 +5773,7 @@ div#hilfePanel.offen,
   line-height: 1 !important;
 }
 
-/* Noch größere + und - Buttons im Produktbereich (Startseite) */
+/* Noch grÃ¶ÃŸere + und - Buttons im Produktbereich (Startseite) */
 .product-card .quantity-btn {
   width: 90px !important;
   height: 90px !important;
@@ -5788,7 +5788,7 @@ div#hilfePanel.offen,
   line-height: 1 !important;
 }
 
-/* Große, touchfreundliche Hinzufügen-Buttons im Produktbereich - nur für Desktop */
+/* GroÃŸe, touchfreundliche HinzufÃ¼gen-Buttons im Produktbereich - nur fÃ¼r Desktop */
 @media (min-width: 769px) {
   .product-card .add-to-cart {
     min-height: 60px !important;
@@ -5815,7 +5815,7 @@ div#hilfePanel.offen,
   }
 }
 
-/* Hinzufügen-Button bei Produkten - nur für Desktop */
+/* HinzufÃ¼gen-Button bei Produkten - nur fÃ¼r Desktop */
 @media (min-width: 769px) {
   button.add-to-cart,
   .product-card button.add-to-cart {
@@ -6081,7 +6081,7 @@ div#hilfePanel.offen,
   color: white;
 }
 
-/* Orange Hintergrund für Benutzer-Nachrichten */
+/* Orange Hintergrund fÃ¼r Benutzer-Nachrichten */
 .user-message .message-text.orange-support {
   background: var(--orange-gradient) !important;
   color: white !important;
@@ -6263,7 +6263,7 @@ div#hilfePanel.offen,
   fill: white !important;
 }
 
-/* ULTIMATE FORCE - Text muss weiß sein beim Hover */
+/* ULTIMATE FORCE - Text muss weiÃŸ sein beim Hover */
 .feedback-btn.not-helpful-btn:hover,
 .not-helpful-btn:hover,
 button.not-helpful-btn:hover {
@@ -6349,7 +6349,7 @@ button.helpful-btn:hover {
   border-color: transparent !important;
 }
 
-/* Orange Hintergrund für Hilfe-Themen-Buttons */
+/* Orange Hintergrund fÃ¼r Hilfe-Themen-Buttons */
 .hilfe-thema-btn.orange-support {
   background: var(--orange-gradient) !important;
   color: white !important;
@@ -6449,7 +6449,7 @@ button.helpful-btn:hover {
   fill: white !important;
 }
 
-/* Mobile Anpassungen für Chatbot */
+/* Mobile Anpassungen fÃ¼r Chatbot */
 @media (max-width: 768px) {
   .chatbot-messages {
     max-height: calc(100vh - 180px);
@@ -6480,7 +6480,7 @@ button.helpful-btn:hover {
   }
 }
 
-/* Animationen für Chatbot */
+/* Animationen fÃ¼r Chatbot */
 @keyframes messageSlideIn {
   from {
     opacity: 0;
@@ -6496,7 +6496,7 @@ button.helpful-btn:hover {
   animation: messageSlideIn 0.3s ease;
 }
 
-/* Scrollbar für Chatbot */
+/* Scrollbar fÃ¼r Chatbot */
 .chatbot-messages::-webkit-scrollbar {
   width: 4px;
 }
@@ -6517,7 +6517,7 @@ button.helpful-btn:hover {
 
 /* ===== ENHANCED CART DROPDOWN RECOMMENDATIONS ===== */
 
-/* Container für Empfehlungen im Warenkorb-Dropdown */
+/* Container fÃ¼r Empfehlungen im Warenkorb-Dropdown */
 .cart-recommendations {
   padding: 20px;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.02), rgba(255, 255, 255, 0.95));
@@ -6647,7 +6647,7 @@ button.helpful-btn:hover {
   gap: 4px;
 }
 
-/* Hinzufügen-Button für Empfehlungen */
+/* HinzufÃ¼gen-Button fÃ¼r Empfehlungen */
 .recommendation-add-btn {
   width: 32px;
   height: 32px;
@@ -6675,7 +6675,7 @@ button.helpful-btn:hover {
 }
 
 
-/* Scrollbar für Empfehlungen */
+/* Scrollbar fÃ¼r Empfehlungen */
 .recommendations-grid::-webkit-scrollbar {
   width: 4px;
 }
@@ -6696,7 +6696,7 @@ button.helpful-btn:hover {
   opacity: 0.8;
 }
 
-/* Mobile Anpassungen für Empfehlungen */
+/* Mobile Anpassungen fÃ¼r Empfehlungen */
 @media (max-width: 768px) {
   .cart-recommendations {
     padding: 16px;
@@ -6730,7 +6730,7 @@ button.helpful-btn:hover {
   }
 }
 
-/* Animation für neue Empfehlungen entfernt */
+/* Animation fÃ¼r neue Empfehlungen entfernt */
 .recommendation-card {
   /* Keine Animation */
 }
@@ -6751,14 +6751,14 @@ button.helpful-btn:hover {
   max-height: 320px;
 }
 
-/* Erfolgreiche Hinzufügung Animation entfernt */
+/* Erfolgreiche HinzufÃ¼gung Animation entfernt */
 .recommendation-card.added {
   /* Keine Animation */
 }
 
 /* addedPulse Animation entfernt */
 
-/* Verbesserte Hover-Effekte für Touch-Geräte */
+/* Verbesserte Hover-Effekte fÃ¼r Touch-GerÃ¤te */
 @media (hover: none) and (pointer: coarse) {
   .recommendation-card:hover {
     transform: none;
@@ -6773,7 +6773,7 @@ button.helpful-btn:hover {
 /* ===== ENDE ENHANCED CART DROPDOWN RECOMMENDATIONS =====*/
 
 /* ULTIMATE FEEDBACK BUTTON FIX - JAVASCRIPT INJECTION */
-/* Füge diesen CSS-Block am Ende hinzu, um JavaScript zu injizieren */
+/* FÃ¼ge diesen CSS-Block am Ende hinzu, um JavaScript zu injizieren */
 body::after {
   content: "";
   position: absolute;
@@ -6783,7 +6783,7 @@ body::after {
   pointer-events: none;
 }
 
-/* CSS-basierte Lösung für Feedback-Buttons */
+/* CSS-basierte LÃ¶sung fÃ¼r Feedback-Buttons */
 .feedback-buttons .helpful-btn,
 .feedback-buttons .not-helpful-btn {
   background: var(--card-bg) !important;
@@ -6820,7 +6820,7 @@ body::after {
 .feedback-buttons .not-helpful-btn i {
   color: var(--danger-color) !important;
 }
-/* Hover-Effekte mit maximaler Spezifität */
+/* Hover-Effekte mit maximaler SpezifitÃ¤t */
 .feedback-buttons .helpful-btn:hover,
 .feedback-buttons .helpful-btn:hover *,
 .feedback-buttons .helpful-btn:hover i {
@@ -6831,7 +6831,7 @@ body::after {
   box-shadow: var(--shadow-medium), 0 8px 25px rgba(16, 185, 129, 0.4) !important;
 }
 
-/* ULTIMATE FORCE für grünen Button - GRÜNER HINTERGRUND */
+/* ULTIMATE FORCE fÃ¼r grÃ¼nen Button - GRÃœNER HINTERGRUND */
 button.helpful-btn:hover,
 .helpful-btn:hover,
 #feedbackButtons .helpful-btn:hover {
@@ -6860,7 +6860,7 @@ button.helpful-btn:hover i,
   box-shadow: var(--shadow-medium), 0 8px 25px rgba(239, 68, 68, 0.4) !important;
 }
 
-/* ULTIMATE FORCE für roten Button */
+/* ULTIMATE FORCE fÃ¼r roten Button */
 button.not-helpful-btn:hover,
 .not-helpful-btn:hover,
 #feedbackButtons .not-helpful-btn:hover {
@@ -7528,7 +7528,7 @@ button.not-helpful-btn:hover i,
 
 /* ===== INTEGRIERTE CUSTOM STYLES ===== */
 
-/* Larger text for "Über uns" section in footer */
+/* Larger text for "Ãœber uns" section in footer */
 .lumiere-footer h5 {
     font-size: 20px !important;
     font-weight: 600 !important;
@@ -7588,7 +7588,7 @@ button.not-helpful-btn:hover i,
     border: 1px solid #c9a8ff !important;
 }
 
-/* Technik/Gadgets - GRÜN wenn aktiv */
+/* Technik/Gadgets - GRÃœN wenn aktiv */
 .lumiere-category-tab[data-category="Technik/Gadgets"].active {
     background: linear-gradient(135deg, #43e97b, #38a169) !important;
     color: #ffffff !important;
@@ -7602,16 +7602,16 @@ button.not-helpful-btn:hover i,
     border: 1px solid #fbbf24 !important;
 }
 
-/* K�rperpflege/Wellness - LILA wenn aktiv */
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"].active {
+/* KÃ¶rperpflege/Wellness - LILA wenn aktiv */
+.lumiere-category-tab[data-category="KÃ¶rperpflege/Wellness"].active {
     background: linear-gradient(135deg, #9333ea, #7c3aed) !important;
     color: #ffffff !important;
     border: 1px solid #9333ea !important;
     box-shadow: 0 6px 25px rgba(147, 51, 234, 0.4) !important;
 }
 
-/* Haushalt und K�che - ROSA wenn aktiv */
-.lumiere-category-tab[data-category="Haushalt und K�che"].active {
+/* Haushalt und KÃ¼che - ROSA wenn aktiv */
+.lumiere-category-tab[data-category="Haushalt und KÃ¼che"].active {
     background: linear-gradient(135deg, #ec4899, #db2777) !important;
     color: #ffffff !important;
     border: 1px solid #ec4899 !important;
@@ -7640,7 +7640,7 @@ button.not-helpful-btn:hover i,
     transform: translateY(-2px);
 }
 
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"]:hover {
+.lumiere-category-tab[data-category="KÃ¶rperpflege/Wellness"]:hover {
     background: rgba(147, 51, 234, 0.15) !important;
     color: #9333ea !important;
     border-color: #9333ea !important;
@@ -7648,7 +7648,7 @@ button.not-helpful-btn:hover i,
     box-shadow: 0 4px 20px rgba(147, 51, 234, 0.25) !important;
 }
 
-.lumiere-category-tab[data-category="Haushalt und K�che"]:hover {
+.lumiere-category-tab[data-category="Haushalt und KÃ¼che"]:hover {
     background: rgba(236, 72, 153, 0.15) !important;
     color: #ec4899 !important;
     border-color: #ec4899 !important;
@@ -7663,13 +7663,13 @@ button.not-helpful-btn:hover i,
     box-shadow: 0 8px 30px rgba(67, 233, 123, 0.5) !important;
 }
 
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"].active:hover {
+.lumiere-category-tab[data-category="KÃ¶rperpflege/Wellness"].active:hover {
     background: linear-gradient(135deg, #7c3aed, #9333ea) !important;
     color: #ffffff !important;
     box-shadow: 0 8px 30px rgba(147, 51, 234, 0.5) !important;
 }
 
-.lumiere-category-tab[data-category="Haushalt und K�che"].active:hover {
+.lumiere-category-tab[data-category="Haushalt und Kï¿½che"].active:hover {
     background: linear-gradient(135deg, #db2777, #ec4899) !important;
     color: #ffffff !important;
     box-shadow: 0 8px 30px rgba(236, 72, 153, 0.5) !important;
@@ -7690,21 +7690,21 @@ button.not-helpful-btn:hover i,
     box-shadow: 0 2px 8px rgba(146, 64, 14, 0.2) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="K�rperpflege/Wellness"] .lumiere-add-to-cart-btn {
+#bestsellerGrid .lumiere-product-card[data-category="Kï¿½rperpflege/Wellness"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
     color: #6b21a8 !important;
     border: 1px solid #c4b5fd !important;
     box-shadow: 0 2px 8px rgba(107, 33, 168, 0.2) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn {
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
     box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
 }
 
-/* Hover-Effekte f�r Bestseller-Buttons - PASTEL COLORS */
+/* Hover-Effekte fÃ¼r Bestseller-Buttons - PASTEL COLORS */
 #bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #bbf7d0, #86efac) !important;
     transform: translateY(-2px) !important;
@@ -7717,19 +7717,19 @@ button.not-helpful-btn:hover i,
     box-shadow: 0 4px 15px rgba(146, 64, 14, 0.3) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="K�rperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
+#bestsellerGrid .lumiere-product-card[data-category="KÃ¶rperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #e9d5ff, #c4b5fd) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(107, 33, 168, 0.3) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover {
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
 }
 
-/* Fallback f�r alle Bestseller Buttons falls keine spezifische Kategorie */
+/* Fallback fÃ¼r alle Bestseller Buttons falls keine spezifische Kategorie */
 #bestsellerGrid .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
     color: #6b2c91 !important;
@@ -7743,48 +7743,48 @@ button.not-helpful-btn:hover i,
     box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
 }
 
-/* ===== HAUSHALT KATEGORIE SEKTION BUTTONS - ROSA STATT GR�N ===== */
+/* ===== HAUSHALT KATEGORIE SEKTION BUTTONS - ROSA STATT GRÃ¼N ===== */
 
 /* Haushalt Kategorie Sektion - Rosa Hintergrund */
-section[data-category="Haushalt und K�che"],
+section[data-category="Haushalt und KÃ¼che"],
 .product-category-section:has(#haushaltGrid) {
     background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%) !important;
 }
 
 /* Haushalt Warenkorb Buttons - ROSA */
-section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn,
+section[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn,
 #haushaltGrid .lumiere-add-to-cart-btn,
-.lumiere-product-card[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn {
+.lumiere-product-card[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
     box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
 }
 
-section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
+section[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn:hover,
 #haushaltGrid .lumiere-add-to-cart-btn:hover,
-.lumiere-product-card[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover {
+.lumiere-product-card[data-category="Haushalt und KÃ¼che"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
 }
 
-/* CSS Variablen �berschreiben */
+/* CSS Variablen Ã¼berschreiben */
 :root {
-  /* Technik wird GR�N */
+  /* Technik wird GRÃ¼N */
   --category-technik: #43e97b !important;
   --category-technik-light: rgba(67, 233, 123, 0.15) !important;
   
-  /* K�rperpflege wird LILA */
+  /* KÃ¶rperpflege wird LILA */
   --category-koerperpflege: #9333ea !important;
   --category-koerperpflege-light: rgba(147, 51, 234, 0.15) !important;
   
-  /* Haushalt wird ROSA (weg vom Gr�n) */
+  /* Haushalt wird ROSA (weg vom GrÃ¼n) */
   --category-haushalt: #ec4899 !important;
   --category-haushalt-light: rgba(236, 72, 153, 0.15) !important;
 }
 
-/* ===== KATEGORIE BUTTONS - PASTELL FARBEN WENN AUSGEW�HLT ===== */
+/* ===== KATEGORIE BUTTONS - PASTELL FARBEN WENN AUSGEWï¿½HLT ===== */
 
 /* Alle Kategorien - PASTELL LILA wenn aktiv */
 .lumiere-category-tab:first-child.active,
@@ -7795,7 +7795,7 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 6px 25px rgba(107, 44, 145, 0.3) !important;
 }
 
-/* Technik/Gadgets - PASTELL GR�N wenn aktiv */
+/* Technik/Gadgets - PASTELL GRï¿½N wenn aktiv */
 .lumiere-category-tab[data-category="Technik/Gadgets"].active {
     background: linear-gradient(135deg, #dcfce7, #bbf7d0) !important;
     color: #166534 !important;
@@ -7811,16 +7811,16 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 6px 25px rgba(146, 64, 14, 0.3) !important;
 }
 
-/* K�rperpflege/Wellness - PASTELL LILA/ROSA wenn aktiv */
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"].active {
+/* Kï¿½rperpflege/Wellness - PASTELL LILA/ROSA wenn aktiv */
+.lumiere-category-tab[data-category="Kï¿½rperpflege/Wellness"].active {
     background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
     color: #6b21a8 !important;
     border: 1px solid #c4b5fd !important;
     box-shadow: 0 6px 25px rgba(107, 33, 168, 0.3) !important;
 }
 
-/* Haushalt und K�che - PASTELL ROSA wenn aktiv */
-.lumiere-category-tab[data-category="Haushalt und K�che"].active {
+/* Haushalt und Kï¿½che - PASTELL ROSA wenn aktiv */
+.lumiere-category-tab[data-category="Haushalt und Kï¿½che"].active {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
@@ -7829,7 +7829,7 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
 
 /* ===== BESTSELLER BUTTONS - ALLE KONSISTENT MACHEN ===== */
 
-/* Standard Fallback f�r alle Bestseller Buttons */
+/* Standard Fallback fï¿½r alle Bestseller Buttons */
 #bestsellerGrid .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
     color: #6b2c91 !important;
@@ -7843,7 +7843,7 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
 }
 
-/* Spezifische �berschreibungen nach Kategorie */
+/* Spezifische ï¿½berschreibungen nach Kategorie */
 #bestsellerGrid .lumiere-product-card[data-category="Technik/Gadgets"] .lumiere-add-to-cart-btn,
 #bestsellerGrid .lumiere-product-card[data-category="Elektronik"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #dcfce7, #bbf7d0) !important;
@@ -7872,33 +7872,33 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 4px 15px rgba(146, 64, 14, 0.3) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="K�rperpflege/Wellness"] .lumiere-add-to-cart-btn {
+#bestsellerGrid .lumiere-product-card[data-category="Kï¿½rperpflege/Wellness"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
     color: #6b21a8 !important;
     border: 1px solid #c4b5fd !important;
     box-shadow: 0 2px 8px rgba(107, 33, 168, 0.2) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="K�rperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
+#bestsellerGrid .lumiere-product-card[data-category="Kï¿½rperpflege/Wellness"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #e9d5ff, #c4b5fd) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(107, 33, 168, 0.3) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn {
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Kï¿½che"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
     box-shadow: 0 2px 8px rgba(190, 24, 93, 0.2) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover {
+#bestsellerGrid .lumiere-product-card[data-category="Haushalt und Kï¿½che"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
 }
 
-/* Zus�tzliche Selektoren f�r alle m�glichen Varianten */
+/* Zusï¿½tzliche Selektoren fï¿½r alle mï¿½glichen Varianten */
 #bestsellerGrid .lumiere-product-card:not([data-category]) .lumiere-add-to-cart-btn,
 #bestsellerGrid .lumiere-product-card[data-category=""] .lumiere-add-to-cart-btn,
 #bestsellerGrid .lumiere-product-card[data-category="undefined"] .lumiere-add-to-cart-btn {
@@ -7916,7 +7916,7 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
 }
 
-/* Sehr spezifische �berschreibung f�r hartn�ckige Buttons */
+/* Sehr spezifische ï¿½berschreibung fï¿½r hartnï¿½ckige Buttons */
 #bestsellerGrid .lumiere-add-to-cart-btn[style] {
     background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
     color: #6b2c91 !important;
@@ -7924,9 +7924,9 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 2px 8px rgba(107, 44, 145, 0.2) !important;
 }
 
-/* ===== BESTSELLER BUTTONS - ULTIMATIVE �BERSCHREIBUNG ===== */
+/* ===== BESTSELLER BUTTONS - ULTIMATIVE ï¿½BERSCHREIBUNG ===== */
 
-/* Alle Bestseller Buttons - St�rkste Regel mit h�chster Spezifit�t */
+/* Alle Bestseller Buttons - Stï¿½rkste Regel mit hï¿½chster Spezifitï¿½t */
 #bestsellerGrid .lumiere-product-card .lumiere-add-to-cart-btn,
 #bestsellerGrid .product-card .lumiere-add-to-cart-btn,
 #bestsellerGrid .lumiere-add-to-cart-btn,
@@ -7947,7 +7947,7 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
 }
 
-/* �berschreibt alle inline Styles und andere Regeln */
+/* ï¿½berschreibt alle inline Styles und andere Regeln */
 #bestsellerGrid .lumiere-add-to-cart-btn[style*="background"],
 #bestsellerGrid .lumiere-add-to-cart-btn[style*="color"] {
     background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
@@ -7955,7 +7955,7 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     border: 1px solid #c9a8ff !important;
 }
 
-/* Spezielle Regel f�r die ersten beiden Buttons */
+/* Spezielle Regel fï¿½r die ersten beiden Buttons */
 #bestsellerGrid .lumiere-product-card:nth-child(1) .lumiere-add-to-cart-btn,
 #bestsellerGrid .lumiere-product-card:nth-child(2) .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
@@ -7972,7 +7972,7 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
 }
 
-/* Reset aller m�glichen Kategorie-spezifischen Styles f�r Bestseller */
+/* Reset aller mï¿½glichen Kategorie-spezifischen Styles fï¿½r Bestseller */
 #bestsellerGrid .lumiere-product-card[data-category] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
     color: #6b2c91 !important;
@@ -7989,9 +7989,9 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
 
 /* ===== BESTSELLER BUTTONS - KATEGORIE-SPEZIFISCHE FARBEN KORRIGIERT ===== */
 
-/* Entferne die ultimative �berschreibung und mache kategorie-spezifisch */
+/* Entferne die ultimative ï¿½berschreibung und mache kategorie-spezifisch */
 
-/* Standard Fallback f�r Buttons ohne spezifische Kategorie */
+/* Standard Fallback fï¿½r Buttons ohne spezifische Kategorie */
 #bestsellerGrid .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #e8d5ff, #d9c2ff) !important;
     color: #6b2c91 !important;
@@ -8005,7 +8005,7 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 4px 15px rgba(107, 44, 145, 0.3) !important;
 }
 
-/* Technik/Gadgets und Elektronik - GR�N */
+/* Technik/Gadgets und Elektronik - GRï¿½N */
 #bestsellerGrid .lumiere-product-card[data-category*="Technik"] .lumiere-add-to-cart-btn,
 #bestsellerGrid .lumiere-product-card[data-category*="Gadgets"] .lumiere-add-to-cart-btn,
 #bestsellerGrid .lumiere-product-card[data-category*="Elektronik"] .lumiere-add-to-cart-btn {
@@ -8037,8 +8037,8 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 4px 15px rgba(146, 64, 14, 0.3) !important;
 }
 
-/* K�rperpflege/Wellness - LILA/ROSA */
-#bestsellerGrid .lumiere-product-card[data-category*="K�rperpflege"] .lumiere-add-to-cart-btn,
+/* Kï¿½rperpflege/Wellness - LILA/ROSA */
+#bestsellerGrid .lumiere-product-card[data-category*="Kï¿½rperpflege"] .lumiere-add-to-cart-btn,
 #bestsellerGrid .lumiere-product-card[data-category*="Wellness"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
     color: #6b21a8 !important;
@@ -8046,16 +8046,16 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 2px 8px rgba(107, 33, 168, 0.2) !important;
 }
 
-#bestsellerGrid .lumiere-product-card[data-category*="K�rperpflege"] .lumiere-add-to-cart-btn:hover,
+#bestsellerGrid .lumiere-product-card[data-category*="Kï¿½rperpflege"] .lumiere-add-to-cart-btn:hover,
 #bestsellerGrid .lumiere-product-card[data-category*="Wellness"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #e9d5ff, #c4b5fd) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(107, 33, 168, 0.3) !important;
 }
 
-/* Haushalt und K�che - ROSA */
+/* Haushalt und Kï¿½che - ROSA */
 #bestsellerGrid .lumiere-product-card[data-category*="Haushalt"] .lumiere-add-to-cart-btn,
-#bestsellerGrid .lumiere-product-card[data-category*="K�che"] .lumiere-add-to-cart-btn {
+#bestsellerGrid .lumiere-product-card[data-category*="Kï¿½che"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
@@ -8063,20 +8063,20 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
 }
 
 #bestsellerGrid .lumiere-product-card[data-category*="Haushalt"] .lumiere-add-to-cart-btn:hover,
-#bestsellerGrid .lumiere-product-card[data-category*="K�che"] .lumiere-add-to-cart-btn:hover {
+#bestsellerGrid .lumiere-product-card[data-category*="Kï¿½che"] .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
 }
 
-/* Spezielle Fixes f�r die ersten beiden Produkte falls sie falsche Kategorien haben */
-#bestsellerGrid .lumiere-product-card:nth-child(1)[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn {
+/* Spezielle Fixes fï¿½r die ersten beiden Produkte falls sie falsche Kategorien haben */
+#bestsellerGrid .lumiere-product-card:nth-child(1)[data-category="Haushalt und Kï¿½che"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
 }
 
-#bestsellerGrid .lumiere-product-card:nth-child(2)[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn {
+#bestsellerGrid .lumiere-product-card:nth-child(2)[data-category="Haushalt und Kï¿½che"] .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
@@ -8084,11 +8084,11 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
 
 /* ===== HAUSHALT KATEGORIE SEKTION - ROSA BUTTONS FIX ===== */
 
-/* Haushalt Sektion - Alle Buttons ROSA mit h�chster Priorit�t */
+/* Haushalt Sektion - Alle Buttons ROSA mit hï¿½chster Prioritï¿½t */
 #haushaltGrid .lumiere-add-to-cart-btn,
 #haushaltGrid .lumiere-product-card .lumiere-add-to-cart-btn,
 .product-category-section:has(#haushaltGrid) .lumiere-add-to-cart-btn,
-section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn,
+section[data-category="Haushalt und Kï¿½che"] .lumiere-add-to-cart-btn,
 .haushalt-section .lumiere-add-to-cart-btn {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
@@ -8099,7 +8099,7 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn,
 #haushaltGrid .lumiere-add-to-cart-btn:hover,
 #haushaltGrid .lumiere-product-card .lumiere-add-to-cart-btn:hover,
 .product-category-section:has(#haushaltGrid) .lumiere-add-to-cart-btn:hover,
-section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
+section[data-category="Haushalt und Kï¿½che"] .lumiere-add-to-cart-btn:hover,
 .haushalt-section .lumiere-add-to-cart-btn:hover {
     background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
     color: #be185d !important;
@@ -8107,16 +8107,16 @@ section[data-category="Haushalt und K�che"] .lumiere-add-to-cart-btn:hover,
     box-shadow: 0 4px 15px rgba(190, 24, 93, 0.3) !important;
 }
 
-/* �berschreibe alle anderen Farben in der Haushalt Sektion */
+/* ï¿½berschreibe alle anderen Farben in der Haushalt Sektion */
 #haushaltGrid [class*="add-to-cart"] {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
 }
 
-/* ===== �BER UNS SEKTION - HINTERGRUND UND TEXT FIXES ===== */
+/* ===== ï¿½BER UNS SEKTION - HINTERGRUND UND TEXT FIXES ===== */
 
-/* Entferne wei�en Raum vor �ber uns */
+/* Entferne weiï¿½en Raum vor ï¿½ber uns */
 .about-section,
 #about,
 section:has(.about-content) {
@@ -8125,13 +8125,13 @@ section:has(.about-content) {
     background: #1a1a1a !important;
 }
 
-/* Vorherige Sektion soll direkt anschlie�en */
+/* Vorherige Sektion soll direkt anschlieï¿½en */
 .product-category-section:last-of-type {
     margin-bottom: 0 !important;
     padding-bottom: 80px !important;
 }
 
-/* �ber uns Text gr��er und volle Breite nutzen */
+/* ï¿½ber uns Text grï¿½ï¿½er und volle Breite nutzen */
 .about-content {
     max-width: 100% !important;
     width: 100% !important;
@@ -8174,8 +8174,8 @@ section:has(.about-content) {
     padding-top: 60px !important;
 }
 
-/* �bergangsbereich zwischen letzter Kategorie und �ber uns */
-section[data-category="Haushalt und K�che"]::after,
+/* ï¿½bergangsbereich zwischen letzter Kategorie und ï¿½ber uns */
+section[data-category="Haushalt und Kï¿½che"]::after,
 #haushaltGrid::after,
 .product-category-section:last-of-type::after {
     content: "" !important;
@@ -8187,16 +8187,16 @@ section[data-category="Haushalt und K�che"]::after,
 
 /* ===== KATEGORIE BUTTONS - FINALE KORREKTUR ===== */
 
-/* Haushalt und K�che - ROSA wenn aktiv (NICHT GR�N!) */
-.lumiere-category-tab[data-category="Haushalt und K�che"].active {
+/* Haushalt und Kï¿½che - ROSA wenn aktiv (NICHT GRï¿½N!) */
+.lumiere-category-tab[data-category="Haushalt und Kï¿½che"].active {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
     box-shadow: 0 6px 25px rgba(190, 24, 93, 0.3) !important;
 }
 
-/* Haushalt und K�che - ROSA Hover (NICHT LILA-GR�N!) */
-.lumiere-category-tab[data-category="Haushalt und K�che"]:hover:not(.active) {
+/* Haushalt und Kï¿½che - ROSA Hover (NICHT LILA-GRï¿½N!) */
+.lumiere-category-tab[data-category="Haushalt und Kï¿½che"]:hover:not(.active) {
     background: rgba(236, 72, 153, 0.15) !important;
     color: #ec4899 !important;
     border-color: #ec4899 !important;
@@ -8204,23 +8204,23 @@ section[data-category="Haushalt und K�che"]::after,
     box-shadow: 0 4px 20px rgba(236, 72, 153, 0.25) !important;
 }
 
-/* Haushalt und K�che - Active Hover */
-.lumiere-category-tab[data-category="Haushalt und K�che"].active:hover {
+/* Haushalt und Kï¿½che - Active Hover */
+.lumiere-category-tab[data-category="Haushalt und Kï¿½che"].active:hover {
     background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
     color: #be185d !important;
     box-shadow: 0 8px 30px rgba(236, 72, 153, 0.4) !important;
 }
 
-/* K�rperpflege/Wellness - MEHR LILA wenn aktiv */
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"].active {
+/* Kï¿½rperpflege/Wellness - MEHR LILA wenn aktiv */
+.lumiere-category-tab[data-category="Kï¿½rperpflege/Wellness"].active {
     background: linear-gradient(135deg, #e9d5ff, #d8b4fe) !important;
     color: #7c3aed !important;
     border: 1px solid #a78bfa !important;
     box-shadow: 0 6px 25px rgba(124, 58, 237, 0.3) !important;
 }
 
-/* K�rperpflege/Wellness - Lila Hover */
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"]:hover:not(.active) {
+/* Kï¿½rperpflege/Wellness - Lila Hover */
+.lumiere-category-tab[data-category="Kï¿½rperpflege/Wellness"]:hover:not(.active) {
     background: rgba(147, 51, 234, 0.15) !important;
     color: #9333ea !important;
     border-color: #9333ea !important;
@@ -8228,14 +8228,14 @@ section[data-category="Haushalt und K�che"]::after,
     box-shadow: 0 4px 20px rgba(147, 51, 234, 0.25) !important;
 }
 
-/* K�rperpflege/Wellness - Active Hover */
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"].active:hover {
+/* Kï¿½rperpflege/Wellness - Active Hover */
+.lumiere-category-tab[data-category="Kï¿½rperpflege/Wellness"].active:hover {
     background: linear-gradient(135deg, #d8b4fe, #c084fc) !important;
     color: #7c3aed !important;
     box-shadow: 0 8px 30px rgba(147, 51, 234, 0.4) !important;
 }
 
-/* Technik/Gadgets bleibt GR�N - zur Sicherheit nochmal definieren */
+/* Technik/Gadgets bleibt GRï¿½N - zur Sicherheit nochmal definieren */
 .lumiere-category-tab[data-category="Technik/Gadgets"].active {
     background: linear-gradient(135deg, #dcfce7, #bbf7d0) !important;
     color: #166534 !important;
@@ -8262,16 +8262,16 @@ section[data-category="Haushalt und K�che"]::after,
 
 /* ===== KATEGORIE BUTTONS - FARBEN KORRIGIERT ===== */
 
-/* Haushalt und K�che - ROSA wenn aktiv (nicht gr�n!) */
-.lumiere-category-tab[data-category="Haushalt und K�che"].active {
+/* Haushalt und Kï¿½che - ROSA wenn aktiv (nicht grï¿½n!) */
+.lumiere-category-tab[data-category="Haushalt und Kï¿½che"].active {
     background: linear-gradient(135deg, #fce7f3, #fbcfe8) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
     box-shadow: 0 6px 25px rgba(190, 24, 93, 0.4) !important;
 }
 
-/* Haushalt und K�che - ROSA hover */
-.lumiere-category-tab[data-category="Haushalt und K�che"]:hover {
+/* Haushalt und Kï¿½che - ROSA hover */
+.lumiere-category-tab[data-category="Haushalt und Kï¿½che"]:hover {
     background: linear-gradient(135deg, #fbcfe8, #f9a8d4) !important;
     color: #be185d !important;
     border: 1px solid #f9a8d4 !important;
@@ -8279,23 +8279,23 @@ section[data-category="Haushalt und K�che"]::after,
     box-shadow: 0 4px 20px rgba(190, 24, 93, 0.3) !important;
 }
 
-/* Haushalt und K�che - ROSA active hover */
-.lumiere-category-tab[data-category="Haushalt und K�che"].active:hover {
+/* Haushalt und Kï¿½che - ROSA active hover */
+.lumiere-category-tab[data-category="Haushalt und Kï¿½che"].active:hover {
     background: linear-gradient(135deg, #fbcfe8, #ec4899) !important;
     color: #ffffff !important;
     box-shadow: 0 8px 30px rgba(190, 24, 93, 0.5) !important;
 }
 
-/* K�rperpflege/Wellness - MEHR LILA wenn aktiv */
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"].active {
+/* Kï¿½rperpflege/Wellness - MEHR LILA wenn aktiv */
+.lumiere-category-tab[data-category="Kï¿½rperpflege/Wellness"].active {
     background: linear-gradient(135deg, #a855f7, #9333ea) !important;
     color: #ffffff !important;
     border: 1px solid #a855f7 !important;
     box-shadow: 0 6px 25px rgba(168, 85, 247, 0.5) !important;
 }
 
-/* K�rperpflege/Wellness - LILA hover (nicht aktiv) */
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"]:hover:not(.active) {
+/* Kï¿½rperpflege/Wellness - LILA hover (nicht aktiv) */
+.lumiere-category-tab[data-category="Kï¿½rperpflege/Wellness"]:hover:not(.active) {
     background: linear-gradient(135deg, #f3e8ff, #e9d5ff) !important;
     color: #a855f7 !important;
     border: 1px solid #c4b5fd !important;
@@ -8303,38 +8303,38 @@ section[data-category="Haushalt und K�che"]::after,
     box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3) !important;
 }
 
-/* K�rperpflege/Wellness - DUNKEL LILA active hover */
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"].active:hover {
+/* Kï¿½rperpflege/Wellness - DUNKEL LILA active hover */
+.lumiere-category-tab[data-category="Kï¿½rperpflege/Wellness"].active:hover {
     background: linear-gradient(135deg, #9333ea, #7c3aed) !important;
     color: #ffffff !important;
     box-shadow: 0 8px 30px rgba(168, 85, 247, 0.6) !important;
 }
 
-/* �berschreibe alle anderen Regeln f�r diese Buttons */
+/* ï¿½berschreibe alle anderen Regeln fï¿½r diese Buttons */
 .lumiere-category-tab[data-category*="Haushalt"] {
     --category-color: #ec4899 !important;
     --category-light: rgba(236, 72, 153, 0.15) !important;
 }
 
-.lumiere-category-tab[data-category*="K�rperpflege"] {
+.lumiere-category-tab[data-category*="Kï¿½rperpflege"] {
     --category-color: #a855f7 !important;
     --category-light: rgba(168, 85, 247, 0.15) !important;
 }
 
-/* Zus�tzliche Sicherheit - �berschreibe gr�ne Farben */
-.lumiere-category-tab[data-category="Haushalt und K�che"]:not(.active) {
+/* Zusï¿½tzliche Sicherheit - ï¿½berschreibe grï¿½ne Farben */
+.lumiere-category-tab[data-category="Haushalt und Kï¿½che"]:not(.active) {
     background: rgba(236, 72, 153, 0.1) !important;
     color: #ec4899 !important;
     border: 1px solid rgba(236, 72, 153, 0.3) !important;
 }
 
-.lumiere-category-tab[data-category="K�rperpflege/Wellness"]:not(.active) {
+.lumiere-category-tab[data-category="Kï¿½rperpflege/Wellness"]:not(.active) {
     background: rgba(168, 85, 247, 0.1) !important;
     color: #a855f7 !important;
     border: 1px solid rgba(168, 85, 247, 0.3) !important;
 }
 
-/* Fix für Warenkorb Löschen Button Zentrierung */
+/* Fix fÃ¼r Warenkorb LÃ¶schen Button Zentrierung */
 .cart-dropdown-footer .clear-cart-btn {
     display: flex !important;
     align-items: center !important;
@@ -8346,7 +8346,7 @@ section[data-category="Haushalt und K�che"]::after,
     margin-right: 6px !important;
 }
 
-/* Fix für Warenkorb Löschen Button Zentrierung - Höhere Spezifität */
+/* Fix fÃ¼r Warenkorb LÃ¶schen Button Zentrierung - HÃ¶here SpezifitÃ¤t */
 #cartDropdown .cart-dropdown-footer .clear-cart-btn,
 .cart-dropdown .cart-dropdown-footer .clear-cart-btn {
     display: flex !important;
@@ -8366,7 +8366,7 @@ section[data-category="Haushalt und K�che"]::after,
     line-height: 1 !important;
 }
 
-/* Fix für konsistente Button-Höhe und Text-Zentrierung */
+/* Fix fÃ¼r konsistente Button-HÃ¶he und Text-Zentrierung */
 .cart-dropdown-footer button.clear-cart-btn {
     min-height: 48px !important;
     box-sizing: border-box !important;
@@ -8378,7 +8378,7 @@ section[data-category="Haushalt und K�che"]::after,
     flex-wrap: nowrap !important;
 }
 
-/* Fix für den Container um die Buttons */
+/* Fix fÃ¼r den Container um die Buttons */
 .cart-dropdown-footer > div.d-grid {
     min-height: auto !important;
     grid-template-rows: 48px 48px !important;
@@ -8422,7 +8422,7 @@ section[data-category="Haushalt und K�che"]::after,
 
 /* Kritische Mobile Fixes - Zittern stoppen */
 @media (max-width: 768px) {
-    /* Hardware-Beschleunigung für Container */
+    /* Hardware-Beschleunigung fÃ¼r Container */
     .product-scroll-container {
         -webkit-transform: translateZ(0) !important;
         transform: translateZ(0) !important;
@@ -8435,7 +8435,7 @@ section[data-category="Haushalt und K�che"]::after,
         overflow: hidden !important;
     }
     
-    /* Hardware-Beschleunigung für Grid */
+    /* Hardware-Beschleunigung fÃ¼r Grid */
     .product-scroll-grid {
         -webkit-transform: translateZ(0) !important;
         transform: translateZ(0) !important;
@@ -8460,7 +8460,7 @@ section[data-category="Haushalt und K�che"]::after,
         box-shadow: none !important;
     }
     
-    /* Scrollbar-Fixes für Mobile - VERBESSERT */
+    /* Scrollbar-Fixes fÃ¼r Mobile - VERBESSERT */
     .product-scroll-container .custom-scrollbar-track {
         -webkit-transform: translateZ(0) !important;
         transform: translateZ(0) !important;
@@ -8557,9 +8557,9 @@ section[data-category="Haushalt und K�che"]::after,
     }
 }
 
-/* Zusätzliche Fixes für sehr kleine Bildschirme */
+/* ZusÃ¤tzliche Fixes fÃ¼r sehr kleine Bildschirme */
 @media (max-width: 480px) {
-    /* Noch aggressivere Anti-Zitter-Maßnahmen */
+    /* Noch aggressivere Anti-Zitter-MaÃŸnahmen */
     .product-scroll-container,
     .product-scroll-grid {
         -webkit-transform: translate3d(0, 0, 0) !important;
@@ -8569,7 +8569,7 @@ section[data-category="Haushalt und K�che"]::after,
 
 /* Touch-spezifische Optimierungen */
 @media (hover: none) and (pointer: coarse) {
-    /* Für Touch-Geräte alle Hover-Effekte komplett entfernen */
+    /* FÃ¼r Touch-GerÃ¤te alle Hover-Effekte komplett entfernen */
     .product-scroll-grid .lumiere-product-card:hover,
     .scroll-arrow:hover,
     .lumiere-category-tab:hover,
