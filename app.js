@@ -2178,11 +2178,14 @@ function initializeCategoryNavigation() {
 function showCategorySections(selectedCategory) {
   console.log('ðŸ”§ Showing category sections for:', selectedCategory);
   
-  // Get all product category sections (but NOT the bestseller section)
-  const categorySections = document.querySelectorAll('.product-category-section');
+  // Get all product category sections (but NOT the bestseller section or alle-produkte-grid)
+  const categorySections = document.querySelectorAll('.product-category-section:not(.alle-produkte-grid-section)');
   
   // Get the bestseller section (should always stay visible)
   const bestsellerSection = document.querySelector('#bestsellerGrid')?.closest('.product-category-section');
+  
+  // Get the "Alle Produkte Grid" section (should always stay visible)
+  const alleProduktGridSection = document.querySelector('.alle-produkte-grid-section');
   
   // Get the "Alle Produkte" header section
   const alleProduktHeader = document.querySelector('.category-header[style*="margin-top: 3rem"]');
@@ -2210,6 +2213,11 @@ function showCategorySections(selectedCategory) {
       bestsellerSection.style.display = 'block';
     }
     
+    // Ensure "Alle Produkte Grid" section is always visible
+    if (alleProduktGridSection) {
+      alleProduktGridSection.style.display = 'block';
+    }
+    
     console.log('âœ… All category sections shown');
   } else {
     // Hide "Alle Produkte" header when specific category is selected
@@ -2228,6 +2236,11 @@ function showCategorySections(selectedCategory) {
     // Always keep bestseller section visible
     if (bestsellerSection) {
       bestsellerSection.style.display = 'block';
+    }
+    
+    // Always keep "Alle Produkte Grid" section visible
+    if (alleProduktGridSection) {
+      alleProduktGridSection.style.display = 'block';
     }
     
     // Show only the selected category section
@@ -4955,4 +4968,82 @@ setTimeout(() => {
         };
         console.log('âœ… Warenkorb-Dropdown Fix aktiviert');
     }
-}, 1000)
+}, 1000);
+
+// Load all products into master grid on index page
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        loadMasterProductGrid();
+    }, 1000);
+});
+
+function loadMasterProductGrid() {
+    console.log('📦 Loading master product grid...');
+    
+    const masterGrid = document.getElementById('alleProdukteMasterGrid');
+    if (!masterGrid) {
+        console.log('❌ Master grid not found!');
+        return;
+    }
+    
+    // Load products fresh like search does
+    loadProducts().then(products => {
+        console.log('✅ Products loaded for master grid:', products.length);
+        
+        // Filter out AliExpress products
+        const filteredProducts = products.filter(p => !p.sku || !p.sku.startsWith('ALI'));
+        console.log('✅ After filtering:', filteredProducts.length);
+        
+        // Clear grid
+        masterGrid.innerHTML = '';
+        
+        // Render products
+        filteredProducts.forEach(product => {
+            const col = document.createElement('div');
+            col.className = 'col-6 col-md-3';
+            
+            const card = document.createElement('div');
+            card.className = 'lumiere-product-card';
+            card.style.cursor = 'pointer';
+            card.setAttribute('data-product-id', product.id);
+            card.onclick = () => navigateToProduct(product.id);
+            
+            const price = product.price || product.salePrice || 0;
+            const formattedPrice = typeof price === 'number' ? price.toFixed(2) : parseFloat(price || 0).toFixed(2);
+            
+            card.innerHTML = `
+                <div class="lumiere-image-container">
+                    <img src="${product.image}" alt="${product.name}" class="lumiere-product-image" loading="lazy">
+                    <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </div>
+                <div class="lumiere-card-content">
+                    <h3 class="lumiere-product-title">${product.name}</h3>
+                    <div class="lumiere-price-section">
+                        <span class="lumiere-price">€${formattedPrice}</span>
+                    </div>
+                    <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
+                        In den Warenkorb
+                    </button>
+                </div>
+            `;
+            
+            col.appendChild(card);
+            masterGrid.appendChild(col);
+        });
+        
+        console.log('✅ Master grid rendered with', filteredProducts.length, 'products');
+        
+        // Initialize buttons after rendering
+        setTimeout(() => {
+            initializeAddToCartButtons();
+            initializeWishlistButtons();
+            initializeProductCardClicks();
+        }, 100);
+    }).catch(error => {
+        console.error('❌ Error loading products for master grid:', error);
+    });
+}
+
+window.loadMasterProductGrid = loadMasterProductGrid;
