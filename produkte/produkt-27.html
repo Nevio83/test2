@@ -89,13 +89,13 @@
             right: 0;
             bottom: 0;
             z-index: -1;
-            opacity: 0.7;
+            opacity: 0.85;
             background: linear-gradient(135deg, 
-                rgba(78, 205, 196, 0.7) 0%, 
-                rgba(68, 160, 141, 0.7) 25%, 
-                rgba(56, 239, 125, 0.7) 50%, 
-                rgba(17, 153, 142, 0.7) 75%, 
-                rgba(78, 205, 196, 0.7) 100%
+                rgba(78, 205, 196, 0.85) 0%, 
+                rgba(68, 160, 141, 0.85) 25%, 
+                rgba(56, 239, 125, 0.85) 50%, 
+                rgba(17, 153, 142, 0.85) 75%, 
+                rgba(78, 205, 196, 0.85) 100%
             );
             animation: gradientShift 10s ease infinite;
             background-size: 200% 200%;
@@ -218,38 +218,10 @@
         }
 
         .bundle-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: none !important;
         }
 
-        .bundle-badge.popular {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .bundle-badge.savings {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-
-        .bundle-label {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.25);
-            color: #ffffff;
-            padding: 0.4rem 1rem;
-            border-radius: 25px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-        }
+        .bundle-label { display: none !important; }
 
         .bundle-prices {
             font-size: 1.5rem;
@@ -391,7 +363,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <p><strong>Kategorie:</strong> Körperpflege/Wellness</p>
-                            <p><strong>Preis:</strong> €31.99</p>
+                            <p><strong>Preis:</strong> €15.99</p>
                         </div>
                         <div class="col-md-6">
                             <p><strong>Verfügbarkeit:</strong> Auf Lager</p>
@@ -416,8 +388,8 @@
                                 </div>
                             </div>
                             <div class="price-section">
-                                <div class="current-price">€<span id="currentPrice-mobile">31.99</span></div>
-                                <div class="total-price">Gesamt: <span id="totalPrice-mobile" class="text-success">€31.99</span></div>
+                                <div class="current-price">€<span id="currentPrice-mobile">15.99</span></div>
+                                <div class="total-price">Gesamt: <span id="totalPrice-mobile" class="text-success">€15.99</span></div>
                             </div>
                             <div class="action-buttons">
                                 <button class="buy-now-btn add-to-cart" onclick="addToCartWithQuantity()">
@@ -457,8 +429,8 @@
                             </div>
                             
                             <div class="price-section">
-                                <div class="current-price">€<span id="currentPrice">31.99</span></div>
-                                <div class="total-price">Gesamt: <span id="totalPrice" class="text-success">€31.99</span></div>
+                                <div class="current-price">€<span id="currentPrice">15.99</span></div>
+                                <div class="total-price">Gesamt: <span id="totalPrice" class="text-success">€15.99</span></div>
                             </div>
                             
                             <div class="action-buttons">
@@ -603,11 +575,7 @@
               <input type="radio" name="bundle" class="bundle-radio" id="bundleRadio${i}" value="${i}" ${i===selected?'checked':''}>
               <div class="bundle-info">
                 <div class="bundle-title">
-                  ${s.qty} Set${s.qty>1?'s':''} kaufen
-                  ${i===1 ? '<span class="bundle-badge popular">Am beliebtesten</span>' : ''}
-                  ${i===2 ? '<span class="bundle-badge savings">Meiste Ersparnis</span>' : ''}
-                  ${i>0 ? `<span class="bundle-label">EXTRA ${i===1?'15':i===2?'20':'0'}% RABATT</span>` : ''}
-                </div>
+                  ${s.qty} Set${s.qty>1?'s':''} kaufen                </div>
                 <div class="bundle-prices">
                   €${s.price.toFixed(2)} pro Set
                   <span class="savings">Spare €${((s.original-s.price)*s.qty).toFixed(2)}</span>

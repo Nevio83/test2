@@ -182,14 +182,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <h3 class="bundle-qty">${bundle.qty} Set${bundle.qty > 1 ? 's' : ''} kaufen</h3>
                             </div>
                             
-                            ${bundle.discount > 0 ? `
-                                <div class="bundle-badges">
-                                    <span class="discount-badge">EXTRA ${bundle.discount}% RABATT</span>
-                                    ${index === 1 ? '<span class="popular-badge">Am beliebtesten</span>' : ''}
-                                    ${index === 2 ? '<span class="best-badge">Meiste Ersparnis</span>' : ''}
-                                </div>
-                            ` : ''}
-                            
                             <div class="bundle-colors">
                                 ${Array.from({length: bundle.qty}, (_, i) => `
                                     <div class="bundle-set">
