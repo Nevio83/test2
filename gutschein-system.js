@@ -533,12 +533,22 @@
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const appliedCode = localStorage.getItem('appliedVoucher');
         
-        // Berechne Zwischensumme
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        // Hole aktuelle Währung und Land aus cart.js
+        const currentCurrency = window.currentCurrency || { code: 'EUR', symbol: '€', factor: 1 };
+        const currentCountry = localStorage.getItem('selectedCountry') || 'DE';
+        
+        // Berechne Zwischensumme mit Währungsumrechnung
+        const subtotal = cart.reduce((sum, item) => {
+            const priceInCurrency = window.convertPrice ? window.convertPrice(item.price, currentCurrency.code) : item.price;
+            return sum + (priceInCurrency * item.quantity);
+        }, 0);
         const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
         
         let discount = 0;
-        let shippingCost = 0; // Deutschland = kostenloser Versand
+        // Hole Versandkosten basierend auf Land
+        let shippingCost = window.getShippingCost ? window.getShippingCost(currentCountry) : 0;
+        // Konvertiere Versandkosten in aktuelle Währung
+        shippingCost = window.convertPrice ? window.convertPrice(shippingCost, currentCurrency.code) : shippingCost;
         let discountInfo = '';
         
         // Gutschein anwenden
@@ -569,8 +579,10 @@
         // Erstelle oder aktualisiere Zusammenfassung
         displayCartSummary(subtotal, discount, shippingCost, total, discountInfo);
         
-        // Update alle Preis-Anzeigen auf der Seite
-        updateAllPriceDisplays(total);
+        // Update alle Preis-Anzeigen auf der Seite NUR wenn ein Gutschein aktiv ist
+        if (appliedCode) {
+            updateAllPriceDisplays(total);
+        }
         
         console.log('💰 Zusammenfassung aktualisiert:', {
             subtotal: subtotal.toFixed(2),
@@ -582,11 +594,15 @@
     
     // Aktualisiere alle Preis-Anzeigen auf der Seite
     function updateAllPriceDisplays(total) {
+        // Hole aktuelles Währungssymbol
+        const currentCurrency = window.currentCurrency || { code: 'EUR', symbol: '€', factor: 1 };
+        const currencySymbol = currentCurrency.symbol;
+        
         // Suche nach allen Elementen die den Gesamtpreis anzeigen
         const priceElements = document.querySelectorAll('[data-total-price], .total-price, #totalPrice, .checkout-total');
         
         priceElements.forEach(element => {
-            element.textContent = `€${total.toFixed(2)}`;
+            element.textContent = `${currencySymbol}${total.toFixed(2)}`;
         });
         
         // Update ALLE Buttons die einen Preis enthalten
@@ -595,8 +611,10 @@
             const text = button.textContent || button.innerText;
             
             // Prüfe ob Button "JETZT BESTELLEN" oder einen Preis enthält
-            if ((text.toUpperCase().includes('JETZT BESTELLEN') || text.toUpperCase().includes('BESTELLEN')) && text.includes('€')) {
-                const newText = text.replace(/€\s*[\d,.]+/, `€${total.toFixed(2)}`);
+            // Unterstütze verschiedene Währungssymbole
+            const currencyPattern = new RegExp(`[€$£¥₹A-Z]{1,3}\\s*[\\d,.]+`, 'g');
+            if ((text.toUpperCase().includes('JETZT BESTELLEN') || text.toUpperCase().includes('BESTELLEN')) && currencyPattern.test(text)) {
+                const newText = text.replace(currencyPattern, `${currencySymbol}${total.toFixed(2)}`);
                 button.textContent = newText;
                 console.log('✅ Button aktualisiert:', text, '→', newText);
             }
@@ -617,6 +635,10 @@
     }
     
     function updateExistingOrderBox(subtotal, discount, shipping, total, discountInfo) {
+        // Hole aktuelles Währungssymbol
+        const currentCurrency = window.currentCurrency || { code: 'EUR', symbol: '€', factor: 1 };
+        const currencySymbol = currentCurrency.symbol;
+        
         // Suche nach "Zwischensumme:" in der Bestellung-Box
         const allElements = document.querySelectorAll('*');
         let zwischensummeRow = null;
@@ -645,7 +667,7 @@
             const rabattHTML = `
                 <div id="voucherDiscountRow" style="display: flex; justify-content: space-between; padding: 12px 0; color: #16a34a; font-weight: 600;">
                     <span><i class="bi bi-tag-fill"></i> Rabatt (${discountInfo}):</span>
-                    <span>-€${discount.toFixed(2)}</span>
+                    <span>-${currencySymbol}${discount.toFixed(2)}</span>
                 </div>
             `;
             zwischensummeRow.insertAdjacentHTML('afterend', rabattHTML);
@@ -656,23 +678,27 @@
             if (oldRabatt) oldRabatt.remove();
         }
         
-        // Update Versand
-        if (versandRow) {
-            const versandPrice = versandRow.querySelector('span:last-child');
-            if (versandPrice) {
-                versandPrice.textContent = shipping === 0 ? 'Kostenlos' : `€${shipping.toFixed(2)}`;
-                versandPrice.style.color = shipping === 0 ? '#16a34a' : '';
-                versandPrice.style.fontWeight = shipping === 0 ? '600' : '';
-                console.log('✅ Versand aktualisiert:', shipping === 0 ? 'Kostenlos' : shipping.toFixed(2));
+        // Update Versand und Gesamt NUR wenn ein Gutschein aktiv ist
+        const appliedCode = localStorage.getItem('appliedVoucher');
+        if (appliedCode) {
+            // Update Versand
+            if (versandRow) {
+                const versandPrice = versandRow.querySelector('span:last-child');
+                if (versandPrice) {
+                    versandPrice.textContent = shipping === 0 ? 'Kostenlos' : `${currencySymbol}${shipping.toFixed(2)}`;
+                    versandPrice.style.color = shipping === 0 ? '#16a34a' : '';
+                    versandPrice.style.fontWeight = shipping === 0 ? '600' : '';
+                    console.log('✅ Versand aktualisiert:', shipping === 0 ? 'Kostenlos' : shipping.toFixed(2));
+                }
             }
-        }
-        
-        // Update Gesamt
-        if (gesamtRow) {
-            const gesamtPrice = gesamtRow.querySelector('span:last-child');
-            if (gesamtPrice) {
-                gesamtPrice.textContent = `€${total.toFixed(2)}`;
-                console.log('✅ Gesamt aktualisiert:', total.toFixed(2));
+            
+            // Update Gesamt
+            if (gesamtRow) {
+                const gesamtPrice = gesamtRow.querySelector('span:last-child');
+                if (gesamtPrice) {
+                    gesamtPrice.textContent = `${currencySymbol}${total.toFixed(2)}`;
+                    console.log('✅ Gesamt aktualisiert:', total.toFixed(2));
+                }
             }
         }
     }
