@@ -158,8 +158,8 @@
         .bundle-card.selected::before {
             content: '\2713' !important;
             position: absolute !important;
-            top: -10px !important;
-            right: -10px !important;
+            top: 10px !important;
+            right: 10px !important;
             left: auto !important;
             width: 35px !important;
             height: 35px !important;
@@ -544,7 +544,6 @@
   function renderBundles() {
     // Preisstaffel: [ {menge, preisProSet, originalProSet} ]
     const staffel = [
-      {qty: 1, price: product.price, original: product.price},
       {qty: 2, price: product.price * 0.85, original: product.price},
       {qty: 3, price: product.price * 0.80, original: product.price}
     ];
@@ -641,7 +640,6 @@
     
     const idx = parseInt(selectedRadio.value);
     const staffel = [
-      {qty: 1, price: product.price, original: product.price},
       {qty: 2, price: product.price * 0.85, original: product.price},
       {qty: 3, price: product.price * 0.80, original: product.price}
     ];
