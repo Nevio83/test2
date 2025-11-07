@@ -46,23 +46,41 @@
         .bundle-title { font-size: 1.4rem; font-weight: 800; color: #ffffff; margin-bottom: 0.8rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
         .bundle-badge { display: none !important; }
         .bundle-label { display: none !important; }
-        /* Liquid Glass Buttons */
-        #cartBtn, #wishlistBtn {
-            background: rgba(255, 255, 255, 0.15) !important;
+                /* Liquid Glass Buttons */
+        #cartBtn, #heroCartBtn {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            color: #333333 !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }
+
+        #cartBtn:hover, #heroCartBtn:hover {
+            background: rgba(255, 255, 255, 1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
+        }
+
+        #wishlistBtn {
+            background: rgba(220, 53, 69, 0.9) !important;
             backdrop-filter: blur(10px) !important;
             -webkit-backdrop-filter: blur(10px) !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
             color: #ffffff !important;
             font-weight: 600 !important;
             transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
         }
 
-        #cartBtn:hover, #wishlistBtn:hover {
-            background: rgba(255, 255, 255, 0.25) !important;
+        #wishlistBtn:hover {
+            background: rgba(220, 53, 69, 1) !important;
             border: 1px solid rgba(255, 255, 255, 0.5) !important;
             transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
         }
         .bundle-prices { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
         .bundle-prices .savings { display: block; font-size: 1rem; color: #a8ff78; font-weight: 600; margin-top: 0.3rem; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
@@ -359,7 +377,7 @@
                     </button>
                 </div>
                 <div class="col-lg-6 text-center">
-                    <img src="../produkt bilder/ware.png" alt="40 Oz Tumbler With Handle Straw Insulated Halloween" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
+                    <img src="../produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg" alt="40 Oz Tumbler With Handle Straw Insulated Halloween" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
                 </div>
             </div>
         </div>
@@ -533,7 +551,7 @@
             name: "40 Oz Tumbler With Handle Straw Insulated Halloween",
             price: 19.99,
             originalPrice: 34.99,
-            image: "produkt bilder/ware.png",
+            image: "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg",
             category: "Haushalt und Küche",
             description: "Isolierter 40 Oz Halloween Tumbler mit Griff und Strohhalm in gruseligen Halloween-Farben. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
             sku: "CJJT165633329CX",

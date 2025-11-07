@@ -678,7 +678,7 @@ class ProductImageGallery {
             case 47: // 40 Oz Tumbler With Handle Straw Insulated
                 this.images = [
                     {
-                        src: `../produkt bilder/ware.png`,
+                        src: `../produkt bilder/40 Oz Tumbler With Handle Straw Insulated .jpg`,
                         alt: '40 Oz Tumbler With Handle Straw Insulated - Hauptbild',
                         color: 'Standard'
                     },
@@ -743,7 +743,7 @@ class ProductImageGallery {
             case 48: // 40 Oz Tumbler With Handle Straw Insulated Winter
                 this.images = [
                     {
-                        src: `../produkt bilder/ware.png`,
+                        src: `../produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter.jpg`,
                         alt: '40 Oz Tumbler With Handle Straw Insulated Winter - Hauptbild',
                         color: 'Standard'
                     },
@@ -763,7 +763,7 @@ class ProductImageGallery {
             case 49: // 40 Oz Tumbler With Handle Straw Insulated Halloween
                 this.images = [
                     {
-                        src: `../produkt bilder/ware.png`,
+                        src: `../produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg`,
                         alt: '40 Oz Tumbler With Handle Straw Insulated Halloween - Hauptbild',
                         color: 'Standard'
                     },
