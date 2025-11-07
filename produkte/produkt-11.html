@@ -223,6 +223,24 @@
         .bundle-badge { display: none !important; }
 
         .bundle-label { display: none !important; }
+        /* Liquid Glass Buttons */
+        #cartBtn, #wishlistBtn {
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        #cartBtn:hover, #wishlistBtn:hover {
+            background: rgba(255, 255, 255, 0.25) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+        }
 
         .bundle-prices {
             font-size: 1.5rem;

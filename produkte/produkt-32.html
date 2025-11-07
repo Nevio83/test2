@@ -46,6 +46,24 @@
         .bundle-title { font-size: 1.4rem; font-weight: 800; color: #ffffff; margin-bottom: 0.8rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
         .bundle-badge { display: none !important; }
         .bundle-label { display: none !important; }
+        /* Liquid Glass Buttons */
+        #cartBtn, #wishlistBtn {
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        #cartBtn:hover, #wishlistBtn:hover {
+            background: rgba(255, 255, 255, 0.25) !important;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+        }
         .bundle-prices { font-size: 1.5rem; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
         .bundle-prices .savings { display: block; font-size: 1rem; color: #ffeb3b; font-weight: 600; margin-top: 0.3rem; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
         .bundle-total { margin-top: 0.8rem; font-size: 1.1rem; color: rgba(255, 255, 255, 0.95); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3); }
