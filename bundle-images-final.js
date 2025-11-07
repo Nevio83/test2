@@ -908,12 +908,25 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentProduct || !currentProduct.name) {
             // Verwende die korrekten Produktdaten basierend auf ID
             const productData = {
-                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 49.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
-                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
-                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
-                21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg', category: 'Beleuchtung' },
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
+                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 32.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
+                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 4.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
+                21: { id: 21, name: 'LED Water Ripple Crystal', price: 21.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg', category: 'Beleuchtung' },
                 26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 13.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
-                47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 29.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated.jpg', category: 'Haushalt und Küche' }
+                32: { id: 32, name: 'Indoor Sensing Wall Lamp', price: 23.99, image: 'produkt bilder/Indoor Sensing Wall Lamp.jpg', category: 'Beleuchtung' },
+                33: { id: 33, name: 'Aromatherapy Essential Oil Humidifier', price: 8.99, image: 'produkt bilder/Aromatherapy Essential Oil Humidifier.jpg', category: 'Haushalt und Küche' },
+                34: { id: 34, name: 'Moisturizing Face Steamer', price: 19.99, image: 'produkt bilder/Moisturizing Face Steamer.jpg', category: 'Körperpflege/Wellness' },
+                35: { id: 35, name: 'Thermal Neck Lifting And Tighten Massager', price: 16.99, image: 'produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg', category: 'Körperpflege/Wellness' },
+                38: { id: 38, name: 'Jade Massager', price: 10.99, image: 'produkt bilder/Jade Massager.jpg', category: 'Körperpflege/Wellness' },
+                40: { id: 40, name: 'Mug Warmer Pad', price: 19.99, image: 'produkt bilder/Mug Warmer Pad.jpg', category: 'Haushalt und Küche' },
+                42: { id: 42, name: 'RGB Flame Aroma Diffuser Volcano', price: 29.99, image: 'produkt bilder/RGB Flame Aroma Diffuser Volcano.jpg', category: 'Haushalt und Küche' },
+                43: { id: 43, name: 'Portable Mini Thermal Label Printer', price: 21.99, image: 'produkt bilder/Portable Mini Thermal Label Printer.jpg', category: 'Technik/Gadgets' },
+                44: { id: 44, name: 'Portable Projector For Home', price: 149.99, image: 'produkt bilder/Portable Projector For Home.jpg', category: 'Technik/Gadgets' },
+                46: { id: 46, name: 'Nordic Crystal Lamp', price: 24.99, image: 'produkt bilder/Nordic Crystal Lamp.jpg', category: 'Beleuchtung' },
+                47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated .jpg', category: 'Haushalt und Küche' },
+                48: { id: 48, name: '40 Oz Tumbler With Handle Straw Insulated Winter', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter.jpg', category: 'Haushalt und Küche' },
+                49: { id: 49, name: '40 Oz Tumbler With Handle Straw Insulated Halloween', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg', category: 'Haushalt und Küche' },
+                50: { id: 50, name: 'Luminous Crystal Ball', price: 15.99, image: 'produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball.jpg', category: 'Beleuchtung' }
             };
             
             if (productData[productId]) {
@@ -943,7 +956,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         const productName = currentProduct.name;
-        const productImage = currentProduct.image;
+        // Entferne ../ aus dem Bildpfad für cart.html (liegt im Root)
+        const productImage = currentProduct.image.replace('../', '');
         
         console.log('🎁 Bundle wird erstellt für Produkt:', { 
             id: currentProduct.id, 
@@ -1035,12 +1049,25 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentProduct || !currentProduct.name) {
             // Verwende die korrekten Produktdaten basierend auf ID
             const productData = {
-                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 49.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
-                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 24.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
-                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 14.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
-                21: { id: 21, name: 'LED Water Ripple Crystal', price: 39.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg', category: 'Beleuchtung' },
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
+                11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 32.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
+                17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 4.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
+                21: { id: 21, name: 'LED Water Ripple Crystal', price: 21.99, image: 'produkt bilder/LED Water Ripple Crystal.jpg', category: 'Beleuchtung' },
                 26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 13.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
-                47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 29.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated.jpg', category: 'Haushalt und Küche' }
+                32: { id: 32, name: 'Indoor Sensing Wall Lamp', price: 23.99, image: 'produkt bilder/Indoor Sensing Wall Lamp.jpg', category: 'Beleuchtung' },
+                33: { id: 33, name: 'Aromatherapy Essential Oil Humidifier', price: 8.99, image: 'produkt bilder/Aromatherapy Essential Oil Humidifier.jpg', category: 'Haushalt und Küche' },
+                34: { id: 34, name: 'Moisturizing Face Steamer', price: 19.99, image: 'produkt bilder/Moisturizing Face Steamer.jpg', category: 'Körperpflege/Wellness' },
+                35: { id: 35, name: 'Thermal Neck Lifting And Tighten Massager', price: 16.99, image: 'produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg', category: 'Körperpflege/Wellness' },
+                38: { id: 38, name: 'Jade Massager', price: 10.99, image: 'produkt bilder/Jade Massager.jpg', category: 'Körperpflege/Wellness' },
+                40: { id: 40, name: 'Mug Warmer Pad', price: 19.99, image: 'produkt bilder/Mug Warmer Pad.jpg', category: 'Haushalt und Küche' },
+                42: { id: 42, name: 'RGB Flame Aroma Diffuser Volcano', price: 29.99, image: 'produkt bilder/RGB Flame Aroma Diffuser Volcano.jpg', category: 'Haushalt und Küche' },
+                43: { id: 43, name: 'Portable Mini Thermal Label Printer', price: 21.99, image: 'produkt bilder/Portable Mini Thermal Label Printer.jpg', category: 'Technik/Gadgets' },
+                44: { id: 44, name: 'Portable Projector For Home', price: 149.99, image: 'produkt bilder/Portable Projector For Home.jpg', category: 'Technik/Gadgets' },
+                46: { id: 46, name: 'Nordic Crystal Lamp', price: 24.99, image: 'produkt bilder/Nordic Crystal Lamp.jpg', category: 'Beleuchtung' },
+                47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated .jpg', category: 'Haushalt und Küche' },
+                48: { id: 48, name: '40 Oz Tumbler With Handle Straw Insulated Winter', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter.jpg', category: 'Haushalt und Küche' },
+                49: { id: 49, name: '40 Oz Tumbler With Handle Straw Insulated Halloween', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg', category: 'Haushalt und Küche' },
+                50: { id: 50, name: 'Luminous Crystal Ball', price: 15.99, image: 'produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball.jpg', category: 'Beleuchtung' }
             };
             
             if (productData[productId]) {
@@ -1070,7 +1097,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         const productName = currentProduct.name;
-        const productImage = currentProduct.image;
+        // Entferne ../ aus dem Bildpfad für cart.html (liegt im Root)
+        const productImage = currentProduct.image.replace('../', '');
         
         console.log('🎁 Bundle wird erstellt für Produkt:', { 
             id: currentProduct.id, 
