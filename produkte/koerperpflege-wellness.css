@@ -1399,6 +1399,10 @@
     font-size: 2rem;
   }
   
+  .section-title::after {
+    bottom: -8px !important;
+  }
+  
   .section-subtitle {
     font-size: 1rem;
   }
