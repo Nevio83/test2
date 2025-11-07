@@ -919,7 +919,7 @@
     const mobileQuantity = parseInt(document.getElementById('quantity-mobile')?.value, 10) || 1;
     const desktopQuantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
     
-    // Einfache Berechnung: Gesamtpreis = Menge Ã— Einzelpreis
+    // Einfache Berechnung: Gesamtpreis = Menge x Einzelpreis
     const mobileTotal = (product.price * mobileQuantity).toFixed(2);
     const desktopTotal = (product.price * desktopQuantity).toFixed(2);
     

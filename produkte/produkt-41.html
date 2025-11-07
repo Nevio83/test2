@@ -337,7 +337,7 @@
                     <!-- Bildergalerie wie bei Produkt 26 -->
                     <div class="gallery-container" style="position: relative; display: flex; align-items: center; justify-content: center; gap: 20px;">
                         <!-- Linker Pfeil (außerhalb) -->
-                        <button id="prevArrow" onclick="changeGalleryImage(-1)" style="background: white; color: #333; border: 2px solid #ddd; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; z-index: 10;">"¹</button>
+                        <button id="prevArrow" onclick="changeGalleryImage(-1)" style="background: white; color: #333; border: 2px solid #ddd; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; z-index: 10;">←</button>
                         
                         <!-- Bild Container -->
                         <div class="image-container" style="position: relative; display: inline-block;">
@@ -350,7 +350,7 @@
                         </div>
                         
                         <!-- Rechter Pfeil (außerhalb) -->
-                        <button id="nextArrow" onclick="changeGalleryImage(1)" style="background: white; color: #333; border: 2px solid #ddd; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; z-index: 10;">"º</button>
+                        <button id="nextArrow" onclick="changeGalleryImage(1)" style="background: white; color: #333; border: 2px solid #ddd; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s; z-index: 10;">→</button>
                     </div>
                     
                     <!-- Thumbnails -->
@@ -902,7 +902,7 @@
     const mobileQuantity = parseInt(document.getElementById('quantity-mobile')?.value, 10) || 1;
     const desktopQuantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
     
-    // Einfache Berechnung: Gesamtpreis = Menge Ã— Einzelpreis
+    // Einfache Berechnung: Gesamtpreis = Menge x Einzelpreis
     const mobileTotal = (product.price * mobileQuantity).toFixed(2);
     const desktopTotal = (product.price * desktopQuantity).toFixed(2);
     
@@ -1027,16 +1027,16 @@
         
         // Navigation Pfeile im Fullscreen
         const prevBtn = document.createElement('button');
-        prevBtn.innerHTML = '"¹';
+        prevBtn.innerHTML = '←';
         prevBtn.style.cssText = 'position:absolute;left:30px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.9);color:#333;border:none;border-radius:50%;width:60px;height:60px;font-size:30px;cursor:pointer;z-index:10001;box-shadow:0 4px 15px rgba(0,0,0,0.3);';
         
         const nextBtn = document.createElement('button');
-        nextBtn.innerHTML = '"º';
+        nextBtn.innerHTML = '→';
         nextBtn.style.cssText = 'position:absolute;right:30px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.9);color:#333;border:none;border-radius:50%;width:60px;height:60px;font-size:30px;cursor:pointer;z-index:10001;box-shadow:0 4px 15px rgba(0,0,0,0.3);';
         
         // Close Button
         const close = document.createElement('span');
-        close.innerHTML = 'Ã—';
+        close.innerHTML = 'x';
         close.style.cssText = 'position:absolute;top:30px;right:40px;color:white;font-size:50px;cursor:pointer;font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.8);z-index:10001;';
         
         // Bildcounter im Fullscreen
