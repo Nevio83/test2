@@ -163,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('🎨 Verfügbare Farben für Bundle:', colors.length, colors.map(c => c.name));
         
         const bundles = [
-            { qty: 1, price: basePrice, discount: 0 },
             { qty: 2, price: (basePrice * 0.85), discount: 15 },
             { qty: 3, price: (basePrice * 0.80), discount: 20 }
         ];
@@ -174,8 +173,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h2 class="bundle-title">BUNDLE & SPARE</h2>
                 
                 ${bundles.map((bundle, index) => `
-                    <div class="bundle-card ${index === 1 ? 'selected' : ''}" data-bundle-id="${bundle.qty}">
-                        <input type="radio" name="bundle" value="${bundle.qty}" ${index === 1 ? 'checked' : ''} class="bundle-radio" style="display: none;">
+                    <div class="bundle-card ${index === 0 ? 'selected' : ''}" data-bundle-id="${bundle.qty}">
+                        <input type="radio" name="bundle" value="${bundle.qty}" ${index === 0 ? 'checked' : ''} class="bundle-radio" style="display: none;">
                         
                         <div class="bundle-content">
                             <div class="bundle-left">

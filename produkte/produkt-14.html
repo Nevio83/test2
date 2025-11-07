@@ -549,13 +549,11 @@
 
   function renderBundles() {
     const einzelpreis = 12.99;
-    const staffel = [
-      {qty:1, price:einzelpreis, original:einzelpreis},
-      {qty:2, price:(einzelpreis*0.85), original:einzelpreis},
+    const staffel = [      {qty:2, price:(einzelpreis*0.85), original:einzelpreis},
       {qty:3, price:(einzelpreis*0.80), original:einzelpreis}
     ];
     const section = document.getElementById('bundle-section');
-    let selected = 1;
+    let selected = 0;
     section.innerHTML = `
       <div class="bundle-box">
         <div class="bundle-header">BUNDLE & SPARE</div>
