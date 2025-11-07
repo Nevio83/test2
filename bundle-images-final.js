@@ -227,44 +227,14 @@ document.addEventListener('DOMContentLoaded', function() {
             bundleSection.dataset.bundleRendered = 'true';
             console.log('✅ Bundle HTML eingefügt');
             
-            // Debug: Prüfe ob alle Farbbilder gerendert wurden
-            setTimeout(() => {
-                const colorImages = bundleSection.querySelectorAll('.color-image-option');
-                const colorNames = Array.from(colorImages).map(img => img.querySelector('.color-name')?.textContent);
-                console.log('🖼️ Gerenderte Farbbilder:', colorImages.length, 'Farben:', colorNames);
-                
-                if (colorImages.length < colors.length) {
-                    console.warn('⚠️ Nicht alle Farben wurden gerendert!', 'Erwartet:', colors.length, 'Gefunden:', colorImages.length);
-                }
-                
-                // Debug: Prüfe Scrollbar-Status und erzwinge Scrolling
+            // Optimierte Scrollbar-Initialisierung ohne Debug-Code
+            requestAnimationFrame(() => {
                 const colorContainers = bundleSection.querySelectorAll('.color-images');
-                colorContainers.forEach((container, index) => {
-                    const scrollWidth = container.scrollWidth;
-                    const clientWidth = container.clientWidth;
-                    const isScrollable = scrollWidth > clientWidth;
-                    console.log(`📏 Container ${index + 1}: scrollWidth=${scrollWidth}, clientWidth=${clientWidth}, scrollable=${isScrollable}`);
-                    
-                    // Erzwinge Scrolling durch Begrenzung der Container-Breite
+                colorContainers.forEach(container => {
                     container.style.maxWidth = '400px';
                     container.style.overflowX = 'scroll';
-                    container.style.scrollbarWidth = 'auto';
-                    
-                    // Prüfe erneut nach Styling
-                    setTimeout(() => {
-                        const newScrollWidth = container.scrollWidth;
-                        const newClientWidth = container.clientWidth;
-                        const newIsScrollable = newScrollWidth > newClientWidth;
-                        console.log(`📏 Container ${index + 1} nach Fix: scrollWidth=${newScrollWidth}, clientWidth=${newClientWidth}, scrollable=${newIsScrollable}`);
-                        
-                        if (!newIsScrollable) {
-                            console.warn('⚠️ Container ist immer noch nicht scrollbar!');
-                            // Letzte Rettung: Noch kleinere Breite
-                            container.style.maxWidth = '300px';
-                        }
-                    }, 50);
                 });
-            }, 100);
+            });
             
             // Event Listener für individuelle Bundle-Buttons hinzufügen
             const individualBundleBtns = bundleSection.querySelectorAll('.add-individual-bundle-btn');
@@ -313,19 +283,43 @@ document.addEventListener('DOMContentLoaded', function() {
                     cursor: pointer;
                     transition: all 0.3s ease;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                    will-change: transform, box-shadow;
                 }
                 
                 .bundle-card:hover {
-                    border-color: ${categoryColor};
+                    border-color: rgba(255, 255, 255, 0.35);
                     transform: translateY(-2px);
-                    box-shadow: 0 4px 12px ${categoryColor}30;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
                 }
                 
                 .bundle-card.selected {
-                    border-color: ${categoryColor};
-                    background: linear-gradient(135deg, ${categoryColor}15 0%, ${darkerCategoryColor}10 100%);
-                    box-shadow: 0 6px 20px ${categoryColor}30;
+                    border-color: rgba(255, 255, 255, 0.6);
+                    background: rgba(255, 255, 255, 0.3);
+                    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
                     transform: scale(1.02);
+                }
+                
+                .bundle-card.bundle-card.selected::before {
+                    content: '\\2713' !important;
+                    position: absolute !important;
+                    top: 5px !important;
+                    right: 5px !important;
+                    left: auto !important;
+                    bottom: auto !important;
+                    width: 35px !important;
+                    height: 35px !important;
+                    background: rgba(255, 255, 255, 0.95) !important;
+                    color: ${categoryColor} !important;
+                    border-radius: 50% !important;
+                    display: block !important;
+                    font-weight: bold !important;
+                    font-size: 1.3rem !important;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+                    z-index: 10 !important;
+                    text-align: center !important;
+                    line-height: 35px !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
                 }
                 
                 .bundle-content {
@@ -598,21 +592,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 .checkmark {
                     position: absolute !important;
-                    top: 2px !important;
-                    right: 2px !important;
-                    background: ${categoryColor} !important;
-                    color: white !important;
-                    width: 18px !important;
-                    height: 18px !important;
+                    top: -8px !important;
+                    right: -8px !important;
+                    left: auto !important;
+                    bottom: auto !important;
+                    background: rgba(255, 255, 255, 0.95) !important;
+                    color: ${categoryColor} !important;
+                    width: 24px !important;
+                    height: 24px !important;
                     border-radius: 50% !important;
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
-                    font-size: 12px !important;
+                    font-size: 14px !important;
                     font-weight: bold !important;
                     z-index: 100 !important;
                     margin: 0 !important;
                     padding: 0 !important;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
                 }
                 
                 .color-image-option .checkmark {
@@ -626,9 +623,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bundle-pricing {
                     margin-top: 20px;
                     padding: 15px;
-                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    background: transparent;
                     border-radius: 12px;
-                    border: 1px solid #dee2e6;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
                 }
                 
                 .price-display {
@@ -642,33 +639,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 .price {
                     font-size: 28px;
                     font-weight: bold;
-                    color: #212529;
+                    color: #ffffff;
+                    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                 }
                 
                 .original {
                     text-decoration: line-through;
-                    color: #6c757d;
+                    color: rgba(255, 255, 255, 0.6);
                     font-size: 20px;
                     opacity: 0.7;
                 }
                 
                 .savings-text {
-                    background: linear-gradient(135deg, ${darkerCategoryColor}, ${categoryColor});
-                    color: white;
-                    padding: 8px 16px;
-                    border-radius: 25px;
+                    background: transparent;
+                    color: rgba(255, 255, 255, 0.9);
+                    padding: 8px 0;
                     font-size: 14px;
-                    font-weight: 700;
-                    box-shadow: 0 3px 10px ${categoryColor}35;
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 5px;
+                    font-weight: 600;
+                    display: inline-block;
+                    margin-top: 10px;
                     position: relative;
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
                 }
                 
                 .savings-text::before {
-                    content: '💰';
-                    font-size: 16px;
+                    content: '';
+                    font-size: 0;
                 }
                 
                 .add-individual-bundle-btn {
