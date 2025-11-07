@@ -568,11 +568,7 @@
               <input type="radio" name="bundle" class="bundle-radio" id="bundleRadio${i}" value="${i}" ${i===selected?'checked':''}>
               <div class="bundle-info">
                 <div class="bundle-title">
-                  ${s.qty} Set${s.qty>1?'s':''} kaufen
-                  ${i===1 ? '<span class="bundle-badge popular">Am beliebtesten</span>' : ''}
-                  ${i===2 ? '<span class="bundle-badge savings">Meiste Ersparnis</span>' : ''}
-                  ${i>0 ? `<span class="bundle-label">EXTRA ${i===1?'15':i===2?'20':'0'}% RABATT</span>` : ''}
-                </div>
+                  ${s.qty} Set${s.qty>1?'s':''} kaufen                </div>
                 <div class="bundle-prices">
                   €${s.price.toFixed(2)} pro Set
                   <span class="savings">Spare €${((s.original-s.price)*s.qty).toFixed(2)}</span>
