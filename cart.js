@@ -23,6 +23,9 @@ const COUNTRIES = currencyByCountry;
 let currentCountry = 'DE';
 let currentCurrency = currencyByCountry['DE']; // Initialisiere currentCurrency mit Deutschland als Standard
 
+// Mache Währung global verfügbar für Gutschein-System
+window.currentCurrency = currentCurrency;
+
 // GLOBALE Funktion zum Abrufen des farbspezifischen Bildes
 async function getCartItemImage(item) {
     console.log('🖼️ GLOBALER getCartItemImage für:', item.name, 'ID:', item.id);
@@ -141,12 +144,18 @@ function convertPrice(eurPrice, currencyCode) {
     return eurPrice * factor;
 }
 
+// Mache convertPrice global verfügbar
+window.convertPrice = convertPrice;
+
 // Versandkosten nach Land
 function getShippingCost(countryCode) {
     // Europäische Länder haben keinen Versand
     const europeanCountries = ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'GB'];
     return europeanCountries.includes(countryCode) ? 0 : 4.99;
 }
+
+// Mache getShippingCost global verfügbar
+window.getShippingCost = getShippingCost;
 
 // Nominatim OpenStreetMap API für Adressvorschläge
 let addressTimeout;
@@ -229,6 +238,7 @@ function selectAddress(address) {
             }
             currentCountry = countryCode;
             currentCurrency = currencyByCountry[countryCode];
+            window.currentCurrency = currentCurrency; // Update global
             updateCartPage();
         }
     }
@@ -289,6 +299,7 @@ function onCountryChange() {
     if (selectedCountry && currencyByCountry[selectedCountry]) {
         currentCountry = selectedCountry;
         currentCurrency = currencyByCountry[selectedCountry];
+        window.currentCurrency = currentCurrency; // Update global
         updateCartPage();
         
         // Adressfeld leeren wenn Land geändert wird
@@ -549,38 +560,10 @@ function updateCartPage() {
                         <span>${shipping === 0 ? 'Kostenlos' : currentCurrency.symbol + shippingConverted.toFixed(2)}</span>
                     </div>
                     <div class="summary-row total">
-                        <span>Gesamt:</span>
-                        <span>${currentCurrency.symbol}${total.toFixed(2)}</span>
-                    </div>
                 </div>
-                
-                <!-- Express-Checkout Bereich -->
-                <div class="text-center mb-3">
-                    <div class="fw-semibold mb-3" style="font-size:1.1rem;">Express-Checkout</div>
-                    <div class="d-flex justify-content-center gap-2 flex-wrap mb-2">
-                        <button class="btn px-3 py-2 d-flex align-items-center justify-content-center" style="background:#000; color:#fff; border-radius:12px; font-weight:600; font-size:0.9rem; border:none; min-width:120px;" onclick="alert('Google Pay Checkout (Demo)')">
-                            Google Pay
-                        </button>
-                        <button class="btn px-3 py-2 d-flex align-items-center justify-content-center" style="background:#0070ba; color:#fff; border-radius:12px; font-weight:600; font-size:0.9rem; border:none; min-width:120px;" onclick="alert('PayPal Checkout (Demo)')">
-                            <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right:6px;">
-                                <path fill="#fff" d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106z"/>
-                            </svg>
-                            PayPal
-                        </button>
-                    </div>
-                    <div class="d-flex justify-content-center gap-2 flex-wrap mb-2">
-                        <button class="btn px-3 py-2 d-flex align-items-center justify-content-center" style="background:#fff; color:#222; border-radius:12px; font-weight:600; font-size:0.9rem; border:1.5px solid #222; min-width:120px;" onclick="alert('Apple Pay Checkout (Demo)')">
-                            <i class="bi bi-apple" style="font-size:18px; margin-right:6px;"></i> Apple Pay
-                        </button>
-                        <button class="btn px-3 py-2 d-flex align-items-center justify-content-center" style="background:#ffdaec; color:#222; border-radius:12px; font-weight:600; font-size:0.9rem; border:none; min-width:120px;" onclick="alert('Klarna Checkout (Demo)')">
-                            <img src="karten/klarna.png" alt="Klarna" style="height:20px; margin-right:6px;"> Klarna
-                        </button>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-center my-3" style="gap:1rem;">
-                        <hr style="flex:1; border-top:1.5px solid #cfd8dc; margin:0;">
-                        <span class="text-muted fw-semibold" style="font-size:0.9rem;">ODER</span>
-                        <hr style="flex:1; border-top:1.5px solid #cfd8dc; margin:0;">
-                    </div>
+                <div class="summary-row total">
+                    <span>Gesamt:</span>
+                    <span>${currentCurrency.symbol}${total.toFixed(2)}</span>
                 </div>
                 
                 <form id="stripe-form" class="payment-form">
@@ -589,25 +572,6 @@ function updateCartPage() {
                             <i class="bi bi-envelope"></i> E-Mail-Adresse
                         </label>
                         <input type="email" id="email" class="form-control" required autocomplete="email" placeholder="ihre@email.de">
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label for="firstname" class="form-label">
-                                    <i class="bi bi-person"></i> Vorname
-                                </label>
-                                <input type="text" id="firstname" class="form-control" required placeholder="Vorname">
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label for="lastname" class="form-label">
-                                    <i class="bi bi-person-fill"></i> Nachname
-                                </label>
-                                <input type="text" id="lastname" class="form-control" required placeholder="Nachname">
-                            </div>
-                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -637,80 +601,12 @@ function updateCartPage() {
                         </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="city" class="form-label">
-                            <i class="bi bi-building"></i> Stadt
-                        </label>
-                        <input type="text" id="city" class="form-control" required placeholder="Stadt eingeben">
-                    </div>
-                    
-                    <div class="form-group position-relative">
-                        <label for="address" class="form-label">
-                            <i class="bi bi-geo-alt"></i> Adresse
-                        </label>
-                        <input type="text" id="address" class="form-control" required placeholder="Straße und Hausnummer">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="postcode" class="form-label">
-                            <i class="bi bi-mailbox"></i> Postleitzahl
-                        </label>
-                        <input type="text" id="postcode" class="form-control" required placeholder="Postleitzahl">
-                    </div>
-                    
-                    <div id="address-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,0.1);z-index:1000;max-height:200px;overflow-y:auto;"></div>
-                    
-                    <div class="payment-section">
-                        <h4 class="payment-title">
-                            <i class="bi bi-credit-card"></i> Zahlungsinformationen
-                        </h4>
-                        
-                        <!-- Kreditkarte -->
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="bi bi-credit-card"></i> Kreditkarte
-                            </label>
-                            
-                            <!-- Kartenbilder mit Dropdown -->
-                            <div class="card-images mb-3">
-                                <div class="d-flex align-items-center gap-2 flex-wrap">
-                                    <img src="karten/visa.png" class="card-img-static">
-                                    <img src="karten/mastercard.jpg" class="card-img-static">
-                                    <img src="karten/bancontact.png" class="card-img-static">
-                                    <img src="karten/cartes bancaires.jpg" class="card-img-static">
-                                    <div class="position-relative">
-                                        <button type="button" class="btn btn-outline-secondary d-flex align-items-center" style="height:24px; padding:0 8px; font-size:0.8rem; border-radius:4px;" onclick="toggleCardDropdown()">
-                                            +3
-                                        </button>
-                                        <div id="card-dropdown" style="display:none; position:absolute; top:100%; left:0; background:#fff; border:1px solid #ddd; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:1000; padding:8px;">
-                                            <div class="d-flex flex-column gap-2">
-                                                <img src="karten/EPS.png" class="card-img-static" style="margin:0; cursor: pointer;" onclick="handleRedirectCheckout('EPS')">
-                                                <img src="karten/giropay.png" class="card-img-static" style="margin:0; cursor: pointer;" onclick="handleRedirectCheckout('giropay')">
-                                                <img src="karten/blik.png" class="card-img-static" style="margin:0; cursor: pointer;" onclick="handleRedirectCheckout('blik')">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="card-input-container" style="background: #f8f9fa; border-radius: 12px; padding: 20px; border: 1px solid #e9ecef;">
-                                <div class="form-group mb-3">
-                                    <div id="card-number-element" class="stripe-element-container"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <div id="card-expiry-element" class="stripe-element-container"></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <div id="card-cvc-element" class="stripe-element-container"></div>
-                                        </div>
-                                <div id="card-errors" role="alert" class="text-danger mt-2"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Versteckte Felder für Validierung -->
+                    <input type="hidden" id="firstname" value="Kunde">
+                    <input type="hidden" id="lastname" value="Stripe">
+                    <input type="hidden" id="city" value="Stadt">
+                    <input type="hidden" id="address" value="Adresse">
+                    <input type="hidden" id="postcode" value="12345">
                     
                     <!-- AGB und Datenschutz Checkboxen -->
                     <div class="agb-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border: 2px solid #e9ecef; border-radius: 16px; padding: 1.8rem; margin: 2rem 0 1.5rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
@@ -878,7 +774,7 @@ window.handleCheckout = async function() {
         return;
     }
     
-    // Prüfe ob alle Pflichtfelder ausgefüllt sind
+    // Hole Werte (versteckte Felder haben Standardwerte)
     const email = document.getElementById('email').value.trim();
     const firstname = document.getElementById('firstname').value.trim();
     const lastname = document.getElementById('lastname').value.trim();
@@ -887,7 +783,52 @@ window.handleCheckout = async function() {
     const address = document.getElementById('address').value.trim();
     const postcode = document.getElementById('postcode').value.trim();
     
-    // Prüfe ob AGB akzeptiert wurden
+    // Email-Validierung
+    if (!email) {
+        showErrorToast('Bitte geben Sie Ihre E-Mail-Adresse ein.');
+        const emailField = document.getElementById('email');
+        if (emailField) {
+            emailField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            emailField.focus();
+            emailField.style.borderColor = '#dc3545';
+            setTimeout(() => {
+                emailField.style.borderColor = '';
+            }, 3000);
+        }
+        return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showErrorToast('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+        const emailField = document.getElementById('email');
+        if (emailField) {
+            emailField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            emailField.focus();
+            emailField.style.borderColor = '#dc3545';
+            setTimeout(() => {
+                emailField.style.borderColor = '';
+            }, 3000);
+        }
+        return;
+    }
+    
+    // Land-Validierung
+    if (!country) {
+        showErrorToast('Bitte wählen Sie ein Land aus.');
+        const countryField = document.getElementById('country');
+        if (countryField) {
+            countryField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            countryField.focus();
+            countryField.style.borderColor = '#dc3545';
+            setTimeout(() => {
+                countryField.style.borderColor = '';
+            }, 3000);
+        }
+        return;
+    }
+    
+    // AGB-Validierung
     const agbCheckbox = document.getElementById('agbCheckbox');
     if (!agbCheckbox || !agbCheckbox.checked) {
         showErrorToast('Bitte akzeptieren Sie die Allgemeinen Geschäftsbedingungen und Datenschutzbestimmungen.');
@@ -904,49 +845,6 @@ window.handleCheckout = async function() {
         }
         return;
     }
-    
-    if (!email || !firstname || !lastname || !country || !city || !address || !postcode) {
-        showErrorToast('Bitte füllen Sie alle Pflichtfelder aus.');
-        // Finde das erste leere Pflichtfeld und scrolle dorthin
-        const emptyField = [
-            { value: email, id: 'email' },
-            { value: firstname, id: 'firstname' },
-            { value: lastname, id: 'lastname' },
-            { value: country, id: 'country' },
-            { value: city, id: 'city' },
-            { value: address, id: 'address' },
-            { value: postcode, id: 'postcode' }
-        ].find(field => !field.value);
-        
-        if (emptyField) {
-            const element = document.getElementById(emptyField.id);
-            if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                element.focus();
-                element.style.borderColor = '#dc3545';
-                setTimeout(() => {
-                    element.style.borderColor = '';
-                }, 3000);
-            }
-        }
-        return;
-    }
-    
-    // Email-Validierung
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        showErrorToast('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
-        const emailField = document.getElementById('email');
-        if (emailField) {
-            emailField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            emailField.focus();
-            emailField.style.borderColor = '#dc3545';
-            setTimeout(() => {
-                emailField.style.borderColor = '';
-            }, 3000);
-        }
-        return;
-    }
     const spinner = submitButton.querySelector('.spinner-border');
     const buttonText = submitButton.querySelector('.button-text');
     
@@ -954,78 +852,94 @@ window.handleCheckout = async function() {
     
     // Button deaktivieren und Spinner anzeigen
     submitButton.disabled = true;
-    spinner.style.display = 'inline-block';
-    buttonText.innerHTML = '<i class="bi bi-hourglass-split"></i> Verarbeitung...';
+    if (spinner) spinner.style.display = 'inline-block';
+    if (buttonText) buttonText.innerHTML = '<i class="bi bi-hourglass-split"></i> Verarbeitung...';
     
     try {
-        // Sammle Bestelldaten für Kassenbon
+        // Hole Warenkorb
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const orderData = {
-            cart: cart,
-            customer: {
-                name: `${firstname} ${lastname}`,
-                email: email,
-                phone: '', // Telefon-Feld könnte hinzugefügt werden
-                billingAddress: {
-                    street: address,
-                    city: city,
-                    zip: postcode,
-                    country: country
-                }
-            },
-            shipping: {
-                cost: 0, // Wird aus der Berechnung übernommen
-                address: {
-                    street: address,
-                    city: city,
-                    zip: postcode,
-                    country: country
-                }
-            },
-            payment: {
-                method: 'card',
-                status: 'completed'
+        
+        if (cart.length === 0) {
+            showErrorToast('Ihr Warenkorb ist leer.');
+            submitButton.disabled = false;
+            spinner.style.display = 'none';
+            buttonText.innerHTML = '<i class="bi bi-lock"></i> Jetzt bestellen';
+            return;
+        }
+        
+        console.log('💳 Erstelle Stripe Checkout Session...');
+        
+        // Hole Rabatt-Informationen
+        const appliedVoucher = localStorage.getItem('appliedVoucher');
+        let discountData = null;
+        
+        if (appliedVoucher && window.getCartTotals) {
+            const totals = window.getCartTotals();
+            if (totals.discount > 0) {
+                // Berechne Rabatt-Prozentsatz
+                const discountPercent = Math.round((totals.discount / totals.subtotal) * 100);
+                discountData = {
+                    code: appliedVoucher,
+                    percent: discountPercent
+                };
+                console.log('🎫 Rabatt wird angewendet:', discountData);
+            }
+        }
+        
+        // Sammle Kundendaten
+        const customerInfo = {
+            email: email,
+            name: `${firstname} ${lastname}`,
+            address: {
+                line1: address,
+                city: city,
+                postal_code: postcode,
+                country: country
             }
         };
         
-        console.log('💳 Erstelle Kassenbon...');
+        console.log('🌍 Sende Land an Server:', country);
+        console.log('💱 Aktuelle Währung:', window.currentCurrency);
         
-        // Erstelle Kassenbon über API
-        try {
-            const response = await fetch('/api/receipt/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(orderData)
-            });
-            
-            if (response.ok) {
-                const receiptData = await response.json();
-                console.log('✅ Kassenbon erstellt:', receiptData.orderId);
-                
-                // Speichere Bestellnummer für Success-Seite
-                localStorage.setItem('lastOrderId', receiptData.orderId);
-                localStorage.setItem('lastReceiptNumber', receiptData.receiptNumber);
-            } else {
-                console.warn('⚠️ Kassenbon-Erstellung fehlgeschlagen, fahre trotzdem fort');
-            }
-        } catch (receiptError) {
-            console.warn('⚠️ Kassenbon-API nicht erreichbar:', receiptError.message);
+        // Erstelle Stripe Checkout Session
+        const response = await fetch('/api/create-checkout-session', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                cart, 
+                country,
+                discount: discountData,
+                customerInfo: customerInfo
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Fehler beim Erstellen der Checkout-Session');
         }
         
-        // Zeige Erfolgsmeldung nach 2 Sekunden
-        setTimeout(() => {
-            console.log('✅ Zahlung erfolgreich, leere Warenkorb...');
-            localStorage.removeItem('cart');
-            console.log('🔄 Weiterleitung zur Erfolgsseite...');
-            window.location.href = 'success.html';
-        }, 2000);
+        const { url, error } = await response.json();
+        
+        if (error) {
+            throw new Error(error);
+        }
+        
+        if (!url) {
+            throw new Error('Keine Checkout-URL erhalten');
+        }
+        
+        console.log('✅ Checkout Session erstellt, leite weiter...');
+        
+        // Weiterleitung zu Stripe Checkout
+        window.location.href = url;
         
     } catch (error) {
         console.error('❌ Zahlungsfehler:', error);
         
         // Fehler anzeigen
+        showErrorToast(error.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
+        
         const errorElement = document.getElementById('card-errors');
         if (errorElement) {
             errorElement.textContent = error.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
@@ -1033,10 +947,10 @@ window.handleCheckout = async function() {
         
         // Button wieder aktivieren
         submitButton.disabled = false;
-        spinner.style.display = 'none';
+        if (spinner) spinner.style.display = 'none';
         const total = document.querySelector('.total span:last-child');
         const totalText = total ? total.textContent : '0.00';
-        buttonText.innerHTML = '<i class="bi bi-lock"></i> Jetzt bestellen - ' + totalText;
+        if (buttonText) buttonText.innerHTML = '<i class="bi bi-lock"></i> Jetzt bestellen - ' + totalText;
     }
 };
 
@@ -1559,15 +1473,13 @@ async function handleStripeSubmit(event) {
             throw new Error("Ihr Warenkorb ist leer.");
         }
 
-        // 2. PaymentIntent auf dem Server erstellen (Demo-Modus)
-        // Da kein echter Server vorhanden ist, simulieren wir einen Fehler
-        const response = await fetch('/api/create-payment-intent', {
+        // 2. Stripe Checkout Session erstellen
+        const response = await fetch('/api/create-checkout-session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cart, email, country, city, firstname, lastname })
+            body: JSON.stringify({ cart, country })
         }).catch(error => {
-            // Netzwerkfehler abfangen
-            throw new Error('Server nicht erreichbar. Dies ist eine Demo-Version ohne echte Zahlungsabwicklung.');
+            throw new Error('Server nicht erreichbar.');
         });
 
         let responseData;
@@ -1582,42 +1494,14 @@ async function handleStripeSubmit(event) {
             throw new Error('Zahlungsserver nicht verfügbar. Dies ist eine Demo-Version. Für eine echte Bestellung kontaktieren Sie uns bitte direkt.');
         }
 
-        const { clientSecret, error: backendError } = responseData;
+        const { id, url, error: backendError } = responseData;
 
-        if (backendError || !clientSecret) {
-            throw new Error(backendError || 'Fehler bei der Zahlungsinitialisierung. Server nicht konfiguriert.');
+        if (backendError || !url) {
+            throw new Error(backendError || 'Fehler bei der Zahlungsinitialisierung.');
         }
 
-        // 3. Zahlung auf dem Client bestätigen
-        const { error, paymentIntent } = await stripe.confirmCardPayment(
-            clientSecret, {
-                payment_method: {
-                    card: cardNumber,
-                    billing_details: {
-                        name: `${firstname} ${lastname}`,
-                        email: email,
-                        address: {
-                            line1: address,
-                            city: city,
-                            country: country,
-                            postal_code: postalCode
-                        }
-                    },
-                },
-            }
-        );
-
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        // 4. Bei Erfolg weiterleiten
-        if (paymentIntent.status === 'succeeded') {
-            localStorage.removeItem('cart');
-            window.location.href = 'success.html';
-        } else {
-            throw new Error(`Zahlung fehlgeschlagen: ${paymentIntent.status}`);
-        }
+        // 3. Weiterleitung zu Stripe Checkout
+        window.location.href = url;
 
     } catch (err) {
         // Alle Fehler hier abfangen und anzeigen

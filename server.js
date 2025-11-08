@@ -117,12 +117,33 @@ app.use(express.static(path.join(__dirname), {
   }
 }));
 
+// Hilfsfunktion: Erstelle oder hole Stripe Coupon
+async function createOrGetCoupon(percent, code) {
+  try {
+    // Versuche existierenden Coupon zu holen
+    const existingCoupon = await stripe.coupons.retrieve(code);
+    return existingCoupon.id;
+  } catch (error) {
+    // Coupon existiert nicht, erstelle neuen
+    const coupon = await stripe.coupons.create({
+      id: code,
+      percent_off: percent,
+      duration: 'once',
+      name: `${percent}% Rabatt`
+    });
+    return coupon.id;
+  }
+}
+
 app.post('/api/create-checkout-session', async (req, res) => {
   if (!stripe) {
     return res.status(503).json({ error: 'Payment system not configured. Please set up Stripe API key.' });
   }
-  const { cart, country } = req.body;
+  const { cart, country, discount, customerInfo } = req.body;
+  
+  console.log('📍 Empfangenes Land:', country);
   const currency = getCurrencyByCountry(country);
+  console.log('💱 Verwendete Währung:', currency);
   
   // Konvertiere alle Preise parallel
   const line_items = await Promise.all(cart.map(async (item) => {
@@ -148,13 +169,46 @@ app.post('/api/create-checkout-session', async (req, res) => {
   }));
 
   try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+    const sessionConfig = {
+      payment_method_types: ['card'], // Nur Karte bei "Zahlungsmethode"
       line_items,
       mode: 'payment',
-      success_url: `${process.env.REPL_URL || 'http://localhost:5000'}/success.html`,
-      cancel_url: `${process.env.REPL_URL || 'http://localhost:5000'}/cart.html`,
-    });
+      success_url: `${process.env.REPL_URL || 'http://localhost:3000'}/success.html`,
+      cancel_url: `${process.env.REPL_URL || 'http://localhost:3000'}/cart.html`,
+      billing_address_collection: 'required',
+      shipping_address_collection: {
+        allowed_countries: ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'PL', 'US', 'GB']
+      },
+      phone_number_collection: {
+        enabled: true
+      },
+      locale: 'auto', // Automatische Spracherkennung
+      // Express Checkout Payment Methods (oben angezeigt)
+      payment_method_options: {
+        card: {
+          request_three_d_secure: 'automatic'
+        }
+      }
+    };
+    
+    // Füge Kundendaten hinzu wenn vorhanden
+    if (customerInfo && customerInfo.email) {
+      sessionConfig.customer_email = customerInfo.email;
+    }
+    
+    // Setze Standard-Land basierend auf ausgewähltem Land
+    if (country) {
+      console.log('🌍 Setze Standard-Land für Stripe:', country);
+    }
+    
+    // Füge Rabatt hinzu wenn vorhanden
+    if (discount && discount.percent) {
+      sessionConfig.discounts = [{
+        coupon: await createOrGetCoupon(discount.percent, discount.code)
+      }];
+    }
+    
+    const session = await stripe.checkout.sessions.create(sessionConfig);
     // Stripe Checkout Link (z.B. für Debugging oder manuelle Weiterleitung)
     console.log('Stripe Checkout Link:', session.url);
     res.json({ id: session.id, url: session.url }); // session.url ist der Stripe-Zahlungslink
@@ -179,18 +233,138 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
       process.env.STRIPE_WEBHOOK_SECRET
     );
 
+    // Handle Checkout Session (Stripe Checkout)
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
-      const msg = {
-        to: session.customer_details.email,
-        from: process.env.SENDER_EMAIL,
-        reply_to: process.env.SUPPORT_EMAIL,
-        subject: 'Zahlungsbestätigung - Maios',
-        text: `Vielen Dank für Ihre Bestellung #${session.id}!\n\nIhre Zahlung wurde erfolgreich verarbeitet.`,        html: `<strong>Bestellbestätigung #${session.id}</strong>
-          <p>Ihre Zahlung wurde erfolgreich verarbeitet und wir bereiten den Versand vor.</p>`
+      
+      // Hole vollständige Session-Daten mit Line Items
+      const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+        expand: ['line_items', 'customer']
+      });
+      
+      // Erstelle Bestelldaten aus Stripe Session
+      const orderData = {
+        order_id: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        receipt_number: `KB-${new Date().getFullYear()}${String(Date.now()).slice(-6)}`,
+        customer_email: fullSession.customer_details.email,
+        customer_name: fullSession.customer_details.name,
+        customer_phone: fullSession.customer_details.phone || null,
+        shipping_address: JSON.stringify(fullSession.shipping_details?.address || {}),
+        billing_address: JSON.stringify(fullSession.customer_details?.address || {}),
+        payment_method: 'card',
+        payment_status: 'paid',
+        subtotal: fullSession.amount_subtotal / 100, // Stripe gibt Cents zurück
+        shipping_cost: (fullSession.total_details?.amount_shipping || 0) / 100,
+        tax_amount: (fullSession.total_details?.amount_tax || 0) / 100,
+        total_amount: fullSession.amount_total / 100,
+        currency: fullSession.currency.toUpperCase(),
+        notes: `Stripe Payment ID: ${session.payment_intent}`,
+        items: fullSession.line_items.data.map(item => ({
+          product_id: item.price.product,
+          product_name: item.description,
+          product_sku: item.price.metadata?.sku || null,
+          product_image: null,
+          color: item.price.metadata?.color || null,
+          quantity: item.quantity,
+          unit_price: item.price.unit_amount / 100,
+          total_price: item.amount_total / 100
+        })),
+        created_at: new Date(session.created * 1000).toISOString()
       };
-      await sgMail.send(msg);
+      
+      // Erstelle Stripe Invoice
+      try {
+        // 1. Kunde erstellen oder abrufen
+        let customer;
+        if (fullSession.customer) {
+          customer = await stripe.customers.retrieve(fullSession.customer);
+        } else {
+          customer = await stripe.customers.create({
+            email: fullSession.customer_details.email,
+            name: fullSession.customer_details.name,
+            phone: fullSession.customer_details.phone,
+            address: fullSession.customer_details.address,
+            metadata: {
+              order_id: orderData.order_id
+            }
+          });
+        }
+        
+        // 2. Erstelle Invoice zuerst
+        const invoice = await stripe.invoices.create({
+          customer: customer.id,
+          auto_advance: false,
+          collection_method: 'send_invoice',
+          days_until_due: 0,
+          description: `Bestellung ${orderData.order_id}`,
+          footer: `Vielen Dank für Ihren Einkauf!\n\nBestellnummer: ${orderData.order_id}\nKassenbon-Nr: ${orderData.receipt_number}\n\nDiese Rechnung wurde bereits bezahlt.`,
+          metadata: {
+            order_id: orderData.order_id,
+            receipt_number: orderData.receipt_number,
+            payment_intent: session.payment_intent,
+            paid: 'true'
+          }
+        });
+        
+        // 3. Füge Invoice Items zur Invoice hinzu
+        for (const item of orderData.items) {
+          await stripe.invoiceItems.create({
+            customer: customer.id,
+            invoice: invoice.id,
+            amount: Math.round(item.total_price * 100), // Gesamtpreis in Cents
+            currency: orderData.currency.toLowerCase(),
+            description: `${item.quantity}x ${item.product_name}${item.color ? ` (${item.color})` : ''} - je ${item.unit_price.toFixed(2)}€`,
+            metadata: {
+              product_id: item.product_id,
+              product_sku: item.product_sku || '',
+              order_id: orderData.order_id,
+              quantity: item.quantity.toString()
+            }
+          });
+        }
+        
+        // 4. Versandkosten hinzufügen (falls vorhanden)
+        if (orderData.shipping_cost > 0) {
+          await stripe.invoiceItems.create({
+            customer: customer.id,
+            invoice: invoice.id,
+            amount: Math.round(orderData.shipping_cost * 100),
+            currency: orderData.currency.toLowerCase(),
+            description: 'Versandkosten',
+            metadata: {
+              order_id: orderData.order_id
+            }
+          });
+        }
+        
+        // 5. Invoice finalisieren
+        const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+        
+        // 6. E-Mail senden (funktioniert nur im Live-Modus)
+        try {
+          await stripe.invoices.sendInvoice(finalizedInvoice.id);
+        } catch (emailError) {
+          console.log('⚠️ E-Mail-Versand übersprungen (Testmodus)');
+        }
+        
+        console.log(`✅ Stripe Invoice erstellt: ${finalizedInvoice.number}`);
+        console.log(`📄 Invoice URL: ${finalizedInvoice.hosted_invoice_url}`);
+        console.log(`📥 PDF Download: ${finalizedInvoice.invoice_pdf}`);
+        console.log(`📧 Rechnung per E-Mail an ${orderData.customer_email} gesendet`);
+        
+      } catch (invoiceError) {
+        console.error('❌ Stripe Invoice-Erstellung fehlgeschlagen:', invoiceError);
+      }
     }
+    
+    // Handle Payment Intent (Direkte Kartenzahlung)
+    if (event.type === 'payment_intent.succeeded') {
+      const paymentIntent = event.data.object;
+      console.log(`✅ Payment Intent erfolgreich: ${paymentIntent.id}`);
+      console.log(`⚠️ Hinweis: Für Payment Intent Rechnungen muss noch Logik implementiert werden`);
+      // TODO: Hier könnte man auch eine Rechnung erstellen, wenn man die Bestelldaten hat
+    }
+    
     res.status(200).end();
   } catch (err) {
     console.error('Webhook Error:', err.message);
@@ -878,7 +1052,7 @@ app.post('/api/exchange-rates/clear-cache', (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   console.log(`📱 Access URL: ${process.env.REPL_URL || `http://localhost:${PORT}`}`);
