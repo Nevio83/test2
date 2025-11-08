@@ -210,13 +210,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                         ''
                                     }
                                 </div>
-                                <button class="add-individual-bundle-btn" data-bundle-qty="${bundle.qty}">
-                                    <i class="bi bi-cart-plus"></i> Set in den Warenkorb
-                                </button>
                             </div>
                         </div>
                     </div>
                 `).join('')}
+                
+                <button class="add-bundle-btn" onclick="addSelectedBundleToCart()">
+                    <i class="bi bi-cart-plus"></i> Ausgewähltes Bundle in den Warenkorb
+                </button>
             </div>
         `;
         
@@ -235,18 +236,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
             
-            // Event Listener für individuelle Bundle-Buttons hinzufügen
-            const individualBundleBtns = bundleSection.querySelectorAll('.add-individual-bundle-btn');
-            individualBundleBtns.forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const bundleQty = parseInt(this.getAttribute('data-bundle-qty'));
-                    console.log(`🛒 Individueller Bundle-Button geklickt für ${bundleQty} Set(s)`);
-                    window.addSpecificBundleToCart(bundleQty);
+            // Event Listener für Bundle-Karten (zum Auswählen)
+            const bundleCards = bundleSection.querySelectorAll('.bundle-card');
+            bundleCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Ignoriere Klicks auf Farbauswahl
+                    if (e.target.closest('.color-image-option')) return;
+                    
+                    // Entferne selected von allen Karten
+                    bundleCards.forEach(c => c.classList.remove('selected'));
+                    // Füge selected zur geklickten Karte hinzu
+                    this.classList.add('selected');
+                    // Setze Radio Button
+                    this.querySelector('.bundle-radio').checked = true;
                 });
             });
-            console.log(`✅ ${individualBundleBtns.length} individuelle Bundle-Button Event Listener hinzugefügt`);
+            console.log(`✅ ${bundleCards.length} Bundle-Karten Event Listener hinzugefügt`);
         } else {
             console.log('❌ Bundle-Section nicht gefunden');
         }
@@ -688,50 +693,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .add-individual-bundle-btn {
-                    width: auto;
-                    min-width: 140px;
-                    max-width: 200px;
-                    padding: 10px 16px;
-                    background: linear-gradient(135deg, ${categoryColor} 0%, ${darkerCategoryColor} 100%);
-                    color: white;
-                    border: none;
-                    border-radius: 8px;
-                    font-size: 13px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    margin-top: 15px;
-                    transition: all 0.3s ease;
-                    position: relative;
-                    overflow: hidden;
-                    text-transform: uppercase;
-                    letter-spacing: 0.3px;
-                    white-space: nowrap;
-                    display: inline-block;
-                }
-                
-                .add-individual-bundle-btn::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: -100%;
-                    width: 100%;
-                    height: 100%;
-                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-                    transition: left 0.5s;
-                }
-                
-                .add-individual-bundle-btn:hover {
-                    background: linear-gradient(135deg, ${darkerCategoryColor} 0%, ${categoryColor} 100%);
-                    transform: translateY(-2px) scale(1.02);
-                    box-shadow: 0 4px 15px ${categoryColor}40;
-                }
-                
-                .add-individual-bundle-btn:hover::before {
-                    left: 100%;
-                }
-                
-                .add-individual-bundle-btn:active {
-                    transform: translateY(0) scale(0.98);
+                    display: none !important;
                 }
                 
                 .add-bundle-btn {
@@ -1320,3 +1282,22 @@ if (!window.showBundleSuccessMessage) {
         }, 3000);
     };
 }
+
+// Globale Funktion zum Hinzufügen des ausgewählten Bundles
+window.addSelectedBundleToCart = function() {
+    const selectedCard = document.querySelector('.bundle-card.selected');
+    if (!selectedCard) {
+        console.log('⚠️ Kein Bundle ausgewählt');
+        return;
+    }
+    
+    const bundleQty = parseInt(selectedCard.getAttribute('data-bundle-id'));
+    console.log(`🛒 Ausgewähltes Bundle wird hinzugefügt: ${bundleQty} Set(s)`);
+    
+    // Rufe die bestehende Funktion auf
+    if (typeof window.addSpecificBundleToCart === 'function') {
+        window.addSpecificBundleToCart(bundleQty);
+    } else {
+        console.log('⚠️ addSpecificBundleToCart Funktion nicht gefunden');
+    }
+};
