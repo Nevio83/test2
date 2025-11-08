@@ -517,6 +517,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 @media (max-width: 768px) {
+                    .bundle-set .set-label,
+                    .set-label {
+                        color: #ffffff !important;
+                        font-weight: 600 !important;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+                    }
+                    
                     .color-images {
                         gap: 4px !important;
                         overflow-x: scroll !important;
@@ -547,22 +554,32 @@ document.addEventListener('DOMContentLoaded', function() {
                         border-radius: 5px !important;
                     }
                     
+                    .color-image-option .color-name,
                     .color-name {
                         display: block !important;
                         font-size: 11px !important;
                         margin-top: 3px !important;
                         margin-bottom: 2px !important;
-                        color: #333 !important;
+                        color: #ffffff !important;
                         text-align: center !important;
                         line-height: 1.2 !important;
                         word-break: break-word !important;
                         visibility: visible !important;
                         opacity: 1 !important;
                         max-width: 65px !important;
+                        font-weight: 600 !important;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
                     }
                 }
                 
                 @media (max-width: 480px) {
+                    .bundle-set .set-label,
+                    .set-label {
+                        color: #ffffff !important;
+                        font-weight: 600 !important;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+                    }
+                    
                     .color-images {
                         gap: 4px !important;
                     }
@@ -577,9 +594,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         height: 50px !important;
                     }
                     
+                    .color-image-option .color-name,
                     .color-name {
                         font-size: 10px !important;
                         max-width: 55px !important;
+                        color: #ffffff !important;
+                        font-weight: 600 !important;
+                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
                     }
                     
                     .add-individual-bundle-btn {
