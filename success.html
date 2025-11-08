@@ -48,6 +48,51 @@
     <script>
         // Zeige Bestellinformationen an, falls vorhanden
         document.addEventListener('DOMContentLoaded', function() {
+            // Prüfe ob wir von Stripe Checkout kommen
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            
+            if (sessionId) {
+                console.log('✅ Stripe Checkout erfolgreich, Session ID:', sessionId);
+            }
+            
+            // Lösche Warenkorb und Gutschein nach erfolgreicher Bestellung
+            // (egal ob von Stripe oder direkter Aufruf)
+            
+            // ZUERST: Hole den angewendeten Gutschein-Code
+            const appliedCode = localStorage.getItem('appliedVoucher');
+            
+            // Lösche Warenkorb
+            localStorage.removeItem('cart');
+            
+            // Entferne den verwendeten Gutschein aus der Gutschein-Liste
+            if (appliedCode) {
+                const myVouchers = JSON.parse(localStorage.getItem('myVouchers') || '[]');
+                // Entferne EINEN Gutschein mit diesem Code
+                const voucherIndex = myVouchers.findIndex(id => {
+                    // Finde den Gutschein-Code basierend auf ID
+                    const vouchers = [
+                        { id: 1, code: 'SAVE10' },
+                        { id: 2, code: 'SAVE15' },
+                        { id: 3, code: 'SAVE20' },
+                        { id: 4, code: 'FREESHIP' },
+                        { id: 5, code: 'WELCOME25' },
+                        { id: 6, code: 'BUNDLE30' }
+                    ];
+                    const voucher = vouchers.find(v => v.id === id);
+                    return voucher && voucher.code === appliedCode;
+                });
+                
+                if (voucherIndex !== -1) {
+                    myVouchers.splice(voucherIndex, 1);
+                    localStorage.setItem('myVouchers', JSON.stringify(myVouchers));
+                    console.log('🗑️ Verwendeter Gutschein aus Liste entfernt');
+                }
+            }
+            
+            localStorage.removeItem('appliedVoucher');
+            console.log('✅ Warenkorb und Gutschein gelöscht');
+            
             const orderId = localStorage.getItem('lastOrderId');
             const receiptNumber = localStorage.getItem('lastReceiptNumber');
             

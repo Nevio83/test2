@@ -256,15 +256,25 @@
     }
 
     function initCartVouchers() {
-        // Warte kurz bis cart.html geladen ist
+        // Prüfe ob Warenkorb leer ist - wenn ja, lösche Gutschein
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        if (cart.length === 0) {
+            localStorage.removeItem('appliedVoucher');
+            console.log('🗑️ Warenkorb leer - Gutschein gelöscht');
+        }
+        
+        // Warte länger bis cart.js die Währung gesetzt hat
         setTimeout(() => {
             createVoucherSection();
             checkAppliedVoucher();
-            updateCartSummary();
             
-            // Beobachte Warenkorb-Änderungen (später)
-            setTimeout(observeCartChanges, 2000);
-        }, 500);
+            // Warte nochmal bevor Summary aktualisiert wird
+            setTimeout(() => {
+                updateCartSummary();
+                // Beobachte Warenkorb-Änderungen
+                setTimeout(observeCartChanges, 1000);
+            }, 1000);
+        }, 1500);
     }
     
     // Beobachte Warenkorb-Änderungen für automatische Updates (mit Debounce)
@@ -476,13 +486,15 @@
 
     function removeCartVoucher() {
         localStorage.removeItem('appliedVoucher');
-        document.getElementById('appliedVoucherDisplay').style.display = 'none';
-        showVoucherMessage('Gutschein entfernt.', 'info');
         
-        // Aktualisiere Zusammenfassung
-        updateCartSummary();
+        // Einfach die Seite neu laden - das ist am sichersten
+        showVoucherMessage('Gutschein wird entfernt...', 'info');
         
-        console.log('🗑️ Gutschein entfernt');
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+        
+        console.log('🗑️ Gutschein entfernt, Seite wird neu geladen');
     }
 
     function showAppliedVoucher(voucher) {
@@ -537,8 +549,9 @@
         const currentCurrency = window.currentCurrency || { code: 'EUR', symbol: '€', factor: 1 };
         const currentCountry = localStorage.getItem('selectedCountry') || 'DE';
         
-        // Berechne Zwischensumme mit Währungsumrechnung
+        // Berechne Zwischensumme MIT Währungsumrechnung
         const subtotal = cart.reduce((sum, item) => {
+            // Konvertiere jeden Preis in die Zielwährung
             const priceInCurrency = window.convertPrice ? window.convertPrice(item.price, currentCurrency.code) : item.price;
             return sum + (priceInCurrency * item.quantity);
         }, 0);
@@ -551,13 +564,15 @@
         shippingCost = window.convertPrice ? window.convertPrice(shippingCost, currentCurrency.code) : shippingCost;
         let discountInfo = '';
         
-        // Gutschein anwenden
+        // Gutschein anwenden - NACH der Währungsumrechnung!
         if (appliedCode) {
             const voucher = getVoucherByCode(appliedCode);
             if (voucher) {
                 if (voucher.type === 'percentage') {
+                    // Berechne Rabatt auf die bereits umgerechnete Zwischensumme
                     discount = subtotal * voucher.discount;
                     discountInfo = `${(voucher.discount * 100)}% Rabatt`;
+                    console.log('🎫 Rabatt berechnet:', discount.toFixed(2), currentCurrency.symbol);
                 } else if (voucher.type === 'shipping') {
                     shippingCost = 0;
                     discountInfo = 'Kostenloser Versand';
@@ -638,6 +653,9 @@
         // Hole aktuelles Währungssymbol
         const currentCurrency = window.currentCurrency || { code: 'EUR', symbol: '€', factor: 1 };
         const currencySymbol = currentCurrency.symbol;
+        
+        console.log('💱 Aktuelle Währung:', currentCurrency);
+        console.log('💰 Rabatt-Betrag:', discount, currencySymbol);
         
         // Suche nach "Zwischensumme:" in der Bestellung-Box
         const allElements = document.querySelectorAll('*');
@@ -724,15 +742,15 @@
         updateGutscheineCounter();
     }
 
-    // Willkommens-Gutschein für Neukunden
-    const hasVisited = localStorage.getItem('hasVisited');
-    if (!hasVisited) {
-        setTimeout(() => {
-            window.addVoucherToUser(5); // WELCOME25
-            localStorage.setItem('hasVisited', 'true');
-            console.log('🎁 Willkommens-Gutschein hinzugefügt!');
-        }, 2000);
-    }
+    // Willkommens-Gutschein DEAKTIVIERT
+    // Um manuell Gutscheine hinzuzufügen, öffne die Browser-Konsole (F12) und gib ein:
+    // addVoucherToUser(1)  // Für SAVE10 (10% ab 50€)
+    // addVoucherToUser(2)  // Für SAVE15 (15% ab 100€)
+    // addVoucherToUser(3)  // Für SAVE20 (20% ab 150€)
+    // addVoucherToUser(4)  // Für FREESHIP (Gratis Versand)
+    // addVoucherToUser(5)  // Für WELCOME25 (25% Willkommensrabatt)
+    // addVoucherToUser(6)  // Für BUNDLE30 (30% ab 3 Produkten)
 
     console.log('✅ Gutschein-System initialisiert');
+    console.log('💡 Gutscheine manuell hinzufügen: addVoucherToUser(1-6) in der Konsole eingeben');
 })();
