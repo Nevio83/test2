@@ -333,6 +333,19 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
   }
+  
+  /* NUR MOBILE: Alle Produkte Grid - 2 Spalten wie Suche */
+  #alleProdukteMasterGrid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px !important;
+  }
+  
+  #alleProdukteMasterGrid > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
 }
 
 @media (min-width: 769px) and (max-width: 1200px) {
