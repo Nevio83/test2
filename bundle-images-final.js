@@ -408,39 +408,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .bundle-colors {
-                    margin: 15px 0;
+                    margin: 10px 0;
                 }
                 
                 .bundle-set {
                     display: flex;
-                    align-items: flex-start;
-                    margin-bottom: 10px;
+                    align-items: center;
+                    margin-bottom: 8px;
                     width: 100%;
+                    gap: 8px;
                 }
                 
                 .set-label {
-                    min-width: 60px;
-                    font-size: 14px;
+                    min-width: 50px;
+                    font-size: 13px;
                     color: #666;
                     flex-shrink: 0;
-                    margin-top: 5px;
+                    font-weight: 500;
                 }
                 
                 .color-images {
                     display: flex !important;
-                    gap: 6px !important;
-                    margin-top: 8px;
-                    overflow-x: scroll !important;
+                    gap: 5px !important;
+                    overflow-x: auto !important;
                     overflow-y: hidden !important;
-                    padding: 5px 0 15px 0 !important;
+                    padding: 2px 0 8px 0 !important;
                     scroll-behavior: smooth !important;
                     -webkit-overflow-scrolling: touch !important;
-                    max-width: 400px !important;
-                    width: 100% !important;
                     flex: 1;
                     min-width: 0;
-                    /* Force scrollbar to appear */
-                    scrollbar-width: auto !important;
+                    scrollbar-width: thin !important;
                     scrollbar-color: ${categoryColor} #f1f1f1 !important;
                 }
                 
@@ -450,47 +447,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .color-images::-webkit-scrollbar {
-                    height: 12px !important;
-                    width: 12px !important;
+                    height: 6px !important;
                     display: block !important;
-                    -webkit-appearance: none !important;
                 }
                 
                 .color-images::-webkit-scrollbar-track {
                     background: #f1f1f1 !important;
-                    border-radius: 6px !important;
-                    border: 1px solid #ddd !important;
+                    border-radius: 3px !important;
                 }
                 
                 .color-images::-webkit-scrollbar-thumb {
                     background: ${categoryColor} !important;
-                    border-radius: 6px !important;
-                    border: 2px solid #fff !important;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+                    border-radius: 3px !important;
                 }
                 
                 .color-images::-webkit-scrollbar-thumb:hover {
                     background: ${darkerCategoryColor} !important;
                 }
                 
-                .color-images::-webkit-scrollbar-corner {
-                    background: #f1f1f1 !important;
-                }
-                
                 .color-image-option {
                     position: relative !important;
-                    border: 3px solid #e0e0e0;
-                    border-radius: 10px;
-                    padding: 5px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    padding: 4px;
                     cursor: pointer;
                     transition: all 0.3s ease;
                     display: inline-block;
                     background: white;
-                    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     flex-shrink: 0;
-                    min-width: 80px;
-                    width: 80px;
-                    max-width: 80px;
+                    min-width: 60px;
+                    width: 60px;
+                    max-width: 60px;
                 }
                 
                 .color-image-option:hover {
@@ -505,18 +493,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .color-img {
-                    width: 70px;
-                    height: 70px;
+                    width: 52px;
+                    height: 52px;
                     object-fit: cover;
-                    border-radius: 6px;
+                    border-radius: 5px;
                     display: block;
                 }
                 
                 .color-name {
                     display: block;
                     text-align: center;
-                    font-size: 13px;
-                    margin-top: 6px;
+                    font-size: 11px;
+                    margin-top: 4px;
                     color: #495057;
                     font-weight: 500;
                 }
@@ -534,15 +522,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         overflow-x: scroll !important;
                         overflow-y: hidden !important;
                         -webkit-overflow-scrolling: touch !important;
-                        scrollbar-width: auto !important;
-                        -ms-overflow-style: auto !important;
-                        padding: 5px 0 15px 0 !important;
+                        scrollbar-width: none !important;
+                        -ms-overflow-style: none !important;
+                        padding: 5px 0 5px 0 !important;
                         max-width: 300px !important;
                     }
                     
                     .color-images::-webkit-scrollbar {
-                        height: 8px !important;
-                        display: block !important;
+                        display: none !important;
                     }
                     
                     .color-image-option {
@@ -617,24 +604,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 .checkmark {
                     position: absolute !important;
-                    top: -8px !important;
-                    right: -8px !important;
+                    top: -6px !important;
+                    right: -6px !important;
                     left: auto !important;
                     bottom: auto !important;
                     background: rgba(255, 255, 255, 0.95) !important;
                     color: ${categoryColor} !important;
-                    width: 24px !important;
-                    height: 24px !important;
+                    width: 20px !important;
+                    height: 20px !important;
                     border-radius: 50% !important;
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
-                    font-size: 14px !important;
+                    font-size: 12px !important;
                     font-weight: bold !important;
                     z-index: 100 !important;
                     margin: 0 !important;
                     padding: 0 !important;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+                    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2) !important;
                 }
                 
                 .color-image-option .checkmark {
@@ -646,10 +633,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .bundle-pricing {
-                    margin-top: 20px;
-                    padding: 15px;
+                    margin-top: 12px;
+                    padding: 12px;
                     background: transparent;
-                    border-radius: 12px;
+                    border-radius: 10px;
                     border: 1px solid rgba(255, 255, 255, 0.2);
                 }
                 
