@@ -258,6 +258,11 @@ class ProductImageGallery {
                         color: 'Standard'
                     },
                     {
+                        src: `../produkt bilder/${folderName50}/Krystall Ball Mond.jpg`,
+                        alt: 'Krystall Ball Nachtlampe - Mond',
+                        color: 'Mond'
+                    },
+                    {
                         src: `../produkt bilder/${folderName50}/Riesenrad.jpg`,
                         alt: 'Krystall Ball Nachtlampe - Riesenrad',
                         color: 'Riesenrad'
@@ -266,11 +271,6 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName50}/Wassermolch.jpg`,
                         alt: 'Krystall Ball Nachtlampe - Wassermolch',
                         color: 'Wassermolch'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName50}/Krystall Ball Mond.jpg`,
-                        alt: 'Krystall Ball Nachtlampe - Mond',
-                        color: 'Mond'
                     },
                     {
                         src: `../produkt bilder/${folderName50}/Saturn.jpg`,
