@@ -104,7 +104,16 @@ document.addEventListener('DOMContentLoaded', function() {
             productCategory = window.product.category || 'Haushalt und Küche';
             console.log('✅ Produktdaten von window.product geholt:', { category: productCategory, productId: window.product.id });
             
-            // Hole Farben aus products.json basierend auf der Produkt-ID
+            // Hole Farben aus window.product.colors falls vorhanden
+            if (window.product.colors && window.product.colors.length > 0) {
+                colors = window.product.colors;
+                console.log('✅ Farben direkt aus window.product.colors geholt:', colors.length, 'Farben:', colors.map(c => c.name));
+                console.log('🎨 Alle Farbdaten:', colors);
+                renderBundleContent(colors, productCategory);
+                return;
+            }
+            
+            // Fallback: Hole Farben aus products.json basierend auf der Produkt-ID
             fetch('../products.json')
                 .then(res => res.json())
                 .then(products => {
@@ -161,6 +170,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('🎁 Bundle-Rendering für:', { id: productId, name: productName, price: basePrice, windowProduct: !!window.product });
         console.log('🎨 Verfügbare Farben für Bundle:', colors.length, colors.map(c => c.name));
+        console.log('🎨 WICHTIG - Colors Array:', colors);
+        
+        // WICHTIG: Wenn keine Farben vorhanden sind, zeige Warnung
+        if (!colors || colors.length === 0) {
+            console.warn('⚠️⚠️⚠️ KEINE FARBEN VERFÜGBAR - Bundle wird ohne Farbbilder gerendert!');
+            console.warn('window.product:', window.product);
+            console.warn('window.product.colors:', window.product?.colors);
+        }
         
         const bundles = [
             { qty: 2, price: (basePrice * 0.85), discount: 15 },
@@ -878,7 +895,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentProduct || !currentProduct.name) {
             // Verwende die korrekten Produktdaten basierend auf ID
             const productData = {
-                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: €28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
                 11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 32.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
                 17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 6.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
                 21: { id: 21, name: 'Led crystal lampe', price: 18.99, image: 'produkt bilder/Led crystal lampe .jpg', category: 'Beleuchtung' },
@@ -1019,7 +1036,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentProduct || !currentProduct.name) {
             // Verwende die korrekten Produktdaten basierend auf ID
             const productData = {
-                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: €28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
                 11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 32.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
                 17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 6.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
                 21: { id: 21, name: 'Led crystal lampe', price: 18.99, image: 'produkt bilder/Led crystal lampe .jpg', category: 'Beleuchtung' },
