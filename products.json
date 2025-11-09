@@ -578,7 +578,7 @@
     {
       "id": 26,
       "name": "4 In 1 Self Cleaning Hair Brush",
-      "price": 13.99,
+      "price": 11.99,
       "originalPrice": 20.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",
@@ -591,7 +591,7 @@
           "name": "Roland Purple",
           "code": "#663399",
           "sku": "CJYD186774301AZ",
-          "price": 13.99,
+          "price": 11.99,
           "originalPrice": 20.99,
           "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg"
         },
@@ -599,7 +599,7 @@
           "name": "Lunar Rock",
           "code": "#708090",
           "sku": "CJYD186774302BY",
-          "price": 13.99,
+          "price": 11.99,
           "originalPrice": 21.99,
           "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg"
         }
@@ -643,7 +643,7 @@
     {
       "id": 27,
       "name": "Volcanic Flame Aroma Essential Oil Diffuser",
-      "price": 31.99,
+      "price": 28.99,
       "originalPrice": 49.99,
       "category": "Körperpflege/Wellness",
       "image": "produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg",
@@ -867,7 +867,7 @@
     {
       "id": 22,
       "name": "Waterproof RGB LED Solar Light",
-      "price": 9.99,
+      "price": 12.99,
       "originalPrice": 34.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/Waterproof RGB LED Solar Light.jpg",

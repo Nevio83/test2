@@ -878,11 +878,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentProduct || !currentProduct.name) {
             // Verwende die korrekten Produktdaten basierend auf ID
             const productData = {
-                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: €28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
                 11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 32.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
                 17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 6.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
                 21: { id: 21, name: 'Led crystal lampe', price: 18.99, image: 'produkt bilder/Led crystal lampe .jpg', category: 'Beleuchtung' },
-                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 13.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
+                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 11.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
                 32: { id: 32, name: 'Indoor Sensing Wall Lamp', price: 23.99, image: 'produkt bilder/Indoor Sensing Wall Lamp.jpg', category: 'Beleuchtung' },
                 33: { id: 33, name: 'Aromatherapy Essential Oil Humidifier', price: 8.99, image: 'produkt bilder/Aromatherapy Essential Oil Humidifier.jpg', category: 'Haushalt und Küche' },
                 34: { id: 34, name: 'Moisturizing Face Steamer', price: 19.99, image: 'produkt bilder/Moisturizing Face Steamer.jpg', category: 'Körperpflege/Wellness' },
@@ -1019,11 +1019,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!currentProduct || !currentProduct.name) {
             // Verwende die korrekten Produktdaten basierend auf ID
             const productData = {
-                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: 28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
+                10: { id: 10, name: 'Elektrischer Wasserspender für Schreibtisch', price: €28.99, image: 'produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg', category: 'Haushalt und Küche' },
                 11: { id: 11, name: '350ml Elektrischer Mixer Entsafter', price: 32.99, image: 'produkt bilder/350ml Elektrischer Mixer Entsafter.jpg', category: 'Haushalt und Küche' },
                 17: { id: 17, name: 'Bluetooth Anti-Lost Finder Wassertropfen', price: 6.99, image: 'produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg', category: 'Technik/Gadgets' },
                 21: { id: 21, name: 'Led crystal lampe', price: 18.99, image: 'produkt bilder/Led crystal lampe .jpg', category: 'Beleuchtung' },
-                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 13.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
+                26: { id: 26, name: '4 In 1 Self Cleaning Hair Brush', price: 11.99, image: 'produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg', category: 'Körperpflege/Wellness' },
                 32: { id: 32, name: 'Indoor Sensing Wall Lamp', price: 23.99, image: 'produkt bilder/Indoor Sensing Wall Lamp.jpg', category: 'Beleuchtung' },
                 33: { id: 33, name: 'Aromatherapy Essential Oil Humidifier', price: 8.99, image: 'produkt bilder/Aromatherapy Essential Oil Humidifier.jpg', category: 'Haushalt und Küche' },
                 34: { id: 34, name: 'Moisturizing Face Steamer', price: 19.99, image: 'produkt bilder/Moisturizing Face Steamer.jpg', category: 'Körperpflege/Wellness' },
