@@ -4752,7 +4752,7 @@ function makeDropdownImagesClickable() {
       'ZigBee Smart DIY Motorisierte Rollos': 20,
       
       // Beleuchtung
-      'LED Water Ripple Crystal': 21,
+      'Led crystal Lampe ': 21,
       'LED Wasserwellen Kristall Tischlampe': 21,
       'Waterproof RGB LED Solar Light': 22,
       'Waterproof RGB LED Solarleuchte': 22,
