@@ -33,10 +33,10 @@ class ProductImageGallery {
             41: '2 In 1 Oil Sprayer Bottle bilder',
             42: 'RGB Flame Aroma Diffuser Volcano bilder',
             43: 'Mini Thermal Drucker bilder',
-            44: 'Portable Projector For Home bilder',
+            44: 'Smart Beamer bilder',
             45: 'Air Conditioner bilder',
             46: 'Nordic Crystal Lamp bilder',
-            47: '40 Oz Tumbler With Handle Straw Insulated bilder'
+            47: 'Tumbler Becher bilder'
         };
         
         this.init();
@@ -61,11 +61,11 @@ class ProductImageGallery {
             40: 'Mug Warmer Pad bilder',
             42: 'RGB Flame Aroma Diffuser Volcano bilder',
             43: 'Mini Thermal Drucker bilder',
-            44: 'Portable Projector For Home bilder',
+            44: 'Smart Beamer bilder',
             45: 'Air Conditioner bilder',
             46: 'Nordic Crystal Lamp bilder',
-            47: '40 Oz Tumbler With Handle Straw Insulated bilder',
-            48: '40 Oz Tumbler With Handle Straw Insulated Winter bilder',
+            47: 'Tumbler Becher bilder',
+            48: 'Tumbler becher winter bilder',
             49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder',
             50: 'Krystall Ball Nachtlampe bilder'
         };
@@ -580,36 +580,36 @@ class ProductImageGallery {
                 ];
                 break;
                 
-            case 44: // Portable Projector For Home
+            case 44: // Smart Beamer
                 this.images = [
                     {
-                        src: `../produkt bilder/Portable Projector For Home.jpg`,
-                        alt: 'Portable Projector For Home - Hauptbild',
+                        src: `../produkt bilder/Smart Beamer.jpg`,
+                        alt: 'Smart Beamer - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Projector For Home weiß.jpg`,
-                        alt: 'Portable Projector For Home - Weiß',
+                        src: `../produkt bilder/${folderName}/Smart Beamer weiß.jpg`,
+                        alt: 'Smart Beamer - Weiß',
                         color: 'Weiß'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Projector For Home silber.jpg`,
-                        alt: 'Portable Projector For Home - Silber',
+                        src: `../produkt bilder/${folderName}/Smart Beamer silber.jpg`,
+                        alt: 'Smart Beamer - Silber',
                         color: 'Silber'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Projector For Home auflösung.jpg`,
-                        alt: 'Portable Projector For Home - Auflösung',
+                        src: `../produkt bilder/${folderName}/Smart Beamer auflösung.jpg`,
+                        alt: 'Smart Beamer - Auflösung',
                         color: 'Auflösung'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Projector For Home anschlüsse.jpg`,
-                        alt: 'Portable Projector For Home - Anschlüsse',
+                        src: `../produkt bilder/${folderName}/Smart Beamer anschlüsse.jpg`,
+                        alt: 'Smart Beamer - Anschlüsse',
                         color: 'Anschlüsse'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Projector For Home.jpg`,
-                        alt: 'Portable Projector For Home - Detailansicht',
+                        src: `../produkt bilder/${folderName}/Smart Beamer.jpg`,
+                        alt: 'Smart Beamer - Detailansicht',
                         color: 'Detail'
                     }
                 ];
@@ -675,122 +675,92 @@ class ProductImageGallery {
                 ];
                 break;
                 
-            case 47: // 40 Oz Tumbler With Handle Straw Insulated
+            case 47: // Tumbler Becher
                 this.images = [
                     {
-                        src: `../produkt bilder/40 Oz Tumbler With Handle Straw Insulated .jpg`,
-                        alt: '40 Oz Tumbler With Handle Straw Insulated - Hauptbild',
+                        src: `../produkt bilder/Tumbler Becher.jpg`,
+                        alt: 'Tumbler Becher - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated schwarz.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher schwarz.jpg`,
                         alt: '40 Oz Tumbler - Schwarz',
                         color: 'Schwarz'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated cream white.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher cream white.jpg`,
                         alt: '40 Oz Tumbler - Cream Weiß',
                         color: 'Cream Weiß'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated hell blau.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher hell blau.jpg`,
                         alt: '40 Oz Tumbler - Hell Blau',
                         color: 'Hell Blau'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated bay leaves.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher bay leaves.jpg`,
                         alt: '40 Oz Tumbler - Bay Leaves',
                         color: 'Bay Leaves'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated red rust.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher red rust.jpg`,
                         alt: '40 Oz Tumbler - Red Rust',
                         color: 'Red Rust'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated pink love b.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher pink love b.jpg`,
                         alt: '40 Oz Tumbler - Pink Love B',
                         color: 'Pink Love B'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated peony color.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher peony color.jpg`,
                         alt: '40 Oz Tumbler - Peony Color',
                         color: 'Peony Color'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated hell lila.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher hell lila.jpg`,
                         alt: '40 Oz Tumbler - Hell Lila',
                         color: 'Hell Lila'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated storm sea.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher storm sea.jpg`,
                         alt: '40 Oz Tumbler - Storm Sea',
                         color: 'Storm Sea'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated straw.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher Strohalm.jpg`,
                         alt: '40 Oz Tumbler - Straw',
-                        color: 'Straw'
+                        color: 'Strohalm'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated thermal sublimation.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler Becher thermal sublimation.jpg`,
                         alt: '40 Oz Tumbler - Thermal Sublimation',
                         color: 'Thermal Sublimation'
                     }
                 ];
                 break;
                 
-            case 48: // 40 Oz Tumbler With Handle Straw Insulated Winter
+            case 48: // Tumbler Becher Winter
                 this.images = [
                     {
-                        src: `../produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter.jpg`,
-                        alt: '40 Oz Tumbler With Handle Straw Insulated Winter - Hauptbild',
+                        src: `../produkt bilder/Tumbler becher winter.jpg`,
+                        alt: 'Tumbler Becher Winter - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red.jpg`,
-                        alt: '40 Oz Tumbler Winter - Christmas Red',
-                        color: 'Christmas Red'
+                        src: `../produkt bilder/${folderName}/Tumbler becher merry christmas.jpg`,
+                        alt: 'Tumbler Becher Winter - Merry Christmas',
+                        color: 'Merry Christmas'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red B.jpg`,
-                        alt: '40 Oz Tumbler Winter - Christmas Red B',
-                        color: 'Christmas Red B'
-                    }
-                ];
-                break;
-                
-            case 49: // 40 Oz Tumbler With Handle Straw Insulated Halloween
-                this.images = [
-                    {
-                        src: `../produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg`,
-                        alt: '40 Oz Tumbler With Handle Straw Insulated Halloween - Hauptbild',
-                        color: 'Standard'
+                        src: `../produkt bilder/${folderName}/Tumbler becher Weihnachtszauber.jpg`,
+                        alt: 'Tumbler Becher Winter - Weihnachtszauber',
+                        color: 'Weihnachtszauber'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Cream Black.jpg`,
-                        alt: '40 Oz Tumbler Halloween - Cream Black',
-                        color: 'Halloween Cream Black'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White.jpg`,
-                        alt: '40 Oz Tumbler Halloween - Cream White',
-                        color: 'Halloween Cream White'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White B.jpg`,
-                        alt: '40 Oz Tumbler Halloween - Cream White B',
-                        color: 'Halloween Cream White B'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue.jpg`,
-                        alt: '40 Oz Tumbler Halloween - Dark Blue',
-                        color: 'Halloween Dark Blue'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue B.jpg`,
-                        alt: '40 Oz Tumbler Halloween - Dark Blue B',
-                        color: 'Halloween Dark Blue B'
+                        src: `../produkt bilder/${folderName}/Tumbler becher winter Strohalm.jpg`,
+                        alt: 'Tumbler Becher Winter - Strohalm',
+                        color: 'Strohalm'
                     }
                 ];
                 break;
@@ -1295,8 +1265,8 @@ class ProductImageFullscreen {
                 26: '4 In 1 Self Cleaning Hair Brush bilder',
                 32: 'Indoor Sensing Wall Lamp bilder',
                 42: 'RGB Flame Aroma Diffuser Volcano bilder',
-                47: '40 Oz Tumbler With Handle Straw Insulated bilder',
-                48: '40 Oz Tumbler With Handle Straw Insulated Winter bilder',
+                47: 'Tumbler Becher bilder',
+                48: 'Tumbler becher winter bilder',
                 49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder'
             };
             
