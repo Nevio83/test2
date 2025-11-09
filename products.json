@@ -1,2237 +1,2013 @@
 [
-    {
-      "id": 10,
-      "name": "Elektrischer Wasserspender für Schreibtisch",
-      "price": 28.99,
-      "originalPrice": 69.99,
-      "category": "Technik/Gadgets",
-      "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
-      "description": "Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.",
-      "sku": "CJ1621032671155597312",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "colors": [
-        {
-          "name": "Schwarz",
-          "code": "#2C2C2C",
-          "sku": "CJHS167415803CX",
-          "price": 28.99,
-          "originalPrice": 69.99,
-          "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg"
-        },
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJHS167415802BY",
-          "price": 28.99,
-          "originalPrice": 69.99,
-          "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg"
-        }
-      ],
-      "showInSlider": true,
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Büro Bundle",
-          "description": "Wasserspender + Bürozubehör",
-          "items": [
-            "Ersatzpumpe",
-            "Reinigungsset"
-          ],
-          "originalPrice": 75,
-          "bundlePrice": 65,
-          "savings": 10
-        },
-        {
-          "id": "bundle2",
-          "name": "Premium Hydration",
-          "description": "Komplettes Hydration-Set",
-          "items": [
-            "Ersatzpumpe",
-            "Reinigungsset",
-            "Wasserfilterset"
-          ],
-          "originalPrice": 120,
-          "bundlePrice": 89,
-          "savings": 31
-        }
-      ]
-    },
-    {
-      "id": 11,
-      "name": "350ml Elektrischer Mixer Entsafter",
-      "price": 32.99,
-      "originalPrice": 49.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
-      "description": "Kompakter elektrischer Mixer und Entsafter. Perfekt für Smoothies und frische Säfte unterwegs.",
-      "sku": "CJ1621032671155597313",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "colors": [
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJJD112318801AZ",
-          "price": 32.99,
-          "originalPrice": 49.99,
-          "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg"
-        },
-        {
-          "name": "Rosa",
-          "code": "#FFC0CB",
-          "sku": "CJJD112318812LO",
-          "price": 32.99,
-          "originalPrice": 49.99,
-          "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png"
-        },
-        {
-          "name": "Blau",
-          "code": "#4A90E2",
-          "sku": "CJJD112318814NM",
-          "price": 32.99,
-          "originalPrice": 49.99,
-          "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Blau.jpg"
-        }
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Smoothie Starter",
-          "description": "Mixer + Zubehör",
-          "items": [
-            "Ersatzbecher",
-            "Reinigungsbürste"
-          ],
-          "originalPrice": 35,
-          "bundlePrice": 29,
-          "savings": 6
-        },
-        {
-          "id": "bundle2",
-          "name": "Fitness Bundle",
-          "description": "Komplettes Smoothie-Set",
-          "items": [
-            "2x Ersatzbecher",
-            "Reinigungsbürste",
-            "Rezeptbuch"
-          ],
-          "originalPrice": 60,
-          "bundlePrice": 45,
-          "savings": 15
-        },
-        {
-          "id": "bundle3",
-          "name": "Family Pack",
-          "description": "Alles für die Familie",
-          "items": [
-            "3x Ersatzbecher",
-            "2x Reinigungsbürste",
-            "Rezeptbuch",
-            "Transporttasche"
-          ],
-          "originalPrice": 85,
-          "bundlePrice": 59,
-          "savings": 26
-        },
-        {
-          "id": "bundle4",
-          "name": "Professional Set",
-          "description": "Für tägliche Nutzung",
-          "items": [
-            "4x Ersatzbecher",
-            "3x Reinigungsbürste",
-            "Rezeptbuch",
-            "Transporttasche",
-            "Ersatzklingen"
-          ],
-          "originalPrice": 120,
-          "bundlePrice": 79,
-          "savings": 41
-        }
-      ],
-      "tags": [
-        "mixer",
-        "entsafter",
-        "smoothie",
-        "350ml",
-        "elektrisch",
-        "tragbar"
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 12,
-      "name": "Multifunktions Gemüseschneider",
-      "price": 16.99,
-      "originalPrice": 29.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/Multifunktions Gemüseschneider.jpg",
-      "description": "Vielseitiger Gemüseschneider mit austauschbaren Klingen. Spart Zeit und Mühe beim Kochen.",
-      "sku": "CJCJ170137301AZ",
-      "inStock": true,
-      "shippingTime": "6-11 Werktage",
-      "tags": [
-        "gemüse",
-        "schneider",
-        "küche",
-        "multifunktion"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Küchen Starter",
-          "description": "Schneider + Zubehör",
-          "items": [
-            "Extra Klingen",
-            "Reinigungsbürste"
-          ],
-          "originalPrice": 35,
-          "bundlePrice": 28,
-          "savings": 7
-        },
-        {
-          "id": "bundle2",
-          "name": "Profi Küche",
-          "description": "Professionelles Küchen-Set",
-          "items": [
-            "Extra Klingen",
-            "Reinigungsbürste",
-            "Aufbewahrungsbox"
-          ],
-          "originalPrice": 55,
-          "bundlePrice": 40,
-          "savings": 15
-        }
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 13,
-      "name": "Luft Wasser Flasche mit Pumpe",
-      "price": 24.99,
-      "originalPrice": 34.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/Luft Wasser Flasche mit Pumpe.jpeg",
-      "description": "Innovative Wasserflasche mit integrierter Luftpumpe. Perfekt für Sport, Reisen und den täglichen Gebrauch.",
-      "sku": "ALI1005007209",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "tags": [
-        "wasser",
-        "sport",
-        "pumpe",
-        "flasche"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Sport Bundle",
-          "description": "Flasche + Sport Zubehör",
-          "items": [
-            "Trageschlaufe",
-            "Reinigungsset"
-          ],
-          "originalPrice": 35,
-          "bundlePrice": 30,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Active Lifestyle",
-          "description": "Komplettes Sport-Set",
-          "items": [
-            "Trageschlaufe",
-            "Reinigungsset",
-            "Ersatzventil"
-          ],
-          "originalPrice": 50,
-          "bundlePrice": 40,
-          "savings": 10
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 14,
-      "name": "10-1 Stück Aroma-Pads",
-      "price": 12.99,
-      "originalPrice": 18.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/10-1 Stück Aroma-Pads.jpeg",
-      "description": "Hochwertige Aroma-Pads für Kaffeemaschinen. Wiederverwendbar und umweltfreundlich für perfekten Kaffeegenuss.",
-      "sku": "ALI1005008666",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "tags": [
-        "kaffee",
-        "pads",
-        "wiederverwendbar",
-        "umweltfreundlich"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Kaffee Starter",
-          "description": "Pads + Kaffee Zubehör",
-          "items": [
-            "Reinigungsbürste",
-            "Aufbewahrungsbox"
-          ],
-          "originalPrice": 20,
-          "bundlePrice": 17,
-          "savings": 3
-        },
-        {
-          "id": "bundle2",
-          "name": "Barista Set",
-          "description": "Professionelles Kaffee-Set",
-          "items": [
-            "Reinigungsbürste",
-            "Aufbewahrungsbox",
-            "Premium Kaffeebohnen"
-          ],
-          "originalPrice": 35,
-          "bundlePrice": 25,
-          "savings": 10
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 15,
-      "name": "Drahtlose elektrische tragbare Espressomaschine",
-      "price": 89.99,
-      "originalPrice": 119.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/Drahtlose elektrische tragbare Espressomaschine.jpeg",
-      "description": "Premium tragbare Espressomaschine mit drahtloser Technologie. Perfekter Espresso überall und jederzeit.",
-      "sku": "ALI1005007317",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "tags": [
-        "espresso",
-        "kaffee",
-        "tragbar",
-        "drahtlos"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Espresso Starter",
-          "description": "Maschine + Grundausstattung",
-          "items": [
-            "Reinigungsset",
-            "Ersatzkapseln"
-          ],
-          "originalPrice": 110,
-          "bundlePrice": 99,
-          "savings": 11
-        },
-        {
-          "id": "bundle2",
-          "name": "Barista Professional",
-          "description": "Professionelles Espresso-Set",
-          "items": [
-            "Reinigungsset",
-            "Ersatzkapseln",
-            "Premium Kaffeebohnen",
-            "Milchaufschäumer"
-          ],
-          "originalPrice": 150,
-          "bundlePrice": 125,
-          "savings": 25
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 16,
-      "name": "Elektrische Küchenwaage Digital",
-      "price": 49.99,
-      "originalPrice": 39.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/ware.png",
-      "description": "Präzise digitale Küchenwaage mit LCD-Display. Ideal für genaues Wiegen beim Kochen und Backen.",
-      "sku": "ALI1005007542",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "tags": [
-        "waage",
-        "küche",
-        "digital",
-        "präzise"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Baking Starter",
-          "description": "Waage + Back-Zubehör",
-          "items": [
-            "Messbecher Set",
-            "Rezeptbuch"
-          ],
-          "originalPrice": 40,
-          "bundlePrice": 35,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Master Baker",
-          "description": "Professionelles Back-Set",
-          "items": [
-            "Messbecher Set",
-            "Rezeptbuch",
-            "Silikon Backformen",
-            "Digitaler Timer"
-          ],
-          "originalPrice": 70,
-          "bundlePrice": 55,
-          "savings": 15
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 19,
-      "name": "Elektronisches Distanzmessgerät Digital",
-      "price": 19.99,
-      "originalPrice": 59.99,
-      "category": "Technik/Gadgets",
-      "image": "produkt bilder/Elektronisches Distanzmessgerät Digital.jpg",
-      "description": "Präzises elektronisches Distanzmessgerät mit LCD-Display. Ideal für Handwerker, Architekten und Heimwerker.",
-      "sku": "CJXFLPJY00674-Black",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "tags": [
-        "messen",
-        "werkzeug",
-        "elektronisch",
-        "digital"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Starter Bundle",
-          "description": "Produkt + Grundzubehör",
-          "items": [
-            "Bedienungsanleitung",
-            "Garantiekarte"
-          ],
-          "originalPrice": 49.99,
-          "bundlePrice": 44.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Premium Bundle",
-          "description": "Komplettes Set mit Extras",
-          "items": [
-            "Bedienungsanleitung",
-            "Garantiekarte",
-            "Premium Support"
-          ],
-          "originalPrice": 64.99,
-          "bundlePrice": 54.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 20,
-      "name": "ZigBee Smart DIY Motorisierte Rollos",
-      "price": 89.99,
-      "originalPrice": 129.99,
-      "category": "Technik/Gadgets",
-      "image": "produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg",
-      "description": "Intelligente motorisierte Rollos mit ZigBee-Technologie. Einfache Installation und Smart Home Integration für automatische Lichtsteuerung.",
-      "sku": "ALI1005005801",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "tags": [
-        "smart",
-        "automation"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Starter Bundle",
-          "description": "Produkt + Grundzubehör",
-          "items": [
-            "Bedienungsanleitung",
-            "Garantiekarte"
-          ],
-          "originalPrice": 99.99,
-          "bundlePrice": 94.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Premium Bundle",
-          "description": "Komplettes Set mit Extras",
-          "items": [
-            "Bedienungsanleitung",
-            "Garantiekarte",
-            "Premium Support"
-          ],
-          "originalPrice": 114.99,
-          "bundlePrice": 104.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 24,
-      "name": "COBLED Arbeitsleuchte",
-      "price": 12.99,
-      "originalPrice": 49.99,
-      "category": "Beleuchtung",
-      "image": "produkt bilder/COBLED Arbeitsleuchte.jpeg",
-      "description": "Professionelle COBLED Arbeitsleuchte mit COB LED-Technologie. Ideal für Werkstatt, Garage, Camping und alle Arbeiten die helles, gleichmäßiges Licht benötigen.",
-      "sku": "ALI1005007024",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "features": [
-        "COB LED-Technologie für gleichmäßiges Licht",
-        "Bis zu 1000 Lumen Helligkeit",
-        "Wiederaufladbar über USB",
-        "Magnetische Befestigung und Haken",
-        "Wasserdicht (IP54) für Outdoor-Einsatz"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Work Starter",
-          "description": "Arbeitsleuchte + Ladezubehör",
-          "items": [
-            "USB-Ladekabel",
-            "Bedienungsanleitung"
-          ],
-          "originalPrice": 49.99,
-          "bundlePrice": 39.99,
-          "savings": 10
-        },
-        {
-          "id": "bundle2",
-          "name": "Professional Work",
-          "description": "Komplettes Arbeitsbeleuchtungsset",
-          "items": [
-            "USB-Ladekabel",
-            "Bedienungsanleitung",
-            "Zusätzliche Halterung"
-          ],
-          "originalPrice": 64.99,
-          "bundlePrice": 49.99,
-          "savings": 15
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 25,
-      "name": "Nachtlichter mit Bewegungsmelder",
-      "price": 23.99,
-      "originalPrice": 24.99,
-      "category": "Beleuchtung",
-      "image": "produkt bilder/Nachtlichter mit Bewegungsmelder.jpeg",
-      "description": "Automatische Nachtlichter mit Bewegungsmelder für sicheres Navigieren in der Dunkelheit. Perfekt für Schlafzimmer, Badezimmer, Flure und Kinderzimmer.",
-      "sku": "ALI1005007025",
-      "inStock": true,
-      "features": [
-        "Automatischer Bewegungsmelder",
-        "Warmes, augenschonendes Licht",
-        "Batteriebetrieben - bis zu 12 Monate",
-        "Klebestreifen für einfache Montage",
-        "Kompaktes, unauffälliges Design"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Night Safety",
-          "description": "Nachtlicht + Batterien",
-          "items": [
-            "3x AAA Batterien",
-            "Klebestreifen"
-          ],
-          "originalPrice": 24.99,
-          "bundlePrice": 19.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Night Safety",
-          "description": "Komplettes Nachtbeleuchtungsset",
-          "items": [
-            "3x AAA Batterien",
-            "Klebestreifen",
-            "Zusätzliche Befestigungsoptionen"
-          ],
-          "originalPrice": 34.99,
-          "bundlePrice": 24.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 26,
-      "name": "4 In 1 Self Cleaning Hair Brush",
-      "price": 11.99,
-      "originalPrice": 20.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",
-      "description": "Revolutionäre 4-in-1 selbstreinigende haarbürste mit Anti-Statik-Massage-Funktion. Skalierbar, rotierend und selbstreinigend für perfekte haarpflege.",
-      "sku": "CJ1711943102027542528",
-      "inStock": true,
-      "shippingTime": "7-15 Werktage",
-      "colors": [
-        {
-          "name": "Roland Purple",
-          "code": "#663399",
-          "sku": "CJYD186774301AZ",
-          "price": 11.99,
-          "originalPrice": 20.99,
-          "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg"
-        },
-        {
-          "name": "Lunar Rock",
-          "code": "#708090",
-          "sku": "CJYD186774302BY",
-          "price": 11.99,
-          "originalPrice": 21.99,
-          "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg"
-        }
-      ],
-      "features": [
-        "4-in-1 Multifunktions-Design",
-        "Selbstreinigende Technologie",
-        "Anti-Statik-Massage-Funktion",
-        "Skalierbar und rotierend",
-        "Ergonomischer Griff"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Wellness Starter",
-          "description": "Produkt + Wellness Zubehör",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte"
-          ],
-          "originalPrice": 20.99,
-          "bundlePrice": 15.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Wellness",
-          "description": "Komplettes Wellness-Set",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte",
-            "Premium Support"
-          ],
-          "originalPrice": 35.99,
-          "bundlePrice": 25.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 27,
-      "name": "Volcanic Flame Aroma Essential Oil Diffuser",
-      "price": 28.99,
-      "originalPrice": 49.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg",
-      "description": "USB-betriebener Vulkanflammen-Aromadiffuser mit Quallen-Luftbefeuchter und Nachtlicht. Perfekt für entspannende Atmosphäre und Wellness.",
-      "sku": "CJJT163563001AZ",
-      "inStock": true,
-      "shippingTime": "7-15 Werktage",
-      "tags": [
-        "aromadiffuser",
-        "luftbefeuchter",
-        "nachtlicht",
-        "wellness"
-      ],
-      "features": [
-        "Vulkanflammen-Design für entspannende Atmosphäre",
-        "USB-betrieben für einfache Nutzung",
-        "Quallen-Luftbefeuchter-Funktion",
-        "Integriertes Nachtlicht",
-        "Tragbar und kompakt"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Wellness Starter",
-          "description": "Produkt + Wellness Zubehör",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte"
-          ],
-          "originalPrice": 25.99,
-          "bundlePrice": 20.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Wellness",
-          "description": "Komplettes Wellness-Set",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte",
-            "Premium Support"
-          ],
-          "originalPrice": 40.99,
-          "bundlePrice": 30.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 28,
-      "name": "Mini Muskel Massage Pistole",
-      "price": 24.99,
-      "originalPrice": 44.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Mini Muskel Massage Pistole.jpeg",
-      "description": "Kompakte Mini-Massage-Pistole für Muskelentspannung und Regeneration. Ideal für Sport, Fitness und tägliche Wellness-Routine.",
-      "sku": "ALI1005007060455752",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "tags": [
-        "massage",
-        "muskel",
-        "regeneration",
-        "sport"
-      ],
-      "features": [
-        "Kompaktes Mini-Design",
-        "Verschiedene Massage-Aufsätze",
-        "Einstellbare Geschwindigkeitsstufen",
-        "Wiederaufladbar über USB",
-        "Leise Betriebsgeräusche"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Wellness Starter",
-          "description": "Produkt + Wellness Zubehör",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte"
-          ],
-          "originalPrice": 34.99,
-          "bundlePrice": 29.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Wellness",
-          "description": "Komplettes Wellness-Set",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte",
-            "Premium Support"
-          ],
-          "originalPrice": 49.99,
-          "bundlePrice": 39.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 29,
-      "name": "Haaröl-Applikator Kopfhaut Massager",
-      "price": 8.99,
-      "originalPrice": 16.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Haaröl-Applikator Kopfhaut Massager.jpeg",
-      "description": "Innovativer Haaröl-Applikator mit Kopfhaut-Massage-Funktion. Gleichmäßige Verteilung von Haarölen und entspannende Kopfhautmassage in einem Gerät.",
-      "sku": "ALI1005007010671073",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "tags": [
-        "haaröl",
-        "kopfhaut",
-        "massage",
-        "haarpflege"
-      ],
-      "features": [
-        "Präzise Haaröl-Verteilung",
-        "Integrierte Kopfhautmassage",
-        "Ergonomisches Design",
-        "Einfache Reinigung",
-        "Für alle Haartypen geeignet"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Wellness Starter",
-          "description": "Produkt + Wellness Zubehör",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte"
-          ],
-          "originalPrice": 18.99,
-          "bundlePrice": 13.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Wellness",
-          "description": "Komplettes Wellness-Set",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte",
-            "Premium Support"
-          ],
-          "originalPrice": 33.99,
-          "bundlePrice": 23.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 21,
-      "name": "Led crystal lampe",
-      "price": 18.99,
-      "originalPrice": 59.99,
-      "category": "Beleuchtung",
-      "image": "produkt bilder/Led crystal lampe .jpg",
-      "description": "USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
-      "sku": "CJLED21001",
-      "inStock": true,
-      "shippingTime": "6-11 Werktage",
-      "colors": [
-        {
-          "name": "Krone",
-          "code": "#FFD700",
-          "sku": "CJYD188109101AZ",
-          "price": 18.99,
-          "originalPrice": 59.99,
-          "image": "produkt bilder/Led crystal lampe  bilder/Led crystal Krone .png"
-        },
-        {
-          "name": "Holz boden",
-          "code": "#C0C0C0",
-          "sku": "CJYD188109102BY",
-          "price": 18.99,
-          "originalPrice": 59.99,
-          "image": "produkt bilder/Led crystal lampe  bilder/Led Crystal Holz boden.png"
-        }
-      ],
-      "features": [
-        "USB-betrieben für einfache Nutzung",
-        "Rotierende Projektion für dynamische Effekte",
-        "16 verschiedene Farben verfügbar",
-        "RGB dimmbar für perfekte Atmosphäre",
-        "Kristall-Design für elegante Optik"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Ambient Starter",
-          "description": "Lampe + Grundzubehör",
-          "items": [
-            "USB-Kabel",
-            "Bedienungsanleitung"
-          ],
-          "originalPrice": 49.99,
-          "bundlePrice": 44.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Ambience",
-          "description": "Komplettes Beleuchtungs-Set",
-          "items": [
-            "USB-Kabel",
-            "Bedienungsanleitung",
-            "Fernbedienung"
-          ],
-          "originalPrice": 69.99,
-          "bundlePrice": 54.99,
-          "savings": 15
-        }
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 22,
-      "name": "Waterproof RGB LED Solar Light",
-      "price": 12.99,
-      "originalPrice": 34.99,
-      "category": "Beleuchtung",
-      "image": "produkt bilder/Waterproof RGB LED Solar Light.jpg",
-      "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.",
-      "sku": "CJLE101693101AZ",
-      "inStock": true,
-      "shippingTime": "7-15 Werktage",
-      "showInSlider": true
-    },
-    {
-      "id": 23,
-      "name": "LED Motion Sensor Licht Drahtlose",
-      "price": 19.99,
-      "originalPrice": 29.99,
-      "category": "Beleuchtung",
-      "image": "produkt bilder/LED Motion Sensor Licht Drahtlose.jpeg",
-      "description": "Drahtloses LED Motion Sensor Licht mit Bewegungsmelder. Perfekt für Flure, Treppen, Schränke und andere Bereiche wo automatische Beleuchtung benötigt wird.",
-      "sku": "ALI1005007023",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "features": [
-        "Drahtlos - einfache Installation überall",
-        "Bewegungsmelder mit 3m Reichweite",
-        "Batteriebetrieben - bis zu 6 Monate Laufzeit",
-        "Automatische Ein-/Ausschaltung",
-        "Kompaktes Design für unauffällige Montage"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Motion Starter",
-          "description": "Sensor-Licht + Batterien",
-          "items": [
-            "3x AAA Batterien",
-            "Klebestreifen"
-          ],
-          "originalPrice": 29.99,
-          "bundlePrice": 24.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Smart Home Pack",
-          "description": "Komplettes Sensor-Beleuchtungsset",
-          "items": [
-            "3x AAA Batterien",
-            "Klebestreifen",
-            "Zusätzliche Montageoption"
-          ],
-          "originalPrice": 39.99,
-          "bundlePrice": 29.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 31,
-      "name": "Elektrischer Kopfhaut-Massagekamm",
-      "price": 12.99,
-      "originalPrice": 22.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Elektrischer Kopfhaut-Massagekamm.jpeg",
-      "description": "Elektrischer Kopfhaut-Massagekamm für entspannende Kopfmassage und verbesserte Durchblutung. Fördert Haarwachstum und Entspannung.",
-      "sku": "ALI1005007987737586",
-      "inStock": true,
-      "shippingTime": "10-20 Werktage",
-      "tags": [
-        "kopfhautmassage",
-        "elektrisch",
-        "haarwachstum",
-        "entspannung"
-      ],
-      "features": [
-        "Elektrische Vibrations-Massage",
-        "Fördert die Durchblutung der Kopfhaut",
-        "Unterstützt natürliches Haarwachstum",
-        "Wasserdicht für Duschnutzung",
-        "Ergonomischer Griff"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Wellness Starter",
-          "description": "Produkt + Wellness Zubehör",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte"
-          ],
-          "originalPrice": 22.99,
-          "bundlePrice": 17.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Wellness",
-          "description": "Komplettes Wellness-Set",
-          "items": [
-            "Pflegeanleitung",
-            "Garantiekarte",
-            "Premium Support"
-          ],
-          "originalPrice": 37.99,
-          "bundlePrice": 27.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 17,
-      "name": "Bluetooth Anti-Lost Finder Wassertropfen",
-      "price": 6.99,
-      "originalPrice": 24.99,
-      "category": "Technik/Gadgets",
-      "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg",
-      "description": "Kompakter Bluetooth-Tracker in Wassertropfen-Design. Finden Sie verlorene Gegenstände schnell und einfach über Ihr Smartphone.",
-      "sku": "CJ9FA9912D",
-      "inStock": true,
-      "shippingTime": "8-15 Werktage",
-      "colors": [
-        {
-          "name": "Schwarz",
-          "code": "#2C2C2C",
-          "sku": "CJJSAQJK00001-Black Opp",
-          "price": 6.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png"
-        },
-        {
-          "name": "Weiß",
-          "code": "#F8F8F8",
-          "sku": "CJJSAQJK00001-White Opp",
-          "price": 6.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png"
-        },
-        {
-          "name": "Grün",
-          "code": "#7ED321",
-          "sku": "CJJSAQJK00001-Green Opp",
-          "price": 6.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png"
-        },
-        {
-          "name": "Pink",
-          "code": "#E91E63",
-          "sku": "CJJSAQJK00001-Pink Opp",
-          "price": 6.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png"
-        },
-        {
-          "name": "Gold",
-          "code": "#FFD700",
-          "sku": "CJJSAQJK00001-1PC Gold",
-          "price": 6.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen gold.jpg"
-        },
-        {
-          "name": "Silber",
-          "code": "#C0C0C0",
-          "sku": "CJJSAQJK00001-1PC Silver",
-          "price": 6.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen Silber.jpg"
-        }
-      ],
-      "tags": [
-        "bluetooth",
-        "tracker",
-        "finder"
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 18,
-      "name": "Home Electronic Clock Digitale Uhr",
-      "price": 14.99,
-      "category": "Technik/Gadgets",
-      "image": "produkt bilder/Home Electronic Clock Digitale Uhr.jpg",
-      "description": "Moderne digitale Wanduhr mit LED-Display. Perfekt für Wohnzimmer, Büro oder Küche mit großer, gut lesbarer Anzeige.",
-      "sku": "CJXFZNZN00532-Black USB",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "tags": [
-        "uhr",
-        "digital",
-        "led"
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 32,
-      "name": "Indoor Sensing Wall Lamp",
-      "price": 17.99,
-      "originalPrice": 39.99,
-      "category": "Beleuchtung",
-      "image": "produkt bilder/Indoor Sensing Wall Lamp.jpg",
-      "description": "USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt für Flure, Treppen und Schränke mit automatischer Ein-/Ausschaltung bei Bewegung.",
-      "sku": "CJ1373821404948074496",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "colors": [
-        {
-          "name": "Schwarz",
-          "code": "#000000",
-          "sku": "CJSN105028901AZ",
-          "price": 17.99,
-          "originalPrice": 39.99,
-          "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwarz.jpg"
-        },
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJSN105028907GT",
-          "price": 17.99,
-          "originalPrice": 39.99,
-          "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg"
-        }
-      ],
-      "features": [
-        "USB-aufladbar für kabellose Nutzung",
-        "Bewegungssensor mit automatischer Aktivierung",
-        "Verschiedene Größen verfügbar (14x6cm, 22x11cm, 29x11cm)",
-        "Weiß- und Warmlicht-Modi",
-        "Einfache Wandmontage ohne Verkabelung"
-      ],
-      "tags": [
-        "wandlampe",
-        "bewegungsmelder",
-        "usb",
-        "sensor",
-        "beleuchtung",
-        "automatisch"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Smart Light Starter",
-          "description": "Wandlampe + Grundzubehör",
-          "items": [
-            "USB-Ladekabel",
-            "Montagezubehör"
-          ],
-          "originalPrice": 39.99,
-          "bundlePrice": 34.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Smart Lighting",
-          "description": "Komplettes Smart-Beleuchtungsset",
-          "items": [
-            "USB-Ladekabel",
-            "Montagezubehör",
-            "Bedienungsanleitung"
-          ],
-          "originalPrice": 54.99,
-          "bundlePrice": 44.99,
-          "savings": 10
-        }
-      ]
-    },
-    {
-      "id": 33,
-      "name": "Aromatherapy Essential Oil Humidifier",
-      "price": 8.99,
-      "originalPrice": 14.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Aromatherapy essential oil humidifier.jpg",
-      "description": "Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.",
-      "sku": "CJ09477003744E498990DA",
-      "inStock": true,
-      "shippingTime": "7-15 Werktage",
-      "showInSlider": true,
-      "colors": [
-        {
-          "name": "Cherry Blossoms",
-          "code": "#FFB6C1",
-          "sku": "CJBJPFJY00081-Cherry blossoms",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg"
-        },
-        {
-          "name": "Green Tea",
-          "code": "#90EE90",
-          "sku": "CJBJPFJY00081-Green Tea",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg"
-        },
-        {
-          "name": "Jasmine",
-          "code": "#F8F8FF",
-          "sku": "CJBJPFJY00081-Jasmine",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier jasmine.jpg"
-        },
-        {
-          "name": "Lavender",
-          "code": "#E6E6FA",
-          "sku": "CJBJPFJY00081-Lavender",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lavender.jpg"
-        },
-        {
-          "name": "Lemon",
-          "code": "#FFFF99",
-          "sku": "CJBJPFJY00081-Lemon",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lemon.jpg"
-        },
-        {
-          "name": "Lily",
-          "code": "#87CEEB",
-          "sku": "CJBJPFJY00081-Lily",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lily.jpg"
-        },
-        {
-          "name": "Ocean",
-          "code": "#FF69B4",
-          "sku": "CJBJPFJY00081-Ocean",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier ocean.jpg"
-        },
-        {
-          "name": "Rose",
-          "code": "#D2B48C",
-          "sku": "CJBJPFJY00081-Rose",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier rose.jpg"
-        },
-        {
-          "name": "Sandalwood",
-          "code": "#F5DEB3",
-          "sku": "CJBJPFJY00081-Sandalwood",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sandalwood.jpg"
-        },
-        {
-          "name": "Sweet",
-          "code": "#F5DEB3",
-          "sku": "CJBJPFJY00081-Sweet",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sweet.jpg"
-        },
-        {
-          "name": "Vanilla",
-          "code": "#FFF8DC",
-          "sku": "CJBJPFJY00081-Vanilla",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier vanilla.jpg"
-        },
-        {
-          "name": "Violet",
-          "code": "#8A2BE2",
-          "sku": "CJBJPFJY00081-violet",
-          "price": 8.99,
-          "originalPrice": 14.99,
-          "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier violet.jpg"
-        }
-      ],
-      "features": [
-        "12 verschiedene Aromatherapy-Düfte verfügbar",
-        "Ultraschall-Technologie für feine Nebel-Verteilung",
-        "LED-Beleuchtung mit verschiedenen Farben",
-        "Automatische Abschaltung bei niedrigem Wasserstand",
-        "Leiser Betrieb für Schlafzimmer geeignet",
-        "300ml Wassertank für bis zu 10 Stunden Betrieb"
-      ],
-      "tags": [
-        "aromatherapy",
-        "humidifier",
-        "wellness",
-        "entspannung",
-        "duft",
-        "luftbefeuchter",
-        "essential oil"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Wellness Starter",
-          "description": "Humidifier + 3 Duftöle",
-          "items": [
-            "Aromatherapy Humidifier",
-            "3 Essential Oil Samples",
-            "Bedienungsanleitung"
-          ],
-          "originalPrice": 79.99,
-          "bundlePrice": 59.99,
-          "savings": 20
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Aromatherapy Set",
-          "description": "Komplettes Wellness-Paket",
-          "items": [
-            "Aromatherapy Humidifier",
-            "5 Essential Oil Samples",
-            "Reinigungsset",
-            "Bedienungsanleitung"
-          ],
-          "originalPrice": 119.99,
-          "bundlePrice": 89.99,
-          "savings": 30
-        }
-      ]
-    },
-    {
-      "id": 34,
-      "name": "Moisturizing Face Steamer",
-      "price": 19.99,
-      "originalPrice": 24.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Moisturizing Face Steamer.jpg",
-      "description": "Ein 2-in-1-Gesichts- und Augendampfer mit Nano-Zerstäubungstechnologie. Spendet effektiv Feuchtigkeit, lindert trockene Haut und reduziert die Ermüdung der Augen. Klein, tragbar und über USB aufladbar - perfekt für die Hautpflege unterwegs.",
-      "sku": "CJMB1545970",
-      "inStock": true,
-      "shippingTime": "7-15 Werktage",
-      "showInSlider": true,
-      "colors": [
-        {
-          "name": "Blau",
-          "code": "#A0C4FF",
-          "sku": "CJMB154597002BY",
-          "price": 19.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer blau.jpg"
-        },
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJMB154597001AZ",
-          "price": 19.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer weiß.jpg"
-        }
-      ],
-      "tags": [
-        "face steamer",
-        "moisturizer",
-        "wellness",
-        "hautpflege",
-        "beauty"
-      ]
-    },
-    {
-      "id": 35,
-      "name": "Thermal Neck Lifting And Tighten Massager",
-      "price": 16.99,
-      "originalPrice": 29.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg",
-      "description": "Ein EMS Thermal Neck Lifting und Tighten Massager, der mit elektrischem Mikrostrom Falten entfernt und die Haut strafft. Ideal für eine entspannende und verjüngende Nackenmassage.",
-      "sku": "CJYD1887254",
-      "inStock": true,
-      "shippingTime": "7-15 Werktage",
-      "showInSlider": false,
-      "colors": [
-        {
-          "name": "Schwarz",
-          "code": "#000000",
-          "sku": "CJYD188725403CX",
-          "price": 16.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager schwarz.jpg"
-        },
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJYD188725404DW",
-          "price": 16.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager weiß.jpg"
-        }
-      ],
-      "tags": [
-        "neck massager",
-        "wellness",
-        "hautpflege",
-        "faltenentferner",
-        "ems"
-      ]
-    },
-    {
-      "id": 36,
-      "name": "Cleaning Blackhead Instrument",
-      "price": 17.99,
-      "originalPrice": 22.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Cleaning Blackhead Instrument.jpg",
-      "description": "Elektrisches Mitesser-Entferner-Instrument mit Saugfunktion zur Gesichtsreinigung. Entfernt effektiv Akne und Mitesser für eine reinere Haut.",
-      "sku": "CJBJMRDD00019-White",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "showInSlider": false,
-      "tags": [
-        "blackhead remover",
-        "hautpflege",
-        "gesichtsreinigung",
-        "wellness"
-      ]
-    },
-    {
-      "id": 37,
-      "name": "Professional 5 In 1 Hair Dryer",
-      "price": 39.99,
-      "originalPrice": 69.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Professional 5 In 1 Hair Dryer.jpg",
-      "description": "Professioneller 5-in-1 Haartrockner mit Bürste, Glätter und Lockenwickler. Elektrisches Haarstyling-Tool für alle Haartypen.",
-      "sku": "CJTF141037804DW",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "showInSlider": true,
-      "tags": [
-        "hair dryer",
-        "haarstyling",
-        "föhn",
-        "wellness",
-        "beauty"
-      ]
-    },
-    {
-      "id": 38,
-      "name": "Jade Massager",
-      "price": 10.99,
-      "originalPrice": 24.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Jade Massager.jpg",
-      "description": "Natürlicher Jade-Massager und Gua Sha Stein zur Förderung der Durchblutung, Reduzierung von Schwellungen und zur Entspannung der Gesichtsmuskulatur. Ideal für die tägliche Hautpflege-Routine.",
-      "sku": "CJPF1011351",
-      "inStock": true,
-      "shippingTime": "6-11 Werktage",
-      "showInSlider": true,
-      "colors": [
-        {
-          "name": "Schwarz",
-          "code": "#000000",
-          "sku": "CJPF101135114NM",
-          "price": 10.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Jade Massager bilder/Jade Massager schwarz.jpg"
-        },
-        {
-          "name": "Grün",
-          "code": "#008000",
-          "sku": "CJPF101135122VE",
-          "price": 10.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Jade Massager bilder/Jade Massager grün.jpg"
-        },
-        {
-          "name": "Hellgrün",
-          "code": "#90EE90",
-          "sku": "CJPF101135120TG",
-          "price": 10.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Jade Massager bilder/Jade Massager hell grün.jpg"
-        },
-        {
-          "name": "Pink",
-          "code": "#FFC0CB",
-          "sku": "CJPF101135116PK",
-          "price": 10.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Jade Massager bilder/Jade Massager pink.jpg"
-        },
-        {
-          "name": "Lila",
-          "code": "#800080",
-          "sku": "CJPF101135118RI",
-          "price": 10.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Jade Massager bilder/Jade Massager lila.jpg"
-        },
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJPF101135124XC",
-          "price": 10.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Jade Massager bilder/Jade Massager weiß.jpg"
-        },
-        {
-          "name": "Gelb",
-          "code": "#FFFF00",
-          "sku": "CJPF101135127AZ",
-          "price": 10.99,
-          "originalPrice": 24.99,
-          "image": "produkt bilder/Jade Massager bilder/Jade Massager gelb.jpg"
-        }
-      ],
-      "tags": [
-        "jade",
-        "massager",
-        "gua sha",
-        "wellness",
-        "hautpflege"
-      ]
-    },
-    {
-      "id": 39,
-      "name": "Electric Guasha Massager",
-      "price": 32.99,
-      "originalPrice": 49.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/Electric Guasha Massager.jpg",
-      "description": "Elektrisches Guasha-Massagegerät mit EMS-Mikrostrom, Heiß- und Kalt-Modus sowie 3-Farben-Lichttherapie zur Hautstraffung, Faltenreduzierung und Förderung der Aufnahme von Hautpflegeprodukten.",
-      "sku": "CJPF203924202BY",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "showInSlider": false,
-      "tags": [
-        "guasha",
-        "ems",
-        "face lifting",
-        "hautpflege",
-        "wellness"
-      ]
-    },
-    {
-      "id": 40,
-      "name": "Mug Warmer Pad",
-      "price": 19.99,
-      "originalPrice": 29.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/Mug Warmer Pad.jpg",
-      "description": "Halten Sie Ihr Getränk mit diesem intelligenten Tassenwärmer-Untersetzer konstant auf der perfekten Temperatur. Ideal für Kaffee, Tee oder Kakao am Schreibtisch oder zu Hause.",
-      "sku": "CJJT1723382",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "showInSlider": true,
-      "colors": [
-        {
-          "name": "Pink",
-          "code": "#FFC0CB",
-          "sku": "CJJT172338202BY",
-          "price": 19.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad pink.jpg"
-        },
-        {
-          "name": "Grün",
-          "code": "#008000",
-          "sku": "CJJT172338203CX",
-          "price": 19.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad grün.jpg"
-        },
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJJT172338201AZ",
-          "price": 19.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad weiß.jpg"
-        }
-      ],
-      "tags": [
-        "mug warmer",
-        "tassenwärmer",
-        "kaffee",
-        "tee",
-        "haushalt"
-      ]
-    },
-    {
-      "id": 41,
-      "name": "2 In 1 Oil Sprayer Bottle",
-      "price": 18.99,
-      "originalPrice": 24.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/2 In 1 Oil Sprayer Bottle.jpg",
-      "description": "Praktische 2-in-1-Ölsprühflasche für die Küche. Perfekt zum Kochen, Grillen und für Salate. Ermöglicht einfaches Sprühen und Ausgießen von Öl und Essig.",
-      "sku": "CJYD187611401AZ",
-      "inStock": true,
-      "shippingTime": "6-11 Werktage",
-      "tags": [
-        "öl",
-        "sprayer",
-        "küche",
-        "kochen",
-        "grillen"
-      ],
-      "features": [
-        "2-in-1-Funktion: Sprühen und Ausgießen",
-        "Geeignet für Öl, Essig und andere Flüssigkeiten",
-        "Einfach zu befüllen und zu reinigen",
-        "Gleichmäßiges Sprühen für gesünderes Kochen",
-        "Modernes Design für jede Küche"
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 42,
-      "name": "RGB Flame Aroma Diffuser Volcano",
-      "price": 29.99,
-      "originalPrice": 49.99,
-      "category": "Körperpflege/Wellness",
-      "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano.jpg",
-      "description": "Innovativer RGB Flame Aroma Diffuser mit realistischem 3D-Vulkan-Flammeneffekt. 130ml Kapazität mit bunter LED-Beleuchtung für entspannende Aromatherapie und stimmungsvolle Beleuchtung.",
-      "sku": "CJJD1582742",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "colors": [
-        {
-          "name": "Schwarz",
-          "code": "#2C2C2C",
-          "sku": "CJJD1582742-Black",
-          "price": 29.99,
-          "originalPrice": 49.99,
-          "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano bilder/RGB Flame Aroma Diffuser Volcano schwarz.jpg"
-        },
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJJD1582742-White",
-          "price": 29.99,
-          "originalPrice": 49.99,
-          "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano bilder/RGB Flame Aroma Diffuser Volcano weiß.jpg"
-        }
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Wellness Starter",
-          "description": "Diffuser + Aromatherapie Grundausstattung",
-          "items": [
-            "Ätherische Öle Set (3x 10ml)",
-            "Reinigungsset"
-          ],
-          "originalPrice": 45,
-          "bundlePrice": 39,
-          "savings": 6
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Aromatherapy",
-          "description": "Komplettes Aromatherapie-Set",
-          "items": [
-            "Ätherische Öle Set (6x 10ml)",
-            "Reinigungsset",
-            "Aromatherapie Ratgeber"
-          ],
-          "originalPrice": 65,
-          "bundlePrice": 55,
-          "savings": 10
-        }
-      ],
-      "tags": [
-        "aroma diffuser",
-        "rgb beleuchtung",
-        "vulkan effekt",
-        "aromatherapie",
-        "wellness",
-        "entspannung",
-        "luftbefeuchter"
-      ],
-      "features": [
-        "3D Vulkan-Flammeneffekt mit RGB-Beleuchtung",
-        "130ml Wassertank für bis zu 6 Stunden Betrieb",
-        "Ultraschall-Vernebelungstechnologie",
-        "7 verschiedene LED-Farbmodi",
-        "Automatische Abschaltung bei leerem Tank",
-        "Whisper-leise Technologie",
-        "Perfekt für Schlafzimmer, Wohnzimmer und Büro"
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 43,
-      "name": "Portable Mini Thermal Label Printer",
-      "price": 21.99,
-      "originalPrice": 59.99,
-      "category": "Technik/Gadgets",
-      "image": "produkt bilder/Portable Mini Thermal Label Printer.jpg",
-      "description": "Tragbarer Mini-Thermodrucker für Etiketten, Fotos und Notizen. Bluetooth-kompatibel mit verschiedenen Papierrollen und Farben verfügbar.",
-      "sku": "CJJT1365880",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "colors": [
-        {
-          "name": "Grün",
-          "code": "#008000",
-          "sku": "CJJT136588021UF",
-          "price": 21.99,
-          "originalPrice": 59.99,
-          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer grün.jpg"
-        },
-        {
-          "name": "Blau",
-          "code": "#0066CC",
-          "sku": "CJJT136588022VE",
-          "price": 21.99,
-          "originalPrice": 59.99,
-          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer blau.jpg"
-        },
-        {
-          "name": "Pink",
-          "code": "#FFC0CB",
-          "sku": "CJJT136588034HS",
-          "price": 21.99,
-          "originalPrice": 59.99,
-          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer pink.jpg"
-        },
-        {
-          "name": "Gelb",
-          "code": "#FFD700",
-          "sku": "CJJT136588024XC",
-          "price": 21.99,
-          "originalPrice": 59.99,
-          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer gelb.jpg"
-        },
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJJT136588038LO",
-          "price": 21.99,
-          "originalPrice": 59.99,
-          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer weiß.jpg"
-        },
-        {
-          "name": "Style A Rollen",
-          "code": "#FFE4B5",
-          "sku": "CJJT136588011KP",
-          "price": 3.99,
-          "originalPrice": 18.99,
-          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen A.jpg"
-        },
-        {
-          "name": "Style B Rollen",
-          "code": "#E6E6FA",
-          "sku": "CJJT136588012LO",
-          "price": 3.99,
-          "originalPrice": 18.99,
-          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen B.jpg"
-        },
-        {
-          "name": "Style C Rollen",
-          "code": "#F0F8FF",
-          "sku": "CJJT136588013MN",
-          "price": 3.99,
-          "originalPrice": 18.99,
-          "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen C.jpg"
-        }
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Starter Set",
-          "description": "Drucker + Papierrollen Style A",
-          "items": [
-            "Papierrollen Style A (3 Rollen)",
-            "USB-Kabel"
-          ],
-          "originalPrice": 55,
-          "bundlePrice": 49,
-          "savings": 6
-        },
-        {
-          "id": "bundle2",
-          "name": "Complete Print Kit",
-          "description": "Drucker + alle Papierrollen-Styles",
-          "items": [
-            "Papierrollen Style A (3 Rollen)",
-            "Papierrollen Style B (3 Rollen)",
-            "Papierrollen Style C (3 Rollen)",
-            "USB-Kabel",
-            "Tragetasche"
-          ],
-          "originalPrice": 85,
-          "bundlePrice": 69,
-          "savings": 16
-        }
-      ],
-      "tags": [
-        "thermal printer",
-        "label printer",
-        "bluetooth",
-        "portable",
-        "mini printer",
-        "photo printer",
-        "gadget"
-      ],
-      "features": [
-        "Bluetooth-kompatibel",
-        "Tragbares Design",
-        "Verschiedene Papierrollen verfügbar",
-        "Für Etiketten, Fotos und Notizen",
-        "Einfache App-Steuerung",
-        "Wiederaufladbar",
-        "Kompakt und leicht"
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 44,
-      "name": "Portable Projector For Home",
-      "price": 149.99,
-      "originalPrice": 199.99,
-      "category": "Technik/Gadgets",
-      "image": "produkt bilder/Portable Projector For Home.jpg",
-      "description": "Kompakter tragbarer Projektor für den Heimgebrauch mit 180° Projektionswinkel und automatischem Fokus. Perfekt für Filme, Präsentationen und Gaming.",
-      "sku": "CJYD1808029",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "colors": [
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJYD1808029",
-          "price": 149.99,
-          "originalPrice": 199.99,
-          "image": "produkt bilder/Portable Projector For Home bilder/Portable Projector For Home weiß.jpg"
-        },
-        {
-          "name": "Silber",
-          "code": "#C0C0C0",
-          "sku": "CJYD180802918RI",
-          "price": 159.99,
-          "originalPrice": 209.99,
-          "image": "produkt bilder/Portable Projector For Home bilder/Portable Projector For Home silber.jpg"
-        }
-      ],
-      "tags": [
-        "Projektor",
-        "Heimkino",
-        "Tragbar",
-        "180° Winkel",
-        "Automatischer Fokus",
-        "HD Qualität",
-        "Kompakt",
-        "Multimedia"
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 45,
-      "name": "Air Conditioner",
-      "price": 15.99,
-      "originalPrice": 29.99,
-      "category": "Technik/Gadgets",
-      "image": "produkt bilder/Air Conditioner.jpg",
-      "description": "Tragbare Klimaanlage mit Wasserkühlung für Räume, Büros und Autos. Effiziente Luftkühlung mit integriertem Ventilator und Wassertank.",
-      "sku": "CJYD177061601AZ",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "tags": [
-        "Klimaanlage",
-        "Luftkühler",
-        "Tragbar",
-        "Wasserkühlung",
-        "Ventilator",
-        "Büro",
-        "Auto",
-        "Energiesparend"
-      ],
-      "showInSlider": false
-    },
-    {
-      "id": 46,
-      "name": "Nordic Crystal Lamp",
-      "price": 24.99,
-      "originalPrice": 39.99,
-      "category": "Beleuchtung",
-      "image": "produkt bilder/Nordic Crystal Lamp.jpg",
-      "description": "Elegante nordische Kristalllampe mit USB-Anschluss und Touch-Dimming. Perfekte Atmosphärenbeleuchtung für Schlafzimmer mit Diamant-Nachtlicht-Effekt.",
-      "sku": "CJJT122932909IR",
-      "inStock": true,
-      "shippingTime": "7-13 Werktage",
-      "colors": [
-        {
-          "name": "Schwarz",
-          "code": "#000000",
-          "sku": "CJJT122932909IR",
-          "price": 24.99,
-          "originalPrice": 39.99,
-          "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp schwarz.jpg"
-        },
-        {
-          "name": "Weiß",
-          "code": "#FFFFFF",
-          "sku": "CJJT122932910JQ",
-          "price": 24.99,
-          "originalPrice": 39.99,
-          "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp weiß.jpg"
-        },
-        {
-          "name": "Gelb",
-          "code": "#FFD700",
-          "sku": "CJJT122932915OL",
-          "price": 24.99,
-          "originalPrice": 39.99,
-          "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp gelb.jpg"
-        }
-      ],
-      "tags": [
-        "Kristalllampe",
-        "USB Lampe",
-        "Touch Dimming",
-        "Nachtlicht",
-        "Atmosphäre",
-        "Schlafzimmer",
-        "Diamant Effekt",
-        "Nordisch"
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 47,
-      "name": "40 Oz Tumbler With Handle Straw Insulated",
-      "price": 19.99,
-      "originalPrice": 34.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated .jpg",
-      "description": "Isolierter 40 Oz Tumbler mit Griff und Strohhalm. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
-      "sku": "CJJT165633304DW",
-      "inStock": true,
-      "shippingTime": "6-11 Werktage",
-      "colors": [
-        {
-          "name": "Schwarz",
-          "code": "#000000",
-          "sku": "CJJT165633304DW",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated schwarz.jpg"
-        },
-        {
-          "name": "Cream Weiß",
-          "code": "#FFF8DC",
-          "sku": "CJJT165633305EV",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated cream white.jpg"
-        },
-        {
-          "name": "Hell Blau",
-          "code": "#87CEEB",
-          "sku": "CJJT165633399UF",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated hell blau.jpg"
-        },
-        {
-          "name": "Bay Leaves",
-          "code": "#8FBC8F",
-          "sku": "CJJT165633312LO",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated bay leaves.jpg"
-        },
-        {
-          "name": "Red Rust",
-          "code": "#B7410E",
-          "sku": "CJJT165633311KP",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated red rust.jpg"
-        },
-        {
-          "name": "Pink Love B",
-          "code": "#FFB6C1",
-          "sku": "CJJT165633336JQ",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated pink love b.jpg"
-        },
-        {
-          "name": "Peony Color",
-          "code": "#DA70D6",
-          "sku": "CJJT1656333101WD",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated peony color.jpg"
-        },
-        {
-          "name": "Hell Lila",
-          "code": "#DDA0DD",
-          "sku": "CJJT165633389KP",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated hell lila.jpg"
-        },
-        {
-          "name": "Storm Sea",
-          "code": "#4682B4",
-          "sku": "CJJT165633310JQ",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated storm sea.jpg"
-        },
-        {
-          "name": "Straw",
-          "code": "#F5DEB3",
-          "sku": "CJJT165633324XC",
-          "price": 2.00,
-          "originalPrice": 2.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated straw.jpg"
-        },
-        {
-          "name": "Thermal Sublimation",
-          "code": "#FF69B4",
-          "sku": "CJJT165633302BY",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated thermal sublimation.jpg"
-        }
-      ],
-      "tags": [
-        "Tumbler",
-        "Isoliert",
-        "40 Oz",
-        "Strohhalm",
-        "Griff",
-        "BPA-frei",
-        "Spülmaschinenfest",
-        "Thermobecher",
-        "Küche",
-        "Getränke"
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 48,
-      "name": "40 Oz Tumbler With Handle Straw Insulated Winter",
-      "price": 19.99,
-      "originalPrice": 34.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter.jpg",
-      "description": "Isolierter 40 Oz Winter Tumbler mit Griff und Strohhalm in festlichen Weihnachtsfarben. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
-      "sku": "CJJT165633330DW",
-      "inStock": true,
-      "shippingTime": "6-11 Werktage",
-      "colors": [
-        {
-          "name": "Christmas Red",
-          "code": "#DC143C",
-          "sku": "CJJT165633330DW",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter bilder/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red.jpg"
-        },
-        {
-          "name": "Christmas Red B",
-          "code": "#B22222",
-          "sku": "CJJT165633331EV",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter bilder/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red B.jpg"
-        }
-      ],
-      "tags": [
-        "Tumbler",
-        "Isoliert",
-        "40 Oz",
-        "Strohhalm",
-        "Griff",
-        "BPA-frei",
-        "Spülmaschinenfest",
-        "Winter",
-        "Weihnachten",
-        "Christmas",
-        "Thermobecher",
-        "Küche",
-        "Getränke"
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 49,
-      "name": "40 Oz Tumbler With Handle Straw Insulated Halloween",
-      "price": 19.99,
-      "originalPrice": 34.99,
-      "category": "Haushalt und Küche",
-      "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg",
-      "description": "Isolierter 40 Oz Halloween Tumbler mit Griff und Strohhalm in gruseligen Halloween-Farben. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
-      "sku": "CJJT165633329CX",
-      "inStock": true,
-      "shippingTime": "6-11 Werktage",
-      "colors": [
-        {
-          "name": "Halloween Cream Black",
-          "code": "#2F2F2F",
-          "sku": "CJJT165633329CX",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Cream Black.jpg"
-        },
-        {
-          "name": "Halloween Cream White",
-          "code": "#F5F5DC",
-          "sku": "CJJT165633327AZ",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White.jpg"
-        },
-        {
-          "name": "Halloween Cream White B",
-          "code": "#FFFAF0",
-          "sku": "CJJT165633328BY",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White B.jpg"
-        },
-        {
-          "name": "Halloween Dark Blue",
-          "code": "#191970",
-          "sku": "CJJT165633326ZA",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue.jpg"
-        },
-        {
-          "name": "Halloween Dark Blue B",
-          "code": "#000080",
-          "sku": "CJJT165633325YB",
-          "price": 19.99,
-          "originalPrice": 34.99,
-          "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue B.jpg"
-        }
-      ],
-      "tags": [
-        "Tumbler",
-        "Isoliert",
-        "40 Oz",
-        "Strohhalm",
-        "Griff",
-        "BPA-frei",
-        "Spülmaschinenfest",
-        "Halloween",
-        "Gruselig",
-        "Thermobecher",
-        "Küche",
-        "Getränke"
-      ],
-      "showInSlider": true
-    },
-    {
-      "id": 50,
-      "name": "Luminous Crystal Ball",
-      "price": 15.99,
-      "originalPrice": 29.99,
-      "category": "Beleuchtung",
-      "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball.jpg",
-      "description": "Leuchtende Kristallkugel mit verschiedenen Motiven - Sternenhimmel, Planeten, Mond und mehr. Perfekte Dekoration für Zuhause oder als Geschenk.",
-      "sku": "CJJT153840401AZ",
-      "inStock": true,
-      "shippingTime": "7-15 Werktage",
-      "colors": [
-        {
-          "name": "Ferris Wheel",
-          "code": "#FFB6C1",
-          "sku": "CJJT153840405EV",
-          "price": 15.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Ferris Wheel.jpg"
-        },
-        {
-          "name": "Newt",
-          "code": "#98D8C8",
-          "sku": "CJJT153840435IR",
-          "price": 15.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Newt.jpg"
-        },
-        {
-          "name": "Moon",
-          "code": "#F4E4C1",
-          "sku": "CJJT153840404DW",
-          "price": 15.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Moon.jpg"
-        },
-        {
-          "name": "Saturn",
-          "code": "#E6B87E",
-          "sku": "CJJT153840412LO",
-          "price": 15.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Saturn.jpg"
-        },
-        {
-          "name": "Smooth sailing",
-          "code": "#87CEEB",
-          "sku": "CJJT153840418RI",
-          "price": 15.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Smooth sailing.jpg"
-        },
-        {
-          "name": "Snowman",
-          "code": "#FFFFFF",
-          "sku": "CJJT153840433GT",
-          "price": 15.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Snowman.jpg"
-        },
-        {
-          "name": "Through the starry",
-          "code": "#4B0082",
-          "sku": "CJJT153840408HS",
-          "price": 15.99,
-          "originalPrice": 29.99,
-          "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Through the starry.jpg"
-        }
-      ],
-      "tags": [
-        "kristallkugel",
-        "leuchtend",
-        "dekoration",
-        "geschenk",
-        "sternenhimmel"
-      ],
-      "features": [
-        "Leuchtende Kristallkugel",
-        "7 verschiedene Motive",
-        "Perfekte Dekoration",
-        "Ideal als Geschenk",
-        "Hochwertige Verarbeitung"
-      ],
-      "bundles": [
-        {
-          "id": "bundle1",
-          "name": "Crystal Starter",
-          "description": "Kristallkugel + Basis",
-          "items": [
-            "LED-Basis",
-            "USB-Kabel"
-          ],
-          "originalPrice": 24.99,
-          "bundlePrice": 19.99,
-          "savings": 5
-        },
-        {
-          "id": "bundle2",
-          "name": "Crystal Premium",
-          "description": "Komplettes Deko-Set",
-          "items": [
-            "LED-Basis",
-            "USB-Kabel",
-            "Geschenkbox"
-          ],
-          "originalPrice": 34.99,
-          "bundlePrice": 24.99,
-          "savings": 10
-        }
-      ],
-      "showInSlider": true
-    }
-  ]
+  {
+    "id": 10,
+    "name": "Elektrischer Wasserspender für Schreibtisch",
+    "price": 28.99,
+    "originalPrice": 69.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
+    "description": "Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.",
+    "sku": "CJ1621032671155597312",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#2C2C2C",
+        "sku": "CJHS167415803CX",
+        "price": 28.99,
+        "originalPrice": 69.99,
+        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJHS167415802BY",
+        "price": 28.99,
+        "originalPrice": 69.99,
+        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Büro Bundle",
+        "description": "Wasserspender + Bürozubehör",
+        "items": ["Ersatzpumpe", "Reinigungsset"],
+        "originalPrice": 75,
+        "bundlePrice": 65,
+        "savings": 10
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Hydration",
+        "description": "Komplettes Hydration-Set",
+        "items": ["Ersatzpumpe", "Reinigungsset", "Wasserfilterset"],
+        "originalPrice": 120,
+        "bundlePrice": 89,
+        "savings": 31
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "350ml Elektrischer Mixer Entsafter",
+    "price": 32.99,
+    "originalPrice": 49.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
+    "description": "Kompakter elektrischer Mixer und Entsafter. Perfekt für Smoothies und frische Säfte unterwegs.",
+    "sku": "CJ1621032671155597313",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "colors": [
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJD112318801AZ",
+        "price": 32.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg"
+      },
+      {
+        "name": "Rosa",
+        "code": "#FFC0CB",
+        "sku": "CJJD112318812LO",
+        "price": 32.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png"
+      },
+      {
+        "name": "Blau",
+        "code": "#4A90E2",
+        "sku": "CJJD112318814NM",
+        "price": 32.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Blau.jpg"
+      }
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Smoothie Starter",
+        "description": "Mixer + Zubehör",
+        "items": ["Ersatzbecher", "Reinigungsbürste"],
+        "originalPrice": 35,
+        "bundlePrice": 29,
+        "savings": 6
+      },
+      {
+        "id": "bundle2",
+        "name": "Fitness Bundle",
+        "description": "Komplettes Smoothie-Set",
+        "items": ["2x Ersatzbecher", "Reinigungsbürste", "Rezeptbuch"],
+        "originalPrice": 60,
+        "bundlePrice": 45,
+        "savings": 15
+      },
+      {
+        "id": "bundle3",
+        "name": "Family Pack",
+        "description": "Alles für die Familie",
+        "items": [
+          "3x Ersatzbecher",
+          "2x Reinigungsbürste",
+          "Rezeptbuch",
+          "Transporttasche"
+        ],
+        "originalPrice": 85,
+        "bundlePrice": 59,
+        "savings": 26
+      },
+      {
+        "id": "bundle4",
+        "name": "Professional Set",
+        "description": "Für tägliche Nutzung",
+        "items": [
+          "4x Ersatzbecher",
+          "3x Reinigungsbürste",
+          "Rezeptbuch",
+          "Transporttasche",
+          "Ersatzklingen"
+        ],
+        "originalPrice": 120,
+        "bundlePrice": 79,
+        "savings": 41
+      }
+    ],
+    "tags": [
+      "mixer",
+      "entsafter",
+      "smoothie",
+      "350ml",
+      "elektrisch",
+      "tragbar"
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 12,
+    "name": "Multifunktions Gemüseschneider",
+    "price": 16.99,
+    "originalPrice": 29.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Multifunktions Gemüseschneider.jpg",
+    "description": "Vielseitiger Gemüseschneider mit austauschbaren Klingen. Spart Zeit und Mühe beim Kochen.",
+    "sku": "CJCJ170137301AZ",
+    "inStock": true,
+    "shippingTime": "6-11 Werktage",
+    "tags": ["gemüse", "schneider", "küche", "multifunktion"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Küchen Starter",
+        "description": "Schneider + Zubehör",
+        "items": ["Extra Klingen", "Reinigungsbürste"],
+        "originalPrice": 35,
+        "bundlePrice": 28,
+        "savings": 7
+      },
+      {
+        "id": "bundle2",
+        "name": "Profi Küche",
+        "description": "Professionelles Küchen-Set",
+        "items": ["Extra Klingen", "Reinigungsbürste", "Aufbewahrungsbox"],
+        "originalPrice": 55,
+        "bundlePrice": 40,
+        "savings": 15
+      }
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 13,
+    "name": "Luft Wasser Flasche mit Pumpe",
+    "price": 24.99,
+    "originalPrice": 34.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Luft Wasser Flasche mit Pumpe.jpeg",
+    "description": "Innovative Wasserflasche mit integrierter Luftpumpe. Perfekt für Sport, Reisen und den täglichen Gebrauch.",
+    "sku": "ALI1005007209",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["wasser", "sport", "pumpe", "flasche"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Sport Bundle",
+        "description": "Flasche + Sport Zubehör",
+        "items": ["Trageschlaufe", "Reinigungsset"],
+        "originalPrice": 35,
+        "bundlePrice": 30,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Active Lifestyle",
+        "description": "Komplettes Sport-Set",
+        "items": ["Trageschlaufe", "Reinigungsset", "Ersatzventil"],
+        "originalPrice": 50,
+        "bundlePrice": 40,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 14,
+    "name": "10-1 Stück Aroma-Pads",
+    "price": 12.99,
+    "originalPrice": 18.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/10-1 Stück Aroma-Pads.jpeg",
+    "description": "Hochwertige Aroma-Pads für Kaffeemaschinen. Wiederverwendbar und umweltfreundlich für perfekten Kaffeegenuss.",
+    "sku": "ALI1005008666",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["kaffee", "pads", "wiederverwendbar", "umweltfreundlich"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Kaffee Starter",
+        "description": "Pads + Kaffee Zubehör",
+        "items": ["Reinigungsbürste", "Aufbewahrungsbox"],
+        "originalPrice": 20,
+        "bundlePrice": 17,
+        "savings": 3
+      },
+      {
+        "id": "bundle2",
+        "name": "Barista Set",
+        "description": "Professionelles Kaffee-Set",
+        "items": [
+          "Reinigungsbürste",
+          "Aufbewahrungsbox",
+          "Premium Kaffeebohnen"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 25,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 15,
+    "name": "Drahtlose elektrische tragbare Espressomaschine",
+    "price": 89.99,
+    "originalPrice": 119.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Drahtlose elektrische tragbare Espressomaschine.jpeg",
+    "description": "Premium tragbare Espressomaschine mit drahtloser Technologie. Perfekter Espresso überall und jederzeit.",
+    "sku": "ALI1005007317",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["espresso", "kaffee", "tragbar", "drahtlos"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Espresso Starter",
+        "description": "Maschine + Grundausstattung",
+        "items": ["Reinigungsset", "Ersatzkapseln"],
+        "originalPrice": 110,
+        "bundlePrice": 99,
+        "savings": 11
+      },
+      {
+        "id": "bundle2",
+        "name": "Barista Professional",
+        "description": "Professionelles Espresso-Set",
+        "items": [
+          "Reinigungsset",
+          "Ersatzkapseln",
+          "Premium Kaffeebohnen",
+          "Milchaufschäumer"
+        ],
+        "originalPrice": 150,
+        "bundlePrice": 125,
+        "savings": 25
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 16,
+    "name": "Elektrische Küchenwaage Digital",
+    "price": 49.99,
+    "originalPrice": 39.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Präzise digitale Küchenwaage mit LCD-Display. Ideal für genaues Wiegen beim Kochen und Backen.",
+    "sku": "ALI1005007542",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["waage", "küche", "digital", "präzise"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Baking Starter",
+        "description": "Waage + Back-Zubehör",
+        "items": ["Messbecher Set", "Rezeptbuch"],
+        "originalPrice": 40,
+        "bundlePrice": 35,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Master Baker",
+        "description": "Professionelles Back-Set",
+        "items": [
+          "Messbecher Set",
+          "Rezeptbuch",
+          "Silikon Backformen",
+          "Digitaler Timer"
+        ],
+        "originalPrice": 70,
+        "bundlePrice": 55,
+        "savings": 15
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 19,
+    "name": "Elektronisches Distanzmessgerät Digital",
+    "price": 19.99,
+    "originalPrice": 59.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Elektronisches Distanzmessgerät Digital.jpg",
+    "description": "Präzises elektronisches Distanzmessgerät mit LCD-Display. Ideal für Handwerker, Architekten und Heimwerker.",
+    "sku": "CJXFLPJY00674-Black",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["messen", "werkzeug", "elektronisch", "digital"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": ["Bedienungsanleitung", "Garantiekarte"],
+        "originalPrice": 49.99,
+        "bundlePrice": 44.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": ["Bedienungsanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 64.99,
+        "bundlePrice": 54.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 20,
+    "name": "ZigBee Smart DIY Motorisierte Rollos",
+    "price": 89.99,
+    "originalPrice": 129.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg",
+    "description": "Intelligente motorisierte Rollos mit ZigBee-Technologie. Einfache Installation und Smart Home Integration für automatische Lichtsteuerung.",
+    "sku": "ALI1005005801",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["smart", "automation"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": ["Bedienungsanleitung", "Garantiekarte"],
+        "originalPrice": 99.99,
+        "bundlePrice": 94.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": ["Bedienungsanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 114.99,
+        "bundlePrice": 104.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 24,
+    "name": "COBLED Arbeitsleuchte",
+    "price": 12.99,
+    "originalPrice": 49.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/COBLED Arbeitsleuchte.jpeg",
+    "description": "Professionelle COBLED Arbeitsleuchte mit COB LED-Technologie. Ideal für Werkstatt, Garage, Camping und alle Arbeiten die helles, gleichmäßiges Licht benötigen.",
+    "sku": "ALI1005007024",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "features": [
+      "COB LED-Technologie für gleichmäßiges Licht",
+      "Bis zu 1000 Lumen Helligkeit",
+      "Wiederaufladbar über USB",
+      "Magnetische Befestigung und Haken",
+      "Wasserdicht (IP54) für Outdoor-Einsatz"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Work Starter",
+        "description": "Arbeitsleuchte + Ladezubehör",
+        "items": ["USB-Ladekabel", "Bedienungsanleitung"],
+        "originalPrice": 49.99,
+        "bundlePrice": 39.99,
+        "savings": 10
+      },
+      {
+        "id": "bundle2",
+        "name": "Professional Work",
+        "description": "Komplettes Arbeitsbeleuchtungsset",
+        "items": [
+          "USB-Ladekabel",
+          "Bedienungsanleitung",
+          "Zusätzliche Halterung"
+        ],
+        "originalPrice": 64.99,
+        "bundlePrice": 49.99,
+        "savings": 15
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 25,
+    "name": "Nachtlichter mit Bewegungsmelder",
+    "price": 23.99,
+    "originalPrice": 24.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Nachtlichter mit Bewegungsmelder.jpeg",
+    "description": "Automatische Nachtlichter mit Bewegungsmelder für sicheres Navigieren in der Dunkelheit. Perfekt für Schlafzimmer, Badezimmer, Flure und Kinderzimmer.",
+    "sku": "ALI1005007025",
+    "inStock": true,
+    "features": [
+      "Automatischer Bewegungsmelder",
+      "Warmes, augenschonendes Licht",
+      "Batteriebetrieben - bis zu 12 Monate",
+      "Klebestreifen für einfache Montage",
+      "Kompaktes, unauffälliges Design"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Night Safety",
+        "description": "Nachtlicht + Batterien",
+        "items": ["3x AAA Batterien", "Klebestreifen"],
+        "originalPrice": 24.99,
+        "bundlePrice": 19.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Night Safety",
+        "description": "Komplettes Nachtbeleuchtungsset",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen",
+          "Zusätzliche Befestigungsoptionen"
+        ],
+        "originalPrice": 34.99,
+        "bundlePrice": 24.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 26,
+    "name": "4 In 1 Self Cleaning Hair Brush",
+    "price": 11.99,
+    "originalPrice": 20.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",
+    "description": "Revolutionäre 4-in-1 selbstreinigende haarbürste mit Anti-Statik-Massage-Funktion. Skalierbar, rotierend und selbstreinigend für perfekte haarpflege.",
+    "sku": "CJ1711943102027542528",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Roland Purple",
+        "code": "#663399",
+        "sku": "CJYD186774301AZ",
+        "price": 11.99,
+        "originalPrice": 20.99,
+        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg"
+      },
+      {
+        "name": "Lunar Rock",
+        "code": "#708090",
+        "sku": "CJYD186774302BY",
+        "price": 11.99,
+        "originalPrice": 21.99,
+        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg"
+      }
+    ],
+    "features": [
+      "4-in-1 Multifunktions-Design",
+      "Selbstreinigende Technologie",
+      "Anti-Statik-Massage-Funktion",
+      "Skalierbar und rotierend",
+      "Ergonomischer Griff"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "originalPrice": 20.99,
+        "bundlePrice": 15.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 35.99,
+        "bundlePrice": 25.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 27,
+    "name": "Volcanic Flame Aroma Essential Oil Diffuser",
+    "price": 28.99,
+    "originalPrice": 49.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg",
+    "description": "USB-betriebener Vulkanflammen-Aromadiffuser mit Quallen-Luftbefeuchter und Nachtlicht. Perfekt für entspannende Atmosphäre und Wellness.",
+    "sku": "CJJT163563001AZ",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": ["aromadiffuser", "luftbefeuchter", "nachtlicht", "wellness"],
+    "features": [
+      "Vulkanflammen-Design für entspannende Atmosphäre",
+      "USB-betrieben für einfache Nutzung",
+      "Quallen-Luftbefeuchter-Funktion",
+      "Integriertes Nachtlicht",
+      "Tragbar und kompakt"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "originalPrice": 25.99,
+        "bundlePrice": 20.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 40.99,
+        "bundlePrice": 30.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 28,
+    "name": "Mini Muskel Massage Pistole",
+    "price": 24.99,
+    "originalPrice": 44.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Mini Muskel Massage Pistole.jpeg",
+    "description": "Kompakte Mini-Massage-Pistole für Muskelentspannung und Regeneration. Ideal für Sport, Fitness und tägliche Wellness-Routine.",
+    "sku": "ALI1005007060455752",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["massage", "muskel", "regeneration", "sport"],
+    "features": [
+      "Kompaktes Mini-Design",
+      "Verschiedene Massage-Aufsätze",
+      "Einstellbare Geschwindigkeitsstufen",
+      "Wiederaufladbar über USB",
+      "Leise Betriebsgeräusche"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "originalPrice": 34.99,
+        "bundlePrice": 29.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 49.99,
+        "bundlePrice": 39.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 29,
+    "name": "Haaröl-Applikator Kopfhaut Massager",
+    "price": 8.99,
+    "originalPrice": 16.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Haaröl-Applikator Kopfhaut Massager.jpeg",
+    "description": "Innovativer Haaröl-Applikator mit Kopfhaut-Massage-Funktion. Gleichmäßige Verteilung von Haarölen und entspannende Kopfhautmassage in einem Gerät.",
+    "sku": "ALI1005007010671073",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["haaröl", "kopfhaut", "massage", "haarpflege"],
+    "features": [
+      "Präzise Haaröl-Verteilung",
+      "Integrierte Kopfhautmassage",
+      "Ergonomisches Design",
+      "Einfache Reinigung",
+      "Für alle Haartypen geeignet"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "originalPrice": 18.99,
+        "bundlePrice": 13.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 33.99,
+        "bundlePrice": 23.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 21,
+    "name": "Led crystal lampe",
+    "price": 18.99,
+    "originalPrice": 59.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Led crystal lampe .jpg",
+    "description": "USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
+    "sku": "CJLED21001",
+    "inStock": true,
+    "shippingTime": "6-11 Werktage",
+    "colors": [
+      {
+        "name": "Krone",
+        "code": "#FFD700",
+        "sku": "CJYD188109101AZ",
+        "price": 18.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Led crystal lampe  bilder/Led crystal Krone .png"
+      },
+      {
+        "name": "Holz boden",
+        "code": "#C0C0C0",
+        "sku": "CJYD188109102BY",
+        "price": 18.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Led crystal lampe  bilder/Led Crystal Holz boden.png"
+      }
+    ],
+    "features": [
+      "USB-betrieben für einfache Nutzung",
+      "Rotierende Projektion für dynamische Effekte",
+      "16 verschiedene Farben verfügbar",
+      "RGB dimmbar für perfekte Atmosphäre",
+      "Kristall-Design für elegante Optik"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Ambient Starter",
+        "description": "Lampe + Grundzubehör",
+        "items": ["USB-Kabel", "Bedienungsanleitung"],
+        "originalPrice": 49.99,
+        "bundlePrice": 44.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Ambience",
+        "description": "Komplettes Beleuchtungs-Set",
+        "items": ["USB-Kabel", "Bedienungsanleitung", "Fernbedienung"],
+        "originalPrice": 69.99,
+        "bundlePrice": 54.99,
+        "savings": 15
+      }
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 22,
+    "name": "Waterproof RGB LED Solar Light",
+    "price": 12.99,
+    "originalPrice": 34.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Waterproof RGB LED Solar Light.jpg",
+    "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.",
+    "sku": "CJLE101693101AZ",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": true
+  },
+  {
+    "id": 23,
+    "name": "LED Motion Sensor Licht Drahtlose",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/LED Motion Sensor Licht Drahtlose.jpeg",
+    "description": "Drahtloses LED Motion Sensor Licht mit Bewegungsmelder. Perfekt für Flure, Treppen, Schränke und andere Bereiche wo automatische Beleuchtung benötigt wird.",
+    "sku": "ALI1005007023",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "features": [
+      "Drahtlos - einfache Installation überall",
+      "Bewegungsmelder mit 3m Reichweite",
+      "Batteriebetrieben - bis zu 6 Monate Laufzeit",
+      "Automatische Ein-/Ausschaltung",
+      "Kompaktes Design für unauffällige Montage"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Motion Starter",
+        "description": "Sensor-Licht + Batterien",
+        "items": ["3x AAA Batterien", "Klebestreifen"],
+        "originalPrice": 29.99,
+        "bundlePrice": 24.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Smart Home Pack",
+        "description": "Komplettes Sensor-Beleuchtungsset",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen",
+          "Zusätzliche Montageoption"
+        ],
+        "originalPrice": 39.99,
+        "bundlePrice": 29.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 31,
+    "name": "Elektrischer Kopfhaut-Massagekamm",
+    "price": 12.99,
+    "originalPrice": 22.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Elektrischer Kopfhaut-Massagekamm.jpeg",
+    "description": "Elektrischer Kopfhaut-Massagekamm für entspannende Kopfmassage und verbesserte Durchblutung. Fördert Haarwachstum und Entspannung.",
+    "sku": "ALI1005007987737586",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["kopfhautmassage", "elektrisch", "haarwachstum", "entspannung"],
+    "features": [
+      "Elektrische Vibrations-Massage",
+      "Fördert die Durchblutung der Kopfhaut",
+      "Unterstützt natürliches Haarwachstum",
+      "Wasserdicht für Duschnutzung",
+      "Ergonomischer Griff"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "originalPrice": 22.99,
+        "bundlePrice": 17.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 37.99,
+        "bundlePrice": 27.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 17,
+    "name": "Bluetooth Anti-Lost Finder Wassertropfen",
+    "price": 6.99,
+    "originalPrice": 24.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg",
+    "description": "Kompakter Bluetooth-Tracker in Wassertropfen-Design. Finden Sie verlorene Gegenstände schnell und einfach über Ihr Smartphone.",
+    "sku": "CJ9FA9912D",
+    "inStock": true,
+    "shippingTime": "8-15 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#2C2C2C",
+        "sku": "CJJSAQJK00001-Black Opp",
+        "price": 6.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png"
+      },
+      {
+        "name": "Weiß",
+        "code": "#F8F8F8",
+        "sku": "CJJSAQJK00001-White Opp",
+        "price": 6.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png"
+      },
+      {
+        "name": "Grün",
+        "code": "#7ED321",
+        "sku": "CJJSAQJK00001-Green Opp",
+        "price": 6.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png"
+      },
+      {
+        "name": "Pink",
+        "code": "#E91E63",
+        "sku": "CJJSAQJK00001-Pink Opp",
+        "price": 6.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png"
+      },
+      {
+        "name": "Gold",
+        "code": "#FFD700",
+        "sku": "CJJSAQJK00001-1PC Gold",
+        "price": 6.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen gold.jpg"
+      },
+      {
+        "name": "Silber",
+        "code": "#C0C0C0",
+        "sku": "CJJSAQJK00001-1PC Silver",
+        "price": 6.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen Silber.jpg"
+      }
+    ],
+    "tags": ["bluetooth", "tracker", "finder"],
+    "showInSlider": true
+  },
+  {
+    "id": 18,
+    "name": "Home Electronic Clock Digitale Uhr",
+    "price": 14.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Home Electronic Clock Digitale Uhr.jpg",
+    "description": "Moderne digitale Wanduhr mit LED-Display. Perfekt für Wohnzimmer, Büro oder Küche mit großer, gut lesbarer Anzeige.",
+    "sku": "CJXFZNZN00532-Black USB",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "tags": ["uhr", "digital", "led"],
+    "showInSlider": true
+  },
+  {
+    "id": 32,
+    "name": "Indoor Sensing Wall Lamp",
+    "price": 17.99,
+    "originalPrice": 39.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Indoor Sensing Wall Lamp.jpg",
+    "description": "USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt für Flure, Treppen und Schränke mit automatischer Ein-/Ausschaltung bei Bewegung.",
+    "sku": "CJ1373821404948074496",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJSN105028901AZ",
+        "price": 17.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJSN105028907GT",
+        "price": 17.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg"
+      }
+    ],
+    "features": [
+      "USB-aufladbar für kabellose Nutzung",
+      "Bewegungssensor mit automatischer Aktivierung",
+      "Verschiedene Größen verfügbar (14x6cm, 22x11cm, 29x11cm)",
+      "Weiß- und Warmlicht-Modi",
+      "Einfache Wandmontage ohne Verkabelung"
+    ],
+    "tags": [
+      "wandlampe",
+      "bewegungsmelder",
+      "usb",
+      "sensor",
+      "beleuchtung",
+      "automatisch"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Smart Light Starter",
+        "description": "Wandlampe + Grundzubehör",
+        "items": ["USB-Ladekabel", "Montagezubehör"],
+        "originalPrice": 39.99,
+        "bundlePrice": 34.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Smart Lighting",
+        "description": "Komplettes Smart-Beleuchtungsset",
+        "items": ["USB-Ladekabel", "Montagezubehör", "Bedienungsanleitung"],
+        "originalPrice": 54.99,
+        "bundlePrice": 44.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Aromatherapy Essential Oil Humidifier",
+    "price": 8.99,
+    "originalPrice": 14.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Aromatherapy essential oil humidifier.jpg",
+    "description": "Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.",
+    "sku": "CJ09477003744E498990DA",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": true,
+    "colors": [
+      {
+        "name": "Cherry Blossoms",
+        "code": "#FFB6C1",
+        "sku": "CJBJPFJY00081-Cherry blossoms",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg"
+      },
+      {
+        "name": "Green Tea",
+        "code": "#90EE90",
+        "sku": "CJBJPFJY00081-Green Tea",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg"
+      },
+      {
+        "name": "Jasmine",
+        "code": "#F8F8FF",
+        "sku": "CJBJPFJY00081-Jasmine",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier jasmine.jpg"
+      },
+      {
+        "name": "Lavender",
+        "code": "#E6E6FA",
+        "sku": "CJBJPFJY00081-Lavender",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lavender.jpg"
+      },
+      {
+        "name": "Lemon",
+        "code": "#FFFF99",
+        "sku": "CJBJPFJY00081-Lemon",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lemon.jpg"
+      },
+      {
+        "name": "Lily",
+        "code": "#87CEEB",
+        "sku": "CJBJPFJY00081-Lily",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lily.jpg"
+      },
+      {
+        "name": "Ocean",
+        "code": "#FF69B4",
+        "sku": "CJBJPFJY00081-Ocean",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier ocean.jpg"
+      },
+      {
+        "name": "Rose",
+        "code": "#D2B48C",
+        "sku": "CJBJPFJY00081-Rose",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier rose.jpg"
+      },
+      {
+        "name": "Sandalwood",
+        "code": "#F5DEB3",
+        "sku": "CJBJPFJY00081-Sandalwood",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sandalwood.jpg"
+      },
+      {
+        "name": "Sweet",
+        "code": "#F5DEB3",
+        "sku": "CJBJPFJY00081-Sweet",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sweet.jpg"
+      },
+      {
+        "name": "Vanilla",
+        "code": "#FFF8DC",
+        "sku": "CJBJPFJY00081-Vanilla",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier vanilla.jpg"
+      },
+      {
+        "name": "Violet",
+        "code": "#8A2BE2",
+        "sku": "CJBJPFJY00081-violet",
+        "price": 8.99,
+        "originalPrice": 14.99,
+        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier violet.jpg"
+      }
+    ],
+    "features": [
+      "12 verschiedene Aromatherapy-Düfte verfügbar",
+      "Ultraschall-Technologie für feine Nebel-Verteilung",
+      "LED-Beleuchtung mit verschiedenen Farben",
+      "Automatische Abschaltung bei niedrigem Wasserstand",
+      "Leiser Betrieb für Schlafzimmer geeignet",
+      "300ml Wassertank für bis zu 10 Stunden Betrieb"
+    ],
+    "tags": [
+      "aromatherapy",
+      "humidifier",
+      "wellness",
+      "entspannung",
+      "duft",
+      "luftbefeuchter",
+      "essential oil"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Humidifier + 3 Duftöle",
+        "items": [
+          "Aromatherapy Humidifier",
+          "3 Essential Oil Samples",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 79.99,
+        "bundlePrice": 59.99,
+        "savings": 20
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Aromatherapy Set",
+        "description": "Komplettes Wellness-Paket",
+        "items": [
+          "Aromatherapy Humidifier",
+          "5 Essential Oil Samples",
+          "Reinigungsset",
+          "Bedienungsanleitung"
+        ],
+        "originalPrice": 119.99,
+        "bundlePrice": 89.99,
+        "savings": 30
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Moisturizing Face Steamer",
+    "price": 19.99,
+    "originalPrice": 24.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Moisturizing Face Steamer.jpg",
+    "description": "Ein 2-in-1-Gesichts- und Augendampfer mit Nano-Zerstäubungstechnologie. Spendet effektiv Feuchtigkeit, lindert trockene Haut und reduziert die Ermüdung der Augen. Klein, tragbar und über USB aufladbar - perfekt für die Hautpflege unterwegs.",
+    "sku": "CJMB1545970",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": true,
+    "colors": [
+      {
+        "name": "Blau",
+        "code": "#A0C4FF",
+        "sku": "CJMB154597002BY",
+        "price": 19.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer blau.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJMB154597001AZ",
+        "price": 19.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer weiß.jpg"
+      }
+    ],
+    "tags": ["face steamer", "moisturizer", "wellness", "hautpflege", "beauty"]
+  },
+  {
+    "id": 35,
+    "name": "Thermal Neck Lifting And Tighten Massager",
+    "price": 16.99,
+    "originalPrice": 29.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg",
+    "description": "Ein EMS Thermal Neck Lifting und Tighten Massager, der mit elektrischem Mikrostrom Falten entfernt und die Haut strafft. Ideal für eine entspannende und verjüngende Nackenmassage.",
+    "sku": "CJYD1887254",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "showInSlider": false,
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJYD188725403CX",
+        "price": 16.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJYD188725404DW",
+        "price": 16.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager weiß.jpg"
+      }
+    ],
+    "tags": [
+      "neck massager",
+      "wellness",
+      "hautpflege",
+      "faltenentferner",
+      "ems"
+    ]
+  },
+  {
+    "id": 36,
+    "name": "Cleaning Blackhead Instrument",
+    "price": 17.99,
+    "originalPrice": 22.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Cleaning Blackhead Instrument.jpg",
+    "description": "Elektrisches Mitesser-Entferner-Instrument mit Saugfunktion zur Gesichtsreinigung. Entfernt effektiv Akne und Mitesser für eine reinere Haut.",
+    "sku": "CJBJMRDD00019-White",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "showInSlider": false,
+    "tags": ["blackhead remover", "hautpflege", "gesichtsreinigung", "wellness"]
+  },
+  {
+    "id": 37,
+    "name": "Professional 5 In 1 Hair Dryer",
+    "price": 39.99,
+    "originalPrice": 69.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Professional 5 In 1 Hair Dryer.jpg",
+    "description": "Professioneller 5-in-1 Haartrockner mit Bürste, Glätter und Lockenwickler. Elektrisches Haarstyling-Tool für alle Haartypen.",
+    "sku": "CJTF141037804DW",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "showInSlider": true,
+    "tags": ["hair dryer", "haarstyling", "föhn", "wellness", "beauty"]
+  },
+  {
+    "id": 38,
+    "name": "Jade Massager",
+    "price": 10.99,
+    "originalPrice": 24.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Jade Massager.jpg",
+    "description": "Natürlicher Jade-Massager und Gua Sha Stein zur Förderung der Durchblutung, Reduzierung von Schwellungen und zur Entspannung der Gesichtsmuskulatur. Ideal für die tägliche Hautpflege-Routine.",
+    "sku": "CJPF1011351",
+    "inStock": true,
+    "shippingTime": "6-11 Werktage",
+    "showInSlider": true,
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJPF101135114NM",
+        "price": 10.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager schwarz.jpg"
+      },
+      {
+        "name": "Grün",
+        "code": "#008000",
+        "sku": "CJPF101135122VE",
+        "price": 10.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager grün.jpg"
+      },
+      {
+        "name": "Hellgrün",
+        "code": "#90EE90",
+        "sku": "CJPF101135120TG",
+        "price": 10.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager hell grün.jpg"
+      },
+      {
+        "name": "Pink",
+        "code": "#FFC0CB",
+        "sku": "CJPF101135116PK",
+        "price": 10.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager pink.jpg"
+      },
+      {
+        "name": "Lila",
+        "code": "#800080",
+        "sku": "CJPF101135118RI",
+        "price": 10.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager lila.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJPF101135124XC",
+        "price": 10.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager weiß.jpg"
+      },
+      {
+        "name": "Gelb",
+        "code": "#FFFF00",
+        "sku": "CJPF101135127AZ",
+        "price": 10.99,
+        "originalPrice": 24.99,
+        "image": "produkt bilder/Jade Massager bilder/Jade Massager gelb.jpg"
+      }
+    ],
+    "tags": ["jade", "massager", "gua sha", "wellness", "hautpflege"]
+  },
+  {
+    "id": 39,
+    "name": "Electric Guasha Massager",
+    "price": 32.99,
+    "originalPrice": 49.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Electric Guasha Massager.jpg",
+    "description": "Elektrisches Guasha-Massagegerät mit EMS-Mikrostrom, Heiß- und Kalt-Modus sowie 3-Farben-Lichttherapie zur Hautstraffung, Faltenreduzierung und Förderung der Aufnahme von Hautpflegeprodukten.",
+    "sku": "CJPF203924202BY",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "showInSlider": false,
+    "tags": ["guasha", "ems", "face lifting", "hautpflege", "wellness"]
+  },
+  {
+    "id": 40,
+    "name": "Mug Warmer Pad",
+    "price": 19.99,
+    "originalPrice": 29.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Mug Warmer Pad.jpg",
+    "description": "Halten Sie Ihr Getränk mit diesem intelligenten Tassenwärmer-Untersetzer konstant auf der perfekten Temperatur. Ideal für Kaffee, Tee oder Kakao am Schreibtisch oder zu Hause.",
+    "sku": "CJJT1723382",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "showInSlider": true,
+    "colors": [
+      {
+        "name": "Pink",
+        "code": "#FFC0CB",
+        "sku": "CJJT172338202BY",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad pink.jpg"
+      },
+      {
+        "name": "Grün",
+        "code": "#008000",
+        "sku": "CJJT172338203CX",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad grün.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJT172338201AZ",
+        "price": 19.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad weiß.jpg"
+      }
+    ],
+    "tags": ["mug warmer", "tassenwärmer", "kaffee", "tee", "haushalt"]
+  },
+  {
+    "id": 41,
+    "name": "2 In 1 Oil Sprayer Bottle",
+    "price": 18.99,
+    "originalPrice": 24.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/2 In 1 Oil Sprayer Bottle.jpg",
+    "description": "Praktische 2-in-1-Ölsprühflasche für die Küche. Perfekt zum Kochen, Grillen und für Salate. Ermöglicht einfaches Sprühen und Ausgießen von Öl und Essig.",
+    "sku": "CJYD187611401AZ",
+    "inStock": true,
+    "shippingTime": "6-11 Werktage",
+    "tags": ["öl", "sprayer", "küche", "kochen", "grillen"],
+    "features": [
+      "2-in-1-Funktion: Sprühen und Ausgießen",
+      "Geeignet für Öl, Essig und andere Flüssigkeiten",
+      "Einfach zu befüllen und zu reinigen",
+      "Gleichmäßiges Sprühen für gesünderes Kochen",
+      "Modernes Design für jede Küche"
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 42,
+    "name": "RGB Flame Aroma Diffuser Volcano",
+    "price": 29.99,
+    "originalPrice": 49.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano.jpg",
+    "description": "Innovativer RGB Flame Aroma Diffuser mit realistischem 3D-Vulkan-Flammeneffekt. 130ml Kapazität mit bunter LED-Beleuchtung für entspannende Aromatherapie und stimmungsvolle Beleuchtung.",
+    "sku": "CJJD1582742",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#2C2C2C",
+        "sku": "CJJD1582742-Black",
+        "price": 29.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano bilder/RGB Flame Aroma Diffuser Volcano schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJD1582742-White",
+        "price": 29.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano bilder/RGB Flame Aroma Diffuser Volcano weiß.jpg"
+      }
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Diffuser + Aromatherapie Grundausstattung",
+        "items": ["Ätherische Öle Set (3x 10ml)", "Reinigungsset"],
+        "originalPrice": 45,
+        "bundlePrice": 39,
+        "savings": 6
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Aromatherapy",
+        "description": "Komplettes Aromatherapie-Set",
+        "items": [
+          "Ätherische Öle Set (6x 10ml)",
+          "Reinigungsset",
+          "Aromatherapie Ratgeber"
+        ],
+        "originalPrice": 65,
+        "bundlePrice": 55,
+        "savings": 10
+      }
+    ],
+    "tags": [
+      "aroma diffuser",
+      "rgb beleuchtung",
+      "vulkan effekt",
+      "aromatherapie",
+      "wellness",
+      "entspannung",
+      "luftbefeuchter"
+    ],
+    "features": [
+      "3D Vulkan-Flammeneffekt mit RGB-Beleuchtung",
+      "130ml Wassertank für bis zu 6 Stunden Betrieb",
+      "Ultraschall-Vernebelungstechnologie",
+      "7 verschiedene LED-Farbmodi",
+      "Automatische Abschaltung bei leerem Tank",
+      "Whisper-leise Technologie",
+      "Perfekt für Schlafzimmer, Wohnzimmer und Büro"
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 43,
+    "name": "Portable Mini Thermal Label Printer",
+    "price": 21.99,
+    "originalPrice": 59.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Portable Mini Thermal Label Printer.jpg",
+    "description": "Tragbarer Mini-Thermodrucker für Etiketten, Fotos und Notizen. Bluetooth-kompatibel mit verschiedenen Papierrollen und Farben verfügbar.",
+    "sku": "CJJT1365880",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "colors": [
+      {
+        "name": "Grün",
+        "code": "#008000",
+        "sku": "CJJT136588021UF",
+        "price": 21.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer grün.jpg"
+      },
+      {
+        "name": "Blau",
+        "code": "#0066CC",
+        "sku": "CJJT136588022VE",
+        "price": 21.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer blau.jpg"
+      },
+      {
+        "name": "Pink",
+        "code": "#FFC0CB",
+        "sku": "CJJT136588034HS",
+        "price": 21.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer pink.jpg"
+      },
+      {
+        "name": "Gelb",
+        "code": "#FFD700",
+        "sku": "CJJT136588024XC",
+        "price": 21.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer gelb.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJT136588038LO",
+        "price": 21.99,
+        "originalPrice": 59.99,
+        "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer weiß.jpg"
+      },
+      {
+        "name": "Style A Rollen",
+        "code": "#FFE4B5",
+        "sku": "CJJT136588011KP",
+        "price": 3.99,
+        "originalPrice": 18.99,
+        "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen A.jpg"
+      },
+      {
+        "name": "Style B Rollen",
+        "code": "#E6E6FA",
+        "sku": "CJJT136588012LO",
+        "price": 3.99,
+        "originalPrice": 18.99,
+        "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen B.jpg"
+      },
+      {
+        "name": "Style C Rollen",
+        "code": "#F0F8FF",
+        "sku": "CJJT136588013MN",
+        "price": 3.99,
+        "originalPrice": 18.99,
+        "image": "produkt bilder/Portable Mini Thermal Label Printer bilder/Portable Mini Thermal Label Printer rollen C.jpg"
+      }
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Set",
+        "description": "Drucker + Papierrollen Style A",
+        "items": ["Papierrollen Style A (3 Rollen)", "USB-Kabel"],
+        "originalPrice": 55,
+        "bundlePrice": 49,
+        "savings": 6
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Print Kit",
+        "description": "Drucker + alle Papierrollen-Styles",
+        "items": [
+          "Papierrollen Style A (3 Rollen)",
+          "Papierrollen Style B (3 Rollen)",
+          "Papierrollen Style C (3 Rollen)",
+          "USB-Kabel",
+          "Tragetasche"
+        ],
+        "originalPrice": 85,
+        "bundlePrice": 69,
+        "savings": 16
+      }
+    ],
+    "tags": [
+      "thermal printer",
+      "label printer",
+      "bluetooth",
+      "portable",
+      "mini printer",
+      "photo printer",
+      "gadget"
+    ],
+    "features": [
+      "Bluetooth-kompatibel",
+      "Tragbares Design",
+      "Verschiedene Papierrollen verfügbar",
+      "Für Etiketten, Fotos und Notizen",
+      "Einfache App-Steuerung",
+      "Wiederaufladbar",
+      "Kompakt und leicht"
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 44,
+    "name": "Portable Projector For Home",
+    "price": 149.99,
+    "originalPrice": 199.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Portable Projector For Home.jpg",
+    "description": "Kompakter tragbarer Projektor für den Heimgebrauch mit 180° Projektionswinkel und automatischem Fokus. Perfekt für Filme, Präsentationen und Gaming.",
+    "sku": "CJYD1808029",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "colors": [
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJYD1808029",
+        "price": 149.99,
+        "originalPrice": 199.99,
+        "image": "produkt bilder/Portable Projector For Home bilder/Portable Projector For Home weiß.jpg"
+      },
+      {
+        "name": "Silber",
+        "code": "#C0C0C0",
+        "sku": "CJYD180802918RI",
+        "price": 159.99,
+        "originalPrice": 209.99,
+        "image": "produkt bilder/Portable Projector For Home bilder/Portable Projector For Home silber.jpg"
+      }
+    ],
+    "tags": [
+      "Projektor",
+      "Heimkino",
+      "Tragbar",
+      "180° Winkel",
+      "Automatischer Fokus",
+      "HD Qualität",
+      "Kompakt",
+      "Multimedia"
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 45,
+    "name": "Air Conditioner",
+    "price": 15.99,
+    "originalPrice": 29.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Air Conditioner.jpg",
+    "description": "Tragbare Klimaanlage mit Wasserkühlung für Räume, Büros und Autos. Effiziente Luftkühlung mit integriertem Ventilator und Wassertank.",
+    "sku": "CJYD177061601AZ",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "tags": [
+      "Klimaanlage",
+      "Luftkühler",
+      "Tragbar",
+      "Wasserkühlung",
+      "Ventilator",
+      "Büro",
+      "Auto",
+      "Energiesparend"
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 46,
+    "name": "Nordic Crystal Lamp",
+    "price": 24.99,
+    "originalPrice": 39.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Nordic Crystal Lamp.jpg",
+    "description": "Elegante nordische Kristalllampe mit USB-Anschluss und Touch-Dimming. Perfekte Atmosphärenbeleuchtung für Schlafzimmer mit Diamant-Nachtlicht-Effekt.",
+    "sku": "CJJT122932909IR",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJJT122932909IR",
+        "price": 24.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJT122932910JQ",
+        "price": 24.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp weiß.jpg"
+      },
+      {
+        "name": "Gelb",
+        "code": "#FFD700",
+        "sku": "CJJT122932915OL",
+        "price": 24.99,
+        "originalPrice": 39.99,
+        "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp gelb.jpg"
+      }
+    ],
+    "tags": [
+      "Kristalllampe",
+      "USB Lampe",
+      "Touch Dimming",
+      "Nachtlicht",
+      "Atmosphäre",
+      "Schlafzimmer",
+      "Diamant Effekt",
+      "Nordisch"
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 47,
+    "name": "40 Oz Tumbler With Handle Straw Insulated",
+    "price": 19.99,
+    "originalPrice": 34.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated .jpg",
+    "description": "Isolierter 40 Oz Tumbler mit Griff und Strohhalm. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
+    "sku": "CJJT165633304DW",
+    "inStock": true,
+    "shippingTime": "6-11 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJJT165633304DW",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated schwarz.jpg"
+      },
+      {
+        "name": "Cream Weiß",
+        "code": "#FFF8DC",
+        "sku": "CJJT165633305EV",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated cream white.jpg"
+      },
+      {
+        "name": "Hell Blau",
+        "code": "#87CEEB",
+        "sku": "CJJT165633399UF",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated hell blau.jpg"
+      },
+      {
+        "name": "Bay Leaves",
+        "code": "#8FBC8F",
+        "sku": "CJJT165633312LO",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated bay leaves.jpg"
+      },
+      {
+        "name": "Red Rust",
+        "code": "#B7410E",
+        "sku": "CJJT165633311KP",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated red rust.jpg"
+      },
+      {
+        "name": "Pink Love B",
+        "code": "#FFB6C1",
+        "sku": "CJJT165633336JQ",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated pink love b.jpg"
+      },
+      {
+        "name": "Peony Color",
+        "code": "#DA70D6",
+        "sku": "CJJT1656333101WD",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated peony color.jpg"
+      },
+      {
+        "name": "Hell Lila",
+        "code": "#DDA0DD",
+        "sku": "CJJT165633389KP",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated hell lila.jpg"
+      },
+      {
+        "name": "Storm Sea",
+        "code": "#4682B4",
+        "sku": "CJJT165633310JQ",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated storm sea.jpg"
+      },
+      {
+        "name": "Straw",
+        "code": "#F5DEB3",
+        "sku": "CJJT165633324XC",
+        "price": 2.0,
+        "originalPrice": 2.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated straw.jpg"
+      },
+      {
+        "name": "Thermal Sublimation",
+        "code": "#FF69B4",
+        "sku": "CJJT165633302BY",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated bilder/40 Oz Tumbler With Handle Straw Insulated thermal sublimation.jpg"
+      }
+    ],
+    "tags": [
+      "Tumbler",
+      "Isoliert",
+      "40 Oz",
+      "Strohhalm",
+      "Griff",
+      "BPA-frei",
+      "Spülmaschinenfest",
+      "Thermobecher",
+      "Küche",
+      "Getränke"
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 48,
+    "name": "40 Oz Tumbler With Handle Straw Insulated Winter",
+    "price": 19.99,
+    "originalPrice": 34.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter.jpg",
+    "description": "Isolierter 40 Oz Winter Tumbler mit Griff und Strohhalm in festlichen Weihnachtsfarben. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
+    "sku": "CJJT165633330DW",
+    "inStock": true,
+    "shippingTime": "6-11 Werktage",
+    "colors": [
+      {
+        "name": "Christmas Red",
+        "code": "#DC143C",
+        "sku": "CJJT165633330DW",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter bilder/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red.jpg"
+      },
+      {
+        "name": "Christmas Red B",
+        "code": "#B22222",
+        "sku": "CJJT165633331EV",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter bilder/40 Oz Tumbler With Handle Straw Insulated Winter Christmas Red B.jpg"
+      }
+    ],
+    "tags": [
+      "Tumbler",
+      "Isoliert",
+      "40 Oz",
+      "Strohhalm",
+      "Griff",
+      "BPA-frei",
+      "Spülmaschinenfest",
+      "Winter",
+      "Weihnachten",
+      "Christmas",
+      "Thermobecher",
+      "Küche",
+      "Getränke"
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 49,
+    "name": "40 Oz Tumbler With Handle Straw Insulated Halloween",
+    "price": 19.99,
+    "originalPrice": 34.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg",
+    "description": "Isolierter 40 Oz Halloween Tumbler mit Griff und Strohhalm in gruseligen Halloween-Farben. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
+    "sku": "CJJT165633329CX",
+    "inStock": true,
+    "shippingTime": "6-11 Werktage",
+    "colors": [
+      {
+        "name": "Halloween Cream Black",
+        "code": "#2F2F2F",
+        "sku": "CJJT165633329CX",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Cream Black.jpg"
+      },
+      {
+        "name": "Halloween Cream White",
+        "code": "#F5F5DC",
+        "sku": "CJJT165633327AZ",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White.jpg"
+      },
+      {
+        "name": "Halloween Cream White B",
+        "code": "#FFFAF0",
+        "sku": "CJJT165633328BY",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Cream White B.jpg"
+      },
+      {
+        "name": "Halloween Dark Blue",
+        "code": "#191970",
+        "sku": "CJJT165633326ZA",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue.jpg"
+      },
+      {
+        "name": "Halloween Dark Blue B",
+        "code": "#000080",
+        "sku": "CJJT165633325YB",
+        "price": 19.99,
+        "originalPrice": 34.99,
+        "image": "produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween bilder/40 Oz Tumbler With Handle Straw Insulated Halloween Dark Blue B.jpg"
+      }
+    ],
+    "tags": [
+      "Tumbler",
+      "Isoliert",
+      "40 Oz",
+      "Strohhalm",
+      "Griff",
+      "BPA-frei",
+      "Spülmaschinenfest",
+      "Halloween",
+      "Gruselig",
+      "Thermobecher",
+      "Küche",
+      "Getränke"
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 50,
+    "name": "Luminous Crystal Ball",
+    "price": 15.99,
+    "originalPrice": 29.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball.jpg",
+    "description": "Leuchtende Kristallkugel mit verschiedenen Motiven - Sternenhimmel, Planeten, Mond und mehr. Perfekte Dekoration für Zuhause oder als Geschenk.",
+    "sku": "CJJT153840401AZ",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Ferris Wheel",
+        "code": "#FFB6C1",
+        "sku": "CJJT153840405EV",
+        "price": 15.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Ferris Wheel.jpg"
+      },
+      {
+        "name": "Newt",
+        "code": "#98D8C8",
+        "sku": "CJJT153840435IR",
+        "price": 15.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Newt.jpg"
+      },
+      {
+        "name": "Moon",
+        "code": "#F4E4C1",
+        "sku": "CJJT153840404DW",
+        "price": 15.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Moon.jpg"
+      },
+      {
+        "name": "Saturn",
+        "code": "#E6B87E",
+        "sku": "CJJT153840403CX",
+        "price": 15.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Saturn.jpg"
+      },
+      {
+        "name": "Smooth sailing",
+        "code": "#87CEEB",
+        "sku": "CJJT153840418RI",
+        "price": 15.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Smooth sailing.jpg"
+      },
+      {
+        "name": "Snowman",
+        "code": "#FFFFFF",
+        "sku": "CJJT153840433GT",
+        "price": 15.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Snowman.jpg"
+      },
+      {
+        "name": "Through the starry",
+        "code": "#4B0082",
+        "sku": "CJJT153840408HS",
+        "price": 15.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Through the starry.jpg"
+      }
+    ],
+    "tags": [
+      "kristallkugel",
+      "leuchtend",
+      "dekoration",
+      "geschenk",
+      "sternenhimmel"
+    ],
+    "features": [
+      "Leuchtende Kristallkugel",
+      "7 verschiedene Motive",
+      "Perfekte Dekoration",
+      "Ideal als Geschenk",
+      "Hochwertige Verarbeitung"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Crystal Starter",
+        "description": "Kristallkugel + Basis",
+        "items": ["LED-Basis", "USB-Kabel"],
+        "originalPrice": 24.99,
+        "bundlePrice": 19.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Crystal Premium",
+        "description": "Komplettes Deko-Set",
+        "items": ["LED-Basis", "USB-Kabel", "Geschenkbox"],
+        "originalPrice": 34.99,
+        "bundlePrice": 24.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": true
+  }
+]
