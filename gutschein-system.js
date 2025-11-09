@@ -451,6 +451,15 @@
             return;
         }
 
+        // Prüfe ob Nutzer den Gutschein besitzt
+        const myVouchers = JSON.parse(localStorage.getItem('myVouchers') || '[]');
+        const hasVoucher = myVouchers.includes(voucher.id);
+        
+        if (!hasVoucher) {
+            showVoucherMessage('Du besitzt diesen Gutschein nicht.', 'error');
+            return;
+        }
+
         // Prüfe Bedingungen
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -502,41 +511,101 @@
         const details = document.getElementById('voucherDetails');
         
         let discountText = '';
+        let discountIcon = '🎉';
+        
         if (voucher.type === 'percentage') {
-            discountText = `${(voucher.discount * 100)}% Rabatt`;
+            discountText = `Spare ${(voucher.discount * 100)}% bei Bestellungen ab ${voucher.minOrder}€`;
+            discountIcon = '💰';
         } else if (voucher.type === 'shipping') {
             discountText = 'Kostenloser Versand';
+            discountIcon = '🚚';
+        } else if (voucher.type === 'fixed') {
+            discountText = `${voucher.discount}€ Rabatt`;
+            discountIcon = '💸';
         }
         
-        details.innerHTML = `<strong>${voucher.code}</strong>: ${voucher.description} (${discountText})`;
+        details.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 24px;">${discountIcon}</span>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; font-size: 16px; color: #16a34a; margin-bottom: 4px;">
+                        ✓ Gutschein angewendet
+                    </div>
+                    <div style="font-size: 14px; color: #4b5563;">
+                        <strong style="color: #1f2937;">${voucher.code}</strong>: ${discountText}
+                    </div>
+                </div>
+            </div>
+        `;
         display.style.display = 'block';
     }
 
     function showVoucherMessage(message, type) {
         const messageDiv = document.getElementById('voucherMessage');
         
+        const icons = {
+            success: '✅',
+            error: '❌',
+            info: 'ℹ️'
+        };
+        
         const colors = {
-            success: { bg: '#f0fdf4', border: '#86efac', text: '#16a34a' },
-            error: { bg: '#fef2f2', border: '#fca5a5', text: '#dc2626' },
-            info: { bg: '#eff6ff', border: '#93c5fd', text: '#2563eb' }
+            success: { bg: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', border: '#22c55e', text: '#16a34a', shadow: 'rgba(34, 197, 94, 0.2)' },
+            error: { bg: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)', border: '#ef4444', text: '#dc2626', shadow: 'rgba(239, 68, 68, 0.2)' },
+            info: { bg: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', border: '#3b82f6', text: '#2563eb', shadow: 'rgba(59, 130, 246, 0.2)' }
         };
         
         const color = colors[type] || colors.info;
+        const icon = icons[type] || icons.info;
         
         messageDiv.style.cssText = `
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 12px;
             background: ${color.bg};
             border: 2px solid ${color.border};
             color: ${color.text};
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 12px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px ${color.shadow};
+            animation: slideIn 0.3s ease-out;
         `;
         
-        messageDiv.textContent = message;
+        messageDiv.innerHTML = `
+            <span style="font-size: 20px;">${icon}</span>
+            <span>${message}</span>
+        `;
+        
+        // Animation hinzufügen
+        if (!document.getElementById('voucherMessageAnimation')) {
+            const style = document.createElement('style');
+            style.id = 'voucherMessageAnimation';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
         
         setTimeout(() => {
-            messageDiv.style.display = 'none';
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(-10px)';
+            messageDiv.style.transition = 'all 0.3s ease-out';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+                messageDiv.style.opacity = '1';
+                messageDiv.style.transform = 'translateY(0)';
+            }, 300);
         }, 3000);
     }
 

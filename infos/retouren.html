@@ -13,7 +13,7 @@
 <body>
   <header class="header-bar py-3">
     <div class="container d-flex align-items-center gap-3">
-      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">MAIOS</a>
+      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1">Maios</a>
       <a href="../index.html" class="ms-auto back-btn"><i class="bi bi-arrow-left"></i> Zurück zum Shop</a>
     </div>
   </header>
@@ -82,7 +82,7 @@
       const formData = new FormData(form);
       const templateParams = {
           to_name: 'Maios Support',
-        to_email: 'maioscontact@gmail.com',
+          to_email: 'maioscorporation@gmail.com',
         from_name: formData.get('email'),
         from_email: formData.get('email'),
         message: `Retoure-Anfrage für Bestellung #${formData.get('orderId')}\n\nKunden-E-Mail: ${formData.get('email')}\nGrund: ${formData.get('reason') || 'Nicht angegeben'}`,
@@ -110,7 +110,7 @@
         // EmailJS funktioniert nicht - verwende sofort mailto
         const subject = encodeURIComponent(`Retoure-Anfrage #${formData.get('orderId')}`);
         const body = encodeURIComponent(`Bestellnummer: ${formData.get('orderId')}\nE-Mail: ${formData.get('email')}\nGrund: ${formData.get('reason') || 'Nicht angegeben'}`);
-        const mailtoLink = `mailto:marktplatzcontact@gmail.com?subject=${subject}&body=${body}`;
+        const mailtoLink = `mailto:maioscorporation@gmail.com?subject=${subject}&body=${body}`;
         
         window.open(mailtoLink, '_blank');
         statusEl.textContent = 'E-Mail-Programm geöffnet. Bitte senden Sie die E-Mail manuell.';
