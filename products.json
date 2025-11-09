@@ -1065,7 +1065,7 @@
     {
       "id": 32,
       "name": "Indoor Sensing Wall Lamp",
-      "price": 23.99,
+      "price": 17.99,
       "originalPrice": 39.99,
       "category": "Beleuchtung",
       "image": "produkt bilder/Indoor Sensing Wall Lamp.jpg",
@@ -1073,13 +1073,12 @@
       "sku": "CJ1373821404948074496",
       "inStock": true,
       "shippingTime": "7-13 Werktage",
-      "showInSlider": true,
       "colors": [
         {
           "name": "Schwarz",
-          "code": "#2C2C2C",
+          "code": "#000000",
           "sku": "CJSN105028901AZ",
-          "price": 23.99,
+          "price": 17.99,
           "originalPrice": 39.99,
           "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwarz.jpg"
         },
@@ -1087,7 +1086,7 @@
           "name": "Weiß",
           "code": "#FFFFFF",
           "sku": "CJSN105028907GT",
-          "price": 23.99,
+          "price": 17.99,
           "originalPrice": 39.99,
           "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg"
         }
