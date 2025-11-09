@@ -34,7 +34,7 @@ class ProductImageGallery {
             42: 'RGB Flame Aroma Diffuser Volcano bilder',
             43: 'Mini Thermal Drucker bilder',
             44: 'Smart Beamer bilder',
-            45: 'Air Conditioner bilder',
+            45: 'Klimaanlage mit Displaybilder',
             46: 'Nordic Crystal Lamp bilder',
             47: 'Tumbler Becher bilder'
         };
@@ -62,7 +62,7 @@ class ProductImageGallery {
             42: 'RGB Flame Aroma Diffuser Volcano bilder',
             43: 'Mini Thermal Drucker bilder',
             44: 'Smart Beamer bilder',
-            45: 'Air Conditioner bilder',
+            45: 'Klimaanlage mit Displaybilder',
             46: 'Nordic Crystal Lamp bilder',
             47: 'Tumbler Becher bilder',
             48: 'Tumbler becher winter bilder',
@@ -615,32 +615,22 @@ class ProductImageGallery {
                 ];
                 break;
                 
-            case 45: // Air Conditioner
+            case 45: // Klimaanlage mit Display
                 this.images = [
                     {
-                        src: `../produkt bilder/Air Conditioner.jpg`,
-                        alt: 'Air Conditioner - Hauptbild',
+                        src: `../produkt bilder/Klimaanlage mit Display.jpg`,
+                        alt: 'Klimaanlage mit Display - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Air Conditioner funktion.jpg`,
-                        alt: 'Air Conditioner - Funktion',
+                        src: `../produkt bilder/${folderName}/Klimaanlage mit Display funktion.jpg`,
+                        alt: 'Klimaanlage mit Display - Funktion',
                         color: 'Funktion'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Air Conditioner anschluss.jpg`,
-                        alt: 'Air Conditioner - Anschluss',
-                        color: 'Anschluss'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Air Conditioner lautstärke.jpg`,
-                        alt: 'Air Conditioner - Lautstärke',
-                        color: 'Lautstärke'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Air Conditioner wasser.jpg`,
-                        alt: 'Air Conditioner - Wasser',
-                        color: 'Wasser'
+                        src: `../produkt bilder/${folderName}/Klimaanlage mit Display.jpg`,
+                        alt: 'Klimaanlage mit Display - Detail',
+                        color: 'Detail'
                     }
                 ];
                 break;
