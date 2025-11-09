@@ -26,7 +26,7 @@ class ProductImageGallery {
             10: 'Elektrischer Wasserspender für Schreibtisch bilder',
             11: '350ml Elektrischer Mixer Entsafter bilder',
             17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
-            21: 'Led crystal Lampe  bilder',
+            21: 'Led crystal lampe bilder',
             26: '4 In 1 Self Cleaning Hair Brush bilder',
             27: 'Volcanic Flame Aroma Essential Oil Diffuser bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
@@ -51,7 +51,7 @@ class ProductImageGallery {
             10: 'Elektrischer Wasserspender für Schreibtisch bilder',
             11: '350ml Elektrischer Mixer Entsafter bilder',
             17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
-            21: 'Led crystal Lampe  bilder',
+            21: 'Led crystal lampe bilder',
             26: '4 In 1 Self Cleaning Hair Brush bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
             33: 'Aromatherapy essential oil humidifier bilder',
@@ -169,31 +169,31 @@ class ProductImageGallery {
                 ];
                 break;
                 
-            case 21: // Led crystal Lampe 
+            case 21: // Led crystal lampe
                 this.images = [
                     {
-                        src: `../produkt bilder/Led crystal Lampe .jpg`,
-                        alt: 'Led crystal Lampe  - Hauptbild',
+                        src: `../produkt bilder/Led crystal lampe .jpg`,
+                        alt: 'Led crystal lampe - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Led crystal Lampe  crown.png`,
-                        alt: 'Led crystal Lampe  - Crown',
+                        src: `../produkt bilder/${folderName}/Led crystal lampe crown.png`,
+                        alt: 'Led crystal lampe - Crown',
                         color: 'Crown'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Led crystal Lampe  square.png`,
-                        alt: 'Led crystal Lampe  - Square',
+                        src: `../produkt bilder/${folderName}/Led crystal lampe square.png`,
+                        alt: 'Led crystal lampe - Square',
                         color: 'Square'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Led crystal Lampe  crown anleitung.png`,
-                        alt: 'Led crystal Lampe  - Crown Anleitung',
+                        src: `../produkt bilder/${folderName}/Led crystal lampe crown anleitung.png`,
+                        alt: 'Led crystal lampe - Crown Anleitung',
                         color: 'Crown Anleitung'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Led crystal Lampe  square anleitung.png`,
-                        alt: 'Led crystal Lampe  - Square Anleitung',
+                        src: `../produkt bilder/${folderName}/Led crystal lampe square anleitung.png`,
+                        alt: 'Led crystal lampe - Square Anleitung',
                         color: 'Square Anleitung'
                     }
                 ];
@@ -1291,7 +1291,7 @@ class ProductImageFullscreen {
                 10: 'Elektrischer Wasserspender für Schreibtisch bilder',
                 11: '350ml Elektrischer Mixer Entsafter bilder',
                 17: 'Bluetooth Anti-Lost Finder Wassertropfen bilder',
-                21: 'Led crystal Lampe  bilder',
+                21: 'Led crystal lampe bilder',
                 26: '4 In 1 Self Cleaning Hair Brush bilder',
                 32: 'Indoor Sensing Wall Lamp bilder',
                 42: 'RGB Flame Aroma Diffuser Volcano bilder',
