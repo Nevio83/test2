@@ -913,7 +913,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated .jpg', category: 'Haushalt und Küche' },
                 48: { id: 48, name: '40 Oz Tumbler With Handle Straw Insulated Winter', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter.jpg', category: 'Haushalt und Küche' },
                 49: { id: 49, name: '40 Oz Tumbler With Handle Straw Insulated Halloween', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg', category: 'Haushalt und Küche' },
-                50: { id: 50, name: 'Luminous Crystal Ball', price: 15.99, image: 'produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball.jpg', category: 'Beleuchtung' }
+                50: { id: 50, name: 'Krystall Ball Nachtlampe', price: 13.99, image: 'produkt bilder/Krystall Ball Nachtlampe.jpg', category: 'Beleuchtung' }
             };
             
             if (productData[productId]) {
@@ -1054,7 +1054,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 47: { id: 47, name: '40 Oz Tumbler With Handle Straw Insulated', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated .jpg', category: 'Haushalt und Küche' },
                 48: { id: 48, name: '40 Oz Tumbler With Handle Straw Insulated Winter', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated Winter.jpg', category: 'Haushalt und Küche' },
                 49: { id: 49, name: '40 Oz Tumbler With Handle Straw Insulated Halloween', price: 19.99, image: 'produkt bilder/40 Oz Tumbler With Handle Straw Insulated Halloween.jpg', category: 'Haushalt und Küche' },
-                50: { id: 50, name: 'Luminous Crystal Ball', price: 15.99, image: 'produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball.jpg', category: 'Beleuchtung' }
+                50: { id: 50, name: 'Krystall Ball Nachtlampe', price: 13.99, image: 'produkt bilder/Krystall Ball Nachtlampe.jpg', category: 'Beleuchtung' }
             };
             
             if (productData[productId]) {

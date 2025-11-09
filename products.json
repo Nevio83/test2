@@ -1907,71 +1907,71 @@
   },
   {
     "id": 50,
-    "name": "Luminous Crystal Ball",
-    "price": 15.99,
+    "name": "Krystall Ball Nachtlampe",
+    "price": 13.99,
     "originalPrice": 29.99,
     "category": "Beleuchtung",
-    "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball.jpg",
+    "image": "produkt bilder/Krystall Ball Nachtlampe.jpg",
     "description": "Leuchtende Kristallkugel mit verschiedenen Motiven - Sternenhimmel, Planeten, Mond und mehr. Perfekte Dekoration für Zuhause oder als Geschenk.",
     "sku": "CJJT153840401AZ",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
     "colors": [
       {
-        "name": "Ferris Wheel",
+        "name": "Riesenrad",
         "code": "#FFB6C1",
         "sku": "CJJT153840405EV",
-        "price": 15.99,
+        "price": 13.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Ferris Wheel.jpg"
+        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Riesenrad.jpg"
       },
       {
-        "name": "Newt",
+        "name": "Wassermolch",
         "code": "#98D8C8",
         "sku": "CJJT153840435IR",
-        "price": 15.99,
+        "price": 13.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Newt.jpg"
+        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Wassermolch.jpg"
       },
       {
-        "name": "Moon",
+        "name": "Mond",
         "code": "#F4E4C1",
         "sku": "CJJT153840404DW",
-        "price": 15.99,
+        "price": 13.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Moon.jpg"
+        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Krystall Ball Mond.jpg"
       },
       {
         "name": "Saturn",
         "code": "#E6B87E",
         "sku": "CJJT153840403CX",
-        "price": 15.99,
+        "price": 13.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Saturn.jpg"
+        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Saturn.jpg"
       },
       {
-        "name": "Smooth sailing",
+        "name": "Segelboot",
         "code": "#87CEEB",
         "sku": "CJJT153840418RI",
-        "price": 15.99,
+        "price": 13.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Smooth sailing.jpg"
+        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Segelboot.jpg"
       },
       {
-        "name": "Snowman",
+        "name": "Schneemann",
         "code": "#FFFFFF",
         "sku": "CJJT153840433GT",
-        "price": 15.99,
+        "price": 13.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Snowman.jpg"
+        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Schneemann.jpg"
       },
       {
-        "name": "Through the starry",
+        "name": "Sternenhimmel",
         "code": "#4B0082",
         "sku": "CJJT153840408HS",
-        "price": 15.99,
+        "price": 13.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball bilder/Luminous Starry Sky And Planets Moon Moon Crystal Ball Through the starry.jpg"
+        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Sternenhimmel.jpg"
       }
     ],
     "tags": [
