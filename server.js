@@ -553,10 +553,39 @@ app.get('/api/cj/product/:vid/stock', async (req, res) => {
   }
 });
 
-// Create CJ Order
+// Funktion zur automatischen Auswahl der Versandmethode
+function getShippingMethod(country) {
+  // Europa - Standard Versand mit Tracking
+  const europeanCountries = ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'GB', 'PL', 'SE', 'DK', 'NO', 'FI'];
+  
+  if (europeanCountries.includes(country)) {
+    return "CJ Packet Registered"; // Mit Tracking für Europa (7-13 Tage)
+  }
+  
+  // USA
+  if (country === 'US') {
+    return "CJ Packet Ordinary"; // Standard für USA (10-20 Tage)
+  }
+  
+  // Rest der Welt
+  return "CJ Packet Ordinary"; // Standard weltweit
+}
+
+// Create CJ Order mit automatischer Versandmethoden-Auswahl
 app.post('/api/cj/orders/create', async (req, res) => {
   try {
-    const orderData = req.body;
+    const orderData = {
+      ...req.body,
+      // Automatische Versandmethoden-Auswahl basierend auf Zielland
+      logisticName: getShippingMethod(req.body.shippingAddress?.country || 'DE'),
+      // Versand aus China Warehouse (günstiger und schneller)
+      fromCountryCode: "CN"
+    };
+    
+    console.log(`📦 Bestellung erstellt mit Versandmethode: ${orderData.logisticName} nach ${orderData.shippingAddress?.country || 'DE'}`);
+    console.log(`🏭 Warehouse: ${orderData.fromCountryCode}`);
+    console.log(`📋 Komplette Order-Daten:`, JSON.stringify(orderData, null, 2));
+    
     const order = await cjAPI.createOrderV2(orderData);
     res.json(order);
   } catch (error) {
