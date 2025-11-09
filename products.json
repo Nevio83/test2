@@ -801,31 +801,31 @@
     },
     {
       "id": 21,
-      "name": "LED Water Ripple Crystal",
-      "price": 21.99,
+      "name": "Led crystal lampe",
+      "price": 18.99,
       "originalPrice": 59.99,
       "category": "Beleuchtung",
-      "image": "produkt bilder/LED Water Ripple Crystal.jpg",
-      "description": "LED Water Ripple Ambient Night Light - USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
+      "image": "produkt bilder/Led crystal lampe .jpg",
+      "description": "USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
       "sku": "CJLED21001",
       "inStock": true,
-      "shippingTime": "7-13 Werktage",
+      "shippingTime": "6-11 Werktage",
       "colors": [
         {
           "name": "Crown",
           "code": "#FFD700",
           "sku": "CJYD188109101AZ",
-          "price": 21.99,
+          "price": 18.99,
           "originalPrice": 59.99,
-          "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal crown.png"
+          "image": "produkt bilder/Led crystal lampe bilder/Led crystal lampe crown.png"
         },
         {
           "name": "Square",
           "code": "#C0C0C0",
           "sku": "CJYD188109102BY",
-          "price": 21.99,
+          "price": 18.99,
           "originalPrice": 59.99,
-          "image": "produkt bilder/LED Water Ripple Crystal bilder/LED Water Ripple Crystal square.png"
+          "image": "produkt bilder/Led crystal lampe bilder/Led crystal lampe square.png"
         }
       ],
       "features": [
