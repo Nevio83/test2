@@ -69,11 +69,10 @@ async function convertPrice(priceInEUR, targetCurrency) {
 // Initialize Receipt System
 const { dbOperations } = require('./database');
 const ReceiptGenerator = require('./receipt-generator');
-const EmailService = require('./email-service');
+const emailService = require('./resend-service'); // Resend E-Mail Service
 const { v4: uuidv4 } = require('uuid');
 
 const receiptGenerator = new ReceiptGenerator();
-const emailService = new EmailService();
 
 const app = express();
 
@@ -173,8 +172,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
       payment_method_types: ['card'], // Nur Karte bei "Zahlungsmethode"
       line_items,
       mode: 'payment',
-      success_url: `${process.env.REPL_URL || 'http://localhost:3000'}/success.html`,
-      cancel_url: `${process.env.REPL_URL || 'http://localhost:3000'}/cart.html`,
+      success_url: `${process.env.REPL_URL || 'https://maiosshop.com'}/success.html`,
+      cancel_url: `${process.env.REPL_URL || 'https://maiosshop.com'}/cart.html`,
       billing_address_collection: 'required',
       shipping_address_collection: {
         allowed_countries: ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'PL', 'US', 'GB']
@@ -775,14 +774,14 @@ app.post('/api/receipt/create', async (req, res) => {
     // Generiere HTML-Version für E-Mail
     const receiptHTML = receiptGenerator.generateHTMLReceipt(orderData);
     
-    // Sende E-Mails
+    // Sende E-Mails mit EmailJS
     try {
       // Kunde
-      await emailService.sendReceiptToCustomer(orderData, receiptHTML, pdfResult.filePath);
+      await emailService.sendOrderConfirmation(orderData);
       await dbOperations.updateEmailStatus(receiptId, 'customer');
       
       // Admin
-      await emailService.sendAdminNotification(orderData, receiptHTML, pdfResult.filePath);
+      await emailService.sendAdminNotification(orderData);
       await dbOperations.updateEmailStatus(receiptId, 'admin');
     } catch (emailError) {
       console.error('E-Mail-Versand Fehler:', emailError);
@@ -926,12 +925,11 @@ app.post('/api/receipt/resend/:orderId', async (req, res) => {
     const pdfPath = `receipts/receipt_${order.receipt_number}.pdf`;
     const fullPdfPath = require('path').join(__dirname, pdfPath);
     
-    // Sende E-Mail
-    await emailService.sendReceiptToCustomer(
-      { ...order, customer_email: email || order.customer_email },
-      receiptHTML,
-      fullPdfPath
-    );
+    // Sende E-Mail mit EmailJS
+    await emailService.sendOrderConfirmation({
+      ...order,
+      customer_email: email || order.customer_email
+    });
     
     res.json({ success: true, message: 'Kassenbon erneut gesendet' });
   } catch (error) {
