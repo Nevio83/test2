@@ -177,24 +177,24 @@ class ProductImageGallery {
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Led crystal lampe crown.png`,
-                        alt: 'Led crystal lampe - Crown',
-                        color: 'Crown'
+                        src: `../produkt bilder/Led crystal lampe  bilder/Led crystal Krone .png`,
+                        alt: 'Led crystal lampe - Krone',
+                        color: 'Krone'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Led crystal lampe square.png`,
-                        alt: 'Led crystal lampe - Square',
-                        color: 'Square'
+                        src: `../produkt bilder/Led crystal lampe  bilder/Led Crystal Holz boden.png`,
+                        alt: 'Led crystal lampe - Holz boden',
+                        color: 'Holz boden'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Led crystal lampe crown anleitung.png`,
-                        alt: 'Led crystal lampe - Crown Anleitung',
-                        color: 'Crown Anleitung'
+                        src: `../produkt bilder/Led crystal lampe  bilder/Led crystal Krone anleitung.png`,
+                        alt: 'Led crystal lampe - Krone Anleitung',
+                        color: 'Krone Anleitung'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Led crystal lampe square anleitung.png`,
-                        alt: 'Led crystal lampe - Square Anleitung',
-                        color: 'Square Anleitung'
+                        src: `../produkt bilder/Led crystal lampe  bilder/Led Crystal Holz boden anleitung.png`,
+                        alt: 'Led crystal lampe - Holz boden Anleitung',
+                        color: 'Holz boden Anleitung'
                     }
                 ];
                 break;

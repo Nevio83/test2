@@ -812,20 +812,20 @@
       "shippingTime": "6-11 Werktage",
       "colors": [
         {
-          "name": "Crown",
+          "name": "Krone",
           "code": "#FFD700",
           "sku": "CJYD188109101AZ",
           "price": 18.99,
           "originalPrice": 59.99,
-          "image": "produkt bilder/Led crystal lampe bilder/Led crystal lampe crown.png"
+          "image": "produkt bilder/Led crystal lampe  bilder/Led crystal Krone .png"
         },
         {
-          "name": "Square",
+          "name": "Holz boden",
           "code": "#C0C0C0",
           "sku": "CJYD188109102BY",
           "price": 18.99,
           "originalPrice": 59.99,
-          "image": "produkt bilder/Led crystal lampe bilder/Led crystal lampe square.png"
+          "image": "produkt bilder/Led crystal lampe  bilder/Led Crystal Holz boden.png"
         }
       ],
       "features": [
