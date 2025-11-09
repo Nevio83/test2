@@ -513,6 +513,14 @@ class ImageColorSelection {
             el.textContent = `€${color.price.toFixed(2)}`;
         });
         
+        // Update durchgestrichenen Preis (originalPrice)
+        const originalPriceElements = document.querySelectorAll('.text-decoration-line-through');
+        originalPriceElements.forEach(el => {
+            if (color.originalPrice) {
+                el.textContent = `€${color.originalPrice.toFixed(2)}`;
+            }
+        });
+        
         // Update Quick Order Preise (current-price)
         const currentPriceElements = document.querySelectorAll('.current-price');
         currentPriceElements.forEach(el => {
@@ -526,7 +534,7 @@ class ImageColorSelection {
             el.textContent = `€${(color.price * quantity).toFixed(2)}`;
         });
         
-        console.log(`Preis aktualisiert auf: €${color.price.toFixed(2)}`);
+        console.log(`Preis aktualisiert auf: €${color.price.toFixed(2)} (Original: €${color.originalPrice?.toFixed(2) || 'N/A'})`);
         
         // WICHTIG: Erst window.product.price aktualisieren, DANN Bundles neu rendern
         if (window.product) {
