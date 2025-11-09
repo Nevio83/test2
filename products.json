@@ -1918,6 +1918,14 @@
     "shippingTime": "7-15 Werktage",
     "colors": [
       {
+        "name": "Mond",
+        "code": "#F4E4C1",
+        "sku": "CJJT153840404DW",
+        "price": 13.99,
+        "originalPrice": 29.99,
+        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Krystall Ball Mond.jpg"
+      },
+      {
         "name": "Riesenrad",
         "code": "#FFB6C1",
         "sku": "CJJT153840405EV",
@@ -1932,14 +1940,6 @@
         "price": 13.99,
         "originalPrice": 29.99,
         "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Wassermolch.jpg"
-      },
-      {
-        "name": "Mond",
-        "code": "#F4E4C1",
-        "sku": "CJJT153840404DW",
-        "price": 13.99,
-        "originalPrice": 29.99,
-        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Krystall Ball Mond.jpg"
       },
       {
         "name": "Saturn",
