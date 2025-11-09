@@ -32,7 +32,7 @@ class ProductImageGallery {
             32: 'Indoor Sensing Wall Lamp bilder',
             41: '2 In 1 Oil Sprayer Bottle bilder',
             42: 'RGB Flame Aroma Diffuser Volcano bilder',
-            43: 'Portable Mini Thermal Label Printer bilder',
+            43: 'Mini Thermal Drucker bilder',
             44: 'Portable Projector For Home bilder',
             45: 'Air Conditioner bilder',
             46: 'Nordic Crystal Lamp bilder',
@@ -60,7 +60,7 @@ class ProductImageGallery {
             38: 'Jade Massager bilder',
             40: 'Mug Warmer Pad bilder',
             42: 'RGB Flame Aroma Diffuser Volcano bilder',
-            43: 'Portable Mini Thermal Label Printer bilder',
+            43: 'Mini Thermal Drucker bilder',
             44: 'Portable Projector For Home bilder',
             45: 'Air Conditioner bilder',
             46: 'Nordic Crystal Lamp bilder',
@@ -530,51 +530,51 @@ class ProductImageGallery {
                 ];
                 break;
                 
-            case 43: // Portable Mini Thermal Label Printer
+            case 43: // Mini Thermal Drucker
                 this.images = [
                     {
-                        src: `../produkt bilder/Portable Mini Thermal Label Printer.jpg`,
-                        alt: 'Portable Mini Thermal Label Printer - Hauptbild',
+                        src: `../produkt bilder/Mini Thermal Drucker.jpg`,
+                        alt: 'Mini Thermal Drucker - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer grün.jpg`,
-                        alt: 'Portable Mini Thermal Label Printer - Grün',
+                        src: `../produkt bilder/${folderName}/Mini Thermal Drucker grün.jpg`,
+                        alt: 'Mini Thermal Drucker - Grün',
                         color: 'Grün'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer blau.jpg`,
-                        alt: 'Portable Mini Thermal Label Printer - Blau',
+                        src: `../produkt bilder/${folderName}/Mini Thermal Drucker blau.jpg`,
+                        alt: 'Mini Thermal Drucker - Blau',
                         color: 'Blau'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer pink.jpg`,
-                        alt: 'Portable Mini Thermal Label Printer - Pink',
+                        src: `../produkt bilder/${folderName}/Mini Thermal Drucker pink.jpg`,
+                        alt: 'Mini Thermal Drucker - Pink',
                         color: 'Pink'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer gelb.jpg`,
-                        alt: 'Portable Mini Thermal Label Printer - Gelb',
+                        src: `../produkt bilder/${folderName}/Mini Thermal Drucker gelb.jpg`,
+                        alt: 'Mini Thermal Drucker - Gelb',
                         color: 'Gelb'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer weiß.jpg`,
-                        alt: 'Portable Mini Thermal Label Printer - Weiß',
+                        src: `../produkt bilder/${folderName}/Mini Thermal Drucker weiß.jpg`,
+                        alt: 'Mini Thermal Drucker - Weiß',
                         color: 'Weiß'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer rollen A.jpg`,
-                        alt: 'Portable Mini Thermal Label Printer - Style A Rollen',
+                        src: `../produkt bilder/${folderName}/Mini Thermal Drucker rollen A.jpg`,
+                        alt: 'Mini Thermal Drucker - Style A Rollen',
                         color: 'Style A Rollen'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer rollen B.jpg`,
-                        alt: 'Portable Mini Thermal Label Printer - Style B Rollen',
+                        src: `../produkt bilder/${folderName}/Mini Thermal Drucker rollen B.jpg`,
+                        alt: 'Mini Thermal Drucker - Style B Rollen',
                         color: 'Style B Rollen'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Portable Mini Thermal Label Printer rollen C.jpg`,
-                        alt: 'Portable Mini Thermal Label Printer - Style C Rollen',
+                        src: `../produkt bilder/${folderName}/Mini Thermal Drucker rollen C.jpg`,
+                        alt: 'Mini Thermal Drucker - Style C Rollen',
                         color: 'Style C Rollen'
                     }
                 ];
