@@ -55,8 +55,8 @@ class ProductImageGallery {
             26: '4 In 1 Self Cleaning Hair Brush bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
             33: 'Aromatherapy essential oil humidifier bilder',
-            34: 'Moisturizing Face Steamer bilder',
-            35: 'Thermal Neck Lifting And Tighten Massager bilder',
+            34: 'Gesichtssauna bilder',
+            35: 'Thermische Massage bilder',
             38: 'Jade Massager bilder',
             40: 'Mug Warmer Pad bilder',
             42: 'Aroma Öl Diffusor bilder',
@@ -365,41 +365,41 @@ class ProductImageGallery {
                 ];
                 break;
 
-            case 34: // Moisturizing Face Steamer
+            case 34: // Gesichtssauna
                 this.images = [
                     {
-                        src: `../produkt bilder/Moisturizing Face Steamer.jpg`,
-                        alt: 'Moisturizing Face Steamer - Hauptbild',
+                        src: `../produkt bilder/Gesichtssauna.jpg`,
+                        alt: 'Gesichtssauna - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Moisturizing Face Steamer blau.jpg`,
-                        alt: 'Moisturizing Face Steamer - Blau',
+                        src: `../produkt bilder/${folderName}/Gesichtssauna blau.jpg`,
+                        alt: 'Gesichtssauna - Blau',
                         color: 'Blau'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Moisturizing Face Steamer weiß.jpg`,
-                        alt: 'Moisturizing Face Steamer - Weiß',
+                        src: `../produkt bilder/${folderName}/Gesichtssauna weiß.jpg`,
+                        alt: 'Gesichtssauna - Weiß',
                         color: 'Weiß'
                     }
                 ];
                 break;
 
-            case 35: // Thermal Neck Lifting And Tighten Massager
+            case 35: // Thermische Massage
                 this.images = [
                     {
-                        src: `../produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg`,
-                        alt: 'Thermal Neck Lifting And Tighten Massager - Hauptbild',
+                        src: `../produkt bilder/Thermische Massage.jpg`,
+                        alt: 'Thermische Massage - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Thermal Neck Lifting And Tighten Massager schwarz.jpg`,
-                        alt: 'Thermal Neck Lifting And Tighten Massager - Schwarz',
+                        src: `../produkt bilder/${folderName}/Thermische Massage schwarz.jpg`,
+                        alt: 'Thermische Massage - Schwarz',
                         color: 'Schwarz'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Thermal Neck Lifting And Tighten Massager weiß.jpg`,
-                        alt: 'Thermal Neck Lifting And Tighten Massager - Weiß',
+                        src: `../produkt bilder/${folderName}/Thermische Massage weiß.jpg`,
+                        alt: 'Thermische Massage - Weiß',
                         color: 'Weiß'
                     }
                 ];

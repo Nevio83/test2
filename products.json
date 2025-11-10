@@ -1123,11 +1123,11 @@
   },
   {
     "id": 34,
-    "name": "Moisturizing Face Steamer",
+    "name": "Gesichtssauna",
     "price": 19.99,
     "originalPrice": 24.99,
     "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Moisturizing Face Steamer.jpg",
+    "image": "produkt bilder/Gesichtssauna.jpg",
     "description": "Ein 2-in-1-Gesichts- und Augendampfer mit Nano-Zerstäubungstechnologie. Spendet effektiv Feuchtigkeit, lindert trockene Haut und reduziert die Ermüdung der Augen. Klein, tragbar und über USB aufladbar - perfekt für die Hautpflege unterwegs.",
     "sku": "CJMB1545970",
     "inStock": true,
@@ -1140,7 +1140,7 @@
         "sku": "CJMB154597002BY",
         "price": 19.99,
         "originalPrice": 24.99,
-        "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer blau.jpg"
+        "image": "produkt bilder/Gesichtssauna bilder/Gesichtssauna blau.jpg"
       },
       {
         "name": "Weiß",
@@ -1148,18 +1148,18 @@
         "sku": "CJMB154597001AZ",
         "price": 19.99,
         "originalPrice": 24.99,
-        "image": "produkt bilder/Moisturizing Face Steamer bilder/Moisturizing Face Steamer weiß.jpg"
+        "image": "produkt bilder/Gesichtssauna bilder/Gesichtssauna weiß.jpg"
       }
     ],
-    "tags": ["face steamer", "moisturizer", "wellness", "hautpflege", "beauty"]
+    "tags": ["face steamer", "moisturizer", "wellness", "hautpflege", "beauty", "gesichtssauna"]
   },
   {
     "id": 35,
-    "name": "Thermal Neck Lifting And Tighten Massager",
-    "price": 16.99,
+    "name": "Thermische Massage",
+    "price": 21.99,
     "originalPrice": 29.99,
     "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager.jpg",
+    "image": "produkt bilder/Thermische Massage.jpg",
     "description": "Ein EMS Thermal Neck Lifting und Tighten Massager, der mit elektrischem Mikrostrom Falten entfernt und die Haut strafft. Ideal für eine entspannende und verjüngende Nackenmassage.",
     "sku": "CJYD1887254",
     "inStock": true,
@@ -1170,17 +1170,17 @@
         "name": "Schwarz",
         "code": "#000000",
         "sku": "CJYD188725403CX",
-        "price": 16.99,
+        "price": 21.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager schwarz.jpg"
+        "image": "produkt bilder/Thermische Massage bilder/Thermische Massage schwarz.jpg"
       },
       {
         "name": "Weiß",
         "code": "#FFFFFF",
         "sku": "CJYD188725404DW",
-        "price": 16.99,
+        "price": 21.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Thermal Neck Lifting And Tighten Massager bilder/Thermal Neck Lifting And Tighten Massager weiß.jpg"
+        "image": "produkt bilder/Thermische Massage bilder/Thermische Massage weiß.jpg"
       }
     ],
     "tags": [
