@@ -555,14 +555,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 @media (max-width: 768px) {
                     .bundle-container {
-                        padding: 20px !important;
-                        max-width: 95% !important;
+                        padding: 5px !important;
+                        max-width: 98% !important;
                         margin: 0 auto !important;
+                    }
+                    
+                    .bundle-title {
+                        margin-bottom: 5px !important;
+                        font-size: 1rem !important;
+                    }
+                    
+                    .bundle-card {
+                        margin-bottom: 5px !important;
+                        padding: 6px !important;
                     }
                     
                     .bundle-set,
                     .bundle-colors {
-                        margin: 8px 0 !important;
+                        margin: 2px 0 !important;
                         display: block !important;
                         visibility: visible !important;
                     }
@@ -572,15 +582,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         visibility: visible !important;
                         color: #ffffff !important;
                         font-weight: 600 !important;
-                        margin-bottom: 8px !important;
+                        margin-bottom: 1px !important;
+                        font-size: 0.75rem !important;
                     }
                     
                     .color-images {
                         display: flex !important;
                         visibility: visible !important;
-                        gap: 6px !important;
+                        gap: 2px !important;
                         overflow-x: auto !important;
-                        padding: 8px 0 !important;
+                        padding: 1px 0 !important;
                         -webkit-overflow-scrolling: touch !important;
                         max-width: 100% !important;
                         width: 100% !important;
@@ -633,26 +644,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     .bundle-savings-badge {
-                        padding: 6px 12px !important;
-                        font-size: 12px !important;
+                        padding: 4px 8px !important;
+                        font-size: 0.7rem !important;
                         margin-top: 0 !important;
                         align-self: center !important;
+                    }
+                    
+                    .bundle-qty {
+                        font-size: 1rem !important;
+                        margin: 0 0 3px 0 !important;
                     }
                     
                     .price-display {
                         flex-direction: column !important;
                         align-items: center !important;
-                        gap: 10px !important;
+                        gap: 2px !important;
                     }
                     
                     .price-display > div {
                         flex-direction: column !important;
                         align-items: center !important;
                         text-align: center !important;
+                        gap: 1px !important;
                     }
                     
-                    .price, .original {
+                    .price {
+                        font-size: 1rem !important;
                         text-align: center !important;
+                    }
+                    
+                    .original {
+                        font-size: 0.8rem !important;
+                        text-align: center !important;
+                    }
+                    
+                    .add-bundle-btn {
+                        padding: 8px !important;
+                        font-size: 0.85rem !important;
+                        margin-top: 5px !important;
                     }
                 }
                 
