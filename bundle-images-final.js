@@ -220,12 +220,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             
                             <div class="bundle-pricing">
                                 <div class="price-display">
-                                    <span class="price">€${(bundle.price * bundle.qty).toFixed(2)}</span>
-                                    ${bundle.discount > 0 ? `<span class="original">€${(basePrice * bundle.qty).toFixed(2)}</span>` : ''}
-                                    ${bundle.discount > 0 ? 
-                                        `<span class="savings-text">Spare €${((basePrice - bundle.price) * bundle.qty).toFixed(2)}</span>` : 
-                                        ''
-                                    }
+                                    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                                        <span class="price">Gesamt: €${(bundle.price * bundle.qty).toFixed(2)}</span>
+                                        ${bundle.discount > 0 ? `<span class="original">€${(basePrice * bundle.qty).toFixed(2)}</span>` : ''}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -280,8 +278,8 @@ document.addEventListener('DOMContentLoaded', function() {
             style.id = 'bundle-images-styles';
             style.textContent = `
                 .bundle-container {
-                    padding: 25px;
-                    max-width: 900px;
+                    padding: 70px;
+                    max-width: 650px;
                     margin: 0 auto;
                 }
                 
@@ -350,9 +348,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .bundle-qty {
-                    margin: 0;
-                    font-size: 20px;
-                    color: #333;
+                    margin: 0 0 20px 0;
+                    font-size: 32px;
+                    color: #ffffff;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 3px;
+                    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                 }
                 
                 
@@ -437,11 +439,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .set-label {
-                    min-width: 50px;
-                    font-size: 13px;
-                    color: #666;
+                    min-width: 60px;
+                    font-size: 18px;
+                    color: #ffffff;
                     flex-shrink: 0;
-                    font-weight: 500;
+                    font-weight: 600;
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
                 }
                 
                 .color-images {
@@ -856,7 +859,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const savingsDisplay = card.querySelector('.savings-text');
             if (savingsDisplay && discount > 0) {
                 const savings = totalPrice - discountedPrice;
-                savingsDisplay.textContent = `Spare €${savings.toFixed(2)}`;
+                savingsDisplay.textContent = `Gesamt: €${discountedPrice.toFixed(2)}`;
             }
         });
         
