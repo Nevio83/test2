@@ -1368,11 +1368,11 @@
   },
   {
     "id": 42,
-    "name": "RGB Flame Aroma Diffuser Volcano",
+    "name": "Aroma Öl Diffusor",
     "price": 29.99,
     "originalPrice": 49.99,
     "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano.jpg",
+    "image": "produkt bilder/Aroma Öl Diffusor.jpg",
     "description": "Innovativer RGB Flame Aroma Diffuser mit realistischem 3D-Vulkan-Flammeneffekt. 130ml Kapazität mit bunter LED-Beleuchtung für entspannende Aromatherapie und stimmungsvolle Beleuchtung.",
     "sku": "CJJD1582742",
     "inStock": true,
@@ -1384,7 +1384,7 @@
         "sku": "CJJD1582742-Black",
         "price": 29.99,
         "originalPrice": 49.99,
-        "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano bilder/RGB Flame Aroma Diffuser Volcano schwarz.jpg"
+        "image": "produkt bilder/Aroma Öl Diffusor bilder/Aroma Öl Diffusor schwarz.jpg"
       },
       {
         "name": "Weiß",
@@ -1392,7 +1392,7 @@
         "sku": "CJJD1582742-White",
         "price": 29.99,
         "originalPrice": 49.99,
-        "image": "produkt bilder/RGB Flame Aroma Diffuser Volcano bilder/RGB Flame Aroma Diffuser Volcano weiß.jpg"
+        "image": "produkt bilder/Aroma Öl Diffusor bilder/Aroma Öl Diffusor weiß.jpg"
       }
     ],
     "bundles": [

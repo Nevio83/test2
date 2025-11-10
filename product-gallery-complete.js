@@ -31,7 +31,7 @@ class ProductImageGallery {
             27: 'Volcanic Flame Aroma Essential Oil Diffuser bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
             41: '2 In 1 Oil Sprayer Bottle bilder',
-            42: 'RGB Flame Aroma Diffuser Volcano bilder',
+            42: 'Aroma Öl Diffusor bilder',
             43: 'Mini Thermal Drucker bilder',
             44: 'Smart Beamer bilder',
             45: 'Klimaanlage mit Displaybilder',
@@ -59,7 +59,7 @@ class ProductImageGallery {
             35: 'Thermal Neck Lifting And Tighten Massager bilder',
             38: 'Jade Massager bilder',
             40: 'Mug Warmer Pad bilder',
-            42: 'RGB Flame Aroma Diffuser Volcano bilder',
+            42: 'Aroma Öl Diffusor bilder',
             43: 'Mini Thermal Drucker bilder',
             44: 'Smart Beamer bilder',
             45: 'Klimaanlage mit Displaybilder',
@@ -495,36 +495,36 @@ class ProductImageGallery {
                 ];
                 break;
 
-            case 42: // RGB Flame Aroma Diffuser Volcano
+            case 42: // Aroma Öl Diffusor
                 this.images = [
                     {
-                        src: `../produkt bilder/RGB Flame Aroma Diffuser Volcano.jpg`,
-                        alt: 'RGB Flame Aroma Diffuser Volcano - Hauptbild',
+                        src: `../produkt bilder/Aroma Öl Diffusor.jpg`,
+                        alt: 'Aroma Öl Diffusor - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano schwarz.jpg`,
-                        alt: 'RGB Flame Aroma Diffuser Volcano - Schwarz',
+                        src: `../produkt bilder/${folderName}/Aroma Öl Diffusor schwarz.jpg`,
+                        alt: 'Aroma Öl Diffusor - Schwarz',
                         color: 'Schwarz'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano weiß.jpg`,
-                        alt: 'RGB Flame Aroma Diffuser Volcano - Weiß',
+                        src: `../produkt bilder/${folderName}/Aroma Öl Diffusor weiß.jpg`,
+                        alt: 'Aroma Öl Diffusor - Weiß',
                         color: 'Weiß'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano schwarz an.jpg`,
-                        alt: 'RGB Flame Aroma Diffuser Volcano - Schwarz An',
+                        src: `../produkt bilder/${folderName}/Aroma Öl Diffusor schwarz an.jpg`,
+                        alt: 'Aroma Öl Diffusor - Schwarz An',
                         color: 'Schwarz An'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano weiß an.jpg`,
-                        alt: 'RGB Flame Aroma Diffuser Volcano - Weiß An',
+                        src: `../produkt bilder/${folderName}/Aroma Öl Diffusor weiß an.jpg`,
+                        alt: 'Aroma Öl Diffusor - Weiß An',
                         color: 'Weiß An'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/RGB Flame Aroma Diffuser Volcano ansicht.jpg`,
-                        alt: 'RGB Flame Aroma Diffuser Volcano - Ansicht',
+                        src: `../produkt bilder/${folderName}/Aroma Öl Diffusor ansicht.jpg`,
+                        alt: 'Aroma Öl Diffusor - Ansicht',
                         color: 'Ansicht'
                     }
                 ];
@@ -1254,7 +1254,7 @@ class ProductImageFullscreen {
                 21: 'Led crystal lampe bilder',
                 26: '4 In 1 Self Cleaning Hair Brush bilder',
                 32: 'Indoor Sensing Wall Lamp bilder',
-                42: 'RGB Flame Aroma Diffuser Volcano bilder',
+                42: 'Aroma Öl Diffusor bilder',
                 47: 'Tumbler Becher bilder',
                 48: 'Tumbler becher winter bilder',
                 49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder'
