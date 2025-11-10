@@ -1193,22 +1193,22 @@
   },
   {
     "id": 36,
-    "name": "Cleaning Blackhead Instrument",
+    "name": "Mitesserentferner Gerät",
     "price": 17.99,
     "originalPrice": 22.99,
     "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Cleaning Blackhead Instrument.jpg",
+    "image": "produkt bilder/Mitesserentferner Gerät.jpg",
     "description": "Elektrisches Mitesser-Entferner-Instrument mit Saugfunktion zur Gesichtsreinigung. Entfernt effektiv Akne und Mitesser für eine reinere Haut.",
     "sku": "CJBJMRDD00019-White",
     "inStock": true,
     "shippingTime": "7-13 Werktage",
     "showInSlider": false,
-    "tags": ["blackhead remover", "hautpflege", "gesichtsreinigung", "wellness"]
+    "tags": ["blackhead remover", "hautpflege", "gesichtsreinigung", "wellness", "mitesserentferner"]
   },
   {
     "id": 37,
     "name": "Professional 5 In 1 Hair Dryer",
-    "price": 39.99,
+    "price": 59.99,
     "originalPrice": 69.99,
     "category": "Körperpflege/Wellness",
     "image": "produkt bilder/Professional 5 In 1 Hair Dryer.jpg",
@@ -1222,7 +1222,7 @@
   {
     "id": 38,
     "name": "Jade Massager",
-    "price": 10.99,
+    "price": 11.99,
     "originalPrice": 24.99,
     "category": "Körperpflege/Wellness",
     "image": "produkt bilder/Jade Massager.jpg",
@@ -1236,7 +1236,7 @@
         "name": "Schwarz",
         "code": "#000000",
         "sku": "CJPF101135114NM",
-        "price": 10.99,
+        "price": 11.99,
         "originalPrice": 24.99,
         "image": "produkt bilder/Jade Massager bilder/Jade Massager schwarz.jpg"
       },
@@ -1244,7 +1244,7 @@
         "name": "Grün",
         "code": "#008000",
         "sku": "CJPF101135122VE",
-        "price": 10.99,
+        "price": 11.99,
         "originalPrice": 24.99,
         "image": "produkt bilder/Jade Massager bilder/Jade Massager grün.jpg"
       },
@@ -1252,7 +1252,7 @@
         "name": "Hellgrün",
         "code": "#90EE90",
         "sku": "CJPF101135120TG",
-        "price": 10.99,
+        "price": 11.99,
         "originalPrice": 24.99,
         "image": "produkt bilder/Jade Massager bilder/Jade Massager hell grün.jpg"
       },
@@ -1260,7 +1260,7 @@
         "name": "Pink",
         "code": "#FFC0CB",
         "sku": "CJPF101135116PK",
-        "price": 10.99,
+        "price": 11.99,
         "originalPrice": 24.99,
         "image": "produkt bilder/Jade Massager bilder/Jade Massager pink.jpg"
       },
@@ -1268,7 +1268,7 @@
         "name": "Lila",
         "code": "#800080",
         "sku": "CJPF101135118RI",
-        "price": 10.99,
+        "price": 11.99,
         "originalPrice": 24.99,
         "image": "produkt bilder/Jade Massager bilder/Jade Massager lila.jpg"
       },
@@ -1276,7 +1276,7 @@
         "name": "Weiß",
         "code": "#FFFFFF",
         "sku": "CJPF101135124XC",
-        "price": 10.99,
+        "price": 11.99,
         "originalPrice": 24.99,
         "image": "produkt bilder/Jade Massager bilder/Jade Massager weiß.jpg"
       },
@@ -1284,7 +1284,7 @@
         "name": "Gelb",
         "code": "#FFFF00",
         "sku": "CJPF101135127AZ",
-        "price": 10.99,
+        "price": 11.99,
         "originalPrice": 24.99,
         "image": "produkt bilder/Jade Massager bilder/Jade Massager gelb.jpg"
       }
@@ -1369,7 +1369,7 @@
   {
     "id": 42,
     "name": "Aroma Öl Diffusor",
-    "price": 29.99,
+    "price": 28.99,
     "originalPrice": 49.99,
     "category": "Körperpflege/Wellness",
     "image": "produkt bilder/Aroma Öl Diffusor.jpg",
@@ -1382,7 +1382,7 @@
         "name": "Schwarz",
         "code": "#2C2C2C",
         "sku": "CJJD1582742-Black",
-        "price": 29.99,
+        "price": 28.99,
         "originalPrice": 49.99,
         "image": "produkt bilder/Aroma Öl Diffusor bilder/Aroma Öl Diffusor schwarz.jpg"
       },
@@ -1390,7 +1390,7 @@
         "name": "Weiß",
         "code": "#FFFFFF",
         "sku": "CJJD1582742-White",
-        "price": 29.99,
+        "price": 28.99,
         "originalPrice": 49.99,
         "image": "produkt bilder/Aroma Öl Diffusor bilder/Aroma Öl Diffusor weiß.jpg"
       }
@@ -1442,7 +1442,7 @@
   {
     "id": 43,
     "name": "Mini Thermal Drucker",
-    "price": 21.99,
+    "price": 26.99,
     "originalPrice": 59.99,
     "category": "Technik/Gadgets",
     "image": "produkt bilder/Mini Thermal Drucker.jpg",
@@ -1455,7 +1455,7 @@
         "name": "Grün",
         "code": "#008000",
         "sku": "CJJT136588021UF",
-        "price": 21.99,
+        "price": 26.99,
         "originalPrice": 59.99,
         "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker grün.jpg"
       },
@@ -1463,7 +1463,7 @@
         "name": "Blau",
         "code": "#0066CC",
         "sku": "CJJT136588022VE",
-        "price": 21.99,
+        "price": 26.99,
         "originalPrice": 59.99,
         "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker blau.jpg"
       },
@@ -1471,7 +1471,7 @@
         "name": "Pink",
         "code": "#FFC0CB",
         "sku": "CJJT136588034HS",
-        "price": 21.99,
+        "price": 26.99,
         "originalPrice": 59.99,
         "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker pink.jpg"
       },
@@ -1479,7 +1479,7 @@
         "name": "Gelb",
         "code": "#FFD700",
         "sku": "CJJT136588024XC",
-        "price": 21.99,
+        "price": 26.99,
         "originalPrice": 59.99,
         "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker gelb.jpg"
       },
@@ -1487,7 +1487,7 @@
         "name": "Weiß",
         "code": "#FFFFFF",
         "sku": "CJJT136588038LO",
-        "price": 21.99,
+        "price": 26.99,
         "originalPrice": 59.99,
         "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker weiß.jpg"
       },
@@ -1565,7 +1565,7 @@
   {
     "id": 44,
     "name": "Smart Beamer",
-    "price": 149.99,
+    "price": 74.99,
     "originalPrice": 199.99,
     "category": "Technik/Gadgets",
     "image": "produkt bilder/Smart Beamer.jpg",
@@ -1578,7 +1578,7 @@
         "name": "Weiß",
         "code": "#FFFFFF",
         "sku": "CJYD1808029",
-        "price": 149.99,
+        "price": 74.99,
         "originalPrice": 199.99,
         "image": "produkt bilder/Smart Beamer bilder/Smart Beamer weiß.jpg"
       },
@@ -1586,7 +1586,7 @@
         "name": "Silber",
         "code": "#C0C0C0",
         "sku": "CJYD180802920TG",
-        "price": 159.99,
+        "price": 74.99,
         "originalPrice": 209.99,
         "image": "produkt bilder/Smart Beamer bilder/Smart Beamer silber.jpg"
       }
