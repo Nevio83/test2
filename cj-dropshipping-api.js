@@ -356,6 +356,40 @@ class CJDropshippingAPI {
   }
 
   // ==========================================
+  // RETURNS APIs
+  // ==========================================
+
+  /**
+   * Create Return Request
+   */
+  async createReturn(data) {
+    console.log('📦 Erstelle CJ-Retoure...');
+    return this.makeRequest('/api2.0/v1/returns/create', 'POST', data);
+  }
+
+  /**
+   * Get Return List
+   */
+  async getReturnList(params = {}) {
+    const queryString = new URLSearchParams(params).toString();
+    return this.makeRequest(`/api2.0/v1/returns/list${queryString ? '?' + queryString : ''}`);
+  }
+
+  /**
+   * Get Return Details
+   */
+  async getReturnDetails(returnId) {
+    return this.makeRequest(`/api2.0/v1/returns/details?returnId=${returnId}`);
+  }
+
+  /**
+   * Cancel Return
+   */
+  async cancelReturn(returnId) {
+    return this.makeRequest('/api2.0/v1/returns/cancel', 'POST', { returnId });
+  }
+
+  // ==========================================
   // SETTINGS APIs
   // ==========================================
 
@@ -507,6 +541,12 @@ class CJDropshippingAPI {
         'cancelDispute',
         'disputeProducts',
         'disputeConfirmInfo'
+      ],
+      returns: [
+        'createReturn',
+        'getReturnList',
+        'getReturnDetails',
+        'cancelReturn'
       ],
       settings: [
         'getSettings'

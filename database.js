@@ -163,6 +163,11 @@ const dbOperations = {
     });
   },
 
+  // Bestellung nach Bestellnummer abrufen (Alias für getOrder)
+  getOrderByOrderId: (order_id) => {
+    return dbOperations.getOrder(order_id);
+  },
+
   // Alle Bestellungen abrufen (mit Pagination)
   getAllOrders: (limit = 50, offset = 0) => {
     return new Promise((resolve, reject) => {

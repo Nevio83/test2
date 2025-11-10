@@ -144,6 +144,22 @@ app.post('/api/create-checkout-session', async (req, res) => {
   const currency = getCurrencyByCountry(country);
   console.log('💱 Verwendete Währung:', currency);
   
+  // Berechne CJ-Kosten für automatische Aufteilung
+  const { calculateCJCost, calculatePaymentSplit } = require('./cj-payment-calculator');
+  const cartItems = cart.map(item => ({
+    id: item.id,
+    price: item.price,
+    quantity: item.quantity
+  }));
+  const cjCost = calculateCJCost(cartItems, country);
+  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const split = calculatePaymentSplit(cartTotal, cjCost);
+  
+  console.log('💰 Payment Split Berechnung:');
+  console.log(`   Gesamt: €${split.total.toFixed(2)}`);
+  console.log(`   CJ-Kosten: €${split.cjCost.toFixed(2)}`);
+  console.log(`   Dein Gewinn: €${split.yourProfit.toFixed(2)} (${split.profitPercentage}%)`);
+  
   // Konvertiere alle Preise parallel
   const line_items = await Promise.all(cart.map(async (item) => {
     if (item.id === 1) {
@@ -189,6 +205,32 @@ app.post('/api/create-checkout-session', async (req, res) => {
         }
       }
     };
+    
+    // 🚀 AUTOMATISCHE CJ-ZAHLUNG: Füge Payment Intent mit Transfer hinzu
+    if (process.env.CJ_STRIPE_ACCOUNT_ID && split.cjCost > 0) {
+      const cjCostInCents = Math.round(split.cjCost * 100);
+      console.log('💳 Aktiviere automatischen Transfer an CJ Sub-Account');
+      console.log(`   Transfer-Betrag: €${split.cjCost.toFixed(2)} (${cjCostInCents} cents)`);
+      
+      sessionConfig.payment_intent_data = {
+        application_fee_amount: 0, // Keine Platform-Gebühr
+        transfer_data: {
+          amount: cjCostInCents,
+          destination: process.env.CJ_STRIPE_ACCOUNT_ID
+        },
+        metadata: {
+          cj_cost: split.cjCost.toFixed(2),
+          your_profit: split.yourProfit.toFixed(2),
+          profit_percentage: split.profitPercentage
+        }
+      };
+      
+      console.log('✅ Automatischer Transfer konfiguriert!');
+      console.log(`   Destination: ${process.env.CJ_STRIPE_ACCOUNT_ID}`);
+    } else if (!process.env.CJ_STRIPE_ACCOUNT_ID) {
+      console.log('⚠️  CJ Sub-Account nicht konfiguriert - Transfer übersprungen');
+      console.log('💡 Führe aus: node setup-stripe-cj-split.js');
+    }
     
     // Füge Kundendaten hinzu wenn vorhanden
     if (customerInfo && customerInfo.email) {
@@ -354,6 +396,104 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
       } catch (invoiceError) {
         console.error('❌ Stripe Invoice-Erstellung fehlgeschlagen:', invoiceError);
       }
+      
+      // ==========================================
+      // 🚀 NEU: AUTOMATISCHE CJ-BESTELLUNG
+      // ==========================================
+      try {
+        console.log('\n🏭 AUTOMATISCHE CJ-BESTELLUNG STARTEN...');
+        
+        // Importiere CJ Payment Calculator
+        const { calculateCJCost, calculatePaymentSplit } = require('./cj-payment-calculator');
+        
+        // Berechne CJ-Kosten
+        const cartItems = orderData.items.map(item => ({
+          id: item.product_id,
+          price: item.unit_price,
+          quantity: item.quantity
+        }));
+        
+        const country = JSON.parse(orderData.shipping_address).country || 'DE';
+        const cjCost = calculateCJCost(cartItems, country);
+        const split = calculatePaymentSplit(orderData.total_amount, cjCost);
+        
+        console.log(`💰 Kunde zahlt: €${split.total.toFixed(2)}`);
+        console.log(`🏭 CJ-Kosten: €${split.cjCost.toFixed(2)}`);
+        console.log(`✅ Dein Gewinn: €${split.yourProfit.toFixed(2)} (${split.profitPercentage}%)`);
+        
+        // Prüfe ob CJ Sub-Account existiert
+        if (process.env.CJ_STRIPE_ACCOUNT_ID) {
+          console.log('💳 CJ Sub-Account gefunden - Automatische Zahlung aktiv');
+          
+          // Hinweis: Transfer wird automatisch durch Stripe Split gemacht
+          // (wird in cart.js beim Checkout konfiguriert)
+          console.log('✅ Zahlung wird automatisch aufgeteilt');
+          
+        } else {
+          console.log('⚠️  CJ Sub-Account nicht konfiguriert');
+          console.log('💡 Führe aus: node setup-stripe-cj-split.js');
+        }
+        
+        // Erstelle CJ-Bestellung (wenn API verfügbar)
+        if (cjAPI && orderData.items.length > 0) {
+          console.log('📦 Erstelle CJ-Bestellung...');
+          
+          const cjOrderData = {
+            orderNumber: orderData.order_id,
+            shippingAddress: {
+              name: orderData.customer_name,
+              email: orderData.customer_email,
+              phone: orderData.customer_phone || '',
+              ...JSON.parse(orderData.shipping_address)
+            },
+            products: orderData.items.map(item => ({
+              vid: item.product_sku || `PROD-${item.product_id}`,
+              quantity: item.quantity,
+              variantId: item.color || null
+            })),
+            shippingMethod: 'Standard',
+            fromCountryCode: 'DE'
+          };
+          
+          try {
+            const cjOrder = await cjAPI.createOrderV2(cjOrderData);
+            console.log(`✅ CJ-Bestellung erstellt: ${cjOrder.orderId}`);
+            
+            // Speichere CJ-Bestellnummer
+            await dbOperations.addTracking({
+              order_id: orderData.order_id,
+              status: 'order_placed',
+              description: 'Bestellung an CJ Dropshipping gesendet',
+              tracking_number: cjOrder.orderId,
+              carrier: 'CJ Dropshipping'
+            });
+            
+          } catch (cjError) {
+            console.error('❌ CJ-Bestellung fehlgeschlagen:', cjError.message);
+            
+            // Sende Admin-Warnung
+            await emailService.sendEmail({
+              to: 'maioscorporation@gmail.com',
+              subject: `⚠️ CJ-Bestellung fehlgeschlagen: ${orderData.order_id}`,
+              html: `
+                <h2>CJ-Bestellung konnte nicht automatisch erstellt werden</h2>
+                <p><strong>Bestellnummer:</strong> ${orderData.order_id}</p>
+                <p><strong>Kunde:</strong> ${orderData.customer_name}</p>
+                <p><strong>Betrag:</strong> €${orderData.total_amount.toFixed(2)}</p>
+                <p><strong>Fehler:</strong> ${cjError.message}</p>
+                <p><strong>Aktion erforderlich:</strong> Bitte manuell in CJ Dashboard erstellen</p>
+                <hr>
+                <p>Geld ist in deinem Stripe-Konto verfügbar.</p>
+              `
+            });
+          }
+        } else {
+          console.log('⚠️  CJ API nicht verfügbar - Bestellung muss manuell erstellt werden');
+        }
+        
+      } catch (autoOrderError) {
+        console.error('❌ Automatische CJ-Bestellung Fehler:', autoOrderError.message);
+      }
     }
     
     // Handle Payment Intent (Direkte Kartenzahlung)
@@ -484,6 +624,8 @@ app.post('/api/return-request', async (req, res) => {
     // Validiere Bestellnummer gegen Datenbank
     let orderExists = false;
     let orderDetails = null;
+    let autoApproved = false;
+    let refundProcessed = false;
     
     try {
       orderDetails = await dbOperations.getOrderByOrderId(orderId);
@@ -495,6 +637,106 @@ app.post('/api/return-request', async (req, res) => {
           error: 'Die angegebene E-Mail-Adresse stimmt nicht mit der Bestellung überein.' 
         });
       }
+      
+      // 🚀 AUTOMATISCHE GENEHMIGUNG prüfen
+      if (orderExists && orderDetails) {
+        const orderAge = Math.floor((Date.now() - new Date(orderDetails.created_at).getTime()) / (1000 * 60 * 60 * 24));
+        const autoApproveReasons = ['Produkt defekt', 'Falsche Ware erhalten', 'Beschädigt angekommen'];
+        
+        console.log(`🔍 Prüfe automatische Genehmigung:`);
+        console.log(`   Bestellalter: ${orderAge} Tage`);
+        console.log(`   Grund: ${reason}`);
+        
+        // Automatisch genehmigen wenn:
+        // 1. Bestellung < 14 Tage alt
+        // 2. Grund ist in Auto-Approve Liste
+        // DEAKTIVIERT: Benutzer möchte immer manuell entscheiden
+        if (false && orderAge <= 14 && autoApproveReasons.includes(reason)) {
+          autoApproved = true;
+          console.log('✅ Retoure wird automatisch genehmigt!');
+          
+          // Automatischer Stripe Refund
+          try {
+            if (stripe && orderDetails.payment_intent_id) {
+              console.log('💳 Erstelle automatischen Stripe Refund...');
+              
+              const refund = await stripe.refunds.create({
+                payment_intent: orderDetails.payment_intent_id,
+                reason: 'requested_by_customer',
+                metadata: {
+                  order_id: orderId,
+                  return_reason: reason,
+                  auto_approved: 'true'
+                }
+              });
+              
+              refundProcessed = true;
+              console.log(`✅ Refund erstellt: ${refund.id}`);
+              console.log(`   Betrag: €${(refund.amount / 100).toFixed(2)}`);
+              
+              // Update Order Status
+              await dbOperations.updateOrderStatus(orderId, 'refunded');
+              
+              // 🚀 AUTOMATISCHE CJ-RETOURE
+              try {
+                console.log('📦 Erstelle automatische CJ-Retoure...');
+                
+                // Hole CJ Order ID aus Tracking
+                const tracking = await dbOperations.getTracking(orderId);
+                let cjOrderId = null;
+                
+                if (tracking && tracking.length > 0) {
+                  cjOrderId = tracking.find(t => t.carrier === 'CJ Dropshipping')?.tracking_number;
+                }
+                
+                if (cjOrderId && cjAPI) {
+                  const cjReturnData = {
+                    orderId: cjOrderId,
+                    reason: reason,
+                    description: `Customer return request - ${reason}`,
+                    refundAmount: orderDetails.total_amount,
+                    returnType: 'refund' // oder 'exchange'
+                  };
+                  
+                  const cjReturn = await cjAPI.createReturn(cjReturnData);
+                  
+                  if (cjReturn && cjReturn.success) {
+                    console.log(`✅ CJ-Retoure erstellt: ${cjReturn.returnId || 'ID pending'}`);
+                    
+                    // Speichere CJ-Retoure ID
+                    await dbOperations.addTracking({
+                      order_id: orderId,
+                      status: 'return_requested',
+                      description: 'CJ-Retoure automatisch erstellt',
+                      tracking_number: cjReturn.returnId || 'pending',
+                      carrier: 'CJ Dropshipping Return'
+                    });
+                  } else {
+                    console.log('⚠️  CJ-Retoure konnte nicht erstellt werden - manuell erforderlich');
+                  }
+                } else {
+                  console.log('⚠️  CJ Order ID nicht gefunden - CJ-Retoure manuell erforderlich');
+                }
+                
+              } catch (cjReturnError) {
+                console.error('❌ CJ-Retoure Fehler:', cjReturnError.message);
+                console.log('⚠️  CJ-Retoure muss manuell erstellt werden');
+              }
+              
+            } else {
+              console.log('⚠️  Stripe Refund nicht möglich - Payment Intent fehlt');
+            }
+          } catch (refundError) {
+            console.error('❌ Automatischer Refund fehlgeschlagen:', refundError.message);
+            autoApproved = false; // Fallback zu manuell
+          }
+        } else {
+          console.log('⚠️  Automatische Genehmigung nicht möglich:');
+          if (orderAge > 14) console.log(`   - Bestellung zu alt (${orderAge} Tage)`);
+          if (!autoApproveReasons.includes(reason)) console.log(`   - Grund nicht in Auto-Approve Liste`);
+        }
+      }
+      
     } catch (dbError) {
       console.warn('⚠️ Datenbank-Validierung fehlgeschlagen:', dbError.message);
       // Fahre fort ohne Validierung (Fallback)
@@ -516,17 +758,25 @@ app.post('/api/return-request', async (req, res) => {
                     
                     <!-- Header -->
                     <tr>
-                        <td style="text-align: center; padding: 40px 0; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🔄 RETOURE-ANFRAGE</h1>
+                        <td style="text-align: center; padding: 40px 0; background: linear-gradient(135deg, ${autoApproved ? '#28a745' : '#dc3545'} 0%, ${autoApproved ? '#218838' : '#c82333'} 100%);">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">${autoApproved ? '✅ RETOURE AUTOMATISCH GENEHMIGT' : '🔄 RETOURE-ANFRAGE'}</h1>
+                            ${autoApproved ? '<p style="margin: 10px 0 0 0; color: #ffffff; font-size: 14px;">Refund wurde automatisch verarbeitet</p>' : ''}
                         </td>
                     </tr>
                     
                     <!-- Hauptinhalt -->
                     <tr>
                         <td style="padding: 40px;">
-                            <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; margin: 0 0 30px 0; border-radius: 4px;">
-                                <p style="margin: 0; color: #856404; font-size: 14px; font-weight: 600;">⚠️ NEUE RETOURE-ANFRAGE EINGEGANGEN</p>
+                            ${autoApproved ? `
+                            <div style="background-color: #d4edda; border-left: 4px solid #28a745; padding: 20px; margin: 0 0 30px 0; border-radius: 4px;">
+                                <p style="margin: 0; color: #155724; font-size: 14px; font-weight: 600;">✅ RETOURE AUTOMATISCH GENEHMIGT & REFUND VERARBEITET</p>
+                                <p style="margin: 10px 0 0 0; color: #155724; font-size: 12px;">Kunde erhält Geld automatisch zurück. CJ-Retoure muss noch geklärt werden.</p>
                             </div>
+                            ` : `
+                            <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; margin: 0 0 30px 0; border-radius: 4px;">
+                                <p style="margin: 0; color: #856404; font-size: 14px; font-weight: 600;">⚠️ NEUE RETOURE-ANFRAGE - MANUELLE PRÜFUNG ERFORDERLICH</p>
+                            </div>
+                            `}
                             
                             <!-- Bestellnummer -->
                             <div style="background-color: #f8f9fa; border-left: 4px solid #dc3545; padding: 20px; margin: 0 0 20px 0; border-radius: 4px;">
@@ -609,10 +859,20 @@ app.post('/api/return-request', async (req, res) => {
     
     if (result.success) {
       console.log(`✅ Retoure-Anfrage für ${orderId} gesendet (Bestellung ${orderExists ? 'gefunden' : 'nicht gefunden'})`);
+      if (autoApproved) {
+        console.log(`✅ Retoure automatisch genehmigt und Refund verarbeitet`);
+      }
+      
       res.json({ 
         success: true, 
         orderFound: orderExists,
-        message: orderExists ? 'Retoure-Anfrage erfolgreich gesendet.' : 'Retoure-Anfrage gesendet. Bestellung wird manuell geprüft.'
+        autoApproved: autoApproved,
+        refundProcessed: refundProcessed,
+        message: autoApproved 
+          ? 'Retoure automatisch genehmigt! Rückerstattung wird verarbeitet.' 
+          : orderExists 
+            ? 'Retoure-Anfrage erfolgreich gesendet. Wir prüfen Ihre Anfrage.' 
+            : 'Retoure-Anfrage gesendet. Bestellung wird manuell geprüft.'
       });
     } else {
       throw new Error(result.error || 'E-Mail konnte nicht gesendet werden');
