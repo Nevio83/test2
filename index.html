@@ -68,6 +68,14 @@
                 letter-spacing: -0.5px !important;
             }
             
+            .nav-logo-simple a img {
+                height: 60px !important;
+            }
+            
+            .nav-logo-simple a span {
+                font-size: 1.8rem !important;
+            }
+            
             .nav-tagline {
                 display: none !important;
             }
@@ -218,6 +226,14 @@
         @media (max-width: 480px) {
             .nav-logo-simple a {
                 font-size: 1.4rem !important;
+            }
+            
+            .nav-logo-simple a img {
+                height: 50px !important;
+            }
+            
+            .nav-logo-simple a span {
+                font-size: 1.6rem !important;
             }
             
             .nav-content-simple {
@@ -1377,7 +1393,10 @@
         <div class="nav-content-simple">
           <!-- Logo -->
           <div class="nav-logo-simple">
-            <a href="#" onclick="window.location.reload(); return false;">MAIOS</a>
+            <a href="index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; pointer-events: auto;" onclick="window.location.href='index.html'; return false;">
+              <img src="images/logo.jpg" alt="Maios Logo" style="height: 70px; width: auto;">
+              <span style="font-weight: 900; letter-spacing: -0.5px; color: #333; font-size: 2rem;">MAIOS</span>
+            </a>
             <span class="nav-tagline"></span>
           </div>
 
