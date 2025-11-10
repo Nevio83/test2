@@ -8,7 +8,6 @@
   <link href="../styles.css" rel="stylesheet" />
   <link href="./info.css" rel="stylesheet" />
   <link href="./kontakt.css" rel="stylesheet" />
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <style>
         /* Mobile Logo Optimierung */
         @media (max-width: 768px) {
@@ -85,41 +84,49 @@
   </main>
   <script>
     (function(){
-      // EmailJS initialisieren
-      emailjs.init("60APtUSJgbItJHi_W");
-      
       const form = document.getElementById('contactForm');
       const statusEl = document.getElementById('contactStatus');
       
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         statusEl.textContent = 'Senden...';
+        statusEl.style.color = '#666';
         
         const formData = new FormData(form);
-        const templateParams = {
-          to_name: 'Maios Support',
-          to_email: 'maioscorporation@gmail.com',
-          from_name: formData.get('name'),
-          from_email: formData.get('email'),
-          message: formData.get('message'),
-          reply_to: formData.get('email')
+        const contactData = {
+          name: formData.get('name'),
+          email: formData.get('email'),
+          message: formData.get('message')
         };
         
         try {
-          // Direkte E-Mail über EmailJS senden
-          await emailjs.send('service_ftlmmdq', 'template_gam8j1a', templateParams);
-          statusEl.textContent = 'Nachricht erfolgreich gesendet!';
-          statusEl.style.color = 'green';
-          form.reset();
+          // E-Mail über Resend (Server-Endpunkt) senden
+          const response = await fetch('/api/contact', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contactData)
+          });
+          
+          const result = await response.json();
+          
+          if (response.ok && result.success) {
+            statusEl.textContent = '✅ Nachricht erfolgreich gesendet!';
+            statusEl.style.color = 'green';
+            form.reset();
+          } else {
+            throw new Error(result.error || 'Fehler beim Senden');
+          }
         } catch (error) {
-          console.error('EmailJS Fehler:', error);
+          console.error('Kontaktformular Fehler:', error);
           // Fallback: mailto-Link öffnen
           const subject = encodeURIComponent('Kontaktanfrage - Maios');
-          const body = encodeURIComponent(`Name: ${templateParams.from_name}\nE-Mail: ${templateParams.from_email}\n\nNachricht:\n${templateParams.message}`);
+          const body = encodeURIComponent(`Name: ${contactData.name}\nE-Mail: ${contactData.email}\n\nNachricht:\n${contactData.message}`);
           const mailtoLink = `mailto:maioscorporation@gmail.com?subject=${subject}&body=${body}`;
           
           window.open(mailtoLink, '_blank');
-          statusEl.textContent = 'E-Mail-Programm geöffnet. Bitte senden Sie die E-Mail manuell.';
+          statusEl.textContent = '⚠️ E-Mail-Programm geöffnet. Bitte senden Sie die E-Mail manuell.';
           statusEl.style.color = 'orange';
         }
       });

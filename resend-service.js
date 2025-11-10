@@ -213,6 +213,41 @@ class ResendService {
   }
 
   /**
+   * Generische E-Mail senden
+   */
+  async sendEmail({ to, subject, html, text, replyTo }) {
+    try {
+      if (!this.resend) {
+        console.warn('⚠️ Resend nicht initialisiert');
+        return { success: false, error: 'Resend not configured' };
+      }
+
+      const emailData = {
+        from: `${this.fromName} <${this.fromEmail}>`,
+        to: Array.isArray(to) ? to : [to],
+        subject: subject,
+        html: html
+      };
+
+      if (text) {
+        emailData.text = text;
+      }
+
+      if (replyTo) {
+        emailData.replyTo = replyTo;
+      }
+
+      const data = await this.resend.emails.send(emailData);
+
+      console.log('✅ E-Mail gesendet an:', to);
+      return { success: true, messageId: data.id };
+    } catch (error) {
+      console.error('❌ Resend Fehler:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Test-E-Mail senden
    */
   async sendTestEmail(toEmail) {
