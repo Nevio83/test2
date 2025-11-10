@@ -30,7 +30,7 @@ class ProductImageGallery {
             26: '4 In 1 Self Cleaning Hair Brush bilder',
             27: 'Volcanic Flame Aroma Essential Oil Diffuser bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
-            41: '2 In 1 Oil Sprayer Bottle bilder',
+            41: '2 in 1 öl sprayer Flasche bilder',
             42: 'Aroma Öl Diffusor bilder',
             43: 'Mini Thermal Drucker bilder',
             44: 'Smart Beamer bilder',
@@ -57,8 +57,8 @@ class ProductImageGallery {
             33: 'Aromatherapy essential oil humidifier bilder',
             34: 'Gesichtssauna bilder',
             35: 'Thermische Massage bilder',
-            38: 'Jade Massager bilder',
-            40: 'Mug Warmer Pad bilder',
+            38: 'Jade Stein bilder',
+            40: 'Wärmender Untersetzter bilder',
             42: 'Aroma Öl Diffusor bilder',
             43: 'Mini Thermal Drucker bilder',
             44: 'Smart Beamer bilder',
@@ -405,91 +405,71 @@ class ProductImageGallery {
                 ];
                 break;
 
-            case 38: // Jade Massager
+            case 38: // Jade Stein
                 this.images = [
                     {
-                        src: `../produkt bilder/Jade Massager.jpg`,
-                        alt: 'Jade Massager - Hauptbild',
+                        src: `../produkt bilder/Jade Stein.jpg`,
+                        alt: 'Jade Stein - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Jade Massager schwarz.jpg`,
-                        alt: 'Jade Massager - Schwarz',
-                        color: 'Schwarz'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager grün.jpg`,
-                        alt: 'Jade Massager - Grün',
+                        src: `../produkt bilder/${folderName}/Jade Stein grün.jpg`,
+                        alt: 'Jade Stein - Grün',
                         color: 'Grün'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Jade Massager hell grün.jpg`,
-                        alt: 'Jade Massager - Hellgrün',
-                        color: 'Hellgrün'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager pink.jpg`,
-                        alt: 'Jade Massager - Pink',
-                        color: 'Pink'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager lila.jpg`,
-                        alt: 'Jade Massager - Lila',
-                        color: 'Lila'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Jade Massager weiß.jpg`,
-                        alt: 'Jade Massager - Weiß',
+                        src: `../produkt bilder/${folderName}/Jade Stein weiß.jpg`,
+                        alt: 'Jade Stein - Weiß',
                         color: 'Weiß'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Jade Massager gelb.jpg`,
-                        alt: 'Jade Massager - Gelb',
-                        color: 'Gelb'
+                        src: `../produkt bilder/${folderName}/Jade Stein pink.jpg`,
+                        alt: 'Jade Stein - Pink',
+                        color: 'Pink'
                     }
                 ];
                 break;
 
-            case 40: // Mug Warmer Pad
+            case 40: // Wärmender Untersetzter
                 this.images = [
                     {
-                        src: `../produkt bilder/Mug Warmer Pad.jpg`,
-                        alt: 'Mug Warmer Pad - Hauptbild',
+                        src: `../produkt bilder/Wärmender Untersetzter.jpg`,
+                        alt: 'Wärmender Untersetzter - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad pink.jpg`,
-                        alt: 'Mug Warmer Pad - Pink',
+                        src: `../produkt bilder/${folderName}/Wärmender Untersetzter pink.jpg`,
+                        alt: 'Wärmender Untersetzter - Pink',
                         color: 'Pink'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad grün.jpg`,
-                        alt: 'Mug Warmer Pad - Grün',
+                        src: `../produkt bilder/${folderName}/Wärmender Untersetzter grün.jpg`,
+                        alt: 'Wärmender Untersetzter - Grün',
                         color: 'Grün'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Mug Warmer Pad weiß.jpg`,
-                        alt: 'Mug Warmer Pad - Weiß',
+                        src: `../produkt bilder/${folderName}/Wärmender Untersetzter weiß.jpg`,
+                        alt: 'Wärmender Untersetzter - Weiß',
                         color: 'Weiß'
                     }
                 ];
                 break;
 
-            case 41: // 2 In 1 Oil Sprayer Bottle
+            case 41: // 2 in 1 öl sprayer Flasche
                 this.images = [
                     {
-                        src: `../produkt bilder/2 In 1 Oil Sprayer Bottle.jpg`,
-                        alt: '2 In 1 Oil Sprayer Bottle - Hauptbild',
+                        src: `../produkt bilder/2 in 1 öl sprayer Flasche.jpg`,
+                        alt: '2 in 1 öl sprayer Flasche - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/2 In 1 Oil Sprayer Bottle.jpg`,
-                        alt: '2 In 1 Oil Sprayer Bottle - Detailansicht',
+                        src: `../produkt bilder/${folderName}/2 in 1 öl sprayer Flasche.jpg`,
+                        alt: '2 in 1 öl sprayer Flasche - Detailansicht',
                         color: 'Detail'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/2 In 1 Oil Sprayer Bottle maße.jpg`,
-                        alt: '2 In 1 Oil Sprayer Bottle - Maße',
+                        src: `../produkt bilder/${folderName}/2 in 1 öl sprayer Flasche maße.jpg`,
+                        alt: '2 in 1 öl sprayer Flasche - Maße',
                         color: 'Maße'
                     }
                 ];
