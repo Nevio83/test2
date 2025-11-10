@@ -481,27 +481,144 @@ app.post('/api/return-request', async (req, res) => {
       return res.status(400).json({ error: 'Bitte Bestellnummer und E-Mail angeben.' });
     }
     
+    // Validiere Bestellnummer gegen Datenbank
+    let orderExists = false;
+    let orderDetails = null;
+    
+    try {
+      orderDetails = await dbOperations.getOrderByOrderId(orderId);
+      orderExists = !!orderDetails;
+      
+      // Prüfe ob E-Mail zur Bestellung passt
+      if (orderExists && orderDetails.customer_email.toLowerCase() !== email.toLowerCase()) {
+        return res.status(400).json({ 
+          error: 'Die angegebene E-Mail-Adresse stimmt nicht mit der Bestellung überein.' 
+        });
+      }
+    } catch (dbError) {
+      console.warn('⚠️ Datenbank-Validierung fehlgeschlagen:', dbError.message);
+      // Fahre fort ohne Validierung (Fallback)
+    }
+    
+    // Erstelle professionelle HTML-E-Mail
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px 0;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="text-align: center; padding: 40px 0; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">🔄 RETOURE-ANFRAGE</h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Hauptinhalt -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; margin: 0 0 30px 0; border-radius: 4px;">
+                                <p style="margin: 0; color: #856404; font-size: 14px; font-weight: 600;">⚠️ NEUE RETOURE-ANFRAGE EINGEGANGEN</p>
+                            </div>
+                            
+                            <!-- Bestellnummer -->
+                            <div style="background-color: #f8f9fa; border-left: 4px solid #dc3545; padding: 20px; margin: 0 0 20px 0; border-radius: 4px;">
+                                <p style="margin: 0; color: #666666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Bestellnummer</p>
+                                <p style="margin: 5px 0 0 0; color: #1a1a1a; font-size: 24px; font-weight: 700;">${orderId}</p>
+                                ${orderExists ? '<p style="margin: 10px 0 0 0; color: #28a745; font-size: 13px;">✅ Bestellung in Datenbank gefunden</p>' : '<p style="margin: 10px 0 0 0; color: #ffc107; font-size: 13px;">⚠️ Bestellung nicht in Datenbank gefunden</p>'}
+                            </div>
+                            
+                            <!-- Kundendaten -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 20px 0;">
+                                <tr>
+                                    <td style="padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                                        <p style="margin: 0 0 10px 0; color: #666666; font-size: 12px; text-transform: uppercase;">Kunden-E-Mail</p>
+                                        <p style="margin: 0; color: #1a1a1a; font-size: 16px; font-weight: 600;">${email}</p>
+                                        ${orderExists && orderDetails ? `<p style="margin: 10px 0 0 0; color: #666666; font-size: 14px;">Kunde: ${orderDetails.customer_name || 'Nicht angegeben'}</p>` : ''}
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Retouren-Grund -->
+                            <div style="margin: 0 0 20px 0;">
+                                <h2 style="color: #1a1a1a; font-size: 18px; font-weight: 600; margin: 0 0 10px 0;">Grund der Retoure</h2>
+                                <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px;">
+                                    <p style="margin: 0; color: #495057; font-size: 15px; line-height: 1.6;">${reason || '<em style="color: #999;">Kein Grund angegeben</em>'}</p>
+                                </div>
+                            </div>
+                            
+                            ${orderExists && orderDetails ? `
+                            <!-- Bestelldetails -->
+                            <div style="margin: 0 0 20px 0;">
+                                <h2 style="color: #1a1a1a; font-size: 18px; font-weight: 600; margin: 0 0 10px 0;">Bestelldetails</h2>
+                                <div style="background-color: #f8f9fa; border-radius: 8px; padding: 20px;">
+                                    <p style="margin: 0 0 8px 0; color: #666666; font-size: 14px;"><strong>Bestelldatum:</strong> ${new Date(orderDetails.created_at).toLocaleDateString('de-DE', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                    <p style="margin: 0 0 8px 0; color: #666666; font-size: 14px;"><strong>Gesamtbetrag:</strong> €${orderDetails.total_amount.toFixed(2)}</p>
+                                    <p style="margin: 0; color: #666666; font-size: 14px;"><strong>Status:</strong> ${orderDetails.order_status || 'Unbekannt'}</p>
+                                </div>
+                            </div>
+                            ` : ''}
+                            
+                            <!-- Aktionen -->
+                            <div style="margin: 30px 0 0 0; padding: 20px; background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%); border-radius: 8px; border: 2px solid #dc3545;">
+                                <p style="margin: 0 0 15px 0; color: #1a1a1a; font-size: 16px; font-weight: 600;">📋 Nächste Schritte:</p>
+                                <ol style="margin: 0; padding-left: 20px; color: #495057; font-size: 14px; line-height: 1.8;">
+                                    <li>Bestellung in Datenbank überprüfen</li>
+                                    <li>Retourenlabel erstellen und an Kunden senden</li>
+                                    <li>Retoure in System erfassen</li>
+                                    <li>Nach Wareneingang: Rückerstattung veranlassen</li>
+                                </ol>
+                            </div>
+                            
+                            <p style="margin: 30px 0 0 0; color: #999999; font-size: 13px; text-align: center;">
+                                Diese E-Mail wurde automatisch generiert.<br>
+                                Antworte direkt auf diese E-Mail, um mit dem Kunden zu kommunizieren.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #1a1a1a; padding: 20px; text-align: center;">
+                            <p style="margin: 0; color: #999999; font-size: 13px;">Maios Shop - Retouren-System</p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+    `;
+    
     // E-Mail über Resend senden
     const result = await emailService.sendEmail({
       to: 'maioscorporation@gmail.com',
-      subject: `Retoure-Anfrage #${orderId}`,
-      html: `
-        <h2>Neue Retoure-Anfrage</h2>
-        <p><strong>Bestellnummer:</strong> #${orderId}</p>
-        <p><strong>E-Mail:</strong> ${email}</p>
-        <p><strong>Grund:</strong> ${reason || '—'}</p>
-        <p><strong>Artikel:</strong> ${(items && items.join(', ')) || '—'}</p>
-      `,
+      subject: `🔄 Retoure-Anfrage #${orderId}${orderExists ? ' ✅' : ' ⚠️'}`,
+      html: htmlContent,
       replyTo: email
     });
     
     if (result.success) {
-      res.json({ success: true });
+      console.log(`✅ Retoure-Anfrage für ${orderId} gesendet (Bestellung ${orderExists ? 'gefunden' : 'nicht gefunden'})`);
+      res.json({ 
+        success: true, 
+        orderFound: orderExists,
+        message: orderExists ? 'Retoure-Anfrage erfolgreich gesendet.' : 'Retoure-Anfrage gesendet. Bestellung wird manuell geprüft.'
+      });
     } else {
       throw new Error(result.error || 'E-Mail konnte nicht gesendet werden');
     }
   } catch (error) {
-    console.error('Retoure-Fehler:', error);
+    console.error('❌ Retoure-Fehler:', error);
     res.status(500).json({ error: 'Senden fehlgeschlagen', details: error.message });
   }
 });
