@@ -447,20 +447,29 @@ app.post('/api/contact', async (req, res) => {
     if (!name || !email || !message) {
       return res.status(400).json({ error: 'Bitte Name, E-Mail und Nachricht angeben.' });
     }
-    const msg = {
-      to: 'marktplatzcontact@gmail.com',
-      from: process.env.SENDER_EMAIL,
-      reply_to: email,
+    
+    // E-Mail über Resend senden
+    const result = await emailService.sendEmail({
+      to: 'maioscorporation@gmail.com',
       subject: 'Kontaktanfrage – Maios',
-      text: `Von: ${name} <${email}>
-Nachricht:\n${message}`,
-      html: `<p><strong>Von:</strong> ${name} &lt;${email}&gt;</p><p>${message.replace(/\n/g, '<br>')}</p>`
-    };
-    await sgMail.send(msg);
-    res.json({ success: true });
+      html: `
+        <h2>Neue Kontaktanfrage</h2>
+        <p><strong>Von:</strong> ${name}</p>
+        <p><strong>E-Mail:</strong> ${email}</p>
+        <p><strong>Nachricht:</strong></p>
+        <p>${message.replace(/\n/g, '<br>')}</p>
+      `,
+      replyTo: email
+    });
+    
+    if (result.success) {
+      res.json({ success: true });
+    } else {
+      throw new Error(result.error || 'E-Mail konnte nicht gesendet werden');
+    }
   } catch (error) {
     console.error('Kontakt-Fehler:', error);
-    res.status(500).json({ error: 'Senden fehlgeschlagen' });
+    res.status(500).json({ error: 'Senden fehlgeschlagen', details: error.message });
   }
 });
 
@@ -471,22 +480,29 @@ app.post('/api/return-request', async (req, res) => {
     if (!orderId || !email) {
       return res.status(400).json({ error: 'Bitte Bestellnummer und E-Mail angeben.' });
     }
-    const msg = {
-      to: 'marktplatzcontact@gmail.com',
-      from: process.env.SENDER_EMAIL,
-      reply_to: email,
+    
+    // E-Mail über Resend senden
+    const result = await emailService.sendEmail({
+      to: 'maioscorporation@gmail.com',
       subject: `Retoure-Anfrage #${orderId}`,
-      text: `Retoure angefragt für Bestellung ${orderId}\nE-Mail: ${email}\nGrund: ${reason || '—'}\nArtikel: ${(items && items.join(', ')) || '—'}`,
-      html: `<p><strong>Retoure angefragt</strong> für Bestellung <strong>#${orderId}</strong></p>
-            <p><strong>E-Mail:</strong> ${email}</p>
-            <p><strong>Grund:</strong> ${reason || '—'}</p>
-            <p><strong>Artikel:</strong> ${(items && items.join(', ')) || '—'}</p>`
-    };
-    await sgMail.send(msg);
-    res.json({ success: true });
+      html: `
+        <h2>Neue Retoure-Anfrage</h2>
+        <p><strong>Bestellnummer:</strong> #${orderId}</p>
+        <p><strong>E-Mail:</strong> ${email}</p>
+        <p><strong>Grund:</strong> ${reason || '—'}</p>
+        <p><strong>Artikel:</strong> ${(items && items.join(', ')) || '—'}</p>
+      `,
+      replyTo: email
+    });
+    
+    if (result.success) {
+      res.json({ success: true });
+    } else {
+      throw new Error(result.error || 'E-Mail konnte nicht gesendet werden');
+    }
   } catch (error) {
     console.error('Retoure-Fehler:', error);
-    res.status(500).json({ error: 'Senden fehlgeschlagen' });
+    res.status(500).json({ error: 'Senden fehlgeschlagen', details: error.message });
   }
 });
 
