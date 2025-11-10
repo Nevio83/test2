@@ -629,12 +629,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     .bundle-savings-badge {
                         padding: 6px 12px !important;
                         font-size: 12px !important;
-                        margin-top: 8px !important;
+                        margin-top: 0 !important;
+                        align-self: center !important;
+                    }
+                    
+                    .price-display {
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        gap: 10px !important;
                     }
                     
                     .price-display > div {
                         flex-direction: column !important;
-                        align-items: flex-start !important;
+                        align-items: center !important;
+                        text-align: center !important;
+                    }
+                    
+                    .price, .original {
+                        text-align: center !important;
                     }
                 }
                 
