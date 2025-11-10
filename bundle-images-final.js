@@ -300,9 +300,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     margin-bottom: 20px;
                     position: relative;
                     cursor: pointer;
-                    transition: all 0.3s ease;
+                    transition: transform 0.2s ease, border-color 0.2s ease;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-                    will-change: transform, box-shadow;
+                    will-change: transform;
                 }
                 
                 .bundle-card:hover {
@@ -489,16 +489,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     position: relative !important;
                     border: 2px solid #e0e0e0;
                     border-radius: 8px;
-                    padding: 4px;
+                    padding: 2px;
                     cursor: pointer;
-                    transition: all 0.3s ease;
+                    transition: transform 0.2s ease, border-color 0.2s ease;
                     display: inline-block;
                     background: white;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     flex-shrink: 0;
-                    min-width: 60px;
-                    width: 60px;
-                    max-width: 60px;
+                    min-width: 56px;
+                    width: 56px;
+                    max-width: 56px;
+                    height: auto;
+                    will-change: transform;
                 }
                 
                 .color-image-option:hover {
