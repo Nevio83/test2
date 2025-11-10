@@ -198,11 +198,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <h3 class="bundle-qty">${bundle.qty} Set${bundle.qty > 1 ? 's' : ''} kaufen</h3>
                             </div>
                             
-                            <div class="bundle-colors">
+                            <div class="bundle-colors" style="display: ${colors && colors.length > 0 ? 'block' : 'none'} !important;">
                                 ${Array.from({length: bundle.qty}, (_, i) => `
-                                    <div class="bundle-set">
-                                        <span class="set-label">Set ${i + 1}:</span>
-                                        <div class="color-images">
+                                    <div class="bundle-set" style="display: block !important; visibility: visible !important;">
+                                        <span class="set-label" style="display: block !important; visibility: visible !important;">Set ${i + 1}:</span>
+                                        <div class="color-images" style="display: flex !important; visibility: visible !important;">
                                             ${colors.map((color, colorIndex) => `
                                                 <div class="color-image-option ${colorIndex === 0 ? 'selected' : ''}" 
                                                      data-set="${i}" 
@@ -219,11 +219,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                             
                             <div class="bundle-pricing">
-                                <div class="price-display">
+                                <div class="price-display" style="display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
                                     <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
                                         <span class="price">Gesamt: €${(bundle.price * bundle.qty).toFixed(2)}</span>
                                         ${bundle.discount > 0 ? `<span class="original">€${(basePrice * bundle.qty).toFixed(2)}</span>` : ''}
                                     </div>
+                                    ${bundle.discount > 0 ? `<div class="bundle-savings-badge">Spare €${((basePrice * bundle.qty) - (bundle.price * bundle.qty)).toFixed(2)}</div>` : ''}
                                 </div>
                             </div>
                         </div>
@@ -303,6 +304,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     transition: transform 0.2s ease, border-color 0.2s ease;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                     will-change: transform;
+                }
+                
+                .bundle-savings-badge {
+                    background: #28a745;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-size: 14px;
+                    font-weight: 700;
+                    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+                    white-space: nowrap;
+                    flex-shrink: 0;
+                    align-self: center;
+                }
+                
+                .price-display {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 15px;
+                    flex-wrap: wrap;
                 }
                 
                 .bundle-card:hover {
@@ -532,37 +554,56 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 @media (max-width: 768px) {
-                    .bundle-set .set-label,
+                    .bundle-set,
+                    .bundle-colors {
+                        margin: 8px 0 !important;
+                        display: block !important;
+                        visibility: visible !important;
+                    }
+                    
                     .set-label {
+                        display: block !important;
+                        visibility: visible !important;
                         color: #ffffff !important;
                         font-weight: 600 !important;
-                        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+                        margin-bottom: 8px !important;
                     }
                     
                     .color-images {
-                        gap: 4px !important;
-                        overflow-x: scroll !important;
-                        overflow-y: hidden !important;
+                        display: flex !important;
+                        visibility: visible !important;
+                        gap: 6px !important;
+                        overflow-x: auto !important;
+                        padding: 8px 0 !important;
                         -webkit-overflow-scrolling: touch !important;
-                        scrollbar-width: none !important;
-                        -ms-overflow-style: none !important;
-                        padding: 5px 0 5px 0 !important;
-                        max-width: 300px !important;
+                        max-width: 100% !important;
+                        width: 100% !important;
                     }
                     
                     .color-images::-webkit-scrollbar {
-                        display: none !important;
+                        height: 6px !important;
+                    }
+                    
+                    .color-images::-webkit-scrollbar-thumb {
+                        background: rgba(255, 255, 255, 0.5) !important;
+                        border-radius: 3px !important;
                     }
                     
                     .color-image-option {
+                        display: inline-block !important;
+                        visibility: visible !important;
                         border-width: 2px !important;
                         border-radius: 8px !important;
                         padding: 3px !important;
                         flex-shrink: 0 !important;
                         min-width: 65px !important;
+                        width: 65px !important;
+                        height: auto !important;
                     }
                     
                     .color-img {
+                        display: block !important;
+                        visibility: visible !important;
                         width: 55px !important;
                         height: 55px !important;
                         border-radius: 5px !important;
@@ -583,6 +624,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         max-width: 65px !important;
                         font-weight: 600 !important;
                         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+                    }
+                    
+                    .bundle-savings-badge {
+                        padding: 6px 12px !important;
+                        font-size: 12px !important;
+                        margin-top: 8px !important;
+                    }
+                    
+                    .price-display > div {
+                        flex-direction: column !important;
+                        align-items: flex-start !important;
                     }
                 }
                 
@@ -682,23 +734,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     color: rgba(255, 255, 255, 0.6);
                     font-size: 20px;
                     opacity: 0.7;
-                }
-                
-                .savings-text {
-                    background: transparent;
-                    color: rgba(255, 255, 255, 0.9);
-                    padding: 8px 0;
-                    font-size: 14px;
-                    font-weight: 600;
-                    display: inline-block;
-                    margin-top: 10px;
-                    position: relative;
-                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-                }
-                
-                .savings-text::before {
-                    content: '';
-                    font-size: 0;
                 }
                 
                 .add-individual-bundle-btn {
