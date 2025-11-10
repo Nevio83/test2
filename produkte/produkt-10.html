@@ -581,7 +581,27 @@
                 height: 60px;
             }
         }
-        </style>
+        
+        /* Mobile Logo Optimierung */
+        @media (max-width: 768px) {
+            .navbar-brand img {
+                height: 50px !important;
+            }
+            .navbar-brand span {
+                font-size: 1.4rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar-brand img {
+                height: 42px !important;
+            }
+            .navbar-brand span {
+                font-size: 1.3rem !important;
+            }
+        }
+    
+    </style>
     <link rel="stylesheet" href="../product-image-fullscreen.css">
     <link rel="stylesheet" href="../product-image-gallery.css">
     <link rel="stylesheet" href="../color-image-selection.css">
