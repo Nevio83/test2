@@ -1207,13 +1207,13 @@
   },
   {
     "id": 37,
-    "name": "Professional 5 In 1 Hair Dryer",
+    "name": "Professioneller 5 in 1 Haar Trockner",
     "price": 59.99,
     "originalPrice": 69.99,
     "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Professional 5 In 1 Hair Dryer.jpg",
+    "image": "produkt bilder/Professioneller 5 in 1 Haar Trockner .jpg",
     "description": "Professioneller 5-in-1 Haartrockner mit Bürste, Glätter und Lockenwickler. Elektrisches Haarstyling-Tool für alle Haartypen.",
-    "sku": "CJTF141037804DW",
+    "sku": "CJTF141037802BY",
     "inStock": true,
     "shippingTime": "7-13 Werktage",
     "showInSlider": true,
@@ -1221,11 +1221,11 @@
   },
   {
     "id": 38,
-    "name": "Jade Massager",
+    "name": "Jade Stein",
     "price": 11.99,
     "originalPrice": 24.99,
     "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Jade Massager.jpg",
+    "image": "produkt bilder/Jade Stein.jpg",
     "description": "Natürlicher Jade-Massager und Gua Sha Stein zur Förderung der Durchblutung, Reduzierung von Schwellungen und zur Entspannung der Gesichtsmuskulatur. Ideal für die tägliche Hautpflege-Routine.",
     "sku": "CJPF1011351",
     "inStock": true,
@@ -1233,71 +1233,39 @@
     "showInSlider": true,
     "colors": [
       {
-        "name": "Schwarz",
-        "code": "#000000",
-        "sku": "CJPF101135114NM",
-        "price": 11.99,
-        "originalPrice": 24.99,
-        "image": "produkt bilder/Jade Massager bilder/Jade Massager schwarz.jpg"
-      },
-      {
         "name": "Grün",
         "code": "#008000",
-        "sku": "CJPF101135122VE",
+        "sku": "CJPF101135115OL",
         "price": 11.99,
         "originalPrice": 24.99,
-        "image": "produkt bilder/Jade Massager bilder/Jade Massager grün.jpg"
-      },
-      {
-        "name": "Hellgrün",
-        "code": "#90EE90",
-        "sku": "CJPF101135120TG",
-        "price": 11.99,
-        "originalPrice": 24.99,
-        "image": "produkt bilder/Jade Massager bilder/Jade Massager hell grün.jpg"
-      },
-      {
-        "name": "Pink",
-        "code": "#FFC0CB",
-        "sku": "CJPF101135116PK",
-        "price": 11.99,
-        "originalPrice": 24.99,
-        "image": "produkt bilder/Jade Massager bilder/Jade Massager pink.jpg"
-      },
-      {
-        "name": "Lila",
-        "code": "#800080",
-        "sku": "CJPF101135118RI",
-        "price": 11.99,
-        "originalPrice": 24.99,
-        "image": "produkt bilder/Jade Massager bilder/Jade Massager lila.jpg"
+        "image": "produkt bilder/Jade Stein bilder/Jade Stein grün.jpg"
       },
       {
         "name": "Weiß",
         "code": "#FFFFFF",
-        "sku": "CJPF101135124XC",
+        "sku": "CJPF101135123WD",
         "price": 11.99,
         "originalPrice": 24.99,
-        "image": "produkt bilder/Jade Massager bilder/Jade Massager weiß.jpg"
+        "image": "produkt bilder/Jade Stein bilder/Jade Stein weiß.jpg"
       },
       {
-        "name": "Gelb",
-        "code": "#FFFF00",
-        "sku": "CJPF101135127AZ",
+        "name": "Pink",
+        "code": "#FFC0CB",
+        "sku": "CJPF101135119SH",
         "price": 11.99,
         "originalPrice": 24.99,
-        "image": "produkt bilder/Jade Massager bilder/Jade Massager gelb.jpg"
+        "image": "produkt bilder/Jade Stein bilder/Jade Stein pink.jpg"
       }
     ],
     "tags": ["jade", "massager", "gua sha", "wellness", "hautpflege"]
   },
   {
     "id": 39,
-    "name": "Electric Guasha Massager",
-    "price": 32.99,
+    "name": "Elektronischer premium Jade Stein",
+    "price": 29.99,
     "originalPrice": 49.99,
     "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Electric Guasha Massager.jpg",
+    "image": "produkt bilder/Elektronischer premium Jade Stein.jpg",
     "description": "Elektrisches Guasha-Massagegerät mit EMS-Mikrostrom, Heiß- und Kalt-Modus sowie 3-Farben-Lichttherapie zur Hautstraffung, Faltenreduzierung und Förderung der Aufnahme von Hautpflegeprodukten.",
     "sku": "CJPF203924202BY",
     "inStock": true,
@@ -1307,11 +1275,11 @@
   },
   {
     "id": 40,
-    "name": "Mug Warmer Pad",
-    "price": 19.99,
+    "name": "Wärmender Untersetzer",
+    "price": 16.99,
     "originalPrice": 29.99,
     "category": "Haushalt und Küche",
-    "image": "produkt bilder/Mug Warmer Pad.jpg",
+    "image": "produkt bilder/Wärmender Untersetzter.jpg",
     "description": "Halten Sie Ihr Getränk mit diesem intelligenten Tassenwärmer-Untersetzer konstant auf der perfekten Temperatur. Ideal für Kaffee, Tee oder Kakao am Schreibtisch oder zu Hause.",
     "sku": "CJJT1723382",
     "inStock": true,
@@ -1322,36 +1290,36 @@
         "name": "Pink",
         "code": "#FFC0CB",
         "sku": "CJJT172338202BY",
-        "price": 19.99,
+        "price": 16.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad pink.jpg"
+        "image": "produkt bilder/Wärmender Untersetzter bilder/Wärmender Untersetzter pink.jpg"
       },
       {
         "name": "Grün",
         "code": "#008000",
         "sku": "CJJT172338203CX",
-        "price": 19.99,
+        "price": 16.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad grün.jpg"
+        "image": "produkt bilder/Wärmender Untersetzter bilder/Wärmender Untersetzter grün.jpg"
       },
       {
         "name": "Weiß",
         "code": "#FFFFFF",
         "sku": "CJJT172338201AZ",
-        "price": 19.99,
+        "price": 16.99,
         "originalPrice": 29.99,
-        "image": "produkt bilder/Mug Warmer Pad bilder/Mug Warmer Pad weiß.jpg"
+        "image": "produkt bilder/Wärmender Untersetzter bilder/Wärmender Untersetzter weiß.jpg"
       }
     ],
     "tags": ["mug warmer", "tassenwärmer", "kaffee", "tee", "haushalt"]
   },
   {
     "id": 41,
-    "name": "2 In 1 Oil Sprayer Bottle",
+    "name": "2 in 1 Öl Sprayer Flasche",
     "price": 18.99,
     "originalPrice": 24.99,
     "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/2 In 1 Oil Sprayer Bottle.jpg",
+    "image": "produkt bilder/2 in 1 öl sprayer Flasche.jpg",
     "description": "Praktische 2-in-1-Ölsprühflasche für die Küche. Perfekt zum Kochen, Grillen und für Salate. Ermöglicht einfaches Sprühen und Ausgießen von Öl und Essig.",
     "sku": "CJYD187611401AZ",
     "inStock": true,
