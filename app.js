@@ -3942,14 +3942,18 @@ function testSearchFunction(query) {
     
     // Load products and filter
     loadProducts().then(products => {
-        console.log('ðŸ“¦ Total products:', products.length);
+        console.log('📦 Total products:', products.length);
+        
+        // Filter out AliExpress products first
+        const nonAliExpressProducts = products.filter(p => !p.sku || !p.sku.startsWith('ALI'));
+        console.log('📦 After filtering AliExpress:', nonAliExpressProducts.length);
         
         const searchText = query.toLowerCase();
-        const filtered = products.filter(product => {
+        const filtered = nonAliExpressProducts.filter(product => {
             const name = (product.name || '').toLowerCase();
             const match = name.includes(searchText);
             if (match) {
-                console.log('âœ… Found match:', product.name);
+                console.log('✅ Found match:', product.name);
             }
             return match;
         });
