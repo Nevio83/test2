@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     bundleSystemInitialized = true;
-    console.log('🎨 Initialisiere Bundle-Bilder...');
+    console.log('🎨 Bundle-System bereit - warte auf manuellen Aufruf von Produktseite...');
     
     // Funktion zum Bestimmen der Kategorie-Farbe
     function getCategoryColor(category) {
@@ -81,8 +81,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Funktion zum Rendern der Bundles mit Bildern
-    function renderBundlesWithImages() {
+    // Funktion zum Rendern der Bundles mit Bildern (async)
+    window.renderBundlesWithImages = async function() {
+        console.log('🎁 renderBundlesWithImages wurde aufgerufen');
+        
         const bundleSection = document.getElementById('bundle-section');
         if (!bundleSection) {
             console.log('❌ Bundle-Section nicht gefunden');
@@ -92,8 +94,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Verhindere mehrfaches Laden
         if (bundleSection.dataset.bundleRendered === 'true') {
             console.log('⚠️ Bundle bereits gerendert, überspringe');
+            console.trace('Stack trace für doppelten Aufruf:');
             return;
         }
+        
+        console.log('🎨 Starte Bundle-Rendering...');
         
         // Hole Farben und Kategorie vom aktuellen Produkt
         let colors = [];
@@ -109,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 colors = window.product.colors;
                 console.log('✅ Farben direkt aus window.product.colors geholt:', colors.length, 'Farben:', colors.map(c => c.name));
                 console.log('🎨 Alle Farbdaten:', colors);
-                renderBundleContent(colors, productCategory);
+                await renderBundleContent(colors, productCategory);
                 return;
             }
             
@@ -146,8 +151,8 @@ document.addEventListener('DOMContentLoaded', function() {
         renderBundleContent(colors, productCategory, null);
     }
     
-    // Separate Funktion für das eigentliche Rendering
-    function renderBundleContent(colors, productCategory, productData = null) {
+    // Separate Funktion für das eigentliche Rendering (async um auf CSS zu warten)
+    async function renderBundleContent(colors, productCategory, productData = null) {
         
         const categoryColor = getCategoryColor(productCategory);
         const darkerCategoryColor = getDarkerCategoryColor(productCategory);
@@ -168,9 +173,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const basePrice = currentProduct ? currentProduct.price : 24.99;
         const productName = currentProduct ? currentProduct.name : `Produkt ${productId || ''}`;
         
-        console.log('🎁 Bundle-Rendering für:', { id: productId, name: productName, price: basePrice, windowProduct: !!window.product });
+        console.log('🎁 Bundle-Rendering für:', { id: productId, name: currentProduct.name, price: currentProduct.price, windowProduct: !!window.product });
         console.log('🎨 Verfügbare Farben für Bundle:', colors.length, colors.map(c => c.name));
         console.log('🎨 WICHTIG - Colors Array:', colors);
+        console.log('🎨 colors && colors.length > 0:', colors && colors.length > 0);
+        console.log('🎨 Wird Farbauswahl-HTML generiert?', colors && colors.length > 0 ? 'JA' : 'NEIN');
         
         // WICHTIG: Wenn keine Farben vorhanden sind, zeige Warnung
         if (!colors || colors.length === 0) {
@@ -183,6 +190,9 @@ document.addEventListener('DOMContentLoaded', function() {
             { qty: 2, price: (basePrice * 0.85), discount: 15 },
             { qty: 3, price: (basePrice * 0.80), discount: 20 }
         ];
+        
+        console.log('📝 Generiere HTML mit colors.length:', colors.length);
+        console.log('📝 colors Array vor HTML-Generierung:', colors);
         
         // Erstelle HTML
         let html = `
@@ -237,47 +247,15 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        const bundleSection = document.getElementById('bundle-section');
-        if (bundleSection) {
-            bundleSection.innerHTML = html;
-            bundleSection.dataset.bundleRendered = 'true';
-            console.log('✅ Bundle HTML eingefügt');
-            
-            // Optimierte Scrollbar-Initialisierung ohne Debug-Code
-            requestAnimationFrame(() => {
-                const colorContainers = bundleSection.querySelectorAll('.color-images');
-                colorContainers.forEach(container => {
-                    container.style.maxWidth = '400px';
-                    container.style.overflowX = 'scroll';
-                });
-            });
-            
-            // Event Listener für Bundle-Karten (zum Auswählen)
-            const bundleCards = bundleSection.querySelectorAll('.bundle-card');
-            bundleCards.forEach(card => {
-                card.addEventListener('click', function(e) {
-                    // Ignoriere Klicks auf Farbauswahl
-                    if (e.target.closest('.color-image-option')) return;
-                    
-                    // Entferne selected von allen Karten
-                    bundleCards.forEach(c => c.classList.remove('selected'));
-                    // Füge selected zur geklickten Karte hinzu
-                    this.classList.add('selected');
-                    // Setze Radio Button
-                    this.querySelector('.bundle-radio').checked = true;
-                });
-            });
-            console.log(`✅ ${bundleCards.length} Bundle-Karten Event Listener hinzugefügt`);
-        } else {
-            console.log('❌ Bundle-Section nicht gefunden');
+        // Füge CSS ZUERST hinzu - VOR dem HTML! IMMER neu einfügen um sicherzustellen dass es da ist
+        const existingStyle = document.getElementById('bundle-images-styles');
+        if (existingStyle) {
+            existingStyle.remove(); // Entferne altes CSS
         }
-        
-        // Füge CSS hinzu (nur einmal)
-        if (!document.getElementById('bundle-images-styles')) {
-            console.log('🎨 Füge Bundle-CSS hinzu');
-            const style = document.createElement('style');
-            style.id = 'bundle-images-styles';
-            style.textContent = `
+        console.log('🎨 Füge Bundle-CSS hinzu (neu)');
+        const style = document.createElement('style');
+        style.id = 'bundle-images-styles';
+        style.textContent = `
                 .bundle-container {
                     padding: 70px;
                     max-width: 650px;
@@ -448,16 +426,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
                 }
                 
+                #bundle-section .bundle-colors,
+                .bundle-card .bundle-colors,
                 .bundle-colors {
-                    margin: 10px 0;
+                    margin: 10px 0 !important;
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
                 }
                 
                 .bundle-set {
-                    display: flex;
+                    display: flex !important;
                     align-items: center;
                     margin-bottom: 8px;
                     width: 100%;
                     gap: 8px;
+                    visibility: visible !important;
                 }
                 
                 .set-label {
@@ -467,20 +451,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     flex-shrink: 0;
                     font-weight: 600;
                     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                    display: block !important;
+                    visibility: visible !important;
                 }
                 
+                #bundle-section .color-images,
+                .bundle-card .color-images,
+                .bundle-set .color-images,
                 .color-images {
                     display: flex !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
                     gap: 5px !important;
                     overflow-x: auto !important;
                     overflow-y: hidden !important;
                     padding: 2px 0 8px 0 !important;
                     scroll-behavior: smooth !important;
                     -webkit-overflow-scrolling: touch !important;
-                    flex: 1;
-                    min-width: 0;
-                    scrollbar-width: thin !important;
-                    scrollbar-color: ${categoryColor} #f1f1f1 !important;
+                    max-width: 400px !important;
+                    width: 100% !important;
+                    height: auto !important;
+                    min-height: 60px !important;
                 }
                 
                 /* Stelle sicher, dass der Container für alle Düfte scrollbar ist */
@@ -507,22 +498,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     background: ${darkerCategoryColor} !important;
                 }
                 
+                #bundle-section .color-image-option,
+                .bundle-card .color-image-option,
+                .color-images .color-image-option,
                 .color-image-option {
                     position: relative !important;
-                    border: 2px solid #e0e0e0;
-                    border-radius: 8px;
-                    padding: 2px;
-                    cursor: pointer;
-                    transition: transform 0.2s ease, border-color 0.2s ease;
-                    display: inline-block;
-                    background: white;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                    flex-shrink: 0;
-                    min-width: 56px;
-                    width: 56px;
-                    max-width: 56px;
-                    height: auto;
-                    will-change: transform;
+                    border: 2px solid #e0e0e0 !important;
+                    border-radius: 8px !important;
+                    padding: 4px !important;
+                    cursor: pointer !important;
+                    transition: transform 0.2s ease, border-color 0.2s ease !important;
+                    display: inline-block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    background: white !important;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+                    flex-shrink: 0 !important;
+                    min-width: 88px !important;
+                    width: 88px !important;
+                    max-width: 88px !important;
+                    height: auto !important;
+                    will-change: transform !important;
                 }
                 
                 .color-image-option:hover {
@@ -537,15 +533,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 .color-img {
-                    width: 52px;
-                    height: 52px;
+                    width: 80px !important;
+                    height: 80px !important;
                     object-fit: cover;
                     border-radius: 5px;
-                    display: block;
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
                 }
                 
                 .color-name {
-                    display: block;
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
                     text-align: center;
                     font-size: 11px;
                     margin-top: 4px;
@@ -554,6 +554,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 @media (max-width: 768px) {
+                    .bundle-container {
+                        padding: 20px !important;
+                        max-width: 95% !important;
+                        margin: 0 auto !important;
+                    }
+                    
                     .bundle-set,
                     .bundle-colors {
                         margin: 8px 0 !important;
@@ -791,34 +797,76 @@ document.addEventListener('DOMContentLoaded', function() {
                     left: 100%;
                 }
             `;
-            document.head.appendChild(style);
+        // Füge CSS am ENDE des head ein für höchste Priorität
+        document.head.appendChild(style);
+        console.log('✅ CSS in <head> eingefügt');
+        
+        // WICHTIG: Warte kurz damit CSS garantiert angewendet wird
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
+        // JETZT füge HTML ein - NACH dem CSS
+        const bundleSection = document.getElementById('bundle-section');
+        if (bundleSection) {
+            bundleSection.innerHTML = html;
+            bundleSection.dataset.bundleRendered = 'true';
+            console.log('✅ Bundle HTML eingefügt');
+            
+            // Verifiziere dass Farbauswahl im DOM ist
+            setTimeout(() => {
+                const colorImages = bundleSection.querySelectorAll('.color-images');
+                const colorOptions = bundleSection.querySelectorAll('.color-image-option');
+                console.log('🔍 Verifizierung:', {
+                    colorImagesContainers: colorImages.length,
+                    colorOptions: colorOptions.length,
+                    bundleColors: bundleSection.querySelectorAll('.bundle-colors').length
+                });
+                if (colorOptions.length === 0 && colors.length > 0) {
+                    console.error('❌ PROBLEM: Farben wurden nicht gerendert obwohl', colors.length, 'Farben vorhanden sind!');
+                }
+            }, 100);
+            
+            // Optimierte Scrollbar-Initialisierung ohne Debug-Code
+            requestAnimationFrame(() => {
+                const colorContainers = bundleSection.querySelectorAll('.color-images');
+                colorContainers.forEach(container => {
+                    container.style.maxWidth = '400px';
+                    container.style.overflowX = 'scroll';
+                });
+            });
+            
+            // Event Listener für Bundle-Karten (zum Auswählen)
+            const bundleCards = bundleSection.querySelectorAll('.bundle-card');
+            bundleCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Ignoriere Klicks auf Farbauswahl
+                    if (e.target.closest('.color-image-option')) return;
+                    
+                    // Entferne selected von allen Karten
+                    bundleCards.forEach(c => c.classList.remove('selected'));
+                    // Füge selected zur geklickten Karte hinzu
+                    this.classList.add('selected');
+                    // Setze Radio Button
+                    this.querySelector('.bundle-radio').checked = true;
+                });
+            });
+            console.log(`✅ ${bundleCards.length} Bundle-Karten Event Listener hinzugefügt`);
+        } else {
+            console.log('❌ Bundle-Section nicht gefunden');
         }
         
             // Funktion zum Abrufen des korrekten Bildpfads für Bundles
     function getImagePathForBundle(productId, color) {
-        const imagePathMappings = {
-            33: { // Aromatherapy Essential Oil Humidifier
-                'Cherry Blossoms': '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg',
-                'Green Tea':       '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg',
-                'Jasmine':         '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier jasmine.jpg',
-                'Lavender':        '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lavender.jpg',
-                'Lemon':           '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lemon.jpg',
-                'Lily':            '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lily.jpg',
-                'Ocean':           '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier ocean.jpg',
-                'Rose':            '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier rose.jpg',
-                'Sandalwood':      '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sandalwood.jpg',
-                'Sweet':           '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sweet.jpg',
-                'Vanilla':         '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier vanilla.jpg',
-                'Violet':          '../produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier violet.jpg'
-            }
-        };
-
-        if (imagePathMappings[productId] && imagePathMappings[productId][color.name]) {
-            return imagePathMappings[productId][color.name];
+        // Verwende direkt color.image aus window.product.colors
+        if (color.image) {
+            // Füge ../ hinzu wenn nicht vorhanden (weil wir in /produkte/ sind)
+            const imagePath = color.image.startsWith('../') ? color.image : '../' + color.image;
+            // KEIN Cache-busting mehr - Browser-Cache ist OK
+            console.log(`🖼️ Bildpfad für ${color.name}:`, imagePath);
+            return imagePath;
         }
-
-        // Fallback-Logik
-        return color.image && !color.image.startsWith('../') ? '../' + color.image : color.image;
+        
+        console.warn(`⚠️ Kein Bildpfad für Farbe ${color.name} gefunden`);
+        return '';
     }
 
     // Card-Klick Handler
