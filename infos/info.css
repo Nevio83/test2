@@ -83,6 +83,7 @@ body {
   font-weight: 800;
   letter-spacing: -0.4px;
   background: var(--primary-gradient);
+  text-align: center !important;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
