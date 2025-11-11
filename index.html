@@ -165,24 +165,47 @@
             #cartDropdownFooter .checkout-btn,
             #cartDropdownFooter .clear-cart-btn,
             #cartDropdown .checkout-btn,
-            #cartDropdown .clear-cart-btn {
+            #cartDropdown .clear-cart-btn,
+            .cart-dropdown-footer .btn-primary,
+            .cart-dropdown-footer .btn-outline-danger,
+            #cartDropdownFooter .btn-primary,
+            #cartDropdownFooter .btn-outline-danger {
                 height: 48px !important;
                 min-height: 48px !important;
                 max-height: 48px !important;
-                padding: 12px 16px !important;
+                padding: 0 16px !important;
                 flex-shrink: 0 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 white-space: nowrap !important;
+                line-height: normal !important;
+                box-sizing: border-box !important;
+                border-radius: 12px !important;
             }
             
             .cart-dropdown-footer .checkout-btn span,
             .cart-dropdown-footer .clear-cart-btn span,
             #cartDropdownFooter .checkout-btn span,
-            #cartDropdownFooter .clear-cart-btn span {
+            #cartDropdownFooter .clear-cart-btn span,
+            .cart-dropdown-footer .btn-primary span,
+            .cart-dropdown-footer .btn-outline-danger span,
+            #cartDropdownFooter .btn-primary span,
+            #cartDropdownFooter .btn-outline-danger span {
                 height: auto !important;
                 line-height: normal !important;
+                display: inline !important;
+            }
+            
+            .cart-dropdown-footer .checkout-btn i,
+            .cart-dropdown-footer .clear-cart-btn i,
+            #cartDropdownFooter .checkout-btn i,
+            #cartDropdownFooter .clear-cart-btn i,
+            .cart-dropdown-footer .btn-primary i,
+            .cart-dropdown-footer .btn-outline-danger i,
+            #cartDropdownFooter .btn-primary i,
+            #cartDropdownFooter .btn-outline-danger i {
+                margin-right: 8px !important;
             }
             
             .mobile-search-bar .search-button {
