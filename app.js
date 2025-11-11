@@ -1400,50 +1400,82 @@ function renderCartDropdown() {
       finalFooter.style.zIndex = '9999';
       finalFooter.style.background = 'white';
       finalFooter.style.borderTop = '1px solid #ddd';
-      finalFooter.style.padding = '20px';
+      finalFooter.style.padding = '16px';
+      
+      // Fix button container to use flexbox instead of grid
+      const buttonContainer = finalFooter.querySelector('.d-grid');
+      if (buttonContainer) {
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.flexDirection = 'column';
+        buttonContainer.style.gap = '10px';
+        buttonContainer.style.gridTemplateRows = 'none';
+      }
+      
       console.log('Final footer visibility check completed');
     }
     
     if (checkoutBtn) {
-      checkoutBtn.style.display = 'block';
+      // Komplett neu generieren ohne verschachtelte Spans
+      checkoutBtn.innerHTML = '<i class="bi bi-credit-card" style="margin-right: 8px;"></i>Zur Kasse';
+      
+      checkoutBtn.style.display = 'flex';
+      checkoutBtn.style.alignItems = 'center';
+      checkoutBtn.style.justifyContent = 'center';
       checkoutBtn.style.visibility = 'visible';
       checkoutBtn.style.opacity = '1';
       checkoutBtn.style.position = 'relative';
       checkoutBtn.style.zIndex = '9999';
       checkoutBtn.style.width = '100%';
-      checkoutBtn.style.height = '44px';
-      checkoutBtn.style.lineHeight = '44px';
+      checkoutBtn.style.height = '48px';
+      checkoutBtn.style.minHeight = '48px';
+      checkoutBtn.style.maxHeight = '48px';
+      checkoutBtn.style.lineHeight = 'normal';
       checkoutBtn.style.textAlign = 'center';
-      checkoutBtn.style.marginBottom = '8px';
-      checkoutBtn.style.background = '#007bff';
+      checkoutBtn.style.marginBottom = '0';
+      checkoutBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
       checkoutBtn.style.color = 'white';
       checkoutBtn.style.border = 'none';
-      checkoutBtn.style.borderRadius = '8px';
+      checkoutBtn.style.borderRadius = '12px';
       checkoutBtn.style.textDecoration = 'none';
-      console.log('Checkout button forced visible with full styling');
+      checkoutBtn.style.padding = '0 16px';
+      checkoutBtn.style.fontSize = '16px';
+      checkoutBtn.style.fontWeight = '600';
+      checkoutBtn.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
+      checkoutBtn.style.transition = 'all 0.3s ease';
+      checkoutBtn.style.boxSizing = 'border-box';
+      
+      console.log('Checkout button completely regenerated');
     }
     
     if (clearBtn) {
-      clearBtn.style.display = 'block';
+      // Komplett neu generieren ohne verschachtelte Spans
+      clearBtn.innerHTML = '<i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px;"></i>Löschen';
+      
+      clearBtn.style.display = 'flex';
+      clearBtn.style.alignItems = 'center';
+      clearBtn.style.justifyContent = 'center';
       clearBtn.style.visibility = 'visible';
       clearBtn.style.opacity = '1';
       clearBtn.style.position = 'relative';
       clearBtn.style.zIndex = '9999';
       clearBtn.style.width = '100%';
-      clearBtn.style.height = '44px';
+      clearBtn.style.height = '48px';
+      clearBtn.style.minHeight = '48px';
+      clearBtn.style.maxHeight = '48px';
       clearBtn.style.border = '2px solid #dc3545';
       clearBtn.style.color = '#dc3545';
       clearBtn.style.background = 'white';
-      clearBtn.style.borderRadius = '8px';
+      clearBtn.style.borderRadius = '12px';
       clearBtn.style.cursor = 'pointer';
       clearBtn.style.fontSize = '16px';
-      clearBtn.style.lineHeight = '40px';
+      clearBtn.style.fontWeight = '600';
+      clearBtn.style.lineHeight = 'normal';
       clearBtn.style.textAlign = 'center';
-      // Ensure button has text content
-      if (!clearBtn.textContent.includes('Löschen')) {
-        clearBtn.innerHTML = '<i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px;"></i> Löschen';
-      }
-      console.log('Clear button forced visible with full styling and text');
+      clearBtn.style.padding = '0 16px';
+      clearBtn.style.transition = 'all 0.3s ease';
+      clearBtn.style.boxSizing = 'border-box';
+      
+      console.log('Clear button completely regenerated');
     }
     
     // Extra check for PC browsers
