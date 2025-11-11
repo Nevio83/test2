@@ -149,9 +149,16 @@ window.convertPrice = convertPrice;
 
 // Versandkosten nach Land
 function getShippingCost(countryCode) {
-    // Europäische Länder haben keinen Versand
-    const europeanCountries = ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'GB'];
-    return europeanCountries.includes(countryCode) ? 0 : 4.99;
+    // Pauschale Versandkosten pro Land (gleich wie shipping-calculator.js)
+    const shippingCosts = {
+        'DE': 0, 'AT': 0, 'CH': 0, 'FR': 0, 'IT': 0, 'ES': 0, 'NL': 0, 'BE': 0, 'GB': 0, 'PL': 0,
+        'US': 12.00, 'CA': 12.00, 'MX': 15.00,
+        'JP': 15.00, 'CN': 15.00, 'KR': 15.00, 'SG': 15.00,
+        'AU': 20.00, 'NZ': 20.00,
+        'BR': 18.00, 'AR': 18.00
+    };
+    
+    return shippingCosts[countryCode] || 15.00; // Standard: 15€
 }
 
 // Mache getShippingCost global verfügbar

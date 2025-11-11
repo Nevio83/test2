@@ -26,6 +26,9 @@ if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendg
 const CJDropshippingAPI = require('./cj-dropshipping-api');
 const cjAPI = new CJDropshippingAPI();
 
+// Initialize Shipping Calculator
+const { calculateShippingCost } = require('./shipping-calculator');
+
 // Initialize Exchange Rate Service
 const ExchangeRateService = require('./exchange-rate-service');
 const exchangeRateService = new ExchangeRateService();
@@ -548,10 +551,11 @@ app.post('/api/create-payment-intent', async (req, res) => {
     }
   }
 
-  // Versandkosten in EUR
-  const europeanCountries = ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'GB'];
-  const shippingCostEUR = europeanCountries.includes(country) ? 0 : 4.99;
+  // Versandkosten in EUR (pauschale Kosten basierend auf Land)
+  const shippingCostEUR = calculateShippingCost(country);
   amountInEUR += shippingCostEUR;
+  
+  console.log(`📦 Versandkosten für ${country}: €${shippingCostEUR.toFixed(2)}`);
   
   // Rechne Gesamtbetrag in Zielwährung um
   const convertedAmount = await convertPrice(amountInEUR, currency);
