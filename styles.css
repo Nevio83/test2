@@ -1260,10 +1260,7 @@ body {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
   }
   
-  /* Add padding to body to compensate for fixed nav */
-  body {
-    padding-top: 60px !important;
-  }
+  /* Kein body padding mehr - Abstand wird in hero-section geregelt */
 }
 
 /* Desktop keeps normal navigation */
@@ -1420,6 +1417,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   min-width: 18px;
   text-align: center;
   line-height: 1.2;
+  pointer-events: none; /* Klicks gehen durch zum Button */
 }
 
 /* LumiÃ¨re Design Announcement Bar */
@@ -2193,7 +2191,7 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
 
 @media (max-width: 768px) {
     .hero-section {
-        padding: 60px 0 40px;
+        padding: 130px 0 40px; /* Mehr padding-top für Navigation-Bar */
     }
     
     .section-heading {
@@ -5206,6 +5204,7 @@ div#hilfePanel.offen,
     align-items: center !important;
     justify-content: center !important;
     font-weight: 700 !important;
+    pointer-events: none !important; /* Klicks gehen durch zum Button */
   }
   
   /* Gutscheine Button kompakt */

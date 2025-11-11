@@ -50,8 +50,8 @@ const SHIPPING_MARKUP = 0;
  * @returns {number} Versandkosten in EUR
  */
 function calculateShippingCost(countryCode) {
-  // Hole pauschale Kosten für das Land
-  return FLAT_SHIPPING_COSTS[countryCode] || FLAT_SHIPPING_COSTS['DEFAULT'];
+  // Hole pauschale Kosten für das Land (hasOwnProperty um 0 korrekt zu behandeln)
+  return FLAT_SHIPPING_COSTS.hasOwnProperty(countryCode) ? FLAT_SHIPPING_COSTS[countryCode] : FLAT_SHIPPING_COSTS['DEFAULT'];
 }
 
 /**
