@@ -648,62 +648,62 @@ class ProductImageGallery {
             case 47: // Tumbler Becher
                 this.images = [
                     {
-                        src: `../produkt bilder/Tumbler Becher.jpg`,
+                        src: `../produkt bilder/Tumbler becher.jpg`,
                         alt: 'Tumbler Becher - Hauptbild',
                         color: 'Standard'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher schwarz.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher schwarz.jpg`,
                         alt: '40 Oz Tumbler - Schwarz',
                         color: 'Schwarz'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher cream white.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher cream white.jpg`,
                         alt: '40 Oz Tumbler - Cream Weiß',
                         color: 'Cream Weiß'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher hell blau.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher hell blau.jpg`,
                         alt: '40 Oz Tumbler - Hell Blau',
                         color: 'Hell Blau'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher bay leaves.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher bay leaves.jpg`,
                         alt: '40 Oz Tumbler - Bay Leaves',
                         color: 'Bay Leaves'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher red rust.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher red rust.jpg`,
                         alt: '40 Oz Tumbler - Red Rust',
                         color: 'Red Rust'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher pink love b.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher pink love B.jpg`,
                         alt: '40 Oz Tumbler - Pink Love B',
                         color: 'Pink Love B'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher peony color.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher peony color.jpg`,
                         alt: '40 Oz Tumbler - Peony Color',
                         color: 'Peony Color'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher hell lila.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher hell lila.jpg`,
                         alt: '40 Oz Tumbler - Hell Lila',
                         color: 'Hell Lila'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher storm sea.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher storm sea.jpg`,
                         alt: '40 Oz Tumbler - Storm Sea',
                         color: 'Storm Sea'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher Strohalm.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher Strohalm.jpg`,
                         alt: '40 Oz Tumbler - Straw',
                         color: 'Strohalm'
                     },
                     {
-                        src: `../produkt bilder/${folderName}/Tumbler Becher thermal sublimation.jpg`,
+                        src: `../produkt bilder/${folderName}/Tumbler becher Thermal sublimation.jpg`,
                         alt: '40 Oz Tumbler - Thermal Sublimation',
                         color: 'Thermal Sublimation'
                     }
@@ -713,7 +713,7 @@ class ProductImageGallery {
             case 48: // Tumbler Becher Winter
                 this.images = [
                     {
-                        src: `../produkt bilder/Tumbler becher winter.jpg`,
+                        src: `../produkt bilder/Tumbler becher Winter.jpg`,
                         alt: 'Tumbler Becher Winter - Hauptbild',
                         color: 'Standard'
                     },
