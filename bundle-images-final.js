@@ -1040,8 +1040,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 44: { id: 44, name: 'Smart Beamer', price: 149.99, image: 'produkt bilder/Smart Beamer.jpg', category: 'Technik/Gadgets' },
                 45: { id: 45, name: 'Klimaanlage mit Display', price: 28.99, image: 'produkt bilder/Klimaanlage mit Display.jpg', category: 'Technik/Gadgets' },
                 46: { id: 46, name: 'Nordic Crystal Lamp', price: 24.99, image: 'produkt bilder/Nordic Crystal Lamp.jpg', category: 'Beleuchtung' },
-                47: { id: 47, name: 'Tumbler Becher', price: 19.99, image: 'produkt bilder/Tumbler Becher.jpg', category: 'Haushalt und Küche' },
-                48: { id: 48, name: 'Tumbler Becher Winter', price: 19.99, image: 'produkt bilder/Tumbler becher winter.jpg', category: 'Haushalt und Küche' },
+                47: { id: 47, name: 'Tumbler Becher', price: 19.99, image: 'produkt bilder/Tumbler becher.jpg', category: 'Haushalt und Küche' },
+                48: { id: 48, name: 'Tumbler Becher Winter', price: 19.99, image: 'produkt bilder/Tumbler becher Winter.jpg', category: 'Haushalt und Küche' },
                 50: { id: 50, name: 'Krystall Ball Nachtlampe', price: 13.99, image: 'produkt bilder/Krystall Ball Nachtlampe.jpg', category: 'Beleuchtung' }
             };
             
@@ -1181,8 +1181,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 44: { id: 44, name: 'Smart Beamer', price: 149.99, image: 'produkt bilder/Smart Beamer.jpg', category: 'Technik/Gadgets' },
                 45: { id: 45, name: 'Klimaanlage mit Display', price: 28.99, image: 'produkt bilder/Klimaanlage mit Display.jpg', category: 'Technik/Gadgets' },
                 46: { id: 46, name: 'Nordic Crystal Lamp', price: 24.99, image: 'produkt bilder/Nordic Crystal Lamp.jpg', category: 'Beleuchtung' },
-                47: { id: 47, name: 'Tumbler Becher', price: 19.99, image: 'produkt bilder/Tumbler Becher.jpg', category: 'Haushalt und Küche' },
-                48: { id: 48, name: 'Tumbler Becher Winter', price: 19.99, image: 'produkt bilder/Tumbler becher winter.jpg', category: 'Haushalt und Küche' },
+                47: { id: 47, name: 'Tumbler Becher', price: 19.99, image: 'produkt bilder/Tumbler becher.jpg', category: 'Haushalt und Küche' },
+                48: { id: 48, name: 'Tumbler Becher Winter', price: 19.99, image: 'produkt bilder/Tumbler becher Winter.jpg', category: 'Haushalt und Küche' },
                 50: { id: 50, name: 'Krystall Ball Nachtlampe', price: 13.99, image: 'produkt bilder/Krystall Ball Nachtlampe.jpg', category: 'Beleuchtung' }
             };
             
