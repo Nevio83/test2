@@ -96,7 +96,9 @@
   </main>
   <script>
     (function(){
-      // Pauschale Versandkosten pro Land
+      console.log('🚀 Versandkosten-Rechner geladen');
+      
+      // Pauschale Versandkosten pro Land (in EUR)
       const shippingCosts = {
         'DE': 0, 'AT': 0, 'CH': 0, 'FR': 0, 'IT': 0, 'ES': 0, 'NL': 0, 'BE': 0, 'GB': 0, 'PL': 0,
         'US': 12.00, 'CA': 12.00, 'MX': 15.00,
@@ -105,17 +107,72 @@
         'BR': 18.00, 'AR': 18.00
       };
       
+      // Währungsumrechnung (wie in cart.js)
+      const currencyConversion = {
+        'EUR': 1,
+        'USD': 1.09,
+        'GBP': 0.86,
+        'CHF': 0.94,
+        'JPY': 160.50,
+        'AUD': 1.66,
+        'CAD': 1.48,
+        'CNY': 7.85,
+        'MXN': 18.50,
+        'BRL': 5.45
+      };
+      
+      // Währung nach Land
+      const currencyByCountry = {
+        'DE': 'EUR', 'AT': 'EUR', 'CH': 'CHF', 'FR': 'EUR', 'IT': 'EUR', 'ES': 'EUR', 
+        'NL': 'EUR', 'BE': 'EUR', 'GB': 'GBP', 'PL': 'EUR',
+        'US': 'USD', 'CA': 'CAD', 'MX': 'MXN',
+        'JP': 'JPY', 'CN': 'CNY', 'KR': 'USD', 'SG': 'USD',
+        'AU': 'AUD', 'NZ': 'AUD',
+        'BR': 'BRL', 'AR': 'USD'
+      };
+      
+      // Währungssymbole
+      const currencySymbols = {
+        'EUR': '€', 'USD': '$', 'GBP': '£', 'CHF': 'CHF', 
+        'JPY': '¥', 'AUD': 'A$', 'CAD': 'C$', 'CNY': '¥',
+        'MXN': 'MX$', 'BRL': 'R$'
+      };
+      
       function getShippingCost(code){
-        return shippingCosts[code] || 15.00; // Standard: 15€
+        const cost = shippingCosts.hasOwnProperty(code) ? shippingCosts[code] : 15.00;
+        console.log(`📦 Versandkosten für ${code}: €${cost}`);
+        return cost;
+      }
+      
+      function convertPrice(eurPrice, currencyCode) {
+        const factor = currencyConversion[currencyCode] || 1;
+        return eurPrice * factor;
       }
       
       const select = document.getElementById('shipCountry');
       const out = document.getElementById('shipCost');
-      function update(){
-        const val = select.value;
-        const cost = getShippingCost(val);
-        out.textContent = cost === 0 ? '0,00€' : cost.toFixed(2).replace('.', ',') + '€';
+      
+      if (!select || !out) {
+        console.error('❌ Elemente nicht gefunden!');
+        return;
       }
+      
+      function update(){
+        const countryCode = select.value;
+        const costEUR = getShippingCost(countryCode);
+        const currency = currencyByCountry[countryCode] || 'EUR';
+        const symbol = currencySymbols[currency] || '€';
+        const convertedCost = convertPrice(costEUR, currency);
+        
+        if (costEUR === 0) {
+          out.textContent = '0,00' + symbol;
+        } else {
+          out.textContent = symbol + convertedCost.toFixed(2).replace('.', ',');
+        }
+        
+        console.log(`✅ ${countryCode}: ${costEUR}€ = ${symbol}${convertedCost.toFixed(2)}`);
+      }
+      
       select.addEventListener('change', update);
       update();
     })();

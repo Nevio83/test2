@@ -41,30 +41,44 @@
   </header>
 
   <main class="container py-4 py-md-5">
-    <h1 class="page-title display-5 mb-3">Kategorien</h1>
-    <p class="lead mb-4">Stöbere durch unsere beliebtesten Bereiche.</p>
+    <div class="header-section text-center mb-5">
+      <h1 class="page-title display-4 mb-3" style="font-weight: 700; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Kategorien</h1>
+      <p class="lead mb-0" style="color: #6b7280; font-size: 1.1rem;">Entdecke unsere sorgfältig kuratierten Produktwelten</p>
+    </div>
 
-    <div class="row g-4">
-      <div class="col-md-6">
-        <a class="category-card p-4 h-100" href="../index.html?category=Technik/Gadgets#productGrid">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+      <div>
+        <a class="category-card p-4 h-100" href="#" onclick="openCategorySearch('Technik/Gadgets'); return false;">
+          <div class="category-image-container">
+            <img src="../produkt bilder/Elektronisches Distanzmessgerät Digital.jpg" alt="Technik/Gadgets" class="category-image">
+          </div>
           <h2 class="section-title h5 mb-2">Technik/Gadgets</h2>
           <p class="mb-0 text-muted">Praktische Gadgets, Audio, Smart Home und mehr.</p>
         </a>
       </div>
-      <div class="col-md-6">
-        <a class="category-card p-4 h-100" href="../index.html?category=Beleuchtung#productGrid">
+      <div>
+        <a class="category-card p-4 h-100" href="#" onclick="openCategorySearch('Beleuchtung'); return false;">
+          <div class="category-image-container">
+            <img src="../produkt bilder/Indoor Sensing Wall Lamp.jpg" alt="Beleuchtung" class="category-image">
+          </div>
           <h2 class="section-title h5 mb-2">Beleuchtung</h2>
           <p class="mb-0 text-muted">Lampen, LED-Strips und Beleuchtungslösungen.</p>
         </a>
       </div>
-      <div class="col-md-6">
-        <a class="category-card p-4 h-100" href="../index.html?category=Körperpflege/Wellness#productGrid">
+      <div>
+        <a class="category-card p-4 h-100" href="#" onclick="openCategorySearch('Körperpflege/Wellness'); return false;">
+          <div class="category-image-container">
+            <img src="../produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg" alt="Körperpflege/Wellness" class="category-image">
+          </div>
           <h2 class="section-title h5 mb-2">Körperpflege/Wellness</h2>
           <p class="mb-0 text-muted">Pflegeprodukte und Wellness für Ihr Wohlbefinden.</p>
         </a>
       </div>
-      <div class="col-md-6">
-        <a class="category-card p-4 h-100" href="../index.html?category=Haushalt und Küche#productGrid">
+      <div>
+        <a class="category-card p-4 h-100" href="#" onclick="openCategorySearch('Haushalt und Küche'); return false;">
+          <div class="category-image-container">
+            <img src="../produkt bilder/Multifunktions Gemüseschneider.jpg" alt="Haushalt und Küche" class="category-image">
+          </div>
           <h2 class="section-title h5 mb-2">Haushalt und Küche</h2>
           <p class="mb-0 text-muted">Nützliche Helfer für Küche, Reinigung und Ordnung.</p>
         </a>
@@ -72,10 +86,224 @@
     </div>
 
     <div class="mt-4">
-      <a class="back-btn" href="../index.html#productGrid"><i class="bi bi-grid"></i> Produkte in allen Kategorien</a>
+      <a class="back-btn" href="#" onclick="openCategorySearch('alle'); return false;"><i class="bi bi-grid"></i> Alle Produkte durchsuchen</a>
     </div>
 
     <div class="footer-spacer"></div>
   </main>
+
+  <script>
+    // Funktion zum Öffnen der Suche mit ausgewählter Kategorie
+    function openCategorySearch(category) {
+      // Zur Hauptseite mit Kategorie-Parameter weiterleiten
+      window.location.href = `../index.html?search=true&category=${encodeURIComponent(category)}`;
+    }
+  </script>
+
+  <style>
+    /* Allgemeines Seiten-Styling */
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    main.container {
+      max-width: 1200px;
+    }
+
+    /* Header Section */
+    .header-section {
+      padding: 2rem 0;
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Kategorie-Karten - MODERN & ELEGANT */
+    .category-card {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      position: relative;
+      text-decoration: none;
+      display: block;
+    }
+
+    .category-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .category-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .category-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(102, 126, 234, 0.2);
+      text-decoration: none;
+    }
+
+    .category-image-container {
+      width: 100%;
+      padding-top: 100%; /* 1:1 Quadratisch wie auf Index-Seite */
+      overflow: hidden;
+      margin-bottom: 20px;
+      background: #ffffff;
+      position: relative;
+      border-radius: 12px;
+    }
+
+    .category-image {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      max-width: none;
+      object-fit: cover;
+      transition: all 0.4s ease;
+    }
+    
+    .category-card:hover .category-image {
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    .category-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 10px;
+      transition: color 0.3s ease;
+    }
+
+    .category-card:hover h2 {
+      color: #667eea;
+    }
+
+    .category-card p {
+      font-size: 0.95rem;
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 0;
+    }
+
+    /* Grid Animation */
+    .row.g-4 > div {
+      animation: fadeInUp 0.6s ease-out backwards;
+    }
+
+    .row.g-4 > div:nth-child(1) { animation-delay: 0.1s; }
+    .row.g-4 > div:nth-child(2) { animation-delay: 0.2s; }
+    .row.g-4 > div:nth-child(3) { animation-delay: 0.3s; }
+    .row.g-4 > div:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Back Button Styling */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white !important;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      text-decoration: none;
+    }
+
+    /* Grid Layout - 2 Spalten erzwingen */
+    .row.g-4 > div {
+      flex: 0 0 50% !important;
+      max-width: 50% !important;
+    }
+
+    /* Mobile Optimierung */
+    @media (max-width: 768px) {
+      .category-image-container {
+        margin-bottom: 12px;
+      }
+
+      .category-card h2 {
+        font-size: 1rem;
+        margin-bottom: 6px;
+      }
+      
+      .category-card p {
+        font-size: 0.85rem;
+      }
+
+      .header-section h1 {
+        font-size: 2rem !important;
+      }
+      
+      .category-card {
+        padding: 0.75rem !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .category-card h2 {
+        font-size: 0.95rem;
+      }
+      
+      .category-card p {
+        font-size: 0.8rem;
+        line-height: 1.3;
+      }
+
+      .header-section h1 {
+        font-size: 1.75rem !important;
+      }
+
+      .header-section p {
+        font-size: 0.95rem !important;
+      }
+      
+      .category-card {
+        padding: 0.6rem !important;
+      }
+    }
+  </style>
 </body>
 </html>

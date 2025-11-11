@@ -158,7 +158,8 @@ function getShippingCost(countryCode) {
         'BR': 18.00, 'AR': 18.00
     };
     
-    return shippingCosts[countryCode] || 15.00; // Standard: 15€
+    // Verwende hasOwnProperty um 0 korrekt zu behandeln
+    return shippingCosts.hasOwnProperty(countryCode) ? shippingCosts[countryCode] : 15.00;
 }
 
 // Mache getShippingCost global verfügbar
