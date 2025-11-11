@@ -29,6 +29,11 @@
     <style>
         /* KRITISCHE FIXES - SOFORT ANWENDEN */
         
+        /* Desktop: Mobile Suchleiste verstecken */
+        .mobile-search-bar {
+            display: none !important;
+        }
+        
         /* MOBILE NAVIGATION - OPTIMIERT & MODERN */
         @media (max-width: 768px) {
             .simple-nav {
@@ -80,38 +85,64 @@
                 display: none !important;
             }
             
-            /* Such-Icon - Runder Button */
+            /* Such-Icon in Navbar verstecken auf Mobile */
             .search-icon-center {
-                order: 2 !important;
-                flex: 0 0 auto !important;
-                background: transparent !important;
-                border: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            
-            .search-icon-center button {
-                padding: 0 !important;
-                font-size: 20px !important;
-                background: #f5f5f5 !important;
-                border: none !important;
-                border-radius: 50% !important;
-                width: 44px !important;
-                height: 44px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                color: #333 !important;
-                transition: all 0.2s ease !important;
-            }
-            
-            .search-icon-center button span {
                 display: none !important;
             }
             
-            .search-icon-center button:active {
-                background: #e0e0e0 !important;
-                transform: scale(0.95) !important;
+            /* Mobile Suchleiste unter Navbar - wie Desktop */
+            .mobile-search-bar {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                padding: 8px 15px 8px 15px !important;
+                background: #f8f9fa !important;
+                border-bottom: none !important;
+                position: fixed !important;
+                top: 74px !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 999 !important;
+            }
+            
+            /* Hero Section - minimaler Abstand für Navbar + Suchleiste */
+            .hero-section {
+                padding-top: 90px !important;
+                margin-top: -20px !important;
+            }
+            
+            .mobile-search-bar .search-button {
+                background: #ffffff !important;
+                border: 2px solid #e0e0e0 !important;
+                border-radius: 20px !important;
+                width: 100% !important;
+                max-width: 600px !important;
+                height: 40px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                color: #333 !important;
+                font-size: 16px !important;
+                cursor: pointer !important;
+                transition: all 0.2s ease !important;
+                padding: 0 15px !important;
+                gap: 10px !important;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            }
+            
+            .mobile-search-bar .search-button:hover {
+                border-color: #667eea !important;
+                box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2) !important;
+            }
+            
+            .mobile-search-bar .search-button i {
+                font-size: 18px !important;
+                color: #666 !important;
+            }
+            
+            .mobile-search-bar .search-button span {
+                color: #999 !important;
+                font-weight: 400 !important;
             }
             
             /* Action Buttons - Einheitlich & Touch-freundlich */
@@ -1471,6 +1502,14 @@
         </div>
       </div>
     </nav>
+
+    <!-- Mobile Suchleiste (nur auf Mobile sichtbar) -->
+    <div class="mobile-search-bar">
+      <button class="search-button" type="button" aria-label="Suchen" id="mobileSearchBtn">
+        <i class="bi bi-search"></i>
+        <span>Suche nach Produkten...</span>
+      </button>
+    </div>
 
     <!-- Burger Menu Overlay -->
     <div class="burger-menu-overlay" id="burgerMenuOverlay">
@@ -3117,6 +3156,30 @@ document.addEventListener('DOMContentLoaded', function() {
         updateBurgerCounters();
         updateGutscheineCounter();
     }, 2000);
+});
+
+// Mobile Suchleiste Funktionalität
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+    
+    if (mobileSearchBtn) {
+        // Bei Klick auf Button öffne Vollbild-Suche
+        mobileSearchBtn.addEventListener('click', function() {
+            const searchOverlay = document.getElementById('fullscreenSearchOverlay');
+            if (searchOverlay) {
+                searchOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Fokussiere das Vollbild-Suchfeld
+                setTimeout(() => {
+                    const fullscreenInput = document.getElementById('fullscreenSearchInput');
+                    if (fullscreenInput) {
+                        fullscreenInput.focus();
+                    }
+                }, 100);
+            }
+        });
+    }
 });
 </script>
 
