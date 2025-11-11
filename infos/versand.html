@@ -45,11 +45,11 @@
     <p class="lead mb-4">Transparente Infos zu Versandarten, Zeiten und Kosten.</p>
 
     <div class="info-card p-4 p-md-5 mb-4">
-      <h2 class="section-title h5 mb-3">Standard- und Expressversand</h2>
+      <h2 class="section-title h5 mb-3">Standardversand</h2>
       <ul class="clean-list">
-        <li>Standard: 3–5 Werktage</li>
-        <li>Express: 1–2 Werktage</li>
-        <li>Kostenlos ab 50€ Bestellwert innerhalb der EU</li>
+        <li>Lieferzeit: 7–13 Werktage</li>
+        <li>Kostenloser Versand innerhalb Europas</li>
+        <li>Außerhalb Europas: 4,99€ Versandkosten</li>
       </ul>
     </div>
 
@@ -84,7 +84,7 @@
         <div class="col-md-6">
           <div class="calc-output">
             <div><span class="text-muted">Versandkosten:</span> <strong id="shipCost">–</strong></div>
-            <div class="small text-muted">Kostenfrei in Europa, sonst 4,99€</div>
+            <div class="small text-muted">Kostenfrei in Europa, weltweit 12-20€</div>
           </div>
         </div>
       </div>
@@ -96,10 +96,19 @@
   </main>
   <script>
     (function(){
+      // Pauschale Versandkosten pro Land
+      const shippingCosts = {
+        'DE': 0, 'AT': 0, 'CH': 0, 'FR': 0, 'IT': 0, 'ES': 0, 'NL': 0, 'BE': 0, 'GB': 0, 'PL': 0,
+        'US': 12.00, 'CA': 12.00, 'MX': 15.00,
+        'JP': 15.00, 'CN': 15.00, 'KR': 15.00, 'SG': 15.00,
+        'AU': 20.00, 'NZ': 20.00,
+        'BR': 18.00, 'AR': 18.00
+      };
+      
       function getShippingCost(code){
-        const eu = ['DE','AT','CH','FR','IT','ES','NL','BE','GB'];
-        return eu.includes(code) ? 0 : 4.99;
+        return shippingCosts[code] || 15.00; // Standard: 15€
       }
+      
       const select = document.getElementById('shipCountry');
       const out = document.getElementById('shipCost');
       function update(){
