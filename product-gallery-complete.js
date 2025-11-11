@@ -36,7 +36,7 @@ class ProductImageGallery {
             44: 'Smart Beamer bilder',
             45: 'Klimaanlage mit Displaybilder',
             46: 'Nordic Crystal Lamp bilder',
-            47: 'Tumbler Becher bilder'
+            47: 'Tumbler becher bilder'
         };
         
         this.init();
@@ -64,7 +64,7 @@ class ProductImageGallery {
             44: 'Smart Beamer bilder',
             45: 'Klimaanlage mit Displaybilder',
             46: 'Nordic Crystal Lamp bilder',
-            47: 'Tumbler Becher bilder',
+            47: 'Tumbler becher bilder',
             48: 'Tumbler becher winter bilder',
             49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder',
             50: 'Krystall Ball Nachtlampe bilder'
