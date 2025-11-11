@@ -111,6 +111,80 @@
                 margin-top: -20px !important;
             }
             
+            /* Warenkorb Dropdown - Mobile Fullscreen */
+            .cart-dropdown {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                width: 100% !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+                border-radius: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                z-index: 10000 !important;
+            }
+            
+            .cart-dropdown-header {
+                order: 1 !important;
+                flex-shrink: 0 !important;
+            }
+            
+            .cart-dropdown-body {
+                order: 2 !important;
+                flex: 1 !important;
+                overflow-y: auto !important;
+                padding-bottom: 0 !important;
+                margin-bottom: 0 !important;
+            }
+            
+            .cart-dropdown-footer {
+                order: 3 !important;
+                position: sticky !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                background: white !important;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1) !important;
+                padding: 16px !important;
+                z-index: 10001 !important;
+                flex-shrink: 0 !important;
+            }
+            
+            .cart-dropdown-footer .d-grid {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 10px !important;
+                grid-template-rows: none !important;
+            }
+            
+            .cart-dropdown-footer .checkout-btn,
+            .cart-dropdown-footer .clear-cart-btn,
+            #cartDropdownFooter .checkout-btn,
+            #cartDropdownFooter .clear-cart-btn,
+            #cartDropdown .checkout-btn,
+            #cartDropdown .clear-cart-btn {
+                height: 48px !important;
+                min-height: 48px !important;
+                max-height: 48px !important;
+                padding: 12px 16px !important;
+                flex-shrink: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                white-space: nowrap !important;
+            }
+            
+            .cart-dropdown-footer .checkout-btn span,
+            .cart-dropdown-footer .clear-cart-btn span,
+            #cartDropdownFooter .checkout-btn span,
+            #cartDropdownFooter .clear-cart-btn span {
+                height: auto !important;
+                line-height: normal !important;
+            }
+            
             .mobile-search-bar .search-button {
                 background: #ffffff !important;
                 border: 2px solid #e0e0e0 !important;
@@ -1471,22 +1545,18 @@
             <p class="text-muted mt-2">Ihr Warenkorb ist leer</p>
           </div>
         </div>
-        <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 999 !important; background: white !important; padding: 20px !important; width: 100% !important; box-sizing: border-box !important;">
+        <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 999 !important; background: white !important; padding: 16px !important; width: 100% !important; box-sizing: border-box !important;">
           <div class="d-flex justify-content-between align-items-center mb-3" style="width: 100% !important;">
             <strong>Gesamt: €<span id="cartTotal">0.00</span></strong>
           </div>
-          <div class="d-grid gap-2" style="width: 100% !important; display: grid !important; grid-template-rows: 48px 48px !important; gap: 12px !important; align-items: stretch !important;">
-            <a href="cart.html" class="btn btn-primary checkout-btn" style="display: flex !important; align-items: center !important; justify-content: center !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; text-align: center !important; text-decoration: none !important; color: white !important; background: linear-gradient(135deg, #667eea, #764ba2) !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important; font-size: 16px !important; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important; transition: all 0.3s ease !important; line-height: 1 !important; padding: 0 !important; box-sizing: border-box !important;">
-              <span style="display: inline-flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; height: 48px !important;">
-                <i class="bi bi-credit-card" style="margin-right: 8px !important; line-height: 1 !important; display: inline-block !important;"></i>
-                <span style="line-height: 1 !important; display: inline-block !important;">Zur Kasse</span>
-              </span>
+          <div class="d-grid gap-2" style="width: 100% !important; display: flex !important; flex-direction: column !important; gap: 10px !important;">
+            <a href="cart.html" class="btn btn-primary checkout-btn" style="display: flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; text-decoration: none !important; color: white !important; background: linear-gradient(135deg, #667eea, #764ba2) !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important; font-size: 16px !important; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important; padding: 0 16px !important; box-sizing: border-box !important;">
+              <i class="bi bi-credit-card" style="margin-right: 8px !important;"></i>
+              <span>Zur Kasse</span>
             </a>
-            <button class="btn btn-outline-danger clear-cart-btn" id="clearCart" style="display: flex !important; align-items: center !important; justify-content: center !important; visibility: visible !important; opacity: 1 !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; border: 2px solid #dc3545 !important; color: #dc3545 !important; background: white !important; border-radius: 12px !important; cursor: pointer !important; font-size: 16px !important; font-weight: 600 !important; transition: all 0.3s ease !important; line-height: 1 !important; padding: 0 !important; box-sizing: border-box !important;">
-              <span style="display: inline-flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; height: 48px !important;">
-                <i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px; line-height: 1 !important; display: inline-block !important;"></i>
-                <span style="line-height: 1 !important; display: inline-block !important;">Löschen</span>
-              </span>
+            <button class="btn btn-outline-danger clear-cart-btn" id="clearCart" style="display: flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; border: 2px solid #dc3545 !important; color: #dc3545 !important; background: white !important; border-radius: 12px !important; cursor: pointer !important; font-size: 16px !important; font-weight: 600 !important; padding: 0 16px !important; box-sizing: border-box !important;">
+              <i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px;"></i>
+              <span>Löschen</span>
             </button>
           </div>
         </div>
