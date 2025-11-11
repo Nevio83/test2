@@ -8467,38 +8467,40 @@ section[data-category="Haushalt und Kï¿½che"]::after,
         transform: none !important;
         -webkit-transform: none !important;
         animation: none !important;
-        transition: none !important;
-        -webkit-transition: none !important;
         box-shadow: none !important;
     }
     
     /* Scrollbar-Fixes fÃ¼r Mobile - VERBESSERT */
     .product-scroll-container .custom-scrollbar-track {
-        -webkit-transform: translateZ(0) !important;
-        transform: translateZ(0) !important;
+        position: fixed !important;
+        transform: none !important;
+        -webkit-transform: none !important;
         animation: none !important;
         transition: none !important;
         -webkit-transition: none !important;
-        /* Sichtbarer auf Mobile */
-        height: 8px !important;
-        background: #b0b0b0 !important;
-        border: 1px solid #999999 !important;
-        bottom: 8px !important;
+        will-change: auto !important;
+        /* Sichtbarer auf Mobile - wie Technik */
+        height: 10px !important;
+        background: #f0f0f0 !important;
+        border: none !important;
+        bottom: 6px !important;
     }
     
     .product-scroll-container .custom-scrollbar-thumb {
-        -webkit-transform: translateZ(0) !important;
-        transform: translateZ(0) !important;
+        position: absolute !important;
+        transform: none !important;
+        -webkit-transform: none !important;
         animation: none !important;
-        transition: transform 0.1s ease !important;
-        -webkit-transition: -webkit-transform 0.1s ease !important;
-        /* Sichtbarer auf Mobile */
-        height: 8px !important;
-        background: linear-gradient(135deg, #333333, #000000) !important;
-        border: 1px solid #000000 !important;
-        bottom: 8px !important;
-        min-width: 40px !important;
-        border-radius: 4px !important;
+        transition: none !important;
+        -webkit-transition: none !important;
+        will-change: auto !important;
+        /* Sichtbarer auf Mobile - wie Technik */
+        height: 10px !important;
+        background: #000000 !important;
+        border: none !important;
+        bottom: 6px !important;
+        min-width: 50px !important;
+        border-radius: 3px !important;
     }
     
     .product-scroll-container .custom-scrollbar-thumb:active {
@@ -8595,11 +8597,12 @@ section[data-category="Haushalt und Kï¿½che"]::after,
         box-shadow: none !important;
     }
     
-    /* Mobile Scrollbar noch sichtbarer machen */
+    /* Mobile Scrollbar noch sichtbarer machen - wie Technik */
     .product-scroll-container .custom-scrollbar-track {
         height: 10px !important;
-        background: #999999 !important;
+        background: #f0f0f0 !important;
         bottom: 6px !important;
+        border: none !important;
     }
     
     .product-scroll-container .custom-scrollbar-thumb {
@@ -8607,5 +8610,7 @@ section[data-category="Haushalt und Kï¿½che"]::after,
         background: #000000 !important;
         bottom: 6px !important;
         min-width: 50px !important;
+        border: none !important;
+        border-radius: 3px !important;
     }
 }
