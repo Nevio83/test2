@@ -944,7 +944,16 @@ window.handleCheckout = async function() {
         if (!customerInfo.metadata) customerInfo.metadata = {};
         customerInfo.metadata.allow_express_checkout = 'true';
         
-        const response = await fetch('/api/create-checkout-session', {
+        // Optimierte URL-Konfiguration für maiosshop.com
+        let apiUrl = '/api/create-checkout-session';
+        
+        // Nur für lokale Entwicklung die vollständige URL verwenden
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            apiUrl = 'http://localhost:3000/api/create-checkout-session';
+        }
+            
+        console.log('🌐 API URL:', apiUrl);
+        const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
