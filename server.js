@@ -1644,12 +1644,22 @@ app.post('/api/exchange-rates/clear-cache', (req, res) => {
     });
   } catch (error) {
     console.error('Clear Cache Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to clear cache'
+    });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
-  console.log(`📱 Access URL: ${process.env.REPL_URL || `http://localhost:${PORT}`}`);
+const HOST = '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log('='.repeat(50));
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+  console.log(`📱 Access URL: ${process.env.REPL_URL || 'https://maiosshop.com'}`);
+  console.log(`💻 API-Endpunkte:`);
+  console.log(`   ✅ /api/create-checkout-session (Stripe Checkout)`); 
+  console.log(`   ✅ /api/exchange-rates (Währungskurse)`);  
+  console.log(`   ✅ /stripe-webhook (Stripe Events)`);  
+  console.log('='.repeat(50));
 });
