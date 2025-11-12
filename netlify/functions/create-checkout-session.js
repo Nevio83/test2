@@ -120,12 +120,10 @@ exports.handler = async (event, context) => {
     });
 
     // Stripe Checkout-Konfiguration mit allen aktivierten Zahlungsmethoden
+    // Absolut minimal konfigurierte Session
     const sessionConfig = {
-      // Erweiterte Liste kompatibler Zahlungsmethoden
-      payment_method_types: [
-        'card',
-        'paypal' // PayPal als zusätzliche Zahlungsmethode
-      ],
+      // Nur Kreditkarten für Basistest
+      payment_method_types: ['card'],
       line_items,
       mode: 'payment',
       success_url: `${process.env.URL || 'https://maiosshop.com'}/success.html`,
@@ -137,27 +135,8 @@ exports.handler = async (event, context) => {
       phone_number_collection: {
         enabled: true
       },
-      locale: 'de',
-      // Zahlungsmethoden-Optionen konfigurieren
-      payment_method_options: {
-        card: {
-          request_three_d_secure: 'automatic'
-        },
-        paypal: {
-          // Optimieren der PayPal-Erfahrung
-          preferred_locale: 'de-DE',
-          // Nach erfolgreicher Zahlung zur Website zurückkehren
-          reference_id: `order-${Date.now()}`
-        }
-      },
-      payment_intent_data: {
-        description: 'Einkauf bei Maios',
-        capture_method: 'automatic',
-        metadata: {
-          order_id: `ORD-${Date.now()}`,
-          shop_domain: 'maiosshop.com'
-        }
-      }
+      locale: 'de'
+      // Alle erweiterten Optionen entfernt für Basistest
     };
 
     // CJ-Zahlungs-Split
