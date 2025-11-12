@@ -146,10 +146,10 @@ exports.handler = async (event, context) => {
       };
     });
 
-    // Absolut minimale Konfiguration ohne jegliche Extras
+    // Erweiterte Konfiguration mit PayPal
     const sessionConfig = {
-      // Nur die absolut notwendigen Einstellungen
-      payment_method_types: ['card'],
+      // Karten und PayPal als Zahlungsmethoden
+      payment_method_types: ['card', 'paypal'],
       line_items,
       mode: 'payment',
       success_url: `${process.env.URL || 'https://maiosshop.com'}/success.html`,
