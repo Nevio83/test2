@@ -50,8 +50,23 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    console.log('📂 Rohe Anfrage erhalten:', event.body);
+    
     // Anfrage-Daten parsen
-    const { cart, country, discount, customerInfo } = JSON.parse(event.body);
+    let parsedBody;
+    try {
+      parsedBody = JSON.parse(event.body);
+      console.log('✅ Anfrage erfolgreich geparst');
+    } catch (parseError) {
+      console.error('⚠️ JSON Parse-Fehler:', parseError.message);
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Ungültiges JSON Format', details: parseError.message })
+      };
+    }
+    
+    const { cart, country, discount, customerInfo } = parsedBody;
+    console.log('💰 Land:', country, 'Warenkorbgröße:', cart?.length || 0);
 
     // Validiere Eingaben
     if (!cart || !Array.isArray(cart) || cart.length === 0) {
@@ -106,16 +121,9 @@ exports.handler = async (event, context) => {
 
     // Stripe Checkout-Konfiguration mit allen aktivierten Zahlungsmethoden
     const sessionConfig = {
+      // Reduzierte Liste kompatibler Zahlungsmethoden
       payment_method_types: [
-        'card',
-        'paypal',
-        'klarna', 
-        'bancontact',
-        'sofort',
-        'giropay',
-        'ideal',
-        'sepa_debit',
-        'eps'
+        'card' // Beginne mit nur Kreditkarten, andere nach Test hinzufügen
       ],
       line_items,
       mode: 'payment',
@@ -129,20 +137,11 @@ exports.handler = async (event, context) => {
         enabled: true
       },
       locale: 'de',
-      // Express-Zahlungsmethoden und Wallet-Optionen aktivieren
+      // Wallet-Optionen ohne automatische Zahlungsmethoden
       payment_method_options: {
         card: {
-          request_three_d_secure: 'automatic',
-          wallet: {
-            apple_pay: 'auto',
-            google_pay: 'auto'
-          }
+          request_three_d_secure: 'automatic'
         }
-      },
-      
-      // Automatische Zahlungsmethoden aktivieren (wichtig für Apple/Google Pay)
-      automatic_payment_methods: {
-        enabled: true
       },
       payment_intent_data: {
         description: 'Einkauf bei Maios',
