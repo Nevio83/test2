@@ -6,10 +6,13 @@ if (!process.env.STRIPE_SECRET_KEY) {
   console.error('⚠️ KRITISCHER FEHLER: STRIPE_SECRET_KEY nicht in Umgebungsvariablen gefunden!');
 }
 
-// Stripe-Client initialisieren
+// Stripe-Client mit spezifischer API-Version initialisieren
 let stripe;
 try {
-  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2023-10-16' // Aktuelle Stripe API-Version mit Unterstützung für alle Features
+  });
+  console.log('✅ Stripe mit API-Version 2023-10-16 initialisiert');
 } catch (error) {
   console.error('⚠️ Fehler beim Initialisieren des Stripe-Clients:', error.message);
 }
@@ -165,9 +168,14 @@ exports.handler = async (event, context) => {
       // Wallet-Optionen für Apple Pay und Google Pay
       payment_method_options: {
         card: {
-          request_three_d_secure: 'automatic'
-          // Wallet-Optionen entfernt, da nicht mit der Stripe API-Version kompatibel
-          // Error: "Received unknown parameter: payment_method_options[card][wallet]"
+          request_three_d_secure: 'automatic',
+          wallet: {
+            apple_pay: 'auto',
+            google_pay: 'auto'
+          }
+        },
+        paypal: {
+          preferred_locale: 'de_DE'
         }
       }
     };

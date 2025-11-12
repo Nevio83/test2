@@ -1,6 +1,14 @@
 [build]
   publish = "."
   functions = "netlify/functions"
+  
+# Node.js Version und Umgebungseinstellungen
+[build.environment]
+  NODE_VERSION = "18.18.0"
+  
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["stripe"]
 
 # Weiterleitungen für API-Aufrufe an Netlify Functions
 [[redirects]]
