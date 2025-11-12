@@ -1,20 +1,47 @@
 // Netlify Function für Stripe Checkout Session
 require('dotenv').config();
 
-// Fehlerprüfung für Stripe API-Key
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.error('⚠️ KRITISCHER FEHLER: STRIPE_SECRET_KEY nicht in Umgebungsvariablen gefunden!');
+// Debug-Ausgabe aller Umgebungsvariablen (ohne sensible Werte)
+console.log('===== UMGEBUNGSVARIABLEN DEBUG =====');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('CONTEXT:', process.env.CONTEXT); // Netlify-spezifisch
+console.log('STRIPE_SECRET_KEY existiert:', !!process.env.STRIPE_SECRET_KEY);
+if (process.env.STRIPE_SECRET_KEY) {
+  // Zeige nur die ersten und letzten 4 Zeichen, um die Sicherheit zu wahren
+  console.log('STRIPE_SECRET_KEY Format:', 
+    process.env.STRIPE_SECRET_KEY.substring(0, 3) + 
+    '...' + 
+    process.env.STRIPE_SECRET_KEY.substring(process.env.STRIPE_SECRET_KEY.length - 4));
 }
+console.log('STRIPE_PUBLISHABLE_KEY existiert:', !!process.env.STRIPE_PUBLISHABLE_KEY);
+console.log('CJ_STRIPE_ACCOUNT_ID existiert:', !!process.env.CJ_STRIPE_ACCOUNT_ID);
+console.log('===================================');
 
 // Stripe-Client mit spezifischer API-Version initialisieren
 let stripe;
-try {
-  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2023-10-16' // Aktuelle Stripe API-Version mit Unterstützung für alle Features
-  });
-  console.log('✅ Stripe mit API-Version 2023-10-16 initialisiert');
-} catch (error) {
-  console.error('⚠️ Fehler beim Initialisieren des Stripe-Clients:', error.message);
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.error('⚠️ KRITISCHER FEHLER: STRIPE_SECRET_KEY nicht in Umgebungsvariablen gefunden!');
+  // Setze einen Fallback nur für Debug-Zwecke - NIEMALS in Produktion verwenden!
+  // Dies ist nur, um zu sehen, ob wir ein Problem mit den Umgebungsvariablen haben
+  const FALLBACK_KEY = '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';
+  console.log('⚠️ WARNUNG: Verwende Fallback-Key für Debugging');
+  try {
+    stripe = require('stripe')(FALLBACK_KEY, {
+      apiVersion: '2023-10-16' 
+    });
+    console.log('✅ Stripe mit Fallback-Key initialisiert');
+  } catch (error) {
+    console.error('⚠️ Fehler beim Initialisieren des Stripe-Clients mit Fallback-Key:', error.message);
+  }
+} else {
+  try {
+    stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2023-10-16' // Aktuelle Stripe API-Version mit Unterstützung für alle Features
+    });
+    console.log('✅ Stripe mit API-Version 2023-10-16 initialisiert');
+  } catch (error) {
+    console.error('⚠️ Fehler beim Initialisieren des Stripe-Clients:', error.message);
+  }
 }
 
 // Lokalen Pfad für cj-payment-calculator verwenden
