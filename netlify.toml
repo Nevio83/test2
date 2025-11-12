@@ -1,0 +1,16 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Weiterleitungen für API-Aufrufe an Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# Hauptseite bei Direktzugriff
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

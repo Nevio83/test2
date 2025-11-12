@@ -956,11 +956,18 @@ window.handleCheckout = async function() {
                 
             case 'maiosshop.com':
             case 'www.maiosshop.com':
-                // WICHTIG: Prüfe, ob die API auf einer separaten Domain läuft
-                // Option 1: API auf derselben Domain
-                apiUrl = 'https://maiosshop.com/api/create-checkout-session';
+                // WICHTIG: Verschiedene Optionen für API-Standort
                 
-                // Option 2: API auf separater Domain (API-Server) - DIESE ZEILE AKTIVIEREN WENN NÖTIG
+                // OPTION A: Standard-API-Pfad (für Node.js-Server oder Express)
+                // apiUrl = '/api/create-checkout-session';
+                
+                // OPTION B: Netlify Functions Pfad (EMPFOHLEN FÜR NETLIFY)
+                apiUrl = '/.netlify/functions/create-checkout-session';
+                
+                // OPTION C: Mit Redirect-Regel (muss in netlify.toml definiert sein)
+                // apiUrl = '/api/create-checkout-session';
+                
+                // OPTION D: Verwende separaten API-Server (eigene Subdomain)
                 // apiUrl = 'https://api.maiosshop.com/create-checkout-session';
                 break;
                 
