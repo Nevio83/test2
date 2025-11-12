@@ -146,11 +146,10 @@ exports.handler = async (event, context) => {
       };
     });
 
-    // Stripe Checkout-Konfiguration mit allen aktivierten Zahlungsmethoden
-    // Erweiterte Session mit PayPal
+    // Absolut minimale Konfiguration ohne jegliche Extras
     const sessionConfig = {
-      // Kreditkarten + PayPal
-      payment_method_types: ['card', 'paypal'],
+      // Nur die absolut notwendigen Einstellungen
+      payment_method_types: ['card'],
       line_items,
       mode: 'payment',
       success_url: `${process.env.URL || 'https://maiosshop.com'}/success.html`,
@@ -166,7 +165,8 @@ exports.handler = async (event, context) => {
       // Alle erweiterten Optionen entfernt für Basistest
     };
 
-    // CJ-Zahlungs-Split
+    // CJ-Zahlungs-Split - Entfernt für grundlegenden Test
+    /* Auskommentiert, um mögliche Fehlerquelle zu eliminieren
     if (process.env.CJ_STRIPE_ACCOUNT_ID && split.cjCost > 0) {
       // Berechne maximalen Transfer-Betrag (nie mehr als Gesamtbetrag)
       const cartTotalInCents = Math.round(split.total * 100);
@@ -188,6 +188,7 @@ exports.handler = async (event, context) => {
         };
       }
     }
+    */
 
     // Füge Kundendaten hinzu wenn vorhanden
     if (customerInfo && customerInfo.email) {

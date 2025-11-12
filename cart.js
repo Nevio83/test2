@@ -993,12 +993,26 @@ window.handleCheckout = async function() {
         if (!response.ok) {
             // Versuche detaillierte Fehlerinformationen zu erhalten
             try {
-                const errorData = await response.json();
-                console.error('🚨 API-Fehlerdetails:', errorData);
-                throw new Error(errorData.error || errorData.details || errorData.message || 'Fehler beim Erstellen der Checkout-Session');
+                const errorText = await response.text();
+                console.error('🚨 API-Fehler Raw Response:', errorText);
+                
+                // Versuche JSON zu parsen, falls vorhanden
+                try {
+                    const errorData = JSON.parse(errorText);
+                    console.error('🚨 API-Fehlerdetails (parsed):', errorData);
+                    // Zeige detaillierte Fehlermeldung in einem Alert für bessere Diagnose
+                    alert(`API-Fehler (${response.status}): ${JSON.stringify(errorData, null, 2)}`);
+                    throw new Error(errorData.error || errorData.details || errorData.message || 'Fehler beim Erstellen der Checkout-Session');
+                } catch (jsonError) {
+                    // Text ist kein JSON
+                    console.error('🚨 API-Fehler (kein JSON):', response.status, response.statusText);
+                    alert(`API-Fehler (${response.status}): Kein JSON in Antwort. Rohe Antwort: ${errorText.substring(0, 200)}...`);
+                    throw new Error(`Fehler beim Erstellen der Checkout-Session (${response.status}: ${response.statusText})`);
+                }
             } catch (parseError) {
-                // Falls keine JSON-Antwort verfügbar ist
-                console.error('🚨 API-Fehler:', response.status, response.statusText);
+                // Falls keine Antwort verfügbar ist
+                console.error('🚨 API-Fehler ohne Inhalt:', response.status, response.statusText, parseError);
+                alert(`API-Fehler (${response.status}): Konnte Fehlerdetails nicht lesen. ${parseError.message}`);
                 throw new Error(`Fehler beim Erstellen der Checkout-Session (${response.status}: ${response.statusText})`);
             }
         }
