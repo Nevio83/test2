@@ -120,10 +120,10 @@ exports.handler = async (event, context) => {
     });
 
     // Stripe Checkout-Konfiguration mit allen aktivierten Zahlungsmethoden
-    // Absolut minimal konfigurierte Session
+    // Erweiterte Session mit PayPal
     const sessionConfig = {
-      // Nur Kreditkarten für Basistest
-      payment_method_types: ['card'],
+      // Kreditkarten + PayPal
+      payment_method_types: ['card', 'paypal'],
       line_items,
       mode: 'payment',
       success_url: `${process.env.URL || 'https://maiosshop.com'}/success.html`,
