@@ -149,66 +149,30 @@ exports.handler = async (event, context) => {
       };
     });
 
-    // Erweiterte Konfiguration mit PayPal
+    // Absolut minimale Konfiguration - keine fortgeschrittenen Features
     const sessionConfig = {
-      // Karten und PayPal als Zahlungsmethoden
-      payment_method_types: ['card', 'paypal'],
+      // Nur Kreditkarten - absolut minimale Konfiguration
+      payment_method_types: ['card'],
       line_items,
       mode: 'payment',
       success_url: `${process.env.URL || 'https://maiosshop.com'}/success.html`,
       cancel_url: `${process.env.URL || 'https://maiosshop.com'}/cart.html`,
-      billing_address_collection: 'required',
-      shipping_address_collection: {
-        allowed_countries: ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'PL', 'US', 'GB']
-      },
-      phone_number_collection: {
-        enabled: true
-      },
-      locale: 'de',
-      // Wallet-Optionen für Apple Pay und Google Pay
-      payment_method_options: {
-        card: {
-          request_three_d_secure: 'automatic',
-          wallet: {
-            apple_pay: 'auto',
-            google_pay: 'auto'
-          }
-        },
-        paypal: {
-          preferred_locale: 'de_DE'
-        }
-      }
+      // Nur die absolut notwendigsten Optionen behalten
+      locale: 'de'
+      // ALLE anderen Optionen entfernt für maximale Kompatibilität
     };
 
-    // CJ-Zahlungs-Split (reaktiviert)
+    // CJ-Zahlungs-Split komplett deaktiviert für Kompatibilitätstests
+    // Berechnen der Werte nur für Logging-Zwecke
     if (process.env.CJ_STRIPE_ACCOUNT_ID && split.cjCost > 0) {
-      // Berechne maximalen Transfer-Betrag (nie mehr als Gesamtbetrag)
       const cartTotalInCents = Math.round(split.total * 100);
-      const maxTransferAmount = Math.min(
-        Math.round(split.cjCost * 100),  // CJ-Kosten in Cents
-        cartTotalInCents - 1             // Gesamtbetrag - 1 Cent (für Stripe-Gebühr)
+      const potentialTransferAmount = Math.min(
+        Math.round(split.cjCost * 100),
+        cartTotalInCents - 1
       );
-
-      console.log(`   Angepasster Transfer-Betrag: €${(maxTransferAmount/100).toFixed(2)}`);
-
-      try {
-        // Nur Transfer hinzufügen wenn positiver Betrag
-        if (maxTransferAmount > 0) {
-          // payment_intent_data initialisieren, falls nicht vorhanden
-          sessionConfig.payment_intent_data = sessionConfig.payment_intent_data || {};
-          
-          // Transfer-Daten hinzufügen
-          sessionConfig.payment_intent_data.transfer_data = {
-            amount: maxTransferAmount,
-            destination: process.env.CJ_STRIPE_ACCOUNT_ID
-          };
-          
-          console.log('✅ CJ-Transfer konfiguriert:', maxTransferAmount, 'Cents');
-        }
-      } catch (transferError) {
-        console.error('❌ Fehler bei CJ-Transfer-Konfiguration:', transferError);
-        // Fehlschlag beim Hinzufügen der Transfer-Daten beeinträchtigt nicht den Checkout
-      }
+      
+      console.log(`   [INFO] Berechneter Transfer-Betrag (deaktiviert): €${(potentialTransferAmount/100).toFixed(2)}`);
+      // WICHTIG: KEIN Transfer wird konfiguriert!
     }
 
     // Füge Kundendaten hinzu wenn vorhanden
