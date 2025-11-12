@@ -944,12 +944,29 @@ window.handleCheckout = async function() {
         if (!customerInfo.metadata) customerInfo.metadata = {};
         customerInfo.metadata.allow_express_checkout = 'true';
         
-        // Optimierte URL-Konfiguration für maiosshop.com
-        let apiUrl = '/api/create-checkout-session';
+        // Konfiguriere die richtige API-URL für verschiedene Umgebungen
+        let apiUrl;
         
-        // Nur für lokale Entwicklung die vollständige URL verwenden
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            apiUrl = 'http://localhost:3000/api/create-checkout-session';
+        // Bestimme API-URL je nach Hostname
+        switch(window.location.hostname) {
+            case 'localhost':
+            case '127.0.0.1':
+                apiUrl = 'http://localhost:3000/api/create-checkout-session';
+                break;
+                
+            case 'maiosshop.com':
+            case 'www.maiosshop.com':
+                // WICHTIG: Prüfe, ob die API auf einer separaten Domain läuft
+                // Option 1: API auf derselben Domain
+                apiUrl = 'https://maiosshop.com/api/create-checkout-session';
+                
+                // Option 2: API auf separater Domain (API-Server) - DIESE ZEILE AKTIVIEREN WENN NÖTIG
+                // apiUrl = 'https://api.maiosshop.com/create-checkout-session';
+                break;
+                
+            default:
+                // Fallback auf relative URL
+                apiUrl = '/api/create-checkout-session';
         }
             
         console.log('🌐 API URL:', apiUrl);
@@ -967,7 +984,16 @@ window.handleCheckout = async function() {
         });
         
         if (!response.ok) {
-            throw new Error('Fehler beim Erstellen der Checkout-Session');
+            // Versuche detaillierte Fehlerinformationen zu erhalten
+            try {
+                const errorData = await response.json();
+                console.error('🚨 API-Fehlerdetails:', errorData);
+                throw new Error(errorData.error || errorData.details || errorData.message || 'Fehler beim Erstellen der Checkout-Session');
+            } catch (parseError) {
+                // Falls keine JSON-Antwort verfügbar ist
+                console.error('🚨 API-Fehler:', response.status, response.statusText);
+                throw new Error(`Fehler beim Erstellen der Checkout-Session (${response.status}: ${response.statusText})`);
+            }
         }
         
         const { url, error } = await response.json();
