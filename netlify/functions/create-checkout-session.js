@@ -161,8 +161,17 @@ exports.handler = async (event, context) => {
       phone_number_collection: {
         enabled: true
       },
-      locale: 'de'
-      // Alle erweiterten Optionen entfernt für Basistest
+      locale: 'de',
+      // Wallet-Optionen für Apple Pay und Google Pay
+      payment_method_options: {
+        card: {
+          request_three_d_secure: 'automatic',
+          wallet: {
+            apple_pay: 'auto',
+            google_pay: 'auto'
+          }
+        }
+      }
     };
 
     // CJ-Zahlungs-Split - Entfernt für grundlegenden Test
