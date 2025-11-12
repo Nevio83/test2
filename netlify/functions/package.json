@@ -1,0 +1,10 @@
+{
+  "name": "maiosshop-functions",
+  "version": "1.0.0",
+  "description": "Netlify Functions für maiosshop.com",
+  "main": "index.js",
+  "dependencies": {
+    "stripe": "^13.5.0",
+    "dotenv": "^16.3.1"
+  }
+}

@@ -1,7 +1,21 @@
 // Netlify Function für Stripe Checkout Session
 require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { calculateCJCost, calculatePaymentSplit } = require('../../cj-payment-calculator');
+
+// Fehlerprüfung für Stripe API-Key
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.error('⚠️ KRITISCHER FEHLER: STRIPE_SECRET_KEY nicht in Umgebungsvariablen gefunden!');
+}
+
+// Stripe-Client initialisieren
+let stripe;
+try {
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+} catch (error) {
+  console.error('⚠️ Fehler beim Initialisieren des Stripe-Clients:', error.message);
+}
+
+// Lokalen Pfad für cj-payment-calculator verwenden
+const { calculateCJCost, calculatePaymentSplit } = require('./cj-payment-calculator');
 
 // Währungs-Mapping basierend auf Land
 function getCurrencyByCountry(countryCode) {
@@ -13,6 +27,20 @@ function getCurrencyByCountry(countryCode) {
 }
 
 exports.handler = async (event, context) => {
+  console.log('💾 Checkout-Session Anfrage erhalten');
+  
+  // Prüfe Stripe-Initialisierung
+  if (!stripe) {
+    console.error('⚠️ Stripe nicht initialisiert - fehlende API-Keys?');
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: 'Stripe-Zahlungsabwicklung nicht konfiguriert',
+        details: 'API-Schlüssel fehlen oder sind ungültig'
+      })
+    };
+  }
+  
   // Nur POST-Anfragen erlauben
   if (event.httpMethod !== 'POST') {
     return { 
@@ -148,13 +176,38 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('❌ Checkout Error:', error.message);
+    // Detaillierte Fehlerbehandlung
+    console.error('❌ Checkout Error:', error);
+    
+    // Klassifizieren des Fehlers für bessere Fehlermeldungen
+    let statusCode = 500;
+    let errorMessage = 'Fehler beim Erstellen der Checkout-Session';
+    let errorDetails = error.message;
+    
+    if (error.type && error.type.startsWith('Stripe')) {
+      // Stripe-spezifische Fehler
+      if (error.type === 'StripeCardError') {
+        statusCode = 400;
+        errorMessage = 'Zahlungsmethode wurde abgelehnt';
+      } else if (error.type === 'StripeInvalidRequestError') {
+        statusCode = 400;
+        errorMessage = 'Ungültige Anfrage an Stripe';
+      } else if (error.type === 'StripeAPIError') {
+        statusCode = 503;
+        errorMessage = 'Stripe API nicht erreichbar';
+      }
+    } else if (error instanceof SyntaxError) {
+      statusCode = 400;
+      errorMessage = 'Ungültige Anfrage-Daten';
+    }
     
     return {
-      statusCode: 500,
+      statusCode,
       body: JSON.stringify({ 
-        error: 'Fehler beim Erstellen der Checkout-Session',
-        details: error.message
+        error: errorMessage,
+        details: errorDetails,
+        timestamp: new Date().toISOString(),
+        requestId: context.awsRequestId || 'netlify-function'
       })
     };
   }
