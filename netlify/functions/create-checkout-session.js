@@ -104,9 +104,19 @@ exports.handler = async (event, context) => {
       };
     });
 
-    // Stripe Checkout-Konfiguration
+    // Stripe Checkout-Konfiguration mit allen aktivierten Zahlungsmethoden
     const sessionConfig = {
-      payment_method_types: ['card'],
+      payment_method_types: [
+        'card',
+        'paypal',
+        'klarna', 
+        'bancontact',
+        'sofort',
+        'giropay',
+        'ideal',
+        'sepa_debit',
+        'eps'
+      ],
       line_items,
       mode: 'payment',
       success_url: `${process.env.URL || 'https://maiosshop.com'}/success.html`,
@@ -119,10 +129,20 @@ exports.handler = async (event, context) => {
         enabled: true
       },
       locale: 'de',
+      // Express-Zahlungsmethoden und Wallet-Optionen aktivieren
       payment_method_options: {
         card: {
-          request_three_d_secure: 'automatic'
+          request_three_d_secure: 'automatic',
+          wallet: {
+            apple_pay: 'auto',
+            google_pay: 'auto'
+          }
         }
+      },
+      
+      // Automatische Zahlungsmethoden aktivieren (wichtig für Apple/Google Pay)
+      automatic_payment_methods: {
+        enabled: true
       },
       payment_intent_data: {
         description: 'Einkauf bei Maios',
