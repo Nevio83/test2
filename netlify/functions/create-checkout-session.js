@@ -174,8 +174,7 @@ exports.handler = async (event, context) => {
       }
     };
 
-    // CJ-Zahlungs-Split - Entfernt für grundlegenden Test
-    /* Auskommentiert, um mögliche Fehlerquelle zu eliminieren
+    // CJ-Zahlungs-Split (reaktiviert)
     if (process.env.CJ_STRIPE_ACCOUNT_ID && split.cjCost > 0) {
       // Berechne maximalen Transfer-Betrag (nie mehr als Gesamtbetrag)
       const cartTotalInCents = Math.round(split.total * 100);
@@ -186,18 +185,25 @@ exports.handler = async (event, context) => {
 
       console.log(`   Angepasster Transfer-Betrag: €${(maxTransferAmount/100).toFixed(2)}`);
 
-      // Nur Transfer hinzufügen wenn positiver Betrag
-      if (maxTransferAmount > 0) {
-        sessionConfig.payment_intent_data = {
-          ...sessionConfig.payment_intent_data,
-          transfer_data: {
+      try {
+        // Nur Transfer hinzufügen wenn positiver Betrag
+        if (maxTransferAmount > 0) {
+          // payment_intent_data initialisieren, falls nicht vorhanden
+          sessionConfig.payment_intent_data = sessionConfig.payment_intent_data || {};
+          
+          // Transfer-Daten hinzufügen
+          sessionConfig.payment_intent_data.transfer_data = {
             amount: maxTransferAmount,
             destination: process.env.CJ_STRIPE_ACCOUNT_ID
-          }
-        };
+          };
+          
+          console.log('✅ CJ-Transfer konfiguriert:', maxTransferAmount, 'Cents');
+        }
+      } catch (transferError) {
+        console.error('❌ Fehler bei CJ-Transfer-Konfiguration:', transferError);
+        // Fehlschlag beim Hinzufügen der Transfer-Daten beeinträchtigt nicht den Checkout
       }
     }
-    */
 
     // Füge Kundendaten hinzu wenn vorhanden
     if (customerInfo && customerInfo.email) {
