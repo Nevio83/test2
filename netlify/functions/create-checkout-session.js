@@ -27,7 +27,15 @@ function getCurrencyByCountry(countryCode) {
 }
 
 exports.handler = async (event, context) => {
-  console.log('💾 Checkout-Session Anfrage erhalten');
+  console.log('📂 Checkout-Session Anfrage erhalten');
+  console.log('--- DEBUG INFO START ---');
+  console.log('STRIPE KEY existiert:', !!process.env.STRIPE_SECRET_KEY);
+  console.log('STRIPE KEY Länge:', process.env.STRIPE_SECRET_KEY ? process.env.STRIPE_SECRET_KEY.length : 0);
+  console.log('NODE VERSION:', process.version);
+  console.log('ENV:', process.env.NODE_ENV);
+  console.log('EVENT BODY TYP:', typeof event.body);
+  console.log('EVENT BODY Länge:', event.body ? event.body.length : 0);
+  console.log('--- DEBUG INFO END ---');
   
   // Prüfe Stripe-Initialisierung
   if (!stripe) {
@@ -36,7 +44,8 @@ exports.handler = async (event, context) => {
       statusCode: 500,
       body: JSON.stringify({
         error: 'Stripe-Zahlungsabwicklung nicht konfiguriert',
-        details: 'API-Schlüssel fehlen oder sind ungültig'
+        details: 'API-Schlüssel fehlen oder sind ungültig',
+        env_vars_exist: !!process.env.STRIPE_SECRET_KEY
       })
     };
   }
@@ -50,23 +59,41 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    console.log('📂 Rohe Anfrage erhalten:', event.body);
-    
     // Anfrage-Daten parsen
     let parsedBody;
     try {
+      console.log('📂 EVENT BODY (ersten 100 Zeichen):', event.body ? event.body.substring(0, 100) + '...' : 'leer');
       parsedBody = JSON.parse(event.body);
       console.log('✅ Anfrage erfolgreich geparst');
     } catch (parseError) {
       console.error('⚠️ JSON Parse-Fehler:', parseError.message);
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Ungültiges JSON Format', details: parseError.message })
+        body: JSON.stringify({
+          error: 'Ungültiges JSON Format',
+          details: parseError.message,
+          received_data_type: typeof event.body,
+          received_data_sample: event.body ? event.body.substring(0, 50) : 'leer'
+        })
       };
     }
     
     const { cart, country, discount, customerInfo } = parsedBody;
     console.log('💰 Land:', country, 'Warenkorbgröße:', cart?.length || 0);
+    
+    // Detaillierte Datenprüfungen
+    if (!country) console.warn('⚠️ Land fehlt in der Anfrage!');
+    if (!cart) console.warn('⚠️ Warenkorb fehlt komplett!');
+    if (cart && cart.length === 0) console.warn('⚠️ Warenkorb ist leer!');
+    if (cart && cart.length > 0) {
+      console.log('🛒 Warenkorb-Details:');
+      cart.forEach((item, index) => {
+        console.log(`  Item ${index+1}: ID=${item.id}, Name=${item.name}, Preis=${item.price}, Menge=${item.quantity}`);
+        if (!item.id) console.warn(`  ⚠️ Item ${index+1} hat keine ID!`);
+        if (!item.price) console.warn(`  ⚠️ Item ${index+1} hat keinen Preis!`);
+        if (!item.quantity) console.warn(`  ⚠️ Item ${index+1} hat keine Menge!`);
+      });
+    }
 
     // Validiere Eingaben
     if (!cart || !Array.isArray(cart) || cart.length === 0) {
