@@ -79,6 +79,41 @@ const receiptGenerator = new ReceiptGenerator();
 
 const app = express();
 
+// CORS-Konfiguration für maiosshop.com und lokale Entwicklung
+app.use((req, res, next) => {
+  // Erlaubte Domains
+  const allowedOrigins = [
+    'https://maiosshop.com',
+    'https://www.maiosshop.com',
+    'http://localhost:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5000'
+  ];
+  
+  const origin = req.headers.origin;
+  
+  // Prüfe, ob die Anfrage-Quelle in den erlaubten Domains enthalten ist
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    // Für Produktionsumgebung (gleiche Domain, keine CORS nötig)
+    res.header('Access-Control-Allow-Origin', '*');
+  }
+  
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  
+  // Options-Anfragen für CORS Preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  next();
+});
+
+app.use(express.json());
+
 // Enable gzip compression
 app.use(compression({
   filter: (req, res) => {
@@ -254,17 +289,26 @@ app.post('/api/create-checkout-session', async (req, res) => {
   }
 
   try {
-    // Einfache Stripe Checkout-Konfiguration mit maximaler Kompatibilität
+    // Erweiterte Stripe Checkout-Konfiguration für maiosshop.com
     const sessionConfig = {
-      payment_method_types: ['card'], // Nur Kreditkarten
+      payment_method_types: ['card'], // Nur Kreditkarten für maximale Kompatibilität
       
       // Payment Intent Daten
       payment_intent_data: {
         description: 'Einkauf bei Maios',
         capture_method: 'automatic',
+        // Speichere Zahlungsmethode für zukünftige Käufe
+        setup_future_usage: 'on_session',
         metadata: {
-          order_id: `ORD-${Date.now()}`
+          order_id: `ORD-${Date.now()}`,
+          shop_domain: 'maiosshop.com'
         }
+      },
+      
+      // Automatische Zahlungsmethoden in Produktionsumgebung aktivieren
+      // Dies erlaubt Apple Pay, Google Pay usw. wenn verfügbar
+      automatic_payment_methods: {
+        enabled: true
       },
       line_items,
       mode: 'payment',
