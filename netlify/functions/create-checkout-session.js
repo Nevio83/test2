@@ -121,9 +121,10 @@ exports.handler = async (event, context) => {
 
     // Stripe Checkout-Konfiguration mit allen aktivierten Zahlungsmethoden
     const sessionConfig = {
-      // Reduzierte Liste kompatibler Zahlungsmethoden
+      // Erweiterte Liste kompatibler Zahlungsmethoden
       payment_method_types: [
-        'card' // Beginne mit nur Kreditkarten, andere nach Test hinzufügen
+        'card',
+        'paypal' // PayPal als zusätzliche Zahlungsmethode
       ],
       line_items,
       mode: 'payment',
@@ -137,10 +138,16 @@ exports.handler = async (event, context) => {
         enabled: true
       },
       locale: 'de',
-      // Wallet-Optionen ohne automatische Zahlungsmethoden
+      // Zahlungsmethoden-Optionen konfigurieren
       payment_method_options: {
         card: {
           request_three_d_secure: 'automatic'
+        },
+        paypal: {
+          // Optimieren der PayPal-Erfahrung
+          preferred_locale: 'de-DE',
+          // Nach erfolgreicher Zahlung zur Website zurückkehren
+          reference_id: `order-${Date.now()}`
         }
       },
       payment_intent_data: {
