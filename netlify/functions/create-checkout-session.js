@@ -165,11 +165,9 @@ exports.handler = async (event, context) => {
       // Wallet-Optionen für Apple Pay und Google Pay
       payment_method_options: {
         card: {
-          request_three_d_secure: 'automatic',
-          wallet: {
-            apple_pay: 'auto',
-            google_pay: 'auto'
-          }
+          request_three_d_secure: 'automatic'
+          // Wallet-Optionen entfernt, da nicht mit der Stripe API-Version kompatibel
+          // Error: "Received unknown parameter: payment_method_options[card][wallet]"
         }
       }
     };
