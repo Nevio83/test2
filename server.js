@@ -121,74 +121,151 @@ app.use(express.static(path.join(__dirname), {
 
 // Hilfsfunktion: Erstelle oder hole Stripe Coupon
 async function createOrGetCoupon(percent, code) {
+  if (!stripe) {
+    throw new Error('Stripe not initialized');
+  }
+  
+  // Validiere Eingaben
+  if (!percent || !code) {
+    throw new Error('Percent and code are required');
+  }
+  
+  const percentNum = parseInt(percent);
+  if (percentNum < 1 || percentNum > 100) {
+    throw new Error('Percent must be between 1 and 100');
+  }
+  
   try {
     // Versuche existierenden Coupon zu holen
     const existingCoupon = await stripe.coupons.retrieve(code);
+    console.log('✅ Existierender Coupon gefunden:', code);
     return existingCoupon.id;
   } catch (error) {
-    // Coupon existiert nicht, erstelle neuen
-    const coupon = await stripe.coupons.create({
-      id: code,
-      percent_off: percent,
-      duration: 'once',
-      name: `${percent}% Rabatt`
-    });
-    return coupon.id;
+    if (error.code === 'resource_missing') {
+      // Coupon existiert nicht, erstelle neuen
+      console.log('🆕 Erstelle neuen Coupon:', code);
+      const coupon = await stripe.coupons.create({
+        id: code,
+        percent_off: percentNum,
+        duration: 'once',
+        name: `${percentNum}% Rabatt`
+      });
+      console.log('✅ Neuer Coupon erstellt:', coupon.id);
+      return coupon.id;
+    } else {
+      // Anderer Fehler
+      console.error('❌ Stripe Coupon Fehler:', error.message);
+      throw error;
+    }
   }
 }
+
+// WICHTIG: Für PayPal-Integration musst du im Stripe Dashboard folgende Schritte durchführen:
+// 1. Gehe zu https://dashboard.stripe.com/settings/payment_methods
+// 2. Aktiviere PayPal unter "Payment methods"
+// 3. Verbinde dein PayPal-Konto mit Stripe
 
 app.post('/api/create-checkout-session', async (req, res) => {
   if (!stripe) {
     return res.status(503).json({ error: 'Payment system not configured. Please set up Stripe API key.' });
   }
+  
   const { cart, country, discount, customerInfo } = req.body;
+  
+  // Validiere Eingaben
+  if (!cart || !Array.isArray(cart) || cart.length === 0) {
+    return res.status(400).json({ error: 'Cart is required and must contain items' });
+  }
+  
+  console.log('🛒 Checkout-Session Request:', {
+    cartItems: cart.length,
+    country: country || 'DE',
+    hasDiscount: !!discount,
+    discountCode: discount?.code,
+    discountPercent: discount?.percent
+  });
   
   console.log('📍 Empfangenes Land:', country);
   const currency = getCurrencyByCountry(country);
   console.log('💱 Verwendete Währung:', currency);
   
-  // Berechne CJ-Kosten für automatische Aufteilung
-  const { calculateCJCost, calculatePaymentSplit } = require('./cj-payment-calculator');
-  const cartItems = cart.map(item => ({
-    id: item.id,
-    price: item.price,
-    quantity: item.quantity
-  }));
-  const cjCost = calculateCJCost(cartItems, country);
-  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const split = calculatePaymentSplit(cartTotal, cjCost);
+  let line_items;
+  let split;
   
-  console.log('💰 Payment Split Berechnung:');
-  console.log(`   Gesamt: €${split.total.toFixed(2)}`);
-  console.log(`   CJ-Kosten: €${split.cjCost.toFixed(2)}`);
-  console.log(`   Dein Gewinn: €${split.yourProfit.toFixed(2)} (${split.profitPercentage}%)`);
-  
-  // Konvertiere alle Preise parallel
-  const line_items = await Promise.all(cart.map(async (item) => {
-    if (item.id === 1) {
-      return {
-        price: 'price_XXXXXXXXXXXXXXXXXXXXXXXX',
-        quantity: item.quantity,
-      };
-    }
+  try {
+    // Berechne CJ-Kosten für automatische Aufteilung
+    const { calculateCJCost, calculatePaymentSplit } = require('./cj-payment-calculator');
+    const cartItems = cart.map(item => ({
+      id: item.id,
+      price: item.price,
+      quantity: item.quantity
+    }));
+    const cjCost = calculateCJCost(cartItems, country);
+    const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    split = calculatePaymentSplit(cartTotal, cjCost);
     
-    // Rechne Preis von EUR in Zielwährung um
-    const convertedPrice = await convertPrice(item.price, currency);
-    const amountInCents = Math.round(convertedPrice * 100);
+    console.log('💰 Payment Split Berechnung:');
+    console.log(`   Gesamt: €${split.total.toFixed(2)}`);
+    console.log(`   CJ-Kosten: €${split.cjCost.toFixed(2)}`);
+    console.log(`   Dein Gewinn: €${split.yourProfit.toFixed(2)} (${split.profitPercentage}%)`);
     
-    return {
-      price_data: {
-        currency: currency.toLowerCase(),
-        product_data: { name: item.name },
-        unit_amount: amountInCents,
-      },
-      quantity: item.quantity,
-    };
-  }));
+    // Konvertiere alle Preise parallel
+    line_items = await Promise.all(cart.map(async (item) => {
+      if (item.id === 1) {
+        return {
+          price: 'price_XXXXXXXXXXXXXXXXXXXXXXXX',
+          quantity: item.quantity,
+        };
+      }
+      
+      try {
+        // Rechne Preis von EUR in Zielwährung um
+        const convertedPrice = await convertPrice(item.price, currency);
+        const amountInCents = Math.round(convertedPrice * 100);
+        
+        return {
+          price_data: {
+            currency: currency.toLowerCase(),
+            product_data: { name: item.name },
+            unit_amount: amountInCents,
+          },
+          quantity: item.quantity,
+        };
+      } catch (priceError) {
+        console.error('❌ Fehler bei Preiskonvertierung für Item:', item.name, priceError.message);
+        // Fallback: Verwende EUR-Preis direkt
+        const amountInCents = Math.round(item.price * 100);
+        return {
+          price_data: {
+            currency: 'eur',
+            product_data: { name: item.name },
+            unit_amount: amountInCents,
+          },
+          quantity: item.quantity,
+        };
+      }
+    }));
+  } catch (moduleError) {
+    console.error('❌ Fehler beim Laden der Module oder Berechnung:', moduleError.message);
+    return res.status(500).json({ 
+      error: 'Fehler bei der Preisberechnung',
+      details: moduleError.message
+    });
+  }
 
   try {
+    // Einfache Stripe Checkout-Konfiguration mit maximaler Kompatibilität
     const sessionConfig = {
-      payment_method_types: ['card'], // Nur Karte bei "Zahlungsmethode"
+      payment_method_types: ['card'], // Nur Kreditkarten
+      
+      // Payment Intent Daten
+      payment_intent_data: {
+        description: 'Einkauf bei Maios',
+        capture_method: 'automatic',
+        metadata: {
+          order_id: `ORD-${Date.now()}`
+        }
+      },
       line_items,
       mode: 'payment',
       success_url: `${process.env.REPL_URL || 'https://maiosshop.com'}/success.html`,
@@ -200,36 +277,57 @@ app.post('/api/create-checkout-session', async (req, res) => {
       phone_number_collection: {
         enabled: true
       },
-      locale: 'auto', // Automatische Spracherkennung
+      locale: 'de', // Deutsche Sprache für bessere UX
       // Express Checkout Payment Methods (oben angezeigt)
       payment_method_options: {
         card: {
           request_three_d_secure: 'automatic'
         }
+      },
+      // Express Checkout Methoden verbessern
+      payment_intent_data: {
+        setup_future_usage: 'off_session',
+        description: 'Einkauf bei Maios',
+        capture_method: 'automatic'
       }
     };
     
     // 🚀 AUTOMATISCHE CJ-ZAHLUNG: Füge Payment Intent mit Transfer hinzu
     if (process.env.CJ_STRIPE_ACCOUNT_ID && split.cjCost > 0) {
-      const cjCostInCents = Math.round(split.cjCost * 100);
+      // Berechne maximalen Transfer-Betrag (nie mehr als Gesamtbetrag)
+      const cartTotalInCents = Math.round(split.total * 100);
+      const maxTransferAmount = Math.min(
+        Math.round(split.cjCost * 100),  // CJ-Kosten in Cents
+        cartTotalInCents - 1             // Gesamtbetrag - 1 Cent (für Stripe-Gebühr)
+      );
+
       console.log('💳 Aktiviere automatischen Transfer an CJ Sub-Account');
-      console.log(`   Transfer-Betrag: €${split.cjCost.toFixed(2)} (${cjCostInCents} cents)`);
+      console.log(`   Ursprünglicher CJ-Betrag: €${split.cjCost.toFixed(2)}`);
+      console.log(`   Angepasster Transfer-Betrag: €${(maxTransferAmount/100).toFixed(2)} (${maxTransferAmount} cents)`);
       
-      sessionConfig.payment_intent_data = {
-        application_fee_amount: 0, // Keine Platform-Gebühr
-        transfer_data: {
-          amount: cjCostInCents,
-          destination: process.env.CJ_STRIPE_ACCOUNT_ID
-        },
-        metadata: {
-          cj_cost: split.cjCost.toFixed(2),
-          your_profit: split.yourProfit.toFixed(2),
-          profit_percentage: split.profitPercentage
-        }
-      };
-      
-      console.log('✅ Automatischer Transfer konfiguriert!');
-      console.log(`   Destination: ${process.env.CJ_STRIPE_ACCOUNT_ID}`);
+      // Nur Transfer hinzufügen wenn positiver Betrag
+      if (maxTransferAmount > 0) {
+        // Existierende payment_intent_data Objekt erweitern statt überschreiben
+        sessionConfig.payment_intent_data = {
+          ...sessionConfig.payment_intent_data,
+          application_fee_amount: 0, // Keine Platform-Gebühr
+          transfer_data: {
+            amount: maxTransferAmount,
+            destination: process.env.CJ_STRIPE_ACCOUNT_ID
+          },
+          metadata: {
+            cj_cost: split.cjCost.toFixed(2),
+            your_profit: split.yourProfit.toFixed(2),
+            profit_percentage: split.profitPercentage,
+            adjusted_transfer: (maxTransferAmount/100).toFixed(2)
+          }
+        };
+        
+        console.log('✅ Automatischer Transfer konfiguriert!');
+        console.log(`   Destination: ${process.env.CJ_STRIPE_ACCOUNT_ID}`);
+      } else {
+        console.log('⚠️ Kein Transfer möglich - Gewinn zu gering');
+      }
     } else if (!process.env.CJ_STRIPE_ACCOUNT_ID) {
       console.log('⚠️  CJ Sub-Account nicht konfiguriert - Transfer übersprungen');
       console.log('💡 Führe aus: node setup-stripe-cj-split.js');
@@ -246,10 +344,19 @@ app.post('/api/create-checkout-session', async (req, res) => {
     }
     
     // Füge Rabatt hinzu wenn vorhanden
-    if (discount && discount.percent) {
-      sessionConfig.discounts = [{
-        coupon: await createOrGetCoupon(discount.percent, discount.code)
-      }];
+    if (discount && discount.percent && discount.code) {
+      try {
+        console.log('🎫 Erstelle Coupon:', discount.code, discount.percent + '%');
+        const couponId = await createOrGetCoupon(discount.percent, discount.code);
+        sessionConfig.discounts = [{
+          coupon: couponId
+        }];
+        console.log('✅ Coupon erfolgreich hinzugefügt:', couponId);
+      } catch (couponError) {
+        console.error('❌ Coupon-Fehler:', couponError.message);
+        // Fahre ohne Coupon fort, anstatt zu scheitern
+        console.log('⚠️ Fahre ohne Rabatt fort');
+      }
     }
     
     const session = await stripe.checkout.sessions.create(sessionConfig);
@@ -258,8 +365,29 @@ app.post('/api/create-checkout-session', async (req, res) => {
     res.json({ id: session.id, url: session.url }); // session.url ist der Stripe-Zahlungslink
   } catch (err) {
     // Stripe gibt oft einen hilfreichen Fehlertext zurück!
-    console.error('Stripe Checkout Error:', err.message);
-    res.status(500).json({ error: err.message });
+    console.error('❌ Stripe Checkout Error:', {
+      message: err.message,
+      type: err.type,
+      code: err.code,
+      param: err.param,
+      stack: err.stack?.split('\n')[0] // Nur erste Zeile des Stack Trace
+    });
+    
+    // Benutzerfreundliche Fehlermeldungen
+    let userMessage = 'Fehler beim Erstellen der Checkout-Session';
+    if (err.message.includes('coupon')) {
+      userMessage = 'Fehler beim Anwenden des Gutscheins';
+    } else if (err.message.includes('currency')) {
+      userMessage = 'Währungsfehler - bitte versuchen Sie es erneut';
+    } else if (err.message.includes('line_items')) {
+      userMessage = 'Fehler bei den Produktdaten';
+    }
+    
+    res.status(500).json({ 
+      error: userMessage,
+      details: err.message,
+      code: err.code || 'checkout_error'
+    });
   }
 });
 

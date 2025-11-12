@@ -26,6 +26,32 @@ let currentCurrency = currencyByCountry['DE']; // Initialisiere currentCurrency 
 // Mache Währung global verfügbar für Gutschein-System
 window.currentCurrency = currentCurrency;
 
+// Funktion für Checkout-Ladebildschirm
+function showCheckoutLoading() {
+    // Finde den Checkout-Abschnitt
+    const checkoutSection = document.querySelector('.checkout-section') || 
+                           document.querySelector('#stripe-form') || 
+                           document.querySelector('form');
+    
+    if (checkoutSection) {
+        // Speichere den ursprünglichen Inhalt
+        const originalContent = checkoutSection.innerHTML;
+        
+        // Lade-Animation hinzufügen
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'text-center p-5';
+        loadingDiv.innerHTML = `
+            <div class="spinner-border text-primary" role="status"></div>
+            <h4 class="mt-3">Zahlungsseite wird geladen...</h4>
+            <p class="text-muted">Sie werden zu Stripe weitergeleitet</p>
+        `;
+        
+        // Originalen Inhalt speichern und Ladeanimation anzeigen
+        checkoutSection.setAttribute('data-original-content', checkoutSection.innerHTML);
+        checkoutSection.innerHTML = loadingDiv.outerHTML;
+    }
+}
+
 // GLOBALE Funktion zum Abrufen des farbspezifischen Bildes
 async function getCartItemImage(item) {
     console.log('🖼️ GLOBALER getCartItemImage für:', item.name, 'ID:', item.id);
@@ -863,53 +889,61 @@ window.handleCheckout = async function() {
     if (spinner) spinner.style.display = 'inline-block';
     if (buttonText) buttonText.innerHTML = '<i class="bi bi-hourglass-split"></i> Verarbeitung...';
     
+    // Hole Warenkorb
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    if (cart.length === 0) {
+        showErrorToast('Ihr Warenkorb ist leer.');
+        submitButton.disabled = false;
+        spinner.style.display = 'none';
+        buttonText.innerHTML = '<i class="bi bi-lock"></i> Jetzt bestellen';
+        return;
+    }
+    
+    console.log('💳 Erstelle Stripe Checkout Session...');
+    
+    // Hole Rabatt-Informationen
+    const appliedVoucher = localStorage.getItem('appliedVoucher');
+    let discountData = null;
+    
+    if (appliedVoucher && window.getCartTotals) {
+        const totals = window.getCartTotals();
+        if (totals.discount > 0) {
+            // Berechne Rabatt-Prozentsatz
+            const discountPercent = Math.round((totals.discount / totals.subtotal) * 100);
+            discountData = {
+                code: appliedVoucher,
+                percent: discountPercent
+            };
+            console.log('🎟 Rabatt wird angewendet:', discountData);
+        }
+    }
+    
+    // Sammle Kundendaten
+    const customerInfo = {
+        email: email,
+        name: `${firstname} ${lastname}`,
+        address: {
+            line1: address,
+            city: city,
+            postal_code: postcode,
+            country: country
+        }
+    };
+    
+    console.log('🏰 Sende Land an Server:', country);
+    console.log('💱 Aktuelle Währung:', window.currentCurrency);
+    
     try {
-        // Hole Warenkorb
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        // Lade-Anzeige anzeigen
+        showCheckoutLoading();
+        console.log('📦 Zahlungsseite wird geladen...');
         
-        if (cart.length === 0) {
-            showErrorToast('Ihr Warenkorb ist leer.');
-            submitButton.disabled = false;
-            spinner.style.display = 'none';
-            buttonText.innerHTML = '<i class="bi bi-lock"></i> Jetzt bestellen';
-            return;
-        }
+        // Express Checkout Metadata hinzufügen (für Apple Pay und Google Pay)
+        if (!customerInfo) customerInfo = {};
+        if (!customerInfo.metadata) customerInfo.metadata = {};
+        customerInfo.metadata.allow_express_checkout = 'true';
         
-        console.log('💳 Erstelle Stripe Checkout Session...');
-        
-        // Hole Rabatt-Informationen
-        const appliedVoucher = localStorage.getItem('appliedVoucher');
-        let discountData = null;
-        
-        if (appliedVoucher && window.getCartTotals) {
-            const totals = window.getCartTotals();
-            if (totals.discount > 0) {
-                // Berechne Rabatt-Prozentsatz
-                const discountPercent = Math.round((totals.discount / totals.subtotal) * 100);
-                discountData = {
-                    code: appliedVoucher,
-                    percent: discountPercent
-                };
-                console.log('🎫 Rabatt wird angewendet:', discountData);
-            }
-        }
-        
-        // Sammle Kundendaten
-        const customerInfo = {
-            email: email,
-            name: `${firstname} ${lastname}`,
-            address: {
-                line1: address,
-                city: city,
-                postal_code: postcode,
-                country: country
-            }
-        };
-        
-        console.log('🌍 Sende Land an Server:', country);
-        console.log('💱 Aktuelle Währung:', window.currentCurrency);
-        
-        // Erstelle Stripe Checkout Session
         const response = await fetch('/api/create-checkout-session', {
             method: 'POST',
             headers: {
@@ -961,6 +995,7 @@ window.handleCheckout = async function() {
         if (buttonText) buttonText.innerHTML = '<i class="bi bi-lock"></i> Jetzt bestellen - ' + totalText;
     }
 };
+
 
 async function handleRedirectCheckout(methodName) {
     const form = document.getElementById('stripe-form');
@@ -1139,7 +1174,7 @@ let stripeInitialized = false;
 function initializeStripe() {
   try {
     if (typeof Stripe !== 'undefined') {
-      stripe = Stripe('pk_test_XXXXXXXXXXXXXXXXXXXXXXXX');
+      stripe = Stripe('pk_live_51SND1XFTodqoWLSI2s7ojW9E9Hm3nZqNZ2xkkG4OmUYOvV2AvfkzJIsrEvRUSgQAMbPAtEP7cLwsXklJnh1zMyAY00ptZs6E08');
       elements = stripe.elements({
         appearance: {
           theme: 'stripe',
@@ -1148,18 +1183,42 @@ function initializeStripe() {
             colorBackground: '#ffffff',
             colorText: '#30313d',
             colorDanger: '#df1b41',
-            fontFamily: 'system-ui, sans-serif',
-            spacingUnit: '4px',
-            borderRadius: '8px'
+            fontFamily: 'system-ui, sans-serif'
           }
         }
       });
-      stripeInitialized = true;
-      return true;
-    } else {
-      console.warn('Stripe is not loaded yet');
-      return false;
+      console.log('✅ Stripe Elements erfolgreich initialisiert');
+      return;
     }
+
+    // Stripe-Skript laden und initialisieren
+    const script = document.createElement('script');
+    script.src = 'https://js.stripe.com/v3/';
+    script.async = true;
+    script.onload = function() {
+      // Stripe ist geladen und initialisiert
+      console.log('✅ Stripe Elements erfolgreich initialisiert');
+      stripeInitialized = true;
+      
+      // Stripe-Objekt initialisieren
+      if (window.Stripe) {
+        stripe = Stripe('pk_live_51SND1XFTodqoWLSI2s7ojW9E9Hm3nZqNZ2xkkG4OmUYOvV2AvfkzJIsrEvRUSgQAMbPAtEP7cLwsXklJnh1zMyAY00ptZs6E08');
+        elements = stripe.elements({
+          appearance: {
+            theme: 'stripe',
+            variables: {
+              colorPrimary: '#667eea',
+              colorBackground: '#ffffff',
+              colorText: '#30313d',
+              colorDanger: '#df1b41',
+              fontFamily: 'system-ui, sans-serif'
+            }
+          }
+        });
+      }
+    };
+    
+    document.head.appendChild(script);
   } catch (error) {
     console.warn('Stripe initialization failed:', error);
     return false;
