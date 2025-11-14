@@ -1995,3 +1995,291 @@ function setupPostcodeAutocomplete() {
         }
     });
 }
+
+// Mobile Cart Fix - Ensures quantity controls update automatically and adds coupon input
+(function() {
+    console.log('📱 Mobile Cart Fix integriert in cart.js');
+
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        initMobileCartFix();
+    });
+
+    function initMobileCartFix() {
+        console.log('📱 Initializing Mobile Cart Fix');
+        
+        // Fix for quantity controls not updating
+        fixQuantityControls();
+        
+        // Create coupon input if missing
+        ensureCouponInputExists();
+        
+        // Set up mutation observer to handle dynamic content changes
+        setupMutationObserver();
+    }
+
+    function fixQuantityControls() {
+        // Override the changeQuantity function to update the UI immediately
+        const originalChangeQuantity = window.changeQuantity;
+        
+        if (originalChangeQuantity) {
+            window.changeQuantity = function(productId, change) {
+                // Call the original function
+                originalChangeQuantity(productId, change);
+                
+                // Get the updated cart
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const item = cart.find(item => Number(item.id) === Number(productId));
+                
+                // Update quantity display without page reload
+                const cartItem = document.querySelector(`.cart-item[data-id="${productId}"]`);
+                if (cartItem) {
+                    // If item still exists, update its quantity
+                    if (item) {
+                        const quantityDisplays = cartItem.querySelectorAll('.quantity-display');
+                        quantityDisplays.forEach(display => {
+                            display.textContent = item.quantity;
+                        });
+                        console.log(`📱 Updated quantity display for product ${productId} to ${item.quantity}`);
+                    } 
+                    // If item was removed (quantity became 0), remove the element with animation
+                    else {
+                        cartItem.style.transition = 'all 0.3s ease-out';
+                        cartItem.style.opacity = '0';
+                        cartItem.style.transform = 'translateX(-20px)';
+                        cartItem.style.height = cartItem.offsetHeight + 'px';
+                        
+                        setTimeout(() => {
+                            cartItem.style.height = '0';
+                            cartItem.style.margin = '0';
+                            cartItem.style.padding = '0';
+                            cartItem.style.overflow = 'hidden';
+                            
+                            setTimeout(() => {
+                                if (cartItem.parentNode) {
+                                    cartItem.parentNode.removeChild(cartItem);
+                                }
+                                
+                                // Check if cart is empty and update the page
+                                if (cart.length === 0) {
+                                    updateCartPage();
+                                }
+                            }, 300);
+                        }, 300);
+                    }
+                }
+                
+                // Also update the cart summary
+                if (window.updateCartSummary) {
+                    window.updateCartSummary();
+                }
+            };
+            console.log('📱 Quantity control function enhanced for mobile');
+        }
+        
+        // Similarly override removeFromCart
+        const originalRemoveFromCart = window.removeFromCart;
+        
+        if (originalRemoveFromCart) {
+            window.removeFromCart = function(productId) {
+                // Find the cart item before removal for animation
+                const cartItem = document.querySelector(`.cart-item[data-id="${productId}"]`);
+                
+                // Call the original function
+                originalRemoveFromCart(productId);
+                
+                // Animate the removal if the element still exists
+                if (cartItem && cartItem.parentNode) {
+                    cartItem.style.transition = 'all 0.3s ease-out';
+                    cartItem.style.opacity = '0';
+                    cartItem.style.transform = 'translateX(-20px)';
+                    cartItem.style.height = cartItem.offsetHeight + 'px';
+                    
+                    setTimeout(() => {
+                        cartItem.style.height = '0';
+                        cartItem.style.margin = '0';
+                        cartItem.style.padding = '0';
+                        cartItem.style.overflow = 'hidden';
+                        
+                        setTimeout(() => {
+                            if (cartItem.parentNode) {
+                                cartItem.parentNode.removeChild(cartItem);
+                            }
+                            
+                            // Check if cart is empty and update the page if needed
+                            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                            if (cart.length === 0) {
+                                updateCartPage();
+                            }
+                        }, 300);
+                    }, 300);
+                }
+            };
+            console.log('📱 Remove from cart function enhanced for mobile');
+        }
+    }
+
+    function ensureCouponInputExists() {
+        // Check if we're on mobile
+        if (window.innerWidth <= 768) {
+            console.log('📱 Mobile device detected, ensuring coupon input exists');
+            
+            // Check if gutschein-system.js has already created the voucher section
+            let voucherSection = document.getElementById('voucherSection');
+            
+            // If not found, create a simplified mobile version
+            if (!voucherSection) {
+                console.log('📱 Creating mobile-friendly coupon input');
+                
+                const voucherHTML = `
+                    <div id="voucherSection" class="mobile-voucher-section">
+                        <style>
+                            .mobile-voucher-section {
+                                background: white;
+                                border-radius: 12px;
+                                padding: 15px;
+                                margin: 15px 0;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                            }
+                            
+                            .mobile-voucher-section h3 {
+                                margin-bottom: 12px;
+                                color: #333;
+                                font-size: 1.1rem;
+                            }
+                            
+                            .mobile-voucher-input-wrapper {
+                                display: flex;
+                                flex-direction: column;
+                                gap: 10px;
+                            }
+                            
+                            .mobile-voucher-input-wrapper input {
+                                padding: 12px;
+                                border: 2px solid #e2e8f0;
+                                border-radius: 8px;
+                                font-size: 0.95rem;
+                                width: 100%;
+                                box-sizing: border-box;
+                            }
+                            
+                            .mobile-voucher-input-wrapper button {
+                                padding: 12px;
+                                background: linear-gradient(135deg, #667eea, #764ba2);
+                                border: none;
+                                border-radius: 8px;
+                                color: white;
+                                font-weight: 600;
+                                cursor: pointer;
+                                width: 100%;
+                                font-size: 0.95rem;
+                            }
+                        </style>
+                        
+                        <h3>
+                            <i class="bi bi-ticket-perforated" style="color: #667eea;"></i>
+                            Gutschein einlösen
+                        </h3>
+                        
+                        <div class="mobile-voucher-input-wrapper">
+                            <input 
+                                type="text" 
+                                id="voucherInput" 
+                                placeholder="Gutscheincode eingeben..."
+                            >
+                            <button id="applyVoucherBtn">
+                                Einlösen
+                            </button>
+                        </div>
+                        
+                        <div id="voucherMessage" style="display: none; padding: 10px; border-radius: 8px; margin-top: 10px;"></div>
+                        
+                        <div id="appliedVoucherDisplay" style="display: none; background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 15px; margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; color: #16a34a; margin-bottom: 5px;">
+                                        <i class="bi bi-check-circle-fill"></i> Gutschein angewendet
+                                    </div>
+                                    <div id="voucherDetails" style="color: #15803d; font-size: 0.9rem;"></div>
+                                </div>
+                                <button 
+                                    id="removeVoucherBtn"
+                                    style="background: transparent; border: none; color: #dc2626; cursor: pointer; font-size: 1.2rem;"
+                                >
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Insert after page-header
+                const pageHeader = document.querySelector('.page-header');
+                if (pageHeader) {
+                    pageHeader.insertAdjacentHTML('afterend', voucherHTML);
+                    
+                    // Add event listeners
+                    setTimeout(() => {
+                        const applyBtn = document.getElementById('applyVoucherBtn');
+                        const input = document.getElementById('voucherInput');
+                        const removeBtn = document.getElementById('removeVoucherBtn');
+                        
+                        if (applyBtn && window.applyCartVoucher) {
+                            applyBtn.addEventListener('click', window.applyCartVoucher);
+                        }
+                        
+                        if (input && window.applyCartVoucher) {
+                            input.addEventListener('keypress', function(e) {
+                                if (e.key === 'Enter') window.applyCartVoucher();
+                            });
+                        }
+                        
+                        if (removeBtn && window.removeCartVoucher) {
+                            removeBtn.addEventListener('click', window.removeCartVoucher);
+                        }
+                        
+                        // Check if there's an applied voucher
+                        if (window.checkAppliedVoucher) {
+                            window.checkAppliedVoucher();
+                        }
+                    }, 100);
+                }
+            }
+        }
+    }
+
+    function setupMutationObserver() {
+        // Create a mutation observer to watch for changes to the cart
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    // Check if any quantity controls were added
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === 1) { // Element node
+                            // Find any quantity controls in the added node
+                            const quantityBtns = node.querySelectorAll('.quantity-btn, .remove-btn');
+                            if (quantityBtns.length > 0) {
+                                console.log('📱 New quantity controls detected, ensuring they work on mobile');
+                                
+                                // Make sure our enhanced functions are used
+                                fixQuantityControls();
+                            }
+                            
+                            // Check if the voucher section needs to be added
+                            if (!document.getElementById('voucherSection')) {
+                                ensureCouponInputExists();
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Start observing the cart content
+        const cartContent = document.getElementById('cartContent');
+        if (cartContent) {
+            observer.observe(cartContent, { childList: true, subtree: true });
+            console.log('📱 Mutation observer set up for cart content');
+        }
+    }
+})();
