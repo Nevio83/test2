@@ -2440,43 +2440,10 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
     --scroll-position: 0px;
 }
 
-/* Remove this broken rule */
-
+.product-scroll-container::before,
 .product-scroll-container::after {
-    content: '';
-    position: absolute;
-    bottom: 12px;
-    left: 20px;
-    right: 110px;
-    height: 10px;
-    background: #c5c5c5;
-    border-radius: 5px;
-    border: 1px solid #a0a0a0;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
-}
-
-.product-scroll-container::before {
-    content: '';
-    position: absolute;
-    bottom: 12px;
-    left: 20px;
-    width: 100px;
-    height: 10px;
-    background: linear-gradient(135deg, #333333, #000000);
-    border-radius: 5px;
-    z-index: 1;
-    transform: translateX(var(--scroll-position, 0px));
-    transition: transform 0.1s ease-out;
-    cursor: grab;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
-    border: 1px solid #000000;
-}
-
-.product-scroll-container:hover::before {
-    height: 12px;
-    bottom: 11px;
-    background: linear-gradient(135deg, #555555, #222222);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
+    content: none !important;
+    display: none !important;
 }
 
 /* New custom scrollbar system - created dynamically by JavaScript */
@@ -8499,9 +8466,7 @@ section[data-category="Haushalt und Kï¿½che"]::after,
     
     /* Scrollbar-Fixes fÃ¼r Mobile - VERBESSERT */
     .product-scroll-container .custom-scrollbar-track {
-        position: fixed !important;
-        transform: none !important;
-        -webkit-transform: none !important;
+        position: absolute !important;
         animation: none !important;
         transition: none !important;
         -webkit-transition: none !important;
@@ -8515,8 +8480,6 @@ section[data-category="Haushalt und Kï¿½che"]::after,
     
     .product-scroll-container .custom-scrollbar-thumb {
         position: absolute !important;
-        transform: none !important;
-        -webkit-transform: none !important;
         animation: none !important;
         transition: none !important;
         -webkit-transition: none !important;
