@@ -3064,12 +3064,27 @@
     }
   }
 
-  window.addEventListener('scroll', updateNavTransparency);
-  window.addEventListener('resize', updateNavTransparency);
-  window.addEventListener('load', updateNavTransparency);
+  function updateAnnouncementVisibility() {
+    const body = document.body;
+    if (!body) return;
+    if (window.innerWidth <= 768 && window.scrollY <= 5) {
+      body.classList.add('announcement-visible');
+    } else {
+      body.classList.remove('announcement-visible');
+    }
+  }
+
+  function handleScrollStateUpdates() {
+    updateNavTransparency();
+    updateAnnouncementVisibility();
+  }
+
+  window.addEventListener('scroll', handleScrollStateUpdates, { passive: true });
+  window.addEventListener('resize', handleScrollStateUpdates);
+  window.addEventListener('load', handleScrollStateUpdates);
   
   // Initial call
-  updateNavTransparency();
+  handleScrollStateUpdates();
 </script>
 
 <!-- Scripts am Ende laden für bessere Performance -->

@@ -1242,6 +1242,27 @@ body {
   padding: 0 15px;
 }
 
+@media (max-width: 768px) {
+  .announcement-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  body.announcement-visible .simple-nav {
+    top: 40px;
+  }
+
+  body:not(.announcement-visible) .simple-nav {
+    top: 0;
+  }
+
+  body.announcement-visible .mobile-search-bar {
+    top: calc(74px + 40px) !important;
+  }
+}
+
 /* Light transparency for mobile navigation */
 @media (max-width: 768px) {
   .simple-nav {
@@ -1415,8 +1436,12 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   padding: 2px 6px;
   border-radius: 10px;
   min-width: 18px;
-  text-align: center;
-  line-height: 1.2;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  white-space: nowrap;
   pointer-events: none; /* Klicks gehen durch zum Button */
 }
 
@@ -1432,6 +1457,8 @@ a#wishlistButton.nav-icon-simple:hover i.bi-heart {
   height: 40px;
   display: flex;
   align-items: center;
+  z-index: 1100;
+  width: 100%;
 }
 
 .announcement-slider {
