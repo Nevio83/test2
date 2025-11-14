@@ -2251,38 +2251,28 @@
                     // Remove any existing listeners
                     searchBtn.onclick = null;
                     
-                    // Add click handler
+                    // Add click handler that defers to global logic
                     searchBtn.addEventListener('click', function(e) {
                         console.log('🔍 DIRECT: Search button clicked!');
                         e.preventDefault();
                         e.stopPropagation();
                         
-                        // Show overlay with slide animation
-                        searchOverlay.classList.add('active');
-                        document.body.style.overflow = 'hidden';
-                        
-                        // Focus search input and load products (nur für Desktop)
-                        setTimeout(() => {
-                            const searchInput = document.getElementById('fullscreenSearchInput');
-                            if (searchInput && window.innerWidth > 768) {
-                                // Nur auf Desktop fokussieren, nicht auf Mobile
-                                searchInput.focus();
-                            }
-                            
-                            // Load products immediately
-                            if (typeof loadAllProducts === 'function') {
-                                loadAllProducts();
-                            } else {
-                                // Backup: Try again after a short delay
-                                setTimeout(() => {
-                                    if (typeof loadAllProducts === 'function') {
-                                        loadAllProducts();
-                                    } else {
-                                        console.log('⚠️ loadAllProducts function not available');
-                                    }
-                                }, 1000);
-                            }
-                        }, 400);
+                        if (typeof openSearchOverlay === 'function') {
+                            openSearchOverlay();
+                        } else {
+                            // Fallback: keep previous behavior
+                            searchOverlay.classList.add('active');
+                            document.body.style.overflow = 'hidden';
+                            setTimeout(() => {
+                                const searchInput = document.getElementById('fullscreenSearchInput');
+                                if (searchInput) {
+                                    searchInput.focus();
+                                }
+                                if (typeof loadAllProducts === 'function') {
+                                    loadAllProducts();
+                                }
+                            }, 400);
+                        }
                     });
                     
                     // Close button handler
@@ -2290,16 +2280,24 @@
                     if (closeBtn) {
                         closeBtn.addEventListener('click', function(e) {
                             e.preventDefault();
-                            searchOverlay.classList.remove('active');
-                            document.body.style.overflow = '';
+                            if (typeof closeSearchOverlay === 'function') {
+                                closeSearchOverlay();
+                            } else {
+                                searchOverlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                            }
                         });
                     }
                     
                     // ESC key handler
                     document.addEventListener('keydown', function(e) {
                         if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
-                            searchOverlay.classList.remove('active');
-                            document.body.style.overflow = '';
+                            if (typeof closeSearchOverlay === 'function') {
+                                closeSearchOverlay();
+                            } else {
+                                searchOverlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                            }
                         }
                     });
                     
@@ -3280,18 +3278,21 @@ document.addEventListener('DOMContentLoaded', function() {
     if (mobileSearchBtn) {
         // Bei Klick auf Button öffne Vollbild-Suche
         mobileSearchBtn.addEventListener('click', function() {
-            const searchOverlay = document.getElementById('fullscreenSearchOverlay');
-            if (searchOverlay) {
-                searchOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                
-                // Fokussiere das Vollbild-Suchfeld
-                setTimeout(() => {
-                    const fullscreenInput = document.getElementById('fullscreenSearchInput');
-                    if (fullscreenInput) {
-                        fullscreenInput.focus();
-                    }
-                }, 100);
+            if (typeof openSearchOverlay === 'function') {
+                openSearchOverlay();
+            } else {
+                const searchOverlay = document.getElementById('fullscreenSearchOverlay');
+                if (searchOverlay) {
+                    searchOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    
+                    setTimeout(() => {
+                        const searchInput = document.getElementById('fullscreenSearchInput');
+                        if (searchInput) {
+                            searchInput.focus();
+                        }
+                    }, 200);
+                }
             }
         });
     }
