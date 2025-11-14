@@ -8467,6 +8467,9 @@ section[data-category="Haushalt und Kï¿½che"]::after,
     /* Scrollbar-Fixes fÃ¼r Mobile - VERBESSERT */
     .product-scroll-container .custom-scrollbar-track {
         position: absolute !important;
+        left: 20px !important;
+        right: 110px !important;
+        pointer-events: none !important;
         animation: none !important;
         transition: none !important;
         -webkit-transition: none !important;
@@ -8475,11 +8478,13 @@ section[data-category="Haushalt und Kï¿½che"]::after,
         height: 10px !important;
         background: #f0f0f0 !important;
         border: none !important;
-        bottom: 6px !important;
+        bottom: 8px !important;
     }
     
     .product-scroll-container .custom-scrollbar-thumb {
         position: absolute !important;
+        left: 20px !important;
+        pointer-events: none !important;
         animation: none !important;
         transition: none !important;
         -webkit-transition: none !important;
@@ -8488,7 +8493,7 @@ section[data-category="Haushalt und Kï¿½che"]::after,
         height: 10px !important;
         background: #000000 !important;
         border: none !important;
-        bottom: 6px !important;
+        bottom: 8px !important;
         min-width: 50px !important;
         border-radius: 3px !important;
     }
