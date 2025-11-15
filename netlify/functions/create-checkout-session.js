@@ -176,17 +176,24 @@ exports.handler = async (event, context) => {
       };
     });
 
-    // Absolut minimale Konfiguration - keine fortgeschrittenen Features
+    // Stripe Checkout-Konfiguration mit vollständiger Adressabfrage
     const sessionConfig = {
-      // Nur Kreditkarten - absolut minimale Konfiguration
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
       success_url: `${process.env.URL || 'https://maiosshop.com'}/success.html`,
       cancel_url: `${process.env.URL || 'https://maiosshop.com'}/cart.html`,
-      // Nur die absolut notwendigsten Optionen behalten
-      locale: 'de'
-      // ALLE anderen Optionen entfernt für maximale Kompatibilität
+      locale: 'de',
+      // Rechnungsadresse muss ausgefüllt werden
+      billing_address_collection: 'required',
+      // Lieferadresse erfassen (nur relevante Länder zulassen)
+      shipping_address_collection: {
+        allowed_countries: ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'PL', 'US', 'GB']
+      },
+      // Telefonnummer für Versandbenachrichtigungen
+      phone_number_collection: {
+        enabled: true
+      }
     };
 
     // CJ-Zahlungs-Split komplett deaktiviert für Kompatibilitätstests
