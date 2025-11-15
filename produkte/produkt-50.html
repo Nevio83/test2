@@ -432,13 +432,15 @@
 
       .color-images {
         scrollbar-width: thin !important;
-        scrollbar-color: #ffd700 rgba(255, 255, 255, 0.1) !important;
+        scrollbar-color: #000000 rgba(255, 255, 255, 0.1) !important;
       }
 
       .color-image-option {
         position: relative !important;
         width: 100px !important;
         height: 100px !important;
+        min-width: 100px !important;
+        flex-shrink: 0 !important;
         border-radius: 12px !important;
         overflow: hidden !important;
         cursor: pointer !important;
@@ -627,12 +629,10 @@
         }
     
       /* Override: black scrollbar for bundle color images */
-      .color-images { display:flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 8px !important; scrollbar-width: thin !important; scrollbar-color: #000 rgba(0,0,0,0.12) !important; }
-      .color-images::-webkit-scrollbar { height: 8px !important; display: block !important; }
-      .color-images::-webkit-scrollbar-track { background: rgba(0,0,0,0.12) !important; border-radius: 4px !important; }
-      .color-images::-webkit-scrollbar-thumb { background: #000 !important; border-radius: 4px !important; border: 1px solid rgba(255,255,255,0.2) !important; }
-      .color-images::-webkit-scrollbar-button { background: #000 !important; border-radius: 4px !important; width: 16px !important; height: 8px !important; }
-      .color-images::-webkit-scrollbar-button:hover { background: #333 !important; }
+      .color-images { display:flex !important; flex-wrap: nowrap !important; overflow-x: auto !important; }
+      .color-images::-webkit-scrollbar { height: 6px !important; }
+      .color-images::-webkit-scrollbar-track { background: transparent !important; }
+      .color-images::-webkit-scrollbar-thumb { background: #000000 !important; opacity: 1 !important; }
     </style>
     <link rel="stylesheet" href="../product-image-fullscreen.css" />
     <link rel="stylesheet" href="../product-image-gallery.css" />
