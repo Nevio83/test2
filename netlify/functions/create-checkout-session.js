@@ -178,7 +178,7 @@ exports.handler = async (event, context) => {
 
     // Stripe Checkout-Konfiguration mit vollständiger Adressabfrage
     const sessionConfig = {
-      // Karte (inkl. Apple/Google Pay), Link und PayPal für Quick Checkout
+      // Karte + Link + PayPal für Schnell-Checkout
       payment_method_types: ['card', 'link', 'paypal'],
       line_items,
       mode: 'payment',
@@ -194,20 +194,6 @@ exports.handler = async (event, context) => {
       // Telefonnummer für Versandbenachrichtigungen
       phone_number_collection: {
         enabled: true
-      },
-      // Wallet-Optionen für Express Checkout
-      payment_method_options: {
-        card: {
-          request_three_d_secure: 'automatic',
-          // Apple Pay & Google Pay aktivieren
-          wallet: {
-            apple_pay: 'auto',
-            google_pay: 'auto'
-          }
-        },
-        paypal: {
-          preferred_locale: 'de-DE'
-        }
       }
     };
 
