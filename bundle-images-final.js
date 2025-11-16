@@ -187,8 +187,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const bundles = [
-            { qty: 2, price: (basePrice * 0.85), discount: 15 },
-            { qty: 3, price: (basePrice * 0.80), discount: 20 }
+            { qty: 2, price: basePrice, discount: 0 },
+            { qty: 3, price: basePrice, discount: 0 }
         ];
         
         console.log('📝 Generiere HTML mit colors.length:', colors.length);
@@ -232,9 +232,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="price-display" style="display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
                                     <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
                                         <span class="price">Gesamt: €${(bundle.price * bundle.qty).toFixed(2)}</span>
-                                        ${bundle.discount > 0 ? `<span class="original">€${(basePrice * bundle.qty).toFixed(2)}</span>` : ''}
                                     </div>
-                                    ${bundle.discount > 0 ? `<div class="bundle-savings-badge">Spare €${((basePrice * bundle.qty) - (bundle.price * bundle.qty)).toFixed(2)}</div>` : ''}
+                                    <div class="bundle-total-price">Preis pro Set: €${bundle.price.toFixed(2)}</div>
                                 </div>
                             </div>
                         </div>
@@ -284,14 +283,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     will-change: transform;
                 }
                 
-                .bundle-savings-badge {
-                    background: #28a745;
-                    color: white;
-                    padding: 8px 16px;
-                    border-radius: 20px;
+                .bundle-total-price {
+                    background: rgba(255,255,255,0.15);
+                    color: #fff;
+                    padding: 6px 14px;
+                    border-radius: 18px;
                     font-size: 14px;
-                    font-weight: 700;
-                    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+                    font-weight: 600;
                     white-space: nowrap;
                     flex-shrink: 0;
                     align-self: center;
@@ -643,7 +641,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
                     }
                     
-                    .bundle-savings-badge {
+                    .bundle-total-price {
                         padding: 4px 8px !important;
                         font-size: 0.7rem !important;
                         margin-top: 0 !important;
@@ -962,30 +960,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Wende Bundle-Rabatt an
-            let discount = 0;
-            if (qty === 2) discount = 0.15;
-            if (qty === 3) discount = 0.20;
-            
-            const discountedPrice = totalPrice * (1 - discount);
-            
             // Update Preis-Anzeige in der Bundle-Card
             const priceDisplay = card.querySelector('.price');
             if (priceDisplay && totalPrice > 0) {
-                priceDisplay.textContent = `€${discountedPrice.toFixed(2)}`;
+                priceDisplay.textContent = `€${totalPrice.toFixed(2)}`;
             }
             
-            // Update Original-Preis
-            const originalDisplay = card.querySelector('.original');
-            if (originalDisplay && discount > 0) {
-                originalDisplay.textContent = `€${totalPrice.toFixed(2)}`;
-            }
-            
-            // Update Savings
-            const savingsDisplay = card.querySelector('.savings-text');
-            if (savingsDisplay && discount > 0) {
-                const savings = totalPrice - discountedPrice;
-                savingsDisplay.textContent = `Gesamt: €${discountedPrice.toFixed(2)}`;
+            const perSetDisplay = card.querySelector('.bundle-total-price');
+            if (perSetDisplay && qty > 0) {
+                const perSet = totalPrice / qty;
+                perSetDisplay.textContent = `Preis pro Set: €${perSet.toFixed(2)}`;
             }
         });
         
@@ -1062,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const basePrice = currentProduct.price;
-        const bundlePrice = bundleQty === 1 ? basePrice : (bundleQty === 2 ? basePrice * 0.85 : basePrice * 0.80);
+        const bundlePrice = basePrice;
         
         // Sammle ausgewählte Farben für dieses spezifische Bundle
         const selectedColors = [];
@@ -1203,7 +1187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const basePrice = currentProduct.price;
-        const bundlePrice = qty === 1 ? basePrice : (qty === 2 ? basePrice * 0.85 : basePrice * 0.80);
+        const bundlePrice = basePrice;
         
         // Sammle ausgewählte Farben
         const selectedColors = [];
