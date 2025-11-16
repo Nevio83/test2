@@ -234,6 +234,34 @@
             font-weight: 600;
             backdrop-filter: blur(5px);
         }
+
+        @media (max-width: 768px) {
+            .bundle-set {
+                text-align: center;
+                padding-bottom: 0.75rem;
+            }
+
+            .bundle-set .set-label {
+                display: block;
+                text-align: center;
+            }
+
+            .bundle-set .color-images {
+                justify-content: flex-start !important;
+                margin: 0 auto !important;
+                padding: 0 6px 0 0 !important;
+                width: 100%;
+                scroll-padding-left: 0;
+            }
+
+            .bundle-set .color-images .color-image-option:first-child {
+                margin-left: 12px !important;
+            }
+
+            .bundle-set .color-images .color-image-option:last-child {
+                margin-right: 12px !important;
+            }
+        }
         
         .bundle-pricing {
             margin-top: 1rem !important;
