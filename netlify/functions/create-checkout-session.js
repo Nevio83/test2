@@ -178,8 +178,8 @@ exports.handler = async (event, context) => {
 
     // Stripe Checkout-Konfiguration mit vollständiger Adressabfrage
     const sessionConfig = {
-      // Für Debugging nur PayPal aktiv
-      payment_method_types: ['paypal'],
+      // Karte (inkl. Apple/Google Pay), Link und PayPal für Quick Checkout
+      payment_method_types: ['card', 'link', 'paypal'],
       line_items,
       mode: 'payment',
       success_url: `${process.env.URL || 'https://maiosshop.com'}/success.html`,
