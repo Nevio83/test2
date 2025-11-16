@@ -510,12 +510,11 @@ function updateCartPage() {
                     ${cartItems.map(item => {
                         // Prüfe ob es ein Bundle ist - NUR wenn explizit als Bundle markiert
                         const isBundle = item.isBundle === true;
-                        const linkHref = isBundle ? '#' : `produkte/produkt-${item.id}.html`;
-                        const clickHandler = isBundle ? 'onclick="event.preventDefault(); return false;"' : '';
+                        const linkHref = `produkte/produkt-${item.id}.html`;
                         
                         return `
                         <div class="cart-item" data-id="${item.id}" ${isBundle ? 'data-bundle="true"' : ''}>
-                            <a href="${linkHref}" style="text-decoration: none;" ${clickHandler}>
+                            <a href="${linkHref}" style="text-decoration: none;">
                                 <img src="${item.image}" alt="${item.name}" class="cart-item-image" style="cursor: pointer;" onerror="handleImageError(this, '${item.name}', '${item.image}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
                             </a>
                             <div class="cart-item-details">
