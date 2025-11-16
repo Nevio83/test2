@@ -1056,8 +1056,8 @@
 
   function renderBundles() {
     const einzelpreis = 18.99;
-    const staffel = [      {qty:2, price:(einzelpreis*0.85), original:einzelpreis},
-      {qty:3, price:(einzelpreis*0.80), original:einzelpreis}
+    const staffel = [      {qty:2, price: einzelpreis, original:einzelpreis},
+      {qty:3, price: einzelpreis, original:einzelpreis}
     ];
     const section = document.getElementById('bundle-section');
     let selected = 0;
@@ -1073,7 +1073,7 @@
                   ${s.qty} Set${s.qty>1?'s':''} kaufen                </div>
                 <div class="bundle-prices">
                   €${s.price.toFixed(2)} pro Set
-                  <span class="savings">Spare €${((s.original-s.price)*s.qty).toFixed(2)}</span>
+                  
                 </div>
                 ${s.qty>1?`<div class='bundle-total'>Gesamt: <b>€${(s.price*s.qty).toFixed(2)}</b></div>`:''}
               </div>

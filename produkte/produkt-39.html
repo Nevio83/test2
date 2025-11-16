@@ -605,8 +605,8 @@
   function renderBundles() {
     // Preisstaffel: [ {menge, preisProSet, originalProSet} ]
     const staffel = [
-      {qty: 2, price: product.price * 0.85, original: product.price},
-      {qty: 3, price: product.price * 0.80, original: product.price}
+      {qty: 2, price: product.price, original: product.price},
+      {qty: 3, price: product.price, original: product.price}
     ];
     const section = document.getElementById('bundle-section');
     if (!section) return;
@@ -624,7 +624,7 @@
                   ${s.qty} Set${s.qty>1?'s':''} kaufen                </div>
                 <div class="bundle-prices">
                   €${s.price.toFixed(2)} pro Set
-                  <span class="savings">Spare €${((s.original-s.price)*s.qty).toFixed(2)}</span>
+                  
                 </div>
                 ${s.qty>1?`<div style='margin-top:.7em;font-size:.97rem;'>Gesamt: <b>€${(s.price*s.qty).toFixed(2)}</b></div>`:''}
               </div>
@@ -701,8 +701,8 @@
     
     const idx = parseInt(selectedRadio.value);
     const staffel = [
-      {qty: 2, price: product.price * 0.85, original: product.price},
-      {qty: 3, price: product.price * 0.80, original: product.price}
+      {qty: 2, price: product.price, original: product.price},
+      {qty: 3, price: product.price, original: product.price}
     ];
     const s = staffel[idx];
     
