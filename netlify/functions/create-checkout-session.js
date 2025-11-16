@@ -194,6 +194,20 @@ exports.handler = async (event, context) => {
       // Telefonnummer für Versandbenachrichtigungen
       phone_number_collection: {
         enabled: true
+      },
+      // Wallet-Optionen für Express Checkout
+      payment_method_options: {
+        card: {
+          request_three_d_secure: 'automatic',
+          // Apple Pay & Google Pay aktivieren
+          wallet: {
+            apple_pay: 'auto',
+            google_pay: 'auto'
+          }
+        },
+        paypal: {
+          preferred_locale: 'de-DE'
+        }
       }
     };
 
