@@ -186,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.warn('window.product.colors:', window.product?.colors);
         }
         
+        const hasColors = Boolean(colors && colors.length > 0);
         const bundles = [
             { qty: 2, price: basePrice, discount: 0 },
             { qty: 3, price: basePrice, discount: 0 }
@@ -199,7 +200,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="bundle-container">
                 <h2 class="bundle-title">BUNDLE & SPARE</h2>
                 
-                ${bundles.map((bundle, index) => `
+                ${bundles.map((bundle, index) => {
+                    const colorWrapperId = `bundle-colors-${bundle.qty}`;
+                    return `
                     <div class="bundle-card ${index === 0 ? 'selected' : ''}" data-bundle-id="${bundle.qty}">
                         <input type="radio" name="bundle" value="${bundle.qty}" ${index === 0 ? 'checked' : ''} class="bundle-radio" style="display: none;">
                         
@@ -208,11 +211,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <h3 class="bundle-qty">${bundle.qty} Set${bundle.qty > 1 ? 's' : ''} kaufen</h3>
                             </div>
                             
-                            <div class="bundle-colors" style="display: ${colors && colors.length > 0 ? 'block' : 'none'} !important;">
+                            ${hasColors ? `
+                            <div class="bundle-colors expanded" id="${colorWrapperId}">
                                 ${Array.from({length: bundle.qty}, (_, i) => `
-                                    <div class="bundle-set" style="display: block !important; visibility: visible !important;">
-                                        <span class="set-label" style="display: block !important; visibility: visible !important;">Set ${i + 1}:</span>
-                                        <div class="color-images" style="display: flex !important; visibility: visible !important;">
+                                    <div class="bundle-set">
+                                        <span class="set-label">Set ${i + 1}:</span>
+                                        <div class="color-images">
                                             ${colors.map((color, colorIndex) => `
                                                 <div class="color-image-option ${colorIndex === 0 ? 'selected' : ''}" 
                                                      data-set="${i}" 
@@ -226,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </div>
                                     </div>
                                 `).join('')}
-                            </div>
+                            </div>` : ''}
                             
                             <div class="bundle-pricing">
                                 <div class="price-display" style="display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
@@ -238,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                     </div>
-                `).join('')}
+                `}).join('')}
                 
                 <button class="add-bundle-btn" onclick="addSelectedBundleToCart()">
                     <i class="bi bi-cart-plus"></i> Ausgewähltes Bundle in den Warenkorb
@@ -427,7 +431,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 #bundle-section .bundle-colors,
                 .bundle-card .bundle-colors,
                 .bundle-colors {
-                    margin: 10px 0 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
                     display: block !important;
                     visibility: visible !important;
                     opacity: 1 !important;
@@ -436,9 +441,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 .bundle-set {
                     display: flex !important;
                     align-items: center;
-                    margin-bottom: 8px;
+                    margin: 0 !important;
                     width: 100%;
-                    gap: 8px;
+                    gap: 0 !important;
                     visibility: visible !important;
                 }
                 
@@ -451,6 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
                     display: block !important;
                     visibility: visible !important;
+                    margin: 0 !important;
                 }
                 
                 #bundle-section .color-images,
@@ -460,10 +466,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     display: flex !important;
                     visibility: visible !important;
                     opacity: 1 !important;
-                    gap: 5px !important;
+                    gap: 0 !important;
                     overflow-x: auto !important;
                     overflow-y: hidden !important;
-                    padding: 2px 0 8px 0 !important;
+                    padding: 0 !important;
                     scroll-behavior: smooth !important;
                     -webkit-overflow-scrolling: touch !important;
                     max-width: 400px !important;
@@ -943,11 +949,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Neue Funktion: Berechne Gesamtpreis basierend auf ausgewählten Farben in allen Sets
     function updateBundlePriceDisplay() {
         const allBundleCards = document.querySelectorAll('.bundle-card');
+        const baseProductPrice = window.product?.price || 0;
         
         allBundleCards.forEach((card) => {
             const selectedOptions = card.querySelectorAll('.color-image-option.selected');
             let totalPrice = 0;
             let qty = selectedOptions.length;
+            const fallbackQty = parseInt(card.getAttribute('data-bundle-id'), 10) || 1;
             
             // Berechne Gesamtpreis aller ausgewählten Farben
             selectedOptions.forEach(opt => {
@@ -955,21 +963,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (colorName && window.product && window.product.colors) {
                     const color = window.product.colors.find(c => c.name === colorName);
                     if (color) {
-                        totalPrice += color.price;
+                        const priceValue = typeof color.price === 'number' ? color.price : baseProductPrice;
+                        totalPrice += priceValue;
                     }
                 }
             });
             
+            if (qty === 0) {
+                qty = fallbackQty;
+            }
+            if (totalPrice === 0 && qty > 0) {
+                totalPrice = qty * baseProductPrice;
+            }
+            
             // Update Preis-Anzeige in der Bundle-Card
             const priceDisplay = card.querySelector('.price');
             if (priceDisplay && totalPrice > 0) {
-                priceDisplay.textContent = `€${totalPrice.toFixed(2)}`;
+                priceDisplay.textContent = `Gesamt: €${totalPrice.toFixed(2)}`;
             }
             
             const perSetDisplay = card.querySelector('.bundle-total-price');
             if (perSetDisplay && qty > 0) {
                 const perSet = totalPrice / qty;
                 perSetDisplay.textContent = `Preis pro Set: €${perSet.toFixed(2)}`;
+            } else if (perSetDisplay) {
+                perSetDisplay.textContent = `Preis pro Set: €${baseProductPrice.toFixed(2)}`;
             }
         });
         
