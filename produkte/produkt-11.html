@@ -335,11 +335,13 @@
     
 /* Bundle Farbauswahl im Liquid Glass Stil */
         .bundle-colors {
-            margin: 1rem 0;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         
         .bundle-set {
-            margin-bottom: 1rem;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         
         .set-label {
@@ -347,12 +349,12 @@
             font-size: 0.9rem;
             font-weight: 600;
             color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0.5rem;
+            margin: 0 !important;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
         
         /* Override: black scrollbar for bundle color images */
-        .color-images { display:flex !important; flex-wrap: nowrap !important; overflow: hidden !important; padding-bottom: 8px !important; scrollbar-width: none !important; justify-content: center !important; }
+        .color-images { display:flex !important; flex-wrap: nowrap !important; overflow: hidden !important; padding-bottom: 0 !important; scrollbar-width: none !important; justify-content: flex-start !important; }
         
         .color-images::-webkit-scrollbar { display: none !important; }
         
