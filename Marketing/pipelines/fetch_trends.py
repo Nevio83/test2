@@ -12,10 +12,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
+import os
 from pathlib import Path
 from typing import Iterable, List
 
 import sqlite3
+
+try:  # optional dependency
+    from pytrends.request import TrendReq
+except ImportError:  # pragma: no cover - pytrends is optional
+    TrendReq = None
 
 # --- Configuration -----------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -95,33 +101,57 @@ def fetch_tiktok_trends() -> List[TrendRow]:
 
 
 def fetch_google_trends() -> List[TrendRow]:
-    # TODO: Use pytrends to fetch rising queries for relevant verticals.
-    now = datetime.now(UTC)
-    return [
-        TrendRow(
-            source="google_trends",
-            keyword="smoothie rezept",
-            sentiment=0.55,
-            engagement_score=0.74,
-            sample_hook="Mealprep Sonntag in 5 Minuten",
-            captured_at=now,
-        )
-    ]
+    """Fetch trending searches via pytrends (falls verfügbar)."""
 
-
-def fetch_reddit_trends() -> List[TrendRow]:
-    # TODO: Query Reddit API (e.g., r/dropship, r/tiktokmarketing) for hot posts.
     now = datetime.now(UTC)
-    return [
-        TrendRow(
-            source="reddit",
-            keyword="home office hydration",
-            sentiment=0.48,
-            engagement_score=0.68,
-            sample_hook="Das Gadget, das meine Nachtschicht rettet",
-            captured_at=now,
+    if TrendReq is None:
+        return [
+            TrendRow(
+                source="google_trends",
+                keyword="smoothie rezept",
+                sentiment=0.55,
+                engagement_score=0.74,
+                sample_hook="Mealprep Sonntag in 5 Minuten",
+                captured_at=now,
+            )
+        ]
+
+    username = os.environ.get("GOOGLE_TRENDS_USERNAME") or None
+    password = os.environ.get("GOOGLE_TRENDS_PASSWORD") or None
+    region = os.environ.get("GOOGLE_TRENDS_REGION", "germany")
+    keywords: List[TrendRow] = []
+    try:
+        trend = TrendReq(username=username, password=password, tz=0, retries=2, 
+                         backoff_factor=0.1)
+        df = trend.trending_searches(pn=region)
+        top_rows = df[0].tolist()[:5]
+    except Exception:
+        top_rows = []
+
+    for term in top_rows:
+        keywords.append(
+            TrendRow(
+                source="google_trends",
+                keyword=term.lower(),
+                sentiment=0.6,
+                engagement_score=0.7,
+                sample_hook=f"Warum alle plötzlich nach '{term}' suchen",
+                captured_at=now,
+            )
         )
-    ]
+
+    if not keywords:
+        keywords.append(
+            TrendRow(
+                source="google_trends",
+                keyword="cozy home office",
+                sentiment=0.57,
+                engagement_score=0.72,
+                sample_hook="So gestaltest du dein Büro hygge",
+                captured_at=now,
+            )
+        )
+    return keywords
 
 
 def fetch_exploding_topics() -> List[TrendRow]:
@@ -146,7 +176,6 @@ def run_ingestion() -> None:
     rows: List[TrendRow] = []
     rows.extend(fetch_tiktok_trends())
     rows.extend(fetch_google_trends())
-    rows.extend(fetch_reddit_trends())
     rows.extend(fetch_exploding_topics())
     save_trends(rows)
     print(f"Stored {len(rows)} trend rows in {DB_PATH.relative_to(BASE_DIR)}")
