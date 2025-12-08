@@ -23,7 +23,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
   console.error('⚠️ KRITISCHER FEHLER: STRIPE_SECRET_KEY nicht in Umgebungsvariablen gefunden!');
   // Setze einen Fallback nur für Debug-Zwecke - NIEMALS in Produktion verwenden!
   // Dies ist nur, um zu sehen, ob wir ein Problem mit den Umgebungsvariablen haben
-  const FALLBACK_KEY = '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';
+  const FALLBACK_KEY = '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';
   console.log('⚠️ WARNUNG: Verwende Fallback-Key für Debugging');
   try {
     stripe = require('stripe')(FALLBACK_KEY, {
