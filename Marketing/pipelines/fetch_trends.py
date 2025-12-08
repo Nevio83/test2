@@ -18,6 +18,8 @@ from typing import Iterable, List
 
 import sqlite3
 
+import env_loader  # noqa: F401
+
 try:  # optional dependency
     from pytrends.request import TrendReq
 except ImportError:  # pragma: no cover - pytrends is optional

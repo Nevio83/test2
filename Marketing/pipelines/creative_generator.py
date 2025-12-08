@@ -10,7 +10,10 @@ import json
 from pathlib import Path
 from typing import Dict, List
 
+import env_loader  # noqa: F401
+
 from product_matcher import (
+    PerformanceMemory,
     fetch_recent_trends,
     load_products as load_matcher_products,
     match_trend_to_product,
@@ -75,10 +78,11 @@ def load_products_by_id() -> Dict[int, dict]:
 def main() -> None:
     products_index = load_products_by_id()
     matcher_products = load_matcher_products()
+    performance = PerformanceMemory.load()
     trends = fetch_recent_trends()
     briefs: List[CreativeBrief] = []
     for row in trends:
-        matched = match_trend_to_product(row["keyword"], matcher_products)
+        matched = match_trend_to_product(row["keyword"], matcher_products, performance)
         if not matched:
             continue
         product_data = products_index.get(matched.id)
