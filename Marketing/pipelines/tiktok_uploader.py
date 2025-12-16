@@ -21,6 +21,7 @@ except ImportError:  # pragma: no cover - requests is optional
 
 try:  # optional dependency for browser automation fallback
     from selenium import webdriver
+    from selenium.common.exceptions import TimeoutException
     from selenium.webdriver.common.by import By
     from selenium.webdriver.chrome.service import Service
     from selenium.webdriver.support import expected_conditions as EC
@@ -118,12 +119,17 @@ def upload_via_browser(video_path: Path, caption: str, config: UploaderConfig) -
         options.add_argument(f"--user-data-dir={config.chrome_profile_path}")
     options.add_argument("--disable-notifications")
     options.add_argument("--start-maximized")
+    options.add_argument("--remote-allow-origins=*")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--no-sandbox")
+    # Fenster geöffnet lassen, falls das Script abstürzt.
+    options.add_experimental_option("detach", True)
 
     print("[browser] Launching Chrome for manual TikTok upload ...")
     service = Service(executable_path=config.chrome_driver_path)
     driver = webdriver.Chrome(service=service, options=options)
 
-    upload_url = "https://www.tiktok.com/upload?lang=en"
+    upload_url = "https://www.tiktok.com/tiktokstudio/upload?lang=en"
     driver.get(upload_url)
     wait = WebDriverWait(driver, 60)
     try:
@@ -132,13 +138,48 @@ def upload_via_browser(video_path: Path, caption: str, config: UploaderConfig) -
         # Falls das Profil eine Custom-Startseite hat, erzwingen wir das Upload-Tab.
         driver.execute_script(f"window.open('{upload_url}', '_self');")
         wait.until(EC.url_contains("tiktok.com"))
+
+    if "login" in driver.current_url.lower():
+        print("[browser] TikTok verlangt Login. Bitte melde dich im geöffneten Fenster an.")
+        try:
+            WebDriverWait(driver, 180).until(lambda d: "studio" in d.current_url or "upload" in d.current_url)
+        except TimeoutException:
+            print("[error] Login nicht abgeschlossen – Upload abgebrochen.")
+            return
+
     try:
-        upload_input = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='file']")))
+        upload_selectors = [
+            "input[data-e2e='upload-media-input']",
+            "input[type='file']",
+            "input[accept*='video']",
+        ]
+        upload_input = None
+        for selector in upload_selectors:
+            try:
+                upload_input = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
+                break
+            except TimeoutException:
+                continue
+        if upload_input is None:
+            raise TimeoutException("Kein Upload-Eingabefeld gefunden.")
         upload_input.send_keys(str(video_path.resolve()))
-        caption_area = wait.until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "textarea[data-e2e='caption']"))
-        )
-        caption_area.clear()
+        caption_selectors = [
+            "textarea[data-e2e='caption']",
+            "textarea[placeholder*='Caption']",
+            "div[contenteditable='true'][data-e2e='caption']",
+            "div[contenteditable='true'][role='textbox']",
+        ]
+        caption_area = None
+        for selector in caption_selectors:
+            try:
+                caption_area = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, selector)))
+                break
+            except TimeoutException:
+                continue
+        if caption_area is None:
+            raise TimeoutException("Kein Caption-Feld gefunden.")
+        caption_area.click()
+        caption_area.clear() if hasattr(caption_area, "clear") else None
         caption_area.send_keys(caption)
         print(
             "[browser] Video + Caption eingefügt. Bitte überprüfe das TikTok-Fenster und klicke"
