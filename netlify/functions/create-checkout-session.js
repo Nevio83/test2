@@ -18,31 +18,17 @@ console.log('CJ_STRIPE_ACCOUNT_ID existiert:', !!process.env.CJ_STRIPE_ACCOUNT_I
 console.log('===================================');
 
 // Stripe-Client mit spezifischer API-Version initialisieren
-let stripe;
 if (!process.env.STRIPE_SECRET_KEY) {
-  console.error('⚠️ KRITISCHER FEHLER: STRIPE_SECRET_KEY nicht in Umgebungsvariablen gefunden!');
-  // Setze einen Fallback nur für Debug-Zwecke - NIEMALS in Produktion verwenden!
-  // Dies ist nur, um zu sehen, ob wir ein Problem mit den Umgebungsvariablen haben
-  const FALLBACK_KEY = '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';
-  console.log('⚠️ WARNUNG: Verwende Fallback-Key für Debugging');
-  try {
-    stripe = require('stripe')(FALLBACK_KEY, {
-      apiVersion: '2023-10-16' 
-    });
-    console.log('✅ Stripe mit Fallback-Key initialisiert');
-  } catch (error) {
-    console.error('⚠️ Fehler beim Initialisieren des Stripe-Clients mit Fallback-Key:', error.message);
-  }
-} else {
-  try {
-    stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16' // Aktuelle Stripe API-Version mit Unterstützung für alle Features
-    });
-    console.log('✅ Stripe mit API-Version 2023-10-16 initialisiert');
-  } catch (error) {
-    console.error('⚠️ Fehler beim Initialisieren des Stripe-Clients:', error.message);
-  }
+  console.error('❌ STRIPE_SECRET_KEY nicht in Umgebungsvariablen gefunden! Bitte in Netlify als Environment Variable setzen.');
+  return {
+    statusCode: 500,
+    body: JSON.stringify({ error: 'STRIPE_SECRET_KEY fehlt in Umgebungsvariablen.' })
+  };
 }
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2023-10-16'
+});
+// ✅ Stripe mit API-Version 2023-10-16 initialisiert
 
 // Lokalen Pfad für cj-payment-calculator verwenden
 const { calculateCJCost, calculatePaymentSplit } = require('./cj-payment-calculator');
