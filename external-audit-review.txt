@@ -1,0 +1,399 @@
+# Maios Shop – External Audit Package
+Generated: 2026-01-17 13:00 UTC
+
+## 1. Problem Description
+The Maios e-commerce stack has grown organically with dozens of interconnected frontend widgets, backend services, and automation scripts. For an external compliance and quality audit we need a single document that:
+1. Summarizes the current system scope and architecture.
+2. Highlights the most critical modules and why they matter.
+3. Captures representative code excerpts that auditors can inspect without navigating the full repository.
+4. Lists the log/console outputs that demonstrate existing observability and error handling.
+
+## 2. High-Level System Overview
+- **Frontend (Static assets served from root)**: index.html plus 40+ product detail pages leverage `app.js`, `cart.js`, color/bundle helpers, and numerous CSS themes. State is persisted via `localStorage` and products are fetched from `products.json` with cache busting.
+- **Checkout & Automation (Node/Express)**: `server.js` exposes `/api/create-checkout-session` and receipt/tracking endpoints, integrating Stripe, SendGrid/Resend, CJ Dropshipping, exchange rates, and PDF receipt generation.
+- **Operational Dashboards**: Admin UIs under `a29715347575/` (e.g., `admin-orders.js`) fetch receipt data for manual review.
+- **Support & Engagement**: `ai-chat-integration.js` bridges Tawk.to live chat with an OpenAI fallback, while additional scripts add keyboard shortcuts, vouchers, and analytics.
+
+## 2.1 Persistent Memories & Historical Context
+These are the “institutional memories” that have shaped the codebase. Include this section when handing the project to a new workstation so no tribal knowledge is lost.
+
+1. **Analytics & Feedback Loops** – Automatic success/failure tagging for the product matcher is intentionally blocked until objective post-upload analytics (TikTok/shop sales) exist. Manual reviews remain mandatory.
+2. **Credential Requirements** – Operations still require API credentials for TikTok uploads, CapCut Automate, Reddit, Google Trends, Exploding Topics, and OpenAI. None are checked into the repo; store them securely in the new machine’s `.env`/vault before enabling scheduled jobs.
+3. **Variant Handling** – Product pages 10, 11, 17, 21, 26, and others depend on the ColorSelection system (`color-image-selection.js`, `bundle-images-final.js`, `color-cart-bridge.js`). Product 21 uses “Modell” terminology instead of “Farbe”.
+4. **AliExpress Filtering** – Products whose SKU starts with `ALI` are filtered out everywhere except direct product URLs. This logic lives in `app.js` (search/category) and `loadAllProducts()`.
+5. **Cart UX Decisions** – Cart dropdown intentionally stays open after an add-to-cart action, wishlist buttons update instantly, and mobile overflow fixes rely on `mobile-cart-overflow-fix.js` plus CSS injected via `cart-color-images-only.js`.
+6. **Shipping & Returns** – CJ Dropshipping is the canonical fulfillment path. Returns require manual approval (Stripe refund) before automated CJ reverse logistics kicks in. Refer to `RETROUREN-AUTOMATISIERUNG.md` and `VOLLAUTOMATISCHE-RETOUREN.md` for the human-in-the-loop steps.
+7. **Live Chat & Support** – Tawk.to is integrated but hidden by default. Replace `YOUR_PROPERTY_ID` / `YOUR_WIDGET_ID` once real credentials exist. OpenAI-powered fallback replies operate only when the API key is configured.
+8. **Keyboard Shortcuts & Hover Logic** – `keyboard-shortcuts.js` assumes only one `app.js` include with `defer` and uses capture-phase listeners; duplicating scripts on another machine can reintroduce shortcut conflicts.
+9. **Product Media** – All product galleries pull from the `produkt bilder/` directory with strict naming (e.g., `produkt bilder/<Name> bilder/<Name> <farbe>.jpg`). When migrating machines ensure the folder hierarchy copies 1:1 or the gallery/bundle/color bridges will fail.
+10. **Deployment Footprint** – Netlify hosts the static site; `/.netlify/functions` proxies API calls. Required env vars there: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, optional `CJ_STRIPE_ACCOUNT_ID`.
+
+## 3. Related Code Excerpts (Representative Samples)
+### 3.1 Frontend Cart & Wishlist Logic – `app.js`
+```
+// Warenkorb-Initialisierung
+let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+...
+window.clearCart = function() {
+  try {
+    cartItems = [];
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+    if (typeof updateCartCounter === 'function') {
+      updateCartCounter();
+    } else {
+      console.log('updateCartCounter function not available');
+    }
+    console.log('Cart cleared, hiding dropdown');
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown) {
+      cartDropdown.classList.add('hiding');
+      cartDropdown.classList.remove('show');
+      setTimeout(() => {
+        cartDropdown.style.display = 'none';
+        cartDropdown.classList.remove('hiding');
+      }, 300);
+    }
+    if (typeof showAlert === 'function') {
+      showAlert('Warenkorb wurde geleert');
+    }
+    console.log('Cart cleared successfully');
+  } catch (error) {
+    console.error('Error in clearCart:', error);
+    alert('Fehler beim Leeren des Warenkorbs: ' + error.message);
+  }
+};
+```
+*(Source: app.js lines 1-45)*
+
+### 3.2 Product Loading & Validation – `app.js`
+```
+async function loadProducts() {
+  try {
+    const cacheBuster = Date.now();
+    const isProductPage = window.location.pathname.includes('/produkte/');
+    const jsonPath = isProductPage ? '../products.json' : 'products.json';
+    const response = await fetch(`${jsonPath}?v=${cacheBuster}`);
+    products = await response.json();
+    localStorage.setItem('allProducts', JSON.stringify(products));
+    console.log('📓 Products loaded with cache-busting:', products.length);
+    const criticalIds = [10, 11, 19, 20, 24, 25];
+    criticalIds.forEach(id => {
+      const product = products.find(p => Number(p.id) === id);
+      if (product) {
+        console.log(`✅ Critical product ${id} found:`, product.name);
+        if (typeof product.price !== 'number' || isNaN(product.price)) {
+          console.error(`❌ Product ${id} has invalid price:`, product.price);
+        }
+      } else {
+        console.error(`❌ Critical product ${id} NOT FOUND!`);
+      }
+    });
+    return products.map(p => ({
+      ...p,
+      description: p.description || '',
+      price: typeof p.price === 'number' && !isNaN(p.price) ? p.price : 0
+    }));
+  } catch (error) {
+    console.error('Fehler beim Laden der Produkte:', error);
+    return [];
+  }
+}
+```
+*(Source: app.js lines 95-136)*
+
+### 3.3 Cart Item Creation & Dropdown Persistence – `app.js`
+```
+function addProductToCart(productsParam, productId, fromCartDropdown = false) {
+  if ((!productsParam || productsParam.length === 0) && (!products || products.length === 0)) {
+    console.log('⚠️ Keine Produkte verfügbar, lade aus localStorage oder JSON...');
+    const storedProducts = localStorage.getItem('allProducts');
+    if (storedProducts) {
+      products = JSON.parse(storedProducts);
+      console.log('📦 Produkte aus localStorage geladen:', products.length);
+    }
+  }
+  const availableProducts = productsParam && productsParam.length > 0 ? productsParam : products;
+  console.log('Looking for product ID:', productId, 'in', availableProducts.length, 'products');
+  const product = availableProducts.find(p => Number(p.id) === Number(productId));
+  if (!product) {
+    console.error('Product not found for ID:', productId);
+    if (!fromCartDropdown) {
+      alert('Produkt konnte nicht gefunden werden.');
+    }
+    return;
+  }
+  const cartDropdown = document.getElementById('cartDropdown');
+  const wasDropdownOpen = cartDropdown && cartDropdown.classList.contains('show');
+  ...
+  if (wasDropdownOpen && cartDropdown) {
+    setTimeout(() => {
+      console.log('Keeping cart dropdown open after adding product');
+      cartDropdown.classList.add('show');
+      cartDropdown.style.display = 'block';
+      if (typeof renderCartDropdown === 'function') {
+        renderCartDropdown();
+      }
+    }, 100);
+  }
+}
+```
+*(Source: app.js lines 471-635)*
+
+### 3.4 Cart Image Resolution & Error Handling – `cart.js`
+```
+async function getCartItemImage(item) {
+    console.log('🖼️ GLOBALER getCartItemImage für:', item.name, 'ID:', item.id);
+    let colorMatch = item.name.match(/\(([^)]+)\)(?!.*\([^)]*\))/);
+    let color = null;
+    if (colorMatch) {
+        color = colorMatch[1];
+        console.log('🎨 Extrahierte Farbe:', color);
+        if (item.name.includes('Sets')) {
+            console.log('⚠️ Bundle-Produkt erkannt, Name:', item.name);
+            const allMatches = [...item.name.matchAll(/\(([^)]+)\)/g)];
+            for (const match of allMatches) {
+                if (!match[1].includes('Sets') && !match[1].includes('Set')) {
+                    color = match[1];
+                    console.log('🎨 Bundle Farbe gewählt:', color);
+                    break;
+                }
+            }
+        }
+    }
+    if (color) {
+        try {
+            const response = await fetch('products.json');
+            const products = await response.json();
+            const product = products.find(p => p.id == item.id);
+            if (product && product.colors && Array.isArray(product.colors)) {
+                const colorData = product.colors.find(c => c.name === color);
+                if (colorData && colorData.image) {
+                    console.log('✅ GLOBALES Farbbild gefunden:', colorData.image);
+                    return colorData.image;
+                }
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Laden der Produktdaten:', error);
+        }
+    }
+    console.log('⚠️ Verwende Standard-Bild:', item.image);
+    return item.image;
+}
+```
+*(Source: cart.js lines 55-107)*
+
+### 3.5 AI Chat Escalation – `ai-chat-integration.js`
+```
+class AICustomerSupport {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.conversationHistory = [];
+    this.isAgentAvailable = false;
+  }
+  async init() {
+    console.log('🤖 AI Customer Support initialisiert');
+    if (typeof Tawk_API !== 'undefined') {
+      this.setupTawkIntegration();
+    }
+    this.checkAgentAvailability();
+  }
+  setupTawkIntegration() {
+    Tawk_API.onChatMessageVisitor = (message) => {
+      console.log('📨 Neue Kundennachricht:', message);
+      if (!this.isAgentAvailable) {
+        this.handleMessageWithAI(message.text);
+      } else {
+        this.suggestResponseToAgent(message.text);
+      }
+    };
+  }
+}
+```
+*(Source: ai-chat-integration.js lines 13-51)*
+
+### 3.6 Backend Checkout Flow – `server.js`
+```
+let stripe = null;
+if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'your_stripe_secret_key_here') {
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+  console.log('✅ Stripe initialized');
+} else {
+  console.warn('⚠️  Stripe not initialized - STRIPE_SECRET_KEY missing');
+}
+...
+app.post('/api/create-checkout-session', async (req, res) => {
+  if (!stripe) {
+    return res.status(503).json({ error: 'Payment system not configured. Please set up Stripe API key.' });
+  }
+  const { cart, country, discount, customerInfo } = req.body;
+  if (!cart || !Array.isArray(cart) || cart.length === 0) {
+    return res.status(400).json({ error: 'Cart is required and must contain items' });
+  }
+  console.log('🛒 Checkout-Session Request:', { cartItems: cart.length, country: country || 'DE', hasDiscount: !!discount, discountCode: discount?.code, discountPercent: discount?.percent });
+  console.log('📍 Empfangenes Land:', country);
+  const currency = getCurrencyByCountry(country);
+  console.log('💱 Verwendete Währung:', currency);
+  ...
+  try {
+    const sessionConfig = { ... };
+    if (discount && discount.percent && discount.code) {
+      try {
+        console.log('🎫 Erstelle Coupon:', discount.code, discount.percent + '%');
+        const couponId = await createOrGetCoupon(discount.percent, discount.code);
+        sessionConfig.discounts = [{ coupon: couponId }];
+        console.log('✅ Coupon erfolgreich hinzugefügt:', couponId);
+      } catch (couponError) {
+        console.error('❌ Coupon-Fehler:', couponError.message);
+      }
+    }
+    const session = await stripe.checkout.sessions.create(sessionConfig);
+    res.json({ id: session.id, url: session.url });
+  } catch (error) {
+    console.error('❌ Fehler bei Stripe Checkout:', error.message);
+    res.status(500).json({ error: 'Checkout session failed', details: error.message });
+  }
+});
+```
+*(Source: server.js lines 6-399 excerpted)*
+
+### 3.7 Admin Order Dashboard – `a29715347575/admin-orders.js`
+```
+class AdminOrdersDashboard {
+  constructor() {
+    this.orders = [];
+    this.filteredOrders = [];
+    this.currentPage = 1;
+    this.ordersPerPage = 10;
+    this.currentFilter = 'all';
+    this.searchTerm = '';
+    this.init();
+  }
+  async loadStatistics() {
+    try {
+      const response = await fetch('/api/receipt/statistics');
+      if (!response.ok) throw new Error('Fehler beim Laden der Statistiken');
+      const stats = await response.json();
+      document.getElementById('total-orders').textContent = stats.totalOrders?.count || 0;
+      ...
+    } catch (error) {
+      console.error('Statistik-Fehler:', error);
+    }
+  }
+  async loadOrders(limit = 50, offset = 0) {
+    try {
+      const response = await fetch(`/api/receipt/orders?limit=${limit}&offset=${offset}`);
+      if (!response.ok) throw new Error('Fehler beim Laden der Bestellungen');
+      this.orders = await response.json();
+      this.filteredOrders = [...this.orders];
+      this.applyFilters();
+      this.renderOrders();
+    } catch (error) {
+      console.error('Bestellungen laden Fehler:', error);
+      this.showError('Fehler beim Laden der Bestellungen');
+    }
+  }
+}
+```
+*(Source: a29715347575/admin-orders.js lines 1-80)*
+
+## 4. Logging & Observability Inventory
+| Component | Representative Logs |
+|-----------|---------------------|
+| `app.js` | `console.log('Cart cleared successfully');`, `console.error('Fehler beim Laden der Produkte:', error);`, `console.log('Keeping cart dropdown open after adding product');` |
+| `cart.js` | `console.log('🖼️ GLOBALER getCartItemImage für:', item.name);`, `console.error('❌ Fehler beim Laden der Produktdaten:', error);`, `console.log('⚠️ Verwende Standard-Bild:', item.image);` |
+| `ai-chat-integration.js` | `console.log('🤖 AI Customer Support initialisiert');`, `console.log('📨 Neue Kundennachricht:', message);`, `console.error('❌ AI-Fehler:', error);` |
+| `server.js` | `console.log('✅ Stripe initialized');`, `console.warn('⚠️  Stripe not initialized - STRIPE_SECRET_KEY missing');`, `console.log('🛒 Checkout-Session Request:', {...});`, `console.error('❌ Fehler bei Stripe Checkout:', error.message);` |
+| `admin-orders.js` | `console.error('Statistik-Fehler:', error);`, `console.error('Bestellungen laden Fehler:', error);` |
+
+## 5. Analysis & Findings
+1. **Robust Logging but No Central Aggregation** – Console logs (frontend) and stdout logs (backend) are abundant, yet there is no centralized sink or log level control. For external audits, consider routing backend logs to a structured logger (e.g., Winston + JSON) and surfacing frontend telemetry via a browser logging service.
+2. **Cache Busting & Critical Product Validation** – `loadProducts()` already enforces cache busting and validates critical product IDs, which protects against stale data. This is a positive control and should be mentioned to auditors.
+3. **Error Handling Coverage** – Most critical flows wrap network operations in `try/catch` blocks with error alerts/logs. However, some async calls (e.g., `fetch` in auxiliary scripts) lack user-facing fallbacks; auditing should verify user experience when APIs fail.
+4. **Dependency on LocalStorage** – Cart/wishlist state relies on browser storage; tampering can affect totals. For compliance, highlight mitigating controls (Stripe recalculates totals server-side, server stores canonical amounts).
+5. **Secrets Management** – `server.js` conditionally initializes Stripe/SendGrid depending on `.env` keys. Auditors should confirm `.env` exclusion from VCS and production secret rotation.
+6. **Third-Party Integrations** – Documented support for Stripe, Resend, CJ Dropshipping, ExchangeRate-API, and Tawk.to/OpenAI. Ensure DPAs and SLA documentation exist for each provider.
+
+## 6. Recommendations for Audit Readiness
+1. **Centralize Backend Logs** – Replace `console.log` with a logger that timestamps, tags levels, and ships to a SIEM (Elastic, Datadog, etc.).
+2. **Frontend Audit Mode** – Add a build flag to toggle verbose console logs to avoid leaking sensitive data in production.
+3. **Config Baseline** – Prepare `.env.example` with placeholders and maintain a secure vault entry describing required secrets (Stripe, SendGrid, CJ, Resend, OpenAI, Exchange Rate API).
+4. **Operational Runbooks** – Cross-reference existing markdowns (CJ-AUTOMATISIERUNG.md, RETOUREN-AUTOMATISIERUNG.md, etc.) in the audit package so reviewers can trace process controls.
+
+## 7. Log Message Appendix (Copy-Paste Ready)
+```
+[Frontend]
+app.js: "Cart cleared, hiding dropdown"
+app.js: "📓 Products loaded with cache-busting: <count>"
+app.js: "✅ Critical product <id> found: <name>"
+app.js: "❌ Product <id> has invalid price: <value>"
+app.js: "Keeping cart dropdown open after adding product"
+cart.js: "🖼️ GLOBALER getCartItemImage für: <name> ID: <id>"
+cart.js: "🎨 Bundle Farbe gewählt: <color>"
+cart.js: "❌ Fehler beim Laden der Produktdaten: <error>"
+ai-chat-integration.js: "🤖 AI Customer Support initialisiert"
+ai-chat-integration.js: "📨 Neue Kundennachricht: <payload>"
+ai-chat-integration.js: "❌ AI-Fehler: <error>"
+
+[Backend]
+server.js: "✅ Stripe initialized"
+server.js: "⚠️  Stripe not initialized - STRIPE_SECRET_KEY missing"
+server.js: "🛒 Checkout-Session Request: { cartItems, country, ... }"
+server.js: "💰 Payment Split Berechnung: ..."
+server.js: "🎫 Erstelle Coupon: <code> <percent>%"
+server.js: "✅ Coupon erfolgreich hinzugefügt: <id>"
+server.js: "❌ Coupon-Fehler: <message>"
+server.js: "❌ Fehler bei Stripe Checkout: <message>"
+admin-orders.js: "Statistik-Fehler: <error>"
+admin-orders.js: "Bestellungen laden Fehler: <error>"
+```
+
+---
+This document consolidates the most relevant code, analysis, and logging evidence requested for the external audit. Attach it alongside existing process manuals for a complete review package.
+
+## 8. Cross-Machine Setup & Migration Checklist
+Use this when bringing the project onto a fresh PC (values in brackets reference canonical instructions in `README.md`).
+
+1. **Prerequisites** – Install Node.js ≥14, MongoDB, and npm/yarn. `README.md` documents the official toolchain and basic install commands (`npm install`, `node server.js`). @README.md#44-117
+2. **Clone & Verify Repo** – `git clone` the repository, ensure `.env` is not committed, and run `npm install` to restore dependencies.
+3. **Environment Variables** – Copy `.env.example` → `.env` and fill in:
+   - Stripe: `STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`.
+   - Resend: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`.
+   - Additional services: CJ API credentials, SendGrid (if used), OpenAI key, TikTok/Reddit/Google/Exploding Topics tokens per memory item #2, Exchange Rate API key, `SITE_URL`.
+   - Optional: `CJ_STRIPE_ACCOUNT_ID` for automatic profit split transfers.
+4. **Assets & Product Images** – Ensure the entire `produkt bilder/` tree copies over (watch case sensitivity). Missing assets break galleries, bundle previews, and cart thumbnails.
+5. **Local Storage Reset** – When testing on a new browser, clear `localStorage` or use the console helpers (`window.clearCart()`, voucher helpers) to avoid stale caches.
+6. **Run Servers** – Start MongoDB, run `node server.js`, visit `http://localhost:3000`. Confirm the checkout endpoint hits Stripe in test mode before switching to live keys.
+7. **Netlify / Production Sync** – If redeploying, confirm Netlify environment variables match the new `.env`. Re-run `netlify deploy` or push to main to trigger CI.
+8. **Documentation Bundle** – Package this audit file plus the Markdown SOPs (`CJ-AUTOMATISIERUNG.md`, `RETROUREN-AUTOMATISIERUNG.md`, `VOLLAUTOMATISCHE-RETOUREN.md`, `VERSANDMETHODEN.md`, `LIVE-CHAT-SETUP.md`) so operators on the other PC have immediate context.
+9. **Secrets Hygiene** – Never hardcode API keys. Use a password manager or OS keychain; update this document’s checklist if credentials change.
+10. **Smoke Tests** – Execute: add product with color variant, perform checkout in Stripe test mode, trigger AI chat fallback, run admin dashboard fetch, verify cart images. Log results in this file for future audits.
+
+## 9. Knowledge Base References
+- `CJ-AUTOMATISIERUNG.md`: CJ fulfillment API coverage.
+- `RETROUREN-AUTOMATISIERUNG.md` & `VOLLAUTOMATISCHE-RETOUREN.md`: Return workflows and manual approval instructions.
+- `KASSENBON-SYSTEM.md` & `receipt-generator.js`: Invoice/PDF generation logic.
+- `LIVE-CHAT-SETUP.md`: Tawk.to integration steps.
+- `EXCHANGE_RATE_SETUP.md`: ExchangeRate-API onboarding.
+- `Marketing/` directory: Campaign assets (reference when syncing to new workstation).
+
+## 10. Directory-by-Directory Overview (Option A)
+High-level purpose, key files, and noteworthy dependencies/logging for every major folder in this workspace.
+
+| Directory | Purpose & Scope | Key Files / Scripts | Notes & Dependencies |
+|-----------|-----------------|---------------------|----------------------|
+| Root (`/`)| Core frontend & backend files, global CSS/JS, infra configs | `app.js`, `cart.js`, `server.js`, `styles.css`, `products.json`, `.env`, `package.json` | `app.js` orchestrates product load, cart, wishlist; `server.js` handles Stripe/CJ/exchange rates; `styles.css` houses global layout + cart dropdown overrides; `.env` supplies Stripe/Resend/etc. |
+| `produkte/` | Individual product detail pages + category CSS themes | `produkt-10.html` … `produkt-50.html`, `elektronik.css`, `haushalt-kueche.css`, `koerperpflege-wellness.css`, `beleuchtung.css` | Reuse shared scripts (`color-image-selection.js`, `bundle-images-final.js`, `cart.js`). Each HTML embeds `window.product` definitions aligned with `products.json`. |
+| `Marketing/` | Automation pipelines, data exports, chromedriver bundle for marketing workflows | `pipelines/`, `data/`, local `.env` & `.env.example`, dedicated `products.json` | Keep marketing credentials separate. Pipelines depend on chromedriver binaries and scheduled tasks outside main app. |
+| `a29715347575/` | Admin dashboards (orders, vouchers) served behind auth | `orders.html`, `admin-gutscheine.html`, `admin-orders.js` | Frontend fetches `/api/receipt/*` endpoints from `server.js`. Shares CSS from global styles. |
+| `infos/` | Static informational pages (shipping, returns, tracking, etc.) | `shipping.html`, `retoure.html`, `tracking.html` (plus others) | Linked from main site footer; ensure translation consistency. |
+| `netlify/` | Netlify serverless functions + config | `functions/create-checkout-session.js` (if present), `netlify.toml` | Production uses `/.netlify/functions`. Keep env var mappings in Netlify dashboard. |
+| `receipts/` | Generated PDF receipts / storage artifacts | `ORD-*.pdf` style files | Managed by `receipt-generator.js`. Clean up regularly or store in S3 for compliance. |
+| `Marketing/chromedriver-win64/` & `data/` | Selenium helpers and marketing datasets | Binary drivers, CSV/JSON exports | Ensure correct chromedriver version for local OS. |
+| `images/`, `produkt bilder/` | Assets for homepage, product galleries, color variants | `logo.jpg`, `produkt bilder/<Name>.jpg`, nested `<Name> bilder/` folders | Naming must match entries in `products.json` to keep color/variant logic working. |
+| `database/` & root DB scripts | SQLite/JSON helpers for receipts and analytics | `database.js`, `test.db`, `state.json` | `database.js` exposes `dbOperations` consumed by `server.js` for receipts/tracking. |
+| `scripts` (root JS helpers) | Standalone feature modules | `color-image-selection.js`, `bundle-images-final.js`, `color-cart-bridge.js`, `keyboard-shortcuts.js`, `mobile-cart-overflow-fix.js`, `ai-chat-integration.js`, `gutschein-system.js`, etc. | Each script logs extensively (see Section 4). Load order matters: `app.js` → `cart.js` → feature-specific JS. |
+| `styles.css`, `cart.css`, `wishlist.css`, `success.css` | Global + page-specific styling |  | `styles.css` includes cart dropdown positioning fix, help-button visibility, hero banners, etc. `cart.css` controls cart page layout/responsive color swatches. |
+| `success.html`, `wishlist.html`, `gutscheine.html`, `cart.html` | Standalone pages built from shared components |  | Each page includes `app.js` + `cart.js` for consistent cart/wishlist state.
+| `CJ-*`, `RET*`, `VOLLAUTOMATISCH*`, `VERSANDMETHODEN.md`, `EXCHANGE_RATE_SETUP.md` | Operational manuals and SOPs |  | Include in audit package for process evidence.
+
+**Tip:** When onboarding someone on a new PC, pair this directory overview with Section 8’s migration checklist so they know both “where things live” and “how to set them up.”
