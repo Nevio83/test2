@@ -264,8 +264,6 @@ function updateWishlistButtonState(productId) {
 }
 
 // Produktgrid rendern - LumiÃ¨re Design Style
-// Produktgrid rendern - Lumière  Style (Modified)
-// Produktgrid rendern - Lumière Style (Modified)
 function renderProducts(products) {
   const grid = document.getElementById("productGrid");
   if (!grid) {
@@ -278,29 +276,12 @@ function renderProducts(products) {
 
   console.log("Rendering", products.length, "products to grid");
 
-  // Filter out AliExpress products (SKU starts with ALI)
-  products = products.filter(
-    (p) => !p.sku || !p.sku.toUpperCase().startsWith("ALI"),
-  );
-
-  // Filter out AliExpress products
-  const filteredProducts = products.filter(
-    (p) => !p.sku || !p.sku.toUpperCase().startsWith("ALI"),
-  );
-  const productsToRender =
-    filteredProducts.length > 0 ? filteredProducts : products; // Fallback if filter removes everything
-
-  if (filteredProducts.length === 0 && products.length > 0) {
-    console.warn("Only AliExpress products found, showing emptiness");
-  }
-
-  if (productsToRender.length === 0) {
-    grid.innerHTML =
-      '<div class="col-span-full text-center text-gray-500 py-12">No products found.</div>';
+  if (products.length === 0) {
+    grid.innerHTML = '<div class="no-products">Keine Produkte gefunden.</div>';
     return;
   }
 
-  grid.innerHTML = productsToRender
+  grid.innerHTML = products
     .map((product) => {
       const price = product.price || product.salePrice || 0;
       const formattedPrice =
@@ -309,37 +290,22 @@ function renderProducts(products) {
           : parseFloat(price || 0).toFixed(2);
 
       return `
-      <div class="lumiere-product-card group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300 flex flex-col" data-product-id="${product.id}" data-category="${product.category}">
-        <!-- Image Container -->
-        <div class="lumiere-image-container relative overflow-hidden h-64 bg-surface w-full">
-           <img src="${product.image}" class="lumiere-product-image w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="${product.name}" loading="lazy" onerror="this.src='https://placehold.co/400x400?text=No+Image';this.style.objectFit='contain';">
-           
-           <!-- Wishlist Button -->
-           <button class="lumiere-wishlist-btn absolute top-3 right-3 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white hover:bg-primary transition-colors border border-white/10 z-20" data-product-id="${product.id}">
-             <i class="bi bi-heart"></i>
-           </button>
-           
-           ${product.originalPrice > price ? `<span class="absolute top-3 left-3 bg-secondary text-black text-xs font-bold px-2 py-1 rounded z-20">- ${Math.round((1 - price / product.originalPrice) * 100)}%</span>` : ""}
+      <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
+        <div class="lumiere-image-container">
+          <img src="${product.image}" class="lumiere-product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" loading="lazy">
+          <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
+          <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
+            <i class="bi bi-heart"></i>
+          </button>
         </div>
-        
-        <!-- Content -->
-        <div class="lumiere-card-content p-5 flex flex-col flex-grow">
-          <div class="mb-auto">
-             <span class="text-xs text-gray-500 uppercase tracking-wider mb-1 block">${product.category || "Product"}</span>
-             <h3 class="lumiere-product-title font-bold text-lg text-white mb-2 leading-tight">${product.name}</h3>
+        <div class="lumiere-card-content">
+          <h3 class="lumiere-product-title">${product.name}</h3>
+          <div class="lumiere-price-section">
+            <span class="lumiere-price">€${formattedPrice}</span>
           </div>
-          
-          <div class="mt-4 pt-4 border-t border-white/5 flex items-center justify-between gap-4">
-             <div class="flex flex-col">
-                 ${product.originalPrice > price ? `<span class="text-xs text-gray-500 line-through">€${product.originalPrice.toFixed(2)}</span>` : ""}
-                 <span class="lumiere-price text-xl font-bold text-white">€${formattedPrice}</span>
-             </div>
-             
-             <button class="lumiere-add-to-cart-btn bg-white text-black hover:bg-gray-200 transition-colors rounded-full px-5 py-2 text-sm font-bold flex items-center gap-2 z-20" data-product-id="${product.id}">
-                <span>Add</span>
-                <i class="bi bi-plus-lg"></i>
-             </button>
-          </div>
+          <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
+            In den Warenkorb
+          </button>
         </div>
       </div>
     `;
@@ -348,37 +314,14 @@ function renderProducts(products) {
 
   console.log("Products rendered, initializing buttons...");
   initializeAddToCartButtons();
-  // Check if initializeWishlistButtons exists before calling
-  if (typeof initializeWishlistButtons === "function") {
-    initializeWishlistButtons();
-  } else {
-    // Manual initialization if function missing
-    const wishlistButtons = document.querySelectorAll(".lumiere-wishlist-btn");
-    wishlistButtons.forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleWishlist(btn.dataset.productId);
-      });
-    });
-  }
-
+  initializeWishlistButtons();
   initializeProductCardClicks();
-  if (typeof initializeProductPageWishlist === "function") {
-    initializeProductPageWishlist();
-  }
+  initializeProductPageWishlist(); // <-- HIER HINZUGEFÜGT
+  observeProductCards();
 
-  if (typeof observeProductCards === "function") {
-    observeProductCards();
-  }
+  // Images are now loaded directly with native lazy loading
 
-  // Update wishlist states
-  if (
-    typeof updateAllWishlistButtonsStates === "function" &&
-    products.length > 0
-  ) {
-    products.forEach((p) => updateAllWishlistButtonsStates(p.id));
-  }
+  // No need to optimize images anymore
 }
 
 // Ensure product page wishlist init runs on product pages too
