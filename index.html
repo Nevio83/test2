@@ -164,6 +164,14 @@
           transform: translateY(-5px);
         }
       }
+
+      /* appfunktionell.js compatibility */
+      .fullscreen-search-overlay {
+        display: none !important;
+      }
+      .fullscreen-search-overlay.active {
+        display: block !important;
+      }
     </style>
 
     <!-- Keys & Scripts -->
@@ -218,6 +226,67 @@
             >
               Espresso
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fullscreen Search Overlay (appfunktionell.js compatible) -->
+    <div class="fullscreen-search-overlay" id="fullscreenSearchOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 10000; overflow-y: auto;">
+      <div class="fullscreen-search-container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <!-- Search Header -->
+        <div class="fullscreen-search-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+          <h2 style="color: white; font-size: 2rem; margin: 0;">Produktsuche</h2>
+          <button class="close-search-btn" id="closeSearchBtn" style="background: none; border: none; color: white; font-size: 2rem; cursor: pointer; padding: 10px;">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <!-- Lumière Category Tabs -->
+        <div class="lumiere-category-tabs" style="display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;">
+          <a href="#" class="lumiere-category-tab active" data-category="alle" style="padding: 12px 20px; background: #8b5cf6; color: white; text-decoration: none; border-radius: 25px; display: flex; align-items: center; gap: 8px; font-weight: 600; transition: all 0.3s;">
+            <i class="bi bi-grid-3x3-gap"></i>
+            <span>ALLE</span>
+          </a>
+          <a href="#" class="lumiere-category-tab" data-category="Technik/Gadgets" style="padding: 12px 20px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 25px; display: flex; align-items: center; gap: 8px; font-weight: 600; transition: all 0.3s;">
+            <i class="bi bi-cpu"></i>
+            <span>TECHNIK</span>
+          </a>
+          <a href="#" class="lumiere-category-tab" data-category="Beleuchtung" style="padding: 12px 20px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 25px; display: flex; align-items: center; gap: 8px; font-weight: 600; transition: all 0.3s;">
+            <i class="bi bi-lightbulb"></i>
+            <span>LICHT</span>
+          </a>
+          <a href="#" class="lumiere-category-tab" data-category="Körperpflege/Wellness" style="padding: 12px 20px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 25px; display: flex; align-items: center; gap: 8px; font-weight: 600; transition: all 0.3s;">
+            <i class="bi bi-heart-pulse"></i>
+            <span>WELLNESS</span>
+          </a>
+          <a href="#" class="lumiere-category-tab" data-category="Haushalt und Küche" style="padding: 12px 20px; background: rgba(255,255,255,0.1); color: white; text-decoration: none; border-radius: 25px; display: flex; align-items: center; gap: 8px; font-weight: 600; transition: all 0.3s;">
+            <i class="bi bi-house"></i>
+            <span>KÜCHE</span>
+          </a>
+        </div>
+        
+        <!-- Search Input -->
+        <div class="fullscreen-search-input-container" style="margin-bottom: 30px;">
+          <div class="search-input-wrapper" style="position: relative;">
+            <i class="bi bi-search search-input-icon" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #666; font-size: 1.2rem;"></i>
+            <input type="text" class="fullscreen-search-input" placeholder="Wonach suchst du?" id="fullscreenSearchInput" style="width: 100%; padding: 20px 20px 20px 60px; font-size: 1.2rem; border: 2px solid #333; border-radius: 15px; background: #1a1a1a; color: white; outline: none;">
+          </div>
+        </div>
+        
+        <!-- Search Results -->
+        <div class="search-results" id="searchResults" style="display: none; margin-bottom: 40px;">
+          <h3 class="search-section-title" style="color: white; font-size: 1.5rem; margin-bottom: 20px;">Suchergebnisse</h3>
+          <div class="search-results-grid" id="searchResultsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+            <!-- Results will be populated here -->
+          </div>
+        </div>
+        
+        <!-- All Products Section -->
+        <div class="search-all-products">
+          <h3 class="search-section-title" style="color: white; font-size: 1.5rem; margin-bottom: 20px;">VIELLEICHT INTERESSIERT SIE DAS FOLGENDE</h3>
+          <div class="search-all-products-grid" id="searchAllProductsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+            <!-- All products will be loaded here -->
           </div>
         </div>
       </div>
@@ -307,15 +376,28 @@
         <!-- Actions -->
         <div class="flex items-center gap-6">
           <button
-            onclick="toggleSearch()"
             class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
+            id="fullscreenSearchBtn"
           >
             <i class="bi bi-search text-lg"></i>
           </button>
 
+          <!-- Wishlist Button -->
+          <a
+            href="wishlist.html"
+            class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5 relative"
+            id="wishlistButton"
+          >
+            <i class="bi bi-heart text-lg"></i>
+            <span
+              id="wishlistCounter"
+              class="absolute top-0 right-0 bg-primary text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full hidden shadow-neon"
+              >0</span
+            >
+          </a>
+
           <div class="relative group" id="cartContainer">
             <button
-              onclick="toggleCart()"
               class="flex items-center gap-2 text-white hover:text-primary transition-colors p-2 rounded-full hover:bg-white/5 relative"
               id="cartButton"
             >
@@ -336,27 +418,41 @@
                 class="p-4 border-b border-white/5 flex justify-between items-center"
               >
                 <span class="font-bold text-sm">Shopping Cart</span>
-                <span class="text-xs text-gray-500">Free Shipping</span>
+                <button class="text-gray-400 hover:text-white" id="closeCartDropdown">
+                  <i class="bi bi-x text-lg"></i>
+                </button>
               </div>
               <div
-                id="cartItemsContainer"
+                id="cartDropdownBody"
                 class="max-h-64 overflow-y-auto p-4 custom-scrollbar"
               >
                 <!-- Items inserted by JS -->
                 <div
                   class="flex flex-col items-center justify-center py-8 text-gray-500 gap-2"
+                  id="emptyCartMessage"
                 >
                   <i class="bi bi-cart-x text-3xl opacity-50"></i>
                   <span class="text-sm">Your cart is empty</span>
                 </div>
               </div>
-              <div class="p-4 bg-black/20 border-t border-white/5">
-                <a
-                  href="cart.html"
-                  class="block w-full text-center bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors shadow-lg shadow-white/5 relative overflow-hidden group"
-                >
-                  <span class="relative z-10">Checkout</span>
-                </a>
+              <div class="p-4 bg-black/20 border-t border-white/5" id="cartDropdownFooter">
+                <div class="flex justify-between items-center mb-3">
+                  <strong>Gesamt: €<span id="cartTotal">0.00</span></strong>
+                </div>
+                <div class="grid gap-2">
+                  <a
+                    href="cart.html"
+                    class="block w-full text-center bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors shadow-lg shadow-white/5 relative overflow-hidden group"
+                  >
+                    <span class="relative z-10">Checkout</span>
+                  </a>
+                  <button
+                    id="clearCart"
+                    class="w-full text-center bg-transparent border border-red-500 text-red-500 font-bold py-3 rounded-xl hover:bg-red-500 hover:text-white transition-colors"
+                  >
+                    <i class="bi bi-trash mr-2"></i>Warenkorb leeren
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -598,7 +694,62 @@
           </div>
         </div>
 
-        <!-- Grid -->
+        <!-- Bestseller Grid -->
+        <div class="mb-20">
+          <h3 class="text-2xl font-bold mb-8 text-white">Bestseller</h3>
+          <div
+            id="bestsellerGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            <!-- Bestseller products loaded by JS -->
+          </div>
+        </div>
+
+        <!-- Technik Grid -->
+        <div class="mb-20">
+          <h3 class="text-2xl font-bold mb-8 text-white">Technik & Gadgets</h3>
+          <div
+            id="technikGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            <!-- Technik products loaded by JS -->
+          </div>
+        </div>
+
+        <!-- Beleuchtung Grid -->
+        <div class="mb-20">
+          <h3 class="text-2xl font-bold mb-8 text-white">Beleuchtung</h3>
+          <div
+            id="beleuchtungGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            <!-- Beleuchtung products loaded by JS -->
+          </div>
+        </div>
+
+        <!-- Haushalt Grid -->
+        <div class="mb-20">
+          <h3 class="text-2xl font-bold mb-8 text-white">Haushalt & Küche</h3>
+          <div
+            id="haushaltGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            <!-- Haushalt products loaded by JS -->
+          </div>
+        </div>
+
+        <!-- Wellness Grid -->
+        <div class="mb-20">
+          <h3 class="text-2xl font-bold mb-8 text-white">Körperpflege & Wellness</h3>
+          <div
+            id="wellnessGrid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          >
+            <!-- Wellness products loaded by JS -->
+          </div>
+        </div>
+
+        <!-- Main Product Grid (existing) -->
         <div
           id="productGrid"
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
@@ -753,18 +904,78 @@
       </div>
     </footer>
 
+    <!-- Hilfe Button (Fixed Position) -->
+    <button
+      id="hilfeButton"
+      style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #22d3ee); border: none; color: white; font-size: 24px; font-weight: bold; cursor: pointer; z-index: 1000; box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4); transition: all 0.3s ease;"
+      onmouseover="this.style.transform='scale(1.1)'"
+      onmouseout="this.style.transform='scale(1)'"
+    >
+      ?
+    </button>
+
+    <!-- Hilfe Panel -->
+    <div
+      id="hilfePanel"
+      style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 10000; padding: 20px; overflow-y: auto;"
+    >
+      <div style="max-width: 800px; margin: 0 auto; background: #1a1a1a; border-radius: 20px; padding: 30px; color: white;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+          <h2 style="margin: 0; font-size: 2rem; color: #8b5cf6;">Hilfe & Support</h2>
+          <button
+            id="hilfePanelClose"
+            style="background: none; border: none; color: white; font-size: 2rem; cursor: pointer; padding: 10px;"
+          >
+            ×
+          </button>
+        </div>
+        <div style="line-height: 1.6;">
+          <h3 style="color: #22d3ee; margin-bottom: 15px;">Häufig gestellte Fragen</h3>
+          <p><strong>Wie kann ich bestellen?</strong><br>
+          Klicken Sie einfach auf "In den Warenkorb" bei Ihrem gewünschten Produkt und folgen Sie den Checkout-Schritten.</p>
+          
+          <p><strong>Wie lange dauert der Versand?</strong><br>
+          Standardversand dauert 7-13 Werktage. Express-Versand ist verfügbar.</p>
+          
+          <p><strong>Kann ich meine Bestellung stornieren?</strong><br>
+          Ja, solange die Bestellung noch nicht versandt wurde. Kontaktieren Sie uns umgehend.</p>
+          
+          <h3 style="color: #22d3ee; margin: 30px 0 15px 0;">Kontakt</h3>
+          <p>📧 Email: support@maios.com<br>
+          📞 Telefon: +49 123 456 789<br>
+          🕒 Mo-Fr: 9:00-18:00 Uhr</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
-    <script src="app.js"></script>
+    <script src="appfunktionell.js" defer></script>
+    <script src="keyboard-shortcuts.js" defer></script>
+    <script src="gutschein-system.js"></script>
     <script>
-      // UI Toggles
-      function toggleSearch() {
+      // UI Toggles (Fallback - appfunktionell.js ist Master)
+      function uiToggleSearchFallback() {
         const modal = document.getElementById("searchModal");
-        if (modal.classList.contains("hidden")) {
-          modal.classList.remove("hidden");
-          setTimeout(() => modal.classList.remove("opacity-0"), 10);
-        } else {
-          modal.classList.add("opacity-0");
-          setTimeout(() => modal.classList.add("hidden"), 300);
+        const overlay = document.getElementById("fullscreenSearchOverlay");
+        
+        // Use fullscreen overlay if available (for appfunktionell.js compatibility)
+        if (overlay) {
+          if (overlay.style.display === "none" || !overlay.style.display) {
+            overlay.style.display = "block";
+            document.body.style.overflow = "hidden";
+          } else {
+            overlay.style.display = "none";
+            document.body.style.overflow = "";
+          }
+        } else if (modal) {
+          // Fallback to modal
+          if (modal.classList.contains("hidden")) {
+            modal.classList.remove("hidden");
+            setTimeout(() => modal.classList.remove("opacity-0"), 10);
+          } else {
+            modal.classList.add("opacity-0");
+            setTimeout(() => modal.classList.add("hidden"), 300);
+          }
         }
       }
 
@@ -777,7 +988,7 @@
         }
       }
 
-      function toggleCart() {
+      function uiToggleCartFallback() {
         const dropdown = document.getElementById("cartDropdown");
         if (dropdown.classList.contains("hidden")) {
           dropdown.classList.remove("hidden");
@@ -800,6 +1011,25 @@
         }
       });
 
+      // Close search overlay - entfernt, da appfunktionell.js Master ist
+      document.addEventListener("click", function(e) {
+        // Nur Help-Panel Events (appfunktionell.js managed Cart/Search)
+        if (e.target.id === "hilfeButton") {
+          const panel = document.getElementById("hilfePanel");
+          if (panel) {
+            panel.style.display = "flex";
+            panel.classList.add("offen");
+          }
+        }
+        if (e.target.id === "hilfePanelClose") {
+          const panel = document.getElementById("hilfePanel");
+          if (panel) {
+            panel.style.display = "none";
+            panel.classList.remove("offen");
+          }
+        }
+      });
+
       document.addEventListener("DOMContentLoaded", () => {
         // Initialize products
         if (typeof loadProducts === "function") {
@@ -808,6 +1038,14 @@
             // But duplicates checks won't hurt
             renderProducts(products);
           });
+        }
+        
+        // Initialize counters
+        if (typeof updateCartCounter === "function") {
+          updateCartCounter();
+        }
+        if (typeof updateWishlistCounter === "function") {
+          updateWishlistCounter();
         }
       });
     </script>
