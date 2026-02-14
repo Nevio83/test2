@@ -1,3 +1,13 @@
 {
-    "kiroAgent.configureMCP": "Disabled"
+  "kiroAgent.configureMCP": "Disabled",
+  "background.windowBackgrounds": [
+    "c:/Users/nevio/Pictures/Screenshots/222829.gif"
+  ],
+  "background.backgroundOpacity": [0.06, 0.1, 0.1, 0.1],
+  "background.backgroundBlur": [
+    "60",
+    "0",
+    "0",
+    "0"
+  ]
 }
