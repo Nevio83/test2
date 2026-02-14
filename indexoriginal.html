@@ -1,11 +1,13 @@
+
 <!DOCTYPE html>
-<html lang="de" class="scroll-smooth">
+<html lang="de">
 <head>
+  <!-- Scripts am Ende laden für bessere Performance -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
-    <title>Maios | Redefine Living</title>
-    <meta name="description" content="Premium Electronics & Lifestyle">
-    <meta name="keywords" content="premium, gadgets, lifestyle, maios">
+    <title>Maios - Startseite</title>
+    <meta name="description" content="Online-Maios mit besten Angeboten">
+    <meta name="keywords" content="ecommerce, online shopping, electronic, mode">
     
     <!-- Favicons & App Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
@@ -24,69 +26,8 @@
     }
     </script>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;600;800&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              background: "#030304",
-              surface: "#0A0A0B",
-              surfaceHighlight: "#141415",
-              primary: "#8b5cf6" /* Vivid Violet */,
-              secondary: "#22d3ee" /* Cyan */,
-              accent: "#f472b6" /* Pink */,
-            },
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-              display: ["Outfit", "sans-serif"],
-            },
-            boxShadow: {
-              neon: "0 0 30px rgba(139, 92, 246, 0.15)",
-              "neon-cyan": "0 0 30px rgba(34, 211, 238, 0.15)",
-              glass: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
-            },
-            backgroundImage: {
-              "hero-gradient":
-                "radial-gradient(circle at 50% 50%, rgba(20,20,35,1) 0%, rgba(3,3,4,1) 100%)",
-              "accent-gradient":
-                "linear-gradient(135deg, #8b5cf6 0%, #22d3ee 100%)",
-              noise:
-                "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz4KPC9zdmc+')",
-            },
-            animation: {
-              float: "float 6s ease-in-out infinite",
-              "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-            },
-            keyframes: {
-              float: {
-                "0%, 100%": { transform: "translateY(0)" },
-                "50%": { transform: "translateY(-20px)" },
-              },
-            },
-          },
-        },
-      };
-    </script>
-
 <!-- Start cookieyes banner --> <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/8e12f1f6a93c31ea65a1052f/script.js"></script> <!-- End cookieyes banner -->
     <meta name="cjdropshipping-key" content="6b4d5d2c435d4aceb4473c792e94e5f5">
-    <script>window.CJ_DROPSHIPPING_KEY='6b4d5d2c435d4aceb4473c792e94e5f5';</script>
     
     <!-- Resource Preloading -->
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
@@ -96,97 +37,15 @@
     
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="styles.css?v=25.2&t=1730135200">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    <script>window.CJ_DROPSHIPPING_KEY='6b4d5d2c435d4aceb4473c792e94e5f5';</script>
     
     <style>
-        /* DARK DESIGN BASE STYLES */
-        body {
-            background-color: #030304;
-            color: #ffffff;
-            overflow-x: hidden;
-            background-image: theme("backgroundImage.noise");
-        }
-
-        html {
-            overflow-x: hidden;
-        }
-
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .glass-nav {
-            background: rgba(3, 3, 4, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-
-        .hero-text-glow {
-            text-shadow: 0 0 60px rgba(139, 92, 246, 0.3);
-        }
-
-        /* Smooth fade in */
-        .fade-in {
-            animation: fadeIn 1s ease-out forwards;
-            opacity: 0;
-        }
-        .slide-up {
-            animation: slideUp 0.8s ease-out forwards;
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-        @keyframes slideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* App.js Compatibility */
-        .success-animation {
-            animation: pulse-green 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        @keyframes pulse-green {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-                background-color: #10b981;
-                border-color: #10b981;
-                color: white;
-            }
-        }
-        .cart-rainbow-bounce {
-            animation: bounce 0.5s;
-        }
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-5px);
-            }
-        }
-
-        /* appdesign.js compatibility */
-        .fullscreen-search-overlay {
-            display: none !important;
-        }
-        .fullscreen-search-overlay.active {
-            display: block !important;
-        }
-
         /* KRITISCHE FIXES - SOFORT ANWENDEN */
         
         /* Desktop: Mobile Suchleiste verstecken */
@@ -539,11 +398,11 @@
             }
         }
         
-        /* 1. KÖRPERPFLEGE - DARK THEME COMPATIBLE */
+        /* 1. KÖRPERPFLEGE - LILA STATT ROSA */
         .category-koerperpflege,
         section[data-category="Körperpflege/Wellness"],
         .product-category-section:has(#wellnessGrid) {
-            background: rgba(139, 92, 246, 0.1) !important;
+            background: linear-gradient(135deg, #f3e8ff 0%, #e8d5ff 100%) !important;
         }
         
         /* 2. KÖRPERPFLEGE BUTTONS - LILA */
@@ -713,14 +572,6 @@
         /* Body und HTML Hintergrund auch dunkel */
         html, body {
             background-color: #1a1a1a !important;
-        }
-        
-        html {
-            overflow-x: hidden;
-        }
-        
-        body {
-            overflow-x: hidden;
         }
         
         /* Über uns Text - MITTLERE GRÖßE */
@@ -966,11 +817,11 @@
             left: 0px;
             right: 110px;
             height: 10px;
-            background: rgba(255,255,255,0.10);
+            background: #d0d0d0;
             border-radius: 5px;
             cursor: pointer;
             transition: all 0.2s ease;
-            border: 1px solid rgba(255,255,255,0.14);
+            border: 1px solid #b0b0b0;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
@@ -990,22 +841,22 @@
             left: 0px;
             width: 100px;
             height: 10px;
-            background: linear-gradient(135deg, rgba(139,92,246,0.95), rgba(34,211,238,0.85));
+            background: linear-gradient(135deg, #333333, #000000);
             border-radius: 5px;
             z-index: 2;
             transition: all 0.2s ease;
             cursor: grab;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(139,92,246,0.8);
+            border: 1px solid #000000;
         }
         
         /* Hover-Effekt für den schwarzen Thumb */
         .product-scroll-container .custom-scrollbar-thumb:hover {
             height: 12px;
             bottom: 11px;
-            background: linear-gradient(135deg, rgba(139,92,246,1), rgba(34,211,238,1));
+            background: linear-gradient(135deg, #555555, #222222);
             cursor: grab;
-            box-shadow: 0 3px 8px rgba(139,92,246, 0.4);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
         }
         
         /* Active/Dragging-Effekt für den schwarzen Thumb */
@@ -1044,8 +895,8 @@
                 bottom: 10px;
                 touch-action: manipulation;
                 -webkit-tap-highlight-color: transparent;
-                background: rgba(255,255,255,0.10) !important;
-                border: 1px solid rgba(255,255,255,0.14) !important;
+                background: #c0c0c0 !important;
+                border: 1px solid #999999 !important;
             }
             
             .product-scroll-container .custom-scrollbar-thumb {
@@ -1053,8 +904,8 @@
                 bottom: 10px;
                 min-width: 60px;
                 touch-action: manipulation;
-                background: linear-gradient(135deg, rgba(139,92,246,0.95), rgba(34,211,238,0.85)) !important;
-                box-shadow: 0 2px 8px rgba(139,92,246, 0.4) !important;
+                background: linear-gradient(135deg, #444444, #111111) !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
             }
             
             .product-scroll-container .custom-scrollbar-thumb:active {
@@ -1062,7 +913,7 @@
                 bottom: 10px;
                 transform: none !important;
                 -webkit-transform: none !important;
-                background: linear-gradient(135deg, rgba(139,92,246,1), rgba(34,211,238,1)) !important;
+                background: linear-gradient(135deg, #666666, #333333) !important;
             }
             
             /* Größerer Touch-Bereich für Mobile */
@@ -1472,7 +1323,7 @@
         .burger-menu-btn {
             background: none;
             border: none;
-            color: #ffffff;
+            color: #333;
             font-size: 28px;
             cursor: pointer;
             padding: 8px 12px;
@@ -1485,8 +1336,8 @@
         }
         
         .burger-menu-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #8b5cf6;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
             transform: scale(1.05);
         }
         
@@ -1496,7 +1347,7 @@
             right: -100%;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 9999;
             transition: right 0.3s ease;
             backdrop-filter: blur(5px);
@@ -1513,12 +1364,11 @@
             width: 380px;
             max-width: 90%;
             height: 100%;
-            background: #141415;
-            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+            background: white;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
             transform: translateX(100%);
             transition: transform 0.3s ease;
             overflow-y: auto;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .burger-menu-overlay.active .burger-menu-container {
@@ -1530,7 +1380,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 20px 24px;
-            background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             position: sticky;
             top: 0;
@@ -1575,7 +1425,7 @@
             display: flex;
             align-items: center;
             padding: 16px 24px;
-            color: #ffffff;
+            color: #333;
             text-decoration: none;
             transition: all 0.3s ease;
             position: relative;
@@ -1583,8 +1433,8 @@
         }
         
         .burger-menu-item:hover {
-            background: linear-gradient(90deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);
-            color: #8b5cf6;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.08) 0%, transparent 100%);
+            color: #667eea;
             padding-left: 28px;
         }
         
@@ -1595,8 +1445,8 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.1);
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
             border-radius: 8px;
             flex-shrink: 0;
         }
@@ -1608,7 +1458,7 @@
         }
         
         .burger-menu-counter {
-            background: linear-gradient(135deg, #8b5cf6, #22d3ee);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 4px 12px;
             border-radius: 20px;
@@ -1616,7 +1466,7 @@
             font-weight: 700;
             min-width: 32px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
         
         .burger-menu-badge {
@@ -1632,7 +1482,7 @@
         
         .burger-menu-divider {
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
             margin: 12px 24px;
         }
         
@@ -1668,196 +1518,110 @@
             border: 2px solid #f5f5f5;
             z-index: 10;
         }
-
-        /* DARK CONSISTENCY OVERRIDE - Complete Dark Theme */
-        .products-section,
-        .product-category-section,
-        .alle-produkte-grid-section {
-            background: #030304 !important;
-            color: #ffffff !important;
-        }
-
-        .category-title,
-        .category-subtitle,
-        .category-header h2,
-        .category-header p {
-            color: #ffffff !important;
-        }
-
-        .product-category-section .container,
-        .alle-produkte-grid-section .container {
-            background: transparent !important;
-        }
-
-        /* Ensure all product sections have consistent dark background */
-        .category-bestseller,
-        .category-technik,
-        .category-beleuchtung,
-        .category-haushalt,
-        .category-wellness {
-            background: #030304 !important;
-        }
-
-        /* Override any remaining light backgrounds in product areas */
-        .lumiere-category-nav {
-            background: #030304 !important;
-        }
-
-        /* Make sure text is visible on dark backgrounds */
-        .product-category-section h2,
-        .product-category-section p,
-        .category-header *,
-        .lumiere-category-nav * {
-            color: #ffffff !important;
-        }
-
-        /* Dark theme for category tabs container */
-        .lumiere-category-tabs {
-            background: transparent !important;
-        }
-
-        /* Cart Dropdown Animation States - Force Visibility */
-        #cartDropdown {
-            opacity: 0 !important;
-            transform: translateY(-8px) !important;
-            pointer-events: none !important;
-            z-index: 10050 !important;
-            background: rgba(20, 20, 21, 0.95) !important;
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        }
-        
-        #cartDropdown.show {
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-            pointer-events: auto !important;
-        }
-        
-        #cartDropdown.hiding {
-            opacity: 0 !important;
-            transform: translateY(-8px) !important;
-            pointer-events: none !important;
-        }
-
-        /* Desktop: Force fixed position to avoid clipping */
-        @media (min-width: 768px) {
-            #cartDropdown {
-                position: fixed !important;
-                top: 88px !important;
-                right: 24px !important;
-            }
-        }
-
-        /* Fix Wishlist Button - Clean Dark Theme */
-        #wishlistButton {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-        
-        /* Wishlist Counter - Perfect Badge Positioning */
-        #wishlistButton {
-            position: relative !important;
-        }
-        
-        #wishlistCounter {
-            min-width: 16px !important;
-            min-height: 16px !important;
-            line-height: 16px !important;
-            padding: 0 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            transform: translate(35%, -35%) !important;
-            background: #8b5cf6 !important;
-            color: white !important;
-            border: 2px solid rgba(3, 3, 4, 0.8) !important;
-            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
-        }
     </style>
 </head>
 <body>
     <!-- Lumière Design Header -->
-    <!-- Dark Glass Navigation -->
-    <nav class="glass-nav fixed top-0 w-full z-50 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <!-- Logo -->
-            <a href="index.html" class="font-display font-black text-3xl tracking-tighter text-white group flex items-baseline gap-1" onclick="window.location.href='index.html'; return false;">
-                MAIOS
-                <div class="w-2 h-2 rounded-full bg-primary group-hover:animate-pulse"></div>
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+      <div class="announcement-slider">
+        <div class="announcement-item">Über 10.000 zufriedene Kunden</div>
+        <div class="announcement-item">Über 3.500+ Bewertungen</div>
+        <div class="announcement-item">Gratis Versand ab 50€</div>
+        <div class="announcement-item">Über 10.000 zufriedene Kunden</div>
+        <div class="announcement-item">Über 3.500+ Bewertungen</div>
+        <div class="announcement-item">Gratis Versand ab 50€</div>
+      </div>
+    </div>
+
+    <!-- Simplified Navigation like in image -->
+    <nav class="simple-nav">
+      <div class="container">
+        <div class="nav-content-simple">
+          <!-- Logo -->
+          <div class="nav-logo-simple">
+            <a href="index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; pointer-events: auto;" onclick="window.location.href='index.html'; return false;">
+              <img src="images/logo.jpg" alt="Maios Logo" style="height: 70px; width: auto;">
+              <span style="font-weight: 900; letter-spacing: -0.5px; color: #333; font-size: 2rem;">MAIOS</span>
             </a>
+            <span class="nav-tagline"></span>
+          </div>
 
-            <!-- Desktop Links -->
-            <div class="hidden md:flex gap-10 items-center">
-                <a href="#featured" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
-                    Featured
-                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
-                </a>
-                <a href="infos/neue-produkte.html" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
-                    Products
-                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#about" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
-                    Vision
-                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
-                </a>
-            </div>
+          <!-- Search Icon Only -->
+          <div class="search-icon-center" style="max-width: 550px;">
+            <button class="search-icon-btn" type="button" aria-label="Suchen" id="fullscreenSearchBtn">
+              <i class="bi bi-search"></i>
+              <span>Suche</span>
+            </button>
+          </div>
 
-            <!-- Actions -->
-            <div class="flex items-center gap-6">
-                <button class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5" id="fullscreenSearchBtn">
-                    <i class="bi bi-search text-lg"></i>
-                </button>
+          <!-- Right Side Icons -->
+          <div class="nav-actions-simple">
+            <a href="gutscheine.html" id="gutscheineButton" class="nav-icon-simple position-relative" style="background: #f5f5f5; color: #333 !important; padding: 8px 15px; border-radius: 8px; font-weight: 600; font-size: 16px; transition: all 0.3s ease; border: 1px solid #e0e0e0; gap: 8px;" 
+               onmouseover="this.style.background='#e8e8e8'; this.style.borderColor='#d0d0d0';" 
+               onmouseout="this.style.background='#f5f5f5'; this.style.borderColor='#e0e0e0';">
+              <img src="infos/Gutschein.jpg" alt="Gutscheine" style="width: 18px; height: 18px; object-fit: contain;">
+              <span style="font-weight: 600;">Gutscheine</span>
+              <span id="gutscheineCounter" class="cart-counter">0</span>
+            </a>
+            <a href="wishlist.html" id="wishlistButton" class="nav-icon-simple position-relative">
+              <i class="bi bi-heart"></i>
+              <span id="wishlistCounter" class="cart-counter" style="display: none;">0</span>
+            </a>
+            <div class="position-relative">
+              <a href="#" id="cartButton" class="nav-icon-simple cart-link">
+                <i class="bi bi-cart3"></i>
+                <span>Warenkorb</span>
+                <span id="cartCounter" class="cart-counter">0</span>
+              </a>
 
-                <!-- Wishlist Button -->
-                <a href="wishlist.html" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5 relative" id="wishlistButton">
-                    <i class="bi bi-heart text-lg"></i>
-                    <span id="wishlistCounter" class="absolute top-0 right-0 bg-primary text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full hidden shadow-neon">0</span>
-                </a>
-
-                <div class="relative group" id="cartContainer">
-                    <button class="flex items-center gap-2 text-white hover:text-primary transition-colors p-2 rounded-full hover:bg-white/5 relative" id="cartButton">
-                        <i class="bi bi-bag text-lg"></i>
-                        <span id="cartCounter" class="absolute top-0 right-0 bg-primary text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full hidden shadow-neon">0</span>
-                    </button>
-
-                    <!-- Cart Dropdown -->
-                    <div id="cartDropdown" class="absolute right-0 top-full mt-4 w-80 bg-surfaceHighlight border border-white/10 rounded-2xl shadow-glass p-0 transition-all duration-200 z-50 overflow-hidden" style="display: none;">
-                        <div class="p-4 border-b border-white/5 flex justify-between items-center">
-                            <span class="font-bold text-sm">Shopping Cart</span>
-                            <button class="text-gray-400 hover:text-white" id="closeCartDropdown">
-                                <i class="bi bi-x text-lg"></i>
-                            </button>
-                        </div>
-                        <div id="cartDropdownBody" class="max-h-64 overflow-y-auto p-4 custom-scrollbar">
-                            <!-- Items inserted by JS -->
-                            <div class="flex flex-col items-center justify-center py-8 text-gray-500 gap-2" id="emptyCartMessage">
-                                <i class="bi bi-cart-x text-3xl opacity-50"></i>
-                                <span class="text-sm">Your cart is empty</span>
-                            </div>
-                        </div>
-                        <div class="p-4 bg-black/20 border-t border-white/5" id="cartDropdownFooter">
-                            <div class="flex justify-between items-center mb-3">
-                                <strong>Gesamt: €<span id="cartTotal">0.00</span></strong>
-                            </div>
-                            <div class="grid gap-2">
-                                <a href="cart.html" class="block w-full text-center bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors shadow-lg shadow-white/5 relative overflow-hidden group">
-                                    <span class="relative z-10">Checkout</span>
-                                </a>
-                                <button id="clearCart" class="w-full text-center bg-transparent border border-red-500 text-red-500 font-bold py-3 rounded-xl hover:bg-red-500 hover:text-white transition-colors">
-                                    <i class="bi bi-trash mr-2"></i>Warenkorb leeren
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="burger-menu-btn" id="burgerMenuBtn" aria-label="Menü öffnen">
-                    <i class="bi bi-list"></i>
-                </button>
-            </div>
+              <!-- Cart Dropdown -->
+              <div class="cart-dropdown" id="cartDropdown">
+        <div class="cart-dropdown-header">
+          <h6 class="mb-0">Warenkorb</h6>
+          <button class="btn-close" id="closeCartDropdown">&times;</button>
         </div>
+        <div class="cart-dropdown-body" id="cartDropdownBody">
+          <div class="empty-cart text-center py-4" id="emptyCartMessage">
+            <i class="bi bi-cart-x fs-1 text-muted"></i>
+            <p class="text-muted mt-2">Ihr Warenkorb ist leer</p>
+          </div>
+        </div>
+        <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 999 !important; background: white !important; padding: 16px !important; width: 100% !important; box-sizing: border-box !important;">
+          <div class="d-flex justify-content-between align-items-center mb-3" style="width: 100% !important;">
+            <strong>Gesamt: €<span id="cartTotal">0.00</span></strong>
+          </div>
+          <div class="d-grid gap-2" style="width: 100% !important; display: flex !important; flex-direction: column !important; gap: 10px !important;">
+            <a href="cart.html" class="btn btn-primary checkout-btn" style="display: flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; text-decoration: none !important; color: white !important; background: linear-gradient(135deg, #667eea, #764ba2) !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important; font-size: 16px !important; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important; padding: 0 16px !important; box-sizing: border-box !important;">
+              <i class="bi bi-credit-card" style="margin-right: 8px !important;"></i>
+              <span>Zur Kasse</span>
+            </a>
+            <button class="btn btn-outline-danger clear-cart-btn" id="clearCart" style="display: flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; border: 2px solid #dc3545 !important; color: #dc3545 !important; background: white !important; border-radius: 12px !important; cursor: pointer !important; font-size: 16px !important; font-weight: 600 !important; padding: 0 16px !important; box-sizing: border-box !important;">
+              <i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px;"></i>
+              <span>Löschen</span>
+            </button>
+          </div>
+        </div>
+            </div>
+          </div>
+            
+          </div>
+          
+          <!-- Burger Menu Button -->
+          <button class="burger-menu-btn" id="burgerMenuBtn" aria-label="Menü öffnen">
+            <i class="bi bi-list"></i>
+          </button>
+        </div>
+      </div>
     </nav>
+
+    <!-- Mobile Suchleiste (nur auf Mobile sichtbar) -->
+    <div class="mobile-search-bar">
+      <button class="search-button" type="button" aria-label="Suchen" id="mobileSearchBtn">
+        <i class="bi bi-search"></i>
+        <span>Suche nach Produkten...</span>
+      </button>
+    </div>
 
     <!-- Burger Menu Overlay -->
     <div class="burger-menu-overlay" id="burgerMenuOverlay">
@@ -2032,72 +1796,27 @@
 
     <!-- Main Content -->
     <main>
-        <!-- Dark Design Hero Section with "Redefine Living" -->
-        <header class="relative h-screen w-full flex items-center justify-center overflow-hidden bg-background">
-            <!-- Animated Background -->
-            <div class="absolute inset-0 bg-hero-gradient opacity-60"></div>
-            <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] animate-float opacity-40"></div>
-            <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/20 rounded-full blur-[120px] animate-float opacity-40" style="animation-delay: -3s"></div>
-
-            <!-- Grid Pattern Overlay -->
-            <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150"></div>
-
-            <div class="relative z-10 text-center px-4 max-w-6xl mx-auto">
-                <div class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-8 slide-up hover:border-primary/50 transition-colors cursor-default">
-                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                    <span class="text-xs font-semibold tracking-wider text-gray-300 uppercase">New Collection Dropped</span>
-                </div>
-
-                <h1 class="font-display font-extrabold text-7xl md:text-9xl tracking-tighter mb-8 leading-[0.9] slide-up hero-text-glow mix-blend-screen" style="animation-delay: 0.1s">
-                    Redefine <br />
-                    <span class="text-transparent bg-clip-text bg-accent-gradient">Living.</span>
-                </h1>
-
-                <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-light slide-up" style="animation-delay: 0.2s">
-                    Discover a curated selection of smart technology and aesthetic home essentials. <br class="hidden md:block" />Designed to elevate your daily rituals to a new standard.
-                </p>
-
-                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center slide-up" style="animation-delay: 0.3s">
-                    <a href="infos/neue-produkte.html" class="group relative px-8 py-4 bg-white text-black rounded-full font-bold overflow-hidden shadow-neon hover:shadow-neon-cyan transition-shadow duration-300">
-                        <span class="relative z-10 group-hover:text-black transition-colors">Explore Collection</span>
-                        <div class="absolute inset-0 bg-secondary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
-                    </a>
-                    <a href="#about" class="px-8 py-4 rounded-full border border-white/20 text-white font-medium hover:bg-white/5 transition-all backdrop-blur-sm flex items-center gap-2 group">
-                        <span>Our Philosophy</span>
-                        <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                    </a>
-                </div>
+        <!-- Lumière Style Hero Section -->
+        <section class="hero-section">
+            <div class="container">
+                <h1 class="section-heading">Einfach besser leben</h1>
+                <p class="section-subheading">Jetzt direkt bestellen! ✓ 7-13 Tage Lieferzeit ✓ Über 10.000 Kunden ✓ 4,8 Sterne Bewertung</p>
             </div>
+        </section>
 
-            <!-- Scroll Indicator -->
-            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-3 opacity-40 hover:opacity-100 transition-opacity cursor-pointer" onclick="document.querySelector('.products-section').scrollIntoView({ behavior: 'smooth' })">
-                <div class="w-[1px] h-12 bg-gradient-to-b from-transparent via-white to-transparent"></div>
-                <span class="text-[10px] tracking-[0.3em] uppercase">Scroll</span>
-            </div>
-        </header>
-
-        <!-- Featured Bento Grid -->
-        <section id="featured" class="py-32 bg-background relative overflow-hidden">
-            <div class="max-w-7xl mx-auto px-6 relative z-10">
-                <h2 class="font-display text-4xl font-bold mb-16 text-center">Curated For You</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Info Card 1 -->
-                    <div class="glass-panel rounded-[2rem] p-8 relative overflow-hidden group hover:bg-white/5 transition-all flex flex-col justify-center items-center text-center border border-dashed border-white/10 hover:border-solid hover:border-white/20">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform shadow-neon-sm">
-                            <i class="bi bi-airplane text-2xl"></i>
-                        </div>
-                        <h4 class="font-bold text-xl mb-2">Global Shipping</h4>
-                        <p class="text-sm text-gray-500">Fast, tracked delivery worldwide.</p>
+        <!-- Lumière Adapted Top Banner -->
+        <section class="lumiere-top-banner">
+            <div class="container">
+                <div class="lumiere-hero-main">
+                    <div class="lumiere-badge-circle">10</div>
+                    <div class="lumiere-hero-text">
+                        <h2>Smart Home & Sicherheit Angebote</h2>
+                        <p>Homematic IP Neuheiten & Highlights für die produkte</p>
                     </div>
-
-                    <!-- Info Card 2 -->
-                    <div class="glass-panel rounded-[2rem] p-8 relative overflow-hidden group hover:bg-white/5 transition-all flex flex-col justify-center items-center text-center">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/5 flex items-center justify-center mb-6 text-secondary group-hover:scale-110 transition-transform shadow-neon-cyan-sm">
-                            <i class="bi bi-shield-check text-2xl"></i>
-                        </div>
-                        <h4 class="font-bold text-xl mb-2">Premium Quality</h4>
-                        <p class="text-sm text-gray-500">Verified gadgets & essentials.</p>
-                    </div>
+                    <div class="lumiere-hero-products">
+                        <img src="produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg" alt="ZigBee Smart DIY Motorisierte Rollos" class="lumiere-hero-img">
+                        <img src="produkt bilder/LED Motion Sensor Licht Drahtlose.jpeg" alt="LED Motion Sensor Licht Drahtlose" class="lumiere-hero-img">
+                        <img src="produkt bilder/Nachtlichter mit Bewegungsmelder.jpeg" alt="Nachtlichter mit Bewegungsmelder" class="lumiere-hero-img">
                 </div>
             </div>
         </section>
@@ -2246,10 +1965,10 @@
             </div>
 
             <!-- Alle Produkte Grid Section -->
-            <div class="product-category-section alle-produkte-grid-section">
+            <div class="product-category-section alle-produkte-grid-section" style="background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);">
                 <div class="container">
                     <div class="category-header" style="text-align: center;">
-                        <h2 class="category-title" style="font-weight: 700; font-size: 2rem;">Alle Produkte</h2>
+                        <h2 class="category-title" style="font-weight: 700; font-size: 2rem; color: #1a1a1a;">Alle Produkte</h2>
                     </div>
                     <div class="row g-3" id="alleProdukteMasterGrid">
                         <!-- All products will be loaded here in grid -->
@@ -2281,230 +2000,45 @@
         </template>
 </main>
 
-    <!-- Vision / About Section -->
-    <section id="about" class="py-40 bg-background relative overflow-hidden">
-        <div class="absolute inset-0 bg-hero-gradient opacity-20"></div>
-        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
-            <i class="bi bi-quote text-6xl text-primary/30 mb-8 block"></i>
-            <h2 class="font-display text-5xl md:text-6xl font-bold mb-10 leading-tight">
-                Design meets <br /><span class="text-white/50">Function.</span>
-            </h2>
-            <p class="text-gray-400 text-xl md:text-2xl leading-relaxed mb-16 font-light">
-                At Maios, we believe that the objects you surround yourself with shape your reality. We curate products that blend minimal aesthetics with maximum utility. No clutter. Just essential, beautiful tools for modern living.
-            </p>
-            <div class="w-32 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full opacity-50"></div>
-        </div>
-    </section>
-
-    <!-- Dark Footer -->
-    <footer class="bg-[#020202] border-t border-white/5 pt-24 pb-12">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-24 mb-20">
-                <div class="col-span-1 md:col-span-2">
-                    <a href="#" class="font-display font-bold text-3xl tracking-tighter text-white mb-6 block">
-                        MAIOS<span class="text-primary">.</span>
-                    </a>
-                    <p class="text-gray-500 max-w-md mb-8 text-lg font-light leading-relaxed">
-                        Premium drops, limited editions, and exclusive offers tailored for the modern aesthete. Upgrade your lifestyle.
-                    </p>
-                    <div class="flex gap-4">
-                        <a href="#" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-gray-400 hover:bg-white hover:text-black transition-all hover:scale-110">
-                            <i class="bi bi-instagram text-xl"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-gray-400 hover:bg-white hover:text-black transition-all hover:scale-110">
-                            <i class="bi bi-twitter-x text-xl"></i>
-                        </a>
-                        <a href="#" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-gray-400 hover:bg-white hover:text-black transition-all hover:scale-110">
-                            <i class="bi bi-tiktok text-xl"></i>
-                        </a>
+    <!-- Footer -->
+    <footer class="lumiere-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5 class="mb-3">Über uns</h5>
+                    <p class="text-muted">Ihr vertrauenswürdiger Online-Maios seit 2024.</p>
+                    <div class="social-icons">
+                        <a href="#" class="text-white me-3" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white me-3" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
                     </div>
                 </div>
-
-                <div>
-                    <h4 class="font-bold text-white mb-8 text-lg">Shop</h4>
-                    <ul class="space-y-4 text-gray-400">
-                        <li><a href="infos/angebote.html" class="hover:text-primary transition-colors flex items-center gap-2"><i class="bi bi-chevron-right text-xs opacity-50"></i> Angebote</a></li>
-                        <li><a href="infos/neue-produkte.html" class="hover:text-primary transition-colors flex items-center gap-2"><i class="bi bi-chevron-right text-xs opacity-50"></i> Neue Produkte</a></li>
-                        <li><a href="infos/kategorien.html" class="hover:text-primary transition-colors flex items-center gap-2"><i class="bi bi-chevron-right text-xs opacity-50"></i> Kategorien</a></li>
+                <div class="col-md-2">
+                    <h5 class="mb-3">Einkaufen</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="infos/angebote.html" class="text-white text-decoration-none">Angebote</a></li>
+                        <li><a href="infos/neue-produkte.html" class="text-white text-decoration-none">Neue Produkte</a></li>
+                        <li><a href="infos/kategorien.html" class="text-white text-decoration-none">Kategorien</a></li>
                     </ul>
                 </div>
-
-                <div>
-                    <h4 class="font-bold text-white mb-8 text-lg">Support</h4>
-                    <ul class="space-y-4 text-gray-400">
-                        <li><a href="infos/kontakt.html" class="hover:text-primary transition-colors">Kontakt</a></li>
-                        <li><a href="infos/versand.html" class="hover:text-primary transition-colors">Versand</a></li>
-                        <li><a href="infos/retouren.html" class="hover:text-primary transition-colors">Retouren</a></li>
+                <div class="col-md-2">
+                    <h5 class="mb-3">Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="infos/kontakt.html" class="text-white text-decoration-none">Kontakt</a></li>
+                        <li><a href="infos/versand.html" class="text-white text-decoration-none">Versand</a></li>
+                        <li><a href="infos/retouren.html" class="text-white text-decoration-none">Retouren</a></li>
                     </ul>
                 </div>
             </div>
-
-            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-600">
-                <p>&copy; 2024 Maios - Alle Rechte vorbehalten</p>
-                <div class="flex gap-8">
-                    <a href="infos/impressum.html" class="hover:text-gray-300 transition-colors">Impressum</a>
-                    <a href="infos/agb.html" class="hover:text-gray-300 transition-colors">AGB</a>
-                </div>
+            <div class="text-center py-4 text-muted">
+                © 2024 Maios - Alle Rechte vorbehalten
             </div>
         </div>
     </footer>
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="app.js?v=32.0&t=1730240000" defer></script>
-    <script>
-        window.addEventListener("load", () => {
-            try {
-                if (typeof initializeCartDropdown === "function") {
-                    initializeCartDropdown();
-                }
-            } catch (e) {
-                console.error("Cart fallback init failed:", e);
-            }
-            
-            // Additional fallback for cart button if app.js didn't initialize
-            setTimeout(() => {
-                const cartButton = document.getElementById('cartButton');
-                const cartDropdown = document.getElementById('cartDropdown');
-                
-                if (cartButton && cartDropdown && !cartButton.hasAttribute('data-initialized')) {
-                    cartButton.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        if (cartDropdown.style.display === 'none' || !cartDropdown.classList.contains('show')) {
-                            cartDropdown.style.display = 'block';
-                            cartDropdown.classList.add('show');
-                        } else {
-                            cartDropdown.classList.remove('show');
-                            setTimeout(() => {
-                                if (!cartDropdown.classList.contains('show')) {
-                                    cartDropdown.style.display = 'none';
-                                }
-                            }, 200);
-                        }
-                    });
-                    cartButton.setAttribute('data-initialized', 'fallback');
-                }
-            }, 500);
-        });
-    </script>
     <script src="keyboard-shortcuts.js" defer></script>
-    
-    <script>
-        // Sticky Navbar Effect
-        window.addEventListener("scroll", () => {
-            const nav = document.getElementById("navbar");
-            if (window.scrollY > 50) {
-                nav.classList.add("border-white/10");
-            } else {
-                nav.classList.remove("border-white/10");
-            }
-        });
-    </script>
-    
-    <script>
-    // ===== BURGER MENU FUNCTIONALITY =====
-    document.addEventListener('DOMContentLoaded', function() {
-        const burgerMenuBtn = document.getElementById('burgerMenuBtn');
-        const burgerMenuOverlay = document.getElementById('burgerMenuOverlay');
-        const burgerMenuClose = document.getElementById('burgerMenuClose');
-        
-        // Öffne Burger-Menü
-        if (burgerMenuBtn) {
-            burgerMenuBtn.addEventListener('click', function() {
-                burgerMenuOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            });
-        }
-        
-        // Schließe Burger-Menü
-        function closeBurgerMenuFunc() {
-            burgerMenuOverlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-        
-        if (burgerMenuClose) {
-            burgerMenuClose.addEventListener('click', closeBurgerMenuFunc);
-        }
-        
-        // Schließe beim Klick auf Overlay
-        burgerMenuOverlay.addEventListener('click', function(e) {
-            if (e.target === burgerMenuOverlay) {
-                closeBurgerMenuFunc();
-            }
-        });
-        
-        // Globale Funktion für onclick-Attribute
-        window.closeBurgerMenu = closeBurgerMenuFunc;
-        
-        // Update Zähler
-        function updateBurgerCounters() {
-            // Warenkorb
-            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-            const cartCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
-            const burgerCartCounter = document.getElementById('burgerCartCounter');
-            if (burgerCartCounter) {
-                burgerCartCounter.textContent = cartCount;
-            }
-            
-            // Wishlist
-            const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-            const burgerWishlistCounter = document.getElementById('burgerWishlistCounter');
-            if (burgerWishlistCounter) {
-                burgerWishlistCounter.textContent = wishlist.length;
-            }
-            
-            // Gutscheine
-            const myVouchers = JSON.parse(localStorage.getItem('myVouchers') || '[]');
-            const burgerGutscheineCounter = document.getElementById('burgerGutscheineCounter');
-            if (burgerGutscheineCounter) {
-                burgerGutscheineCounter.textContent = myVouchers.length;
-            }
-        }
-        
-        // Gutscheine Counter aktualisieren
-        function updateGutscheineCounter() {
-            const myVouchers = JSON.parse(localStorage.getItem('myVouchers') || '[]');
-            const gutscheineCounter = document.getElementById('gutscheineCounter');
-            if (gutscheineCounter) {
-                gutscheineCounter.textContent = myVouchers.length;
-                gutscheineCounter.style.display = myVouchers.length > 0 ? 'flex' : 'none';
-            }
-        }
-        
-        // Initial update
-        updateBurgerCounters();
-        updateGutscheineCounter();
-        
-        // Update bei Storage-Änderungen
-        window.addEventListener('storage', updateBurgerCounters);
-        window.addEventListener('storage', updateGutscheineCounter);
-        
-        // Update bei Cart-Änderungen
-        const originalSetCart = window.setCart;
-        if (originalSetCart) {
-            window.setCart = function(cart) {
-                originalSetCart(cart);
-                updateBurgerCounters();
-            };
-        }
-        
-        // Update bei Wishlist-Änderungen
-        const originalSetWishlist = window.setWishlist;
-        if (originalSetWishlist) {
-            window.setWishlist = function(wishlist) {
-                originalSetWishlist(wishlist);
-                updateBurgerCounters();
-            };
-        }
-        
-        // Periodisches Update alle 2 Sekunden
-        setInterval(() => {
-            updateBurgerCounters();
-            updateGutscheineCounter();
-        }, 2000);
-    });
-    </script>
     
     <!-- Mobile Scrollbar Fix Script -->
     <script>
@@ -2717,47 +2251,137 @@
   </div>
 </div>
     
+    <!-- Direct Search Button Handler -->
+    <script>
+        // Immediate search button handler
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 DOM loaded, setting up search button...');
+            
+            function setupSearchButton() {
+                const searchBtn = document.getElementById('fullscreenSearchBtn');
+                const searchOverlay = document.getElementById('fullscreenSearchOverlay');
+                
+                console.log('🔍 Elements found:', {
+                    searchBtn: !!searchBtn,
+                    searchOverlay: !!searchOverlay
+                });
+                
+                if (searchBtn && searchOverlay) {
+                    // Remove any existing listeners
+                    searchBtn.onclick = null;
+                    
+                    // Add click handler that defers to global logic
+                    searchBtn.addEventListener('click', function(e) {
+                        console.log('🔍 DIRECT: Search button clicked!');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        if (typeof openSearchOverlay === 'function') {
+                            openSearchOverlay();
+                        } else {
+                            // Fallback: keep previous behavior
+                            searchOverlay.classList.add('active');
+                            document.body.style.overflow = 'hidden';
+                            setTimeout(() => {
+                                const searchInput = document.getElementById('fullscreenSearchInput');
+                                if (searchInput) {
+                                    searchInput.focus();
+                                }
+                                if (typeof loadAllProducts === 'function') {
+                                    loadAllProducts();
+                                }
+                            }, 400);
+                        }
+                    });
+                    
+                    // Close button handler
+                    const closeBtn = document.getElementById('closeSearchBtn');
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            if (typeof closeSearchOverlay === 'function') {
+                                closeSearchOverlay();
+                            } else {
+                                searchOverlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                            }
+                        });
+                    }
+                    
+                    // ESC key handler
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
+                            if (typeof closeSearchOverlay === 'function') {
+                                closeSearchOverlay();
+                            } else {
+                                searchOverlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                            }
+                        }
+                    });
+                    
+                    console.log('✅ DIRECT: Search button setup complete!');
+                } else {
+                    console.log('⏳ DIRECT: Elements not ready, retrying...');
+                    setTimeout(setupSearchButton, 100);
+                }
+            }
+            
+            setupSearchButton();
+        });
+    </script>
+    
     <script>
     // Alle Produkte Header klickbar machen
     function openSearchFromAlleProdukte() {
         console.log('🔍 Alle Produkte Header clicked - opening search...');
         
-        // Use app.js function if available
-        if (typeof openSearchOverlay === 'function') {
-            openSearchOverlay();
-        } else {
-            // Minimal fallback: just open overlay
-            const searchOverlay = document.getElementById('fullscreenSearchOverlay');
-            if (searchOverlay) {
-                searchOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
+        const searchOverlay = document.getElementById('fullscreenSearchOverlay');
+        if (searchOverlay) {
+            // Suche öffnen
+            searchOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Alle Kategorien Tab aktivieren und Produkte laden
+            setTimeout(() => {
+                const allCategoryTab = document.querySelector('.lumiere-category-tab[data-category="alle"]');
+                if (allCategoryTab) {
+                    // Alle anderen Tabs deaktivieren
+                    document.querySelectorAll('.lumiere-category-tab').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    // Alle Tab aktivieren
+                    allCategoryTab.classList.add('active');
+                }
+                
+                // Alle Produkte laden - verwende die richtige Funktion
+                if (typeof loadAllProducts === 'function') {
+                    console.log('🔍 Loading all products...');
+                    loadAllProducts();
+                } else {
+                    // Fallback: Versuche die Produkte direkt zu laden
+                    console.log('🔍 Using fallback to load products...');
+                    const allProductsGrid = document.getElementById('searchAllProductsGrid');
+                    if (allProductsGrid && window.products) {
+                        // Rendere alle Produkte direkt
+                        allProductsGrid.innerHTML = '';
+                        window.products.forEach(product => {
+                            const productCard = document.createElement('div');
+                            productCard.className = 'search-product-card';
+                            productCard.innerHTML = `
+                                <img src="${product.image}" alt="${product.name}" class="search-product-image">
+                                <h4 class="search-product-name">${product.name}</h4>
+                                <p class="search-product-price">€${product.price.toFixed(2)}</p>
+                                <button class="search-add-to-cart" onclick="addProductToCart(${product.id})">
+                                    In den Warenkorb
+                                </button>
+                            `;
+                            allProductsGrid.appendChild(productCard);
+                        });
+                    }
+                }
+            }, 200);
         }
-        
-        // Set "alle" tab as active (visual only)
-        setTimeout(() => {
-            const allCategoryTab = document.querySelector('.lumiere-category-tab[data-category="alle"]');
-            if (allCategoryTab) {
-                // Remove active from all tabs
-                document.querySelectorAll('.lumiere-category-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                // Activate "alle" tab
-                allCategoryTab.classList.add('active');
-            }
-            
-            // Focus search input
-            const searchInput = document.getElementById('fullscreenSearchInput');
-            if (searchInput) {
-                searchInput.focus();
-            }
-            
-            // Load products using app.js function only
-            if (typeof loadAllProducts === 'function') {
-                console.log('🔍 Loading all products via app.js...');
-                loadAllProducts();
-            }
-        }, 200);
     }
     </script>
 
@@ -3564,6 +3188,108 @@ Tawk_API.onChatMessageAgent = function(message){
 
 
 <script>
+// ===== BURGER MENU FUNCTIONALITY =====
+document.addEventListener('DOMContentLoaded', function() {
+    const burgerMenuBtn = document.getElementById('burgerMenuBtn');
+    const burgerMenuOverlay = document.getElementById('burgerMenuOverlay');
+    const burgerMenuClose = document.getElementById('burgerMenuClose');
+    
+    // Öffne Burger-Menü
+    if (burgerMenuBtn) {
+        burgerMenuBtn.addEventListener('click', function() {
+            burgerMenuOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+    
+    // Schließe Burger-Menü
+    function closeBurgerMenuFunc() {
+        burgerMenuOverlay.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
+    if (burgerMenuClose) {
+        burgerMenuClose.addEventListener('click', closeBurgerMenuFunc);
+    }
+    
+    // Schließe beim Klick auf Overlay
+    burgerMenuOverlay.addEventListener('click', function(e) {
+        if (e.target === burgerMenuOverlay) {
+            closeBurgerMenuFunc();
+        }
+    });
+    
+    // Globale Funktion für onclick-Attribute
+    window.closeBurgerMenu = closeBurgerMenuFunc;
+    
+    // Update Zähler
+    function updateBurgerCounters() {
+        // Warenkorb
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const cartCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+        const burgerCartCounter = document.getElementById('burgerCartCounter');
+        if (burgerCartCounter) {
+            burgerCartCounter.textContent = cartCount;
+        }
+        
+        // Wishlist
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        const burgerWishlistCounter = document.getElementById('burgerWishlistCounter');
+        if (burgerWishlistCounter) {
+            burgerWishlistCounter.textContent = wishlist.length;
+        }
+        
+        // Gutscheine
+        const myVouchers = JSON.parse(localStorage.getItem('myVouchers') || '[]');
+        const burgerGutscheineCounter = document.getElementById('burgerGutscheineCounter');
+        if (burgerGutscheineCounter) {
+            burgerGutscheineCounter.textContent = myVouchers.length;
+        }
+    }
+    
+    // Gutscheine Counter aktualisieren
+    function updateGutscheineCounter() {
+        const myVouchers = JSON.parse(localStorage.getItem('myVouchers') || '[]');
+        const gutscheineCounter = document.getElementById('gutscheineCounter');
+        if (gutscheineCounter) {
+            gutscheineCounter.textContent = myVouchers.length;
+            gutscheineCounter.style.display = myVouchers.length > 0 ? 'flex' : 'none';
+        }
+    }
+    
+    // Initial update
+    updateBurgerCounters();
+    updateGutscheineCounter();
+    
+    // Update bei Storage-Änderungen
+    window.addEventListener('storage', updateBurgerCounters);
+    window.addEventListener('storage', updateGutscheineCounter);
+    
+    // Update bei Cart-Änderungen
+    const originalSetCart = window.setCart;
+    if (originalSetCart) {
+        window.setCart = function(cart) {
+            originalSetCart(cart);
+            updateBurgerCounters();
+        };
+    }
+    
+    // Update bei Wishlist-Änderungen
+    const originalSetWishlist = window.setWishlist;
+    if (originalSetWishlist) {
+        window.setWishlist = function(wishlist) {
+            originalSetWishlist(wishlist);
+            updateBurgerCounters();
+        };
+    }
+    
+    // Periodisches Update alle 2 Sekunden
+    setInterval(() => {
+        updateBurgerCounters();
+        updateGutscheineCounter();
+    }, 2000);
+});
+
 // Mobile Suchleiste Funktionalität
 document.addEventListener('DOMContentLoaded', function() {
     const mobileSearchBtn = document.getElementById('mobileSearchBtn');
