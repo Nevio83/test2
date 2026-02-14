@@ -1702,6 +1702,25 @@
         .lumiere-category-tabs {
             background: transparent !important;
         }
+
+        /* Cart Dropdown Animation States */
+        #cartDropdown {
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+        }
+        
+        #cartDropdown.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        
+        #cartDropdown.hiding {
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -1721,7 +1740,7 @@
                     Featured
                     <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
                 </a>
-                <a href="#products" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
+                <a href="infos/neue-produkte.html" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
                     Products
                     <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
                 </a>
@@ -1750,7 +1769,7 @@
                     </button>
 
                     <!-- Cart Dropdown -->
-                    <div id="cartDropdown" class="absolute right-0 top-full mt-4 w-80 bg-surfaceHighlight border border-white/10 rounded-2xl shadow-glass p-0 hidden opacity-0 transform -translate-y-2 transition-all duration-200 z-50 overflow-hidden">
+                    <div id="cartDropdown" class="absolute right-0 top-full mt-4 w-80 bg-surfaceHighlight border border-white/10 rounded-2xl shadow-glass p-0 opacity-0 transform -translate-y-2 transition-all duration-200 z-50 overflow-hidden" style="display: none;">
                         <div class="p-4 border-b border-white/5 flex justify-between items-center">
                             <span class="font-bold text-sm">Shopping Cart</span>
                             <button class="text-gray-400 hover:text-white" id="closeCartDropdown">
@@ -1793,7 +1812,7 @@
             <i class="bi bi-x-lg text-2xl"></i>
         </button>
         <a href="#featured" onclick="toggleMobileMenu()" class="font-display text-4xl font-bold text-white hover:text-primary transition-colors">Featured</a>
-        <a href="#products" onclick="toggleMobileMenu()" class="font-display text-4xl font-bold text-white hover:text-primary transition-colors">Products</a>
+        <a href="infos/neue-produkte.html" onclick="toggleMobileMenu()" class="font-display text-4xl font-bold text-white hover:text-primary transition-colors">Products</a>
         <a href="#about" onclick="toggleMobileMenu()" class="font-display text-4xl font-bold text-white hover:text-primary transition-colors">Vision</a>
     </div>
 
@@ -1885,7 +1904,7 @@
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-6 justify-center items-center slide-up" style="animation-delay: 0.3s">
-                    <a href="#products" class="group relative px-8 py-4 bg-white text-black rounded-full font-bold overflow-hidden shadow-neon hover:shadow-neon-cyan transition-shadow duration-300">
+                    <a href="infos/neue-produkte.html" class="group relative px-8 py-4 bg-white text-black rounded-full font-bold overflow-hidden shadow-neon hover:shadow-neon-cyan transition-shadow duration-300">
                         <span class="relative z-10 group-hover:text-black transition-colors">Explore Collection</span>
                         <div class="absolute inset-0 bg-secondary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
                     </a>
@@ -1907,31 +1926,7 @@
         <section id="featured" class="py-32 bg-background relative overflow-hidden">
             <div class="max-w-7xl mx-auto px-6 relative z-10">
                 <h2 class="font-display text-4xl font-bold mb-16 text-center">Curated For You</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[350px]">
-                    <!-- Main Highlight -->
-                    <div class="md:col-span-2 row-span-1 md:row-span-2 glass-panel rounded-[2rem] p-10 relative overflow-hidden group hover:border-primary/50 transition-all duration-500 cursor-pointer" onclick="window.location.href = '#products'">
-                        <img src="produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000" alt="Smart Home" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-                        <div class="relative z-10 h-full flex flex-col justify-end">
-                            <div class="mb-4">
-                                <span class="bg-secondary/20 text-secondary border border-secondary/20 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase inline-block mb-3 backdrop-blur-md">Trending</span>
-                            </div>
-                            <h3 class="font-display text-4xl md:text-5xl font-bold mb-3 tracking-tight">Smart Living</h3>
-                            <p class="text-gray-300 max-w-md text-lg">Next-generation automation for a home that thinks with you.</p>
-                        </div>
-                    </div>
-
-                    <!-- Secondary Highlight -->
-                    <div class="glass-panel rounded-[2rem] p-8 relative overflow-hidden group hover:border-white/30 transition-all cursor-pointer">
-                        <img src="produkt bilder/Drahtlose elektrische tragbare Espressomaschine.jpeg" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700" alt="Coffee" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                        <div class="relative z-10 h-full flex flex-col justify-end">
-                            <h3 class="font-display text-2xl font-bold mb-1">Morning Rituals</h3>
-                            <p class="text-gray-400 text-sm">Brew perfection anywhere.</p>
-                            <i class="bi bi-arrow-up-right absolute top-6 right-6 text-xl opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
-                        </div>
-                    </div>
-
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Info Card 1 -->
                     <div class="glass-panel rounded-[2rem] p-8 relative overflow-hidden group hover:bg-white/5 transition-all flex flex-col justify-center items-center text-center border border-dashed border-white/10 hover:border-solid hover:border-white/20">
                         <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform shadow-neon-sm">
@@ -2455,137 +2450,47 @@
   </div>
 </div>
     
-    <!-- Direct Search Button Handler -->
-    <script>
-        // Immediate search button handler
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔍 DOM loaded, setting up search button...');
-            
-            function setupSearchButton() {
-                const searchBtn = document.getElementById('fullscreenSearchBtn');
-                const searchOverlay = document.getElementById('fullscreenSearchOverlay');
-                
-                console.log('🔍 Elements found:', {
-                    searchBtn: !!searchBtn,
-                    searchOverlay: !!searchOverlay
-                });
-                
-                if (searchBtn && searchOverlay) {
-                    // Remove any existing listeners
-                    searchBtn.onclick = null;
-                    
-                    // Add click handler that defers to global logic
-                    searchBtn.addEventListener('click', function(e) {
-                        console.log('🔍 DIRECT: Search button clicked!');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        if (typeof openSearchOverlay === 'function') {
-                            openSearchOverlay();
-                        } else {
-                            // Fallback: keep previous behavior
-                            searchOverlay.classList.add('active');
-                            document.body.style.overflow = 'hidden';
-                            setTimeout(() => {
-                                const searchInput = document.getElementById('fullscreenSearchInput');
-                                if (searchInput) {
-                                    searchInput.focus();
-                                }
-                                if (typeof loadAllProducts === 'function') {
-                                    loadAllProducts();
-                                }
-                            }, 400);
-                        }
-                    });
-                    
-                    // Close button handler
-                    const closeBtn = document.getElementById('closeSearchBtn');
-                    if (closeBtn) {
-                        closeBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            if (typeof closeSearchOverlay === 'function') {
-                                closeSearchOverlay();
-                            } else {
-                                searchOverlay.classList.remove('active');
-                                document.body.style.overflow = '';
-                            }
-                        });
-                    }
-                    
-                    // ESC key handler
-                    document.addEventListener('keydown', function(e) {
-                        if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
-                            if (typeof closeSearchOverlay === 'function') {
-                                closeSearchOverlay();
-                            } else {
-                                searchOverlay.classList.remove('active');
-                                document.body.style.overflow = '';
-                            }
-                        }
-                    });
-                    
-                    console.log('✅ DIRECT: Search button setup complete!');
-                } else {
-                    console.log('⏳ DIRECT: Elements not ready, retrying...');
-                    setTimeout(setupSearchButton, 100);
-                }
-            }
-            
-            setupSearchButton();
-        });
-    </script>
-    
     <script>
     // Alle Produkte Header klickbar machen
     function openSearchFromAlleProdukte() {
         console.log('🔍 Alle Produkte Header clicked - opening search...');
         
-        const searchOverlay = document.getElementById('fullscreenSearchOverlay');
-        if (searchOverlay) {
-            // Suche öffnen
-            searchOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Alle Kategorien Tab aktivieren und Produkte laden
-            setTimeout(() => {
-                const allCategoryTab = document.querySelector('.lumiere-category-tab[data-category="alle"]');
-                if (allCategoryTab) {
-                    // Alle anderen Tabs deaktivieren
-                    document.querySelectorAll('.lumiere-category-tab').forEach(tab => {
-                        tab.classList.remove('active');
-                    });
-                    // Alle Tab aktivieren
-                    allCategoryTab.classList.add('active');
-                }
-                
-                // Alle Produkte laden - verwende die richtige Funktion
-                if (typeof loadAllProducts === 'function') {
-                    console.log('🔍 Loading all products...');
-                    loadAllProducts();
-                } else {
-                    // Fallback: Versuche die Produkte direkt zu laden
-                    console.log('🔍 Using fallback to load products...');
-                    const allProductsGrid = document.getElementById('searchAllProductsGrid');
-                    if (allProductsGrid && window.products) {
-                        // Rendere alle Produkte direkt
-                        allProductsGrid.innerHTML = '';
-                        window.products.forEach(product => {
-                            const productCard = document.createElement('div');
-                            productCard.className = 'search-product-card';
-                            productCard.innerHTML = `
-                                <img src="${product.image}" alt="${product.name}" class="search-product-image">
-                                <h4 class="search-product-name">${product.name}</h4>
-                                <p class="search-product-price">€${product.price.toFixed(2)}</p>
-                                <button class="search-add-to-cart" onclick="addProductToCart(${product.id})">
-                                    In den Warenkorb
-                                </button>
-                            `;
-                            allProductsGrid.appendChild(productCard);
-                        });
-                    }
-                }
-            }, 200);
+        // Use app.js function if available
+        if (typeof openSearchOverlay === 'function') {
+            openSearchOverlay();
+        } else {
+            // Minimal fallback: just open overlay
+            const searchOverlay = document.getElementById('fullscreenSearchOverlay');
+            if (searchOverlay) {
+                searchOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
         }
+        
+        // Set "alle" tab as active (visual only)
+        setTimeout(() => {
+            const allCategoryTab = document.querySelector('.lumiere-category-tab[data-category="alle"]');
+            if (allCategoryTab) {
+                // Remove active from all tabs
+                document.querySelectorAll('.lumiere-category-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                // Activate "alle" tab
+                allCategoryTab.classList.add('active');
+            }
+            
+            // Focus search input
+            const searchInput = document.getElementById('fullscreenSearchInput');
+            if (searchInput) {
+                searchInput.focus();
+            }
+            
+            // Load products using app.js function only
+            if (typeof loadAllProducts === 'function') {
+                console.log('🔍 Loading all products via app.js...');
+                loadAllProducts();
+            }
+        }, 200);
     }
     </script>
 
