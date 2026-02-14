@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" class="scroll-smooth">
 <head>
-  <!-- Scripts am Ende laden für bessere Performance -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0">
-    <title>Maios - Startseite</title>
-    <meta name="description" content="Online-Maios mit besten Angeboten">
-    <meta name="keywords" content="ecommerce, online shopping, electronic, mode">
+    <title>Maios | Redefine Living</title>
+    <meta name="description" content="Premium Electronics & Lifestyle">
+    <meta name="keywords" content="premium, gadgets, lifestyle, maios">
     
     <!-- Favicons & App Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png">
@@ -25,8 +24,69 @@
     }
     </script>
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              background: "#030304",
+              surface: "#0A0A0B",
+              surfaceHighlight: "#141415",
+              primary: "#8b5cf6" /* Vivid Violet */,
+              secondary: "#22d3ee" /* Cyan */,
+              accent: "#f472b6" /* Pink */,
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              display: ["Outfit", "sans-serif"],
+            },
+            boxShadow: {
+              neon: "0 0 30px rgba(139, 92, 246, 0.15)",
+              "neon-cyan": "0 0 30px rgba(34, 211, 238, 0.15)",
+              glass: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
+            },
+            backgroundImage: {
+              "hero-gradient":
+                "radial-gradient(circle at 50% 50%, rgba(20,20,35,1) 0%, rgba(3,3,4,1) 100%)",
+              "accent-gradient":
+                "linear-gradient(135deg, #8b5cf6 0%, #22d3ee 100%)",
+              noise:
+                "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz4KPC9zdmc+')",
+            },
+            animation: {
+              float: "float 6s ease-in-out infinite",
+              "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-20px)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+
 <!-- Start cookieyes banner --> <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/8e12f1f6a93c31ea65a1052f/script.js"></script> <!-- End cookieyes banner -->
     <meta name="cjdropshipping-key" content="6b4d5d2c435d4aceb4473c792e94e5f5">
+    <script>window.CJ_DROPSHIPPING_KEY='6b4d5d2c435d4aceb4473c792e94e5f5';</script>
     
     <!-- Resource Preloading -->
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
@@ -36,15 +96,93 @@
     
     <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="styles.css?v=25.2&t=1730135200">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
-    <script>window.CJ_DROPSHIPPING_KEY='6b4d5d2c435d4aceb4473c792e94e5f5';</script>
     
     <style>
+        /* DARK DESIGN BASE STYLES */
+        body {
+            background-color: #030304;
+            color: #ffffff;
+            overflow-x: hidden;
+            background-image: theme("backgroundImage.noise");
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-nav {
+            background: rgba(3, 3, 4, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .hero-text-glow {
+            text-shadow: 0 0 60px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Smooth fade in */
+        .fade-in {
+            animation: fadeIn 1s ease-out forwards;
+            opacity: 0;
+        }
+        .slide-up {
+            animation: slideUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* App.js Compatibility */
+        .success-animation {
+            animation: pulse-green 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes pulse-green {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+                background-color: #10b981;
+                border-color: #10b981;
+                color: white;
+            }
+        }
+        .cart-rainbow-bounce {
+            animation: bounce 0.5s;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* appdesign.js compatibility */
+        .fullscreen-search-overlay {
+            display: none !important;
+        }
+        .fullscreen-search-overlay.active {
+            display: block !important;
+        }
+
         /* KRITISCHE FIXES - SOFORT ANWENDEN */
         
         /* Desktop: Mobile Suchleiste verstecken */
@@ -1521,216 +1659,95 @@
 </head>
 <body>
     <!-- Lumière Design Header -->
-    <!-- Announcement Bar -->
-    <div class="announcement-bar">
-      <div class="announcement-slider">
-        <div class="announcement-item">Über 10.000 zufriedene Kunden</div>
-        <div class="announcement-item">Über 3.500+ Bewertungen</div>
-        <div class="announcement-item">Gratis Versand ab 50€</div>
-        <div class="announcement-item">Über 10.000 zufriedene Kunden</div>
-        <div class="announcement-item">Über 3.500+ Bewertungen</div>
-        <div class="announcement-item">Gratis Versand ab 50€</div>
-      </div>
-    </div>
-
-    <!-- Simplified Navigation like in image -->
-    <nav class="simple-nav">
-      <div class="container">
-        <div class="nav-content-simple">
-          <!-- Logo -->
-          <div class="nav-logo-simple">
-            <a href="index.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; pointer-events: auto;" onclick="window.location.href='index.html'; return false;">
-              <img src="images/logo.jpg" alt="Maios Logo" style="height: 70px; width: auto;">
-              <span style="font-weight: 900; letter-spacing: -0.5px; color: #333; font-size: 2rem;">MAIOS</span>
+    <!-- Dark Glass Navigation -->
+    <nav class="glass-nav fixed top-0 w-full z-50 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="index.html" class="font-display font-black text-3xl tracking-tighter text-white group flex items-baseline gap-1" onclick="window.location.href='index.html'; return false;">
+                MAIOS
+                <div class="w-2 h-2 rounded-full bg-primary group-hover:animate-pulse"></div>
             </a>
-            <span class="nav-tagline"></span>
-          </div>
 
-          <!-- Search Icon Only -->
-          <div class="search-icon-center" style="max-width: 550px;">
-            <button class="search-icon-btn" type="button" aria-label="Suchen" id="fullscreenSearchBtn">
-              <i class="bi bi-search"></i>
-              <span>Suche</span>
-            </button>
-          </div>
-
-          <!-- Right Side Icons -->
-          <div class="nav-actions-simple">
-            <a href="gutscheine.html" id="gutscheineButton" class="nav-icon-simple position-relative" style="background: #f5f5f5; color: #333 !important; padding: 8px 15px; border-radius: 8px; font-weight: 600; font-size: 16px; transition: all 0.3s ease; border: 1px solid #e0e0e0; gap: 8px;" 
-               onmouseover="this.style.background='#e8e8e8'; this.style.borderColor='#d0d0d0';" 
-               onmouseout="this.style.background='#f5f5f5'; this.style.borderColor='#e0e0e0';">
-              <img src="infos/Gutschein.jpg" alt="Gutscheine" style="width: 18px; height: 18px; object-fit: contain;">
-              <span style="font-weight: 600;">Gutscheine</span>
-              <span id="gutscheineCounter" class="cart-counter">0</span>
-            </a>
-            <a href="wishlist.html" id="wishlistButton" class="nav-icon-simple position-relative">
-              <i class="bi bi-heart"></i>
-              <span id="wishlistCounter" class="cart-counter" style="display: none;">0</span>
-            </a>
-            <div class="position-relative">
-              <a href="#" id="cartButton" class="nav-icon-simple cart-link">
-                <i class="bi bi-cart3"></i>
-                <span>Warenkorb</span>
-                <span id="cartCounter" class="cart-counter">0</span>
-              </a>
-
-              <!-- Cart Dropdown -->
-              <div class="cart-dropdown" id="cartDropdown">
-        <div class="cart-dropdown-header">
-          <h6 class="mb-0">Warenkorb</h6>
-          <button class="btn-close" id="closeCartDropdown">&times;</button>
-        </div>
-        <div class="cart-dropdown-body" id="cartDropdownBody">
-          <div class="empty-cart text-center py-4" id="emptyCartMessage">
-            <i class="bi bi-cart-x fs-1 text-muted"></i>
-            <p class="text-muted mt-2">Ihr Warenkorb ist leer</p>
-          </div>
-        </div>
-        <div class="cart-dropdown-footer" id="cartDropdownFooter" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 999 !important; background: white !important; padding: 16px !important; width: 100% !important; box-sizing: border-box !important;">
-          <div class="d-flex justify-content-between align-items-center mb-3" style="width: 100% !important;">
-            <strong>Gesamt: €<span id="cartTotal">0.00</span></strong>
-          </div>
-          <div class="d-grid gap-2" style="width: 100% !important; display: flex !important; flex-direction: column !important; gap: 10px !important;">
-            <a href="cart.html" class="btn btn-primary checkout-btn" style="display: flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; text-decoration: none !important; color: white !important; background: linear-gradient(135deg, #667eea, #764ba2) !important; border: none !important; border-radius: 12px !important; font-weight: 600 !important; font-size: 16px !important; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important; padding: 0 16px !important; box-sizing: border-box !important;">
-              <i class="bi bi-credit-card" style="margin-right: 8px !important;"></i>
-              <span>Zur Kasse</span>
-            </a>
-            <button class="btn btn-outline-danger clear-cart-btn" id="clearCart" style="display: flex !important; align-items: center !important; justify-content: center !important; width: 100% !important; height: 48px !important; min-height: 48px !important; max-height: 48px !important; border: 2px solid #dc3545 !important; color: #dc3545 !important; background: white !important; border-radius: 12px !important; cursor: pointer !important; font-size: 16px !important; font-weight: 600 !important; padding: 0 16px !important; box-sizing: border-box !important;">
-              <i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px;"></i>
-              <span>Löschen</span>
-            </button>
-          </div>
-        </div>
+            <!-- Desktop Links -->
+            <div class="hidden md:flex gap-10 items-center">
+                <a href="#featured" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
+                    Featured
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#products" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
+                    Products
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#about" class="text-sm font-medium text-gray-400 hover:text-white transition-colors relative group">
+                    Vision
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
+                </a>
             </div>
-          </div>
-            
-          </div>
-          
-          <!-- Burger Menu Button -->
-          <button class="burger-menu-btn" id="burgerMenuBtn" aria-label="Menü öffnen">
-            <i class="bi bi-list"></i>
-          </button>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-6">
+                <button class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5" id="fullscreenSearchBtn">
+                    <i class="bi bi-search text-lg"></i>
+                </button>
+
+                <!-- Wishlist Button -->
+                <a href="wishlist.html" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5 relative" id="wishlistButton">
+                    <i class="bi bi-heart text-lg"></i>
+                    <span id="wishlistCounter" class="absolute top-0 right-0 bg-primary text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full hidden shadow-neon">0</span>
+                </a>
+
+                <div class="relative group" id="cartContainer">
+                    <button class="flex items-center gap-2 text-white hover:text-primary transition-colors p-2 rounded-full hover:bg-white/5 relative" id="cartButton">
+                        <i class="bi bi-bag text-lg"></i>
+                        <span id="cartCounter" class="absolute top-0 right-0 bg-primary text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full hidden shadow-neon">0</span>
+                    </button>
+
+                    <!-- Cart Dropdown -->
+                    <div id="cartDropdown" class="absolute right-0 top-full mt-4 w-80 bg-surfaceHighlight border border-white/10 rounded-2xl shadow-glass p-0 hidden opacity-0 transform -translate-y-2 transition-all duration-200 z-50 overflow-hidden">
+                        <div class="p-4 border-b border-white/5 flex justify-between items-center">
+                            <span class="font-bold text-sm">Shopping Cart</span>
+                            <button class="text-gray-400 hover:text-white" id="closeCartDropdown">
+                                <i class="bi bi-x text-lg"></i>
+                            </button>
+                        </div>
+                        <div id="cartDropdownBody" class="max-h-64 overflow-y-auto p-4 custom-scrollbar">
+                            <!-- Items inserted by JS -->
+                            <div class="flex flex-col items-center justify-center py-8 text-gray-500 gap-2" id="emptyCartMessage">
+                                <i class="bi bi-cart-x text-3xl opacity-50"></i>
+                                <span class="text-sm">Your cart is empty</span>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-black/20 border-t border-white/5" id="cartDropdownFooter">
+                            <div class="flex justify-between items-center mb-3">
+                                <strong>Gesamt: €<span id="cartTotal">0.00</span></strong>
+                            </div>
+                            <div class="grid gap-2">
+                                <a href="cart.html" class="block w-full text-center bg-white text-black font-bold py-3 rounded-xl hover:bg-gray-200 transition-colors shadow-lg shadow-white/5 relative overflow-hidden group">
+                                    <span class="relative z-10">Checkout</span>
+                                </a>
+                                <button id="clearCart" class="w-full text-center bg-transparent border border-red-500 text-red-500 font-bold py-3 rounded-xl hover:bg-red-500 hover:text-white transition-colors">
+                                    <i class="bi bi-trash mr-2"></i>Warenkorb leeren
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="toggleMobileMenu()" class="md:hidden text-white text-2xl p-2">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
         </div>
-      </div>
     </nav>
 
-    <!-- Mobile Suchleiste (nur auf Mobile sichtbar) -->
-    <div class="mobile-search-bar">
-      <button class="search-button" type="button" aria-label="Suchen" id="mobileSearchBtn">
-        <i class="bi bi-search"></i>
-        <span>Suche nach Produkten...</span>
-      </button>
-    </div>
-
-    <!-- Burger Menu Overlay -->
-    <div class="burger-menu-overlay" id="burgerMenuOverlay">
-      <div class="burger-menu-container">
-        <div class="burger-menu-header">
-          <h3>Menü</h3>
-          <button class="burger-menu-close" id="burgerMenuClose">
-            <i class="bi bi-x"></i>
-          </button>
-        </div>
-        
-        <div class="burger-menu-content">
-          <!-- Mit Zählern -->
-          <div class="burger-menu-section">
-            <a href="cart.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-cart3"></i>
-              </div>
-              <span class="burger-menu-text">Warenkorb</span>
-              <span class="burger-menu-counter" id="burgerCartCounter">0</span>
-            </a>
-            
-            <a href="wishlist.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-heart"></i>
-              </div>
-              <span class="burger-menu-text">Favoriten</span>
-              <span class="burger-menu-counter" id="burgerWishlistCounter">0</span>
-            </a>
-            
-            <a href="gutscheine.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <img src="infos/Gutschein.jpg" alt="Gutscheine" style="width: 24px; height: 24px; object-fit: contain;">
-              </div>
-              <span class="burger-menu-text">Gutscheine</span>
-              <span class="burger-menu-counter" id="burgerGutscheineCounter">0</span>
-            </a>
-          </div>
-          
-          <div class="burger-menu-divider"></div>
-          
-          <!-- Ohne Zähler -->
-          <div class="burger-menu-section">
-            <a href="infos/angebote.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-tag"></i>
-              </div>
-              <span class="burger-menu-text">Angebote</span>
-            </a>
-            
-            <a href="infos/neue-produkte.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-stars"></i>
-              </div>
-              <span class="burger-menu-text">Neue Produkte</span>
-            </a>
-            
-            <a href="infos/kategorien.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-grid-3x3-gap"></i>
-              </div>
-              <span class="burger-menu-text">Kategorien</span>
-            </a>
-            
-            <a href="infos/retouren.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-arrow-return-left"></i>
-              </div>
-              <span class="burger-menu-text">Retouren</span>
-            </a>
-            
-            <a href="infos/kontakt.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-envelope"></i>
-              </div>
-              <span class="burger-menu-text">Kontakt</span>
-            </a>
-            
-            <a href="infos/versand.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-truck"></i>
-              </div>
-              <span class="burger-menu-text">Versand</span>
-            </a>
-            
-            <a href="infos/mitteilungen.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-bell"></i>
-              </div>
-              <span class="burger-menu-text">Mitteilungen</span>
-              <span class="burger-menu-badge" id="burgerMitteilungenBadge" style="display: none;">Neu</span>
-            </a>
-            
-            <a href="infos/impressum.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-info-circle"></i>
-              </div>
-              <span class="burger-menu-text">Impressum</span>
-            </a>
-            
-            <a href="infos/agb.html" class="burger-menu-item">
-              <div class="burger-menu-icon">
-                <i class="bi bi-file-text"></i>
-              </div>
-              <span class="burger-menu-text">AGB</span>
-            </a>
-          </div>
-          
-        </div>
-      </div>
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenu" class="fixed inset-0 z-[90] bg-black transform translate-x-full transition-transform duration-300 md:hidden flex flex-col justify-center items-center gap-8">
+        <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 text-white p-2">
+            <i class="bi bi-x-lg text-2xl"></i>
+        </button>
+        <a href="#featured" onclick="toggleMobileMenu()" class="font-display text-4xl font-bold text-white hover:text-primary transition-colors">Featured</a>
+        <a href="#products" onclick="toggleMobileMenu()" class="font-display text-4xl font-bold text-white hover:text-primary transition-colors">Products</a>
+        <a href="#about" onclick="toggleMobileMenu()" class="font-display text-4xl font-bold text-white hover:text-primary transition-colors">Vision</a>
     </div>
 
     <!-- Fullscreen Search Overlay -->
@@ -1795,11 +1812,97 @@
 
     <!-- Main Content -->
     <main>
-        <!-- Lumière Style Hero Section -->
-        <section class="hero-section">
-            <div class="container">
-                <h1 class="section-heading">Einfach besser leben</h1>
-                <p class="section-subheading">Jetzt direkt bestellen! ✓ 7-13 Tage Lieferzeit ✓ Über 10.000 Kunden ✓ 4,8 Sterne Bewertung</p>
+        <!-- Dark Design Hero Section with "Redefine Living" -->
+        <header class="relative h-screen w-full flex items-center justify-center overflow-hidden bg-background">
+            <!-- Animated Background -->
+            <div class="absolute inset-0 bg-hero-gradient opacity-60"></div>
+            <div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] animate-float opacity-40"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/20 rounded-full blur-[120px] animate-float opacity-40" style="animation-delay: -3s"></div>
+
+            <!-- Grid Pattern Overlay -->
+            <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-150 contrast-150"></div>
+
+            <div class="relative z-10 text-center px-4 max-w-6xl mx-auto">
+                <div class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-8 slide-up hover:border-primary/50 transition-colors cursor-default">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    <span class="text-xs font-semibold tracking-wider text-gray-300 uppercase">New Collection Dropped</span>
+                </div>
+
+                <h1 class="font-display font-extrabold text-7xl md:text-9xl tracking-tighter mb-8 leading-[0.9] slide-up hero-text-glow mix-blend-screen" style="animation-delay: 0.1s">
+                    Redefine <br />
+                    <span class="text-transparent bg-clip-text bg-accent-gradient">Living.</span>
+                </h1>
+
+                <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-light slide-up" style="animation-delay: 0.2s">
+                    Discover a curated selection of smart technology and aesthetic home essentials. <br class="hidden md:block" />Designed to elevate your daily rituals to a new standard.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center slide-up" style="animation-delay: 0.3s">
+                    <a href="#products" class="group relative px-8 py-4 bg-white text-black rounded-full font-bold overflow-hidden shadow-neon hover:shadow-neon-cyan transition-shadow duration-300">
+                        <span class="relative z-10 group-hover:text-black transition-colors">Explore Collection</span>
+                        <div class="absolute inset-0 bg-secondary transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                    </a>
+                    <a href="#about" class="px-8 py-4 rounded-full border border-white/20 text-white font-medium hover:bg-white/5 transition-all backdrop-blur-sm flex items-center gap-2 group">
+                        <span>Our Philosophy</span>
+                        <i class="bi bi-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-3 opacity-40 hover:opacity-100 transition-opacity cursor-pointer" onclick="document.querySelector('.products-section').scrollIntoView({ behavior: 'smooth' })">
+                <div class="w-[1px] h-12 bg-gradient-to-b from-transparent via-white to-transparent"></div>
+                <span class="text-[10px] tracking-[0.3em] uppercase">Scroll</span>
+            </div>
+        </header>
+
+        <!-- Featured Bento Grid -->
+        <section id="featured" class="py-32 bg-background relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+                <h2 class="font-display text-4xl font-bold mb-16 text-center">Curated For You</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[350px]">
+                    <!-- Main Highlight -->
+                    <div class="md:col-span-2 row-span-1 md:row-span-2 glass-panel rounded-[2rem] p-10 relative overflow-hidden group hover:border-primary/50 transition-all duration-500 cursor-pointer" onclick="window.location.href = '#products'">
+                        <img src="produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000" alt="Smart Home" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                        <div class="relative z-10 h-full flex flex-col justify-end">
+                            <div class="mb-4">
+                                <span class="bg-secondary/20 text-secondary border border-secondary/20 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase inline-block mb-3 backdrop-blur-md">Trending</span>
+                            </div>
+                            <h3 class="font-display text-4xl md:text-5xl font-bold mb-3 tracking-tight">Smart Living</h3>
+                            <p class="text-gray-300 max-w-md text-lg">Next-generation automation for a home that thinks with you.</p>
+                        </div>
+                    </div>
+
+                    <!-- Secondary Highlight -->
+                    <div class="glass-panel rounded-[2rem] p-8 relative overflow-hidden group hover:border-white/30 transition-all cursor-pointer">
+                        <img src="produkt bilder/Drahtlose elektrische tragbare Espressomaschine.jpeg" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700" alt="Coffee" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        <div class="relative z-10 h-full flex flex-col justify-end">
+                            <h3 class="font-display text-2xl font-bold mb-1">Morning Rituals</h3>
+                            <p class="text-gray-400 text-sm">Brew perfection anywhere.</p>
+                            <i class="bi bi-arrow-up-right absolute top-6 right-6 text-xl opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+                        </div>
+                    </div>
+
+                    <!-- Info Card 1 -->
+                    <div class="glass-panel rounded-[2rem] p-8 relative overflow-hidden group hover:bg-white/5 transition-all flex flex-col justify-center items-center text-center border border-dashed border-white/10 hover:border-solid hover:border-white/20">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform shadow-neon-sm">
+                            <i class="bi bi-airplane text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-xl mb-2">Global Shipping</h4>
+                        <p class="text-sm text-gray-500">Fast, tracked delivery worldwide.</p>
+                    </div>
+
+                    <!-- Info Card 2 -->
+                    <div class="glass-panel rounded-[2rem] p-8 relative overflow-hidden group hover:bg-white/5 transition-all flex flex-col justify-center items-center text-center">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-secondary/20 to-secondary/5 flex items-center justify-center mb-6 text-secondary group-hover:scale-110 transition-transform shadow-neon-cyan-sm">
+                            <i class="bi bi-shield-check text-2xl"></i>
+                        </div>
+                        <h4 class="font-bold text-xl mb-2">Premium Quality</h4>
+                        <p class="text-sm text-gray-500">Verified gadgets & essentials.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -1816,6 +1919,7 @@
                         <img src="produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg" alt="ZigBee Smart DIY Motorisierte Rollos" class="lumiere-hero-img">
                         <img src="produkt bilder/LED Motion Sensor Licht Drahtlose.jpeg" alt="LED Motion Sensor Licht Drahtlose" class="lumiere-hero-img">
                         <img src="produkt bilder/Nachtlichter mit Bewegungsmelder.jpeg" alt="Nachtlichter mit Bewegungsmelder" class="lumiere-hero-img">
+                    </div>
                 </div>
             </div>
         </section>
@@ -1999,38 +2103,70 @@
         </template>
 </main>
 
-    <!-- Footer -->
-    <footer class="lumiere-footer">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <h5 class="mb-3">Über uns</h5>
-                    <p class="text-muted">Ihr vertrauenswürdiger Online-Maios seit 2024.</p>
-                    <div class="social-icons">
-                        <a href="#" class="text-white me-3" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                        <a href="#" class="text-white me-3" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                        <a href="#" class="text-white" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+    <!-- Vision / About Section -->
+    <section id="about" class="py-40 bg-background relative overflow-hidden">
+        <div class="absolute inset-0 bg-hero-gradient opacity-20"></div>
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <i class="bi bi-quote text-6xl text-primary/30 mb-8 block"></i>
+            <h2 class="font-display text-5xl md:text-6xl font-bold mb-10 leading-tight">
+                Design meets <br /><span class="text-white/50">Function.</span>
+            </h2>
+            <p class="text-gray-400 text-xl md:text-2xl leading-relaxed mb-16 font-light">
+                At Maios, we believe that the objects you surround yourself with shape your reality. We curate products that blend minimal aesthetics with maximum utility. No clutter. Just essential, beautiful tools for modern living.
+            </p>
+            <div class="w-32 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full opacity-50"></div>
+        </div>
+    </section>
+
+    <!-- Dark Footer -->
+    <footer class="bg-[#020202] border-t border-white/5 pt-24 pb-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-24 mb-20">
+                <div class="col-span-1 md:col-span-2">
+                    <a href="#" class="font-display font-bold text-3xl tracking-tighter text-white mb-6 block">
+                        MAIOS<span class="text-primary">.</span>
+                    </a>
+                    <p class="text-gray-500 max-w-md mb-8 text-lg font-light leading-relaxed">
+                        Premium drops, limited editions, and exclusive offers tailored for the modern aesthete. Upgrade your lifestyle.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-gray-400 hover:bg-white hover:text-black transition-all hover:scale-110">
+                            <i class="bi bi-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-gray-400 hover:bg-white hover:text-black transition-all hover:scale-110">
+                            <i class="bi bi-twitter-x text-xl"></i>
+                        </a>
+                        <a href="#" class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-gray-400 hover:bg-white hover:text-black transition-all hover:scale-110">
+                            <i class="bi bi-tiktok text-xl"></i>
+                        </a>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <h5 class="mb-3">Einkaufen</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="infos/angebote.html" class="text-white text-decoration-none">Angebote</a></li>
-                        <li><a href="infos/neue-produkte.html" class="text-white text-decoration-none">Neue Produkte</a></li>
-                        <li><a href="infos/kategorien.html" class="text-white text-decoration-none">Kategorien</a></li>
+
+                <div>
+                    <h4 class="font-bold text-white mb-8 text-lg">Shop</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="infos/angebote.html" class="hover:text-primary transition-colors flex items-center gap-2"><i class="bi bi-chevron-right text-xs opacity-50"></i> Angebote</a></li>
+                        <li><a href="infos/neue-produkte.html" class="hover:text-primary transition-colors flex items-center gap-2"><i class="bi bi-chevron-right text-xs opacity-50"></i> Neue Produkte</a></li>
+                        <li><a href="infos/kategorien.html" class="hover:text-primary transition-colors flex items-center gap-2"><i class="bi bi-chevron-right text-xs opacity-50"></i> Kategorien</a></li>
                     </ul>
                 </div>
-                <div class="col-md-2">
-                    <h5 class="mb-3">Support</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="infos/kontakt.html" class="text-white text-decoration-none">Kontakt</a></li>
-                        <li><a href="infos/versand.html" class="text-white text-decoration-none">Versand</a></li>
-                        <li><a href="infos/retouren.html" class="text-white text-decoration-none">Retouren</a></li>
+
+                <div>
+                    <h4 class="font-bold text-white mb-8 text-lg">Support</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="infos/kontakt.html" class="hover:text-primary transition-colors">Kontakt</a></li>
+                        <li><a href="infos/versand.html" class="hover:text-primary transition-colors">Versand</a></li>
+                        <li><a href="infos/retouren.html" class="hover:text-primary transition-colors">Retouren</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="text-center py-4 text-muted">
-                © 2024 Maios - Alle Rechte vorbehalten
+
+            <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-gray-600">
+                <p>&copy; 2024 Maios - Alle Rechte vorbehalten</p>
+                <div class="flex gap-8">
+                    <a href="infos/impressum.html" class="hover:text-gray-300 transition-colors">Impressum</a>
+                    <a href="infos/agb.html" class="hover:text-gray-300 transition-colors">AGB</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -2038,6 +2174,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="app.js?v=32.0&t=1730240000" defer></script>
     <script src="keyboard-shortcuts.js" defer></script>
+    
+    <script>
+        // Mobile menu toggle function
+        function toggleMobileMenu() {
+            const menu = document.getElementById("mobileMenu");
+            if (menu.classList.contains("translate-x-full")) {
+                menu.classList.remove("translate-x-full");
+            } else {
+                menu.classList.add("translate-x-full");
+            }
+        }
+
+        // Sticky Navbar Effect
+        window.addEventListener("scroll", () => {
+            const nav = document.getElementById("navbar");
+            if (window.scrollY > 50) {
+                nav.classList.add("border-white/10");
+            } else {
+                nav.classList.remove("border-white/10");
+            }
+        });
+    </script>
     
     <!-- Mobile Scrollbar Fix Script -->
     <script>
