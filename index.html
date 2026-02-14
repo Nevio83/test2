@@ -535,11 +535,11 @@
             }
         }
         
-        /* 1. KÖRPERPFLEGE - LILA STATT ROSA */
+        /* 1. KÖRPERPFLEGE - DARK THEME COMPATIBLE */
         .category-koerperpflege,
         section[data-category="Körperpflege/Wellness"],
         .product-category-section:has(#wellnessGrid) {
-            background: linear-gradient(135deg, #f3e8ff 0%, #e8d5ff 100%) !important;
+            background: rgba(139, 92, 246, 0.1) !important;
         }
         
         /* 2. KÖRPERPFLEGE BUTTONS - LILA */
@@ -1655,6 +1655,53 @@
             border: 2px solid #f5f5f5;
             z-index: 10;
         }
+
+        /* DARK CONSISTENCY OVERRIDE - Complete Dark Theme */
+        .products-section,
+        .product-category-section,
+        .alle-produkte-grid-section {
+            background: #030304 !important;
+            color: #ffffff !important;
+        }
+
+        .category-title,
+        .category-subtitle,
+        .category-header h2,
+        .category-header p {
+            color: #ffffff !important;
+        }
+
+        .product-category-section .container,
+        .alle-produkte-grid-section .container {
+            background: transparent !important;
+        }
+
+        /* Ensure all product sections have consistent dark background */
+        .category-bestseller,
+        .category-technik,
+        .category-beleuchtung,
+        .category-haushalt,
+        .category-wellness {
+            background: #030304 !important;
+        }
+
+        /* Override any remaining light backgrounds in product areas */
+        .lumiere-category-nav {
+            background: #030304 !important;
+        }
+
+        /* Make sure text is visible on dark backgrounds */
+        .product-category-section h2,
+        .product-category-section p,
+        .category-header *,
+        .lumiere-category-nav * {
+            color: #ffffff !important;
+        }
+
+        /* Dark theme for category tabs container */
+        .lumiere-category-tabs {
+            background: transparent !important;
+        }
     </style>
 </head>
 <body>
@@ -2068,10 +2115,10 @@
             </div>
 
             <!-- Alle Produkte Grid Section -->
-            <div class="product-category-section alle-produkte-grid-section" style="background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);">
+            <div class="product-category-section alle-produkte-grid-section">
                 <div class="container">
                     <div class="category-header" style="text-align: center;">
-                        <h2 class="category-title" style="font-weight: 700; font-size: 2rem; color: #1a1a1a;">Alle Produkte</h2>
+                        <h2 class="category-title" style="font-weight: 700; font-size: 2rem;">Alle Produkte</h2>
                     </div>
                     <div class="row g-3" id="alleProdukteMasterGrid">
                         <!-- All products will be loaded here in grid -->
