@@ -2008,6 +2008,66 @@
                 padding-bottom: 190px !important;
             }
         }
+
+        /* === CART: quantity numbers aligned + clear button centered === */
+        /* Make numbers stable (no visual jumping) */
+        #cartDropdown .quantity-display,
+        #cartDropdownBody .quantity-display {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 22px !important;          /* gives "1" same space as "9" */
+            height: 22px !important;
+            font-variant-numeric: tabular-nums !important; /* equal digit width */
+            font-feature-settings: "tnum" 1 !important;
+            line-height: 1 !important;
+            text-align: center !important;
+            color: rgba(255,255,255,0.90) !important;
+            font-weight: 700 !important;
+        }
+
+        /* Ensure the +/- buttons are identical and centered */
+        #cartDropdownBody .quantity-controls {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+        }
+
+        #cartDropdownBody .quantity-btn {
+            width: 34px !important;
+            height: 34px !important;
+            min-width: 34px !important;
+            min-height: 34px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            line-height: 1 !important;
+            padding: 0 !important;
+        }
+
+        /* Center the remove item button too (if it looks off) */
+        #cartDropdownBody .remove-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            line-height: 1 !important;
+            padding: 0 !important;
+        }
+
+        /* Footer clear-cart button: center icon + text */
+        #cartDropdownFooter #clearCart {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            gap: 10px !important;
+        }
+
+        /* Ensure the trash icon doesn't push text oddly */
+        #cartDropdownFooter #clearCart i {
+            margin: 0 !important;
+        }
     </style>
 </head>
 <body>
