@@ -1716,15 +1716,26 @@
             background: transparent !important;
         }
 
-        /* Cart Dropdown Animation States - Force Visibility */
+        /* === CART DROPDOWN: Complete behavior like indexoriginal.html === */
+        /* Container - Fixed position, flex layout, no overflow */
         #cartDropdown {
+            /* Visibility and positioning */
             opacity: 0 !important;
             transform: translateY(-8px) !important;
             pointer-events: none !important;
-            z-index: 10050 !important;
-            background: rgba(20, 20, 21, 0.95) !important;
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            z-index: 10060 !important;
+            
+            /* Layout for sticky footer */
+            display: flex !important;
+            flex-direction: column !important;
+            overflow: hidden !important;
+            
+            /* Dark glass styling */
+            background: rgba(10, 10, 12, 0.92) !important;
+            backdrop-filter: blur(18px) !important;
+            -webkit-backdrop-filter: blur(18px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.10) !important;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.60) !important;
         }
         
         #cartDropdown.show {
@@ -1739,12 +1750,27 @@
             pointer-events: none !important;
         }
 
-        /* Desktop: Force fixed position to avoid clipping */
+        /* Desktop: Fixed position to avoid clipping */
         @media (min-width: 768px) {
             #cartDropdown {
                 position: fixed !important;
                 top: 88px !important;
                 right: 24px !important;
+            }
+        }
+
+        /* Mobile: Fullscreen like original */
+        @media (max-width: 768px) {
+            #cartDropdown {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                width: 100% !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+                border-radius: 0 !important;
             }
         }
 
@@ -1773,6 +1799,214 @@
             color: white !important;
             border: 2px solid rgba(3, 3, 4, 0.8) !important;
             box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
+        }
+
+        /* Category Tabs - Make Inactive Tabs Visible */
+        .lumiere-category-tab {
+            background: rgba(255,255,255,0.06) !important;
+            border: 1px solid rgba(255,255,255,0.14) !important;
+            color: rgba(255,255,255,0.82) !important;
+        }
+
+        .lumiere-category-tab i {
+            opacity: 0.9 !important;
+        }
+
+        .lumiere-category-tab:not(.active):hover {
+            background: rgba(255,255,255,0.10) !important;
+            border-color: rgba(255,255,255,0.22) !important;
+            color: rgba(255,255,255,0.95) !important;
+        }
+
+        /* Show Cart Recommendations */
+        #cartDropdown .cart-recommendations {
+            display: block !important;
+        }
+
+        /* Cart Dropdown Content Styling */
+        /* Header */
+        #cartDropdown > div:first-child {
+            background: transparent !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        #cartDropdown > div:first-child span {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-size: 16px !important;
+        }
+
+        /* Body - Scrollable content */
+        #cartDropdownBody {
+            flex: 1 1 auto !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            color: rgba(255, 255, 255, 0.90) !important;
+            padding-bottom: 170px !important;
+            -webkit-overflow-scrolling: touch;
+            
+            /* Dark scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.28) rgba(255,255,255,0.06);
+        }
+
+        /* WebKit scrollbar styling */
+        #cartDropdownBody::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #cartDropdownBody::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.06);
+            border-radius: 999px;
+        }
+
+        #cartDropdownBody::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.22);
+            border-radius: 999px;
+            border: 2px solid rgba(0,0,0,0.35);
+        }
+
+        #cartDropdownBody::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.32);
+        }
+
+        /* Footer - Always visible */
+        #cartDropdownFooter {
+            flex: 0 0 auto !important;
+            position: sticky !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 10070 !important;
+            background: rgba(0,0,0,0.35) !important;
+            border-top: 1px solid rgba(255,255,255,0.10) !important;
+            color: rgba(255, 255, 255, 0.92) !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        #cartDropdownFooter strong {
+            color: rgba(255, 255, 255, 0.92) !important;
+        }
+
+        /* Footer buttons */
+        #cartDropdownFooter a[href="cart.html"] {
+            background: rgba(255,255,255,0.92) !important;
+            color: #0b0b0c !important;
+            border: 0 !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        #clearCart {
+            background: transparent !important;
+            border: 1px solid rgba(239, 68, 68, 0.65) !important;
+            color: rgba(239, 68, 68, 0.95) !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* Cart Items and Recommendations Styling */
+        /* Cart items generated by app.js */
+        #cartDropdownBody .cart-item {
+            display: grid !important;
+            grid-template-columns: 56px 1fr auto !important;
+            gap: 12px !important;
+            align-items: center !important;
+            padding: 12px 14px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        }
+
+        #cartDropdownBody .cart-item-image {
+            width: 56px !important;
+            height: 56px !important;
+            border-radius: 12px !important;
+            object-fit: cover !important;
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        #cartDropdownBody .cart-item-name {
+            color: rgba(255, 255, 255, 0.95) !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            line-height: 1.25 !important;
+            overflow-wrap: anywhere !important;
+        }
+
+        #cartDropdownBody .cart-item-price {
+            color: rgba(255, 255, 255, 0.78) !important;
+            font-size: 13px !important;
+        }
+
+        /* Quantity / remove buttons */
+        #cartDropdownBody .quantity-btn {
+            background: rgba(255, 255, 255, 0.10) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            color: rgba(255, 255, 255, 0.92) !important;
+            border-radius: 999px !important;
+            width: 34px !important;
+            height: 34px !important;
+        }
+
+        #cartDropdownBody .remove-item {
+            background: rgba(239, 68, 68, 0.12) !important;
+            border: 1px solid rgba(239, 68, 68, 0.30) !important;
+            color: rgba(239, 68, 68, 0.95) !important;
+            border-radius: 999px !important;
+            width: 34px !important;
+            height: 34px !important;
+        }
+
+        /* Footer: app.js forces white inline -> override */
+        #cartDropdownFooter {
+            background: rgba(0, 0, 0, 0.22) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: rgba(255, 255, 255, 0.92) !important;
+        }
+
+        #cartDropdownFooter strong {
+            color: rgba(255, 255, 255, 0.92) !important;
+        }
+
+        /* Recommendations: app.js renders, styles.css makes it white -> override only inside dropdown */
+        #cartDropdown .cart-recommendations {
+            display: block !important;
+            padding: 14px 14px 6px 14px !important;
+            background: transparent !important;
+            border-top: 0 !important;
+        }
+
+        #cartDropdown .cart-recommendations h6 {
+            color: rgba(255, 255, 255, 0.90) !important;
+            font-weight: 700 !important;
+        }
+
+        #cartDropdown .recommendations-grid .recommendation-card {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.10) !important;
+            box-shadow: none !important;
+        }
+
+        #cartDropdown .recommendation-name {
+            color: rgba(255, 255, 255, 0.92) !important;
+        }
+
+        #cartDropdown .recommendation-price {
+            color: rgba(255, 255, 255, 0.75) !important;
+        }
+
+        #cartDropdown .recommendation-add-btn {
+            background: rgba(255, 255, 255, 0.10) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            color: rgba(255, 255, 255, 0.92) !important;
+        }
+
+        /* Mobile: Extra padding for recommendations */
+        @media (max-width: 768px) {
+            #cartDropdownBody {
+                padding-bottom: 190px !important;
+            }
         }
     </style>
 </head>
@@ -1822,7 +2056,7 @@
                     </button>
 
                     <!-- Cart Dropdown -->
-                    <div id="cartDropdown" class="absolute right-0 top-full mt-4 w-80 bg-surfaceHighlight border border-white/10 rounded-2xl shadow-glass p-0 transition-all duration-200 z-50 overflow-hidden" style="display: none;">
+                    <div id="cartDropdown" class="absolute right-0 top-full mt-4 w-[420px] max-w-[92vw] bg-surfaceHighlight border border-white/10 rounded-2xl shadow-glass p-0 transition-all duration-200 z-50 overflow-hidden" style="display: none;">
                         <div class="p-4 border-b border-white/5 flex justify-between items-center">
                             <span class="font-bold text-sm">Shopping Cart</span>
                             <button class="text-gray-400 hover:text-white" id="closeCartDropdown">
