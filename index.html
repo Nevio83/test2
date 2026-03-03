@@ -2068,6 +2068,146 @@
         #cartDropdownFooter #clearCart i {
             margin: 0 !important;
         }
+
+        /* === HEADER BADGES: align wishlist/cart counters perfectly === */
+        /* Ensure both icon buttons are stable positioning anchors */
+        #wishlistButton,
+        #cartButton {
+            position: relative !important;
+        }
+
+        /* Normalize both counters to the exact same box model and typography */
+        #wishlistCounter,
+        #cartCounter {
+            position: absolute !important;
+            /* same corner placement for both */
+            top: 2px !important;
+            right: 2px !important;
+            /* exact circle size */
+            width: 18px !important;
+            height: 18px !important;
+            min-width: 18px !important;
+            min-height: 18px !important;
+            /* perfect centering */
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            /* prevent "1" looking off-center / uneven digit widths */
+            font-variant-numeric: tabular-nums !important;
+            font-feature-settings: "tnum" 1 !important;
+            /* kill baseline/line-height weirdness */
+            line-height: 1 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            /* typography */
+            font-size: 11px !important;
+            font-weight: 800 !important;
+            /* keep it crisp */
+            transform: translate3d(0,0,0) !important;
+        }
+
+        /* If one badge still sits 1px higher due to different parent sizing, lock the button box too */
+        #wishlistButton,
+        #cartButton {
+            width: 44px !important;
+            height: 44px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        /* Make sure the icons don't shift the counters */
+        #wishlistButton i,
+        #cartButton i {
+            line-height: 1 !important;
+            display: inline-block !important;
+        }
+
+        /* === REMOVE GREY BAR (custom scrollbar track) === */
+        .product-scroll-container .custom-scrollbar-track {
+            display: none !important;
+        }
+
+        /* Optional: wenn der Thumb noch irgendwo "schwebt", auch ausblenden */
+        .product-scroll-container .custom-scrollbar-thumb {
+            display: none !important;
+        }
+
+        /* Restore spacing (weil vorher unten Platz für Track/Thumb reserviert war) */
+        .product-scroll-grid {
+            padding-bottom: 24px !important;
+        }
+
+        /* === HERO SECTION IMPROVEMENTS === */
+        /* Modern Dark-Glass Buttons */
+        .hero-section .btn,
+        .hero-section button,
+        .hero-section a[class*="btn"] {
+            background: rgba(255, 255, 255, 0.08) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+            padding: 14px 28px !important;
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .hero-section .btn:hover,
+        .hero-section button:hover,
+        .hero-section a[class*="btn"]:hover {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border-color: rgba(255, 255, 255, 0.18) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Primary button variant */
+        .hero-section .btn-primary,
+        .hero-section .primary-btn {
+            background: rgba(139, 92, 246, 0.15) !important;
+            border-color: rgba(139, 92, 246, 0.3) !important;
+            color: rgba(139, 92, 246, 1) !important;
+        }
+
+        .hero-section .btn-primary:hover,
+        .hero-section .primary-btn:hover {
+            background: rgba(139, 92, 246, 0.25) !important;
+            border-color: rgba(139, 92, 246, 0.4) !important;
+            color: rgba(139, 92, 246, 1) !important;
+        }
+
+        /* Scroll Indicator - More Subtle */
+        .scroll-indicator,
+        .hero-scroll-indicator,
+        [class*="scroll-down"] {
+            opacity: 0.6 !important;
+            background: rgba(255, 255, 255, 0.06) !important;
+            backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 50px !important;
+            padding: 12px 16px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .scroll-indicator:hover,
+        .hero-scroll-indicator:hover,
+        [class*="scroll-down"]:hover {
+            opacity: 0.9 !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            transform: translateY(2px) !important;
+        }
+
+        /* Scroll indicator text/icon */
+        .scroll-indicator span,
+        .hero-scroll-indicator span,
+        [class*="scroll-down"] span {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+        }
     </style>
 </head>
 <body>
