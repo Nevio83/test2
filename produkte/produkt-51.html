@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Bildschirm - Maios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="elektronik.css" rel="stylesheet">
+    <link rel="stylesheet" href="../product-image-gallery.css">
+    <link rel="stylesheet" href="../product-image-fullscreen.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="../index.html">Maios</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../wishlist.html">Wunschliste</a></li>
+                    <li class="nav-item"><a class="nav-link cart-nav-link" href="../cart.html"><i class="bi bi-cart3"></i> Warenkorb</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4 align-items-start">
+                <div class="col-lg-6 text-center">
+                    <img src="../produkt bilder/auto bildschirm.jpg" alt="Auto Bildschirm" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.15);">
+                </div>
+                <div class="col-lg-6">
+                    <h1 class="mb-3">Auto Bildschirm</h1>
+                    <div class="mb-3">
+                        <span class="h3 fw-bold">€47.99</span>
+                        <span class="text-muted text-decoration-line-through ms-2">€89.99</span>
+                    </div>
+                    <p class="lead">Kompakter Auto-Bildschirm für Navigation, Multimedia und Rückfahrkamera-Ansicht. Einfache Montage und klare Darstellung für Alltag und Reisen.</p>
+
+                    <div class="d-flex gap-2 flex-wrap mb-4">
+                        <button id="cartBtn" class="btn btn-primary btn-lg">
+                            <i class="bi bi-cart-plus"></i> In den Warenkorb
+                        </button>
+                        <button id="wishlistBtn" class="btn btn-outline-danger btn-lg wishlist-button" data-product-id="51">
+                            <i class="bi bi-heart"></i> Zur Wunschliste
+                        </button>
+                    </div>
+
+                    <div class="card p-3">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div class="fw-semibold">Menge</div>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity(event)">-</button>
+                                <input id="quantity" class="form-control text-center" type="number" value="1" min="1" max="999" style="width: 90px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity(event)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="bi bi-truck"></i> Versand: 6-11 Werktage</li>
+                            <li class="mb-2"><i class="bi bi-shield-check"></i> Garantie inklusive</li>
+                            <li class="mb-0"><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <section class="mt-5" id="bundle-section"></section>
+        </div>
+    </section>
+
+    <footer class="bg-dark text-white py-4">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2024 Maios - Alle Rechte vorbehalten</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const product = {
+            id: 51,
+            name: "Auto Bildschirm",
+            price: 47.99,
+            originalPrice: 89.99,
+            category: "Technik/Gadgets",
+            image: "produkt bilder/auto bildschirm.jpg",
+            description: "Kompakter Auto-Bildschirm für Navigation, Multimedia und Rückfahrkamera-Ansicht. Einfache Montage und klare Darstellung für Alltag und Reisen.",
+            sku: "CJPB164582102BY",
+            inStock: true,
+            shippingTime: "6-11 Werktage",
+            tags: ["auto", "bildschirm", "display", "navigation", "multimedia"],
+            showInSlider: true
+        };
+
+        window.product = product;
+
+        function increaseQuantity() {
+            const input = document.getElementById('quantity');
+            if (!input) return;
+            const currentValue = parseInt(input.value, 10) || 1;
+            if (currentValue < 999) input.value = currentValue + 1;
+        }
+
+        function decreaseQuantity() {
+            const input = document.getElementById('quantity');
+            if (!input) return;
+            const currentValue = parseInt(input.value, 10) || 1;
+            if (currentValue > 1) input.value = currentValue - 1;
+        }
+
+        function addToCartWithQuantity() {
+            const quantity = parseInt(document.getElementById('quantity')?.value, 10) || 1;
+            for (let i = 0; i < quantity; i++) {
+                if (window.addProductToCart && typeof window.addProductToCart === 'function') {
+                    window.addProductToCart(null, product.id);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartBtn = document.getElementById('cartBtn');
+            if (cartBtn) {
+                cartBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    addToCartWithQuantity();
+                });
+            }
+
+            const wishlistBtn = document.getElementById('wishlistBtn');
+            if (wishlistBtn) {
+                wishlistBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (window.toggleWishlist && typeof window.toggleWishlist === 'function') {
+                        window.toggleWishlist(product);
+                    }
+                });
+            }
+
+            if (window.updateAllWishlistButtons && typeof window.updateAllWishlistButtons === 'function') {
+                window.updateAllWishlistButtons();
+            }
+
+            fetch("../products.json")
+                .then((res) => res.json())
+                .then((products) => {
+                    const prod = products.find((p) => p.id === product.id);
+                    if (prod && prod.bundles && prod.bundles.length > 0) {
+                        if (typeof window.renderBundlesWithImages === 'function') {
+                            window.renderBundlesWithImages(product.price);
+                        }
+                    } else {
+                        if (typeof window.renderBundlesWithImages === 'function') {
+                            window.renderBundlesWithImages(product.price);
+                        }
+                    }
+                });
+        });
+    </script>
+
+    <script src="../app.js"></script>
+    <script src="../cart.js"></script>
+    <script src="../bundle-images-final.js"></script>
+    <script src="../product-gallery-complete.js"></script>
+</body>
+</html>

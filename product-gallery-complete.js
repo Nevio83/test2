@@ -36,7 +36,8 @@ class ProductImageGallery {
             44: 'Smart Beamer bilder',
             45: 'Klimaanlage mit Displaybilder',
             46: 'Nordic Crystal Lamp bilder',
-            47: 'Tumbler becher bilder'
+            47: 'Tumbler becher bilder',
+            51: 'auto bildschirm bilder'
         };
         
         this.init();
@@ -67,7 +68,8 @@ class ProductImageGallery {
             47: 'Tumbler becher bilder',
             48: 'Tumbler becher winter bilder',
             49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder',
-            50: 'Krystall Ball Nachtlampe bilder'
+            50: 'Krystall Ball Nachtlampe bilder',
+            51: 'auto bildschirm bilder'
         };
         
         // Prüfe ob dieses Produkt einen Bildordner hat
@@ -100,6 +102,26 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/Elektrischer Wasserspender für Schreibtisch weiß.jpg`,
                         alt: 'Elektrischer Wasserspender für Schreibtisch - Weiß',
                         color: 'Weiß'
+                    }
+                ];
+                break;
+
+            case 51: // Auto Bildschirm
+                this.images = [
+                    {
+                        src: `../produkt bilder/auto bildschirm.jpg`,
+                        alt: 'Auto Bildschirm - Hauptbild',
+                        color: 'Standard'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/auto bildschirm ansicht.jpg`,
+                        alt: 'Auto Bildschirm - Ansicht',
+                        color: 'Ansicht'
+                    },
+                    {
+                        src: `../produkt bilder/${folderName}/auto bildschirm inhalt.jpg`,
+                        alt: 'Auto Bildschirm - Inhalt',
+                        color: 'Inhalt'
                     }
                 ];
                 break;
@@ -1354,7 +1376,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           'Produkt';
         
         // Initialisiere Gallery nur für Produkte mit Bildordnern
-        if ([10, 11, 17, 21, 26, 32, 33, 43, 50].includes(productId)) {
+        if ([10, 11, 17, 21, 26, 32, 33, 43, 50, 51].includes(productId)) {
             new ProductImageGallery(productId, productName);
         }
     }
