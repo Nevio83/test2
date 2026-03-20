@@ -1916,5 +1916,25 @@
       }
     ],
     "showInSlider": true
+  },
+  {
+    "id": 51,
+    "name": "Auto Bildschirm",
+    "price": 47.99,
+    "originalPrice": 89.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/auto bildschirm.jpg",
+    "description": "Kompakter Auto-Bildschirm für Navigation, Multimedia und Rückfahrkamera-Ansicht. Einfache Montage und klare Darstellung für Alltag und Reisen.",
+    "sku": "CJPB164582102BY",
+    "inStock": true,
+    "shippingTime": "6-11 Werktage",
+    "tags": [
+      "auto",
+      "bildschirm",
+      "display",
+      "navigation",
+      "multimedia"
+    ],
+    "showInSlider": true
   }
 ]
