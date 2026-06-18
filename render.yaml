@@ -1,19 +1,25 @@
-# Render Blueprint für Maios Shop
-# Ein einziger persistenter Node-Service bedient Frontend (statisch via express.static)
-# UND die komplette API aus server.js (Checkout, Stripe-Webhook, DB, CJ, Mails).
-# Das beseitigt die bisherige Zwei-Backend-Divergenz (Netlify-Functions).
+# Render Blueprint für Maios Shop — KOSTENLOSER Plan (keine Kreditkarte nötig)
 #
-# Persistenz: SQLite-DB liegt auf einer gemounteten Disk (/data) -> überlebt Deploys/Neustarts.
-# Hinweis: Persistente Disks erfordern einen bezahlten Plan (z.B. "starter").
+# Ein Node-Service bedient Frontend (express.static) UND die komplette API aus server.js
+# (Checkout, Stripe-Webhook, DB, CJ, Mails). Das beseitigt die Zwei-Backend-Divergenz.
 #
-# Setup: Render Dashboard -> New -> Blueprint -> dieses Repo wählen.
-# Secrets danach im Dashboard setzen (envVars mit sync:false bleiben leer im Blueprint).
+# ⚠️ Free-Plan-Hinweise:
+#   - Kein persistenter Speicher: Die SQLite-DB (database/orders.db) wird bei jedem
+#     Redeploy/Neustart geleert. Bestellungen laufen trotzdem (Stripe + E-Mail-Beleg);
+#     nur das interne Bestell-Log fürs Admin-Dashboard ist nicht dauerhaft.
+#   - Der Dienst schläft nach ~15 Min Inaktivität; der nächste Aufruf dauert ~1 Min.
+#
+# Für DAUERHAFTE Bestelldaten später (zwei Wege):
+#   A) Bezahlter Plan + Disk: plan auf "starter" und einen disk-Block ergänzen
+#      (mountPath: /data) sowie SQLITE_DB_PATH=/data/orders.db setzen.
+#   B) KOSTENLOS & dauerhaft: Renders gratis 1-GB-PostgreSQL nutzen — dafür muss
+#      database.js von SQLite auf Postgres umgestellt werden (kann ich übernehmen).
 
 services:
   - type: web
     name: maios-shop
     runtime: node
-    plan: starter
+    plan: free
     region: frankfurt
     branch: main
     buildCommand: npm install
@@ -21,19 +27,11 @@ services:
     healthCheckPath: /
     autoDeploy: true
 
-    disk:
-      name: maios-data
-      mountPath: /data
-      sizeGB: 1
-
     envVars:
       - key: NODE_VERSION
         value: 18.18.0
       - key: NODE_ENV
         value: production
-      # SQLite-DB auf die persistente Disk legen
-      - key: SQLITE_DB_PATH
-        value: /data/orders.db
 
       # ── Secrets: im Render-Dashboard setzen (nicht im Blueprint) ──
       - key: STRIPE_SECRET_KEY
@@ -61,4 +59,8 @@ services:
       - key: SITE_URL
         sync: false
       - key: REPL_URL
+        sync: false
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PASSWORD
         sync: false
