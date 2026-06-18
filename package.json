@@ -2,6 +2,9 @@
   "name": "marktplatz",
   "version": "1.0.0",
   "main": "server.js",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "start": "node server.js",
     "test-cj-api": "node test-cj-api.js",

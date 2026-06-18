@@ -32,6 +32,8 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
 
 // Lokalen Pfad für cj-payment-calculator verwenden
 const { calculateCJCost, calculatePaymentSplit } = require('./cj-payment-calculator');
+// Serverseitige Preisvalidierung gegen products.json (Manipulationsschutz)
+const { validateCart } = require('../../price-validator');
 
 // Währungs-Mapping basierend auf Land
 function getCurrencyByCountry(countryCode) {
@@ -131,15 +133,27 @@ exports.handler = async (event, context) => {
     const currency = getCurrencyByCountry(country);
     console.log('💱 Verwendete Währung:', currency);
 
-    // Berechne CJ-Kosten für automatische Aufteilung
-    const cartItems = cart.map(item => ({
+    // 🔒 Preise serverseitig gegen products.json validieren (Manipulationsschutz)
+    let validatedCart;
+    try {
+      validatedCart = validateCart(cart);
+    } catch (validationError) {
+      console.error('❌ Warenkorb-Validierung fehlgeschlagen:', validationError.message);
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Ungültiger Warenkorb', details: validationError.message })
+      };
+    }
+
+    // Berechne CJ-Kosten für automatische Aufteilung (mit geprüften Preisen)
+    const cartItems = validatedCart.map(item => ({
       id: item.id,
       price: item.price,
       quantity: item.quantity
     }));
-    
+
     const cjCost = calculateCJCost(cartItems, country);
-    const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const cartTotal = validatedCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const split = calculatePaymentSplit(cartTotal, cjCost);
 
     console.log('💰 Payment Split Berechnung:');
@@ -147,9 +161,9 @@ exports.handler = async (event, context) => {
     console.log(`   CJ-Kosten: €${split.cjCost.toFixed(2)}`);
     console.log(`   Dein Gewinn: €${split.yourProfit.toFixed(2)} (${split.profitPercentage}%)`);
 
-    // Konvertiere alle Preise in Stripe-Format
-    const line_items = cart.map(item => {
-      // Preisberechnung direkt in Cent
+    // Konvertiere GEPRÜFTE Preise in Stripe-Format
+    // Hinweis: Beträge sind in EUR; Währungsumrechnung fehlt hier noch (siehe REVIEW #2/#6).
+    const line_items = validatedCart.map(item => {
       const amountInCents = Math.round(item.price * 100);
 
       return {
