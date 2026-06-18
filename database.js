@@ -9,7 +9,9 @@ if (!fs.existsSync(dbDir)) {
 }
 
 // Initialisiere SQLite Datenbank
-const db = new sqlite3.Database(path.join(dbDir, 'orders.db'), (err) => {
+// DB-Pfad konfigurierbar (z.B. persistente Disk auf Render): SQLITE_DB_PATH
+const dbPath = process.env.SQLITE_DB_PATH || path.join(dbDir, 'orders.db');
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error('DB Verbindungsfehler:', err.message);
   }

@@ -1,4 +1,36 @@
-# Local Netlify folder
-.netlify
-node_modules
-node_modules
+# ── Secrets (NIEMALS committen) ──────────────────────────────
+.env
+.env.*
+!.env.example
+Marketing/.env
+Marketing/.env.*
+!Marketing/.env.example
+
+# ── Datenbanken / lokale Daten ───────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+database/*.db
+Marketing/data/*.db
+
+# ── Node / Build ─────────────────────────────────────────────
+node_modules/
+.netlify/
+dist/
+build/
+*.log
+
+# ── Python ───────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# ── Tools / Editor ───────────────────────────────────────────
+.vscode/
+.DS_Store
+graphify-out/
+
+# ── Generierte Artefakte ─────────────────────────────────────
+receipts/*.pdf

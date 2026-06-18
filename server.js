@@ -112,6 +112,12 @@ app.use((req, res, next) => {
   next();
 });
 
+// 🔒 WICHTIG: Stripe-Webhook braucht den ROHEN Body für die Signaturprüfung.
+// Deshalb den Raw-Parser für /stripe-webhook VOR express.json() registrieren –
+// sonst konsumiert express.json() den Body und stripe.webhooks.constructEvent
+// schlägt mit "No signatures found matching..." fehl.
+app.use('/stripe-webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 
 // Enable gzip compression
@@ -126,7 +132,7 @@ app.use(compression({
   threshold: 1024
 }));
 
-app.use(express.json());
+// (express.json() ist bereits oben registriert – Duplikat entfernt)
 
 // Add middleware for Replit proxy/iframe support
 app.use((req, res, next) => {
@@ -140,6 +146,50 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
   next();
+});
+
+// ── Admin-Authentifizierung (HTTP Basic Auth) ───────────────────────
+// Schützt Admin-Dashboards und sensible API-Routen. Login via Browser-Dialog;
+// Zugangsdaten aus ENV: ADMIN_USER (Default 'admin') + ADMIN_PASSWORD.
+const crypto = require('crypto');
+function safeEqual(a, b) {
+  const ba = Buffer.from(String(a));
+  const bb = Buffer.from(String(b));
+  if (ba.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ba, bb);
+}
+function requireAdminAuth(req, res, next) {
+  const USER = process.env.ADMIN_USER || 'admin';
+  const PASS = process.env.ADMIN_PASSWORD;
+  if (!PASS) {
+    return res.status(503).json({ error: 'Admin-Zugang nicht konfiguriert (ADMIN_PASSWORD fehlt)' });
+  }
+  const header = req.headers.authorization || '';
+  const [scheme, encoded] = header.split(' ');
+  if (scheme === 'Basic' && encoded) {
+    const decoded = Buffer.from(encoded, 'base64').toString('utf8');
+    const idx = decoded.indexOf(':');
+    const user = decoded.slice(0, idx);
+    const pass = decoded.slice(idx + 1);
+    if (safeEqual(user, USER) && safeEqual(pass, PASS)) return next();
+  }
+  res.set('WWW-Authenticate', 'Basic realm="Maios Admin", charset="UTF-8"');
+  return res.status(401).json({ error: 'Authentifizierung erforderlich' });
+}
+
+// Admin-Dashboard-Ordner schützen (VOR express.static)
+app.use('/a29715347575', requireAdminAuth);
+// Alle CJ-Routen sind admin-intern (kein oeffentlicher Aufruf)
+app.use('/api/cj', requireAdminAuth);
+// /api/receipt: nur Admin-Routen schuetzen, oeffentliche (Checkout + Tracking) freilassen
+app.use('/api/receipt', (req, res, next) => {
+  const path0 = (req.originalUrl || '').split('?')[0];
+  const isPublic =
+    (req.method === 'POST' && /^\/api\/receipt\/create\/?$/.test(path0)) ||
+    (req.method === 'GET'  && /^\/api\/receipt\/order\/[^/]+\/?$/.test(path0)) ||
+    (req.method === 'GET'  && /^\/api\/receipt\/orders\/email\/[^/]+\/?$/.test(path0));
+  if (isPublic) return next();
+  return requireAdminAuth(req, res, next);
 });
 
 // Serve static files with no cache for development
@@ -230,13 +280,17 @@ app.post('/api/create-checkout-session', async (req, res) => {
   try {
     // Berechne CJ-Kosten für automatische Aufteilung
     const { calculateCJCost, calculatePaymentSplit } = require('./cj-payment-calculator');
-    const cartItems = cart.map(item => ({
+    // 🔒 Preise serverseitig gegen products.json validieren (Manipulationsschutz)
+    const { validateCart } = require('./price-validator');
+    var validatedCart = validateCart(cart);
+
+    const cartItems = validatedCart.map(item => ({
       id: item.id,
       price: item.price,
       quantity: item.quantity
     }));
     const cjCost = calculateCJCost(cartItems, country);
-    const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const cartTotal = validatedCart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     split = calculatePaymentSplit(cartTotal, cjCost);
     
     console.log('💰 Payment Split Berechnung:');
@@ -244,17 +298,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
     console.log(`   CJ-Kosten: €${split.cjCost.toFixed(2)}`);
     console.log(`   Dein Gewinn: €${split.yourProfit.toFixed(2)} (${split.profitPercentage}%)`);
     
-    // Konvertiere alle Preise parallel
-    line_items = await Promise.all(cart.map(async (item) => {
-      if (item.id === 1) {
-        return {
-          price: 'price_XXXXXXXXXXXXXXXXXXXXXXXX',
-          quantity: item.quantity,
-        };
-      }
-      
+    // Konvertiere GEPRÜFTE Preise (EUR) parallel in die Zielwährung
+    line_items = await Promise.all(validatedCart.map(async (item) => {
       try {
-        // Rechne Preis von EUR in Zielwährung um
+        // Rechne geprüften EUR-Preis in Zielwährung um
         const convertedPrice = await convertPrice(item.price, currency);
         const amountInCents = Math.round(convertedPrice * 100);
         
