@@ -22,9 +22,10 @@ Empfehlung: 🔴 zuerst, dann 🟠. Geschätzte Reihenfolge unten in §0.
 
 ---
 
-> **Status (2026-06-18):** In Cowork erledigt → `.gitignore` gefixt, `.env.example` (Root)
-> angelegt. **Offen (im Terminal):** Index-Reparatur, Untracken, History-Rewrite, Force-Push
-> und **Key-Rotation** — Schritt-für-Schritt in `SECURITY-SOFORT.md`.
+> **Status (2026-06-18):** ✅ `.gitignore`/`.env.example` gefixt; ✅ `.env`+`Marketing/.env`
+> untrackt und Commit „fix 1" auf `main` (GitHub Desktop). **Offen & wichtig:** Secrets sind
+> noch in der **Git-History** auf GitHub (`origin/main`) → History-Purge (`git filter-repo`)
+> + **Key-Rotation** stehen aus. Schritte: `SECURITY-SOFORT.md` / `GITHUB-UPDATE.md`.
 
 ## 1. 🔴 Secrets sind in Git eingecheckt
 
