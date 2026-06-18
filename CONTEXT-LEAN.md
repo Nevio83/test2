@@ -60,8 +60,8 @@ Orientierung brauchst. Vollversion: `CLAUDE.md`.
 
 ## Offene Top-Risiken (Details: REVIEW-CLAUDE-CODE.md)
 
-1. 🔴 `.env` + `Marketing/.env` in Git (Live-Keys). `.gitignore`/`​.env.example` gefixt; Rest
-   (untracken, History-Rewrite, **Rotation**) → `SECURITY-SOFORT.md` im Terminal ausführen.
+1. 🔴 `.env` Secrets: ✅ untrackt + committet (`main`). Offen: History-Purge (`git filter-repo`,
+   liegt noch auf GitHub) + **Key-Rotation** → `SECURITY-SOFORT.md` / `GITHUB-UPDATE.md`.
 2. ✅ Preis-Manipulation geschlossen: `price-validator.js` prüft Warenkorb gegen `products.json`
    (in `server.js` + Netlify-Function). Rest: FX-Umrechnung in der Netlify-Function (#6).
 3. ✅ Webhook-Signaturfix in `server.js`. Prod-Deploy vorbereitet (Render: `render.yaml`,
