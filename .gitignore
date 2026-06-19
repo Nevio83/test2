@@ -29,6 +29,7 @@ venv/
 
 # ── Tools / Editor ───────────────────────────────────────────
 .vscode/
+.claude/
 .DS_Store
 graphify-out/
 
