@@ -3,9 +3,10 @@
 Leitfaden für Claude Code / Claude Designer beim Arbeiten in diesem Repository (Maios Shop).
 Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf Deutsch halten.
 
-> Wenn du nur wenig Kontext brauchst oder Tokens sparen willst, lies zuerst `CONTEXT-LEAN.md`.
-> Für eine abfragbare Projektkarte statt Datei-für-Datei-Grep nutze **Graphify** (siehe unten).
-> Was weg/zusammengeführt werden kann, steht in `CLEANUP-CLAUDE-CODE.md`.
+> **Drei Doku-Dateien:** `CLAUDE.md` (dieser Guide: Architektur, Stand, Setup) ·
+> `CLAUDE-CODE.md` (Backlog: Sicherheit, Bugs, Aufräumen, Ausbau, Git) ·
+> `CLAUDE-DESIGN.md` (UI/UX, Design-System, Accessibility, SEO).
+> Für eine abfragbare Projektkarte statt Datei-für-Datei-Grep nutze **Graphify** (siehe §10).
 
 ---
 
@@ -17,8 +18,8 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 - **Bereits erledigt:** Preis-Manipulation geschlossen (`price-validator.js`), Stripe-Webhook-
   Body-Parser gefixt, Admin-/`api/cj`-/Admin-`api/receipt`-Routen per Basic Auth geschützt,
   `node-fetch` auf v2 (CommonJS), `sqlite3`→`pg`.
-- **Noch offen (bei dir):** Key-Rotation (Secrets standen im Chat/Git → `SECURITY-SOFORT.md`),
-  Stripe-Webhook-Endpoint auf die Render-URL zeigen lassen, Aufräumen (`CLEANUP-CLAUDE-CODE.md`).
+- **Noch offen (bei dir):** Stripe-Webhook-Endpoint auf die Render-URL zeigen lassen,
+  Aufräumen (`CLAUDE-CODE.md` §2).
 - **Admin-Dashboard:** `…/a29715347575/orders.html`, Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
 
 ---
@@ -173,10 +174,9 @@ optional `CJ_STRIPE_ACCOUNT_ID`), CJ (`CJ_API_KEY`, `CJ_ACCESS_TOKEN`, `CJ_EMAIL
 (Admin-Login), sowie `SESSION_SECRET`/`JWT_SECRET`/`ENCRYPTION_KEY`, Versand-/Shop-Defaults
 und Analytics-IDs.
 
-> 🔴 **`.env` und `Marketing/.env` waren in Git eingecheckt** (Live-Keys). `.gitignore` und
-> `.env.example` sind gefixt; Untracken/History-Rewrite/**Key-Rotation** stehen noch aus —
-> Schritt-für-Schritt in `SECURITY-SOFORT.md`. Niemals neue Secrets hart codieren; immer aus
-> `process.env` lesen. Neue Werte zusätzlich ins Netlify-Dashboard (Netlify liest nicht `.env`).
+> **Secrets:** `.env` ist gitignored und nicht getrackt; `.env.example` listet alle Schlüssel.
+> Niemals Secrets hart codieren; immer aus `process.env` lesen. Prod-Werte gehören ins
+> **Render-Dashboard** (Render liest nicht `.env`).
 
 ---
 
@@ -189,7 +189,7 @@ CJ/Mail laufen live nicht (siehe §4).
 **Geplanter Weg (vorbereitet):** **Render** als ein persistenter Node-Service, der Frontend
 + komplette API aus `server.js` bedient — beseitigt die Zwei-Backend-Divergenz und gibt SQLite
 eine persistente Disk. Dateien dafür liegen bereit: `render.yaml`, DB-Pfad via `SQLITE_DB_PATH`
-(`database.js`), `engines` in `package.json`. Schritt-für-Schritt: `DEPLOYMENT-RENDER.md`.
+(`database.js`), `engines` in `package.json`. Deploy-Schritte siehe oben in diesem Abschnitt.
 Env-Vars im jeweiligen Dashboard setzen (nicht aus `.env`). Stripe-Webhook-URL nach Deploy auf
 `/stripe-webhook` zeigen lassen.
 
@@ -232,7 +232,7 @@ Beim Arbeiten an diesem Projekt sind diese Skills typischerweise relevant:
 | **mcp-builder** | Falls eine CJ-/Stripe-/Resend-Integration als sauberer MCP-Server gekapselt werden soll. |
 | **humanizer-deutsch** | Produkttexte/Mails entkitschen, KI-Sprachmuster im deutschen Copy entfernen. |
 | **skill-creator** | Eigene wiederkehrende Workflows (z. B. „neue Produktseite anlegen") als Skill formalisieren. |
-| **caveman** | Token-sparender Kommunikationsmodus (siehe `CONTEXT-LEAN.md`). |
+| **caveman** | Token-sparender Kommunikationsmodus für lange Sessions. |
 
 Document-Skills (pdf/xlsx/docx/pptx) erst **nach** der Recherche laden — zuerst Fakten/Daten
 sammeln, dann das Format-Skill für die Ausgabe.
@@ -287,17 +287,17 @@ Skript-Abhängigkeiten sichtbar zu machen.
 
 ## 11. Weitere Reviews / Dokumente in diesem Repo
 
-- `REVIEW-CLAUDE-CODE.md` — tiefer Code-/Bug-/Sicherheits-/Performance-Review (mit Status je Punkt).
-- `REVIEW-CLAUDE-DESIGNER.md` — tiefer UI-/UX-/Accessibility-/SEO-Review (für Claude Designer).
-- `CLEANUP-CLAUDE-CODE.md` — überflüssige Dateien, Duplikate, toter Code (zum Aufräumen).
-- `CONTEXT-LEAN.md` — komprimierter Projekt-Spickzettel + Token-Spar-Regeln.
-- `DEPLOYMENT-RENDER.md` — Live-Deploy auf Render + Neon (aktueller Weg).
-- `GITHUB-UPDATE.md` — Git-/GitHub-Abläufe (Branch, Push, Lock-Fixes).
-- `SECURITY-SOFORT.md` — Sofortmaßnahmen: Secrets aus Git entfernen + Keys rotieren.
-- Betriebs-SOPs: `CJ-AUTOMATISIERUNG.md`, `RETOUREN-AUTOMATISIERUNG.md`,
-  `VOLLAUTOMATISCHE-RETOUREN.md`, `VOLLAUTOMATISCH-FERTIG.md`, `VERSANDMETHODEN.md`,
-  `KASSENBON-SYSTEM.md`, `EXCHANGE_RATE_SETUP.md`.
+**Die drei Kern-Dokumente:**
+- `CLAUDE.md` — dieser Guide (Architektur, aktueller Stand, Setup, Deployment, Konventionen).
+- `CLAUDE-CODE.md` — Backlog für Claude Code: Sicherheit (Key-Rotation), Bug-/Review-Liste mit
+  Status, Aufräumen (überflüssige Dateien/Duplikate/toter Code), Ausbau (Aufrufe-Tracking u.a.),
+  Git-Workflow.
+- `CLAUDE-DESIGN.md` — alles fürs Design: Design-System, UI/UX, Accessibility, SEO.
 
-> Veraltet (siehe `CLEANUP-CLAUDE-CODE.md`): `README.md` (nennt MongoDB; real Postgres/Neon),
-> `external-audit-review.txt`, `DEPLOYMENT.md` (Netlify), `netlify/` + `netlify.toml`,
-> `indexoriginal.html`, `test-require.js`. Bei Doku-Arbeiten zuerst Code prüfen, dann angleichen.
+**Betriebs-SOPs (Domänen-Handbücher):** `CJ-AUTOMATISIERUNG.md`, `RETOUREN-AUTOMATISIERUNG.md`,
+`VOLLAUTOMATISCHE-RETOUREN.md`, `VOLLAUTOMATISCH-FERTIG.md`, `VERSANDMETHODEN.md`,
+`KASSENBON-SYSTEM.md`, `EXCHANGE_RATE_SETUP.md`.
+
+> Veraltet/löschbar (siehe `CLAUDE-CODE.md` §3): `README.md`-Setup (nennt MongoDB; real
+> Postgres/Neon), `external-audit-review.txt`, `DEPLOYMENT.md` (Netlify), `netlify/` +
+> `netlify.toml`, `indexoriginal.html`, `test-require.js`.

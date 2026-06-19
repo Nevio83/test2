@@ -95,7 +95,7 @@ Du siehst:
    Transfer-Betrag: €20.50 (2050 cents)
 
 ✅ Automatischer Transfer konfiguriert!
-   Destination: acct_1SS3HAFYHQU3nTcP
+   Destination: acct_XXXXXXXX (in .env/Render)
 
 🏭 AUTOMATISCHE CJ-BESTELLUNG STARTEN...
 💰 Kunde zahlt: €28.99
