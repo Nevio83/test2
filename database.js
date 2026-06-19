@@ -81,12 +81,23 @@ const SCHEMA = [
     carrier TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
   )`,
+  `CREATE TABLE IF NOT EXISTS page_views (
+    id SERIAL PRIMARY KEY,
+    path TEXT NOT NULL,
+    referrer TEXT,
+    country TEXT,
+    user_agent TEXT,
+    session_id TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  )`,
   `CREATE INDEX IF NOT EXISTS idx_orders_order_id ON orders(order_id)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(customer_email)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at)`,
   `CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id)`,
   `CREATE INDEX IF NOT EXISTS idx_receipts_order_id ON receipts(order_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_tracking_order_id ON order_tracking(order_id)`
+  `CREATE INDEX IF NOT EXISTS idx_tracking_order_id ON order_tracking(order_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_page_views_created ON page_views(created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_page_views_session ON page_views(session_id)`
 ];
 
 async function initializeDatabase() {
@@ -213,6 +224,81 @@ const dbOperations = {
       q(`SELECT COUNT(*)::int AS count FROM orders WHERE order_status = 'processing'`)
     ]);
     return { totalOrders, totalRevenue, todayOrders, todayRevenue, pendingOrders };
+  },
+
+  // ── Aufrufe / Besucher-Tracking ──────────────────────────────
+  addPageView: async (v) => {
+    const sql = `INSERT INTO page_views (path, referrer, country, user_agent, session_id)
+                 VALUES ($1,$2,$3,$4,$5) RETURNING id`;
+    const r = await pool.query(sql, [
+      v.path, v.referrer || null, v.country || null,
+      v.user_agent || null, v.session_id || null
+    ]);
+    return { id: r.rows[0].id };
+  },
+
+  getViewStats: async () => {
+    const q = (sql) => pool.query(sql).then(r => r.rows[0]);
+    const [todayViews, uniqueToday, totalViews, liveNow] = await Promise.all([
+      q(`SELECT COUNT(*)::int AS count FROM page_views WHERE created_at::date = CURRENT_DATE`),
+      q(`SELECT COUNT(DISTINCT session_id)::int AS count FROM page_views WHERE created_at::date = CURRENT_DATE`),
+      q(`SELECT COUNT(*)::int AS count FROM page_views`),
+      q(`SELECT COUNT(DISTINCT session_id)::int AS count FROM page_views WHERE created_at > NOW() - INTERVAL '5 minutes'`)
+    ]);
+    return {
+      todayViews: todayViews.count,
+      uniqueToday: uniqueToday.count,
+      totalViews: totalViews.count,
+      liveNow: liveNow.count
+    };
+  },
+
+  getTopPages: async (limit = 10, days = 30) => {
+    const r = await pool.query(
+      `SELECT path, COUNT(*)::int AS views, COUNT(DISTINCT session_id)::int AS unique_views
+       FROM page_views
+       WHERE created_at > NOW() - ($2 || ' days')::interval
+       GROUP BY path
+       ORDER BY views DESC
+       LIMIT $1`,
+      [limit, String(days)]
+    );
+    return r.rows;
+  },
+
+  getTopCountries: async (limit = 10, days = 30) => {
+    const r = await pool.query(
+      `SELECT COALESCE(NULLIF(country, ''), 'Unbekannt') AS country,
+              COUNT(*)::int AS views,
+              COUNT(DISTINCT session_id)::int AS unique_views
+       FROM page_views
+       WHERE created_at > NOW() - ($2 || ' days')::interval
+       GROUP BY COALESCE(NULLIF(country, ''), 'Unbekannt')
+       ORDER BY views DESC
+       LIMIT $1`,
+      [limit, String(days)]
+    );
+    return r.rows;
+  },
+
+  getViewsTimeseries: async (days = 14) => {
+    const r = await pool.query(
+      `SELECT d::date AS day,
+              COALESCE(v.views, 0)::int AS views,
+              COALESCE(v.unique_views, 0)::int AS unique_views
+       FROM generate_series(CURRENT_DATE - ($1::int - 1), CURRENT_DATE, '1 day') AS d
+       LEFT JOIN (
+         SELECT created_at::date AS day,
+                COUNT(*) AS views,
+                COUNT(DISTINCT session_id) AS unique_views
+         FROM page_views
+         WHERE created_at::date > CURRENT_DATE - $1::int
+         GROUP BY created_at::date
+       ) v ON v.day = d::date
+       ORDER BY day ASC`,
+      [days]
+    );
+    return r.rows;
   }
 };
 

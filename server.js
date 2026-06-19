@@ -171,6 +171,8 @@ function requireAdminAuth(req, res, next) {
 app.use('/a29715347575', requireAdminAuth);
 // Alle CJ-Routen sind admin-intern (kein oeffentlicher Aufruf)
 app.use('/api/cj', requireAdminAuth);
+// Admin-Analytics (Aufrufe/Besucher) — nur fuer eingeloggte Admins
+app.use('/api/admin', requireAdminAuth);
 // /api/receipt: nur Admin-Routen schuetzen, oeffentliche (Checkout + Tracking) freilassen
 app.use('/api/receipt', (req, res, next) => {
   const path0 = (req.originalUrl || '').split('?')[0];
@@ -1527,6 +1529,81 @@ app.get('/api/receipt/statistics', async (req, res) => {
   } catch (error) {
     console.error('Statistik-Fehler:', error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// ── Aufrufe / Besucher-Tracking ──────────────────────────────────────
+// Oeffentlicher Endpunkt: Client meldet Seitenaufruf. Keine rohe IP wird
+// gespeichert — Land kommt clientseitig (geolocation-tracker.js), Pfad/Referrer
+// werden auf sinnvolle Laengen gekuerzt.
+app.post('/api/track/view', async (req, res) => {
+  try {
+    const { path: viewPath, referrer, country, session_id } = req.body || {};
+    if (!viewPath || typeof viewPath !== 'string') {
+      return res.status(400).json({ error: 'path erforderlich' });
+    }
+    // Admin-Bereich nicht mitzaehlen
+    if (viewPath.includes('a29715347575')) {
+      return res.json({ success: true, skipped: true });
+    }
+    const trim = (v, n) => (typeof v === 'string' ? v.slice(0, n) : null);
+    await dbOperations.addPageView({
+      path: trim(viewPath, 512),
+      referrer: trim(referrer, 512),
+      country: trim(country, 64),
+      user_agent: trim(req.headers['user-agent'], 256),
+      session_id: trim(session_id, 64)
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('⚠️ Tracking-Fehler:', error.message);
+    // Tracking darf das Frontend nie stoeren — immer 200 zurueck
+    res.json({ success: false });
+  }
+});
+
+// Admin: Kennzahlen fuer die Dashboard-Kacheln
+app.get('/api/admin/views/stats', async (req, res) => {
+  try {
+    res.json(await dbOperations.getViewStats());
+  } catch (error) {
+    console.error('Aufruf-Statistik-Fehler:', error.message);
+    res.status(500).json({ error: 'Aufruf-Statistik nicht verfuegbar' });
+  }
+});
+
+// Admin: meistbesuchte Seiten
+app.get('/api/admin/views/top-pages', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getTopPages(limit, days));
+  } catch (error) {
+    console.error('Top-Seiten-Fehler:', error.message);
+    res.status(500).json({ error: 'Top-Seiten nicht verfuegbar' });
+  }
+});
+
+// Admin: Aufrufe nach Land
+app.get('/api/admin/views/top-countries', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getTopCountries(limit, days));
+  } catch (error) {
+    console.error('Top-Laender-Fehler:', error.message);
+    res.status(500).json({ error: 'Top-Laender nicht verfuegbar' });
+  }
+});
+
+// Admin: Zeitreihe fuer den Chart
+app.get('/api/admin/views/timeseries', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 14, 90);
+    res.json(await dbOperations.getViewsTimeseries(days));
+  } catch (error) {
+    console.error('Zeitreihen-Fehler:', error.message);
+    res.status(500).json({ error: 'Zeitreihe nicht verfuegbar' });
   }
 });
 

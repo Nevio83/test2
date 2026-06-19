@@ -182,6 +182,83 @@
             </div>
         </div>
 
+        <!-- Aufrufe & Besucher -->
+        <div class="d-flex align-items-center justify-content-between mt-2 mb-3">
+            <h4 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Aufrufe &amp; Besucher</h4>
+            <span class="badge bg-success" id="live-badge" style="display:none;">
+                <i class="bi bi-broadcast"></i> <span id="live-now">0</span> live
+            </span>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-number" id="views-today">0</div>
+                            <div class="text-muted">Aufrufe heute</div>
+                        </div>
+                        <i class="bi bi-eye fs-1 text-muted"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-number" id="views-unique">0</div>
+                            <div class="text-muted">Eindeutige Besucher (heute)</div>
+                        </div>
+                        <i class="bi bi-people fs-1 text-muted"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-number" id="views-live">0</div>
+                            <div class="text-muted">Live jetzt (5 Min)</div>
+                        </div>
+                        <i class="bi bi-broadcast fs-1 text-muted"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-number" id="views-total">0</div>
+                            <div class="text-muted">Aufrufe gesamt</div>
+                        </div>
+                        <i class="bi bi-bar-chart fs-1 text-muted"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="stats-card">
+                    <h6 class="text-muted mb-3">Aufrufe der letzten 14 Tage</h6>
+                    <canvas id="views-chart" height="120"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="stats-card">
+                    <h6 class="text-muted mb-3">Top-Seiten (30 Tage)</h6>
+                    <ul class="list-group list-group-flush" id="top-pages">
+                        <li class="list-group-item text-muted small">Lädt…</li>
+                    </ul>
+                </div>
+                <div class="stats-card">
+                    <h6 class="text-muted mb-3">Top-Länder (30 Tage)</h6>
+                    <ul class="list-group list-group-flush" id="top-countries">
+                        <li class="list-group-item text-muted small">Lädt…</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Suchleiste & Filter -->
         <div class="search-bar">
             <div class="row">
@@ -263,6 +340,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="admin-orders.js"></script>
+    <script src="admin-views.js"></script>
 </body>
 </html>
