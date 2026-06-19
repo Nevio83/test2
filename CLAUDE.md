@@ -5,6 +5,21 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 
 > Wenn du nur wenig Kontext brauchst oder Tokens sparen willst, lies zuerst `CONTEXT-LEAN.md`.
 > Für eine abfragbare Projektkarte statt Datei-für-Datei-Grep nutze **Graphify** (siehe unten).
+> Was weg/zusammengeführt werden kann, steht in `CLEANUP-CLAUDE-CODE.md`.
+
+---
+
+## 0. Aktueller Stand (2026-06-19)
+
+- **Live auf Render:** https://maios-shop.onrender.com (Free-Plan, schläft nach 15 Min →
+  erster Aufruf ~50 s). Repo `Nevio83/test2`, nur Branch `main`, Auto-Deploy bei Push.
+- **Datenbank:** **Neon-Postgres** (dauerhaft, kostenlos) via `DATABASE_URL`. SQLite ist Geschichte.
+- **Bereits erledigt:** Preis-Manipulation geschlossen (`price-validator.js`), Stripe-Webhook-
+  Body-Parser gefixt, Admin-/`api/cj`-/Admin-`api/receipt`-Routen per Basic Auth geschützt,
+  `node-fetch` auf v2 (CommonJS), `sqlite3`→`pg`.
+- **Noch offen (bei dir):** Key-Rotation (Secrets standen im Chat/Git → `SECURITY-SOFORT.md`),
+  Stripe-Webhook-Endpoint auf die Render-URL zeigen lassen, Aufräumen (`CLEANUP-CLAUDE-CODE.md`).
+- **Admin-Dashboard:** `…/a29715347575/orders.html`, Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
 
 ---
 
@@ -193,6 +208,12 @@ Env-Vars im jeweiligen Dashboard setzen (nicht aus `.env`). Stripe-Webhook-URL n
   — beim Bearbeiten das jeweilige Framework der Seite verwenden.
 - Retouren werden bewusst **manuell** genehmigt (Auto-Approve ist im Code mit `if (false && …)`
   deaktiviert). Nicht „aufräumen", ohne Rücksprache.
+- **`node-fetch` muss v2 bleiben** (`require()`-kompatibel). v3 ist ESM-only und crasht
+  `cj-dropshipping-api.js` + `exchange-rate-service.js` beim Start. Alternativ auf Node 20+
+  heben und global `fetch` nutzen.
+- **DB ist Postgres** (`pg`), nicht mehr SQLite. Bei `package.json`-Änderungen
+  `npm install --package-lock-only` laufen lassen, sonst zieht Render eine veraltete Lock-Datei.
+- **Secrets nie committen** — `.env` ist gitignored. Prod-Werte ins Render-Dashboard.
 
 ---
 
@@ -266,14 +287,17 @@ Skript-Abhängigkeiten sichtbar zu machen.
 
 ## 11. Weitere Reviews / Dokumente in diesem Repo
 
-- `REVIEW-CLAUDE-CODE.md` — tiefer Code-/Bug-/Sicherheits-/Performance-Review (für Claude Code).
+- `REVIEW-CLAUDE-CODE.md` — tiefer Code-/Bug-/Sicherheits-/Performance-Review (mit Status je Punkt).
 - `REVIEW-CLAUDE-DESIGNER.md` — tiefer UI-/UX-/Accessibility-/SEO-Review (für Claude Designer).
+- `CLEANUP-CLAUDE-CODE.md` — überflüssige Dateien, Duplikate, toter Code (zum Aufräumen).
 - `CONTEXT-LEAN.md` — komprimierter Projekt-Spickzettel + Token-Spar-Regeln.
+- `DEPLOYMENT-RENDER.md` — Live-Deploy auf Render + Neon (aktueller Weg).
+- `GITHUB-UPDATE.md` — Git-/GitHub-Abläufe (Branch, Push, Lock-Fixes).
 - `SECURITY-SOFORT.md` — Sofortmaßnahmen: Secrets aus Git entfernen + Keys rotieren.
-- `external-audit-review.txt` — bestehendes Audit-Paket (Logging, Migration, Verzeichnisse).
 - Betriebs-SOPs: `CJ-AUTOMATISIERUNG.md`, `RETOUREN-AUTOMATISIERUNG.md`,
   `VOLLAUTOMATISCHE-RETOUREN.md`, `VOLLAUTOMATISCH-FERTIG.md`, `VERSANDMETHODEN.md`,
-  `KASSENBON-SYSTEM.md`, `EXCHANGE_RATE_SETUP.md`, `DEPLOYMENT.md`.
+  `KASSENBON-SYSTEM.md`, `EXCHANGE_RATE_SETUP.md`.
 
-> Hinweis: `README.md` ist teils veraltet (nennt **MongoDB**, tatsächlich ist es **SQLite**).
-> Bei Doku-Arbeiten zuerst Code prüfen, dann README angleichen.
+> Veraltet (siehe `CLEANUP-CLAUDE-CODE.md`): `README.md` (nennt MongoDB; real Postgres/Neon),
+> `external-audit-review.txt`, `DEPLOYMENT.md` (Netlify), `netlify/` + `netlify.toml`,
+> `indexoriginal.html`, `test-require.js`. Bei Doku-Arbeiten zuerst Code prüfen, dann angleichen.

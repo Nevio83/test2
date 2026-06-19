@@ -1,7 +1,12 @@
 # CONTEXT-LEAN.md — Token-Spar-Modus für Maios
 
 Zweck: maximale Wirkung pro Token. Lies **diese** Datei statt großer Dateien, wenn du nur
-Orientierung brauchst. Vollversion: `CLAUDE.md`.
+Orientierung brauchst. Vollversion: `CLAUDE.md`. Aufräum-Liste: `CLEANUP-CLAUDE-CODE.md`.
+
+> **Stand 2026-06-19:** Live auf Render (`https://maios-shop.onrender.com`, Free) · DB =
+> **Neon-Postgres** via `DATABASE_URL` (kein SQLite mehr) · `node-fetch` muss **v2** bleiben
+> (v3 ESM crasht) · Repo `Nevio83/test2`, nur `main`. Offen: Key-Rotation, Stripe-Webhook auf
+> Render-URL, Aufräumen.
 
 ---
 
