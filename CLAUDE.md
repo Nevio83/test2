@@ -21,6 +21,8 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 - **Noch offen (bei dir):** Stripe-Webhook-Endpoint auf die Render-URL zeigen lassen,
   Aufräumen (`CLAUDE-CODE.md` §2).
 - **Admin-Dashboard:** `…/a29715347575/orders.html`, Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
+- **Wo anfangen:** offene Aufgaben + nächste Schritte stehen in `CLAUDE-CODE.md` (§5),
+  Design-Themen in `CLAUDE-DESIGN.md`. Großes Repo → erst `/graphify .` (§10).
 
 ---
 
@@ -33,10 +35,11 @@ Mehrwährung über **ExchangeRate-API**. Dazu gibt es eine separate **Python-Mar
 Automatisierung** (`Marketing/`), die TikTok-Creatives generiert.
 
 **Stack:** Node.js + Express (Backend) · Vanilla JS + Bootstrap/Tailwind (Frontend) ·
-PostgreSQL/Neon (Bestellungen) · Render/Netlify (Hosting) · Python (Marketing-Pipelines).
+PostgreSQL/Neon (Bestellungen) · **Render** (Hosting, live) · Python (Marketing-Pipelines).
 
-> ⚠️ Wichtig: Es gibt **zwei** Backend-Pfade, die auseinanderlaufen — siehe §4. Das ist die
-> häufigste Fehlerquelle. Vor jeder Checkout-/Zahlungsänderung beide Pfade prüfen.
+> ⚠️ Produktion läuft komplett aus `server.js` auf **Render**. Der alte **`netlify/`-Pfad ist
+> Altbestand** (nur 2 Functions, divergiert) und soll entfernt werden (`CLAUDE-CODE.md` §2).
+> Bei Checkout-/Zahlungsänderungen ist **`server.js` die Quelle der Wahrheit** (siehe §4).
 
 ---
 
@@ -103,12 +106,11 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 ### Infrastruktur / Daten
 | Pfad | Zweck |
 |---|---|
-| `netlify.toml` | Hosting: publish `.`, Functions in `netlify/functions`, Redirect `/api/*` → Functions. |
-| `netlify/functions/` | **Produktions-Backend**: nur `create-checkout-session.js` + `cj-payment-calculator.js` (+ `test-server.js`). |
-| `database/orders.db`, `orders.db`, `test.db` | SQLite-Dateien (Test vs. Prod gemischt). |
+| `render.yaml` | **Render-Blueprint** (Live-Hosting, Free): ein Node-Service bedient Frontend + API aus `server.js`. |
+| `netlify.toml`, `netlify/functions/` | **Altbestand** (vor Render). Nur Checkout-Session + Payment-Calc. Zum Entfernen (`CLAUDE-CODE.md` §2). |
 | `Marketing/` | Python-Pipelines (`pipelines/*.py`), eigene `products.json`, chromedriver, Daten/Renders. |
-| `.env`, `Marketing/.env` | Secrets. **Aktuell fälschlich eingecheckt — siehe Review, kritisch.** |
-| `*.md` (CJ-, RETOUREN-, VOLLAUTOMATISCH-, VERSANDMETHODEN-, KASSENBON-, EXCHANGE_RATE-, DEPLOYMENT-) | Betriebs-Handbücher / SOPs. |
+| `.env`, `Marketing/.env` | Secrets, **gitignored & nicht getrackt**. `.env.example` listet alle Schlüssel; Prod-Werte ins Render-Dashboard. |
+| `*.md` | Betriebs-SOPs (CJ, Retouren, Versand, Kassenbon, Exchange) + die drei Kern-Docs (§11). |
 
 ---
 
@@ -120,30 +122,25 @@ Kunde legt in Warenkorb (localStorage)
   → Checkout: POST /api/create-checkout-session  (Stripe-Session)
   → Stripe Checkout (Hosted)
   → Stripe-Webhook  POST /stripe-webhook
-      → SQLite-Bestelldatensatz (database.js)
+      → Postgres-Bestelldatensatz (database.js, Neon)
       → Stripe-Invoice + PDF-Beleg (receipt-generator.js)
       → Mail an Kunde + Admin (resend-service.js)
       → CJ-Bestellung automatisch (cj-dropshipping-api.js)
       → Tracking-Eintrag
 ```
 
-### ⚠️ Die zwei divergierenden Backends
+### Production = `server.js` auf Render (Netlify = Altbestand)
 - **`server.js`** = vollständiges Express-Backend (Webhook, DB, CJ, Mails, Retouren, ~30 Routen).
-  Läuft lokal mit `npm run dev`/`npm start`.
-- **`netlify/functions/`** = Produktion auf Netlify. Hier existieren **nur** Checkout-Session +
-  Payment-Calculator. `netlify.toml` leitet **alle** `/api/*` dorthin um.
-
-**Folge:** In Produktion existieren `/stripe-webhook`, `/api/receipt/*`, `/api/cj/*`,
-`/api/contact`, `/api/return-request` **nicht** → die DB-/Mail-/CJ-Automatik läuft live nicht.
-Außerdem rechnet die Netlify-Function `item.price` direkt in Cents (ohne Währungsumrechnung)
-und nutzt andere Payment-Methoden als `server.js`. **Vor Checkout-Änderungen beide Stellen
-synchron halten** oder die Architektur konsolidieren (Empfehlung im Review).
+  Läuft **live auf Render** (`npm start`) und lokal mit `npm run dev`. **Maßgeblich.**
+- **`netlify/functions/`** = **alter** Pfad (nur Checkout-Session + Payment-Calc, divergiert:
+  rechnet `item.price` direkt in Cents ohne Währungsumrechnung). Wird nicht mehr genutzt →
+  entfernen (`CLAUDE-CODE.md` §2). Solange er existiert: nur `server.js` ändern.
 
 ### Frontend-State
 Warenkorb & Wishlist liegen in `localStorage` (keine Session). Mehrwährung wird clientseitig
 berechnet. **Quelle der Wahrheit für Beträge ist serverseitig:** `price-validator.js` prüft
 den Warenkorb gegen `products.json` (beide Checkout-Pfade), bevor Stripe-Beträge gebildet
-werden. Offen bleibt die Währungsumrechnung in der Netlify-Function (siehe Review #6).
+werden. (Die alte Netlify-Function hatte keine Währungsumrechnung — entfällt mit dem Aufräumen.)
 
 ### Produkt-/Bild-Konvention (nicht brechen!)
 Galerien lesen aus `produkt bilder/<Name> bilder/<Name> <farbe>.jpg`. Ordnerstruktur muss 1:1
@@ -182,16 +179,19 @@ und Analytics-IDs.
 
 ## 7. Deployment
 
-**Aktuell (Altbestand):** Netlify (`netlify.toml`, Node via `.nvmrc` = 18.18.0). `/api/*` →
-Netlify Functions, sonst SPA-Fallback. Problem: nur Checkout-Function vorhanden → Webhook/DB/
-CJ/Mail laufen live nicht (siehe §4).
+**Live auf Render** (Free-Plan): ein Node-Web-Service (`render.yaml`) bedient Frontend +
+komplette API aus `server.js`. URL: https://maios-shop.onrender.com. **Auto-Deploy** bei Push auf
+`main`. Node-Version via `NODE_VERSION`/`.nvmrc` (18.x — EOL-Warnung, später auf 20 heben).
 
-**Geplanter Weg (vorbereitet):** **Render** als ein persistenter Node-Service, der Frontend
-+ komplette API aus `server.js` bedient — beseitigt die Zwei-Backend-Divergenz und gibt SQLite
-eine persistente Disk. Dateien dafür liegen bereit: `render.yaml`, DB-Pfad via `SQLITE_DB_PATH`
-(`database.js`), `engines` in `package.json`. Deploy-Schritte siehe oben in diesem Abschnitt.
-Env-Vars im jeweiligen Dashboard setzen (nicht aus `.env`). Stripe-Webhook-URL nach Deploy auf
-`/stripe-webhook` zeigen lassen.
+- **Datenbank:** Neon-Postgres über `DATABASE_URL` (im Render-Dashboard gesetzt).
+- **Env-Vars:** alle Secrets im **Render-Dashboard → Environment** (Stripe, Resend, CJ,
+  ExchangeRate, `DATABASE_URL`, `ADMIN_USER`/`ADMIN_PASSWORD`) — nicht aus `.env`.
+- **Build/Start:** `npm install` → `npm start`. Bei Dependency-Änderungen vorher
+  `npm install --package-lock-only`, sonst zieht Render eine veraltete Lock-Datei.
+- **Free-Plan-Haken:** Service schläft nach 15 Min (erster Aufruf ~50 s). Daten bleiben (Neon).
+- **Offen:** Stripe-Webhook im Stripe-Dashboard auf
+  `https://maios-shop.onrender.com/stripe-webhook` zeigen lassen (sonst landen Bestellungen
+  nicht in der DB). Alter `netlify/`-Pfad = Altbestand (§4, entfernen).
 
 ---
 
@@ -289,9 +289,8 @@ Skript-Abhängigkeiten sichtbar zu machen.
 
 **Die drei Kern-Dokumente:**
 - `CLAUDE.md` — dieser Guide (Architektur, aktueller Stand, Setup, Deployment, Konventionen).
-- `CLAUDE-CODE.md` — Backlog für Claude Code: Sicherheit (Key-Rotation), Bug-/Review-Liste mit
-  Status, Aufräumen (überflüssige Dateien/Duplikate/toter Code), Ausbau (Aufrufe-Tracking u.a.),
-  Git-Workflow.
+- `CLAUDE-CODE.md` — Backlog für Claude Code: Bug-/Review-Liste mit Status, Aufräumen
+  (überflüssige Dateien/Duplikate/toter Code), Ausbau (Aufrufe-Tracking u.a.), Git-Workflow.
 - `CLAUDE-DESIGN.md` — alles fürs Design: Design-System, UI/UX, Accessibility, SEO.
 
 **Betriebs-SOPs (Domänen-Handbücher):** `CJ-AUTOMATISIERUNG.md`, `RETOUREN-AUTOMATISIERUNG.md`,
