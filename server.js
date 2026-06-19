@@ -171,8 +171,8 @@ function requireAdminAuth(req, res, next) {
 app.use('/a29715347575', requireAdminAuth);
 // Alle CJ-Routen sind admin-intern (kein oeffentlicher Aufruf)
 app.use('/api/cj', requireAdminAuth);
-// Admin-Analytics (Aufrufe/Besucher) — nur fuer eingeloggte Admins
-app.use('/api/admin', requireAdminAuth);
+// Admin-Analytics liegen unter /a29715347575/api/views/* und sind dadurch bereits
+// von der Admin-Auth oben (app.use('/a29715347575', requireAdminAuth)) geschuetzt.
 // /api/receipt: nur Admin-Routen schuetzen, oeffentliche (Checkout + Tracking) freilassen
 app.use('/api/receipt', (req, res, next) => {
   const path0 = (req.originalUrl || '').split('?')[0];
@@ -1563,7 +1563,10 @@ app.post('/api/track/view', async (req, res) => {
 });
 
 // Admin: Kennzahlen fuer die Dashboard-Kacheln
-app.get('/api/admin/views/stats', async (req, res) => {
+// Routen liegen bewusst UNTER /a29715347575/ (= authentifizierter Pfad-Teilbaum),
+// damit der Browser bei fetch() aus dem Dashboard die Basic-Auth-Credentials
+// zuverlaessig mitsendet. Geschuetzt durch app.use('/a29715347575', requireAdminAuth).
+app.get('/a29715347575/api/views/stats', async (req, res) => {
   try {
     res.json(await dbOperations.getViewStats());
   } catch (error) {
@@ -1573,7 +1576,7 @@ app.get('/api/admin/views/stats', async (req, res) => {
 });
 
 // Admin: meistbesuchte Seiten
-app.get('/api/admin/views/top-pages', async (req, res) => {
+app.get('/a29715347575/api/views/top-pages', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit) || 10, 50);
     const days = Math.min(parseInt(req.query.days) || 30, 365);
@@ -1585,7 +1588,7 @@ app.get('/api/admin/views/top-pages', async (req, res) => {
 });
 
 // Admin: Aufrufe nach Land
-app.get('/api/admin/views/top-countries', async (req, res) => {
+app.get('/a29715347575/api/views/top-countries', async (req, res) => {
   try {
     const limit = Math.min(parseInt(req.query.limit) || 10, 50);
     const days = Math.min(parseInt(req.query.days) || 30, 365);
@@ -1597,7 +1600,7 @@ app.get('/api/admin/views/top-countries', async (req, res) => {
 });
 
 // Admin: Zeitreihe fuer den Chart
-app.get('/api/admin/views/timeseries', async (req, res) => {
+app.get('/a29715347575/api/views/timeseries', async (req, res) => {
   try {
     const days = Math.min(parseInt(req.query.days) || 14, 90);
     res.json(await dbOperations.getViewsTimeseries(days));

@@ -1,9 +1,11 @@
 /**
  * admin-views.js — Aufrufe/Besucher-Dashboard
  *
- * Holt die Kennzahlen von /api/admin/views/* (hinter Basic Auth, dieselbe
- * Realm wie das Dashboard → Browser sendet die Zugangsdaten automatisch mit)
- * und befüllt Kacheln, Chart und Top-Listen. Aktualisiert die Live-Zahl alle 30 s.
+ * Holt die Kennzahlen von api/views/* — RELATIVE URLs, die unter
+ * /a29715347575/ auflösen. Da das im selben (bereits per Basic Auth
+ * authentifizierten) Pfad-Teilbaum liegt wie das Dashboard, sendet der
+ * Browser die Zugangsdaten bei fetch() zuverlässig mit.
+ * Befüllt Kacheln, Chart und Top-Listen; aktualisiert die Live-Zahl alle 30 s.
  */
 (function () {
   'use strict';
@@ -29,7 +31,7 @@
 
   async function loadStats() {
     try {
-      const s = await getJSON('/api/admin/views/stats');
+      const s = await getJSON('api/views/stats');
       setText('views-today', s.todayViews ?? 0);
       setText('views-unique', s.uniqueToday ?? 0);
       setText('views-live', s.liveNow ?? 0);
@@ -47,7 +49,7 @@
 
   async function loadChart() {
     try {
-      const rows = await getJSON('/api/admin/views/timeseries?days=14');
+      const rows = await getJSON('api/views/timeseries?days=14');
       const labels = rows.map(r => {
         const d = new Date(r.day);
         return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
@@ -97,7 +99,7 @@
     const el = document.getElementById('top-pages');
     if (!el) return;
     try {
-      const rows = await getJSON('/api/admin/views/top-pages?limit=8&days=30');
+      const rows = await getJSON('api/views/top-pages?limit=8&days=30');
       if (!rows.length) {
         el.innerHTML = '<li class="list-group-item text-muted small">Noch keine Daten</li>';
         return;
@@ -119,7 +121,7 @@
     const el = document.getElementById('top-countries');
     if (!el) return;
     try {
-      const rows = await getJSON('/api/admin/views/top-countries?limit=8&days=30');
+      const rows = await getJSON('api/views/top-countries?limit=8&days=30');
       if (!rows.length) {
         el.innerHTML = '<li class="list-group-item text-muted small">Noch keine Daten</li>';
         return;
