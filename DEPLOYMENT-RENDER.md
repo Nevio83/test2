@@ -1,97 +1,83 @@
-# DEPLOYMENT — Maios auf Render (persistenter Node-Host)
+# DEPLOYMENT — Maios auf Render (Free) + Neon-Postgres (dauerhaft, kostenlos)
 
-Diese Anleitung bringt den **kompletten** Shop (Frontend + API + Stripe-Webhook + SQLite +
-CJ + Mails) auf **einen** persistenten Node-Service. Damit laufen Bestellspeicherung,
-Belege, Mails und CJ-Bestellung in Produktion — was mit den Netlify-Functions nicht geht.
+Kompletter Shop (Frontend + API + Stripe-Webhook + CJ + Mails) auf **einem** Render-Service,
+Bestelldaten dauerhaft in einer **kostenlosen Neon-Postgres-DB**. Damit laufen Bestell-
+speicherung, Belege, Mails und das Admin-Dashboard live — und die Daten bleiben erhalten.
 
-## Warum Render statt Netlify-Functions?
+## Warum dieses Setup?
 
-`server.js` schreibt in eine **SQLite-Datei** (`database/orders.db`) und legt PDF-Belege auf
-der Platte ab. Serverless-Functions (Netlify/Lambda) haben **kein dauerhaftes Dateisystem** —
-nach jedem Aufruf wäre die Bestelldatenbank weg. Außerdem braucht der Stripe-Webhook einen
-stabilen, immer erreichbaren Endpunkt mit rohem Request-Body. Beides liefert ein **persistenter
-Node-Host**. Render gewählt wegen einfachem Blueprint (`render.yaml`) + persistenter Disk.
+- **Render Web Service (Free):** keine Kreditkarte. Trade-off: schläft nach ~15 Min Inaktivität
+  (erster Aufruf danach ~1 Min). Reicht zum Start.
+- **Neon-Postgres (Free):** läuft **dauerhaft** (anders als Renders eigene Free-DB, die nach
+  30 Tagen gelöscht wird). 0,5 GB Speicher gratis, keine Karte.
+- `server.js` liefert das Frontend selbst aus → keine Zwei-Backend-Divergenz.
 
-> Bonus: Da `server.js` das Frontend selbst per `express.static` ausliefert, fällt die bisherige
-> Zwei-Backend-Divergenz (Review #6) weg — eine Codebasis, ein Deploy.
+## Vorbereitet im Repo (erledigt)
 
-## Vorbereitet im Repo (bereits erledigt)
-
-- `render.yaml` — Blueprint: Web-Service + Disk `/data` + Env-Variablen.
-- `database.js` — DB-Pfad jetzt über `SQLITE_DB_PATH` steuerbar (Default unverändert lokal).
-- `package.json` — `engines.node = 18.x`.
-- `server.js` — bindet bereits an `process.env.PORT` und `0.0.0.0` (Render-kompatibel).
-
-## Voraussetzungen
-
-- Repo bei GitHub/GitLab (Render zieht von dort).
-- **Zuerst Secrets rotieren** (siehe `SECURITY-SOFORT.md`) — die alten Keys gelten als geleakt.
-- Render-Account (render.com).
+- `database.js` — auf **Postgres (`pg`)** umgestellt, verbindet über `DATABASE_URL`. Getestet.
+- `package.json` — `sqlite3` raus, `pg` rein (kein nativer Build mehr → robuster Deploy).
+- `render.yaml` — Free-Plan, Env inkl. `DATABASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`.
+- `server.js` — bindet an `process.env.PORT`/`0.0.0.0` (Render-kompatibel).
 
 ---
 
-## Schritt 1 — Blueprint anlegen
+## Schritt 1 — Neon-Datenbank anlegen (kostenlos)
 
-1. Render Dashboard → **New** → **Blueprint**.
-2. Repo `Maios` auswählen. Render liest `render.yaml` und schlägt den Service `maios-shop`
-   mit Disk vor.
-3. **Apply** klicken. Der Service wird erstellt (Build: `npm install`, Start: `npm start`).
+1. Auf [neon.tech](https://neon.tech) mit GitHub anmelden (keine Karte).
+2. **Create project** → Region z.B. Frankfurt/Europe → erstellen.
+3. Im Dashboard den **Connection string** kopieren (Format:
+   `postgresql://user:pass@ep-xxx.eu-central-1.aws.neon.tech/neondb?sslmode=require`).
+   Das ist dein **`DATABASE_URL`**.
 
-> Persistente Disk = bezahlter Plan (Blueprint nutzt `plan: starter`). Ohne Disk wäre die
-> SQLite-DB nach jedem Deploy leer.
+## Schritt 2 — Code committen & pushen
 
-## Schritt 2 — Secrets setzen
+Die DB-Umstellung muss ins Repo, damit Render sie deployt (GitHub Desktop):
+- Geänderte Dateien (`database.js`, `package.json`, `render.yaml`) → Commit „postgres/neon" →
+  **Push origin**.
 
-Im Service → **Environment** alle mit `sync: false` markierten Variablen füllen (echte,
-**rotierte** Werte):
+## Schritt 3 — Render-Service + Env
 
-`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`,
-`CJ_STRIPE_ACCOUNT_ID`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `CJ_API_KEY`,
-`CJ_ACCESS_TOKEN`, `CJ_EMAIL`, `CJ_PASSWORD`, `EXCHANGE_RATE_API_KEY`, `SITE_URL`, `REPL_URL`.
+- Falls noch nicht geschehen: render.com → **New + → Blueprint** → Repo `test2` → Apply
+  (Free-Plan, keine Karte).
+- Im Service → **Environment** setzen:
+  - **`DATABASE_URL`** = der Neon-String aus Schritt 1.
+  - `ADMIN_USER=nevio`, `ADMIN_PASSWORD=932571294lslfrjsnas`.
+  - Stripe/Resend/CJ/ExchangeRate-Keys (`sync:false`-Felder), `SITE_URL`, `REPL_URL`.
+- Deploy starten/abwarten.
 
-`SQLITE_DB_PATH=/data/orders.db` und `NODE_VERSION` kommen schon aus dem Blueprint.
+## Schritt 4 — Test
 
-> `STRIPE_WEBHOOK_SECRET` setzt du erst in Schritt 4 final (kommt aus dem Stripe-Dashboard).
+- Render-URL öffnen (z.B. `https://maios-shop.onrender.com`): Startseite + Produktseite.
+- Dashboard `…/a29715347575/orders.html` → Login `nevio` / dein Passwort.
+- In den Render-**Logs** muss stehen: `✅ Datenbank initialisiert (Postgres)`.
+- Testbestellung im **Stripe-Testmodus** → danach erscheint sie im Dashboard und **bleibt**
+  auch nach einem Redeploy erhalten (das war das Ziel).
 
-## Schritt 3 — Erst-Deploy & Smoke-Test
+## Schritt 5 — Stripe-Webhook
 
-1. Deploy abwarten → Render gibt eine URL wie `https://maios-shop.onrender.com`.
-2. Aufrufen: Startseite lädt? Produktseite? Warenkorb?
-3. Test-Checkout im **Stripe-Testmodus** (Test-Keys verwenden), bis alles steht.
+- Stripe → Developers → Webhooks → Endpoint `https://<render-url>/stripe-webhook`,
+  Event `checkout.session.completed`. Das `whsec_…` als `STRIPE_WEBHOOK_SECRET` in Render →
+  neu deployen.
 
-## Schritt 4 — Stripe-Webhook verbinden
+## Schritt 6 — Domain (optional, zuletzt)
 
-1. Stripe Dashboard → **Developers → Webhooks → Add endpoint**.
-2. Endpoint-URL: `https://maios-shop.onrender.com/stripe-webhook`
-3. Events: mindestens `checkout.session.completed` (optional `payment_intent.succeeded`).
-4. Den angezeigten **Signing secret** (`whsec_…`) als `STRIPE_WEBHOOK_SECRET` in Render
-   eintragen → Service neu deployen.
-5. In Stripe „Send test event" → in den Render-Logs muss die Bestellung verarbeitet werden
-   (DB-Eintrag, Mail, CJ). Kein „No signatures found…" mehr (Body-Parser-Fix ist drin).
-
-## Schritt 5 — Domain umstellen
-
-1. Render → Service → **Settings → Custom Domains** → `maiosshop.com` (+ `www`) hinzufügen.
-2. Beim Domain-Provider die von Render genannten DNS-Einträge setzen.
-3. `SITE_URL`/`REPL_URL` auf die finale Domain setzen.
-4. Netlify kann danach abgeschaltet werden (oder nur als Redirect bleiben).
+- Render → Settings → Custom Domains → `maiosshop.com` + DNS-Einträge setzen.
+- `SITE_URL`/`REPL_URL` auf die finale Domain.
 
 ---
 
-## Nacharbeiten / Hinweise
+## Lokal entwickeln
 
-- **PDF-Belege:** `receipt-generator.js` schreibt nach `receipts/` (ephemer auf Render). Für
-  dauerhafte Ablage entweder auch auf die Disk legen (z.B. `RECEIPTS_PATH=/data/receipts`)
-  oder in S3/Cloud-Storage. Unkritisch, da Belege per Mail rausgehen.
-- **Backups:** Render-Disk regelmäßig sichern (z.B. `orders.db` per Cron kopieren) oder
-  langfristig auf eine gehostete DB (Postgres) migrieren.
-- **Marketing/** (Python) läuft NICHT auf diesem Web-Service — separat betreiben.
-- **netlify/** + `netlify.toml`: nach der Migration entfernen oder ignorieren, damit nicht
-  zwei Checkout-Pfade gepflegt werden (Review #6).
+Dieselbe `DATABASE_URL` (Neon) in die `.env` eintragen, dann:
+```bash
+npm install     # installiert pg
+npm start
+```
+`http://localhost:3000` — nutzt dieselbe dauerhafte DB wie live.
 
-## Alternative Hosts (gleiches Prinzip)
+## Hinweise
 
-- **Railway** / **Fly.io**: ebenfalls persistente Volumes; `SQLITE_DB_PATH` auf den Volume-
-  Mount zeigen, Start `npm start`, Webhook-URL analog. Render hier nur wegen Blueprint-Komfort.
-
-> Bezug: `REVIEW-CLAUDE-CODE.md` #4 (Prod-Bereitstellung) und #6 (Backend-Konsolidierung).
+- **PDF-Belege** (`receipt-generator.js` → `receipts/`) sind auf dem Free-Plan ephemer;
+  unkritisch, da Belege per Mail rausgehen. Für dauerhafte Ablage später S3 o.ä.
+- **Marketing/** (Python) läuft separat, nicht auf diesem Web-Service.
+- **netlify/** + `netlify.toml`: nach der Migration entfernen/ignorieren (eine Codebasis).
