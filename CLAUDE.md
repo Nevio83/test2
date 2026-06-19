@@ -10,16 +10,18 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 
 ---
 
-## 0. Aktueller Stand (2026-06-19)
+## 0. Aktueller Stand (2026-06-20)
 
-- **Live auf Render:** https://maios-shop.onrender.com (Free-Plan, schläft nach 15 Min →
-  erster Aufruf ~50 s). Repo `Nevio83/test2`, nur Branch `main`, Auto-Deploy bei Push.
+- **Live:** **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet auf Apex) +
+  Fallback `https://maios-shop.onrender.com`. Free-Plan (schläft nach 15 Min → erster Aufruf
+  ~50 s). Repo `Nevio83/test2`, nur Branch `main`, Auto-Deploy bei Push.
 - **Datenbank:** **Neon-Postgres** (dauerhaft, kostenlos) via `DATABASE_URL`. SQLite ist Geschichte.
-- **Bereits erledigt:** Preis-Manipulation geschlossen (`price-validator.js`), Stripe-Webhook-
-  Body-Parser gefixt, Admin-/`api/cj`-/Admin-`api/receipt`-Routen per Basic Auth geschützt,
-  `node-fetch` auf v2 (CommonJS), `sqlite3`→`pg`.
-- **Noch offen (bei dir):** Stripe-Webhook-Endpoint auf die Render-URL zeigen lassen,
-  Aufräumen (`CLAUDE-CODE.md` §2).
+- **Hosting-Hinweis:** Netlify ist komplett raus (Domain zeigt jetzt auf Render, Repo entkoppelt,
+  `netlify/`-Ordner gelöscht). **Render = einzige Quelle der Wahrheit.**
+- **Aufrufe-Tracking** ist live: Tabelle `page_views`, `POST /api/track/view`, Client
+  `view-tracker.js` (index/cart/Produktseiten), Dashboard-Kacheln + Chart in `orders.html`.
+- **Noch offen (bei dir):** Stripe-Webhook-Endpoint auf `https://maiosshop.com/stripe-webhook`
+  zeigen lassen (sonst landen Bestellungen nicht in der DB). Weiteres in `CLAUDE-CODE.md`.
 - **Admin-Dashboard:** `…/a29715347575/orders.html`, Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
 - **Wo anfangen:** offene Aufgaben + nächste Schritte stehen in `CLAUDE-CODE.md` (§5),
   Design-Themen in `CLAUDE-DESIGN.md`. Großes Repo → erst `/graphify .` (§10).
