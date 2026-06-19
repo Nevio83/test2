@@ -1,279 +1,219 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const fs = require('fs');
+/**
+ * database.js — PostgreSQL (pg)
+ *
+ * Dauerhafte Speicherung von Bestellungen, Positionen, Belegen, Tracking.
+ * Verbindung über die ENV-Variable DATABASE_URL (z.B. von Neon — kostenlos & dauerhaft).
+ * Lokal: einfach dieselbe DATABASE_URL in die .env eintragen.
+ *
+ * Exportiert dasselbe Interface wie vorher (dbOperations + pool als `db`),
+ * damit server.js unverändert weiterläuft.
+ */
 
-// Erstelle Datenbank-Ordner falls nicht vorhanden
-const dbDir = path.join(__dirname, 'database');
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir);
+const { Pool } = require('pg');
+
+const connectionString = process.env.DATABASE_URL;
+
+// SSL für gehostete DBs (Neon/Supabase) nötig; lokal aus.
+const isLocal = !connectionString || /localhost|127\.0\.0\.1/.test(connectionString);
+const pool = new Pool({
+  connectionString,
+  ssl: isLocal ? false : { rejectUnauthorized: false }
+});
+
+pool.on('error', (err) => {
+  console.error('❌ Postgres Pool-Fehler:', err.message);
+});
+
+// ── Schema-Initialisierung ───────────────────────────────────
+const SCHEMA = [
+  `CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    order_id TEXT UNIQUE NOT NULL,
+    receipt_number TEXT UNIQUE NOT NULL,
+    customer_email TEXT NOT NULL,
+    customer_name TEXT NOT NULL,
+    customer_phone TEXT,
+    shipping_address TEXT,
+    billing_address TEXT,
+    payment_method TEXT,
+    payment_status TEXT DEFAULT 'pending',
+    order_status TEXT DEFAULT 'processing',
+    subtotal REAL NOT NULL,
+    shipping_cost REAL DEFAULT 0,
+    tax_amount REAL DEFAULT 0,
+    total_amount REAL NOT NULL,
+    currency TEXT DEFAULT 'EUR',
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE TABLE IF NOT EXISTS order_items (
+    id SERIAL PRIMARY KEY,
+    order_id TEXT NOT NULL REFERENCES orders(order_id),
+    product_id TEXT NOT NULL,
+    product_name TEXT NOT NULL,
+    product_sku TEXT,
+    product_image TEXT,
+    color TEXT,
+    quantity INTEGER NOT NULL,
+    unit_price REAL NOT NULL,
+    total_price REAL NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE TABLE IF NOT EXISTS receipts (
+    id SERIAL PRIMARY KEY,
+    receipt_id TEXT UNIQUE NOT NULL,
+    order_id TEXT NOT NULL REFERENCES orders(order_id),
+    receipt_number TEXT NOT NULL,
+    pdf_path TEXT,
+    email_sent BOOLEAN DEFAULT false,
+    email_sent_at TIMESTAMPTZ,
+    admin_notified BOOLEAN DEFAULT false,
+    admin_notified_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE TABLE IF NOT EXISTS order_tracking (
+    id SERIAL PRIMARY KEY,
+    order_id TEXT NOT NULL REFERENCES orders(order_id),
+    status TEXT NOT NULL,
+    description TEXT,
+    tracking_number TEXT,
+    carrier TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_orders_order_id ON orders(order_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(customer_email)`,
+  `CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_receipts_order_id ON receipts(order_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_tracking_order_id ON order_tracking(order_id)`
+];
+
+async function initializeDatabase() {
+  if (!connectionString) {
+    console.warn('⚠️  DATABASE_URL fehlt — Postgres nicht konfiguriert. Bestell-/Beleg-/Tracking-Funktionen sind deaktiviert, der Shop läuft sonst normal.');
+    return;
+  }
+  try {
+    for (const sql of SCHEMA) {
+      await pool.query(sql);
+    }
+    console.log('✅ Datenbank initialisiert (Postgres) und Tabellen überprüft.');
+  } catch (err) {
+    // Nicht hart beenden — Shop/Checkout sollen weiterlaufen, auch wenn die DB hakt.
+    console.error('❌ DB-Initialisierung fehlgeschlagen:', err.message);
+  }
 }
+initializeDatabase();
 
-// Initialisiere SQLite Datenbank
-// DB-Pfad konfigurierbar (z.B. persistente Disk auf Render): SQLITE_DB_PATH
-const dbPath = process.env.SQLITE_DB_PATH || path.join(dbDir, 'orders.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('DB Verbindungsfehler:', err.message);
-  }
-});
-
-// Funktion zur Initialisierung der Datenbank
-const initializeDatabase = () => {
-  return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      const queries = [
-        `CREATE TABLE IF NOT EXISTS orders (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT UNIQUE NOT NULL, receipt_number TEXT UNIQUE NOT NULL, customer_email TEXT NOT NULL, customer_name TEXT NOT NULL, customer_phone TEXT, shipping_address TEXT, billing_address TEXT, payment_method TEXT, payment_status TEXT DEFAULT 'pending', order_status TEXT DEFAULT 'processing', subtotal REAL NOT NULL, shipping_cost REAL DEFAULT 0, tax_amount REAL DEFAULT 0, total_amount REAL NOT NULL, currency TEXT DEFAULT 'EUR', notes TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`,
-        `CREATE TABLE IF NOT EXISTS order_items (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT NOT NULL, product_id INTEGER NOT NULL, product_name TEXT NOT NULL, product_sku TEXT, product_image TEXT, color TEXT, quantity INTEGER NOT NULL, unit_price REAL NOT NULL, total_price REAL NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (order_id) REFERENCES orders(order_id))`,
-        `CREATE TABLE IF NOT EXISTS receipts (id INTEGER PRIMARY KEY AUTOINCREMENT, receipt_id TEXT UNIQUE NOT NULL, order_id TEXT NOT NULL, receipt_number TEXT NOT NULL, pdf_path TEXT, email_sent BOOLEAN DEFAULT 0, email_sent_at DATETIME, admin_notified BOOLEAN DEFAULT 0, admin_notified_at DATETIME, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (order_id) REFERENCES orders(order_id))`,
-        `CREATE TABLE IF NOT EXISTS order_tracking (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id TEXT NOT NULL, status TEXT NOT NULL, description TEXT, tracking_number TEXT, carrier TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (order_id) REFERENCES orders(order_id))`,
-        `CREATE INDEX IF NOT EXISTS idx_orders_order_id ON orders(order_id)`,
-        `CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(customer_email)`,
-        `CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at)`,
-        `CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id)`,
-        `CREATE INDEX IF NOT EXISTS idx_receipts_order_id ON receipts(order_id)`,
-        `CREATE INDEX IF NOT EXISTS idx_tracking_order_id ON order_tracking(order_id)`
-      ];
-
-      db.parallelize(() => {
-        queries.forEach(sql => {
-          db.run(sql, (err) => {
-            if (err) {
-              console.error('DB Init Fehler bei Query:', sql);
-            }
-          });
-        });
-      });
-
-      db.wait((err) => {
-          if (err) {
-              return reject(err);
-          }
-          console.log('✅ Datenbank initialisiert und Tabellen überprüft.');
-          resolve();
-      });
-    });
-  });
-};
-
-// Führe Initialisierung aus
-initializeDatabase().catch(err => {
-  console.error('FATAL: Datenbank-Initialisierung fehlgeschlagen:', err);
-  process.exit(1);
-});
-
-// Hilfsfunktionen für Datenbank-Operationen
+// ── Operationen (gleiches Interface wie zuvor) ───────────────
 const dbOperations = {
-  // Neue Bestellung erstellen
-  createOrder: (orderData) => {
-    return new Promise((resolve, reject) => {
-      const {
-        order_id, receipt_number, customer_email, customer_name, customer_phone,
-        shipping_address, billing_address, payment_method, subtotal,
-        shipping_cost, tax_amount, total_amount, currency, notes
-      } = orderData;
-
-      const sql = `
-        INSERT INTO orders (
-          order_id, receipt_number, customer_email, customer_name, customer_phone,
-          shipping_address, billing_address, payment_method, subtotal,
-          shipping_cost, tax_amount, total_amount, currency, notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
-
-      db.run(sql, [
-        order_id, receipt_number, customer_email, customer_name, customer_phone,
-        shipping_address, billing_address, payment_method, subtotal,
-        shipping_cost, tax_amount, total_amount, currency, notes
-      ], function(err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID, order_id });
-      });
-    });
+  createOrder: async (o) => {
+    const sql = `INSERT INTO orders (
+      order_id, receipt_number, customer_email, customer_name, customer_phone,
+      shipping_address, billing_address, payment_method, subtotal,
+      shipping_cost, tax_amount, total_amount, currency, notes
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING id`;
+    const r = await pool.query(sql, [
+      o.order_id, o.receipt_number, o.customer_email, o.customer_name, o.customer_phone,
+      o.shipping_address, o.billing_address, o.payment_method, o.subtotal,
+      o.shipping_cost, o.tax_amount, o.total_amount, o.currency, o.notes
+    ]);
+    return { id: r.rows[0].id, order_id: o.order_id };
   },
 
-  // Bestellpositionen hinzufügen
-  addOrderItems: (order_id, items) => {
-    return new Promise((resolve, reject) => {
-      const stmt = db.prepare(`
-        INSERT INTO order_items (
-          order_id, product_id, product_name, product_sku, product_image,
-          color, quantity, unit_price, total_price
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-
-      let insertedCount = 0;
-      items.forEach(item => {
-        stmt.run(
-          order_id, item.product_id, item.product_name, item.product_sku,
-          item.product_image, item.color, item.quantity, item.unit_price,
-          item.total_price,
-          (err) => {
-            if (err) {
-              stmt.finalize();
-              reject(err);
-            } else {
-              insertedCount++;
-              if (insertedCount === items.length) {
-                stmt.finalize();
-                resolve(insertedCount);
-              }
-            }
-          }
-        );
-      });
-    });
+  addOrderItems: async (order_id, items) => {
+    const sql = `INSERT INTO order_items (
+      order_id, product_id, product_name, product_sku, product_image,
+      color, quantity, unit_price, total_price
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`;
+    for (const it of items) {
+      await pool.query(sql, [
+        order_id, String(it.product_id ?? ''), it.product_name, it.product_sku,
+        it.product_image, it.color, it.quantity, it.unit_price, it.total_price
+      ]);
+    }
+    return items.length;
   },
 
-  // Kassenbon speichern
-  saveReceipt: (receiptData) => {
-    return new Promise((resolve, reject) => {
-      const { receipt_id, order_id, receipt_number, pdf_path } = receiptData;
-
-      const sql = `
-        INSERT INTO receipts (receipt_id, order_id, receipt_number, pdf_path)
-        VALUES (?, ?, ?, ?)
-      `;
-
-      db.run(sql, [receipt_id, order_id, receipt_number, pdf_path], function(err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID, receipt_id });
-      });
-    });
+  saveReceipt: async (r) => {
+    const sql = `INSERT INTO receipts (receipt_id, order_id, receipt_number, pdf_path)
+                 VALUES ($1,$2,$3,$4) RETURNING id`;
+    const res = await pool.query(sql, [r.receipt_id, r.order_id, r.receipt_number, r.pdf_path]);
+    return { id: res.rows[0].id, receipt_id: r.receipt_id };
   },
 
-  // Bestellung abrufen
-  getOrder: (order_id) => {
-    return new Promise((resolve, reject) => {
-      db.get(
-        `SELECT * FROM orders WHERE order_id = ?`,
-        [order_id],
-        (err, order) => {
-          if (err) reject(err);
-          else if (!order) resolve(null);
-          else {
-            db.all(
-              `SELECT * FROM order_items WHERE order_id = ?`,
-              [order_id],
-              (err, items) => {
-                if (err) reject(err);
-                else resolve({ ...order, items });
-              }
-            );
-          }
-        }
-      );
-    });
+  getOrder: async (order_id) => {
+    const o = await pool.query(`SELECT * FROM orders WHERE order_id = $1`, [order_id]);
+    if (o.rows.length === 0) return null;
+    const items = await pool.query(`SELECT * FROM order_items WHERE order_id = $1`, [order_id]);
+    return { ...o.rows[0], items: items.rows };
   },
 
-  // Bestellung nach Bestellnummer abrufen (Alias für getOrder)
-  getOrderByOrderId: (order_id) => {
-    return dbOperations.getOrder(order_id);
+  getOrderByOrderId: (order_id) => dbOperations.getOrder(order_id),
+
+  getAllOrders: async (limit = 50, offset = 0) => {
+    const r = await pool.query(
+      `SELECT * FROM orders ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
+    return r.rows;
   },
 
-  // Alle Bestellungen abrufen (mit Pagination)
-  getAllOrders: (limit = 50, offset = 0) => {
-    return new Promise((resolve, reject) => {
-      db.all(
-        `SELECT * FROM orders ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-        [limit, offset],
-        (err, orders) => {
-          if (err) reject(err);
-          else resolve(orders);
-        }
-      );
-    });
+  updateOrderStatus: async (order_id, status) => {
+    const r = await pool.query(
+      `UPDATE orders SET order_status = $1, updated_at = CURRENT_TIMESTAMP WHERE order_id = $2`,
+      [status, order_id]
+    );
+    return { changes: r.rowCount };
   },
 
-  // Bestellstatus aktualisieren
-  updateOrderStatus: (order_id, status) => {
-    return new Promise((resolve, reject) => {
-      db.run(
-        `UPDATE orders SET order_status = ?, updated_at = CURRENT_TIMESTAMP WHERE order_id = ?`,
-        [status, order_id],
-        function(err) {
-          if (err) reject(err);
-          else resolve({ changes: this.changes });
-        }
-      );
-    });
+  updateEmailStatus: async (receipt_id, type = 'customer') => {
+    const col = type === 'admin' ? 'admin_notified' : 'email_sent';
+    const tcol = type === 'admin' ? 'admin_notified_at' : 'email_sent_at';
+    const r = await pool.query(
+      `UPDATE receipts SET ${col} = true, ${tcol} = CURRENT_TIMESTAMP WHERE receipt_id = $1`,
+      [receipt_id]
+    );
+    return { changes: r.rowCount };
   },
 
-  // E-Mail-Status aktualisieren
-  updateEmailStatus: (receipt_id, type = 'customer') => {
-    return new Promise((resolve, reject) => {
-      const column = type === 'admin' ? 'admin_notified' : 'email_sent';
-      const timeColumn = type === 'admin' ? 'admin_notified_at' : 'email_sent_at';
-      
-      db.run(
-        `UPDATE receipts SET ${column} = 1, ${timeColumn} = CURRENT_TIMESTAMP WHERE receipt_id = ?`,
-        [receipt_id],
-        function(err) {
-          if (err) reject(err);
-          else resolve({ changes: this.changes });
-        }
-      );
-    });
+  addTracking: async (t) => {
+    const r = await pool.query(
+      `INSERT INTO order_tracking (order_id, status, description, tracking_number, carrier)
+       VALUES ($1,$2,$3,$4,$5) RETURNING id`,
+      [t.order_id, t.status, t.description, t.tracking_number, t.carrier]
+    );
+    return { id: r.rows[0].id };
   },
 
-  // Tracking hinzufügen
-  addTracking: (trackingData) => {
-    return new Promise((resolve, reject) => {
-      const { order_id, status, description, tracking_number, carrier } = trackingData;
-      
-      db.run(
-        `INSERT INTO order_tracking (order_id, status, description, tracking_number, carrier)
-         VALUES (?, ?, ?, ?, ?)`,
-        [order_id, status, description, tracking_number, carrier],
-        function(err) {
-          if (err) reject(err);
-          else resolve({ id: this.lastID });
-        }
-      );
-    });
+  getTracking: async (order_id) => {
+    const r = await pool.query(
+      `SELECT * FROM order_tracking WHERE order_id = $1 ORDER BY created_at ASC`,
+      [order_id]
+    );
+    return r.rows;
   },
 
-  // Bestellungen nach E-Mail suchen
-  getOrdersByEmail: (email) => {
-    return new Promise((resolve, reject) => {
-      db.all(
-        `SELECT * FROM orders WHERE customer_email = ? ORDER BY created_at DESC`,
-        [email],
-        (err, orders) => {
-          if (err) reject(err);
-          else resolve(orders);
-        }
-      );
-    });
+  getOrdersByEmail: async (email) => {
+    const r = await pool.query(
+      `SELECT * FROM orders WHERE customer_email = $1 ORDER BY created_at DESC`,
+      [email]
+    );
+    return r.rows;
   },
 
-  // Statistiken abrufen
-  getStatistics: () => {
-    return new Promise((resolve, reject) => {
-      const queries = {
-        totalOrders: `SELECT COUNT(*) as count FROM orders`,
-        totalRevenue: `SELECT SUM(total_amount) as total FROM orders WHERE payment_status = 'completed'`,
-        todayOrders: `SELECT COUNT(*) as count FROM orders WHERE DATE(created_at) = DATE('now')`,
-        todayRevenue: `SELECT SUM(total_amount) as total FROM orders WHERE DATE(created_at) = DATE('now') AND payment_status = 'completed'`,
-        pendingOrders: `SELECT COUNT(*) as count FROM orders WHERE order_status = 'processing'`
-      };
-
-      const stats = {};
-      let completed = 0;
-      
-      Object.entries(queries).forEach(([key, sql]) => {
-        db.get(sql, (err, result) => {
-          if (err) reject(err);
-          else {
-            stats[key] = result;
-            completed++;
-            if (completed === Object.keys(queries).length) {
-              resolve(stats);
-            }
-          }
-        });
-      });
-    });
+  getStatistics: async () => {
+    const q = (sql) => pool.query(sql).then(r => r.rows[0]);
+    const [totalOrders, totalRevenue, todayOrders, todayRevenue, pendingOrders] = await Promise.all([
+      q(`SELECT COUNT(*)::int AS count FROM orders`),
+      q(`SELECT COALESCE(SUM(total_amount),0) AS total FROM orders WHERE payment_status = 'paid'`),
+      q(`SELECT COUNT(*)::int AS count FROM orders WHERE created_at::date = CURRENT_DATE`),
+      q(`SELECT COALESCE(SUM(total_amount),0) AS total FROM orders WHERE created_at::date = CURRENT_DATE AND payment_status = 'paid'`),
+      q(`SELECT COUNT(*)::int AS count FROM orders WHERE order_status = 'processing'`)
+    ]);
+    return { totalOrders, totalRevenue, todayOrders, todayRevenue, pendingOrders };
   }
 };
 
-module.exports = { db, dbOperations };
+module.exports = { db: pool, dbOperations };

@@ -17,7 +17,7 @@ Mehrwährung über **ExchangeRate-API**. Dazu gibt es eine separate **Python-Mar
 Automatisierung** (`Marketing/`), die TikTok-Creatives generiert.
 
 **Stack:** Node.js + Express (Backend) · Vanilla JS + Bootstrap/Tailwind (Frontend) ·
-SQLite (Bestellungen) · Netlify (Hosting + Functions) · Python (Marketing-Pipelines).
+PostgreSQL/Neon (Bestellungen) · Render/Netlify (Hosting) · Python (Marketing-Pipelines).
 
 > ⚠️ Wichtig: Es gibt **zwei** Backend-Pfade, die auseinanderlaufen — siehe §4. Das ist die
 > häufigste Fehlerquelle. Vor jeder Checkout-/Zahlungsänderung beide Pfade prüfen.
@@ -49,7 +49,7 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 | Datei | Zweck |
 |---|---|
 | `server.js` | Express-Server, **alle** API-Routen, Stripe-Webhook, CJ-Auto-Bestellung, Retouren-Logik. ~1665 Zeilen, Herzstück. |
-| `database.js` | SQLite-Schema + `dbOperations` (orders, order_items, receipts, order_tracking). |
+| `database.js` | **PostgreSQL** (`pg`) — Schema + `dbOperations` (orders, order_items, receipts, order_tracking). Verbindung via `DATABASE_URL` (Neon). |
 | `cj-dropshipping-api.js` | Vollständiger CJ-API-Client (Produkte, Orders, Logistik, Disputes, Returns) mit Fallback. |
 | `cj-fallback-system.js` | Lokaler Fallback, wenn CJ-API nicht erreichbar ist. |
 | `cj-payment-calculator.js` | Berechnet CJ-Kosten + Gewinn-Split (auch als Netlify-Function dupliziert). |
@@ -139,9 +139,12 @@ Produkt 21 nutzt „Modell" statt „Farbe".
 
 ## 5. Datenbank
 
-SQLite via `database.js`. Tabellen: `orders`, `order_items`, `receipts`, `order_tracking`
-(+ Indizes). **Kein Migrationssystem** — Schemaänderungen per manuellem `ALTER TABLE` oder
-DB neu anlegen. Prod-DB: `database/orders.db`. `test.db`/`orders.db` im Root sind Altlasten.
+**PostgreSQL** via `database.js` (`pg`-Pool, Verbindung über `DATABASE_URL`). Tabellen:
+`orders`, `order_items`, `receipts`, `order_tracking` (+ Indizes), werden beim Start
+automatisch angelegt (`CREATE TABLE IF NOT EXISTS`). Empfohlen: **Neon** (kostenlos & dauerhaft).
+Lokal dieselbe `DATABASE_URL` in `.env`. Ohne `DATABASE_URL` läuft der Shop, aber Bestell-/
+Beleg-/Tracking-Funktionen sind deaktiviert. **Kein Migrationssystem** — Schemaänderungen per
+manuellem `ALTER TABLE`. (Frühere SQLite-Dateien `*.db` sind Altlasten.)
 
 ---
 
@@ -151,8 +154,9 @@ Alle Secrets in `.env` (Backend) und `Marketing/.env` (Marketing). Kategorien:
 Stripe (`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`,
 optional `CJ_STRIPE_ACCOUNT_ID`), CJ (`CJ_API_KEY`, `CJ_ACCESS_TOKEN`, `CJ_EMAIL`,
 `CJ_PASSWORD`, Warehouses), Resend (`RESEND_API_KEY`, `RESEND_FROM_EMAIL`),
-`EXCHANGE_RATE_API_KEY`, sowie `SESSION_SECRET`/`JWT_SECRET`/`ENCRYPTION_KEY`,
-Versand-/Shop-Defaults und Analytics-IDs.
+`EXCHANGE_RATE_API_KEY`, **`DATABASE_URL`** (Neon-Postgres), `ADMIN_USER`/`ADMIN_PASSWORD`
+(Admin-Login), sowie `SESSION_SECRET`/`JWT_SECRET`/`ENCRYPTION_KEY`, Versand-/Shop-Defaults
+und Analytics-IDs.
 
 > 🔴 **`.env` und `Marketing/.env` waren in Git eingecheckt** (Live-Keys). `.gitignore` und
 > `.env.example` sind gefixt; Untracken/History-Rewrite/**Key-Rotation** stehen noch aus —
