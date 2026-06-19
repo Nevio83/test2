@@ -92,14 +92,11 @@ app.use((req, res, next) => {
   ];
   
   const origin = req.headers.origin;
-  
-  // Prüfe, ob die Anfrage-Quelle in den erlaubten Domains enthalten ist
+
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
-  } else {
-    // Für Produktionsumgebung (gleiche Domain, keine CORS nötig)
-    res.header('Access-Control-Allow-Origin', '*');
   }
+  // Kein Fallback auf '*' — Same-Origin-Requests brauchen keinen ACAO-Header
   
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -134,17 +131,10 @@ app.use(compression({
 
 // (express.json() ist bereits oben registriert – Duplikat entfernt)
 
-// Add middleware for Replit proxy/iframe support
+// Sicherheits-Header
 app.use((req, res, next) => {
-  // Allow iframe embedding for Replit preview
-  res.setHeader('X-Frame-Options', 'ALLOWALL');
-  res.setHeader('Content-Security-Policy', 'frame-ancestors *');
-  
-  // CORS headers for development
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
   next();
 });
 
@@ -340,20 +330,15 @@ app.post('/api/create-checkout-session', async (req, res) => {
     const sessionConfig = {
       payment_method_types: ['card'], // Nur Kreditkarten für maximale Kompatibilität
       
-      // Payment Intent Daten
       payment_intent_data: {
         description: 'Einkauf bei Maios',
         capture_method: 'automatic',
-        // Speichere Zahlungsmethode für zukünftige Käufe
-        setup_future_usage: 'on_session',
+        setup_future_usage: 'off_session',
         metadata: {
           order_id: `ORD-${Date.now()}`,
           shop_domain: 'maiosshop.com'
         }
       },
-      
-      // Automatische Zahlungsmethoden in Produktionsumgebung aktivieren
-      // Dies erlaubt Apple Pay, Google Pay usw. wenn verfügbar
       automatic_payment_methods: {
         enabled: true
       },
@@ -368,18 +353,11 @@ app.post('/api/create-checkout-session', async (req, res) => {
       phone_number_collection: {
         enabled: true
       },
-      locale: 'de', // Deutsche Sprache für bessere UX
-      // Express Checkout Payment Methods (oben angezeigt)
+      locale: 'de',
       payment_method_options: {
         card: {
           request_three_d_secure: 'automatic'
         }
-      },
-      // Express Checkout Methoden verbessern
-      payment_intent_data: {
-        setup_future_usage: 'off_session',
-        description: 'Einkauf bei Maios',
-        capture_method: 'automatic'
       }
     };
     
@@ -873,8 +851,8 @@ app.post('/api/return-request', async (req, res) => {
         // Automatisch genehmigen wenn:
         // 1. Bestellung < 14 Tage alt
         // 2. Grund ist in Auto-Approve Liste
-        // DEAKTIVIERT: Benutzer möchte immer manuell entscheiden
-        if (false && orderAge <= 14 && autoApproveReasons.includes(reason)) {
+        // Nur aktiv wenn RETURNS_AUTO_APPROVE=true gesetzt ist (Standard: manuell)
+        if (process.env.RETURNS_AUTO_APPROVE === 'true' && orderAge <= 14 && autoApproveReasons.includes(reason)) {
           autoApproved = true;
           console.log('✅ Retoure wird automatisch genehmigt!');
           
