@@ -2,6 +2,12 @@
 
 Ein moderner E-Commerce Shop mit Stripe Integration, Multi-Währung Support und automatischem E-Mail-Versand.
 
+> ⚠️ **Dieses README ist teils veraltet.** Maßgeblich sind `CLAUDE.md` (Architektur, aktueller
+> Stand) und `DEPLOYMENT-RENDER.md` (Live-Deploy). Korrekturen gegenüber dem Text unten:
+> - **Datenbank: PostgreSQL (Neon)** via `DATABASE_URL` — **nicht** MongoDB. `database.js` nutzt `pg`.
+> - **Hosting: Render** (`https://maios-shop.onrender.com`) — Netlify-Pfad ist Altbestand.
+> - Lokaler Start: `npm install && npm start` (dieselbe `DATABASE_URL` in `.env`). Kein `mongod` nötig.
+
 ## ✨ Features
 
 ### 💳 Zahlungen
