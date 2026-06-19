@@ -20,8 +20,8 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   `netlify/`-Ordner gelöscht). **Render = einzige Quelle der Wahrheit.**
 - **Aufrufe-Tracking** ist live: Tabelle `page_views`, `POST /api/track/view`, Client
   `view-tracker.js` (index/cart/Produktseiten), Dashboard-Kacheln + Chart in `orders.html`.
-- **Noch offen (bei dir):** Stripe-Webhook-Endpoint auf `https://maiosshop.com/stripe-webhook`
-  zeigen lassen (sonst landen Bestellungen nicht in der DB). Weiteres in `CLAUDE-CODE.md`.
+- **Stripe-Webhook:** zeigt auf `https://maiosshop.com/stripe-webhook` (Nutzlast „Snapshot",
+  Events `checkout.session.completed` + `payment_intent.succeeded`). Offene Aufgaben in `CLAUDE-CODE.md`.
 - **Admin-Dashboard:** `…/a29715347575/orders.html`, Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
 - **Wo anfangen:** offene Aufgaben + nächste Schritte stehen in `CLAUDE-CODE.md` (§5),
   Design-Themen in `CLAUDE-DESIGN.md`. Großes Repo → erst `/graphify .` (§10).

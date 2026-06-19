@@ -17,7 +17,6 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 | # | Prio | Thema | Datei(en) |
 |---|---|---|---|
-| 3 | 🟠 | **Stripe-Webhook-URL** im Stripe-Dashboard auf `https://maiosshop.com/stripe-webhook` zeigen lassen (sonst landen Bestellungen nicht in der DB) | Stripe-Dashboard |
 | 9 | 🟠 | OpenAI-Key nicht im Client (`ai-chat-integration.js`) → serverseitiger Proxy; Antwort defensiv parsen | `ai-chat-integration.js` |
 | 10 | 🟡 | Robustheit: MwSt.-Berechnung prüfen; `crypto.randomUUID()` statt `substr`; Fehler-Responses ohne interne Details | `server.js`, `database.js` |
 | 11 | 🟡 | Performance: Assets unminifiziert/ungebündelt (styles.css ~215 KB, app.js ~190 KB), Bilder unoptimiert (WebP/lazy), `products.json` mehrfach pro Render gefetcht, ~1000 `console.*` → Log-Level | Frontend gesamt |
@@ -82,11 +81,9 @@ Datenschutz: Cookie-/Tracking-Hinweis in `infos/cookies.html`/Datenschutz prüfe
 
 ## 5. Nächste sinnvolle Schritte (Reihenfolge)
 
-1. 🟠 Stripe-Webhook-URL auf `https://maiosshop.com/stripe-webhook` zeigen lassen (§1 #3)
-   → dann füllt sich das Bestell-Dashboard mit echten Bestellungen.
-2. 🟠 Code-Härtung #9 (OpenAI-Proxy), dann #10 (§1).
-3. 🟢 Conversion/Umsatz-Auswertung (§3.1) auf Basis von `page_views` + `orders`.
-4. 🟢 Restliches Aufräumen (§2).
+1. 🟠 Code-Härtung #9 (OpenAI-Proxy), dann #10 (§1).
+2. 🟢 Conversion/Umsatz-Auswertung (§3.1) auf Basis von `page_views` + `orders`.
+3. 🟢 Restliches Aufräumen (§2).
 
 > Großes Repo (~19k JS-Zeilen, 60+ HTML): vor Refactorings `/graphify .` für die
 > Abhängigkeiten (siehe `CLAUDE.md`).
