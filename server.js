@@ -816,6 +816,65 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
+// ── EU-Widerruf (gesetzliches Widerrufsrecht) ────────────────────────
+// Oeffentlicher Endpunkt: Kunde widerruft den Vertrag. Sendet eine
+// Benachrichtigung an den Shop UND eine Eingangsbestaetigung an den Kunden
+// (gesetzlich vorgeschrieben: Bestaetigung auf dauerhaftem Datentraeger).
+app.post('/api/widerruf', async (req, res) => {
+  try {
+    const { orderId, email, name, orderDate, address, note } = req.body || {};
+    if (!orderId || !email || !name) {
+      return res.status(400).json({ error: 'Bitte Bestellnummer, Name und E-Mail angeben.' });
+    }
+    // einfache E-Mail-Plausibilitaet
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: 'Bitte eine gültige E-Mail-Adresse angeben.' });
+    }
+
+    const esc = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const eingegangen = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin' });
+
+    const detailsHtml = `
+      <p><strong>Bestellnummer:</strong> ${esc(orderId)}</p>
+      <p><strong>Name:</strong> ${esc(name)}</p>
+      <p><strong>E-Mail:</strong> ${esc(email)}</p>
+      <p><strong>Bestellt/erhalten am:</strong> ${esc(orderDate || 'Nicht angegeben')}</p>
+      <p><strong>Anschrift:</strong> ${esc(address || 'Nicht angegeben')}</p>
+      <p><strong>Anmerkung:</strong> ${esc(note || '—')}</p>
+      <p><strong>Eingegangen:</strong> ${esc(eingegangen)}</p>`;
+
+    // 1) Benachrichtigung an den Shop
+    await emailService.sendEmail({
+      to: 'maioscorporation@gmail.com',
+      subject: `↩️ Widerruf: ${orderId}`,
+      replyTo: email,
+      html: `<h2>↩️ Neuer Widerruf eingegangen</h2>${detailsHtml}`
+    });
+
+    // 2) Eingangsbestaetigung an den Kunden (gesetzlich vorgeschrieben)
+    await emailService.sendEmail({
+      to: email,
+      subject: `Bestätigung deines Widerrufs – Bestellung ${orderId}`,
+      html: `
+        <h2>Wir haben deinen Widerruf erhalten</h2>
+        <p>Hallo ${esc(name)},</p>
+        <p>hiermit bestätigen wir den Eingang deines Widerrufs zu folgender Bestellung.
+        Eine eventuelle Rückzahlung erfolgt unverzüglich, spätestens binnen 14 Tagen.</p>
+        ${detailsHtml}
+        <p>Bitte sende die Ware – sofern bereits erhalten – unverzüglich an uns zurück.</p>
+        <p>Dein Maios Shop Team<br>
+        <a href="https://maiosshop.com">maiosshop.com</a></p>`
+    });
+
+    console.log(`↩️ Widerruf eingegangen: ${orderId} (${email})`);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('❌ Widerruf-Fehler:', error.message);
+    res.status(500).json({ error: 'Widerruf konnte nicht gesendet werden.' });
+  }
+});
+
 // Retoure-Anfrage Endpunkt
 app.post('/api/return-request', async (req, res) => {
   try {

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Widerruf – Maios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="../styles.css" rel="stylesheet" />
+  <link href="./info.css" rel="stylesheet" />
+  <link href="./retouren.css" rel="stylesheet" />
+  <style>
+    @media (max-width: 768px) {
+      .navbar-brand img { height: 50px !important; }
+      .navbar-brand span { font-size: 1.4rem !important; }
+    }
+    @media (max-width: 480px) {
+      .navbar-brand img { height: 42px !important; }
+      .navbar-brand span { font-size: 1.3rem !important; }
+    }
+    .muster-box {
+      background: #f8f9fa;
+      border: 1px dashed #adb5bd;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <header class="header-bar py-3">
+    <div class="container d-flex align-items-center gap-3">
+      <a href="../index.html" class="navbar-brand fw-bold mb-0 h1" style="font-size: 2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; pointer-events: auto;" onclick="window.location.href='../index.html'; return false;">
+        <img src="../images/logo.jpg" alt="Maios Logo" style="height: 70px; width: auto;">
+        <span style="font-weight: 900; letter-spacing: -0.5px; font-size: 2rem;">MAIOS</span>
+      </a>
+      <a href="../index.html" class="ms-auto back-btn"><i class="bi bi-arrow-left"></i> Zurück zum Shop</a>
+    </div>
+  </header>
+
+  <main class="container py-4 py-md-5">
+    <h1 class="page-title display-5 mb-3">Widerruf</h1>
+    <p class="lead mb-4">Dein gesetzliches Widerrufsrecht – einfach und direkt online ausüben.</p>
+
+    <!-- Widerrufsbelehrung -->
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Widerrufsbelehrung</h2>
+      <p><strong>Widerrufsrecht</strong></p>
+      <p>Du hast das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.
+      Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem du oder ein von dir benannter Dritter,
+      der nicht der Beförderer ist, die Waren in Besitz genommen hast bzw. hat.</p>
+      <p>Um dein Widerrufsrecht auszuüben, musst du uns
+      (<strong>Maios</strong>, E-Mail: <a href="mailto:maioscorporation@gmail.com">maioscorporation@gmail.com</a>)
+      mittels einer eindeutigen Erklärung (z.&nbsp;B. ein mit der Post versandter Brief oder eine E-Mail)
+      über deinen Entschluss, diesen Vertrag zu widerrufen, informieren. Du kannst dafür das untenstehende
+      Online-Formular verwenden, was jedoch nicht vorgeschrieben ist.</p>
+      <p>Zur Wahrung der Widerrufsfrist reicht es aus, dass du die Mitteilung über die Ausübung des
+      Widerrufsrechts vor Ablauf der Widerrufsfrist absendest.</p>
+      <p class="mb-0"><strong>Folgen des Widerrufs</strong><br>
+      Wenn du diesen Vertrag widerrufst, haben wir dir alle Zahlungen, die wir von dir erhalten haben,
+      einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten, die sich daraus ergeben,
+      dass du eine andere Art der Lieferung als die von uns angebotene, günstigste Standardlieferung
+      gewählt hast), unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an
+      dem die Mitteilung über deinen Widerruf dieses Vertrags bei uns eingegangen ist.</p>
+    </div>
+
+    <!-- Muster-Widerrufsformular -->
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Muster-Widerrufsformular</h2>
+      <p class="text-muted small mb-3">(Wenn du den Vertrag widerrufen willst, kannst du dieses Formular
+      ausfüllen und zurücksenden – oder einfach das Online-Formular weiter unten nutzen.)</p>
+      <div class="muster-box">
+        An Maios, E-Mail: maioscorporation@gmail.com:<br><br>
+        Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der
+        folgenden Waren (*):<br><br>
+        — Bestellt am (*) / erhalten am (*): ____________________<br>
+        — Bestellnummer: ____________________<br>
+        — Name des/der Verbraucher(s): ____________________<br>
+        — Anschrift des/der Verbraucher(s): ____________________<br>
+        — Datum: ____________________<br><br>
+        (*) Unzutreffendes streichen.
+      </div>
+    </div>
+
+    <!-- Online-Widerrufsformular (funktional) -->
+    <div class="info-card p-4 p-md-5 mb-4">
+      <h2 class="section-title h5 mb-3">Vertrag online widerrufen</h2>
+      <p class="text-muted small mb-3">Fülle die Felder aus und sende deinen Widerruf direkt ab.
+      Du erhältst umgehend eine Bestätigung per E-Mail.</p>
+      <form id="widerrufForm" class="return-form">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Bestellnummer</label>
+            <input type="text" name="orderId" class="form-control" placeholder="z.B. ORD-…" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">E-Mail (aus der Bestellung)</label>
+            <input type="email" name="email" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Vor- und Nachname</label>
+            <input type="text" name="name" class="form-control" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Bestellt am / erhalten am</label>
+            <input type="date" name="orderDate" class="form-control">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Anschrift (optional)</label>
+            <input type="text" name="address" class="form-control" placeholder="Straße, PLZ, Ort">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Anmerkung (optional)</label>
+            <input type="text" name="note" class="form-control" placeholder="z.B. welche Artikel">
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mt-3">
+          <button class="btn btn-primary rounded-pill px-4" type="submit">Widerruf jetzt senden</button>
+          <div id="widerrufStatus" class="ms-2 small text-muted"></div>
+        </div>
+      </form>
+    </div>
+
+    <a class="back-btn" href="../index.html#productGrid"><i class="bi bi-bag"></i> Weiter einkaufen</a>
+
+    <div class="footer-spacer"></div>
+  </main>
+
+  <script>
+  (function () {
+    const form = document.getElementById('widerrufForm');
+    const statusEl = document.getElementById('widerrufStatus');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = 'Senden…';
+      statusEl.style.color = '#666';
+
+      const fd = new FormData(form);
+      const data = {
+        orderId: fd.get('orderId'),
+        email: fd.get('email'),
+        name: fd.get('name'),
+        orderDate: fd.get('orderDate') || 'Nicht angegeben',
+        address: fd.get('address') || 'Nicht angegeben',
+        note: fd.get('note') || ''
+      };
+
+      try {
+        const res = await fetch('/api/widerruf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+
+        if (res.ok && result.success) {
+          statusEl.textContent = '✅ Widerruf eingegangen – du erhältst eine Bestätigung per E-Mail.';
+          statusEl.style.color = '#28a745';
+          form.reset();
+        } else {
+          throw new Error(result.error || 'Fehler beim Senden');
+        }
+      } catch (err) {
+        console.error('Widerruf-Fehler:', err);
+        const subject = encodeURIComponent(`Widerruf Bestellung ${data.orderId}`);
+        const body = encodeURIComponent(
+          `Hiermit widerrufe ich den Vertrag.\n\nBestellnummer: ${data.orderId}\nName: ${data.name}\nE-Mail: ${data.email}\nBestellt/erhalten am: ${data.orderDate}\nAnschrift: ${data.address}\nAnmerkung: ${data.note}`
+        );
+        const mailto = `mailto:maioscorporation@gmail.com?subject=${subject}&body=${body}`;
+        statusEl.innerHTML = '⚠️ Automatischer Versand fehlgeschlagen. <a href="' + mailto + '" style="color:#007bff;text-decoration:underline;">Hier klicken</a>, um den Widerruf per E-Mail zu senden.';
+        statusEl.style.color = '#856404';
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
