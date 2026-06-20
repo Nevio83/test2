@@ -39,31 +39,7 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 3. Ausbau-Ideen (Admin-Dashboard & Shop)
-
-Alle neuen Daten → Neon-Postgres (`database.js` `SCHEMA` + `dbOperations`). Admin-Endpunkte
-hinter der Admin-Auth — Analytics-Routen liegen bewusst unter `/a29715347575/api/...` (gleicher
-authentifizierter Pfad-Teilbaum wie das Dashboard, damit der Browser Basic-Auth zuverlässig mitsendet).
-
-**1. Umsatz/Conversion:** Conversion-Rate (Views→Orders — `page_views` ist jetzt da!),
-Umsatz-Charts Tag/Woche/Monat, Top-Produkte (aus `order_items`), AOV.
-
-**2. Bestell-Workflow:** Suche/Filter (E-Mail, Nr., Status, Zeitraum), CSV-/Excel-Export,
-Tracking-Spalte (`order_tracking` + `cjAPI.getTrackInfo`), Retouren-Übersicht (Tabelle `returns`),
-Live-Benachrichtigung bei neuer Bestellung.
-
-**3. Betrieb:** CJ-Lagerbestand/Stock-Warnungen, CJ-Status automatisch nachziehen,
-Warenkorb-Abbrüche messen.
-
-**4. Aufrufe-Tracking erweitern** (Basis steht, siehe unten): Bot-Filter, Verweildauer,
-Referrer-Auswertung, Tages-/Stunden-Heatmap.
-
-Datenschutz: Cookie-/Tracking-Hinweis in `infos/cookies.html`/Datenschutz prüfen
-(Tracking speichert keine rohe IP, nur Land + Session-ID aus `sessionStorage`).
-
----
-
-## 4. Git / GitHub-Workflow
+## 3. Git / GitHub-Workflow
 
 - Nur Branch **`main`**, Auto-Deploy auf Render bei Push.
 - Lock-Fehler („A lock file already exists"): alle Git-Tools schließen, dann
@@ -78,11 +54,10 @@ Datenschutz: Cookie-/Tracking-Hinweis in `infos/cookies.html`/Datenschutz prüfe
 
 ---
 
-## 5. Nächste sinnvolle Schritte (Reihenfolge)
+## 4. Nächste sinnvolle Schritte (Reihenfolge)
 
 1. 🟡 Code-Härtung #10 (Robustheit) (§1).
-2. 🟢 Conversion/Umsatz-Auswertung (§3.1) auf Basis von `page_views` + `orders`.
-3. 🟢 Restliches Aufräumen (§2).
+2. 🟢 Restliches Aufräumen (§2).
 
 > Großes Repo (~19k JS-Zeilen, 60+ HTML): vor Refactorings `/graphify .` für die
 > Abhängigkeiten (siehe `CLAUDE.md`).
