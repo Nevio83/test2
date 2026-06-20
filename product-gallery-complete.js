@@ -271,7 +271,7 @@ class ProductImageGallery {
                 ];
                 break;
                 
-            case 50: // Krystall Ball Nachtlampe
+            case 50: { // Krystall Ball Nachtlampe
                 const folderName50 = 'Krystall Ball Nachtlampe bilder';
                 this.images = [
                     {
@@ -316,7 +316,8 @@ class ProductImageGallery {
                     }
                 ];
                 break;
-                
+            }
+
             case 33: // Aromatherapy Essential Oil Humidifier
                 this.images = [
                     {

@@ -1,0 +1,8 @@
+node_modules
+Marketing
+graphify-out
+netlify
+**/*.min.js
+package-lock.json
+products.json
+indexoriginal.html

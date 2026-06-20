@@ -185,7 +185,7 @@ function getShippingCost(countryCode) {
     };
     
     // Verwende hasOwnProperty um 0 korrekt zu behandeln
-    return shippingCosts.hasOwnProperty(countryCode) ? shippingCosts[countryCode] : 15.00;
+    return Object.prototype.hasOwnProperty.call(shippingCosts, countryCode) ? shippingCosts[countryCode] : 15.00;
 }
 
 // Mache getShippingCost global verfügbar
@@ -939,7 +939,6 @@ window.handleCheckout = async function() {
         console.log('📦 Zahlungsseite wird geladen...');
         
         // Express Checkout Metadata hinzufügen (für Apple Pay und Google Pay)
-        if (!customerInfo) customerInfo = {};
         if (!customerInfo.metadata) customerInfo.metadata = {};
         customerInfo.metadata.allow_express_checkout = 'true';
         

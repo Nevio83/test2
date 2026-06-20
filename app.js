@@ -100,7 +100,13 @@ function updateAllWishlistButtonsStates(productId) {
 }
 
 // Produktdaten laden mit Cache-Busting
-async function loadProducts() {
+// Gecachtes Promise: products.json wird pro Seitenaufruf nur EINMAL geladen
+// (vorher fetchte jeder der ~20 Aufrufe die 64-KB-Datei neu). Parallele Aufrufe
+// teilen sich denselben Fetch.
+let _productsPromise = null;
+async function loadProducts(forceReload = false) {
+  if (_productsPromise && !forceReload) return _productsPromise;
+  _productsPromise = (async () => {
   try {
     // Cache-busting für products.json
     const cacheBuster = Date.now();
@@ -139,8 +145,11 @@ async function loadProducts() {
     }));
   } catch (error) {
     console.error("Fehler beim Laden der Produkte:", error);
+    _productsPromise = null; // bei Fehler nächsten Versuch erlauben
     return [];
   }
+  })();
+  return _productsPromise;
 }
 
 // Wishlist-Logik (bereits initialisiert oben)
@@ -233,7 +242,9 @@ function handleWishlistToggle(product) {
   // Also update product page wishlist buttons instantly
   try {
     updateAllWishlistButtonsStates(product.id);
-  } catch (_) {}
+  } catch (_) {
+    /* Produktseiten-Buttons optional – Fehler bewusst ignorieren */
+  }
 
   // Update navigation wishlist counter if it exists
   updateWishlistCounter();
@@ -1174,7 +1185,7 @@ function calculateCategoryCounts(products) {
   };
 
   products.forEach((product) => {
-    if (counts.hasOwnProperty(product.category)) {
+    if (Object.prototype.hasOwnProperty.call(counts, product.category)) {
       counts[product.category]++;
     }
   });
@@ -1668,139 +1679,6 @@ function renderCartDropdown() {
       });
     }
   }, 200);
-}
-
-// Render Bestseller Section with horizontal scroll
-function renderBestsellers(products) {
-  const grid = document.getElementById("bestsellerGrid");
-  if (!grid) return;
-
-  grid.innerHTML = products
-    .map((product) => {
-      const price = product.price || product.salePrice || 0;
-      const formattedPrice =
-        typeof price === "number"
-          ? price.toFixed(2)
-          : parseFloat(price || 0).toFixed(2);
-
-      return `
-            <div class="lumiere-product-card" data-product-id="${product.id}" data-category="${product.category}">
-                <div class="lumiere-image-container">
-                    <img src="${product.image}" class="lumiere-product-image" alt="${product.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
-                    <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
-                        <i class="bi bi-heart"></i>
-                    </button>
-                </div>
-                <div class="lumiere-card-content">
-                    <h3 class="lumiere-product-title">${product.name}</h3>
-                    <div class="lumiere-price-section">
-                        <span class="lumiere-price">€${formattedPrice}</span>
-                    </div>
-                    <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
-                        In den Warenkorb
-                    </button>
-                </div>
-            </div>
-        `;
-    })
-    .join("");
-
-  // Initialize wishlist buttons for bestsellers
-  initializeWishlistButtons();
-  initializeAddToCartButtons();
-
-  // Initialize scrollbar tracking
-  setTimeout(() => {
-    initializeScrollbarTracking();
-  }, 100);
-}
-
-// Scroll function for bestseller slider
-function scrollBestsellers(direction) {
-  const grid = document.getElementById("bestsellerGrid");
-  if (!grid) return;
-
-  const cardWidth = 280 + 20; // Card width + gap
-  const scrollAmount = cardWidth; // Scroll exactly one card
-  const currentScroll = grid.scrollLeft;
-
-  if (direction === "left") {
-    grid.scrollTo({
-      left: Math.max(0, currentScroll - scrollAmount),
-      behavior: "smooth",
-    });
-  } else {
-    const maxScroll = grid.scrollWidth - grid.clientWidth;
-    grid.scrollTo({
-      left: Math.min(maxScroll, currentScroll + scrollAmount),
-      behavior: "smooth",
-    });
-  }
-
-  // Update scrollbar position during and after scroll
-  const updateDuringScroll = () => {
-    updateScrollbarPosition();
-    if (
-      Math.abs(
-        grid.scrollLeft -
-          (direction === "left"
-            ? Math.max(0, currentScroll - scrollAmount)
-            : Math.min(
-                grid.scrollWidth - grid.clientWidth,
-                currentScroll + scrollAmount,
-              )),
-      ) > 1
-    ) {
-      requestAnimationFrame(updateDuringScroll);
-    }
-  };
-  requestAnimationFrame(updateDuringScroll);
-}
-
-// Generic scroll function for all category grids
-function scrollCategory(gridId, direction) {
-  const grid = document.getElementById(gridId);
-  if (!grid) {
-    console.error("Grid not found:", gridId);
-    return;
-  }
-
-  console.log(`ðŸ”§ Scrolling ${gridId} ${direction}`);
-  console.log(
-    `Grid scrollWidth: ${grid.scrollWidth}, clientWidth: ${grid.clientWidth}`,
-  );
-
-  // Calculate scroll amount - always use a reasonable amount
-  const cardWidth = 280 + 20; // Card width + gap
-  const scrollAmount = cardWidth * 0.8; // Always scroll by 80% of a card
-
-  const currentScroll = grid.scrollLeft;
-  const maxScroll = grid.scrollWidth - grid.clientWidth;
-
-  console.log(`Current scroll: ${currentScroll}, Max scroll: ${maxScroll}`);
-
-  // Force scroll even if there's little content
-  if (direction === "left") {
-    const newScroll = Math.max(0, currentScroll - scrollAmount);
-    console.log(`Scrolling left to: ${newScroll}`);
-    grid.scrollTo({
-      left: newScroll,
-      behavior: "smooth",
-    });
-  } else {
-    const newScroll = Math.min(maxScroll, currentScroll + scrollAmount);
-    console.log(`Scrolling right to: ${newScroll}`);
-    grid.scrollTo({
-      left: newScroll,
-      behavior: "smooth",
-    });
-  }
-
-  // Update scrollbar position for this specific grid
-  setTimeout(() => {
-    updateScrollbarPositionForGrid(gridId);
-  }, 100);
 }
 
 // Update scrollbar position - NEUE METHODE (for bestsellers)

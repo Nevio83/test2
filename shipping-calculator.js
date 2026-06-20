@@ -51,7 +51,9 @@ const SHIPPING_MARKUP = 0;
  */
 function calculateShippingCost(countryCode) {
   // Hole pauschale Kosten für das Land (hasOwnProperty um 0 korrekt zu behandeln)
-  return FLAT_SHIPPING_COSTS.hasOwnProperty(countryCode) ? FLAT_SHIPPING_COSTS[countryCode] : FLAT_SHIPPING_COSTS['DEFAULT'];
+  return Object.prototype.hasOwnProperty.call(FLAT_SHIPPING_COSTS, countryCode)
+    ? FLAT_SHIPPING_COSTS[countryCode]
+    : FLAT_SHIPPING_COSTS['DEFAULT'];
 }
 
 /**
