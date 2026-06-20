@@ -1626,13 +1626,24 @@ app.get('/a29715347575/api/views/top-countries', async (req, res) => {
   }
 });
 
-// Admin: Zeitreihe fuer den Chart
+// Admin: Zeitreihe fuer den Chart (Aufrufe/Besucher)
 app.get('/a29715347575/api/views/timeseries', async (req, res) => {
   try {
     const days = Math.min(parseInt(req.query.days) || 14, 90);
     res.json(await dbOperations.getViewsTimeseries(days));
   } catch (error) {
     console.error('Zeitreihen-Fehler:', error.message);
+    res.status(500).json({ error: 'Zeitreihe nicht verfuegbar' });
+  }
+});
+
+// Admin: Zeitreihe fuer Bestellungen + Umsatz (treibt das umschaltbare Dashboard-Chart)
+app.get('/a29715347575/api/orders/timeseries', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 14, 90);
+    res.json(await dbOperations.getOrdersTimeseries(days));
+  } catch (error) {
+    console.error('Bestell-Zeitreihen-Fehler:', error.message);
     res.status(500).json({ error: 'Zeitreihe nicht verfuegbar' });
   }
 });

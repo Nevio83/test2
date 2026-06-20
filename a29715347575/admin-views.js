@@ -47,52 +47,140 @@
     }
   }
 
-  async function loadChart() {
+  // ── Umschaltbares Diagramm ────────────────────────────────────────
+  // Jede Kachel mit data-chart="<mode>" schaltet das Chart auf diese Ansicht.
+  // Drei Modi: Aufrufe (Standard), Bestellungen, Umsatz — je 14 Tage.
+  let currentMode = 'views';
+  const _seriesCache = {}; // url -> rows (vermeidet Re-Fetch beim Hin-/Herschalten)
+
+  function fmtDay(r) {
+    const d = new Date(r.day);
+    return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+  }
+
+  const CHART_MODES = {
+    views: {
+      title: 'Aufrufe der letzten 14 Tage',
+      url: 'api/views/timeseries?days=14',
+      build: (rows) => ({
+        labels: rows.map(fmtDay),
+        datasets: [
+          {
+            label: 'Aufrufe',
+            data: rows.map(r => r.views),
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102,126,234,0.12)',
+            fill: true,
+            tension: 0.3
+          },
+          {
+            label: 'Eindeutige Besucher',
+            data: rows.map(r => r.unique_views),
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40,167,69,0.10)',
+            fill: true,
+            tension: 0.3
+          }
+        ]
+      })
+    },
+    orders: {
+      title: 'Bestellungen der letzten 14 Tage',
+      url: 'api/orders/timeseries?days=14',
+      build: (rows) => ({
+        labels: rows.map(fmtDay),
+        datasets: [
+          {
+            label: 'Bestellungen',
+            data: rows.map(r => r.orders),
+            borderColor: '#fd7e14',
+            backgroundColor: 'rgba(253,126,20,0.12)',
+            fill: true,
+            tension: 0.3
+          }
+        ]
+      })
+    },
+    revenue: {
+      title: 'Umsatz der letzten 14 Tage (€)',
+      url: 'api/orders/timeseries?days=14',
+      isCurrency: true,
+      build: (rows) => ({
+        labels: rows.map(fmtDay),
+        datasets: [
+          {
+            label: 'Umsatz',
+            data: rows.map(r => Number(r.revenue) || 0),
+            borderColor: '#198754',
+            backgroundColor: 'rgba(25,135,84,0.12)',
+            fill: true,
+            tension: 0.3
+          }
+        ]
+      })
+    }
+  };
+
+  async function fetchSeries(url) {
+    if (_seriesCache[url]) return _seriesCache[url];
+    const rows = await getJSON(url);
+    _seriesCache[url] = rows;
+    return rows;
+  }
+
+  function highlightActiveCard(mode) {
+    document.querySelectorAll('.stats-card[data-chart]').forEach(card => {
+      card.classList.toggle('chart-active', card.dataset.chart === mode);
+    });
+  }
+
+  async function renderChart(mode) {
+    const cfg = CHART_MODES[mode] || CHART_MODES.views;
+    currentMode = (CHART_MODES[mode] ? mode : 'views');
+    setText('chart-title', cfg.title);
+    highlightActiveCard(currentMode);
+
     try {
-      const rows = await getJSON('api/views/timeseries?days=14');
-      const labels = rows.map(r => {
-        const d = new Date(r.day);
-        return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
-      });
-      const views = rows.map(r => r.views);
-      const unique = rows.map(r => r.unique_views);
+      const rows = await fetchSeries(cfg.url);
+      const built = cfg.build(rows);
 
       const ctx = document.getElementById('views-chart');
       if (!ctx || typeof Chart === 'undefined') return;
 
       if (viewsChart) viewsChart.destroy();
+      const isCurrency = !!cfg.isCurrency;
       viewsChart = new Chart(ctx, {
         type: 'line',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: 'Aufrufe',
-              data: views,
-              borderColor: '#667eea',
-              backgroundColor: 'rgba(102,126,234,0.12)',
-              fill: true,
-              tension: 0.3
-            },
-            {
-              label: 'Eindeutige Besucher',
-              data: unique,
-              borderColor: '#28a745',
-              backgroundColor: 'rgba(40,167,69,0.10)',
-              fill: true,
-              tension: 0.3
-            }
-          ]
-        },
+        data: { labels: built.labels, datasets: built.datasets },
         options: {
           responsive: true,
-          plugins: { legend: { position: 'bottom' } },
-          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: isCurrency ? {
+              callbacks: {
+                label: (c) => c.dataset.label + ': € ' + Number(c.parsed.y).toFixed(2)
+              }
+            } : {}
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: isCurrency
+                ? { callback: (v) => '€ ' + v }
+                : { precision: 0 }
+            }
+          }
         }
       });
     } catch (e) {
-      console.warn('⚠️ Aufruf-Chart konnte nicht geladen werden:', e.message);
+      console.warn('⚠️ Diagramm konnte nicht geladen werden:', e.message);
     }
+  }
+
+  function attachCardClicks() {
+    document.querySelectorAll('.stats-card[data-chart]').forEach(card => {
+      card.addEventListener('click', () => renderChart(card.dataset.chart));
+    });
   }
 
   async function loadTopPages() {
@@ -147,7 +235,8 @@
 
   function init() {
     loadStats();
-    loadChart();
+    renderChart('views'); // Standard-Ansicht
+    attachCardClicks();   // Kachel-Klicks schalten das Diagramm um
     loadTopPages();
     loadTopCountries();
     // Live-Zahl regelmäßig aktualisieren

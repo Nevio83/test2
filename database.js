@@ -299,6 +299,29 @@ const dbOperations = {
       [days]
     );
     return r.rows;
+  },
+
+  // Zeitreihe fuer Bestellungen + Umsatz pro Tag (lueckenlos via generate_series).
+  // orders = alle Bestellungen des Tages, revenue = Summe NUR bezahlter Bestellungen
+  // (analog zu getStatistics: Gesamt-Bestellungen zaehlt alles, Umsatz nur 'paid').
+  getOrdersTimeseries: async (days = 14) => {
+    const r = await pool.query(
+      `SELECT d::date AS day,
+              COALESCE(o.orders, 0)::int AS orders,
+              COALESCE(o.revenue, 0)::float AS revenue
+       FROM generate_series(CURRENT_DATE - ($1::int - 1), CURRENT_DATE, '1 day') AS d
+       LEFT JOIN (
+         SELECT created_at::date AS day,
+                COUNT(*) AS orders,
+                SUM(CASE WHEN payment_status = 'paid' THEN total_amount ELSE 0 END) AS revenue
+         FROM orders
+         WHERE created_at::date > CURRENT_DATE - $1::int
+         GROUP BY created_at::date
+       ) o ON o.day = d::date
+       ORDER BY day ASC`,
+      [days]
+    );
+    return r.rows;
   }
 };
 

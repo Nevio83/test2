@@ -33,6 +33,25 @@
             transform: translateY(-5px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
+
+        /* Anklickbare Kacheln steuern das Diagramm */
+        .stats-card.clickable {
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .stats-card.clickable:hover {
+            border-color: #c3cbf5;
+        }
+
+        .stats-card.chart-active {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.25);
+        }
+
+        .stats-card.chart-active .stats-number {
+            color: #4a3f9e;
+        }
         
         .stats-number {
             font-size: 2rem;
@@ -137,7 +156,7 @@
         <!-- Statistiken -->
         <div class="row" id="statistics">
             <div class="col-md-3">
-                <div class="stats-card">
+                <div class="stats-card clickable" data-chart="orders" title="Diagramm: Bestellungen der letzten 14 Tage">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="stats-number" id="total-orders">0</div>
@@ -148,7 +167,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stats-card">
+                <div class="stats-card clickable" data-chart="revenue" title="Diagramm: Umsatz der letzten 14 Tage">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="stats-number">€ <span id="total-revenue">0</span></div>
@@ -159,7 +178,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stats-card">
+                <div class="stats-card clickable" data-chart="orders" title="Diagramm: Bestellungen der letzten 14 Tage">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="stats-number" id="today-orders">0</div>
@@ -170,7 +189,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stats-card">
+                <div class="stats-card clickable" data-chart="orders" title="Diagramm: Bestellungen der letzten 14 Tage">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="stats-number" id="pending-orders">0</div>
@@ -191,7 +210,7 @@
         </div>
         <div class="row">
             <div class="col-md-3">
-                <div class="stats-card">
+                <div class="stats-card clickable" data-chart="views" title="Diagramm: Aufrufe der letzten 14 Tage">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="stats-number" id="views-today">0</div>
@@ -202,7 +221,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stats-card">
+                <div class="stats-card clickable" data-chart="views" title="Diagramm: Aufrufe der letzten 14 Tage">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="stats-number" id="views-unique">0</div>
@@ -213,7 +232,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stats-card">
+                <div class="stats-card clickable" data-chart="views" title="Diagramm: Aufrufe der letzten 14 Tage">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="stats-number" id="views-live">0</div>
@@ -224,7 +243,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stats-card">
+                <div class="stats-card clickable" data-chart="views" title="Diagramm: Aufrufe der letzten 14 Tage">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="stats-number" id="views-total">0</div>
@@ -239,7 +258,7 @@
         <div class="row">
             <div class="col-lg-7">
                 <div class="stats-card">
-                    <h6 class="text-muted mb-3">Aufrufe der letzten 14 Tage</h6>
+                    <h6 class="text-muted mb-3" id="chart-title">Aufrufe der letzten 14 Tage</h6>
                     <canvas id="views-chart" height="120"></canvas>
                 </div>
             </div>
