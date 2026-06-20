@@ -13,23 +13,7 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 1. Offene Code-Themen (Performance)
-
-| # | Prio | Thema | Datei(en) |
-|---|---|---|---|
-| 11 | 🟢 | **Performance — Rest, braucht Build-Step-Entscheidung:** Assets minifizieren/bündeln (styles.css ~215 KB, app.js ~190 KB), Bilder auf WebP umstellen, ~1000 `console.*` per Log-Level dämpfen. **Konflikt mit „Kein Build-Step" (`CLAUDE.md`)** — erst entscheiden, ob ein Build-Step eingeführt wird. | Frontend gesamt |
-
-> **Bereits erledigt (2026-06-21):** `products.json`-Mehrfach-Fetch behoben (memoized,
-> 1× statt ~20× pro Seite, im Browser verifiziert) · `compression` (gzip) ist serverseitig
-> aktiv · Bestseller-/Kategorie-Grids nutzen bereits `loading="lazy"`.
-
-> **Hinweis:** Minify/Bundle/WebP brauchen einen Build-Schritt + `render.yaml`-Anpassung
-> (Architektur-Entscheidung). Der `console.*`-Punkt ist Low-ROI, da gzip die Übertragung
-> bereits deckt — eher zusammen mit dem Build-Step lösen.
-
----
-
-## 2. Git / GitHub-Workflow
+## 1. Git / GitHub-Workflow
 
 - Nur Branch **`main`**, Auto-Deploy auf Render bei Push.
 - Lock-Fehler („A lock file already exists"): alle Git-Tools schließen, dann
@@ -46,11 +30,6 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 - `.env` ist gitignored und nicht getrackt — Prod-Werte gehören ins **Render-Dashboard**, nie ins Repo.
 
 ---
-
-## 3. Nächste sinnvolle Schritte
-
-1. 🟢 Entscheidung: Build-Step einführen? Wenn ja → Minify/Bundle + WebP (#11).
-   Wenn nein → #11 bleibt offen/abgehakt (gzip + lazy decken das Wesentliche).
 
 > Großes Repo (~19k JS-Zeilen, 60+ HTML): vor Refactorings `/graphify .` für die
 > Abhängigkeiten (siehe `CLAUDE.md`).
