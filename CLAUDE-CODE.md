@@ -17,7 +17,6 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 | # | Prio | Thema | Datei(en) |
 |---|---|---|---|
-| 9 | 🟠 | OpenAI-Key nicht im Client (`ai-chat-integration.js`) → serverseitiger Proxy; Antwort defensiv parsen | `ai-chat-integration.js` |
 | 10 | 🟡 | Robustheit: MwSt.-Berechnung prüfen; `crypto.randomUUID()` statt `substr`; Fehler-Responses ohne interne Details | `server.js`, `database.js` |
 | 11 | 🟡 | Performance: Assets unminifiziert/ungebündelt (styles.css ~215 KB, app.js ~190 KB), Bilder unoptimiert (WebP/lazy), `products.json` mehrfach pro Render gefetcht, ~1000 `console.*` → Log-Level | Frontend gesamt |
 | 12 | 🟡 | Tests/CI/Lint fehlen: ESLint (`no-dupe-keys`!), Prettier, Smoke-Tests (Split-Mathematik, Webhook-Signatur) | Projektweit |
@@ -81,7 +80,7 @@ Datenschutz: Cookie-/Tracking-Hinweis in `infos/cookies.html`/Datenschutz prüfe
 
 ## 5. Nächste sinnvolle Schritte (Reihenfolge)
 
-1. 🟠 Code-Härtung #9 (OpenAI-Proxy), dann #10 (§1).
+1. 🟡 Code-Härtung #10 (Robustheit) (§1).
 2. 🟢 Conversion/Umsatz-Auswertung (§3.1) auf Basis von `page_views` + `orders`.
 3. 🟢 Restliches Aufräumen (§2).
 
