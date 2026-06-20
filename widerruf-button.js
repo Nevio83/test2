@@ -1,9 +1,10 @@
 /**
  * widerruf-button.js — EU-Widerrufsbutton
  *
- * Fügt auf jeder Seite einen gut sichtbaren Link „Vertrag widerrufen" in den
- * Footer ein (absoluter Pfad → funktioniert aus jeder Verzeichnistiefe).
- * Erfüllt die EU-Vorgabe eines dauerhaft erreichbaren Widerruf-Zugangs.
+ * Fügt auf jeder Seite einen gut sichtbaren, prominenten Button
+ * „Vertrag widerrufen" in den Footer ein (absoluter Pfad → funktioniert aus
+ * jeder Verzeichnistiefe). Erfüllt die EU-Vorgabe eines dauerhaft erreichbaren,
+ * deutlich hervorgehobenen Widerruf-Zugangs.
  */
 (function () {
   'use strict';
@@ -21,22 +22,23 @@
     a.textContent = '↩ Vertrag widerrufen';
     a.setAttribute('aria-label', 'Vertrag widerrufen (gesetzliches Widerrufsrecht)');
 
+    // Prominenter Button-Stil (Marken-Akzent, sichtbar auf hell & dunkel)
+    var btn =
+      'display:inline-block;background:#E91E63;color:#fff;font-weight:700;' +
+      'font-size:15px;line-height:1;padding:12px 24px;border-radius:999px;' +
+      'text-decoration:none;box-shadow:0 4px 14px rgba(233,30,99,.4);' +
+      'letter-spacing:.2px;';
+
     var footer = document.querySelector('footer');
     if (footer) {
-      // dezent in den vorhandenen Footer einreihen
-      a.style.cssText =
-        'display:inline-block;margin:10px auto 0;padding:0;color:inherit;' +
-        'opacity:.85;font-size:14px;text-decoration:underline;text-align:center;';
+      a.style.cssText = btn;
       var wrap = document.createElement('div');
-      wrap.style.cssText = 'width:100%;text-align:center;';
+      wrap.style.cssText = 'width:100%;text-align:center;margin-top:18px;';
       wrap.appendChild(a);
       footer.appendChild(wrap);
     } else {
-      // Seiten ohne Footer (z.B. Info-Seiten): dezenter fixer Link unten links
-      a.style.cssText =
-        'position:fixed;left:12px;bottom:12px;z-index:9998;background:#fff;' +
-        'border:1px solid #ccc;border-radius:20px;padding:6px 14px;font-size:13px;' +
-        'color:#333;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,.15);';
+      // Seiten ohne Footer: fixer, prominenter Button unten links
+      a.style.cssText = btn + 'position:fixed;left:14px;bottom:14px;z-index:9998;';
       document.body.appendChild(a);
     }
   }
