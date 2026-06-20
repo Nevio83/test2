@@ -120,8 +120,44 @@
             <input type="date" name="datum" class="feld" style="min-width:170px">
         </div>
 
+        <!-- CAPTCHA -->
+        <style>
+          @keyframes wobble {
+            0%,100%{transform:translateY(0) rotate(var(--r,0deg))}
+            50%{transform:translateY(-2px) rotate(calc(var(--r,0deg) + 3deg))}
+          }
+          .cq-char {
+            display:inline-block;
+            animation:wobble calc(1.5s + var(--d,0s)) infinite ease-in-out;
+            animation-delay:var(--d,0s);
+            font-size:var(--fs,1rem);
+            color:var(--col,#1a1a1a);
+            font-weight:var(--fw,600);
+            text-decoration:var(--td,none);
+            filter:var(--blur,none);
+          }
+        </style>
+        <div id="captchaBox" style="margin-top:1.5rem;padding:1rem 1.25rem;background:#fff3cd;border:1.5px solid #ffc107;border-radius:10px;user-select:none;">
+          <div style="font-weight:700;font-size:.93rem;margin-bottom:.4rem;color:#6c757d;letter-spacing:.3px;">SICHERHEITSPRÜFUNG <span id="captchaAttemptsBadge" style="color:#dc3545;"></span></div>
+          <div style="font-size:.78rem;color:#856404;margin-bottom:.6rem;">Berechne das Ergebnis (Zahlen sind als Wörter geschrieben):</div>
+          <div id="captchaQuestion" style="font-size:1rem;font-weight:600;color:#1a1a1a;margin-bottom:.75rem;line-height:2;letter-spacing:1px;"></div>
+          <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
+            <input type="text" id="captchaInput" autocomplete="off" inputmode="numeric"
+              placeholder="Ergebnis als Zahl"
+              style="width:150px;border:2px solid #ffc107;border-radius:6px;padding:6px 10px;font-size:1rem;font-family:inherit;">
+            <button type="button" id="captchaCheck"
+              style="background:#ffc107;color:#212529;font-weight:700;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;font-size:.95rem;">
+              Prüfen
+            </button>
+            <span id="captchaTimer" style="font-size:.82rem;color:#dc3545;font-weight:700;min-width:120px;"></span>
+          </div>
+          <div id="captchaHint" style="font-size:.8rem;margin-top:.5rem;color:#dc3545;font-weight:600;"></div>
+          <div id="captchaSuccess" style="display:none;color:#28a745;font-weight:700;margin-top:.5rem;">✅ Prüfung bestanden</div>
+        </div>
+
         <div class="d-flex align-items-center flex-wrap gap-3 mt-4">
-          <button type="submit" class="widerruf-submit">Widerruf absenden</button>
+          <button type="submit" id="widerrufSubmitBtn" class="widerruf-submit" disabled
+            style="opacity:.45;cursor:not-allowed;">Widerruf absenden</button>
           <div id="widerrufStatus" class="small text-muted"></div>
         </div>
       </form>
@@ -133,6 +169,159 @@
   </main>
 
   <script>
+  /* ---- CAPTCHA (maximale Schwierigkeit) ---- */
+  (function () {
+    const W = ['null','ein','zwei','drei','vier','fünf','sechs','sieben','acht','neun',
+               'zehn','elf','zwölf','dreizehn','vierzehn','fünfzehn','sechzehn',
+               'siebzehn','achtzehn','neunzehn','zwanzig'];
+    // Täuschbuchstaben die zufällig eingestreut werden (durchgestrichen, andersfarben)
+    const NOISE_CHARS = 'xqβ∂ωλΩ∑∏μ'.split('');
+    const OPS = [
+      { sym:'plus',  fn:(a,b)=>a+b },
+      { sym:'minus', fn:(a,b)=>a-b },
+      { sym:'mal',   fn:(a,b)=>a*b },
+    ];
+    const COLORS = ['#c0392b','#1a5276','#117a65','#6c3483','#784212','#1a1a1a','#922b21'];
+
+    let answer = null, attempts = 0, lockTimer = null, countdownTimer = null;
+    let timeLeft = 0;
+
+    const box      = document.getElementById('captchaBox');
+    const qEl      = document.getElementById('captchaQuestion');
+    const inp      = document.getElementById('captchaInput');
+    const btn      = document.getElementById('captchaCheck');
+    const hint     = document.getElementById('captchaHint');
+    const timerEl  = document.getElementById('captchaTimer');
+    const success  = document.getElementById('captchaSuccess');
+    const badge    = document.getElementById('captchaAttemptsBadge');
+    const submitBtn= document.getElementById('widerrufSubmitBtn');
+
+    const rnd = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+    const pick = arr => arr[rnd(0,arr.length-1)];
+
+    /* Rendert Text als einzelne wobble-Spans mit Rauschen */
+    function renderDistorted(text) {
+      let html = '';
+      for (let i = 0; i < text.length; i++) {
+        const rot   = rnd(-18, 18);
+        const fs    = (0.88 + Math.random()*0.32).toFixed(2);
+        const col   = pick(COLORS);
+        const fw    = pick([500,600,700,800]);
+        const delay = (Math.random()*1.2).toFixed(2);
+        const blur  = Math.random() < 0.12 ? 'blur(1.2px)' : 'none';
+        html += `<span class="cq-char" style="--r:${rot}deg;--fs:${fs}rem;--col:${col};--fw:${fw};--d:${delay}s;--blur:${blur};">${text[i]}</span>`;
+        // nach jedem Wort: 1-2 Rausch-Zeichen einstreuen
+        if (text[i] === ' ' && Math.random() < 0.55) {
+          const nc = pick(NOISE_CHARS);
+          const nr = rnd(-20,20);
+          html += `<span class="cq-char" style="--r:${nr}deg;--fs:0.7rem;--col:#aaa;--fw:400;--d:${(Math.random()).toFixed(2)}s;text-decoration:line-through;opacity:.55;">${nc}</span>`;
+        }
+      }
+      return html;
+    }
+
+    /* Baut 3-stufige Aufgabe: ((a OP b) OP2 c) OP3 d */
+    function buildQuestion() {
+      clearInterval(countdownTimer);
+      hint.textContent = '';
+      inp.value = '';
+
+      const op1 = pick(OPS), op2 = pick(OPS), op3 = pick(OPS);
+      let a,b,c,d,r1,r2,res, tries=0;
+      do {
+        a=rnd(2,9); b=rnd(2,9); c=rnd(2,9); d=rnd(2,6);
+        r1 = op1.fn(a,b);
+        r2 = op2.fn(r1,c);
+        res= op3.fn(r2,d);
+        tries++;
+      } while (res<0||res>20||tries<50);
+
+      answer = res;
+
+      const text = `(( ${W[a]}  ${op1.sym}  ${W[b]} )  ${op2.sym}  ${W[c]} )  ${op3.sym}  ${W[d]}`;
+      qEl.innerHTML = renderDistorted(text) + '<span style="font-size:1.1rem;font-weight:700;"> = ?</span>';
+
+      // 20-Sekunden-Countdown
+      timeLeft = 20;
+      timerEl.textContent = '⏱ ' + timeLeft + ' s';
+      timerEl.style.color = '#856404';
+      countdownTimer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 5) timerEl.style.color = '#dc3545';
+        timerEl.textContent = '⏱ ' + timeLeft + ' s';
+        if (timeLeft <= 0) {
+          clearInterval(countdownTimer);
+          timerEl.textContent = 'Zeit abgelaufen!';
+          hint.textContent = 'Zu langsam. Neue Aufgabe…';
+          attempts++;
+          badge.textContent = attempts > 0 ? '(' + attempts + '. Versuch)' : '';
+          startLock(10);
+        }
+      }, 1000);
+    }
+
+    function setInputsLocked(locked) {
+      inp.disabled = locked;
+      btn.disabled = locked;
+      btn.style.opacity = locked ? '.4' : '1';
+    }
+
+    function startLock(sec) {
+      clearInterval(lockTimer);
+      clearInterval(countdownTimer);
+      setInputsLocked(true);
+      let rem = sec;
+      timerEl.style.color = '#dc3545';
+      timerEl.textContent = '🔒 Gesperrt – ' + rem + ' s';
+      lockTimer = setInterval(() => {
+        rem--;
+        timerEl.textContent = '🔒 Gesperrt – ' + rem + ' s';
+        if (rem <= 0) {
+          clearInterval(lockTimer);
+          setInputsLocked(false);
+          badge.textContent = attempts > 0 ? '(' + attempts + '. Versuch)' : '';
+          buildQuestion();
+          inp.focus();
+        }
+      }, 1000);
+    }
+
+    btn.addEventListener('click', () => {
+      if (inp.disabled) return;
+      const val = parseInt(inp.value.trim(), 10);
+      if (isNaN(val)) { hint.textContent = 'Nur Zahlen eingeben.'; return; }
+      clearInterval(countdownTimer);
+      if (val === answer) {
+        clearInterval(lockTimer);
+        box.style.borderColor = '#28a745';
+        box.style.background = '#d4edda';
+        ['captchaQuestion','captchaHint','captchaTimer','captchaAttemptsBadge'].forEach(id => {
+          const el = document.getElementById(id); if(el) el.style.display='none';
+        });
+        inp.style.display = 'none';
+        btn.style.display = 'none';
+        document.querySelector('#captchaBox div:nth-child(2)').style.display = 'none';
+        success.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+      } else {
+        attempts++;
+        badge.textContent = '(' + attempts + '. Versuch)';
+        // Sperrzeit: 15s, 25s, 35s, 45s, 60s, 60s …
+        const waits = [15,25,35,45,60];
+        const wait = waits[Math.min(attempts-1, waits.length-1)];
+        hint.textContent = '❌ Falsch! Sperrzeit: ' + wait + ' Sekunden.';
+        startLock(wait);
+      }
+    });
+
+    inp.addEventListener('keydown', e => { if(e.key==='Enter'){e.preventDefault();btn.click();} });
+
+    buildQuestion();
+  })();
+
+  /* ---- Formular ---- */
   (function () {
     const form = document.getElementById('widerrufForm');
     const statusEl = document.getElementById('widerrufStatus');
