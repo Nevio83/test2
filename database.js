@@ -308,11 +308,13 @@ const dbOperations = {
     const r = await pool.query(
       `SELECT d::date AS day,
               COALESCE(o.orders, 0)::int AS orders,
+              COALESCE(o.pending, 0)::int AS pending,
               COALESCE(o.revenue, 0)::float AS revenue
        FROM generate_series(CURRENT_DATE - ($1::int - 1), CURRENT_DATE, '1 day') AS d
        LEFT JOIN (
          SELECT created_at::date AS day,
                 COUNT(*) AS orders,
+                COUNT(*) FILTER (WHERE order_status = 'processing') AS pending,
                 SUM(CASE WHEN payment_status = 'paid' THEN total_amount ELSE 0 END) AS revenue
          FROM orders
          WHERE created_at::date > CURRENT_DATE - $1::int

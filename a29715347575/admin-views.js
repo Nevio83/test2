@@ -50,7 +50,7 @@
   // ── Umschaltbares Diagramm ────────────────────────────────────────
   // Jede Kachel mit data-chart="<mode>" schaltet das Chart auf diese Ansicht.
   // Drei Modi: Aufrufe (Standard), Bestellungen, Umsatz — je 14 Tage.
-  let currentMode = 'views';
+  let currentMode = 'views-day';
   const _seriesCache = {}; // url -> rows (vermeidet Re-Fetch beim Hin-/Herschalten)
 
   function fmtDay(r) {
@@ -58,68 +58,94 @@
     return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
   }
 
+  const VIEWS_URL = 'api/views/timeseries?days=14';
+  const ORDERS_URL = 'api/orders/timeseries?days=14';
+
+  // Hex-Farbe -> rgba mit Alpha (fuer halbtransparente Flaechen)
+  function hexA(hex, a) {
+    const m = hex.replace('#', '');
+    const r = parseInt(m.slice(0, 2), 16);
+    const g = parseInt(m.slice(2, 4), 16);
+    const b = parseInt(m.slice(4, 6), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+
+  // Laufende Summe (fuer kumulierte Ansichten)
+  function cumsum(arr) {
+    let s = 0;
+    return arr.map(v => (s += (Number(v) || 0)));
+  }
+
+  function ds(label, data, color) {
+    return {
+      label,
+      data,
+      borderColor: color,
+      backgroundColor: hexA(color, 0.12),
+      fill: true,
+      tension: 0.3
+    };
+  }
+
+  // Einreihiges Liniendiagramm
+  function line(rows, label, data, color) {
+    return { labels: rows.map(fmtDay), datasets: [ds(label, data, color)] };
+  }
+
+  // Jede Kachel hat ihren eigenen Modus (1 Box = 1 Diagramm).
   const CHART_MODES = {
-    views: {
-      title: 'Aufrufe der letzten 14 Tage',
-      url: 'api/views/timeseries?days=14',
-      build: (rows) => ({
-        labels: rows.map(fmtDay),
+    // ── Aufrufe & Besucher ──
+    'views-day': {
+      title: 'Aufrufe pro Tag (14 Tage)',
+      url: VIEWS_URL,
+      build: (r) => line(r, 'Aufrufe', r.map(x => x.views), '#667eea')
+    },
+    'unique-day': {
+      title: 'Eindeutige Besucher pro Tag (14 Tage)',
+      url: VIEWS_URL,
+      build: (r) => line(r, 'Eindeutige Besucher', r.map(x => x.unique_views), '#28a745')
+    },
+    'traffic-day': {
+      title: 'Aufrufe & Besucher pro Tag (14 Tage)',
+      url: VIEWS_URL,
+      build: (r) => ({
+        labels: r.map(fmtDay),
         datasets: [
-          {
-            label: 'Aufrufe',
-            data: rows.map(r => r.views),
-            borderColor: '#667eea',
-            backgroundColor: 'rgba(102,126,234,0.12)',
-            fill: true,
-            tension: 0.3
-          },
-          {
-            label: 'Eindeutige Besucher',
-            data: rows.map(r => r.unique_views),
-            borderColor: '#28a745',
-            backgroundColor: 'rgba(40,167,69,0.10)',
-            fill: true,
-            tension: 0.3
-          }
+          ds('Aufrufe', r.map(x => x.views), '#667eea'),
+          ds('Eindeutige Besucher', r.map(x => x.unique_views), '#28a745')
         ]
       })
     },
-    orders: {
-      title: 'Bestellungen der letzten 14 Tage',
-      url: 'api/orders/timeseries?days=14',
-      build: (rows) => ({
-        labels: rows.map(fmtDay),
-        datasets: [
-          {
-            label: 'Bestellungen',
-            data: rows.map(r => r.orders),
-            borderColor: '#fd7e14',
-            backgroundColor: 'rgba(253,126,20,0.12)',
-            fill: true,
-            tension: 0.3
-          }
-        ]
-      })
+    'views-cum': {
+      title: 'Aufrufe kumuliert (14 Tage)',
+      url: VIEWS_URL,
+      build: (r) => line(r, 'Aufrufe kumuliert', cumsum(r.map(x => x.views)), '#6f42c1')
     },
-    revenue: {
-      title: 'Umsatz der letzten 14 Tage (€)',
-      url: 'api/orders/timeseries?days=14',
+    // ── Bestellungen & Umsatz ──
+    'orders-cum': {
+      title: 'Bestellungen kumuliert (14 Tage)',
+      url: ORDERS_URL,
+      build: (r) => line(r, 'Bestellungen kumuliert', cumsum(r.map(x => x.orders)), '#0d6efd')
+    },
+    'revenue-cum': {
+      title: 'Umsatz kumuliert (14 Tage, €)',
+      url: ORDERS_URL,
       isCurrency: true,
-      build: (rows) => ({
-        labels: rows.map(fmtDay),
-        datasets: [
-          {
-            label: 'Umsatz',
-            data: rows.map(r => Number(r.revenue) || 0),
-            borderColor: '#198754',
-            backgroundColor: 'rgba(25,135,84,0.12)',
-            fill: true,
-            tension: 0.3
-          }
-        ]
-      })
+      build: (r) => line(r, 'Umsatz kumuliert', cumsum(r.map(x => x.revenue)), '#198754')
+    },
+    'orders-day': {
+      title: 'Bestellungen pro Tag (14 Tage)',
+      url: ORDERS_URL,
+      build: (r) => line(r, 'Bestellungen', r.map(x => x.orders), '#fd7e14')
+    },
+    'pending-day': {
+      title: 'Offene Bestellungen pro Tag (14 Tage)',
+      url: ORDERS_URL,
+      build: (r) => line(r, 'Offene Bestellungen', r.map(x => x.pending), '#dc3545')
     }
   };
+
+  const DEFAULT_MODE = 'views-day';
 
   async function fetchSeries(url) {
     if (_seriesCache[url]) return _seriesCache[url];
@@ -135,8 +161,8 @@
   }
 
   async function renderChart(mode) {
-    const cfg = CHART_MODES[mode] || CHART_MODES.views;
-    currentMode = (CHART_MODES[mode] ? mode : 'views');
+    const cfg = CHART_MODES[mode] || CHART_MODES[DEFAULT_MODE];
+    currentMode = (CHART_MODES[mode] ? mode : DEFAULT_MODE);
     setText('chart-title', cfg.title);
     highlightActiveCard(currentMode);
 
@@ -235,8 +261,8 @@
 
   function init() {
     loadStats();
-    renderChart('views'); // Standard-Ansicht
-    attachCardClicks();   // Kachel-Klicks schalten das Diagramm um
+    renderChart(DEFAULT_MODE); // Standard-Ansicht: Aufrufe pro Tag
+    attachCardClicks();        // Kachel-Klicks schalten das Diagramm um
     loadTopPages();
     loadTopCountries();
     // Live-Zahl regelmäßig aktualisieren
