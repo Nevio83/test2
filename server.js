@@ -12,16 +12,6 @@ if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'your_str
   console.warn('⚠️  Stripe not initialized - STRIPE_SECRET_KEY missing');
 }
 
-// Initialize SendGrid only if API key is available
-let sgMail = null;
-if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your_sendgrid_api_key_here') {
-  sgMail = require('@sendgrid/mail');
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  console.log('✅ SendGrid initialized');
-} else {
-  console.warn('⚠️  SendGrid not initialized - SENDGRID_API_KEY missing');
-}
-
 // Initialize CJ Dropshipping API (has its own fallback system)
 const CJDropshippingAPI = require('./cj-dropshipping-api');
 const cjAPI = new CJDropshippingAPI();
@@ -142,6 +132,12 @@ app.use((req, res, next) => {
 // Schützt Admin-Dashboards und sensible API-Routen. Login via Browser-Dialog;
 // Zugangsdaten aus ENV: ADMIN_USER (Default 'admin') + ADMIN_PASSWORD.
 const crypto = require('crypto');
+
+// Eindeutige Bestell-ID — kryptographisch zufällig (kollisionssicher, nicht vorhersagbar)
+function generateOrderId() {
+  return `ORD-${Date.now()}-${crypto.randomUUID().split('-')[0].toUpperCase()}`;
+}
+
 function safeEqual(a, b) {
   const ba = Buffer.from(String(a));
   const bb = Buffer.from(String(b));
@@ -454,9 +450,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
       userMessage = 'Fehler bei den Produktdaten';
     }
     
-    res.status(500).json({ 
+    res.status(500).json({
       error: userMessage,
-      details: err.message,
       code: err.code || 'checkout_error'
     });
   }
@@ -487,7 +482,7 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
       
       // Erstelle Bestelldaten aus Stripe Session
       const orderData = {
-        order_id: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        order_id: generateOrderId(),
         receipt_number: `KB-${new Date().getFullYear()}${String(Date.now()).slice(-6)}`,
         customer_email: fullSession.customer_details.email,
         customer_name: fullSession.customer_details.name,
@@ -713,29 +708,6 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
   }
 });
 
-// Legacy E-Mail-Endpunkt (kann später entfernt werden)
-app.post('/api/send-confirmation', async (req, res) => {
-  try {
-    const { email, orderId } = req.body;
-    
-    const msg = {
-      to: email,
-      from: process.env.SENDER_EMAIL,
-      reply_to: process.env.SUPPORT_EMAIL,
-      subject: 'Bestellbestätigung - Maios',
-      text: `Vielen Dank für Ihre Bestellung #${orderId}!\n\nWir bearbeiten Ihre Bestellung und senden sie innerhalb von 2 Werktagen zu.`,
-      html: `<strong>Bestellbestätigung #${orderId}</strong>
-        <p>Wir haben Ihre Zahlung erhalten und bearbeiten den Versand.</p>`
-    };
-
-    await sgMail.send(msg);
-    res.json({ success: true });
-  } catch (error) {
-    console.error('E-Mail-Fehler:', error);
-    res.status(500).json({ error: 'E-Mail-Versand fehlgeschlagen' });
-  }
-});
-
 app.post('/api/create-payment-intent', async (req, res) => {
   const { cart, email, country, city, firstname, lastname } = req.body;
   const currency = getCurrencyByCountry(country);
@@ -743,11 +715,7 @@ app.post('/api/create-payment-intent', async (req, res) => {
   // Berechne Gesamtbetrag in EUR
   let amountInEUR = 0;
   for (const item of cart) {
-    if (item.id === 1) {
-      amountInEUR += 10.00 * item.quantity;
-    } else {
-      amountInEUR += (item.price || 0) * item.quantity;
-    }
+    amountInEUR += (item.price || 0) * item.quantity;
   }
 
   // Versandkosten in EUR (pauschale Kosten basierend auf Land)
@@ -779,7 +747,8 @@ app.post('/api/create-payment-intent', async (req, res) => {
     });
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Payment Intent Error:', err);
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -812,7 +781,7 @@ app.post('/api/contact', async (req, res) => {
     }
   } catch (error) {
     console.error('Kontakt-Fehler:', error);
-    res.status(500).json({ error: 'Senden fehlgeschlagen', details: error.message });
+    res.status(500).json({ error: 'Senden fehlgeschlagen' });
   }
 });
 
@@ -1141,7 +1110,7 @@ app.post('/api/return-request', async (req, res) => {
     }
   } catch (error) {
     console.error('❌ Retoure-Fehler:', error);
-    res.status(500).json({ error: 'Senden fehlgeschlagen', details: error.message });
+    res.status(500).json({ error: 'Senden fehlgeschlagen' });
   }
 });
 
@@ -1157,7 +1126,7 @@ app.get('/api/cj/products', async (req, res) => {
     res.json(products);
   } catch (error) {
     console.error('CJ Products Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1169,7 +1138,7 @@ app.post('/api/cj/products/search', async (req, res) => {
     res.json(products);
   } catch (error) {
     console.error('CJ Product Search Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1180,7 +1149,7 @@ app.get('/api/cj/categories', async (req, res) => {
     res.json(categories);
   } catch (error) {
     console.error('CJ Categories Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1192,7 +1161,7 @@ app.get('/api/cj/product/:vid', async (req, res) => {
     res.json(product);
   } catch (error) {
     console.error('CJ Product Details Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1204,7 +1173,7 @@ app.get('/api/cj/product/:vid/stock', async (req, res) => {
     res.json(stock);
   } catch (error) {
     console.error('CJ Product Stock Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1245,7 +1214,7 @@ app.post('/api/cj/orders/create', async (req, res) => {
     res.json(order);
   } catch (error) {
     console.error('CJ Create Order Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1257,7 +1226,7 @@ app.get('/api/cj/orders', async (req, res) => {
     res.json(orders);
   } catch (error) {
     console.error('CJ Orders Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1269,7 +1238,7 @@ app.post('/api/cj/orders/:orderId/confirm', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('CJ Confirm Order Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1281,7 +1250,7 @@ app.get('/api/cj/orders/:orderId', async (req, res) => {
     res.json(order);
   } catch (error) {
     console.error('CJ Order Details Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1293,7 +1262,7 @@ app.post('/api/cj/shipping/calculate', async (req, res) => {
     res.json(cost);
   } catch (error) {
     console.error('CJ Shipping Calculate Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1305,7 +1274,7 @@ app.get('/api/cj/track/:trackingNumber', async (req, res) => {
     res.json(tracking);
   } catch (error) {
     console.error('CJ Tracking Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1316,7 +1285,7 @@ app.get('/api/cj/balance', async (req, res) => {
     res.json(balance);
   } catch (error) {
     console.error('CJ Balance Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1328,7 +1297,7 @@ app.post('/api/cj/sourcing/create', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('CJ Product Sourcing Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1340,7 +1309,7 @@ app.get('/api/cj/disputes', async (req, res) => {
     res.json(disputes);
   } catch (error) {
     console.error('CJ Disputes Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1352,7 +1321,7 @@ app.post('/api/cj/disputes/create', async (req, res) => {
     res.json(dispute);
   } catch (error) {
     console.error('CJ Create Dispute Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1363,7 +1332,7 @@ app.get('/api/cj/test', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('CJ API Test Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1374,7 +1343,7 @@ app.get('/api/cj/methods', (req, res) => {
     res.json(methods);
   } catch (error) {
     console.error('CJ Methods Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1388,7 +1357,7 @@ app.post('/api/receipt/create', async (req, res) => {
     const { cart, customer, payment, shipping } = req.body;
     
     // Generiere eindeutige IDs
-    const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    const orderId = generateOrderId();
     const receiptNumber = `KB-${new Date().getFullYear()}${String(Date.now()).slice(-6)}`;
     const receiptId = uuidv4();
     
@@ -1483,9 +1452,8 @@ app.post('/api/receipt/create', async (req, res) => {
     
   } catch (error) {
     console.error('Kassenbon-Erstellung Fehler:', error);
-    res.status(500).json({ 
-      error: 'Fehler bei der Kassenbon-Erstellung',
-      details: error.message 
+    res.status(500).json({
+      error: 'Fehler bei der Kassenbon-Erstellung'
     });
   }
 });
@@ -1503,7 +1471,7 @@ app.get('/api/receipt/order/:orderId', async (req, res) => {
     res.json(order);
   } catch (error) {
     console.error('Bestellabruf Fehler:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1515,7 +1483,7 @@ app.get('/api/receipt/orders', async (req, res) => {
     res.json(orders);
   } catch (error) {
     console.error('Bestellungen abrufen Fehler:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1543,7 +1511,7 @@ app.put('/api/receipt/order/:orderId/status', async (req, res) => {
     res.json({ success: true, message: 'Status aktualisiert' });
   } catch (error) {
     console.error('Status-Update Fehler:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1564,7 +1532,7 @@ app.post('/api/receipt/order/:orderId/tracking', async (req, res) => {
     res.json({ success: true, message: 'Tracking-Info hinzugefügt' });
   } catch (error) {
     console.error('Tracking-Update Fehler:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1576,7 +1544,7 @@ app.get('/api/receipt/orders/email/:email', async (req, res) => {
     res.json(orders);
   } catch (error) {
     console.error('E-Mail-Suche Fehler:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1587,7 +1555,7 @@ app.get('/api/receipt/statistics', async (req, res) => {
     res.json(stats);
   } catch (error) {
     console.error('Statistik-Fehler:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1696,7 +1664,7 @@ app.post('/api/receipt/resend/:orderId', async (req, res) => {
     res.json({ success: true, message: 'Kassenbon erneut gesendet' });
   } catch (error) {
     console.error('Kassenbon erneut senden Fehler:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1708,7 +1676,7 @@ app.post('/api/receipt/test-email', async (req, res) => {
     res.json(result);
   } catch (error) {
     console.error('Test-E-Mail Fehler:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1730,7 +1698,7 @@ app.get('/api/exchange-rates', async (req, res) => {
     });
   } catch (error) {
     console.error('Exchange Rates Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1765,7 +1733,7 @@ app.post('/api/exchange-rates/convert', async (req, res) => {
     });
   } catch (error) {
     console.error('Currency Conversion Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1780,7 +1748,7 @@ app.get('/api/exchange-rates/currencies', async (req, res) => {
     });
   } catch (error) {
     console.error('Currencies Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
@@ -1794,7 +1762,7 @@ app.get('/api/exchange-rates/cache-status', (req, res) => {
     });
   } catch (error) {
     console.error('Cache Status Error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Interner Serverfehler.' });
   }
 });
 
