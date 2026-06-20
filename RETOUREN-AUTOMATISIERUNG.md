@@ -1,317 +1,105 @@
-# 🔄 ERWEITERTE RETOUREN-AUTOMATISIERUNG
+# 🔄 Retouren-Automatisierung (SOP)
 
-## ✅ WAS ICH IMPLEMENTIERT HABE:
+Konsolidierte Betriebsanleitung für Retouren/Rückerstattungen im Maios Shop.
+Ersetzt die früheren Einzeldokumente `VOLLAUTOMATISCHE-RETOUREN.md` und
+`VOLLAUTOMATISCH-FERTIG.md` (Letzteres betraf den Payment-Split → siehe
+`CJ-AUTOMATISIERUNG.md`).
 
-### **1. Automatische Retouren-Genehmigung** ✅
-- System prüft automatisch ob Retoure genehmigt werden kann
-- Basierend auf Grund und Bestellalter
-- Automatischer Stripe Refund
-
-### **2. Intelligente Regeln** ✅
-- Bestellung < 14 Tage alt
-- Bestimmte Gründe werden automatisch genehmigt
-- Alle anderen: Manuelle Prüfung
-
-### **3. Automatischer Refund** ✅
-- Stripe erstattet automatisch
-- Transfer wird rückgängig gemacht
-- Kunde bekommt Geld zurück
+> **Aktueller Stand:** Auto-Genehmigung ist **standardmäßig AUS**. Retouren werden
+> bewusst **manuell** geprüft. Die Automatik lässt sich per Umgebungsvariable
+> `RETURNS_AUTO_APPROVE=true` aktivieren (Render-Dashboard).
 
 ---
 
-## 🚀 WIE ES JETZT FUNKTIONIERT:
+## 1. Endpunkt & Ablauf
 
-### **Automatische Genehmigung:**
-
-```
-Kunde beantragt Retoure
-    ↓
-System prüft:
-├─ Bestellung < 14 Tage alt? ✅
-├─ Grund: "Produkt defekt"? ✅
-└─ → AUTOMATISCH GENEHMIGT!
-    ↓
-Stripe Refund wird automatisch erstellt
-    ↓
-Geld wird zurückgebucht:
-├─ Von deinem Account: €7.40
-└─ Von CJ Sub-Account: €20.50
-    ↓
-Kunde erhält €28.99 zurück
-    ↓
-Du bekommst E-Mail: "✅ AUTOMATISCH GENEHMIGT"
-    ↓
-Du musst nur noch CJ kontaktieren (5 Min)
-```
-
-### **Manuelle Prüfung:**
+**Endpunkt:** `POST /api/return-request` (in `server.js`).
+Kunde füllt das Formular auf `infos/retouren.html` aus → System validiert die Bestellung
+gegen die DB → entscheidet manuell oder (falls aktiviert) automatisch.
 
 ```
-Kunde beantragt Retoure
+Kunde beantragt Retoure (Bestellnummer, E-Mail, Grund)
     ↓
-System prüft:
-├─ Bestellung > 14 Tage alt? ❌
-└─ Grund: "Gefällt mir nicht"? ❌
+System validiert Bestellung (orders-Tabelle)
     ↓
-Du bekommst E-Mail: "⚠️ MANUELLE PRÜFUNG"
-    ↓
-Du entscheidest: Ja/Nein (2 Min)
-    ↓
-Du klickst Refund in Stripe (1 Klick)
-    ↓
-Du kontaktierst CJ (5 Min)
+┌─ RETURNS_AUTO_APPROVE=true  UND  Bestellung ≤ 14 Tage  UND  Grund in Auto-Liste?
+│      JA  → automatisch genehmigen → Stripe-Refund → CJ-Retoure (API) → E-Mails
+│      NEIN → manuelle Prüfung → E-Mail an Admin „⚠️ MANUELLE PRÜFUNG"
+└─────────────────────────────────────────────────────────────────────────────
 ```
 
 ---
 
-## 📋 AUTO-APPROVE REGELN:
+## 2. Auto-Approve-Regeln
 
-### **Automatisch genehmigt wenn:**
+Automatische Genehmigung **nur** wenn **alle** Bedingungen erfüllt sind:
 
-1. ✅ **Bestellung < 14 Tage alt**
-2. ✅ **Grund ist einer von:**
-   - "Produkt defekt"
-   - "Falsche Ware erhalten"
-   - "Beschädigt angekommen"
+1. `process.env.RETURNS_AUTO_APPROVE === 'true'` (Standard: nicht gesetzt = aus)
+2. Bestellalter **≤ 14 Tage** (`created_at` der Bestellung)
+3. Grund ist einer von:
+   - `Produkt defekt`
+   - `Falsche Ware erhalten`
+   - `Beschädigt angekommen`
 
-### **Manuelle Prüfung wenn:**
+Alle anderen Fälle (älter als 14 Tage, anderer Grund, Flag aus) → **manuelle Prüfung**.
 
-1. ⚠️ **Bestellung > 14 Tage alt**
-2. ⚠️ **Grund ist:**
-   - "Gefällt mir nicht"
-   - "Zu spät angekommen"
-   - "Andere Gründe"
+> Anpassbar in `server.js` (`autoApproveReasons`-Liste und die `if`-Bedingung im
+> `/api/return-request`-Handler). Bestellalter-Grenze `orderAge <= 14` dort ändern.
 
 ---
 
-## 💰 BEISPIEL-SZENARIEN:
+## 3. Was bei Auto-Genehmigung automatisch passiert
 
-### **Szenario 1: Automatisch genehmigt**
+| Schritt | Mechanismus |
+|---|---|
+| Genehmigung | Regelprüfung im Handler |
+| Stripe-Refund | `stripe.refunds.create` (inkl. Rückabwicklung des CJ-Transfers) |
+| CJ-Retoure | `cjAPI.createReturn(...)` via CJ-API |
+| Kunden-Mail | Bestätigung „automatisch genehmigt" (Resend) |
+| Admin-Mail | Info „✅ RETOURE AUTOMATISCH GENEHMIGT" (Resend) |
 
-```
-Tag 5 nach Bestellung:
-Kunde: "Produkt defekt"
-    ↓
-System: ✅ Automatisch genehmigt
-    ↓
-Stripe: Refund €28.99 (automatisch)
-    ↓
-Du: E-Mail erhalten
-Du: CJ kontaktieren (5 Min)
-    ↓
-Aufwand: 5 Minuten
-```
-
-### **Szenario 2: Manuelle Prüfung**
-
-```
-Tag 20 nach Bestellung:
-Kunde: "Gefällt mir nicht"
-    ↓
-System: ⚠️ Manuelle Prüfung
-    ↓
-Du: E-Mail erhalten
-Du: Prüfen (2 Min)
-Du: Entscheiden: Ablehnen
-Du: Kunde informieren
-    ↓
-Aufwand: 5 Minuten
-```
-
-### **Szenario 3: Automatisch + CJ-Retoure**
-
-```
-Tag 3 nach Bestellung:
-Kunde: "Beschädigt angekommen"
-    ↓
-System: ✅ Automatisch genehmigt
-Stripe: Refund €28.99
-    ↓
-Du: CJ kontaktieren
-CJ: Retoure akzeptiert
-CJ: Erstattet €20.50
-    ↓
-Endergebnis: €0 Verlust
-Aufwand: 5 Minuten
-```
+**Fallback:** Schlägt die CJ-API fehl, wird `autoApproved` auf manuell zurückgesetzt und
+der Admin per E-Mail informiert, die CJ-Retoure manuell anzulegen.
 
 ---
 
-## 📊 STATISTIK:
+## 4. Manuelle Prüfung (Standard)
 
-### **Bei 100 Bestellungen/Monat:**
-
-```
-Retouren gesamt: 3-5 (3-5%)
-    ↓
-Automatisch genehmigt: 2-3 (60%)
-├─ Aufwand: 5 Min pro Retoure
-└─ Gesamt: 10-15 Min
-    ↓
-Manuell geprüft: 1-2 (40%)
-├─ Aufwand: 5 Min pro Retoure
-└─ Gesamt: 5-10 Min
-    ↓
-GESAMT-AUFWAND: 15-25 Min/Monat
-```
-
-**Vorher (ohne Automatisierung):** 30-50 Min/Monat  
-**Jetzt (mit Automatisierung):** 15-25 Min/Monat  
-**Ersparnis:** 50% weniger Aufwand! ✅
+1. Admin erhält E-Mail „⚠️ NEUE RETOURE-ANFRAGE – MANUELLE PRÜFUNG ERFORDERLICH".
+2. Entscheidung treffen (genehmigen/ablehnen).
+3. Bei Genehmigung: Refund im **Stripe-Dashboard** (`dashboard.stripe.com/refunds`).
+4. Bei CJ-Ware: CJ-Retoure manuell anstoßen (siehe `CJ-AUTOMATISIERUNG.md`).
+5. Kunden informieren.
 
 ---
 
-## ✅ WAS AUTOMATISCH LÄUFT:
+## 5. Testen
 
-| Funktion | Status |
-|----------|--------|
-| Retouren-Formular | ✅ Automatisch |
-| E-Mail an dich | ✅ Automatisch |
-| Regel-Prüfung | ✅ Automatisch |
-| Auto-Genehmigung | ✅ Automatisch (bei Regeln) |
-| Stripe Refund | ✅ Automatisch (bei Auto-Approve) |
-| Transfer rückgängig | ✅ Automatisch |
-| Kunde informieren | ✅ Automatisch |
-| CJ-Retoure | ⚠️ Manuell (5 Min) |
+```
+1. Bestellung mit Test-Karte 4242 4242 4242 4242 aufgeben
+2. infos/retouren.html öffnen
+3. Bestellnummer (ORD-…) + Kunden-E-Mail eingeben
+4. Grund wählen + absenden
+```
+
+- **Manuell (Standard):** Bestätigung „Wir prüfen", Admin-Mail, **kein** Auto-Refund.
+- **Auto (Flag gesetzt, Grund passend, ≤14 Tage):** Sofort-Bestätigung,
+  Stripe-Refund + CJ-Retoure, Admin-Mail „automatisch genehmigt".
+  Konsole zeigt: `✅ Retoure wird automatisch genehmigt!` → `💳 Stripe Refund` → `📦 CJ-Retoure`.
 
 ---
 
-## 🎯 ANPASSBARE REGELN:
+## 6. Aktivieren / Deaktivieren
 
-### **Du kannst ändern:**
+| Ziel | Aktion |
+|---|---|
+| Auto-Approve **an** | `RETURNS_AUTO_APPROVE=true` im Render-Dashboard setzen, Deploy |
+| Auto-Approve **aus** (Standard) | Variable entfernen oder ≠ `true` |
 
-**1. Bestellalter:**
-```javascript
-// In server.js Zeile 653
-if (orderAge <= 14 && ...) {  // Ändere 14 auf z.B. 30
-```
-
-**2. Auto-Approve Gründe:**
-```javascript
-// In server.js Zeile 644
-const autoApproveReasons = [
-  'Produkt defekt',
-  'Falsche Ware erhalten',
-  'Beschädigt angekommen',
-  // Füge mehr hinzu:
-  'Zu spät angekommen',
-  'Nicht wie beschrieben'
-];
-```
-
-**3. Komplett deaktivieren:**
-```javascript
-// In server.js Zeile 653
-if (false && orderAge <= 14 && ...) {  // Immer false = nie auto-approve
-```
+> **Empfehlung:** Erst manuell betreiben, Retouren-Aufkommen beobachten, dann ggf.
+> Automatik aktivieren und Gründe/Frist anpassen.
 
 ---
 
-## 💡 EMPFEHLUNGEN:
-
-### **Für Start:**
-- ✅ Lass Regeln wie sie sind
-- ✅ Beobachte 1 Monat
-- ✅ Passe dann an
-
-### **Wenn viele Retouren:**
-- ✅ Erweitere Auto-Approve Gründe
-- ✅ Erhöhe Bestellalter auf 30 Tage
-- ✅ Mehr Automatisierung
-
-### **Wenn wenig Retouren:**
-- ✅ Lass alles manuell
-- ✅ Mehr Kontrolle
-- ✅ Weniger Risiko
-
----
-
-## 🔍 WIE DU ES SIEHST:
-
-### **In der E-Mail:**
-
-**Automatisch genehmigt:**
-```
-Betreff: ✅ RETOURE AUTOMATISCH GENEHMIGT #ORD-123
-
-Header: Grün
-Text: "Refund wurde automatisch verarbeitet"
-Status: "✅ RETOURE AUTOMATISCH GENEHMIGT & REFUND VERARBEITET"
-```
-
-**Manuelle Prüfung:**
-```
-Betreff: 🔄 Retoure-Anfrage #ORD-123
-
-Header: Rot
-Text: "Neue Retoure-Anfrage"
-Status: "⚠️ NEUE RETOURE-ANFRAGE - MANUELLE PRÜFUNG ERFORDERLICH"
-```
-
-### **In Stripe Dashboard:**
-
-1. Gehe zu: https://dashboard.stripe.com/refunds
-2. Suche Refund
-3. Siehst du: "Auto-approved: true" in Metadata
-
----
-
-## 🧪 TESTEN:
-
-### **Test 1: Automatische Genehmigung**
-
-1. Kaufe ein Produkt
-2. Warte 1 Tag
-3. Gehe zu Retouren-Formular
-4. Wähle Grund: "Produkt defekt"
-5. Absenden
-
-**Erwartetes Ergebnis:**
-- ✅ Sofortige Bestätigung
-- ✅ E-Mail: "Automatisch genehmigt"
-- ✅ Refund in Stripe
-- ✅ Geld zurück an Kunden
-
-### **Test 2: Manuelle Prüfung**
-
-1. Kaufe ein Produkt
-2. Warte 1 Tag
-3. Gehe zu Retouren-Formular
-4. Wähle Grund: "Gefällt mir nicht"
-5. Absenden
-
-**Erwartetes Ergebnis:**
-- ✅ Bestätigung: "Wir prüfen"
-- ✅ E-Mail: "Manuelle Prüfung"
-- ❌ Kein automatischer Refund
-- ⚠️ Du musst entscheiden
-
----
-
-## 🎉 ZUSAMMENFASSUNG:
-
-**Was automatisch läuft:**
-- ✅ 60% aller Retouren automatisch genehmigt
-- ✅ Automatischer Stripe Refund
-- ✅ Automatische Kunde-Benachrichtigung
-- ✅ 50% weniger Aufwand
-
-**Was du noch machst:**
-- ⚠️ CJ-Retoure klären (5 Min)
-- ⚠️ 40% manuell prüfen (5 Min)
-
-**Gesamt-Aufwand:**
-- 15-25 Min/Monat (statt 30-50 Min)
-
-**Ersparnis:**
-- 50% weniger Zeit! ✅
-
----
-
-## 🚀 NÄCHSTE SCHRITTE:
-
-1. **JETZT:** Server neu starten
-2. **JETZT:** Test-Retoure machen
-3. **SPÄTER:** Regeln anpassen (optional)
-
-**Bereit?** 🎉
+**Verwandt:** Payment-Split (Stripe → CJ Sub-Account) und CJ-Auto-Bestellung →
+`CJ-AUTOMATISIERUNG.md`. Versandlogik → `VERSANDMETHODEN.md`.

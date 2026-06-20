@@ -3,7 +3,7 @@
 Alles, was an Code zu tun ist: offene Bugs/Sicherheit, Aufräumen, Ausbau, Git-Workflow.
 Architektur & Setup stehen in `CLAUDE.md`, Design in `CLAUDE-DESIGN.md`.
 
-Stand: 2026-06-20 · Live: **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet
+Stand: 2026-06-21 · Live: **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet
 auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (nur `main`)
 · DB: Neon-Postgres · Hosting: Render (Free).
 
@@ -13,33 +13,23 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 1. Offene Code-Themen (Bugs/Sicherheit/Performance)
+## 1. Offene Code-Themen (Performance)
 
 | # | Prio | Thema | Datei(en) |
 |---|---|---|---|
-| 10 | 🟡 | Robustheit: MwSt.-Berechnung prüfen; `crypto.randomUUID()` statt `substr`; Fehler-Responses ohne interne Details | `server.js`, `database.js` |
-| 11 | 🟡 | Performance: Assets unminifiziert/ungebündelt (styles.css ~215 KB, app.js ~190 KB), Bilder unoptimiert (WebP/lazy), `products.json` mehrfach pro Render gefetcht, ~1000 `console.*` → Log-Level | Frontend gesamt |
-| 12 | 🟡 | Tests/CI/Lint fehlen: ESLint (`no-dupe-keys`!), Prettier, Smoke-Tests (Split-Mathematik, Webhook-Signatur) | Projektweit |
+| 11 | 🟢 | **Performance — Rest, braucht Build-Step-Entscheidung:** Assets minifizieren/bündeln (styles.css ~215 KB, app.js ~190 KB), Bilder auf WebP umstellen, ~1000 `console.*` per Log-Level dämpfen. **Konflikt mit „Kein Build-Step" (`CLAUDE.md`)** — erst entscheiden, ob ein Build-Step eingeführt wird. | Frontend gesamt |
+
+> **Bereits erledigt (2026-06-21):** `products.json`-Mehrfach-Fetch behoben (memoized,
+> 1× statt ~20× pro Seite, im Browser verifiziert) · `compression` (gzip) ist serverseitig
+> aktiv · Bestseller-/Kategorie-Grids nutzen bereits `loading="lazy"`.
+
+> **Hinweis:** Minify/Bundle/WebP brauchen einen Build-Schritt + `render.yaml`-Anpassung
+> (Architektur-Entscheidung). Der `console.*`-Punkt ist Low-ROI, da gzip die Übertragung
+> bereits deckt — eher zusammen mit dem Build-Step lösen.
 
 ---
 
-## 2. Restliches Aufräumen (toter Code / Docs)
-
-**Toter Code (prüfen & entfernen):**
-- Legacy-Endpunkt `/api/send-confirmation` (alter SendGrid-Pfad, Mails laufen über Resend).
-- `item.id===1`-Altlast in `/api/create-payment-intent`.
-
-**Veraltete Docs:**
-- `README.md` nennt noch MongoDB → real Postgres/Neon (Banner/Update setzen).
-- Drei Retouren-SOPs (`RETOUREN-AUTOMATISIERUNG.md`, `VOLLAUTOMATISCHE-RETOUREN.md`,
-  `VOLLAUTOMATISCH-FERTIG.md`) → auf eine konsolidieren.
-
-> **Nicht zusammenführen:** `products.json` (root) vs. `Marketing/products.json` sind
-> **beabsichtigt** verschieden.
-
----
-
-## 3. Git / GitHub-Workflow
+## 2. Git / GitHub-Workflow
 
 - Nur Branch **`main`**, Auto-Deploy auf Render bei Push.
 - Lock-Fehler („A lock file already exists"): alle Git-Tools schließen, dann
@@ -47,6 +37,9 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 - Push fragt nach Login → GitHub-User + **Personal Access Token** (nicht Passwort).
 - Bei `package.json`-Änderungen immer `npm install --package-lock-only`, sonst zieht Render eine
   veraltete Lock-Datei (genau das war ein Deploy-Fehler).
+- **Vor dem Commit prüfen:** `npm run lint` (ESLint, fängt u. a. `no-dupe-keys`) und
+  `npm test` (Smoke-Tests für Preis-/Versandlogik). `npm run format` formatiert mit Prettier.
+  ESLint/Prettier sind devDependencies — in Prod (Render) nicht zur Laufzeit nötig.
 - **Umlaute/UTF-8:** HTML-Dateien sind UTF-8 **ohne BOM**. NICHT mit Windows-PowerShell-5.1
   `Get-Content -Raw` + `WriteAllText` bulk-bearbeiten (zerstört Umlaute → Mojibake `Ã¼`).
   Edit-Tool oder `[System.IO.File]::ReadAllBytes/WriteAllBytes` mit korrektem Encoding nutzen.
@@ -54,10 +47,10 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 4. Nächste sinnvolle Schritte (Reihenfolge)
+## 3. Nächste sinnvolle Schritte
 
-1. 🟡 Code-Härtung #10 (Robustheit) (§1).
-2. 🟢 Restliches Aufräumen (§2).
+1. 🟢 Entscheidung: Build-Step einführen? Wenn ja → Minify/Bundle + WebP (#11).
+   Wenn nein → #11 bleibt offen/abgehakt (gzip + lazy decken das Wesentliche).
 
 > Großes Repo (~19k JS-Zeilen, 60+ HTML): vor Refactorings `/graphify .` für die
 > Abhängigkeiten (siehe `CLAUDE.md`).

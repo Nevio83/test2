@@ -50,9 +50,9 @@ Ein moderner E-Commerce Shop mit Stripe Integration, Multi-Währung Support und 
 ## 🚀 Installation
 
 ### Voraussetzungen
-- Node.js (v14 oder höher)
-- MongoDB
-- npm oder yarn
+- Node.js (v18 oder höher)
+- PostgreSQL-Datenbank (empfohlen: [Neon](https://neon.tech), kostenlos & dauerhaft) — Verbindung via `DATABASE_URL`
+- npm
 
 ### Setup
 
@@ -73,13 +73,12 @@ cp .env.example .env
 # Bearbeite .env mit deinen API Keys
 ```
 
-4. **MongoDB starten**
-```bash
-# Windows
-mongod
-
-# Linux/Mac
-sudo systemctl start mongodb
+4. **Datenbank verbinden**
+   Lege bei [Neon](https://neon.tech) eine kostenlose Postgres-Datenbank an und trage die
+   Verbindung als `DATABASE_URL` in `.env` ein. Die Tabellen werden beim ersten Start
+   automatisch angelegt (`CREATE TABLE IF NOT EXISTS` in `database.js`).
+```env
+DATABASE_URL=postgres://user:passwort@host/dbname
 ```
 
 5. **Server starten**
@@ -126,7 +125,7 @@ SITE_URL=https://maiosshop.com
 ```
 maios-shop/
 ├── server.js              # Express Server
-├── database.js            # MongoDB Verbindung
+├── database.js            # PostgreSQL-Verbindung (pg) + Schema
 ├── resend-service.js      # E-Mail Service
 ├── receipt-generator.js   # PDF-Generator
 ├── gutschein-system.js    # Gutschein-Logik
@@ -143,7 +142,8 @@ maios-shop/
 ## 🛠️ Technologie-Stack
 
 - **Backend**: Node.js, Express
-- **Datenbank**: MongoDB
+- **Datenbank**: PostgreSQL (Neon) via `pg`
+- **Hosting**: Render
 - **Zahlungen**: Stripe
 - **E-Mail**: Resend
 - **PDF**: PDFKit
@@ -194,10 +194,10 @@ Bearbeite die CSS-Variablen in den HTML-Dateien.
 - Stelle sicher, dass Server erreichbar ist
 - Prüfe Webhook Secret in `.env`
 
-### MongoDB Verbindung fehlgeschlagen
-- Stelle sicher, dass MongoDB läuft
-- Prüfe Connection String in `.env`
-- Firewall-Einstellungen prüfen
+### Datenbank-Verbindung fehlgeschlagen
+- Prüfe, ob `DATABASE_URL` in `.env` (lokal) bzw. im Render-Dashboard (Prod) gesetzt ist
+- Bei Neon: SSL ist erforderlich (`?sslmode=require` ist in der Connection-URL enthalten)
+- Ohne `DATABASE_URL` läuft der Shop, aber Bestell-/Beleg-/Tracking-Funktionen sind deaktiviert
 
 ## 📝 Lizenz
 

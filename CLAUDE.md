@@ -208,8 +208,9 @@ komplette API aus `server.js`. URL: https://maios-shop.onrender.com. **Auto-Depl
   (`Number(p.id) === Number(id)`), wie im Bestandscode.
 - Zwei CSS-Frameworks im Einsatz (Tailwind auf `index.html`, Bootstrap auf Produkt-/Cart-Seiten)
   — beim Bearbeiten das jeweilige Framework der Seite verwenden.
-- Retouren werden bewusst **manuell** genehmigt (Auto-Approve ist im Code mit `if (false && …)`
-  deaktiviert). Nicht „aufräumen", ohne Rücksprache.
+- Retouren werden bewusst **manuell** genehmigt. Auto-Approve ist per Flag `RETURNS_AUTO_APPROVE`
+  gesteuert (Standard: aus). Nur bei `RETURNS_AUTO_APPROVE=true` + Bestellung ≤14 Tage + Grund in
+  der Liste greift die Automatik (Stripe-Refund + CJ-Retoure). Details: `RETOUREN-AUTOMATISIERUNG.md`.
 - **`node-fetch` muss v2 bleiben** (`require()`-kompatibel). v3 ist ESM-only und crasht
   `cj-dropshipping-api.js` + `exchange-rate-service.js` beim Start. Alternativ auf Node 20+
   heben und global `fetch` nutzen.
@@ -296,9 +297,4 @@ Skript-Abhängigkeiten sichtbar zu machen.
 - `CLAUDE-DESIGN.md` — alles fürs Design: Design-System, UI/UX, Accessibility, SEO.
 
 **Betriebs-SOPs (Domänen-Handbücher):** `CJ-AUTOMATISIERUNG.md`, `RETOUREN-AUTOMATISIERUNG.md`,
-`VOLLAUTOMATISCHE-RETOUREN.md`, `VOLLAUTOMATISCH-FERTIG.md`, `VERSANDMETHODEN.md`,
-`KASSENBON-SYSTEM.md`, `EXCHANGE_RATE_SETUP.md`.
-
-> Veraltet/löschbar (siehe `CLAUDE-CODE.md` §3): `README.md`-Setup (nennt MongoDB; real
-> Postgres/Neon), `external-audit-review.txt`, `DEPLOYMENT.md` (Netlify), `netlify/` +
-> `netlify.toml`, `indexoriginal.html`, `test-require.js`.
+`VERSANDMETHODEN.md`, `KASSENBON-SYSTEM.md`, `EXCHANGE_RATE_SETUP.md`.
