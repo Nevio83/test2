@@ -1144,6 +1144,63 @@ function debounce(func, timeout = 50) {
   };
 }
 
+// Anonyme Suchanfrage fuers Marktforschungs-Dashboard protokollieren.
+// Nur mit Einwilligung (wie view-tracker.js); sendet nur Begriff + Trefferzahl, keine PII.
+function trackSearch(term, resultCount) {
+  try {
+    term = (term || "").trim();
+    if (term.length < 2) return;
+    let level = null;
+    if (window.MaiosConsent && typeof window.MaiosConsent.level === "function") {
+      level = window.MaiosConsent.level();
+    }
+    if (!level) {
+      try {
+        level = localStorage.getItem("maios_cookie_consent");
+      } catch (e) {
+        /* ignore */
+      }
+    }
+    if (level !== "all" && level !== "essential") return; // ohne Einwilligung nichts senden
+    let sid = null;
+    try {
+      sid =
+        level === "all"
+          ? localStorage.getItem("maios_vid")
+          : sessionStorage.getItem("maios_sid");
+    } catch (e) {
+      /* ignore */
+    }
+    fetch("/api/track/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        term: term.slice(0, 120),
+        results_count: typeof resultCount === "number" ? resultCount : null,
+        consent_level: level,
+        session_id: sid,
+      }),
+    }).catch(function () {
+      /* Tracking darf die Suche nie stoeren */
+    });
+  } catch (e) {
+    /* ignore */
+  }
+}
+
+// Entprelltes Such-Tracking: protokolliert erst ~1,2 s nach dem letzten Tastendruck
+// den finalen Begriff + Trefferzahl (nicht jeden Zwischenstand).
+let _searchTrackTimer = null;
+function queueSearchTracking(term, count) {
+  term = (term || "").trim();
+  if (term.length < 2) return;
+  clearTimeout(_searchTrackTimer);
+  _searchTrackTimer = setTimeout(function () {
+    trackSearch(term, count);
+  }, 1200);
+}
+
 function filterProducts(products, searchText, category) {
   console.log("filterProducts called:", {
     searchText,
@@ -4352,6 +4409,9 @@ function testSearchFunction(query) {
       });
 
       console.log("ðŸ” Filtered results:", filtered.length);
+
+      // Suchbegriff + Trefferzahl anonym fuers Marktforschungs-Dashboard (entprellt)
+      queueSearchTracking(query, filtered.length);
 
       // Clear and render
       grid.innerHTML = "";

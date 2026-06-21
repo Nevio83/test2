@@ -1687,6 +1687,28 @@ app.post('/api/track/consent', async (req, res) => {
   }
 });
 
+// Oeffentlich: anonyme Suchanfrage protokollieren (Marktforschung). Nur Begriff +
+// Trefferzahl, keine PII. Client sendet nur bei vorhandener Einwilligung.
+app.post('/api/track/search', async (req, res) => {
+  try {
+    const body = req.body || {};
+    const term = typeof body.term === 'string' ? body.term.trim().slice(0, 120) : '';
+    if (!term) return res.json({ success: false });
+    const level = body.consent_level === 'all' ? 'all' : 'essential';
+    const count = parseInt(body.results_count, 10);
+    await dbOperations.addSearchEvent({
+      term,
+      results_count: Number.isFinite(count) ? count : null,
+      consent_level: level,
+      session_id: typeof body.session_id === 'string' ? body.session_id.slice(0, 64) : null
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('⚠️ Such-Tracking-Fehler:', error.message);
+    res.json({ success: false });
+  }
+});
+
 // Admin: Kennzahlen fuer die Dashboard-Kacheln
 // Routen liegen bewusst UNTER /a29715347575/ (= authentifizierter Pfad-Teilbaum),
 // damit der Browser bei fetch() aus dem Dashboard die Basic-Auth-Credentials
@@ -1790,6 +1812,77 @@ app.get('/a29715347575/api/views/visitor-types', async (req, res) => {
   } catch (error) {
     console.error('Besuchertypen-Fehler:', error.message);
     res.status(500).json({ error: 'Besuchertypen nicht verfuegbar' });
+  }
+});
+
+// ── Admin: Marktforschung-Insights (aggregiert) ──────────────────────
+
+// Conversion-Funnel: Besucher -> Produktseite -> Warenkorb -> Kauf
+app.get('/a29715347575/api/insights/funnel', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getConversionFunnel(days));
+  } catch (error) {
+    console.error('Funnel-Fehler:', error.message);
+    res.status(500).json({ error: 'Funnel nicht verfuegbar' });
+  }
+});
+
+// Such-Insights: Top-Begriffe + Null-Treffer-Suchen
+app.get('/a29715347575/api/insights/search', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    const limit = Math.min(parseInt(req.query.limit) || 15, 50);
+    res.json(await dbOperations.getSearchInsights(days, limit));
+  } catch (error) {
+    console.error('Such-Insights-Fehler:', error.message);
+    res.status(500).json({ error: 'Such-Insights nicht verfuegbar' });
+  }
+});
+
+// Referrer/Kanal-Auswertung
+app.get('/a29715347575/api/insights/referrers', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    const limit = Math.min(parseInt(req.query.limit) || 12, 50);
+    res.json(await dbOperations.getReferrers(days, limit));
+  } catch (error) {
+    console.error('Referrer-Fehler:', error.message);
+    res.status(500).json({ error: 'Referrer nicht verfuegbar' });
+  }
+});
+
+// Zeitmuster: Aufrufe + Bestellungen je Stunde
+app.get('/a29715347575/api/insights/hourly', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getHourlyPattern(days));
+  } catch (error) {
+    console.error('Stundenmuster-Fehler:', error.message);
+    res.status(500).json({ error: 'Stundenmuster nicht verfuegbar' });
+  }
+});
+
+// Tagesmuster: Aufrufe + Bestellungen je Wochentag
+app.get('/a29715347575/api/insights/weekday', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getWeekdayPattern(days));
+  } catch (error) {
+    console.error('Tagesmuster-Fehler:', error.message);
+    res.status(500).json({ error: 'Tagesmuster nicht verfuegbar' });
+  }
+});
+
+// Ausstiegsseiten: wo Besucher abspringen
+app.get('/a29715347575/api/insights/exit-pages', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 8, 50);
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getExitPages(limit, days));
+  } catch (error) {
+    console.error('Ausstiegsseiten-Fehler:', error.message);
+    res.status(500).json({ error: 'Ausstiegsseiten nicht verfuegbar' });
   }
 });
 

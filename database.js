@@ -109,10 +109,21 @@ const SCHEMA = [
     user_agent TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
   )`,
+  // Suchanfragen (anonyme Marktforschung): nur Begriff + Trefferzahl, keine PII.
+  // Null-Treffer-Suchen = unerfuellte Nachfrage -> Produktideen.
+  `CREATE TABLE IF NOT EXISTS search_events (
+    id SERIAL PRIMARY KEY,
+    term TEXT NOT NULL,
+    results_count INTEGER,
+    consent_level TEXT,
+    session_id TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  )`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
   `CREATE INDEX IF NOT EXISTS idx_consent_created ON user_consent_events(created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_search_created ON search_events(created_at)`,
   `CREATE INDEX IF NOT EXISTS idx_page_views_client_view ON page_views(client_view_id)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_order_id ON orders(order_id)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(customer_email)`,
@@ -193,6 +204,21 @@ function buildSeriesSql(gran, start, table, aggs, metrics) {
             GROUP BY ${group}
           ) x ON x.day = d::date
           ORDER BY day ASC`;
+}
+
+// Slug -> Produkt-ID (aus products.json, einmal gecacht). Noetig, seit Produktseiten
+// sprechende Slug-URLs haben (/produkte/<slug>.html statt produkt-NN.html).
+let _slugToId = null;
+function getSlugToIdMap() {
+  if (_slugToId) return _slugToId;
+  _slugToId = {};
+  try {
+    const list = require('./products.json');
+    list.forEach((p) => { if (p && p.slug) _slugToId[String(p.slug).toLowerCase()] = String(p.id); });
+  } catch (e) {
+    console.warn('⚠️ products.json fuer Slug-Mapping nicht ladbar:', e.message);
+  }
+  return _slugToId;
 }
 
 // ── Operationen (gleiches Interface wie zuvor) ───────────────
@@ -452,6 +478,141 @@ const dbOperations = {
     };
   },
 
+  // ── Marktforschung (aggregiert, DSGVO-konform) ──────────────────────
+
+  // Eine Suchanfrage protokollieren (anonym, nur Begriff + Trefferzahl).
+  addSearchEvent: async (s) => {
+    const r = await pool.query(
+      `INSERT INTO search_events (term, results_count, consent_level, session_id)
+       VALUES ($1,$2,$3,$4) RETURNING id`,
+      [s.term, Number.isFinite(s.results_count) ? s.results_count : null,
+       s.consent_level || null, s.session_id || null]
+    );
+    return { id: r.rows[0].id };
+  },
+
+  // Such-Insights: Top-Begriffe + Null-Treffer-Suchen (= unerfuellte Nachfrage).
+  getSearchInsights: async (days = 30, limit = 15) => {
+    const interval = [String(days)];
+    const [totals, top, noResults] = await Promise.all([
+      pool.query(
+        `SELECT COUNT(*)::int AS total,
+                COUNT(*) FILTER (WHERE results_count = 0)::int AS zero
+         FROM search_events WHERE created_at > NOW() - ($1 || ' days')::interval`, interval),
+      pool.query(
+        `SELECT lower(term) AS term, COUNT(*)::int AS searches,
+                ROUND(AVG(results_count))::int AS avg_results,
+                COUNT(*) FILTER (WHERE results_count = 0)::int AS zero_hits
+         FROM search_events WHERE created_at > NOW() - ($1 || ' days')::interval
+         GROUP BY lower(term) ORDER BY searches DESC, term ASC LIMIT $2`, [String(days), limit]),
+      pool.query(
+        `SELECT lower(term) AS term, COUNT(*)::int AS searches
+         FROM search_events
+         WHERE results_count = 0 AND created_at > NOW() - ($1 || ' days')::interval
+         GROUP BY lower(term) ORDER BY searches DESC, term ASC LIMIT $2`, [String(days), limit])
+    ]);
+    const t = totals.rows[0] || { total: 0, zero: 0 };
+    return { total: t.total, zero: t.zero, top: top.rows, noResults: noResults.rows };
+  },
+
+  // Conversion-Funnel (Sessions je Stufe). Kauf = Bestellungen im Zeitraum
+  // (Bestellungen sind nicht an Sessions geknuepft -> Kaeufer = Bestellanzahl).
+  getConversionFunnel: async (days = 30) => {
+    const [stages, buyers] = await Promise.all([
+      pool.query(
+        `SELECT COUNT(DISTINCT session_id)::int AS visitors,
+                COUNT(DISTINCT session_id) FILTER (WHERE path LIKE '/produkte/%')::int AS product_viewers,
+                COUNT(DISTINCT session_id) FILTER (WHERE path LIKE '%cart.html%')::int AS cart_reachers
+         FROM page_views WHERE created_at > NOW() - ($1 || ' days')::interval`, [String(days)]),
+      pool.query(
+        `SELECT COUNT(*)::int AS buyers FROM orders
+         WHERE created_at > NOW() - ($1 || ' days')::interval`, [String(days)])
+    ]);
+    const s = stages.rows[0] || { visitors: 0, product_viewers: 0, cart_reachers: 0 };
+    return {
+      visitors: s.visitors,
+      productViewers: s.product_viewers,
+      cartReachers: s.cart_reachers,
+      buyers: (buyers.rows[0] || {}).buyers || 0
+    };
+  },
+
+  // Referrer/Kanal-Auswertung: Host des Referrers (Protokoll/Pfad entfernt).
+  getReferrers: async (days = 30, limit = 12) => {
+    const r = await pool.query(
+      `SELECT CASE
+                WHEN referrer IS NULL OR referrer = '' THEN 'Direkt / kein Referrer'
+                ELSE regexp_replace(regexp_replace(referrer, '^https?://', ''), '/.*$', '')
+              END AS source,
+              COUNT(*)::int AS views,
+              COUNT(DISTINCT session_id)::int AS unique_views
+       FROM page_views
+       WHERE created_at > NOW() - ($1 || ' days')::interval
+       GROUP BY 1 ORDER BY views DESC LIMIT $2`,
+      [String(days), limit]
+    );
+    return r.rows;
+  },
+
+  // Zeitmuster: Aufrufe + Bestellungen je Stunde (0-23, Europe/Berlin).
+  getHourlyPattern: async (days = 30) => {
+    const r = await pool.query(
+      `SELECT h AS hour,
+              COALESCE(v.views,0)::int AS views,
+              COALESCE(o.orders,0)::int AS orders
+       FROM generate_series(0,23) AS h
+       LEFT JOIN (
+         SELECT EXTRACT(HOUR FROM created_at AT TIME ZONE 'Europe/Berlin')::int AS hour, COUNT(*) AS views
+         FROM page_views WHERE created_at > NOW() - ($1 || ' days')::interval GROUP BY 1
+       ) v ON v.hour = h
+       LEFT JOIN (
+         SELECT EXTRACT(HOUR FROM created_at AT TIME ZONE 'Europe/Berlin')::int AS hour, COUNT(*) AS orders
+         FROM orders WHERE created_at > NOW() - ($1 || ' days')::interval GROUP BY 1
+       ) o ON o.hour = h
+       ORDER BY h`,
+      [String(days)]
+    );
+    return r.rows;
+  },
+
+  // Tagesmuster: Aufrufe + Bestellungen je Wochentag (0=So..6=Sa, Europe/Berlin).
+  getWeekdayPattern: async (days = 30) => {
+    const r = await pool.query(
+      `SELECT d AS dow,
+              COALESCE(v.views,0)::int AS views,
+              COALESCE(o.orders,0)::int AS orders
+       FROM generate_series(0,6) AS d
+       LEFT JOIN (
+         SELECT EXTRACT(DOW FROM created_at AT TIME ZONE 'Europe/Berlin')::int AS dow, COUNT(*) AS views
+         FROM page_views WHERE created_at > NOW() - ($1 || ' days')::interval GROUP BY 1
+       ) v ON v.dow = d
+       LEFT JOIN (
+         SELECT EXTRACT(DOW FROM created_at AT TIME ZONE 'Europe/Berlin')::int AS dow, COUNT(*) AS orders
+         FROM orders WHERE created_at > NOW() - ($1 || ' days')::interval GROUP BY 1
+       ) o ON o.dow = d
+       ORDER BY d`,
+      [String(days)]
+    );
+    return r.rows;
+  },
+
+  // Ausstiegsseiten: letzte Seite je Session (wo Besucher abspringen).
+  getExitPages: async (limit = 8, days = 30) => {
+    const r = await pool.query(
+      `SELECT path, COUNT(*)::int AS exits
+       FROM (
+         SELECT DISTINCT ON (session_id) session_id, path
+         FROM page_views
+         WHERE session_id IS NOT NULL
+           AND created_at > NOW() - ($2 || ' days')::interval
+         ORDER BY session_id, created_at DESC
+       ) t
+       GROUP BY path ORDER BY exits DESC LIMIT $1`,
+      [limit, String(days)]
+    );
+    return r.rows;
+  },
+
   getViewStats: async () => {
     const q = (sql) => pool.query(sql).then(r => r.rows[0]);
     const [todayViews, uniqueToday, totalViews, liveNow] = await Promise.all([
@@ -536,20 +697,31 @@ const dbOperations = {
        JOIN orders o ON o.order_id = oi.order_id
        WHERE o.payment_status = 'paid' ${analysisRangeFilter(range, 'o.created_at')}
        GROUP BY oi.product_id`;
+    // Aufrufe je Produktseite: Slug-URLs (/produkte/<slug>.html) UND alte
+    // produkt-NN.html beruecksichtigen. Letzter Pfad-Teil = Slug bzw. produkt-NN.
     const viewsSql =
-      `SELECT product_id,
+      `SELECT lower((regexp_match(path, '/produkte/([^/?#]+)\\.html'))[1]) AS slug,
               COUNT(*)::int AS views,
               COUNT(DISTINCT session_id)::int AS unique_views
-       FROM (
-         SELECT (regexp_match(path, '/produkte/produkt-([0-9]+)\\.html'))[1] AS product_id,
-                session_id
-         FROM page_views
-         WHERE path ~ '/produkte/produkt-[0-9]+\\.html' ${analysisRangeFilter(range, 'created_at')}
-       ) t
-       WHERE product_id IS NOT NULL
-       GROUP BY product_id`;
-    const [sales, views] = await Promise.all([pool.query(salesSql), pool.query(viewsSql)]);
-    return { range, sales: sales.rows, views: views.rows };
+       FROM page_views
+       WHERE path ~ '/produkte/[^/?#]+\\.html' ${analysisRangeFilter(range, 'created_at')}
+       GROUP BY 1`;
+    const [sales, viewsRaw] = await Promise.all([pool.query(salesSql), pool.query(viewsSql)]);
+    // Slug -> Produkt-ID aufloesen (alte produkt-NN.html direkt aus der Zahl).
+    const slugToId = getSlugToIdMap();
+    const byId = {};
+    for (const row of viewsRaw.rows) {
+      const slug = row.slug;
+      if (!slug) continue;
+      let id = slugToId[slug];
+      if (id == null) { const m = slug.match(/^produkt-(\d+)$/); if (m) id = m[1]; }
+      if (id == null) continue;
+      const cur = byId[id] || { product_id: id, views: 0, unique_views: 0 };
+      cur.views += row.views;
+      cur.unique_views += row.unique_views;
+      byId[id] = cur;
+    }
+    return { range, sales: sales.rows, views: Object.values(byId) };
   }
 };
 
