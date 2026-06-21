@@ -1650,6 +1650,16 @@ app.get('/a29715347575/api/orders/timeseries', async (req, res) => {
   }
 });
 
+// Admin: Produkt-Analyse (Verkaeufe + Aufrufe je Produkt) fuer die Bewertungsseite
+app.get('/a29715347575/api/products/analysis', async (req, res) => {
+  try {
+    res.json(await dbOperations.getProductAnalysis(parseRange(req.query.range)));
+  } catch (error) {
+    console.error('Produkt-Analyse-Fehler:', error.message);
+    res.status(500).json({ error: 'Analyse nicht verfuegbar' });
+  }
+});
+
 // Kassenbon erneut senden
 app.post('/api/receipt/resend/:orderId', async (req, res) => {
   try {

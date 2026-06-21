@@ -140,6 +140,18 @@ async function resolveSeries(range, table) {
   return { gran: 'day', start: 'CURRENT_DATE - 29', params: [] }; // '30d' (Default)
 }
 
+// Zeitraum-Filter (WHERE-Fragment) fuer die Produkt-Analyse. `col` ist konstant
+// (kein User-Input), `range` ist validiert -> sichere Konkatenation.
+function analysisRangeFilter(range, col) {
+  switch (range) {
+    case '7d': return `AND ${col} >= NOW() - INTERVAL '7 days'`;
+    case '12m': return `AND ${col} >= NOW() - INTERVAL '1 year'`;
+    case 'all': return '';
+    case '30d':
+    default: return `AND ${col} >= NOW() - INTERVAL '30 days'`;
+  }
+}
+
 // Baut die lueckenlose Zeitreihen-Query (generate_series) fuer eine Tabelle.
 // aggs = Aggregate im Subquery, metrics = Spalten der Aussenabfrage (x = Subquery-Alias).
 function buildSeriesSql(gran, start, table, aggs, metrics) {
@@ -348,6 +360,35 @@ const dbOperations = {
     );
     const r = await pool.query(sql, params);
     return { granularity: gran, rows: r.rows };
+  },
+
+  // Produkt-Analyse: Verkaeufe je Produkt (aus order_items, nur bezahlte Bestellungen)
+  // + Aufrufe der jeweiligen Produktseite (/produkte/produkt-<id>.html). Das Frontend
+  // fuehrt beides mit products.json zusammen und bildet daraus die Bewertung.
+  getProductAnalysis: async (range = '30d') => {
+    const salesSql =
+      `SELECT oi.product_id,
+              SUM(oi.quantity)::int AS units,
+              SUM(oi.total_price)::float AS revenue,
+              COUNT(DISTINCT oi.order_id)::int AS orders
+       FROM order_items oi
+       JOIN orders o ON o.order_id = oi.order_id
+       WHERE o.payment_status = 'paid' ${analysisRangeFilter(range, 'o.created_at')}
+       GROUP BY oi.product_id`;
+    const viewsSql =
+      `SELECT product_id,
+              COUNT(*)::int AS views,
+              COUNT(DISTINCT session_id)::int AS unique_views
+       FROM (
+         SELECT (regexp_match(path, '/produkte/produkt-([0-9]+)\\.html'))[1] AS product_id,
+                session_id
+         FROM page_views
+         WHERE path ~ '/produkte/produkt-[0-9]+\\.html' ${analysisRangeFilter(range, 'created_at')}
+       ) t
+       WHERE product_id IS NOT NULL
+       GROUP BY product_id`;
+    const [sales, views] = await Promise.all([pool.query(salesSql), pool.query(viewsSql)]);
+    return { range, sales: sales.rows, views: views.rows };
   }
 };
 
