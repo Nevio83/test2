@@ -52,18 +52,7 @@ Dann entfällt der Sleep komplett, der Keep-Alive-Workflow kann weg.
 
 ---
 
-## 3. Node.js 18 → 20 upgraden 🟢
-
-**Problem:** Node 18 ist End-of-Life (EOL). Render zeigt Warnung beim Deploy.
-
-**Umsetzung:**
-1. `.nvmrc` ändern: `18` → `20`
-2. `package.json` engines-Feld (falls vorhanden) aktualisieren
-3. `render.yaml` `NODE_VERSION` auf `20` setzen (falls dort gesetzt)
-4. Render-Dashboard → Environment → `NODE_VERSION=20` setzen
-5. Lokal testen: `nvm use 20 && npm run dev`
-6. **Bonus:** `node-fetch` v2 kann durch natives `fetch()` (Node 20 built-in) ersetzt werden —
-   `require('node-fetch')` in `cj-dropshipping-api.js` und `exchange-rate-service.js` entfernen.
-   Achtung: erst testen, native fetch hat leicht andere API bei Timeouts/Abbruch.
-
-**Risiko:** Niedrig — keine Breaking Changes zwischen 18 und 20 erwartet.
+> **Keine weiteren offenen Code-Aufgaben.** Node 18→20 ist erledigt (Node 20.19.0 in
+> `.nvmrc`/`render.yaml`/`engines`, `node-fetch` → natives `fetch`). Nach dem nächsten Deploy
+> einmal im Render-Dashboard prüfen, dass keine alte `NODE_VERSION=18.x` als Env-Var den
+> Blueprint überschreibt.

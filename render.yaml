@@ -24,12 +24,12 @@ services:
     branch: main
     buildCommand: npm install
     startCommand: npm start
-    healthCheckPath: /
+    healthCheckPath: /health
     autoDeploy: true
 
     envVars:
       - key: NODE_VERSION
-        value: 18.18.0
+        value: 20.19.0
       - key: NODE_ENV
         value: production
 

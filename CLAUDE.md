@@ -203,7 +203,7 @@ und Analytics-IDs.
 **Live auf Render** (Free-Plan): ein Node-Web-Service (`render.yaml`) bedient Frontend +
 komplette API aus `server.js`. URL: **https://maiosshop.com** (Fallback
 `https://maios-shop.onrender.com`). **Auto-Deploy** bei Push auf `main`. Node-Version via
-`NODE_VERSION`/`.nvmrc` (18.x — EOL-Warnung, Upgrade auf 20 in `CLAUDE-CODE.md` §3).
+`NODE_VERSION`/`.nvmrc` (**20.19.0**).
 
 - **Datenbank:** Neon-Postgres über `DATABASE_URL` (im Render-Dashboard gesetzt).
 - **Env-Vars:** alle Secrets im **Render-Dashboard → Environment** (Stripe, Resend, CJ,
@@ -237,9 +237,9 @@ komplette API aus `server.js`. URL: **https://maiosshop.com** (Fallback
 - Retouren werden bewusst **manuell** genehmigt. Auto-Approve ist per Flag `RETURNS_AUTO_APPROVE`
   gesteuert (Standard: aus). Nur bei `RETURNS_AUTO_APPROVE=true` + Bestellung ≤14 Tage + Grund in
   der Liste greift die Automatik (Stripe-Refund + CJ-Retoure). Details: `RETOUREN-AUTOMATISIERUNG.md`.
-- **`node-fetch` muss v2 bleiben** (`require()`-kompatibel). v3 ist ESM-only und crasht
-  `cj-dropshipping-api.js` + `exchange-rate-service.js` beim Start. Alternativ auf Node 20+
-  heben und global `fetch` nutzen.
+- **`fetch` ist nativ** (Node 20): `cj-dropshipping-api.js` + `exchange-rate-service.js` nutzen
+  `globalThis.fetch`, `node-fetch` ist entfernt. Node-Version daher **nicht** unter 20 senken
+  (sonst fehlt globales `fetch`). `.nvmrc`/`render.yaml`/`package.json engines` sind auf 20 gepinnt.
 - **DB ist Postgres** (`pg`), nicht mehr SQLite. Bei `package.json`-Änderungen
   `npm install --package-lock-only` laufen lassen, sonst zieht Render eine veraltete Lock-Datei.
 - **Secrets nie committen** — `.env` ist gitignored. Prod-Werte ins Render-Dashboard.

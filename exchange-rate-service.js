@@ -6,7 +6,8 @@
  */
 
 require('dotenv').config();
-const fetch = require('node-fetch');
+// Natives fetch (Node 18+/20). node-fetch wird nicht mehr gebraucht.
+const fetch = globalThis.fetch;
 
 class ExchangeRateService {
   constructor() {
