@@ -36,21 +36,19 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 2. Ladezeit-Problem lösen (Free-Plan Sleep) 🟠
+## 2. Ladezeit / Free-Plan-Sleep — Keep-Alive aktiv ✅ (Rest: optionales Upgrade) 🟢
 
-**Problem:** Render Free-Plan schläft nach 15 Minuten Inaktivität — erster Besucher wartet ~50 Sekunden.
-Das kostet messbar Conversions.
+**Erledigt:** GitHub-Actions-Cron `.github/workflows/keep-alive.yml` pingt alle 10 Min den
+leichtgewichtigen Endpoint **`GET /health`** (in `server.js`) und hält den Render-Free-Service
+wach (kein Cold-Start mehr für Besucher). Gratis, da das Repo öffentlich ist (unbegrenzte
+Actions-Minuten). GitHub-Cron ist „best effort", daher 10-Min-Intervall als Puffer zum 15-Min-Sleep.
 
-**Lösung (kostenlos):** Externer Cron-Dienst pingt alle 14 Minuten die Shop-URL und hält den Service wach.
+**Prüfen nach Deploy:** GitHub → Actions → „Keep Render awake" → erster Lauf grün?
+(Scheduled Workflows starten erst, sobald die Datei auf `main` liegt; ggf. einmal manuell
+„Run workflow" auslösen.)
 
-**Umsetzung:**
-- Bei **cron-job.org** (kostenlos) oder **UptimeRobot** (kostenlos) einen Monitor anlegen:
-  URL: `https://maiosshop.com/` · Intervall: 14 Minuten · HTTP GET
-- Alternativ: GitHub Actions Workflow mit `schedule: cron: '*/14 * * * *'` der einen curl-Request sendet
-- **Kein Code-Änderung nötig** — reine Infrastruktur-Aufgabe
-
-**Langfristig:** Wenn erste Einnahmen fließen, Render Free → **Starter-Plan (7 $/Monat)** upgraden.
-Dann entfällt der Sleep komplett und die Instanz läuft dauerhaft.
+**Langfristig (optional):** Wenn erste Einnahmen fließen, Render Free → **Starter-Plan (7 $/Monat)**.
+Dann entfällt der Sleep komplett, der Keep-Alive-Workflow kann weg.
 
 ---
 

@@ -14,7 +14,8 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 
 - **Live:** **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet auf Apex) +
   Fallback `https://maios-shop.onrender.com`. Free-Plan (schläft nach 15 Min → erster Aufruf
-  ~50 s; Fix in `CLAUDE-CODE.md` §2). Repo `Nevio83/test2`, nur Branch `main`, Auto-Deploy bei Push.
+  ~50 s, aber per Keep-Alive-Cron gemildert — siehe unten). Repo `Nevio83/test2`, nur Branch
+  `main`, Auto-Deploy bei Push.
 - **Datenbank:** **Neon-Postgres** (dauerhaft, kostenlos) via `DATABASE_URL`. SQLite ist Geschichte.
 - **Hosting:** Netlify ist komplett raus (Domain auf Render, Repo entkoppelt, `netlify/`-Ordner
   **gelöscht**). **Render = einzige Quelle der Wahrheit.**
@@ -211,7 +212,8 @@ komplette API aus `server.js`. URL: **https://maiosshop.com** (Fallback
 - **Build/Start:** `npm install` → `npm start`. Bei Dependency-Änderungen vorher
   `npm install --package-lock-only`, sonst zieht Render eine veraltete Lock-Datei.
 - **Free-Plan-Haken:** Service schläft nach 15 Min (erster Aufruf ~50 s). Daten bleiben (Neon).
-  Abhilfe (Ping-Cron) in `CLAUDE-CODE.md` §2.
+  **Keep-Alive aktiv:** `.github/workflows/keep-alive.yml` pingt alle 10 Min `GET /health`
+  (gratis, Repo ist öffentlich). Hält den Service warm; details in `CLAUDE-CODE.md` §2.
 - **Stripe-Webhook:** zeigt im Stripe-Dashboard auf `https://maiosshop.com/stripe-webhook`
   (erledigt — sonst landen Bestellungen nicht in der DB).
 

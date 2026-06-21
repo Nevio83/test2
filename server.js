@@ -121,6 +121,14 @@ app.use(compression({
 
 // (express.json() ist bereits oben registriert – Duplikat entfernt)
 
+// Health-Check / Keep-Alive: leichtgewichtige Antwort zum Wachhalten des Render-
+// Free-Service (schläft sonst nach 15 Min). Wird vom GitHub-Actions-Cron
+// (.github/workflows/keep-alive.yml) alle paar Minuten gepingt. Öffentlich, kein Body-Overhead.
+app.get(['/health', '/healthz'], (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.status(200).json({ status: 'ok', ts: new Date().toISOString(), uptime: process.uptime() });
+});
+
 // Sicherheits-Header
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
