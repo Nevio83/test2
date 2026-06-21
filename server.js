@@ -192,6 +192,30 @@ app.use('/api/receipt', (req, res, next) => {
   return requireAdminAuth(req, res, next);
 });
 
+// 301-Weiterleitungen: alte ID-URLs (/produkte/produkt-NN.html) auf neue
+// SEO-Slug-URLs. Erhaelt Rankings/Bookmarks/externe Links. Slug-Map kommt aus
+// products.json (Feld "slug"). MUSS vor express.static stehen.
+const productSlugRedirects = (() => {
+  try {
+    const list = require('./products.json');
+    const map = {};
+    list.forEach((p) => { if (p && p.slug) map[String(p.id)] = p.slug; });
+    console.log(`✅ ${Object.keys(map).length} Produkt-Slug-Weiterleitungen geladen`);
+    return map;
+  } catch (e) {
+    console.warn('⚠️ products.json fuer Slug-Redirects nicht ladbar:', e.message);
+    return {};
+  }
+})();
+app.use((req, res, next) => {
+  const m = req.path.match(/^\/produkte\/produkt-(\d+)\.html$/);
+  if (m) {
+    const slug = productSlugRedirects[m[1]];
+    if (slug) return res.redirect(301, `/produkte/${slug}.html`);
+  }
+  next();
+});
+
 // Serve static files with no cache for development
 app.use(express.static(path.join(__dirname), {
   maxAge: 0, // No caching for development

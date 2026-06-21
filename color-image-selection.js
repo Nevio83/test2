@@ -42,8 +42,10 @@ class ImageColorSelection {
     }
     
     extractProductIdFromUrl() {
-        const urlPath = window.location.pathname;
-        const match = urlPath.match(/produkt-?(\d+)/i);
+        // Bevorzugt <body data-product-id> (Slug-URLs), sonst alte ID-URL
+        const bodyId = document.body && document.body.dataset ? document.body.dataset.productId : null;
+        if (bodyId) return parseInt(bodyId);
+        const match = window.location.pathname.match(/produkt-?(\d+)/i);
         return match ? parseInt(match[1]) : null;
     }
     

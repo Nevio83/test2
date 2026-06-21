@@ -36,26 +36,36 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 2. Produktseiten nach Produktnamen umbenennen 🟢
+## 2. Ladezeit-Problem lösen (Free-Plan Sleep) 🟠
 
-**Ist-Stand:** Produktseiten heißen `produkte/produkt-10.html`, `produkt-11.html` … `produkt-50.html`
-(~45 Dateien). URLs sind technisch (ID-basiert), nicht sprechend.
+**Problem:** Render Free-Plan schläft nach 15 Minuten Inaktivität — erster Besucher wartet ~50 Sekunden.
+Das kostet messbar Conversions.
 
-**Ziel:** URLs sollen den Produktnamen enthalten, z.B.:
-`produkte/elektrischer-wasserspender-fuer-schreibtisch.html`
+**Lösung (kostenlos):** Externer Cron-Dienst pingt alle 14 Minuten die Shop-URL und hält den Service wach.
 
 **Umsetzung:**
-- Produktnamen aus `products.json` in URL-Slugs umwandeln (Kleinbuchstaben, Leerzeichen → `-`,
-  Umlaute ersetzen: ä→ae, ö→oe, ü→ue, ß→ss, Sonderzeichen entfernen)
-- Alle ~45 HTML-Dateien umbenennen
-- Weiterleitungen (301) von alten ID-URLs auf neue Slug-URLs in `server.js` einrichten
-  (damit alte Links/SEO nicht verloren gehen)
-- `products.json` um Feld `slug` oder `url` ergänzen
-- Alle internen Links in `app.js`, `index.html`, Kategorieseiten (`infos/`), `cart.js` aktualisieren
-- Produktgalerie-Logik (`product-gallery-complete.js`) und Farb-Bridge (`color-cart-bridge.js`)
-  anpassen falls sie ID-basiert auf Dateinamen zugreifen
-- SEO: `<title>`, `<meta name="description">`, `<h1>` auf jeder Produktseite prüfen/anpassen
+- Bei **cron-job.org** (kostenlos) oder **UptimeRobot** (kostenlos) einen Monitor anlegen:
+  URL: `https://maiosshop.com/` · Intervall: 14 Minuten · HTTP GET
+- Alternativ: GitHub Actions Workflow mit `schedule: cron: '*/14 * * * *'` der einen curl-Request sendet
+- **Kein Code-Änderung nötig** — reine Infrastruktur-Aufgabe
 
-**Wichtig:** Galerie liest aus `produkt bilder/<Name> bilder/<Name> <farbe>.jpg` — Ordnerstruktur
-bleibt unverändert, nur die HTML-Dateinamen ändern sich. ID-Logik in `app.js` (numerischer Vergleich)
-bleibt erhalten, URL-Mapping in `server.js` übernimmt die Zuordnung.
+**Langfristig:** Wenn erste Einnahmen fließen, Render Free → **Starter-Plan (7 $/Monat)** upgraden.
+Dann entfällt der Sleep komplett und die Instanz läuft dauerhaft.
+
+---
+
+## 3. Node.js 18 → 20 upgraden 🟢
+
+**Problem:** Node 18 ist End-of-Life (EOL). Render zeigt Warnung beim Deploy.
+
+**Umsetzung:**
+1. `.nvmrc` ändern: `18` → `20`
+2. `package.json` engines-Feld (falls vorhanden) aktualisieren
+3. `render.yaml` `NODE_VERSION` auf `20` setzen (falls dort gesetzt)
+4. Render-Dashboard → Environment → `NODE_VERSION=20` setzen
+5. Lokal testen: `nvm use 20 && npm run dev`
+6. **Bonus:** `node-fetch` v2 kann durch natives `fetch()` (Node 20 built-in) ersetzt werden —
+   `require('node-fetch')` in `cj-dropshipping-api.js` und `exchange-rate-service.js` entfernen.
+   Achtung: erst testen, native fetch hat leicht andere API bei Timeouts/Abbruch.
+
+**Risiko:** Niedrig — keine Breaking Changes zwischen 18 und 20 erwartet.

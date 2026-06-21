@@ -51,6 +51,23 @@ let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 // Globale Produktliste
 let products = [];
 
+// Liefert die SEO-Slug-URL einer Produktseite (root-relativ). Sucht den Slug
+// in der geladenen Produktliste bzw. im localStorage-Cache; Fallback = alte ID-URL.
+function productHref(id) {
+  let list = products && products.length ? products : null;
+  if (!list) {
+    try {
+      list = JSON.parse(localStorage.getItem("allProducts") || "[]");
+    } catch (e) {
+      list = [];
+    }
+  }
+  const p = list.find((x) => Number(x.id) === Number(id));
+  return p && p.slug
+    ? `/produkte/${p.slug}.html`
+    : `/produkte/produkt-${id}.html`;
+}
+
 function initializeProductPageWishlist() {
   const productPageButtons = document.querySelectorAll(".wishlist-button");
   if (productPageButtons.length > 0 && window.product) {
@@ -480,7 +497,7 @@ function initializeProductCardClicks() {
 
       // Only navigate to existing product pages (10+)
       if (productId >= 10) {
-        window.location.href = `produkte/produkt-${productId}.html`;
+        window.location.href = productHref(productId);
       } else {
         console.log("Product page does not exist for ID:", productId);
       }
@@ -4807,7 +4824,7 @@ function navigateToProduct(productId) {
   // Navigate to product page (only for products with ID >= 10)
   if (productId >= 10) {
     setTimeout(() => {
-      window.location.href = `produkte/produkt-${productId}.html`;
+      window.location.href = productHref(productId);
     }, 300);
   } else {
     console.log("Product page does not exist for ID:", productId);
@@ -5259,7 +5276,7 @@ function makeDropdownImagesClickable() {
 
       if (product && product.id) {
         const link = document.createElement("a");
-        link.href = "produkte/produkt-" + product.id + ".html";
+        link.href = productHref(product.id);
         link.style.textDecoration = "none";
 
         img.style.cursor = "pointer";
@@ -5286,7 +5303,7 @@ function makeDropdownImagesClickable() {
 
         if (productId) {
           const link = document.createElement("a");
-          link.href = "produkte/produkt-" + productId + ".html";
+          link.href = productHref(productId);
           link.style.textDecoration = "none";
 
           img.style.cursor = "pointer";

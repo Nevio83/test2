@@ -99,7 +99,7 @@
       grid.innerHTML = sorted.map(p => {
         const node = tpl.content.cloneNode(true);
         const link = node.querySelector('.new-card');
-        link.href = `../produkte/produkt-${p.id}.html`;
+        link.href = p.slug ? `/produkte/${p.slug}.html` : `/produkte/produkt-${p.id}.html`;
         const img = node.querySelector('.new-image');
         img.src = normalizeImagePath(p.image); img.alt = p.name;
         img.onerror = function(){ this.style.background = '#f8fafc'; this.style.objectFit = 'contain'; this.removeAttribute('src'); };

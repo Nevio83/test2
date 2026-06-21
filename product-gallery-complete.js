@@ -1233,10 +1233,11 @@ class ProductImageFullscreen {
         existingNavs.forEach(el => el.remove());
         
         // Check if ProductImageGallery exists
-        const urlPath = window.location.pathname;
-        const match = urlPath.match(/produkt-(\d+)\.html/);
+        // Produkt-ID bevorzugt aus <body data-product-id>, sonst aus alter ID-URL
+        const bodyId = document.body && document.body.dataset ? document.body.dataset.productId : null;
+        const match = bodyId ? [null, bodyId] : window.location.pathname.match(/produkt-(\d+)\.html/);
         if (!match) return;
-        
+
         const productId = parseInt(match[1]);
         
         // Get gallery images if available
@@ -1365,10 +1366,10 @@ class ProductImageFullscreen {
 
 // Initialisiere Gallery wenn DOM bereit ist
 document.addEventListener('DOMContentLoaded', function() {
-    // Extrahiere Produkt-ID aus der URL oder Seite
-    const urlPath = window.location.pathname;
-    const match = urlPath.match(/produkt-(\d+)\.html/);
-    
+    // Extrahiere Produkt-ID bevorzugt aus <body data-product-id>, sonst aus alter ID-URL
+    const bodyId = document.body && document.body.dataset ? document.body.dataset.productId : null;
+    const match = bodyId ? [null, bodyId] : window.location.pathname.match(/produkt-(\d+)\.html/);
+
     if (match) {
         const productId = parseInt(match[1]);
         

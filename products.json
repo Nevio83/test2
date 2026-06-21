@@ -2,6 +2,7 @@
   {
     "id": 10,
     "name": "Elektrischer Wasserspender für Schreibtisch",
+    "slug": "elektrischer-wasserspender-fuer-schreibtisch",
     "price": 28.99,
     "originalPrice": 69.99,
     "category": "Technik/Gadgets",
@@ -34,7 +35,10 @@
         "id": "bundle1",
         "name": "Büro Bundle",
         "description": "Wasserspender + Bürozubehör",
-        "items": ["Ersatzpumpe", "Reinigungsset"],
+        "items": [
+          "Ersatzpumpe",
+          "Reinigungsset"
+        ],
         "originalPrice": 75,
         "bundlePrice": 65,
         "savings": 10
@@ -43,7 +47,11 @@
         "id": "bundle2",
         "name": "Premium Hydration",
         "description": "Komplettes Hydration-Set",
-        "items": ["Ersatzpumpe", "Reinigungsset", "Wasserfilterset"],
+        "items": [
+          "Ersatzpumpe",
+          "Reinigungsset",
+          "Wasserfilterset"
+        ],
         "originalPrice": 120,
         "bundlePrice": 89,
         "savings": 31
@@ -53,6 +61,7 @@
   {
     "id": 11,
     "name": "350ml Elektrischer Mixer Entsafter",
+    "slug": "350ml-elektrischer-mixer-entsafter",
     "price": 32.99,
     "originalPrice": 49.99,
     "category": "Haushalt und Küche",
@@ -92,7 +101,10 @@
         "id": "bundle1",
         "name": "Smoothie Starter",
         "description": "Mixer + Zubehör",
-        "items": ["Ersatzbecher", "Reinigungsbürste"],
+        "items": [
+          "Ersatzbecher",
+          "Reinigungsbürste"
+        ],
         "originalPrice": 35,
         "bundlePrice": 29,
         "savings": 6
@@ -101,7 +113,11 @@
         "id": "bundle2",
         "name": "Fitness Bundle",
         "description": "Komplettes Smoothie-Set",
-        "items": ["2x Ersatzbecher", "Reinigungsbürste", "Rezeptbuch"],
+        "items": [
+          "2x Ersatzbecher",
+          "Reinigungsbürste",
+          "Rezeptbuch"
+        ],
         "originalPrice": 60,
         "bundlePrice": 45,
         "savings": 15
@@ -149,6 +165,7 @@
   {
     "id": 12,
     "name": "Multifunktions Gemüseschneider",
+    "slug": "multifunktions-gemueseschneider",
     "price": 16.99,
     "originalPrice": 29.99,
     "category": "Haushalt und Küche",
@@ -157,13 +174,21 @@
     "sku": "CJCJ170137301AZ",
     "inStock": true,
     "shippingTime": "6-11 Werktage",
-    "tags": ["gemüse", "schneider", "küche", "multifunktion"],
+    "tags": [
+      "gemüse",
+      "schneider",
+      "küche",
+      "multifunktion"
+    ],
     "bundles": [
       {
         "id": "bundle1",
         "name": "Küchen Starter",
         "description": "Schneider + Zubehör",
-        "items": ["Extra Klingen", "Reinigungsbürste"],
+        "items": [
+          "Extra Klingen",
+          "Reinigungsbürste"
+        ],
         "originalPrice": 35,
         "bundlePrice": 28,
         "savings": 7
@@ -172,7 +197,11 @@
         "id": "bundle2",
         "name": "Profi Küche",
         "description": "Professionelles Küchen-Set",
-        "items": ["Extra Klingen", "Reinigungsbürste", "Aufbewahrungsbox"],
+        "items": [
+          "Extra Klingen",
+          "Reinigungsbürste",
+          "Aufbewahrungsbox"
+        ],
         "originalPrice": 55,
         "bundlePrice": 40,
         "savings": 15
@@ -183,6 +212,7 @@
   {
     "id": 13,
     "name": "Luft Wasser Flasche mit Pumpe",
+    "slug": "luft-wasser-flasche-mit-pumpe",
     "price": 24.99,
     "originalPrice": 34.99,
     "category": "Haushalt und Küche",
@@ -191,13 +221,21 @@
     "sku": "ALI1005007209",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
-    "tags": ["wasser", "sport", "pumpe", "flasche"],
+    "tags": [
+      "wasser",
+      "sport",
+      "pumpe",
+      "flasche"
+    ],
     "bundles": [
       {
         "id": "bundle1",
         "name": "Sport Bundle",
         "description": "Flasche + Sport Zubehör",
-        "items": ["Trageschlaufe", "Reinigungsset"],
+        "items": [
+          "Trageschlaufe",
+          "Reinigungsset"
+        ],
         "originalPrice": 35,
         "bundlePrice": 30,
         "savings": 5
@@ -206,7 +244,11 @@
         "id": "bundle2",
         "name": "Active Lifestyle",
         "description": "Komplettes Sport-Set",
-        "items": ["Trageschlaufe", "Reinigungsset", "Ersatzventil"],
+        "items": [
+          "Trageschlaufe",
+          "Reinigungsset",
+          "Ersatzventil"
+        ],
         "originalPrice": 50,
         "bundlePrice": 40,
         "savings": 10
@@ -217,6 +259,7 @@
   {
     "id": 14,
     "name": "10-1 Stück Aroma-Pads",
+    "slug": "10-1-stueck-aroma-pads",
     "price": 12.99,
     "originalPrice": 18.99,
     "category": "Haushalt und Küche",
@@ -225,13 +268,21 @@
     "sku": "ALI1005008666",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
-    "tags": ["kaffee", "pads", "wiederverwendbar", "umweltfreundlich"],
+    "tags": [
+      "kaffee",
+      "pads",
+      "wiederverwendbar",
+      "umweltfreundlich"
+    ],
     "bundles": [
       {
         "id": "bundle1",
         "name": "Kaffee Starter",
         "description": "Pads + Kaffee Zubehör",
-        "items": ["Reinigungsbürste", "Aufbewahrungsbox"],
+        "items": [
+          "Reinigungsbürste",
+          "Aufbewahrungsbox"
+        ],
         "originalPrice": 20,
         "bundlePrice": 17,
         "savings": 3
@@ -255,6 +306,7 @@
   {
     "id": 15,
     "name": "Drahtlose elektrische tragbare Espressomaschine",
+    "slug": "drahtlose-elektrische-tragbare-espressomaschine",
     "price": 89.99,
     "originalPrice": 119.99,
     "category": "Haushalt und Küche",
@@ -263,13 +315,21 @@
     "sku": "ALI1005007317",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
-    "tags": ["espresso", "kaffee", "tragbar", "drahtlos"],
+    "tags": [
+      "espresso",
+      "kaffee",
+      "tragbar",
+      "drahtlos"
+    ],
     "bundles": [
       {
         "id": "bundle1",
         "name": "Espresso Starter",
         "description": "Maschine + Grundausstattung",
-        "items": ["Reinigungsset", "Ersatzkapseln"],
+        "items": [
+          "Reinigungsset",
+          "Ersatzkapseln"
+        ],
         "originalPrice": 110,
         "bundlePrice": 99,
         "savings": 11
@@ -294,6 +354,7 @@
   {
     "id": 16,
     "name": "Elektrische Küchenwaage Digital",
+    "slug": "elektrische-kuechenwaage-digital",
     "price": 49.99,
     "originalPrice": 39.99,
     "category": "Haushalt und Küche",
@@ -302,13 +363,21 @@
     "sku": "ALI1005007542",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
-    "tags": ["waage", "küche", "digital", "präzise"],
+    "tags": [
+      "waage",
+      "küche",
+      "digital",
+      "präzise"
+    ],
     "bundles": [
       {
         "id": "bundle1",
         "name": "Baking Starter",
         "description": "Waage + Back-Zubehör",
-        "items": ["Messbecher Set", "Rezeptbuch"],
+        "items": [
+          "Messbecher Set",
+          "Rezeptbuch"
+        ],
         "originalPrice": 40,
         "bundlePrice": 35,
         "savings": 5
@@ -333,6 +402,7 @@
   {
     "id": 19,
     "name": "Elektronisches Distanzmessgerät Digital",
+    "slug": "elektronisches-distanzmessgeraet-digital",
     "price": 19.99,
     "originalPrice": 59.99,
     "category": "Technik/Gadgets",
@@ -341,13 +411,21 @@
     "sku": "CJXFLPJY00674-Black",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
-    "tags": ["messen", "werkzeug", "elektronisch", "digital"],
+    "tags": [
+      "messen",
+      "werkzeug",
+      "elektronisch",
+      "digital"
+    ],
     "bundles": [
       {
         "id": "bundle1",
         "name": "Starter Bundle",
         "description": "Produkt + Grundzubehör",
-        "items": ["Bedienungsanleitung", "Garantiekarte"],
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte"
+        ],
         "originalPrice": 49.99,
         "bundlePrice": 44.99,
         "savings": 5
@@ -356,7 +434,11 @@
         "id": "bundle2",
         "name": "Premium Bundle",
         "description": "Komplettes Set mit Extras",
-        "items": ["Bedienungsanleitung", "Garantiekarte", "Premium Support"],
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
         "originalPrice": 64.99,
         "bundlePrice": 54.99,
         "savings": 10
@@ -367,6 +449,7 @@
   {
     "id": 20,
     "name": "ZigBee Smart DIY Motorisierte Rollos",
+    "slug": "zigbee-smart-diy-motorisierte-rollos",
     "price": 89.99,
     "originalPrice": 129.99,
     "category": "Technik/Gadgets",
@@ -375,13 +458,19 @@
     "sku": "ALI1005005801",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
-    "tags": ["smart", "automation"],
+    "tags": [
+      "smart",
+      "automation"
+    ],
     "bundles": [
       {
         "id": "bundle1",
         "name": "Starter Bundle",
         "description": "Produkt + Grundzubehör",
-        "items": ["Bedienungsanleitung", "Garantiekarte"],
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte"
+        ],
         "originalPrice": 99.99,
         "bundlePrice": 94.99,
         "savings": 5
@@ -390,7 +479,11 @@
         "id": "bundle2",
         "name": "Premium Bundle",
         "description": "Komplettes Set mit Extras",
-        "items": ["Bedienungsanleitung", "Garantiekarte", "Premium Support"],
+        "items": [
+          "Bedienungsanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
         "originalPrice": 114.99,
         "bundlePrice": 104.99,
         "savings": 10
@@ -401,6 +494,7 @@
   {
     "id": 24,
     "name": "COBLED Arbeitsleuchte",
+    "slug": "cobled-arbeitsleuchte",
     "price": 12.99,
     "originalPrice": 49.99,
     "category": "Beleuchtung",
@@ -421,7 +515,10 @@
         "id": "bundle1",
         "name": "Work Starter",
         "description": "Arbeitsleuchte + Ladezubehör",
-        "items": ["USB-Ladekabel", "Bedienungsanleitung"],
+        "items": [
+          "USB-Ladekabel",
+          "Bedienungsanleitung"
+        ],
         "originalPrice": 49.99,
         "bundlePrice": 39.99,
         "savings": 10
@@ -445,6 +542,7 @@
   {
     "id": 25,
     "name": "Nachtlichter mit Bewegungsmelder",
+    "slug": "nachtlichter-mit-bewegungsmelder",
     "price": 23.99,
     "originalPrice": 24.99,
     "category": "Beleuchtung",
@@ -464,7 +562,10 @@
         "id": "bundle1",
         "name": "Night Safety",
         "description": "Nachtlicht + Batterien",
-        "items": ["3x AAA Batterien", "Klebestreifen"],
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen"
+        ],
         "originalPrice": 24.99,
         "bundlePrice": 19.99,
         "savings": 5
@@ -488,6 +589,7 @@
   {
     "id": 26,
     "name": "4 In 1 Self Cleaning Hair Brush",
+    "slug": "4-in-1-self-cleaning-hair-brush",
     "price": 11.99,
     "originalPrice": 20.99,
     "category": "Körperpflege/Wellness",
@@ -526,7 +628,10 @@
         "id": "bundle1",
         "name": "Wellness Starter",
         "description": "Produkt + Wellness Zubehör",
-        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
         "originalPrice": 20.99,
         "bundlePrice": 15.99,
         "savings": 5
@@ -535,7 +640,11 @@
         "id": "bundle2",
         "name": "Complete Wellness",
         "description": "Komplettes Wellness-Set",
-        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
         "originalPrice": 35.99,
         "bundlePrice": 25.99,
         "savings": 10
@@ -546,6 +655,7 @@
   {
     "id": 27,
     "name": "Volcanic Flame Aroma Essential Oil Diffuser",
+    "slug": "volcanic-flame-aroma-essential-oil-diffuser",
     "price": 28.99,
     "originalPrice": 49.99,
     "category": "Körperpflege/Wellness",
@@ -554,7 +664,12 @@
     "sku": "CJJT163563001AZ",
     "inStock": true,
     "shippingTime": "7-15 Werktage",
-    "tags": ["aromadiffuser", "luftbefeuchter", "nachtlicht", "wellness"],
+    "tags": [
+      "aromadiffuser",
+      "luftbefeuchter",
+      "nachtlicht",
+      "wellness"
+    ],
     "features": [
       "Vulkanflammen-Design für entspannende Atmosphäre",
       "USB-betrieben für einfache Nutzung",
@@ -567,7 +682,10 @@
         "id": "bundle1",
         "name": "Wellness Starter",
         "description": "Produkt + Wellness Zubehör",
-        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
         "originalPrice": 25.99,
         "bundlePrice": 20.99,
         "savings": 5
@@ -576,7 +694,11 @@
         "id": "bundle2",
         "name": "Complete Wellness",
         "description": "Komplettes Wellness-Set",
-        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
         "originalPrice": 40.99,
         "bundlePrice": 30.99,
         "savings": 10
@@ -587,6 +709,7 @@
   {
     "id": 28,
     "name": "Mini Muskel Massage Pistole",
+    "slug": "mini-muskel-massage-pistole",
     "price": 24.99,
     "originalPrice": 44.99,
     "category": "Körperpflege/Wellness",
@@ -595,7 +718,12 @@
     "sku": "ALI1005007060455752",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
-    "tags": ["massage", "muskel", "regeneration", "sport"],
+    "tags": [
+      "massage",
+      "muskel",
+      "regeneration",
+      "sport"
+    ],
     "features": [
       "Kompaktes Mini-Design",
       "Verschiedene Massage-Aufsätze",
@@ -608,7 +736,10 @@
         "id": "bundle1",
         "name": "Wellness Starter",
         "description": "Produkt + Wellness Zubehör",
-        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
         "originalPrice": 34.99,
         "bundlePrice": 29.99,
         "savings": 5
@@ -617,7 +748,11 @@
         "id": "bundle2",
         "name": "Complete Wellness",
         "description": "Komplettes Wellness-Set",
-        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
         "originalPrice": 49.99,
         "bundlePrice": 39.99,
         "savings": 10
@@ -628,6 +763,7 @@
   {
     "id": 29,
     "name": "Haaröl-Applikator Kopfhaut Massager",
+    "slug": "haaroel-applikator-kopfhaut-massager",
     "price": 8.99,
     "originalPrice": 16.99,
     "category": "Körperpflege/Wellness",
@@ -636,7 +772,12 @@
     "sku": "ALI1005007010671073",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
-    "tags": ["haaröl", "kopfhaut", "massage", "haarpflege"],
+    "tags": [
+      "haaröl",
+      "kopfhaut",
+      "massage",
+      "haarpflege"
+    ],
     "features": [
       "Präzise Haaröl-Verteilung",
       "Integrierte Kopfhautmassage",
@@ -649,7 +790,10 @@
         "id": "bundle1",
         "name": "Wellness Starter",
         "description": "Produkt + Wellness Zubehör",
-        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
         "originalPrice": 18.99,
         "bundlePrice": 13.99,
         "savings": 5
@@ -658,7 +802,11 @@
         "id": "bundle2",
         "name": "Complete Wellness",
         "description": "Komplettes Wellness-Set",
-        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
         "originalPrice": 33.99,
         "bundlePrice": 23.99,
         "savings": 10
@@ -669,6 +817,7 @@
   {
     "id": 21,
     "name": "Led crystal lampe",
+    "slug": "led-crystal-lampe",
     "price": 18.99,
     "originalPrice": 59.99,
     "category": "Beleuchtung",
@@ -707,7 +856,10 @@
         "id": "bundle1",
         "name": "Ambient Starter",
         "description": "Lampe + Grundzubehör",
-        "items": ["USB-Kabel", "Bedienungsanleitung"],
+        "items": [
+          "USB-Kabel",
+          "Bedienungsanleitung"
+        ],
         "originalPrice": 49.99,
         "bundlePrice": 44.99,
         "savings": 5
@@ -716,7 +868,11 @@
         "id": "bundle2",
         "name": "Complete Ambience",
         "description": "Komplettes Beleuchtungs-Set",
-        "items": ["USB-Kabel", "Bedienungsanleitung", "Fernbedienung"],
+        "items": [
+          "USB-Kabel",
+          "Bedienungsanleitung",
+          "Fernbedienung"
+        ],
         "originalPrice": 69.99,
         "bundlePrice": 54.99,
         "savings": 15
@@ -727,6 +883,7 @@
   {
     "id": 22,
     "name": "Waterproof RGB LED Solar Light",
+    "slug": "waterproof-rgb-led-solar-light",
     "price": 12.99,
     "originalPrice": 34.99,
     "category": "Beleuchtung",
@@ -740,6 +897,7 @@
   {
     "id": 23,
     "name": "LED Motion Sensor Licht Drahtlose",
+    "slug": "led-motion-sensor-licht-drahtlose",
     "price": 19.99,
     "originalPrice": 29.99,
     "category": "Beleuchtung",
@@ -760,7 +918,10 @@
         "id": "bundle1",
         "name": "Motion Starter",
         "description": "Sensor-Licht + Batterien",
-        "items": ["3x AAA Batterien", "Klebestreifen"],
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen"
+        ],
         "originalPrice": 29.99,
         "bundlePrice": 24.99,
         "savings": 5
@@ -784,6 +945,7 @@
   {
     "id": 31,
     "name": "Elektrischer Kopfhaut-Massagekamm",
+    "slug": "elektrischer-kopfhaut-massagekamm",
     "price": 12.99,
     "originalPrice": 22.99,
     "category": "Körperpflege/Wellness",
@@ -792,7 +954,12 @@
     "sku": "ALI1005007987737586",
     "inStock": true,
     "shippingTime": "10-20 Werktage",
-    "tags": ["kopfhautmassage", "elektrisch", "haarwachstum", "entspannung"],
+    "tags": [
+      "kopfhautmassage",
+      "elektrisch",
+      "haarwachstum",
+      "entspannung"
+    ],
     "features": [
       "Elektrische Vibrations-Massage",
       "Fördert die Durchblutung der Kopfhaut",
@@ -805,7 +972,10 @@
         "id": "bundle1",
         "name": "Wellness Starter",
         "description": "Produkt + Wellness Zubehör",
-        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte"
+        ],
         "originalPrice": 22.99,
         "bundlePrice": 17.99,
         "savings": 5
@@ -814,7 +984,11 @@
         "id": "bundle2",
         "name": "Complete Wellness",
         "description": "Komplettes Wellness-Set",
-        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "items": [
+          "Pflegeanleitung",
+          "Garantiekarte",
+          "Premium Support"
+        ],
         "originalPrice": 37.99,
         "bundlePrice": 27.99,
         "savings": 10
@@ -825,6 +999,7 @@
   {
     "id": 17,
     "name": "Bluetooth Anti-Lost Finder Wassertropfen",
+    "slug": "bluetooth-anti-lost-finder-wassertropfen",
     "price": 6.99,
     "originalPrice": 24.99,
     "category": "Technik/Gadgets",
@@ -883,12 +1058,17 @@
         "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen Silber.jpg"
       }
     ],
-    "tags": ["bluetooth", "tracker", "finder"],
+    "tags": [
+      "bluetooth",
+      "tracker",
+      "finder"
+    ],
     "showInSlider": true
   },
   {
     "id": 18,
     "name": "Home Electronic Clock Digitale Uhr",
+    "slug": "home-electronic-clock-digitale-uhr",
     "price": 14.99,
     "category": "Technik/Gadgets",
     "image": "produkt bilder/Home Electronic Clock Digitale Uhr.jpg",
@@ -896,12 +1076,17 @@
     "sku": "CJXFZNZN00532-Black USB",
     "inStock": true,
     "shippingTime": "7-13 Werktage",
-    "tags": ["uhr", "digital", "led"],
+    "tags": [
+      "uhr",
+      "digital",
+      "led"
+    ],
     "showInSlider": true
   },
   {
     "id": 32,
     "name": "Indoor Sensing Wall Lamp",
+    "slug": "indoor-sensing-wall-lamp",
     "price": 17.99,
     "originalPrice": 39.99,
     "category": "Beleuchtung",
@@ -948,7 +1133,10 @@
         "id": "bundle1",
         "name": "Smart Light Starter",
         "description": "Wandlampe + Grundzubehör",
-        "items": ["USB-Ladekabel", "Montagezubehör"],
+        "items": [
+          "USB-Ladekabel",
+          "Montagezubehör"
+        ],
         "originalPrice": 39.99,
         "bundlePrice": 34.99,
         "savings": 5
@@ -957,7 +1145,11 @@
         "id": "bundle2",
         "name": "Complete Smart Lighting",
         "description": "Komplettes Smart-Beleuchtungsset",
-        "items": ["USB-Ladekabel", "Montagezubehör", "Bedienungsanleitung"],
+        "items": [
+          "USB-Ladekabel",
+          "Montagezubehör",
+          "Bedienungsanleitung"
+        ],
         "originalPrice": 54.99,
         "bundlePrice": 44.99,
         "savings": 10
@@ -967,6 +1159,7 @@
   {
     "id": 33,
     "name": "Aromatherapy Essential Oil Humidifier",
+    "slug": "aromatherapy-essential-oil-humidifier",
     "price": 8.99,
     "originalPrice": 14.99,
     "category": "Körperpflege/Wellness",
@@ -1124,6 +1317,7 @@
   {
     "id": 34,
     "name": "Gesichtssauna",
+    "slug": "gesichtssauna",
     "price": 19.99,
     "originalPrice": 24.99,
     "category": "Körperpflege/Wellness",
@@ -1151,11 +1345,19 @@
         "image": "produkt bilder/Gesichtssauna bilder/Gesichtssauna weiß.jpg"
       }
     ],
-    "tags": ["face steamer", "moisturizer", "wellness", "hautpflege", "beauty", "gesichtssauna"]
+    "tags": [
+      "face steamer",
+      "moisturizer",
+      "wellness",
+      "hautpflege",
+      "beauty",
+      "gesichtssauna"
+    ]
   },
   {
     "id": 35,
     "name": "Thermische Massage",
+    "slug": "thermische-massage",
     "price": 21.99,
     "originalPrice": 29.99,
     "category": "Körperpflege/Wellness",
@@ -1194,6 +1396,7 @@
   {
     "id": 36,
     "name": "Mitesserentferner Gerät",
+    "slug": "mitesserentferner-geraet",
     "price": 17.99,
     "originalPrice": 22.99,
     "category": "Körperpflege/Wellness",
@@ -1203,11 +1406,18 @@
     "inStock": true,
     "shippingTime": "7-13 Werktage",
     "showInSlider": false,
-    "tags": ["blackhead remover", "hautpflege", "gesichtsreinigung", "wellness", "mitesserentferner"]
+    "tags": [
+      "blackhead remover",
+      "hautpflege",
+      "gesichtsreinigung",
+      "wellness",
+      "mitesserentferner"
+    ]
   },
   {
     "id": 37,
     "name": "Professioneller 5 in 1 Haar Trockner",
+    "slug": "professioneller-5-in-1-haar-trockner",
     "price": 59.99,
     "originalPrice": 69.99,
     "category": "Körperpflege/Wellness",
@@ -1217,11 +1427,18 @@
     "inStock": true,
     "shippingTime": "7-13 Werktage",
     "showInSlider": true,
-    "tags": ["hair dryer", "haarstyling", "föhn", "wellness", "beauty"]
+    "tags": [
+      "hair dryer",
+      "haarstyling",
+      "föhn",
+      "wellness",
+      "beauty"
+    ]
   },
   {
     "id": 38,
     "name": "Jade Stein",
+    "slug": "jade-stein",
     "price": 11.99,
     "originalPrice": 24.99,
     "category": "Körperpflege/Wellness",
@@ -1257,11 +1474,18 @@
         "image": "produkt bilder/Jade Stein bilder/Jade Stein pink.jpg"
       }
     ],
-    "tags": ["jade", "massager", "gua sha", "wellness", "hautpflege"]
+    "tags": [
+      "jade",
+      "massager",
+      "gua sha",
+      "wellness",
+      "hautpflege"
+    ]
   },
   {
     "id": 39,
     "name": "Elektronischer premium Jade Stein",
+    "slug": "elektronischer-premium-jade-stein",
     "price": 29.99,
     "originalPrice": 49.99,
     "category": "Körperpflege/Wellness",
@@ -1271,11 +1495,18 @@
     "inStock": true,
     "shippingTime": "7-13 Werktage",
     "showInSlider": false,
-    "tags": ["guasha", "ems", "face lifting", "hautpflege", "wellness"]
+    "tags": [
+      "guasha",
+      "ems",
+      "face lifting",
+      "hautpflege",
+      "wellness"
+    ]
   },
   {
     "id": 40,
     "name": "Wärmender Untersetzer",
+    "slug": "waermender-untersetzer",
     "price": 16.99,
     "originalPrice": 29.99,
     "category": "Haushalt und Küche",
@@ -1311,11 +1542,18 @@
         "image": "produkt bilder/Wärmender Untersetzter bilder/Wärmender Untersetzter weiß.jpg"
       }
     ],
-    "tags": ["mug warmer", "tassenwärmer", "kaffee", "tee", "haushalt"]
+    "tags": [
+      "mug warmer",
+      "tassenwärmer",
+      "kaffee",
+      "tee",
+      "haushalt"
+    ]
   },
   {
     "id": 41,
     "name": "2 in 1 Öl Sprayer Flasche",
+    "slug": "2-in-1-oel-sprayer-flasche",
     "price": 18.99,
     "originalPrice": 24.99,
     "category": "Körperpflege/Wellness",
@@ -1324,7 +1562,13 @@
     "sku": "CJYD187611401AZ",
     "inStock": true,
     "shippingTime": "6-11 Werktage",
-    "tags": ["öl", "sprayer", "küche", "kochen", "grillen"],
+    "tags": [
+      "öl",
+      "sprayer",
+      "küche",
+      "kochen",
+      "grillen"
+    ],
     "features": [
       "2-in-1-Funktion: Sprühen und Ausgießen",
       "Geeignet für Öl, Essig und andere Flüssigkeiten",
@@ -1337,6 +1581,7 @@
   {
     "id": 42,
     "name": "Aroma Öl Diffusor",
+    "slug": "aroma-oel-diffusor",
     "price": 28.99,
     "originalPrice": 49.99,
     "category": "Körperpflege/Wellness",
@@ -1368,7 +1613,10 @@
         "id": "bundle1",
         "name": "Wellness Starter",
         "description": "Diffuser + Aromatherapie Grundausstattung",
-        "items": ["Ätherische Öle Set (3x 10ml)", "Reinigungsset"],
+        "items": [
+          "Ätherische Öle Set (3x 10ml)",
+          "Reinigungsset"
+        ],
         "originalPrice": 45,
         "bundlePrice": 39,
         "savings": 6
@@ -1410,6 +1658,7 @@
   {
     "id": 43,
     "name": "Mini Thermal Drucker",
+    "slug": "mini-thermal-drucker",
     "price": 26.99,
     "originalPrice": 59.99,
     "category": "Technik/Gadgets",
@@ -1489,7 +1738,10 @@
         "id": "bundle1",
         "name": "Starter Set",
         "description": "Drucker + Papierrollen Style A",
-        "items": ["Papierrollen Style A (3 Rollen)", "USB-Kabel"],
+        "items": [
+          "Papierrollen Style A (3 Rollen)",
+          "USB-Kabel"
+        ],
         "originalPrice": 55,
         "bundlePrice": 49,
         "savings": 6
@@ -1533,6 +1785,7 @@
   {
     "id": 44,
     "name": "Smart Beamer",
+    "slug": "smart-beamer",
     "price": 74.99,
     "originalPrice": 199.99,
     "category": "Technik/Gadgets",
@@ -1574,6 +1827,7 @@
   {
     "id": 45,
     "name": "Klimaanlage mit Display",
+    "slug": "klimaanlage-mit-display",
     "price": 28.99,
     "originalPrice": 49.99,
     "category": "Technik/Gadgets",
@@ -1597,6 +1851,7 @@
   {
     "id": 46,
     "name": "Nordic Crystal Lamp",
+    "slug": "nordic-crystal-lamp",
     "price": 24.99,
     "originalPrice": 39.99,
     "category": "Beleuchtung",
@@ -1646,6 +1901,7 @@
   {
     "id": 47,
     "name": "Tumbler Becher",
+    "slug": "tumbler-becher",
     "price": 19.99,
     "originalPrice": 34.99,
     "category": "Haushalt und Küche",
@@ -1761,6 +2017,7 @@
   {
     "id": 48,
     "name": "Tumbler Becher Winter",
+    "slug": "tumbler-becher-winter",
     "price": 19.99,
     "originalPrice": 34.99,
     "category": "Haushalt und Küche",
@@ -1815,6 +2072,7 @@
   {
     "id": 50,
     "name": "Krystall Ball Nachtlampe",
+    "slug": "krystall-ball-nachtlampe",
     "price": 13.99,
     "originalPrice": 29.99,
     "category": "Beleuchtung",
@@ -1900,7 +2158,10 @@
         "id": "bundle1",
         "name": "Crystal Starter",
         "description": "Kristallkugel + Basis",
-        "items": ["LED-Basis", "USB-Kabel"],
+        "items": [
+          "LED-Basis",
+          "USB-Kabel"
+        ],
         "originalPrice": 24.99,
         "bundlePrice": 19.99,
         "savings": 5
@@ -1909,7 +2170,11 @@
         "id": "bundle2",
         "name": "Crystal Premium",
         "description": "Komplettes Deko-Set",
-        "items": ["LED-Basis", "USB-Kabel", "Geschenkbox"],
+        "items": [
+          "LED-Basis",
+          "USB-Kabel",
+          "Geschenkbox"
+        ],
         "originalPrice": 34.99,
         "bundlePrice": 24.99,
         "savings": 10
@@ -1920,6 +2185,7 @@
   {
     "id": 51,
     "name": "Auto Bildschirm",
+    "slug": "auto-bildschirm",
     "price": 47.99,
     "originalPrice": 89.99,
     "category": "Technik/Gadgets",

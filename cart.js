@@ -1,3 +1,12 @@
+// Liefert die SEO-Slug-URL einer Produktseite (root-relativ). Sucht den Slug im
+// localStorage-Cache 'allProducts'; Fallback = alte ID-URL.
+function cartProductHref(id) {
+    let list = [];
+    try { list = JSON.parse(localStorage.getItem('allProducts')) || []; } catch (e) { list = []; }
+    const p = list.find(x => Number(x.id) === Number(id));
+    return p && p.slug ? `/produkte/${p.slug}.html` : `/produkte/produkt-${id}.html`;
+}
+
 // Währungseinstellungen nach Land
 const currencyByCountry = {
     'DE': { symbol: '€', code: 'EUR', name: 'Deutschland' },
@@ -441,7 +450,7 @@ function updateCartPage() {
                     <div class="addon-list">
                         ${randomProducts.map(product => `
                             <div class="addon-card">
-                                <a href="produkte/produkt-${product.id}.html" style="text-decoration: none;">
+                                <a href="${cartProductHref(product.id)}" style="text-decoration: none;">
                                     <img src="${product.image}" class="addon-card-img" alt="${product.name}" style="cursor: pointer;" onerror="this.src='produkt bilder/ware.png'">
                                 </a>
                                 <div class="addon-card-info">
@@ -510,7 +519,7 @@ function updateCartPage() {
                     ${cartItems.map(item => {
                         // Prüfe ob es ein Bundle ist - NUR wenn explizit als Bundle markiert
                         const isBundle = item.isBundle === true;
-                        const linkHref = `produkte/produkt-${item.id}.html`;
+                        const linkHref = cartProductHref(item.id);
                         
                         return `
                         <div class="cart-item" data-id="${item.id}" ${isBundle ? 'data-bundle="true"' : ''}>
@@ -550,7 +559,7 @@ function updateCartPage() {
                     <div class="addon-list">
                         ${addonProducts.map(addon => `
                             <div class="addon-card">
-                                <a href="produkte/produkt-${addon.id}.html" style="text-decoration: none;">
+                                <a href="${cartProductHref(addon.id)}" style="text-decoration: none;">
                                     <img src="${addon.image}" class="addon-card-img" alt="${addon.name}" style="cursor: pointer;" onerror="this.src='produkt bilder/ware.png'">
                                 </a>
                                 <div class="addon-card-info">

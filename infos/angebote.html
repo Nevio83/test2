@@ -160,7 +160,7 @@
         node.querySelector('.deal-price').textContent = formatPrice(d.newPrice);
         node.querySelector('.deal-old').textContent = formatPrice(d.price);
         const viewBtn = node.querySelector('.btn.btn-primary');
-        viewBtn.href = `../produkte/produkt-${d.id}.html`;
+        viewBtn.href = d.slug ? `/produkte/${d.slug}.html` : `/produkte/produkt-${d.id}.html`;
         const catBtn = node.querySelector('.btn.btn-outline-secondary');
         catBtn.href = `/index.html?category=${encodeURIComponent(d.category)}#productGrid`;
         return node.firstElementChild.outerHTML;

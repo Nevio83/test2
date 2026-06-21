@@ -162,6 +162,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Hole Produkt-ID aus URL falls window.product nicht vorhanden
         let productId = currentProduct ? currentProduct.id : null;
+        if (!productId && document.body && document.body.dataset && document.body.dataset.productId) {
+            productId = parseInt(document.body.dataset.productId);
+        }
         if (!productId) {
             const urlPath = window.location.pathname;
             const productMatch = urlPath.match(/produkt-(\d+)\.html/);
@@ -169,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 productId = parseInt(productMatch[1]);
             }
         }
-        
+
         const basePrice = currentProduct ? currentProduct.price : 24.99;
         const productName = currentProduct ? currentProduct.name : `Produkt ${productId || ''}`;
         
@@ -1012,7 +1015,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let currentProduct = window.product;
         let productId = currentProduct ? currentProduct.id : null;
         
-        // Falls window.product nicht vorhanden, versuche aus URL zu extrahieren
+        // Falls window.product nicht vorhanden: erst <body data-product-id>, dann URL
+        if (!productId && document.body && document.body.dataset && document.body.dataset.productId) {
+            productId = parseInt(document.body.dataset.productId);
+        }
         if (!productId) {
             const urlPath = window.location.pathname;
             const productMatch = urlPath.match(/produkt-(\d+)\.html/);
@@ -1153,7 +1159,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let currentProduct = window.product;
         let productId = currentProduct ? currentProduct.id : null;
         
-        // Falls window.product nicht vorhanden, versuche aus URL zu extrahieren
+        // Falls window.product nicht vorhanden: erst <body data-product-id>, dann URL
+        if (!productId && document.body && document.body.dataset && document.body.dataset.productId) {
+            productId = parseInt(document.body.dataset.productId);
+        }
         if (!productId) {
             const urlPath = window.location.pathname;
             const productMatch = urlPath.match(/produkt-(\d+)\.html/);
