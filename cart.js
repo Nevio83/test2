@@ -952,36 +952,10 @@ window.handleCheckout = async function() {
         customerInfo.metadata.allow_express_checkout = 'true';
         
         // Konfiguriere die richtige API-URL für verschiedene Umgebungen
-        let apiUrl;
-        
-        // Bestimme API-URL je nach Hostname
-        switch(window.location.hostname) {
-            case 'localhost':
-            case '127.0.0.1':
-                apiUrl = 'http://localhost:3000/api/create-checkout-session';
-                break;
-                
-            case 'maiosshop.com':
-            case 'www.maiosshop.com':
-                // WICHTIG: Verschiedene Optionen für API-Standort
-                
-                // OPTION A: Standard-API-Pfad (für Node.js-Server oder Express)
-                // apiUrl = '/api/create-checkout-session';
-                
-                // OPTION B: Netlify Functions Pfad (EMPFOHLEN FÜR NETLIFY)
-                apiUrl = '/.netlify/functions/create-checkout-session';
-                
-                // OPTION C: Mit Redirect-Regel (muss in netlify.toml definiert sein)
-                // apiUrl = '/api/create-checkout-session';
-                
-                // OPTION D: Verwende separaten API-Server (eigene Subdomain)
-                // apiUrl = 'https://api.maiosshop.com/create-checkout-session';
-                break;
-                
-            default:
-                // Fallback auf relative URL
-                apiUrl = '/api/create-checkout-session';
-        }
+        // API liegt same-origin auf Render (statische Seite + API aus server.js).
+        // Relative URL funktioniert lokal (Port 3000) wie auch live auf maiosshop.com.
+        // (Früher zeigte maiosshop.com hier auf einen Netlify-Function-Pfad → 404; Netlify ist raus.)
+        const apiUrl = '/api/create-checkout-session';
             
         console.log('🌐 API URL:', apiUrl);
         const response = await fetch(apiUrl, {

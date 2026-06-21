@@ -10,8 +10,7 @@
  * erlaubten Wert überein, wird er akzeptiert (Varianten/Bundles bleiben gültig).
  * Sonst wird auf den Basispreis zurückgefallen. Unbekannte Produkte werden abgelehnt.
  *
- * Wird von server.js UND netlify/functions/create-checkout-session.js genutzt,
- * damit beide Checkout-Pfade dieselbe Validierung verwenden.
+ * Wird von server.js im Checkout-Pfad genutzt, bevor Stripe-Beträge gebildet werden.
  */
 
 let DEFAULT_CATALOG = [];

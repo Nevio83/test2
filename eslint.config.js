@@ -10,9 +10,7 @@ module.exports = [
       'node_modules/**',
       'Marketing/**',
       'graphify-out/**',
-      'netlify/**',
-      '**/*.min.js',
-      'indexoriginal.html'
+      '**/*.min.js'
     ]
   },
   js.configs.recommended,
