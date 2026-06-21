@@ -81,6 +81,18 @@
         '<div class="fs-value">' + s.value.toLocaleString('de-DE') + '</div>' +
       '</div>';
     });
+    // Explizite Schlüssel-Kennzahlen
+    const cart = d.cartReachers || 0;
+    const buyers = d.buyers || 0;
+    const abandon = cart > 0 ? Math.round((1 - buyers / cart) * 100) : null;
+    const conv = visitors > 0 ? ((buyers / visitors) * 100).toFixed(1) : null;
+    html += '<div class="funnel-kpis">' +
+      '<div class="fk"><div class="fk-val' + (abandon != null && abandon >= 70 ? ' bad' : '') + '">' +
+        (abandon == null ? '–' : abandon + '%') + '</div>' +
+        '<div class="fk-lab">Warenkorbabbruch <span class="fk-hint">(Warenkorb erreicht, aber nicht gekauft)</span></div></div>' +
+      '<div class="fk"><div class="fk-val">' + (conv == null ? '–' : conv + '%') + '</div>' +
+        '<div class="fk-lab">Gesamt-Conversion <span class="fk-hint">(Besucher → Kauf)</span></div></div>' +
+    '</div>';
     node.innerHTML = html;
   }
 
