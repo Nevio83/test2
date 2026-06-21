@@ -150,9 +150,10 @@
 
   const DEFAULT_MODE = 'views-day';
 
-  // Titel = Kennzahl + Raster (pro Tag/Monat bzw. kumuliert) + Zeitraum-Label
-  function buildTitle(cfg) {
-    const per = RANGES[currentRange].gran === 'month' ? 'pro Monat' : 'pro Tag';
+  // Titel = Kennzahl + Raster (pro Tag/Monat bzw. kumuliert) + Zeitraum-Label.
+  // gran wird uebergeben, da 'Gesamt' das Raster dynamisch waehlt.
+  function buildTitle(cfg, gran) {
+    const per = gran === 'month' ? 'pro Monat' : 'pro Tag';
     let base = cfg.agg === 'cum' ? (cfg.metric + ' kumuliert') : (cfg.metric + ' ' + per);
     if (cfg.isCurrency) base += ' (€)';
     return base + ' · ' + RANGES[currentRange].label;
@@ -174,14 +175,24 @@
   async function renderChart(mode) {
     const cfg = CHART_MODES[mode] || CHART_MODES[DEFAULT_MODE];
     currentMode = (CHART_MODES[mode] ? mode : DEFAULT_MODE);
-    setText('chart-title', buildTitle(cfg));
+    setText('chart-title', buildTitle(cfg, RANGES[currentRange].gran)); // vorlaeufig
     highlightActiveCard(currentMode);
 
     try {
-      const gran = RANGES[currentRange].gran;
-      const rows = await fetchSeries(cfg.base + '?range=' + currentRange);
+      const payload = await fetchSeries(cfg.base + '?range=' + currentRange);
+      const rows = Array.isArray(payload) ? payload : (payload.rows || []);
+      // 'Gesamt' kann taeglich ODER monatlich sein -> tatsaechliches Raster vom Server
+      const gran = (payload && payload.granularity) || RANGES[currentRange].gran;
+      setText('chart-title', buildTitle(cfg, gran)); // endgueltig
+
       const datasets = cfg.build(rows);
       const labels = rows.map(r => fmtLabel(r, gran));
+
+      // Bei sehr wenig Daten Balken statt Linie (ein einzelner Linienpunkt wirkt leer)
+      const type = rows.length <= 2 ? 'bar' : 'line';
+      if (type === 'bar') {
+        datasets.forEach(d => { d.backgroundColor = d.borderColor; d.borderWidth = 0; d.fill = false; });
+      }
 
       const ctx = document.getElementById('views-chart');
       if (!ctx || typeof Chart === 'undefined') return;
@@ -189,7 +200,7 @@
       if (viewsChart) viewsChart.destroy();
       const isCurrency = !!cfg.isCurrency;
       viewsChart = new Chart(ctx, {
-        type: 'line',
+        type,
         data: { labels, datasets },
         options: {
           responsive: true,

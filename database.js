@@ -118,45 +118,45 @@ async function initializeDatabase() {
 initializeDatabase();
 
 // Zeitraum-Filter fuer die Dashboard-Diagramme.
-// Liefert konstante SQL-Fragmente (kein User-Input in SQL) je Range:
-//   7d / 30d  -> taegliche Buckets ; 12m / all -> monatliche Buckets.
-// `table` wird nur fuer den MIN()-Subquery bei 'all' gebraucht.
-function tsRange(range, table) {
-  switch (range) {
-    case '7d':
-      return {
-        start: 'CURRENT_DATE - 6',
-        end: 'CURRENT_DATE',
-        step: '1 day',
-        bucket: 'created_at::date',
-        where: "WHERE created_at::date >= CURRENT_DATE - 6"
-      };
-    case '12m':
-      return {
-        start: "date_trunc('month', CURRENT_DATE) - INTERVAL '11 months'",
-        end: "date_trunc('month', CURRENT_DATE)",
-        step: '1 month',
-        bucket: "date_trunc('month', created_at)::date",
-        where: "WHERE created_at >= date_trunc('month', CURRENT_DATE) - INTERVAL '11 months'"
-      };
-    case 'all':
-      return {
-        start: `COALESCE((SELECT date_trunc('month', MIN(created_at)) FROM ${table}), date_trunc('month', CURRENT_DATE))`,
-        end: "date_trunc('month', CURRENT_DATE)",
-        step: '1 month',
-        bucket: "date_trunc('month', created_at)::date",
-        where: ''
-      };
-    case '30d':
-    default:
-      return {
-        start: 'CURRENT_DATE - 29',
-        end: 'CURRENT_DATE',
-        step: '1 day',
-        bucket: 'created_at::date',
-        where: "WHERE created_at::date >= CURRENT_DATE - 29"
-      };
+// Liefert Granularitaet + Start-Ausdruck (konstante SQL-Fragmente bzw. $1 bei 'all').
+//   7d / 30d -> Tagesraster, 12m -> Monatsraster.
+//   'all' waehlt das Raster nach der tatsaechlichen Datenspanne:
+//     <= 92 Tage -> taeglich (sieht bei jungen Shops nicht leer aus), sonst monatlich.
+// `table` wird nur fuer den MIN()-Query bei 'all' gebraucht.
+async function resolveSeries(range, table) {
+  if (range === '7d') return { gran: 'day', start: 'CURRENT_DATE - 6', params: [] };
+  if (range === '12m') {
+    return { gran: 'month', start: "date_trunc('month', CURRENT_DATE) - INTERVAL '11 months'", params: [] };
   }
+  if (range === 'all') {
+    const r = await pool.query(`SELECT MIN(created_at)::date AS first FROM ${table}`);
+    const first = r.rows[0] && r.rows[0].first;
+    if (!first) return { gran: 'day', start: 'CURRENT_DATE', params: [] }; // keine Daten
+    const spanDays = Math.floor((Date.now() - new Date(first).getTime()) / 86400000);
+    return spanDays <= 92
+      ? { gran: 'day', start: '$1::date', params: [first] }
+      : { gran: 'month', start: "date_trunc('month', $1::date)", params: [first] };
+  }
+  return { gran: 'day', start: 'CURRENT_DATE - 29', params: [] }; // '30d' (Default)
+}
+
+// Baut die lueckenlose Zeitreihen-Query (generate_series) fuer eine Tabelle.
+// aggs = Aggregate im Subquery, metrics = Spalten der Aussenabfrage (x = Subquery-Alias).
+function buildSeriesSql(gran, start, table, aggs, metrics) {
+  const bucket = gran === 'month' ? "date_trunc('month', created_at)::date" : 'created_at::date';
+  const group = gran === 'month' ? "date_trunc('month', created_at)" : 'created_at::date';
+  const end = gran === 'month' ? "date_trunc('month', CURRENT_DATE)" : 'CURRENT_DATE';
+  const step = gran === 'month' ? '1 month' : '1 day';
+  const cmp = gran === 'month' ? 'created_at >=' : 'created_at::date >=';
+  return `SELECT d::date AS day, ${metrics}
+          FROM generate_series(${start}, ${end}, '${step}') AS d
+          LEFT JOIN (
+            SELECT ${bucket} AS day, ${aggs}
+            FROM ${table}
+            WHERE ${cmp} (${start})
+            GROUP BY ${group}
+          ) x ON x.day = d::date
+          ORDER BY day ASC`;
 }
 
 // ── Operationen (gleiches Interface wie zuvor) ───────────────
@@ -324,48 +324,30 @@ const dbOperations = {
   },
 
   getViewsTimeseries: async (range = '30d') => {
-    const c = tsRange(range, 'page_views');
-    const r = await pool.query(
-      `SELECT d::date AS day,
-              COALESCE(v.views, 0)::int AS views,
-              COALESCE(v.unique_views, 0)::int AS unique_views
-       FROM generate_series(${c.start}, ${c.end}, '${c.step}') AS d
-       LEFT JOIN (
-         SELECT ${c.bucket} AS day,
-                COUNT(*) AS views,
-                COUNT(DISTINCT session_id) AS unique_views
-         FROM page_views
-         ${c.where}
-         GROUP BY ${c.bucket}
-       ) v ON v.day = d::date
-       ORDER BY day ASC`
+    const { gran, start, params } = await resolveSeries(range, 'page_views');
+    const sql = buildSeriesSql(
+      gran, start, 'page_views',
+      'COUNT(*) AS views, COUNT(DISTINCT session_id) AS unique_views',
+      'COALESCE(x.views,0)::int AS views, COALESCE(x.unique_views,0)::int AS unique_views'
     );
-    return r.rows;
+    const r = await pool.query(sql, params);
+    return { granularity: gran, rows: r.rows };
   },
 
   // Zeitreihe fuer Bestellungen + Umsatz pro Tag (lueckenlos via generate_series).
   // orders = alle Bestellungen des Tages, revenue = Summe NUR bezahlter Bestellungen
   // (analog zu getStatistics: Gesamt-Bestellungen zaehlt alles, Umsatz nur 'paid').
   getOrdersTimeseries: async (range = '30d') => {
-    const c = tsRange(range, 'orders');
-    const r = await pool.query(
-      `SELECT d::date AS day,
-              COALESCE(o.orders, 0)::int AS orders,
-              COALESCE(o.pending, 0)::int AS pending,
-              COALESCE(o.revenue, 0)::float AS revenue
-       FROM generate_series(${c.start}, ${c.end}, '${c.step}') AS d
-       LEFT JOIN (
-         SELECT ${c.bucket} AS day,
-                COUNT(*) AS orders,
-                COUNT(*) FILTER (WHERE order_status = 'processing') AS pending,
-                SUM(CASE WHEN payment_status = 'paid' THEN total_amount ELSE 0 END) AS revenue
-         FROM orders
-         ${c.where}
-         GROUP BY ${c.bucket}
-       ) o ON o.day = d::date
-       ORDER BY day ASC`
+    const { gran, start, params } = await resolveSeries(range, 'orders');
+    const sql = buildSeriesSql(
+      gran, start, 'orders',
+      "COUNT(*) AS orders, " +
+        "COUNT(*) FILTER (WHERE order_status = 'processing') AS pending, " +
+        "SUM(CASE WHEN payment_status = 'paid' THEN total_amount ELSE 0 END) AS revenue",
+      'COALESCE(x.orders,0)::int AS orders, COALESCE(x.pending,0)::int AS pending, COALESCE(x.revenue,0)::float AS revenue'
     );
-    return r.rows;
+    const r = await pool.query(sql, params);
+    return { granularity: gran, rows: r.rows };
   }
 };
 
