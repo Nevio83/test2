@@ -138,6 +138,18 @@ function generateOrderId() {
   return `ORD-${Date.now()}-${crypto.randomUUID().split('-')[0].toUpperCase()}`;
 }
 
+// Fortlaufende, lueckenlose Rechnungsnummer (§ 14 UStG) aus der DB-Sequence.
+// Faellt nur bei DB-Ausfall auf eine Timestamp-Nummer zurueck, damit der
+// Beleg trotzdem erzeugt wird (statt den Checkout zu blockieren).
+async function nextReceiptNumber() {
+  try {
+    return await dbOperations.getNextReceiptNumber();
+  } catch (e) {
+    console.error('⚠️ Rechnungsnummer-Sequence nicht verfuegbar, nutze Fallback:', e.message);
+    return `RE-${new Date().getFullYear()}${String(Date.now()).slice(-6)}`;
+  }
+}
+
 function safeEqual(a, b) {
   const ba = Buffer.from(String(a));
   const bb = Buffer.from(String(b));
@@ -483,7 +495,7 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
       // Erstelle Bestelldaten aus Stripe Session
       const orderData = {
         order_id: generateOrderId(),
-        receipt_number: `KB-${new Date().getFullYear()}${String(Date.now()).slice(-6)}`,
+        receipt_number: await nextReceiptNumber(),
         customer_email: fullSession.customer_details.email,
         customer_name: fullSession.customer_details.name,
         customer_phone: fullSession.customer_details.phone || null,
@@ -535,7 +547,7 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
           collection_method: 'send_invoice',
           days_until_due: 0,
           description: `Bestellung ${orderData.order_id}`,
-          footer: `Vielen Dank für Ihren Einkauf!\n\nBestellnummer: ${orderData.order_id}\nKassenbon-Nr: ${orderData.receipt_number}\n\nDiese Rechnung wurde bereits bezahlt.`,
+          footer: `Vielen Dank für Ihren Einkauf!\n\nBestellnummer: ${orderData.order_id}\nRechnungs-Nr: ${orderData.receipt_number}\n\nDiese Rechnung wurde bereits bezahlt.`,
           metadata: {
             order_id: orderData.order_id,
             receipt_number: orderData.receipt_number,
@@ -1358,7 +1370,7 @@ app.post('/api/receipt/create', async (req, res) => {
     
     // Generiere eindeutige IDs
     const orderId = generateOrderId();
-    const receiptNumber = `KB-${new Date().getFullYear()}${String(Date.now()).slice(-6)}`;
+    const receiptNumber = await nextReceiptNumber();
     const receiptId = uuidv4();
     
     // Berechne Summen
@@ -1380,8 +1392,8 @@ app.post('/api/receipt/create', async (req, res) => {
     });
     
     const shippingCost = shipping?.cost || 0;
-    const taxRate = 0.19;
-    const taxAmount = (subtotal + shippingCost) * taxRate / (1 + taxRate);
+    // Kleinunternehmer § 19 UStG -> keine Umsatzsteuer ausweisen.
+    const taxAmount = 0;
     const totalAmount = subtotal + shippingCost;
     
     // Ermittle Währung basierend auf Lieferland
@@ -1436,6 +1448,10 @@ app.post('/api/receipt/create', async (req, res) => {
       // Admin
       await emailService.sendAdminNotification(orderData);
       await dbOperations.updateEmailStatus(receiptId, 'admin');
+
+      // Revisionssichere Archiv-Kopie (GoBD: 10 Jahre). Renders Dateisystem ist
+      // fluechtig -> Beleg-PDF zusaetzlich an die Archiv-Adresse mailen.
+      await emailService.sendReceiptArchive(orderData, pdfResult.filePath, receiptHTML);
     } catch (emailError) {
       console.error('E-Mail-Versand Fehler:', emailError);
       // Fahre fort auch wenn E-Mail fehlschlägt

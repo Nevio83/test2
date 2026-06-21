@@ -1,4 +1,5 @@
 const { Resend } = require('resend');
+const fs = require('fs');
 require('dotenv').config();
 
 class ResendService {
@@ -72,7 +73,7 @@ class ResendService {
                                         <table width="100%" cellpadding="0" cellspacing="0">
                                             <tr>
                                                 <td>
-                                                    <p style="margin: 0; color: #666666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Kassenbon-Nr</p>
+                                                    <p style="margin: 0; color: #666666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Rechnungs-Nr</p>
                                                     <p style="margin: 5px 0 0 0; color: #1a1a1a; font-size: 14px; font-weight: 600;">${orderData.receipt_number}</p>
                                                 </td>
                                                 <td align="right">
@@ -215,7 +216,7 @@ class ResendService {
   /**
    * Generische E-Mail senden
    */
-  async sendEmail({ to, subject, html, text, replyTo }) {
+  async sendEmail({ to, subject, html, text, replyTo, attachments }) {
     try {
       if (!this.resend) {
         console.warn('⚠️ Resend nicht initialisiert');
@@ -237,12 +238,54 @@ class ResendService {
         emailData.replyTo = replyTo;
       }
 
+      if (Array.isArray(attachments) && attachments.length) {
+        emailData.attachments = attachments;
+      }
+
       const data = await this.resend.emails.send(emailData);
 
       console.log('✅ E-Mail gesendet an:', to);
       return { success: true, messageId: data.id };
     } catch (error) {
       console.error('❌ Resend Fehler:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Revisionssichere Archiv-Kopie des Belegs (GoBD: 10 Jahre aufbewahren).
+   * Da Renders Dateisystem fluechtig ist, wird der Beleg zusaetzlich per Mail an
+   * eine Archiv-Adresse gesendet (PDF als Anhang + HTML im Body). Die Bestelldaten
+   * liegen ohnehin dauerhaft in Neon -> der Beleg ist jederzeit reproduzierbar.
+   */
+  async sendReceiptArchive(orderData, pdfPath, html) {
+    try {
+      if (!this.resend) {
+        console.warn('⚠️ Resend nicht initialisiert - Beleg nicht archiviert');
+        return { success: false, error: 'Resend not configured' };
+      }
+      const archiveTo = process.env.RECEIPT_ARCHIVE_EMAIL || 'maioscorporation@gmail.com';
+
+      const attachments = [];
+      if (pdfPath && fs.existsSync(pdfPath)) {
+        attachments.push({
+          filename: `Rechnung_${orderData.receipt_number}.pdf`,
+          content: fs.readFileSync(pdfPath).toString('base64')
+        });
+      }
+
+      const data = await this.resend.emails.send({
+        from: `${this.fromName} <${this.fromEmail}>`,
+        to: [archiveTo],
+        subject: `🗄️ Beleg-Archiv ${orderData.receipt_number} · Bestellung ${orderData.order_id}`,
+        html: html || `<p>Beleg ${orderData.receipt_number} zur Bestellung ${orderData.order_id} (${orderData.customer_email}).</p>`,
+        attachments
+      });
+
+      console.log('🗄️  Beleg archiviert an:', archiveTo);
+      return { success: true, messageId: data.id };
+    } catch (error) {
+      console.error('❌ Beleg-Archivierung Fehler:', error.message);
       return { success: false, error: error.message };
     }
   }

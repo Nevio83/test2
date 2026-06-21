@@ -109,6 +109,9 @@ const SCHEMA = [
     user_agent TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
   )`,
+  // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
+  // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
+  `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
   `CREATE INDEX IF NOT EXISTS idx_consent_created ON user_consent_events(created_at)`,
   `CREATE INDEX IF NOT EXISTS idx_page_views_client_view ON page_views(client_view_id)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_order_id ON orders(order_id)`,
@@ -220,6 +223,14 @@ const dbOperations = {
       ]);
     }
     return items.length;
+  },
+
+  // Naechste fortlaufende Rechnungsnummer (Format RE-000001, lueckenlos).
+  // Wird beim Anlegen einer Bestellung genau einmal vergeben.
+  getNextReceiptNumber: async () => {
+    const r = await pool.query(`SELECT nextval('receipt_seq')::bigint AS n`);
+    const n = r.rows[0].n;
+    return 'RE-' + String(n).padStart(6, '0');
   },
 
   saveReceipt: async (r) => {

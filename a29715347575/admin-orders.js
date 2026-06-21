@@ -340,10 +340,12 @@ class AdminOrdersDashboard {
               <td>€ ${order.shipping_cost.toFixed(2)}</td>
             </tr>
           ` : ''}
+          ${order.tax_amount > 0 ? `
           <tr>
             <td colspan="4" class="text-end">MwSt. (19%):</td>
             <td>€ ${order.tax_amount.toFixed(2)}</td>
           </tr>
+          ` : ''}
           <tr class="table-active">
             <td colspan="4" class="text-end"><strong>Gesamtsumme:</strong></td>
             <td><strong>€ ${order.total_amount.toFixed(2)}</strong></td>

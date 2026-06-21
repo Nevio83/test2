@@ -10,17 +10,28 @@ if (!fs.existsSync(receiptsDir)) {
 
 class ReceiptGenerator {
   constructor() {
+    // Echte Firmendaten (Impressum). Maios ist Kleinunternehmer gemaess § 19 UStG
+    // -> KEINE Umsatzsteuer ausweisen, KEINE USt-IdNr. Die Steuernummer ist
+    // optional (Pflicht erst bei Rechnungen > 250 €) und kommt aus der ENV, damit
+    // sie nicht im Repo steht.
+    // Werte aus ENV (Render-Dashboard) mit den echten Impressum-Daten als Default.
     this.companyInfo = {
-      name: 'Smart Home Shop',
-      address: 'Musterstraße 123',
-      city: '12345 Berlin',
-      country: 'Deutschland',
-      email: 'info@smarthomeshop.de',
-      phone: '+49 30 123456789',
-      website: 'www.smarthomeshop.de',
-      taxId: 'DE123456789',
+      name: process.env.COMPANY_NAME || 'Maios',
+      owner: process.env.COMPANY_OWNER || 'Noah Michelhans',
+      address: process.env.COMPANY_ADDRESS || 'Oberer Burggarten 12',
+      city: process.env.COMPANY_CITY || '69221 Dossenheim',
+      country: process.env.COMPANY_COUNTRY || 'Deutschland',
+      email: process.env.COMPANY_EMAIL || 'maioscorporation@gmail.com',
+      phone: process.env.COMPANY_PHONE || '',
+      website: process.env.COMPANY_WEBSITE || 'maiosshop.com',
+      // Steuernummer (optional, Pflicht erst bei Rechnungen > 250 €). Kleinunternehmer
+      // hat KEINE USt-IdNr. -> nur Steuernummer. COMPANY_TAX_ID als Alt-Name akzeptiert.
+      taxNumber: process.env.COMPANY_TAX_NUMBER || process.env.COMPANY_TAX_ID || '',
+      smallBusiness: true, // Kleinunternehmer § 19 UStG
       logo: null // Logo-Pfad kann später hinzugefügt werden
     };
+    // Pflicht-Hinweis fuer Kleinunternehmer auf jedem Beleg.
+    this.smallBusinessNote = 'Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.';
   }
 
   generateReceipt(orderData) {
@@ -86,76 +97,108 @@ class ReceiptGenerator {
       doc.image(this.companyInfo.logo, 50, startY, { width: 150 });
     }
 
-    // Firmenname und Adresse
+    // Firmenname und Adresse (echte Maios-Daten)
     doc.fontSize(20)
        .font('Helvetica-Bold')
        .text(this.companyInfo.name, 50, startY);
-    
-    doc.fontSize(10)
-       .font('Helvetica')
-       .text(this.companyInfo.address, 50, startY + 30)
-       .text(`${this.companyInfo.city}, ${this.companyInfo.country}`, 50, startY + 45)
-       .text(`Tel: ${this.companyInfo.phone}`, 50, startY + 60)
-       .text(`E-Mail: ${this.companyInfo.email}`, 50, startY + 75)
-       .text(`USt-IdNr.: ${this.companyInfo.taxId}`, 50, startY + 90);
 
-    // Kassenbon-Titel und Nummer
+    doc.fontSize(10)
+       .font('Helvetica');
+    let y = startY + 28;
+    const line = (txt) => { doc.text(txt, 50, y); y += 14; };
+    if (this.companyInfo.owner) line(`Inhaber: ${this.companyInfo.owner}`);
+    line(this.companyInfo.address);
+    line(`${this.companyInfo.city}, ${this.companyInfo.country}`);
+    if (this.companyInfo.phone) line(`Tel: ${this.companyInfo.phone}`);
+    line(`E-Mail: ${this.companyInfo.email}`);
+    if (this.companyInfo.taxNumber) line(`Steuernummer: ${this.companyInfo.taxNumber}`);
+
+    // Beleg-Titel und Nummer (Rechnungsnummer = fortlaufende Belegnummer)
     doc.fontSize(24)
        .font('Helvetica-Bold')
-       .text('KASSENBON', 350, startY, { align: 'right' });
-    
+       .text('RECHNUNG', 350, startY, { align: 'right' });
+
     doc.fontSize(12)
        .font('Helvetica')
-       .text(`Nr: ${orderData.receipt_number}`, 350, startY + 35, { align: 'right' })
+       .text(`Rechnungs-Nr: ${orderData.receipt_number}`, 350, startY + 35, { align: 'right' })
        .text(`Datum: ${new Date(orderData.created_at).toLocaleDateString('de-DE')}`, 350, startY + 55, { align: 'right' })
        .text(`Zeit: ${new Date(orderData.created_at).toLocaleTimeString('de-DE')}`, 350, startY + 75, { align: 'right' });
 
-    // Trennlinie
-    doc.moveTo(50, startY + 120)
-       .lineTo(545, startY + 120)
+    // Trennlinie (unter den hoeheren der beiden Bloecke)
+    const lineY = Math.max(y + 6, startY + 120);
+    doc.moveTo(50, lineY)
+       .lineTo(545, lineY)
        .stroke();
-    
-    return startY + 140;
+
+    return lineY + 20;
+  }
+
+  // Adresse robust parsen (Stripe: line1/postal_code | manuell: street/zip).
+  parseAddress(raw) {
+    if (!raw) return null;
+    let a = raw;
+    if (typeof raw === 'string') {
+      try { a = JSON.parse(raw); } catch (e) { return null; }
+    }
+    if (!a || typeof a !== 'object') return null;
+    const street = a.street || a.line1 || '';
+    const line2 = a.line2 || '';
+    const zip = a.zip || a.postal_code || a.postalCode || '';
+    const city = a.city || '';
+    const country = a.country || '';
+    if (!street && !zip && !city) return null;
+    return { street, line2, zip, city, country };
   }
 
   addCustomerInfo(doc, orderData) {
     const startY = 210;
-    
-    doc.fontSize(14)
+
+    // Leistungsempfaenger = Rechnungsadresse (§ 14 UStG). Faellt auf Lieferadresse
+    // zurueck, falls keine separate Rechnungsadresse vorliegt.
+    const billing = this.parseAddress(orderData.billing_address) ||
+                    this.parseAddress(orderData.shipping_address);
+    const shipping = this.parseAddress(orderData.shipping_address);
+
+    doc.fontSize(12)
        .font('Helvetica-Bold')
-       .text('Kundeninformationen:', 50, startY);
-    
+       .text('Rechnungsempfänger:', 50, startY);
+
     doc.fontSize(11)
        .font('Helvetica');
+    let y = startY + 22;
+    const put = (x, txt) => { if (txt) { doc.text(txt, x, y); y += 16; } };
+    doc.text(orderData.customer_name || '', 50, y); y += 16;
+    if (billing) {
+      put(50, billing.street);
+      put(50, billing.line2);
+      put(50, `${billing.zip} ${billing.city}`.trim());
+      put(50, billing.country);
+    }
+    put(50, `E-Mail: ${orderData.customer_email}`);
+    if (orderData.customer_phone) put(50, `Telefon: ${orderData.customer_phone}`);
 
-    // Kunde
-    doc.text(`Name: ${orderData.customer_name}`, 50, startY + 25);
-    doc.text(`E-Mail: ${orderData.customer_email}`, 50, startY + 45);
-    
-    if (orderData.customer_phone) {
-      doc.text(`Telefon: ${orderData.customer_phone}`, 50, startY + 65);
+    // Lieferadresse nur zeigen, wenn sie von der Rechnungsadresse abweicht.
+    if (shipping) {
+      const differs = !billing ||
+        shipping.street !== billing.street || shipping.zip !== billing.zip ||
+        shipping.city !== billing.city || shipping.country !== billing.country;
+      if (differs) {
+        doc.fontSize(12).font('Helvetica-Bold').text('Lieferadresse:', 300, startY);
+        doc.fontSize(11).font('Helvetica');
+        let ys = startY + 22;
+        const puts = (txt) => { if (txt) { doc.text(txt, 300, ys); ys += 16; } };
+        puts(orderData.customer_name);
+        puts(shipping.street);
+        puts(shipping.line2);
+        puts(`${shipping.zip} ${shipping.city}`.trim());
+        puts(shipping.country);
+      }
     }
 
-    // Lieferadresse
-    if (orderData.shipping_address) {
-      const address = JSON.parse(orderData.shipping_address);
-      doc.fontSize(12)
-         .font('Helvetica-Bold')
-         .text('Lieferadresse:', 300, startY + 25);
-      
-      doc.fontSize(11)
-         .font('Helvetica')
-         .text(address.street || '', 300, startY + 45)
-         .text(`${address.zip || ''} ${address.city || ''}`, 300, startY + 65)
-         .text(address.country || '', 300, startY + 85);
-    }
-
-    // Trennlinie
-    doc.moveTo(50, startY + 110)
-       .lineTo(545, startY + 110)
-       .stroke();
-    
-    return startY + 130;
+    // Trennlinie unter dem hoeheren Block
+    const lineY = Math.max(y + 6, startY + 110);
+    doc.moveTo(50, lineY).lineTo(545, lineY).stroke();
+    return lineY + 20;
   }
 
   addOrderItems(doc, orderData) {
@@ -247,12 +290,7 @@ class ReceiptGenerator {
       currentY += 20;
     }
 
-    // MwSt (19%)
-    const taxRate = 0.19;
-    const taxAmount = orderData.tax_amount || (orderData.total_amount * taxRate / (1 + taxRate));
-    doc.text(`MwSt. (19%):`, 350, currentY);
-    doc.text(`€ ${taxAmount.toFixed(2)}`, 490, currentY, { align: 'right' });
-    currentY += 20;
+    // Kleinunternehmer § 19 UStG -> KEINE Umsatzsteuer ausweisen.
 
     // Trennlinie
     doc.moveTo(350, currentY)
@@ -260,12 +298,20 @@ class ReceiptGenerator {
        .stroke();
     currentY += 10;
 
-    // Gesamtsumme
+    // Gesamtsumme (= Endbetrag, ohne gesonderten USt-Ausweis)
     doc.fontSize(14)
        .font('Helvetica-Bold');
-    doc.text('Gesamtsumme:', 350, currentY);
+    doc.text('Gesamtbetrag:', 350, currentY);
     doc.text(`€ ${orderData.total_amount.toFixed(2)}`, 490, currentY, { align: 'right' });
-    currentY += 30;
+    currentY += 26;
+
+    // Pflicht-Hinweis Kleinunternehmer
+    doc.fontSize(9)
+       .font('Helvetica')
+       .fillColor('#444444')
+       .text(this.smallBusinessNote, 300, currentY, { width: 245, align: 'right' })
+       .fillColor('#000000');
+    currentY += 24;
 
     // Zahlungsmethode
     doc.fontSize(11)
@@ -293,7 +339,7 @@ class ReceiptGenerator {
        .text(orderData.order_id, 50, startY + 35);
 
     // Tracking-URL
-    const trackingUrl = `${this.companyInfo.website}/tracking/${orderData.order_id}`;
+    const trackingUrl = `https://${this.companyInfo.website}/tracking/${orderData.order_id}`;
     doc.fontSize(9)
        .font('Helvetica')
        .text('Verfolgen Sie Ihre Bestellung:', 50, startY + 55)
@@ -309,10 +355,10 @@ class ReceiptGenerator {
        .font('Helvetica')
        .fillColor('#666666')
        .text('Vielen Dank für Ihren Einkauf!', 50, startY + 95, { align: 'center', width: 495 })
-       .text('Dieser Kassenbon dient als Kaufbeleg. Bitte bewahren Sie ihn für eventuelle Rückfragen auf.', 
-             50, startY + 110, { align: 'center', width: 495 })
+       .text('Diese Rechnung dient als Kaufbeleg und ist 10 Jahre aufzubewahren. ' + this.smallBusinessNote,
+             50, startY + 108, { align: 'center', width: 495 })
        .text(`Erstellt am ${new Date().toLocaleString('de-DE')} | ${this.companyInfo.name} | ${this.companyInfo.website}`,
-             50, startY + 125, { align: 'center', width: 495 });
+             50, startY + 128, { align: 'center', width: 495 });
   }
 
   getPaymentMethodText(method) {
@@ -339,10 +385,23 @@ class ReceiptGenerator {
     return statuses[status] || status || 'Unbekannt';
   }
 
+  // Adresse als HTML-Zeilen (Kleinunternehmer: keine USt).
+  addressToHTML(addr, name) {
+    const a = this.parseAddress(addr);
+    if (!a) return name ? `<p style="margin:2px 0;">${name}</p>` : '';
+    const parts = [name, a.street, a.line2, `${a.zip} ${a.city}`.trim(), a.country]
+      .filter(Boolean)
+      .map(p => `<p style="margin:2px 0;">${p}</p>`);
+    return parts.join('');
+  }
+
   // HTML-Version für E-Mail
   generateHTMLReceipt(orderData) {
-    const taxRate = 0.19;
-    const taxAmount = orderData.tax_amount || (orderData.total_amount * taxRate / (1 + taxRate));
+    const billingHTML = this.addressToHTML(
+      orderData.billing_address || orderData.shipping_address, orderData.customer_name
+    );
+    const stNr = this.companyInfo.taxNumber
+      ? `<p style="color: #666; margin: 5px 0;">Steuernummer: ${this.companyInfo.taxNumber}</p>` : '';
 
     const itemsHTML = orderData.items.map((item, index) => `
       <tr>
@@ -370,16 +429,17 @@ class ReceiptGenerator {
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 30px;">
       <h1 style="color: #333; margin: 0;">${this.companyInfo.name}</h1>
-      <p style="color: #666; margin: 5px 0;">${this.companyInfo.address}, ${this.companyInfo.city}</p>
-      <p style="color: #666; margin: 5px 0;">Tel: ${this.companyInfo.phone} | E-Mail: ${this.companyInfo.email}</p>
+      <p style="color: #666; margin: 5px 0;">${this.companyInfo.owner ? 'Inhaber: ' + this.companyInfo.owner + ' &middot; ' : ''}${this.companyInfo.address}, ${this.companyInfo.city}</p>
+      <p style="color: #666; margin: 5px 0;">${this.companyInfo.phone ? 'Tel: ' + this.companyInfo.phone + ' | ' : ''}E-Mail: ${this.companyInfo.email}</p>
+      ${stNr}
     </div>
 
-    <!-- Kassenbon Info -->
+    <!-- Rechnung Info -->
     <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-      <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">KASSENBON</h2>
+      <h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">RECHNUNG</h2>
       <div style="display: flex; justify-content: space-between;">
         <div>
-          <p><strong>Kassenbon-Nr:</strong> ${orderData.receipt_number}</p>
+          <p><strong>Rechnungs-Nr:</strong> ${orderData.receipt_number}</p>
           <p><strong>Bestell-Nr:</strong> ${orderData.order_id}</p>
         </div>
         <div style="text-align: right;">
@@ -389,12 +449,12 @@ class ReceiptGenerator {
       </div>
     </div>
 
-    <!-- Kundeninfo -->
+    <!-- Rechnungsempfaenger -->
     <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-      <h3 style="color: #333;">Kundeninformationen</h3>
-      <p><strong>Name:</strong> ${orderData.customer_name}</p>
-      <p><strong>E-Mail:</strong> ${orderData.customer_email}</p>
-      ${orderData.customer_phone ? `<p><strong>Telefon:</strong> ${orderData.customer_phone}</p>` : ''}
+      <h3 style="color: #333;">Rechnungsempfänger</h3>
+      ${billingHTML}
+      <p style="margin:2px 0;"><strong>E-Mail:</strong> ${orderData.customer_email}</p>
+      ${orderData.customer_phone ? `<p style="margin:2px 0;"><strong>Telefon:</strong> ${orderData.customer_phone}</p>` : ''}
     </div>
 
     <!-- Artikel -->
@@ -430,13 +490,12 @@ class ReceiptGenerator {
           <td style="text-align: right; padding: 5px;">€ ${orderData.shipping_cost.toFixed(2)}</td>
         </tr>
         ` : ''}
-        <tr>
-          <td style="text-align: right; padding: 5px;"><strong>MwSt. (19%):</strong></td>
-          <td style="text-align: right; padding: 5px;">€ ${taxAmount.toFixed(2)}</td>
-        </tr>
         <tr style="border-top: 2px solid #333;">
-          <td style="text-align: right; padding: 10px; font-size: 18px;"><strong>Gesamtsumme:</strong></td>
+          <td style="text-align: right; padding: 10px; font-size: 18px;"><strong>Gesamtbetrag:</strong></td>
           <td style="text-align: right; padding: 10px; font-size: 18px; color: #007bff;"><strong>€ ${orderData.total_amount.toFixed(2)}</strong></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="text-align: right; padding: 5px; color: #666; font-size: 12px;">${this.smallBusinessNote}</td>
         </tr>
       </table>
       
@@ -450,14 +509,14 @@ class ReceiptGenerator {
     <div style="text-align: center; margin-top: 30px; padding: 20px; background: #007bff; color: white; border-radius: 8px;">
       <h3>Vielen Dank für Ihren Einkauf!</h3>
       <p>Verfolgen Sie Ihre Bestellung online:</p>
-      <a href="${this.companyInfo.website}/tracking/${orderData.order_id}" style="color: white; text-decoration: underline;">
+      <a href="https://${this.companyInfo.website}/tracking/${orderData.order_id}" style="color: white; text-decoration: underline;">
         ${this.companyInfo.website}/tracking/${orderData.order_id}
       </a>
     </div>
 
     <div style="text-align: center; margin-top: 20px; color: #666; font-size: 12px;">
-      <p>Dieser Kassenbon dient als Kaufbeleg. Bitte bewahren Sie ihn für eventuelle Rückfragen auf.</p>
-      <p>${this.companyInfo.name} | ${this.companyInfo.taxId} | ${this.companyInfo.website}</p>
+      <p>Diese Rechnung dient als Kaufbeleg und ist 10 Jahre aufzubewahren. ${this.smallBusinessNote}</p>
+      <p>${this.companyInfo.name}${this.companyInfo.owner ? ' &middot; Inhaber: ' + this.companyInfo.owner : ''} &middot; ${this.companyInfo.website}</p>
     </div>
   </div>
 </body>

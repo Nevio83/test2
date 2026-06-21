@@ -36,28 +36,7 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 2. Belegvorhalte­pflichten prüfen 🟡
-
-**Frage:** Sind die Kassenbons/Rechnungen so aufgebaut, dass sie den deutschen steuerlichen
-Belegvorhalte­pflichten entsprechen?
-
-**Prüfpunkte (§14 UStG + GoBD):**
-- Vollständiger Name + Anschrift des leistenden Unternehmens (Maios)
-- Vollständiger Name + Anschrift des Leistungsempfängers (Käufer)
-- Steuer­nummer oder USt-IdNr. des Ausstellers
-- Ausstellungsdatum + fortlaufende Rechnungsnummer
-- Menge + handelsübliche Bezeichnung der gelieferten Gegenstände
-- Netto-Entgelt, anzuwendender Steuersatz, Steuer­betrag, Brutto-Betrag
-- Bei Kleinbetragsrechnungen (≤ 250 €): vereinfachte Pflichtangaben ausreichend
-- Aufbewahrungsfrist: 10 Jahre (Rechnungen müssen maschinell lesbar archiviert sein)
-
-**Aufgabe:** `receipt-generator.js` + HTML-Beleg-Template prüfen ob alle Pflichtfelder
-vorhanden sind. Fehlende Felder ergänzen. Prüfen ob Rechnungsnummern fortlaufend und
-lückenlos sind (Spalte in `receipts`-Tabelle). Gegebenenfalls Hinweis in Datenschutz/AGB.
-
----
-
-## 3. Produktseiten nach Produktnamen umbenennen 🟢
+## 2. Produktseiten nach Produktnamen umbenennen 🟢
 
 **Ist-Stand:** Produktseiten heißen `produkte/produkt-10.html`, `produkt-11.html` … `produkt-50.html`
 (~45 Dateien). URLs sind technisch (ID-basiert), nicht sprechend.
