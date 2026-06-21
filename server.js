@@ -1626,11 +1626,14 @@ app.get('/a29715347575/api/views/top-countries', async (req, res) => {
   }
 });
 
+// Erlaubte Zeitraum-Filter fuer die Dashboard-Diagramme
+const TIMESERIES_RANGES = ['7d', '30d', '12m', 'all'];
+const parseRange = (q) => (TIMESERIES_RANGES.includes(q) ? q : '30d');
+
 // Admin: Zeitreihe fuer den Chart (Aufrufe/Besucher)
 app.get('/a29715347575/api/views/timeseries', async (req, res) => {
   try {
-    const days = Math.min(parseInt(req.query.days) || 14, 90);
-    res.json(await dbOperations.getViewsTimeseries(days));
+    res.json(await dbOperations.getViewsTimeseries(parseRange(req.query.range)));
   } catch (error) {
     console.error('Zeitreihen-Fehler:', error.message);
     res.status(500).json({ error: 'Zeitreihe nicht verfuegbar' });
@@ -1640,8 +1643,7 @@ app.get('/a29715347575/api/views/timeseries', async (req, res) => {
 // Admin: Zeitreihe fuer Bestellungen + Umsatz (treibt das umschaltbare Dashboard-Chart)
 app.get('/a29715347575/api/orders/timeseries', async (req, res) => {
   try {
-    const days = Math.min(parseInt(req.query.days) || 14, 90);
-    res.json(await dbOperations.getOrdersTimeseries(days));
+    res.json(await dbOperations.getOrdersTimeseries(parseRange(req.query.range)));
   } catch (error) {
     console.error('Bestell-Zeitreihen-Fehler:', error.message);
     res.status(500).json({ error: 'Zeitreihe nicht verfuegbar' });

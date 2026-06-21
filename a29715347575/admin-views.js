@@ -47,19 +47,32 @@
     }
   }
 
-  // ── Umschaltbares Diagramm ────────────────────────────────────────
-  // Jede Kachel mit data-chart="<mode>" schaltet das Chart auf diese Ansicht.
-  // Drei Modi: Aufrufe (Standard), Bestellungen, Umsatz — je 14 Tage.
+  // ── Umschaltbares Diagramm mit Zeitraum-Filter ────────────────────
+  // Jede Kachel (data-chart) hat ihr eigenes Diagramm; die Buttongruppe
+  // #chart-range schaltet den Zeitraum fuer ALLE Diagramme um.
   let currentMode = 'views-day';
+  let currentRange = '30d';
   const _seriesCache = {}; // url -> rows (vermeidet Re-Fetch beim Hin-/Herschalten)
 
-  function fmtDay(r) {
-    const d = new Date(r.day);
-    return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
-  }
+  // Zeitraum-Optionen: Tagesraster fuer kurze, Monatsraster fuer lange Zeitraeume.
+  const RANGES = {
+    '7d': { label: '7 Tage', gran: 'day' },
+    '30d': { label: 'Letzter Monat', gran: 'day' },
+    '12m': { label: '1 Jahr', gran: 'month' },
+    'all': { label: 'Gesamt', gran: 'month' }
+  };
+  const DEFAULT_RANGE = '30d';
 
-  const VIEWS_URL = 'api/views/timeseries?days=14';
-  const ORDERS_URL = 'api/orders/timeseries?days=14';
+  const VIEWS_BASE = 'api/views/timeseries';
+  const ORDERS_BASE = 'api/orders/timeseries';
+
+  // X-Achsen-Label je nach Raster (Tag: TT.MM, Monat: Mon. JJ)
+  function fmtLabel(r, gran) {
+    const d = new Date(r.day);
+    return gran === 'month'
+      ? d.toLocaleDateString('de-DE', { month: 'short', year: '2-digit' })
+      : d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+  }
 
   // Hex-Farbe -> rgba mit Alpha (fuer halbtransparente Flaechen)
   function hexA(hex, a) {
@@ -87,65 +100,63 @@
     };
   }
 
-  // Einreihiges Liniendiagramm
-  function line(rows, label, data, color) {
-    return { labels: rows.map(fmtDay), datasets: [ds(label, data, color)] };
+  // Eine Datenreihe als Array (Labels werden zentral in renderChart gesetzt)
+  function single(label, data, color) {
+    return [ds(label, data, color)];
   }
 
   // Jede Kachel hat ihren eigenen Modus (1 Box = 1 Diagramm).
+  // metric = Kennzahl, agg = 'day' (pro Bucket) | 'cum' (kumuliert),
+  // base = Endpoint, build = liefert die Chart.js-Datasets.
   const CHART_MODES = {
     // ── Aufrufe & Besucher ──
     'views-day': {
-      title: 'Aufrufe pro Tag (14 Tage)',
-      url: VIEWS_URL,
-      build: (r) => line(r, 'Aufrufe', r.map(x => x.views), '#667eea')
+      metric: 'Aufrufe', agg: 'day', base: VIEWS_BASE,
+      build: (r) => single('Aufrufe', r.map(x => x.views), '#667eea')
     },
     'unique-day': {
-      title: 'Eindeutige Besucher pro Tag (14 Tage)',
-      url: VIEWS_URL,
-      build: (r) => line(r, 'Eindeutige Besucher', r.map(x => x.unique_views), '#28a745')
+      metric: 'Eindeutige Besucher', agg: 'day', base: VIEWS_BASE,
+      build: (r) => single('Eindeutige Besucher', r.map(x => x.unique_views), '#28a745')
     },
     'traffic-day': {
-      title: 'Aufrufe & Besucher pro Tag (14 Tage)',
-      url: VIEWS_URL,
-      build: (r) => ({
-        labels: r.map(fmtDay),
-        datasets: [
-          ds('Aufrufe', r.map(x => x.views), '#667eea'),
-          ds('Eindeutige Besucher', r.map(x => x.unique_views), '#28a745')
-        ]
-      })
+      metric: 'Aufrufe & Besucher', agg: 'day', base: VIEWS_BASE,
+      build: (r) => [
+        ds('Aufrufe', r.map(x => x.views), '#667eea'),
+        ds('Eindeutige Besucher', r.map(x => x.unique_views), '#28a745')
+      ]
     },
     'views-cum': {
-      title: 'Aufrufe kumuliert (14 Tage)',
-      url: VIEWS_URL,
-      build: (r) => line(r, 'Aufrufe kumuliert', cumsum(r.map(x => x.views)), '#6f42c1')
+      metric: 'Aufrufe', agg: 'cum', base: VIEWS_BASE,
+      build: (r) => single('Aufrufe kumuliert', cumsum(r.map(x => x.views)), '#6f42c1')
     },
     // ── Bestellungen & Umsatz ──
     'orders-cum': {
-      title: 'Bestellungen kumuliert (14 Tage)',
-      url: ORDERS_URL,
-      build: (r) => line(r, 'Bestellungen kumuliert', cumsum(r.map(x => x.orders)), '#0d6efd')
+      metric: 'Bestellungen', agg: 'cum', base: ORDERS_BASE,
+      build: (r) => single('Bestellungen kumuliert', cumsum(r.map(x => x.orders)), '#0d6efd')
     },
     'revenue-cum': {
-      title: 'Umsatz kumuliert (14 Tage, €)',
-      url: ORDERS_URL,
-      isCurrency: true,
-      build: (r) => line(r, 'Umsatz kumuliert', cumsum(r.map(x => x.revenue)), '#198754')
+      metric: 'Umsatz', agg: 'cum', base: ORDERS_BASE, isCurrency: true,
+      build: (r) => single('Umsatz kumuliert', cumsum(r.map(x => x.revenue)), '#198754')
     },
     'orders-day': {
-      title: 'Bestellungen pro Tag (14 Tage)',
-      url: ORDERS_URL,
-      build: (r) => line(r, 'Bestellungen', r.map(x => x.orders), '#fd7e14')
+      metric: 'Bestellungen', agg: 'day', base: ORDERS_BASE,
+      build: (r) => single('Bestellungen', r.map(x => x.orders), '#fd7e14')
     },
     'pending-day': {
-      title: 'Offene Bestellungen pro Tag (14 Tage)',
-      url: ORDERS_URL,
-      build: (r) => line(r, 'Offene Bestellungen', r.map(x => x.pending), '#dc3545')
+      metric: 'Offene Bestellungen', agg: 'day', base: ORDERS_BASE,
+      build: (r) => single('Offene Bestellungen', r.map(x => x.pending), '#dc3545')
     }
   };
 
   const DEFAULT_MODE = 'views-day';
+
+  // Titel = Kennzahl + Raster (pro Tag/Monat bzw. kumuliert) + Zeitraum-Label
+  function buildTitle(cfg) {
+    const per = RANGES[currentRange].gran === 'month' ? 'pro Monat' : 'pro Tag';
+    let base = cfg.agg === 'cum' ? (cfg.metric + ' kumuliert') : (cfg.metric + ' ' + per);
+    if (cfg.isCurrency) base += ' (€)';
+    return base + ' · ' + RANGES[currentRange].label;
+  }
 
   async function fetchSeries(url) {
     if (_seriesCache[url]) return _seriesCache[url];
@@ -163,12 +174,14 @@
   async function renderChart(mode) {
     const cfg = CHART_MODES[mode] || CHART_MODES[DEFAULT_MODE];
     currentMode = (CHART_MODES[mode] ? mode : DEFAULT_MODE);
-    setText('chart-title', cfg.title);
+    setText('chart-title', buildTitle(cfg));
     highlightActiveCard(currentMode);
 
     try {
-      const rows = await fetchSeries(cfg.url);
-      const built = cfg.build(rows);
+      const gran = RANGES[currentRange].gran;
+      const rows = await fetchSeries(cfg.base + '?range=' + currentRange);
+      const datasets = cfg.build(rows);
+      const labels = rows.map(r => fmtLabel(r, gran));
 
       const ctx = document.getElementById('views-chart');
       if (!ctx || typeof Chart === 'undefined') return;
@@ -177,7 +190,7 @@
       const isCurrency = !!cfg.isCurrency;
       viewsChart = new Chart(ctx, {
         type: 'line',
-        data: { labels: built.labels, datasets: built.datasets },
+        data: { labels, datasets },
         options: {
           responsive: true,
           plugins: {
@@ -206,6 +219,21 @@
   function attachCardClicks() {
     document.querySelectorAll('.stats-card[data-chart]').forEach(card => {
       card.addEventListener('click', () => renderChart(card.dataset.chart));
+    });
+  }
+
+  // Zeitraum-Buttons: setzen currentRange und rendern das aktuelle Diagramm neu
+  function attachRangeButtons() {
+    const group = document.getElementById('chart-range');
+    if (!group) return;
+    const buttons = group.querySelectorAll('button[data-range]');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!RANGES[btn.dataset.range]) return;
+        currentRange = btn.dataset.range;
+        buttons.forEach(b => b.classList.toggle('active', b === btn));
+        renderChart(currentMode);
+      });
     });
   }
 
@@ -260,9 +288,11 @@
   }
 
   function init() {
+    currentRange = DEFAULT_RANGE;
     loadStats();
-    renderChart(DEFAULT_MODE); // Standard-Ansicht: Aufrufe pro Tag
+    attachRangeButtons();      // Zeitraum-Filter (7T / Monat / Jahr / Gesamt)
     attachCardClicks();        // Kachel-Klicks schalten das Diagramm um
+    renderChart(DEFAULT_MODE); // Standard-Ansicht: Aufrufe pro Tag, letzter Monat
     loadTopPages();
     loadTopCountries();
     // Live-Zahl regelmäßig aktualisieren
