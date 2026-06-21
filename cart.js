@@ -1,3 +1,15 @@
+// Geraetetyp aus dem User-Agent (rein informativ fuer die Geraete-Conversion).
+function detectDeviceType() {
+    try {
+        const ua = navigator.userAgent || '';
+        if (/iPad|Tablet|PlayBook|Silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) return 'Tablet';
+        if (/Mobi|iPhone|Android.*Mobile|Windows Phone/i.test(ua)) return 'Mobil';
+        return 'Desktop';
+    } catch (e) {
+        return null;
+    }
+}
+
 // Liefert die SEO-Slug-URL einer Produktseite (root-relativ). Sucht den Slug im
 // localStorage-Cache 'allProducts'; Fallback = alte ID-URL.
 function cartProductHref(id) {
@@ -963,11 +975,12 @@ window.handleCheckout = async function() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 
-                cart, 
+            body: JSON.stringify({
+                cart,
                 country,
                 discount: discountData,
-                customerInfo: customerInfo
+                customerInfo: customerInfo,
+                device: detectDeviceType() // rein informativ (Geraete-Conversion)
             })
         });
         

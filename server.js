@@ -287,7 +287,9 @@ app.post('/api/create-checkout-session', async (req, res) => {
     return res.status(503).json({ error: 'Payment system not configured. Please set up Stripe API key.' });
   }
   
-  const { cart, country, discount, customerInfo } = req.body;
+  const { cart, country, discount, customerInfo, device } = req.body;
+  // Geraet rein informativ (fuer Geraete-Conversion). Beeinflusst Zahlung/Betrag nicht.
+  const deviceTag = typeof device === 'string' ? device.slice(0, 16) : null;
   
   // Validiere Eingaben
   if (!cart || !Array.isArray(cart) || cart.length === 0) {
@@ -371,7 +373,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
     // Erweiterte Stripe Checkout-Konfiguration für maiosshop.com
     const sessionConfig = {
       payment_method_types: ['card'], // Nur Kreditkarten für maximale Kompatibilität
-      
+
+      // Session-Metadaten (rein informativ) – im Webhook auslesbar.
+      metadata: deviceTag ? { device: deviceTag } : {},
+
       payment_intent_data: {
         description: 'Einkauf bei Maios',
         capture_method: 'automatic',
@@ -541,6 +546,7 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         total_amount: fullSession.amount_total / 100,
         currency: fullSession.currency.toUpperCase(),
         notes: `Stripe Payment ID: ${session.payment_intent}`,
+        device: fullSession.metadata?.device || null,
         items: fullSession.line_items.data.map(item => ({
           product_id: item.price.product,
           product_name: item.description,
@@ -1883,6 +1889,29 @@ app.get('/a29715347575/api/insights/exit-pages', async (req, res) => {
   } catch (error) {
     console.error('Ausstiegsseiten-Fehler:', error.message);
     res.status(500).json({ error: 'Ausstiegsseiten nicht verfuegbar' });
+  }
+});
+
+// Geraete-Conversion: Besucher- vs. Kaeuferanteil je Geraet
+app.get('/a29715347575/api/insights/device-conversion', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getDeviceConversion(days));
+  } catch (error) {
+    console.error('Geraete-Conversion-Fehler:', error.message);
+    res.status(500).json({ error: 'Geraete-Conversion nicht verfuegbar' });
+  }
+});
+
+// PLZ-Regionen der Kaeufer (aus Bestelladressen)
+app.get('/a29715347575/api/insights/regions', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    const limit = Math.min(parseInt(req.query.limit) || 15, 50);
+    res.json(await dbOperations.getPostalRegions(days, limit));
+  } catch (error) {
+    console.error('PLZ-Regionen-Fehler:', error.message);
+    res.status(500).json({ error: 'PLZ-Regionen nicht verfuegbar' });
   }
 });
 

@@ -155,7 +155,9 @@
       getJSON('api/insights/hourly' + q),
       getJSON('api/insights/weekday' + q),
       getJSON('api/views/entry-pages' + q),
-      getJSON('api/insights/exit-pages' + q)
+      getJSON('api/insights/exit-pages' + q),
+      getJSON('api/insights/device-conversion' + q),
+      getJSON('api/insights/regions' + q)
     ]);
     const val = (i) => (results[i].status === 'fulfilled' ? results[i].value : null);
 
@@ -196,6 +198,39 @@
       valText: (r) => r.exits + ' Ausstiege',
       cls: () => 'warn', emptyText: 'Noch keine Ausstiegsdaten.'
     });
+
+    renderDeviceConversion(val(10) || []);
+    barList(el('regions'), val(11) || [], {
+      label: (r) => (r.country && r.country !== '??' ? r.country + ' · ' : '') + 'PLZ ' + r.region + '…',
+      value: (r) => r.orders,
+      valText: (r) => r.orders + ' Bestellung' + (r.orders === 1 ? '' : 'en'),
+      cls: () => 'ok',
+      emptyText: 'Noch keine Bestellungen mit PLZ im Zeitraum.'
+    });
+  }
+
+  // Geräte-Conversion: Besucher-Anteil vs. Käufer-Anteil je Gerät.
+  function renderDeviceConversion(rows) {
+    const node = el('device-conversion');
+    if (!rows || !rows.length) { empty(node, 'Noch keine Geräte-/Kaufdaten im Zeitraum.'); return; }
+    const totV = rows.reduce((s, r) => s + (r.visitors || 0), 0);
+    const totB = rows.reduce((s, r) => s + (r.buyers || 0), 0);
+    node.innerHTML = rows.map((r) => {
+      const vShare = totV ? Math.round((r.visitors / totV) * 100) : 0;
+      const bShare = totB ? Math.round((r.buyers / totB) * 100) : 0;
+      const worse = totB && totV && bShare < vShare - 5;
+      return '<div class="bar-row">' +
+        '<div class="bar-top"><span class="bar-label">' + esc(r.device) +
+          (worse ? ' <span class="pill">konvertiert schwächer</span>' : '') + '</span>' +
+        '<span class="bar-val">' + r.buyers + ' Käufe</span></div>' +
+        '<div class="dc-line"><span class="dc-tag">Besucher</span>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + Math.max(2, vShare) + '%"></div></div>' +
+          '<span class="dc-pct">' + vShare + '%</span></div>' +
+        '<div class="dc-line"><span class="dc-tag">Käufer</span>' +
+          '<div class="bar-track"><div class="bar-fill ' + (worse ? 'warn' : 'ok') + '" style="width:' + Math.max(2, bShare) + '%"></div></div>' +
+          '<span class="dc-pct">' + bShare + '%</span></div>' +
+      '</div>';
+    }).join('');
   }
 
   function attachRange() {

@@ -100,6 +100,8 @@ const SCHEMA = [
   `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS is_returning BOOLEAN DEFAULT false`,
   `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS time_on_page INTEGER`,
   `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS client_view_id TEXT`,
+  // Geraet zur Bestellung (fuer Geraete-Conversion). Rein informativ, optional.
+  `ALTER TABLE orders ADD COLUMN IF NOT EXISTS device TEXT`,
   // Einwilligungs-Log fuer die DSGVO-Auswertung (jede Banner-Entscheidung).
   `CREATE TABLE IF NOT EXISTS user_consent_events (
     id SERIAL PRIMARY KEY,
@@ -227,12 +229,12 @@ const dbOperations = {
     const sql = `INSERT INTO orders (
       order_id, receipt_number, customer_email, customer_name, customer_phone,
       shipping_address, billing_address, payment_method, subtotal,
-      shipping_cost, tax_amount, total_amount, currency, notes
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING id`;
+      shipping_cost, tax_amount, total_amount, currency, notes, device
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`;
     const r = await pool.query(sql, [
       o.order_id, o.receipt_number, o.customer_email, o.customer_name, o.customer_phone,
       o.shipping_address, o.billing_address, o.payment_method, o.subtotal,
-      o.shipping_cost, o.tax_amount, o.total_amount, o.currency, o.notes
+      o.shipping_cost, o.tax_amount, o.total_amount, o.currency, o.notes, o.device || null
     ]);
     return { id: r.rows[0].id, order_id: o.order_id };
   },
@@ -609,6 +611,67 @@ const dbOperations = {
        ) t
        GROUP BY path ORDER BY exits DESC LIMIT $1`,
       [limit, String(days)]
+    );
+    return r.rows;
+  },
+
+  // Geraete-Conversion: Besucher (Sessions je Geraet, nur Consent 'all') vs.
+  // Kaeufer (Bestellungen je Geraet). Das Frontend bildet daraus den Anteils-Vergleich
+  // (kauft z.B. Mobil unterdurchschnittlich?). Absolutwerte sind wegen Consent-Gate
+  // nicht 1:1 vergleichbar -> Anteile sind die belastbare Aussage.
+  getDeviceConversion: async (days = 30) => {
+    const r = await pool.query(
+      `SELECT d.device,
+              COALESCE(v.visitors,0)::int AS visitors,
+              COALESCE(b.buyers,0)::int AS buyers
+       FROM (
+         SELECT DISTINCT COALESCE(NULLIF(device,''),'Unbekannt') AS device FROM (
+           SELECT device FROM orders
+             WHERE device IS NOT NULL AND created_at > NOW() - ($1 || ' days')::interval
+           UNION
+           SELECT device FROM page_views
+             WHERE device IS NOT NULL AND created_at > NOW() - ($1 || ' days')::interval
+         ) u
+       ) d
+       LEFT JOIN (
+         SELECT COALESCE(NULLIF(device,''),'Unbekannt') AS device, COUNT(DISTINCT session_id) AS visitors
+         FROM page_views WHERE device IS NOT NULL AND created_at > NOW() - ($1 || ' days')::interval
+         GROUP BY 1
+       ) v ON v.device = d.device
+       LEFT JOIN (
+         SELECT COALESCE(NULLIF(device,''),'Unbekannt') AS device, COUNT(*) AS buyers
+         FROM orders WHERE device IS NOT NULL AND created_at > NOW() - ($1 || ' days')::interval
+         GROUP BY 1
+       ) b ON b.device = d.device
+       ORDER BY buyers DESC, visitors DESC`,
+      [String(days)]
+    );
+    return r.rows;
+  },
+
+  // PLZ-Regionen der Kaeufer: aus den Bestelladressen (postal_code/zip), gruppiert
+  // nach PLZ-Leitregion (erste 2 Ziffern) + Land. Regex statt JSON-Cast -> robust
+  // gegen Alt-/Nicht-JSON-Adressen. Rein aggregiert, keine Einzeladresse.
+  getPostalRegions: async (days = 30, limit = 15) => {
+    const r = await pool.query(
+      `SELECT country, region, COUNT(*)::int AS orders
+       FROM (
+         SELECT
+           COALESCE(
+             (regexp_match(billing_address, '"country"\\s*:\\s*"([^"]+)"'))[1],
+             (regexp_match(shipping_address, '"country"\\s*:\\s*"([^"]+)"'))[1], '??'
+           ) AS country,
+           left(COALESCE(
+             (regexp_match(billing_address, '"(?:postal_code|zip)"\\s*:\\s*"([^"]+)"'))[1],
+             (regexp_match(shipping_address, '"(?:postal_code|zip)"\\s*:\\s*"([^"]+)"'))[1], ''
+           ), 2) AS region
+         FROM orders
+         WHERE created_at > NOW() - ($1 || ' days')::interval
+       ) t
+       WHERE region <> ''
+       GROUP BY country, region
+       ORDER BY orders DESC LIMIT $2`,
+      [String(days), limit]
     );
     return r.rows;
   },

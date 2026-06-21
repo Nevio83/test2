@@ -36,6 +36,10 @@
         .bar-fill { height: 100%; background: #667eea; border-radius: 4px; }
         .bar-fill.warn { background: #dc3545; }
         .bar-fill.ok { background: #28a745; }
+        .dc-line { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .dc-line .dc-tag { font-size: 0.72rem; color: #868e96; width: 58px; flex: none; }
+        .dc-line .bar-track { flex: 1; }
+        .dc-line .dc-pct { font-size: 0.78rem; font-weight: 600; color: #495057; width: 38px; text-align: right; flex: none; }
         /* Stunden/Tage Mini-Chart */
         .tchart { display: flex; align-items: flex-end; gap: 3px; height: 110px; }
         .tchart .tcol { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
@@ -136,6 +140,26 @@
                     <h5><i class="bi bi-window"></i> Browser</h5>
                     <div class="sub">Nur Besucher mit voller Einwilligung.</div>
                     <div id="browsers"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Geräte-Conversion -->
+            <div class="col-lg-6">
+                <div class="panel">
+                    <h5><i class="bi bi-phone-flip"></i> Geräte-Conversion</h5>
+                    <div class="sub">Kaufen z.&nbsp;B. Handy-Nutzer schlechter? Besucher- vs. Käufer-Anteil je Gerät.</div>
+                    <div id="device-conversion"></div>
+                    <div class="note mt-2">Anteils-Vergleich ist belastbar; Absolutzahlen sind wegen Einwilligungs-Gate nicht 1:1 vergleichbar.</div>
+                </div>
+            </div>
+            <!-- PLZ-Regionen -->
+            <div class="col-lg-6">
+                <div class="panel">
+                    <h5><i class="bi bi-pin-map"></i> PLZ-Regionen der Käufer</h5>
+                    <div class="sub">Wo clustern Käufer? PLZ-Leitregion (erste 2 Ziffern) aus den Bestellungen – für gezielte Ads.</div>
+                    <div id="regions"></div>
                 </div>
             </div>
         </div>
