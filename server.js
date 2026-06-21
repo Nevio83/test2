@@ -1728,6 +1728,16 @@ app.get('/a29715347575/api/views/stats', async (req, res) => {
   }
 });
 
+// Admin: Aufrufe + eindeutige Besucher fuer den gewaehlten Zeitraum (Kacheln)
+app.get('/a29715347575/api/views/totals', async (req, res) => {
+  try {
+    res.json(await dbOperations.getViewTotals(parseRange(req.query.range)));
+  } catch (error) {
+    console.error('Aufruf-Summen-Fehler:', error.message);
+    res.status(500).json({ error: 'Aufruf-Summen nicht verfuegbar' });
+  }
+});
+
 // Admin: meistbesuchte Seiten
 app.get('/a29715347575/api/views/top-pages', async (req, res) => {
   try {

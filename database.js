@@ -692,6 +692,18 @@ const dbOperations = {
     };
   },
 
+  // Aufrufe + eindeutige Besucher fuer einen Zeitraum (7d/30d/12m/all).
+  // unique = COUNT(DISTINCT session_id) ueber den ganzen Zeitraum (nicht Summe der
+  // Tageswerte) -> korrekt entdoppelt. Treibt die zeitraum-abhaengigen Kacheln.
+  getViewTotals: async (range = '30d') => {
+    const r = await pool.query(
+      `SELECT COUNT(*)::int AS views,
+              COUNT(DISTINCT session_id)::int AS unique_views
+       FROM page_views WHERE TRUE ${analysisRangeFilter(range, 'created_at')}`
+    );
+    return r.rows[0] || { views: 0, unique_views: 0 };
+  },
+
   getTopPages: async (limit = 10, days = 30) => {
     const r = await pool.query(
       `SELECT path, COUNT(*)::int AS views, COUNT(DISTINCT session_id)::int AS unique_views

@@ -32,8 +32,8 @@
   async function loadStats() {
     try {
       const s = await getJSON('api/views/stats');
-      setText('views-today', s.todayViews ?? 0);
-      setText('views-unique', s.uniqueToday ?? 0);
+      // 'Aufrufe' + 'Eindeutige Besucher' folgen dem Zeitraum-Filter (loadRangeTotals);
+      // hier nur die zeitraum-unabhaengigen Kacheln aktualisieren (Live + Gesamt).
       setText('views-live', s.liveNow ?? 0);
       setText('views-total', s.totalViews ?? 0);
 
@@ -233,7 +233,22 @@
     });
   }
 
-  // Zeitraum-Buttons: setzen currentRange und rendern das aktuelle Diagramm neu
+  // Kacheln 'Aufrufe' + 'Eindeutige Besucher' an den gewaehlten Zeitraum anpassen
+  // (Wert + Label), statt fix 'heute' zu zeigen.
+  async function loadRangeTotals() {
+    try {
+      const t = await getJSON('api/views/totals?range=' + currentRange);
+      const lbl = (RANGES[currentRange] || RANGES[DEFAULT_RANGE]).label;
+      setText('views-today', t.views ?? 0);
+      setText('views-unique', t.unique_views ?? 0);
+      setText('views-today-label', 'Aufrufe · ' + lbl);
+      setText('views-unique-label', 'Eindeutige Besucher · ' + lbl);
+    } catch (e) {
+      console.warn('⚠️ Zeitraum-Summen konnten nicht geladen werden:', e.message);
+    }
+  }
+
+  // Zeitraum-Buttons: setzen currentRange, rendern das Diagramm UND die Kacheln neu
   function attachRangeButtons() {
     const group = document.getElementById('chart-range');
     if (!group) return;
@@ -244,6 +259,7 @@
         currentRange = btn.dataset.range;
         buttons.forEach(b => b.classList.toggle('active', b === btn));
         renderChart(currentMode);
+        loadRangeTotals();
       });
     });
   }
@@ -418,6 +434,7 @@
   function init() {
     currentRange = DEFAULT_RANGE;
     loadStats();
+    loadRangeTotals();         // Kacheln 'Aufrufe'/'Eindeutige' fuer den Default-Zeitraum
     attachRangeButtons();      // Zeitraum-Filter (7T / Monat / Jahr / Gesamt)
     attachCardClicks();        // Kachel-Klicks schalten das Diagramm um
     renderChart(DEFAULT_MODE); // Standard-Ansicht: Aufrufe pro Tag, letzter Monat
