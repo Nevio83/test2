@@ -1565,7 +1565,8 @@ app.get('/api/receipt/statistics', async (req, res) => {
 // werden auf sinnvolle Laengen gekuerzt.
 app.post('/api/track/view', async (req, res) => {
   try {
-    const { path: viewPath, referrer, country, session_id } = req.body || {};
+    const body = req.body || {};
+    const { path: viewPath, referrer, country, session_id } = body;
     if (!viewPath || typeof viewPath !== 'string') {
       return res.status(400).json({ error: 'path erforderlich' });
     }
@@ -1574,17 +1575,66 @@ app.post('/api/track/view', async (req, res) => {
       return res.json({ success: true, skipped: true });
     }
     const trim = (v, n) => (typeof v === 'string' ? v.slice(0, n) : null);
+    // Nur die vom Client gemeldete Einwilligung 'all' erlaubt erweiterte Felder.
+    const level = body.consent_level === 'all' ? 'all' : 'essential';
+    const isAll = level === 'all';
     await dbOperations.addPageView({
       path: trim(viewPath, 512),
       referrer: trim(referrer, 512),
       country: trim(country, 64),
       user_agent: trim(req.headers['user-agent'], 256),
-      session_id: trim(session_id, 64)
+      session_id: trim(session_id, 64),
+      consent_level: level,
+      // Zusatzdaten nur bei voller Einwilligung speichern:
+      device: isAll ? trim(body.device, 32) : null,
+      browser: isAll ? trim(body.browser, 32) : null,
+      os: isAll ? trim(body.os, 32) : null,
+      is_entry: isAll ? body.is_entry === true : false,
+      is_returning: isAll ? body.is_returning === true : false,
+      client_view_id: isAll ? trim(body.client_view_id, 64) : null
     });
     res.json({ success: true });
   } catch (error) {
     console.error('⚠️ Tracking-Fehler:', error.message);
     // Tracking darf das Frontend nie stoeren — immer 200 zurueck
+    res.json({ success: false });
+  }
+});
+
+// Oeffentlich: Verweildauer zu einem zuvor gesendeten View nachtragen.
+app.post('/api/track/duration', async (req, res) => {
+  try {
+    const { client_view_id, seconds } = req.body || {};
+    const id = typeof client_view_id === 'string' ? client_view_id.slice(0, 64) : null;
+    const secs = parseInt(seconds, 10);
+    if (!id || !Number.isFinite(secs) || secs < 1 || secs > 7200) {
+      return res.json({ success: false });
+    }
+    await dbOperations.updateViewDuration(id, secs);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('⚠️ Verweildauer-Tracking-Fehler:', error.message);
+    res.json({ success: false });
+  }
+});
+
+// Oeffentlich: Banner-Entscheidung protokollieren (fuer die DSGVO-Auswertung).
+app.post('/api/track/consent', async (req, res) => {
+  try {
+    const { level, session_id, path: p } = req.body || {};
+    if (level !== 'all' && level !== 'essential') {
+      return res.json({ success: false });
+    }
+    const trim = (v, n) => (typeof v === 'string' ? v.slice(0, n) : null);
+    await dbOperations.addConsentEvent({
+      level,
+      session_id: trim(session_id, 64),
+      path: trim(p, 512),
+      user_agent: trim(req.headers['user-agent'], 256)
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('⚠️ Consent-Tracking-Fehler:', error.message);
     res.json({ success: false });
   }
 });
@@ -1623,6 +1673,75 @@ app.get('/a29715347575/api/views/top-countries', async (req, res) => {
   } catch (error) {
     console.error('Top-Laender-Fehler:', error.message);
     res.status(500).json({ error: 'Top-Laender nicht verfuegbar' });
+  }
+});
+
+// Admin: Einwilligungs-Kennzahlen (Cookie-Banner)
+app.get('/a29715347575/api/views/consent', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getConsentStats(days));
+  } catch (error) {
+    console.error('Consent-Statistik-Fehler:', error.message);
+    res.status(500).json({ error: 'Consent-Statistik nicht verfuegbar' });
+  }
+});
+
+// Admin: Geraeteverteilung
+app.get('/a29715347575/api/views/devices', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getDeviceBreakdown(days));
+  } catch (error) {
+    console.error('Geraete-Fehler:', error.message);
+    res.status(500).json({ error: 'Geraeteverteilung nicht verfuegbar' });
+  }
+});
+
+// Admin: Browser-Verteilung
+app.get('/a29715347575/api/views/browsers', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    const limit = Math.min(parseInt(req.query.limit) || 8, 50);
+    res.json(await dbOperations.getBrowserBreakdown(days, limit));
+  } catch (error) {
+    console.error('Browser-Fehler:', error.message);
+    res.status(500).json({ error: 'Browser-Verteilung nicht verfuegbar' });
+  }
+});
+
+// Admin: Einstiegsseiten-Funnel
+app.get('/a29715347575/api/views/entry-pages', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 8, 50);
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getEntryPages(limit, days));
+  } catch (error) {
+    console.error('Einstiegsseiten-Fehler:', error.message);
+    res.status(500).json({ error: 'Einstiegsseiten nicht verfuegbar' });
+  }
+});
+
+// Admin: Verweildauer je Seite
+app.get('/a29715347575/api/views/time-on-page', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(req.query.limit) || 8, 50);
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getTimeOnPage(limit, days));
+  } catch (error) {
+    console.error('Verweildauer-Fehler:', error.message);
+    res.status(500).json({ error: 'Verweildauer nicht verfuegbar' });
+  }
+});
+
+// Admin: Wiederkehrende vs. neue Besucher
+app.get('/a29715347575/api/views/visitor-types', async (req, res) => {
+  try {
+    const days = Math.min(parseInt(req.query.days) || 30, 365);
+    res.json(await dbOperations.getVisitorTypes(days));
+  } catch (error) {
+    console.error('Besuchertypen-Fehler:', error.message);
+    res.status(500).json({ error: 'Besuchertypen nicht verfuegbar' });
   }
 });
 

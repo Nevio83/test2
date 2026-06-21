@@ -90,6 +90,27 @@ const SCHEMA = [
     session_id TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
   )`,
+  // Erweiterte Tracking-Spalten (nur befuellt bei Consent 'all'). ADD COLUMN IF NOT
+  // EXISTS -> idempotent, ersetzt ein Migrationssystem fuer bestehende Installationen.
+  `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS device TEXT`,
+  `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS browser TEXT`,
+  `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS os TEXT`,
+  `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS consent_level TEXT`,
+  `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS is_entry BOOLEAN DEFAULT false`,
+  `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS is_returning BOOLEAN DEFAULT false`,
+  `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS time_on_page INTEGER`,
+  `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS client_view_id TEXT`,
+  // Einwilligungs-Log fuer die DSGVO-Auswertung (jede Banner-Entscheidung).
+  `CREATE TABLE IF NOT EXISTS user_consent_events (
+    id SERIAL PRIMARY KEY,
+    level TEXT NOT NULL,
+    session_id TEXT,
+    path TEXT,
+    user_agent TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_consent_created ON user_consent_events(created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_page_views_client_view ON page_views(client_view_id)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_order_id ON orders(order_id)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(customer_email)`,
   `CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at)`,
@@ -282,13 +303,142 @@ const dbOperations = {
 
   // ── Aufrufe / Besucher-Tracking ──────────────────────────────
   addPageView: async (v) => {
-    const sql = `INSERT INTO page_views (path, referrer, country, user_agent, session_id)
-                 VALUES ($1,$2,$3,$4,$5) RETURNING id`;
+    const sql = `INSERT INTO page_views
+                   (path, referrer, country, user_agent, session_id,
+                    consent_level, device, browser, os, is_entry, is_returning, client_view_id)
+                 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`;
     const r = await pool.query(sql, [
       v.path, v.referrer || null, v.country || null,
-      v.user_agent || null, v.session_id || null
+      v.user_agent || null, v.session_id || null,
+      v.consent_level || null, v.device || null, v.browser || null, v.os || null,
+      v.is_entry === true, v.is_returning === true, v.client_view_id || null
     ]);
     return { id: r.rows[0].id };
+  },
+
+  // Verweildauer (Sekunden) zu einem zuvor gesendeten View nachtragen.
+  updateViewDuration: async (clientViewId, seconds) => {
+    const r = await pool.query(
+      `UPDATE page_views SET time_on_page = $2
+       WHERE client_view_id = $1 AND time_on_page IS NULL`,
+      [clientViewId, seconds]
+    );
+    return { changes: r.rowCount };
+  },
+
+  // Eine Banner-Entscheidung protokollieren (fuer die DSGVO-Auswertung).
+  addConsentEvent: async (c) => {
+    const r = await pool.query(
+      `INSERT INTO user_consent_events (level, session_id, path, user_agent)
+       VALUES ($1,$2,$3,$4) RETURNING id`,
+      [c.level, c.session_id || null, c.path || null, c.user_agent || null]
+    );
+    return { id: r.rows[0].id };
+  },
+
+  // Einwilligungs-Kennzahlen: wie oft 'alle' vs. 'nur notwendige' gewaehlt wurde.
+  getConsentStats: async (days = 30) => {
+    const r = await pool.query(
+      `SELECT level, COUNT(*)::int AS count
+       FROM user_consent_events
+       WHERE created_at > NOW() - ($1 || ' days')::interval
+       GROUP BY level`,
+      [String(days)]
+    );
+    let all = 0, essential = 0;
+    for (const row of r.rows) {
+      if (row.level === 'all') all = row.count;
+      else if (row.level === 'essential') essential = row.count;
+    }
+    const total = all + essential;
+    return { all, essential, total, acceptRate: total ? Math.round((all / total) * 100) : 0 };
+  },
+
+  // Geraeteverteilung (nur Views mit Consent 'all' liefern device).
+  getDeviceBreakdown: async (days = 30) => {
+    const r = await pool.query(
+      `SELECT COALESCE(NULLIF(device,''),'Unbekannt') AS device,
+              COUNT(*)::int AS views,
+              COUNT(DISTINCT session_id)::int AS unique_views
+       FROM page_views
+       WHERE device IS NOT NULL
+         AND created_at > NOW() - ($1 || ' days')::interval
+       GROUP BY COALESCE(NULLIF(device,''),'Unbekannt')
+       ORDER BY views DESC`,
+      [String(days)]
+    );
+    return r.rows;
+  },
+
+  // Browser-Verteilung (nur Views mit Consent 'all').
+  getBrowserBreakdown: async (days = 30, limit = 8) => {
+    const r = await pool.query(
+      `SELECT COALESCE(NULLIF(browser,''),'Unbekannt') AS browser,
+              COUNT(*)::int AS views
+       FROM page_views
+       WHERE browser IS NOT NULL
+         AND created_at > NOW() - ($1 || ' days')::interval
+       GROUP BY COALESCE(NULLIF(browser,''),'Unbekannt')
+       ORDER BY views DESC
+       LIMIT $2`,
+      [String(days), limit]
+    );
+    return r.rows;
+  },
+
+  // Einstiegsseiten-Funnel: ueber welche Seite Besucher einsteigen.
+  getEntryPages: async (limit = 8, days = 30) => {
+    const r = await pool.query(
+      `SELECT path, COUNT(*)::int AS entries,
+              COUNT(DISTINCT session_id)::int AS unique_entries
+       FROM page_views
+       WHERE is_entry = true
+         AND created_at > NOW() - ($2 || ' days')::interval
+       GROUP BY path
+       ORDER BY entries DESC
+       LIMIT $1`,
+      [limit, String(days)]
+    );
+    return r.rows;
+  },
+
+  // Durchschnittliche Verweildauer je Seite (Sekunden).
+  getTimeOnPage: async (limit = 8, days = 30) => {
+    const r = await pool.query(
+      `SELECT path,
+              ROUND(AVG(time_on_page))::int AS avg_seconds,
+              COUNT(*)::int AS samples
+       FROM page_views
+       WHERE time_on_page IS NOT NULL
+         AND created_at > NOW() - ($2 || ' days')::interval
+       GROUP BY path
+       HAVING COUNT(*) >= 1
+       ORDER BY avg_seconds DESC
+       LIMIT $1`,
+      [limit, String(days)]
+    );
+    return r.rows;
+  },
+
+  // Wiederkehrende vs. neue Besucher (nur aus Views mit Consent 'all' bestimmbar).
+  getVisitorTypes: async (days = 30) => {
+    const r = await pool.query(
+      `SELECT
+         COUNT(DISTINCT session_id) FILTER (WHERE is_returning = true)::int AS returning,
+         COUNT(DISTINCT session_id) FILTER (WHERE is_returning = false)::int AS fresh
+       FROM page_views
+       WHERE consent_level = 'all'
+         AND created_at > NOW() - ($1 || ' days')::interval`,
+      [String(days)]
+    );
+    const row = r.rows[0] || { returning: 0, fresh: 0 };
+    const total = (row.returning || 0) + (row.fresh || 0);
+    return {
+      returning: row.returning || 0,
+      fresh: row.fresh || 0,
+      total,
+      returnRate: total ? Math.round((row.returning / total) * 100) : 0
+    };
   },
 
   getViewStats: async () => {

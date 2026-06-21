@@ -289,6 +289,101 @@
             </div>
         </div>
 
+        <!-- Einwilligungen & Besucher-Insights (Cookie-Consent) -->
+        <div class="d-flex align-items-center justify-content-between mt-4 mb-3">
+            <h4 class="mb-0"><i class="bi bi-shield-check"></i> Einwilligungen &amp; Besucher-Insights</h4>
+            <span class="badge bg-light text-muted border">Letzte 30 Tage</span>
+        </div>
+        <p class="text-muted small mb-3">
+            <i class="bi bi-info-circle"></i>
+            Geräte-, Browser- und Verweildauer-Daten entstehen nur bei Besuchern, die im
+            Cookie-Banner „Alle akzeptieren" gewählt haben (DSGVO-konform).
+        </p>
+        <div class="row g-3">
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-number" id="consent-all">0</div>
+                            <div class="text-muted">Alle akzeptiert</div>
+                        </div>
+                        <i class="bi bi-check2-circle fs-1 text-success"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-number" id="consent-essential">0</div>
+                            <div class="text-muted">Nur notwendige</div>
+                        </div>
+                        <i class="bi bi-shield-lock fs-1 text-muted"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-number" id="consent-rate">0%</div>
+                            <div class="text-muted">Zustimmungsrate</div>
+                        </div>
+                        <i class="bi bi-percent fs-1 text-muted"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stats-number" id="visitors-returning">0%</div>
+                            <div class="text-muted">Wiederkehrende Besucher</div>
+                        </div>
+                        <i class="bi bi-arrow-repeat fs-1 text-muted"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-1">
+            <div class="col-lg-6">
+                <div class="stats-card">
+                    <h6 class="text-muted mb-3"><i class="bi bi-phone"></i> Geräteverteilung (30 Tage)</h6>
+                    <ul class="list-group list-group-flush" id="device-breakdown">
+                        <li class="list-group-item text-muted small">Lädt…</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="stats-card">
+                    <h6 class="text-muted mb-3"><i class="bi bi-browser-chrome"></i> Browser (30 Tage)</h6>
+                    <ul class="list-group list-group-flush" id="browser-breakdown">
+                        <li class="list-group-item text-muted small">Lädt…</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="stats-card">
+                    <h6 class="text-muted mb-3"><i class="bi bi-box-arrow-in-right"></i> Einstiegsseiten (30 Tage)</h6>
+                    <ul class="list-group list-group-flush" id="entry-pages">
+                        <li class="list-group-item text-muted small">Lädt…</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="stats-card">
+                    <h6 class="text-muted mb-3"><i class="bi bi-clock-history"></i> Ø Verweildauer je Seite (30 Tage)</h6>
+                    <ul class="list-group list-group-flush" id="time-on-page">
+                        <li class="list-group-item text-muted small">Lädt…</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Suchleiste & Filter -->
         <div class="search-bar">
             <div class="row">

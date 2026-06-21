@@ -298,6 +298,123 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  // ── Einwilligungen & Besucher-Insights (Cookie-Consent) ──────────
+  function fmtDuration(sec) {
+    sec = Number(sec) || 0;
+    if (sec < 60) return sec + ' s';
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return m + ' min' + (s ? ' ' + s + ' s' : '');
+  }
+
+  // Liste mit Wert-Badge + Anteilsbalken (Anteil an der Gesamtsumme).
+  function renderList(el, rows, opts) {
+    if (!el) return;
+    if (!rows || !rows.length) {
+      el.innerHTML = '<li class="list-group-item text-muted small">Noch keine Daten</li>';
+      return;
+    }
+    var total = rows.reduce(function (a, r) { return a + (Number(opts.value(r)) || 0); }, 0) || 1;
+    el.innerHTML = rows.map(function (r) {
+      var val = Number(opts.value(r)) || 0;
+      var pct = Math.round((val / total) * 100);
+      var label = opts.label(r);
+      return '<li class="list-group-item px-0 py-2">' +
+        '<div class="d-flex justify-content-between align-items-center mb-1">' +
+          '<span class="text-truncate" style="max-width:70%;" title="' + escapeHtml(label) + '">' +
+            (opts.icon ? opts.icon(r) + ' ' : '') + escapeHtml(label) +
+          '</span>' +
+          '<span class="badge bg-primary rounded-pill">' + escapeHtml(opts.display(r)) + '</span>' +
+        '</div>' +
+        '<div class="progress" style="height:5px;">' +
+          '<div class="progress-bar" role="progressbar" style="width:' + pct + '%;" ' +
+            'aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"></div>' +
+        '</div>' +
+      '</li>';
+    }).join('');
+  }
+
+  async function loadConsent() {
+    try {
+      const c = await getJSON('api/views/consent?days=30');
+      setText('consent-all', c.all ?? 0);
+      setText('consent-essential', c.essential ?? 0);
+      setText('consent-rate', (c.acceptRate ?? 0) + '%');
+    } catch (e) {
+      console.warn('⚠️ Consent-Stats:', e.message);
+    }
+  }
+
+  async function loadVisitorTypes() {
+    try {
+      const v = await getJSON('api/views/visitor-types?days=30');
+      setText('visitors-returning', (v.returnRate ?? 0) + '%');
+    } catch (e) {
+      console.warn('⚠️ Besuchertypen:', e.message);
+    }
+  }
+
+  var DEVICE_ICONS = { 'Desktop': '🖥️', 'Mobil': '📱', 'Tablet': '📲' };
+  async function loadDevices() {
+    const el = document.getElementById('device-breakdown');
+    if (!el) return;
+    try {
+      const rows = await getJSON('api/views/devices?days=30');
+      renderList(el, rows, {
+        label: function (r) { return r.device; },
+        value: function (r) { return r.views; },
+        display: function (r) { return r.views + ' Aufrufe'; },
+        icon: function (r) { return DEVICE_ICONS[r.device] || '•'; }
+      });
+    } catch (e) {
+      el.innerHTML = '<li class="list-group-item text-danger small">Fehler beim Laden</li>';
+    }
+  }
+
+  async function loadBrowsers() {
+    const el = document.getElementById('browser-breakdown');
+    if (!el) return;
+    try {
+      const rows = await getJSON('api/views/browsers?days=30&limit=8');
+      renderList(el, rows, {
+        label: function (r) { return r.browser; },
+        value: function (r) { return r.views; },
+        display: function (r) { return String(r.views); }
+      });
+    } catch (e) {
+      el.innerHTML = '<li class="list-group-item text-danger small">Fehler beim Laden</li>';
+    }
+  }
+
+  async function loadEntryPages() {
+    const el = document.getElementById('entry-pages');
+    if (!el) return;
+    try {
+      const rows = await getJSON('api/views/entry-pages?days=30&limit=8');
+      renderList(el, rows, {
+        label: function (r) { return r.path; },
+        value: function (r) { return r.entries; },
+        display: function (r) { return String(r.entries); }
+      });
+    } catch (e) {
+      el.innerHTML = '<li class="list-group-item text-danger small">Fehler beim Laden</li>';
+    }
+  }
+
+  async function loadTimeOnPage() {
+    const el = document.getElementById('time-on-page');
+    if (!el) return;
+    try {
+      const rows = await getJSON('api/views/time-on-page?days=30&limit=8');
+      renderList(el, rows, {
+        label: function (r) { return r.path; },
+        value: function (r) { return r.avg_seconds; },
+        display: function (r) { return fmtDuration(r.avg_seconds); }
+      });
+    } catch (e) {
+      el.innerHTML = '<li class="list-group-item text-danger small">Fehler beim Laden</li>';
+    }
+  }
+
   function init() {
     currentRange = DEFAULT_RANGE;
     loadStats();
@@ -306,6 +423,13 @@
     renderChart(DEFAULT_MODE); // Standard-Ansicht: Aufrufe pro Tag, letzter Monat
     loadTopPages();
     loadTopCountries();
+    // Einwilligungen & Besucher-Insights (Cookie-Consent)
+    loadConsent();
+    loadVisitorTypes();
+    loadDevices();
+    loadBrowsers();
+    loadEntryPages();
+    loadTimeOnPage();
     // Live-Zahl regelmäßig aktualisieren
     setInterval(loadStats, 30000);
   }

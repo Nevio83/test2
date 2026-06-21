@@ -32,11 +32,11 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="../index.html" style="font-size: 2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; pointer-events: auto;" onclick="window.location.href='../index.html'; return false;">
-                <img src="../images/logo.jpg" alt="Maios Logo" style="height: 70px; width: auto;">
+            <a class="navbar-brand fw-bold" href="/index.html" style="font-size: 2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; pointer-events: auto;" onclick="window.location.href='/index.html'; return false;">
+                <img src="/images/logo.jpg" alt="Maios Logo" style="height: 70px; width: auto;">
                 <span style="font-weight: 900; letter-spacing: -0.5px; font-size: 2rem;">MAIOS</span>
             </a>
-            <a href="../index.html" class="btn btn-outline-primary">
+            <a href="/index.html" class="btn btn-outline-primary">
                 <i class="bi bi-arrow-left"></i> Zurück zum Shop
             </a>
         </div>
@@ -101,9 +101,15 @@
                             <li><strong>Rechtliche Verpflichtung (Art. 6 Abs. 1 lit. c DSGVO):</strong> Zur Erfüllung steuerrechtlicher Aufbewahrungspflichten</li>
                         </ul>
 
-                        <h2 class="h4 mb-3 mt-4">6. Cookies</h2>
-                        <p>Unsere Website verwendet Cookies. Das sind kleine Textdateien, die Ihr Browser automatisch erstellt und die auf Ihrem Endgerät gespeichert werden. Cookies richten keinen Schaden an.</p>
-                        <p>Wir nutzen Cookies, um unser Angebot nutzerfreundlich zu gestalten. Einige Cookies bleiben auf Ihrem Endgerät gespeichert, bis Sie diese löschen. Sie ermöglichen es uns, Ihren Browser beim nächsten Besuch wiederzuerkennen.</p>
+                        <h2 class="h4 mb-3 mt-4">6. Cookies &amp; Einwilligung</h2>
+                        <p>Unsere Website verwendet Cookies und vergleichbare Technologien (z.&nbsp;B. localStorage). Das sind kleine Textdateien bzw. Einträge, die Ihr Browser auf Ihrem Endgerät speichert. Cookies richten keinen Schaden an.</p>
+                        <p>Beim ersten Besuch erscheint ein <strong>Cookie-Banner</strong>, über den Sie selbst entscheiden. Nicht notwendige Auswertungen erfolgen <strong>erst nach Ihrer aktiven Zustimmung</strong>:</p>
+                        <ul>
+                            <li><strong>„Nur notwendige":</strong> Es werden ausschließlich technisch erforderliche Daten und eine anonyme, sitzungsbezogene Reichweitenmessung verarbeitet (aufgerufene Seite, ungefähres Land, verweisende Domain). Es findet keine geräteübergreifende Wiedererkennung statt.</li>
+                            <li><strong>„Alle akzeptieren":</strong> Zusätzlich werten wir Ihren Besuch zur Verbesserung unseres Angebots aus. Dabei verarbeiten wir Geräteart (Desktop/Mobil/Tablet), Browser und Betriebssystem, Einstiegsseite, Verweildauer je Seite, ob Sie wiederkehren sowie eine zufällige, nicht-personenbezogene Besucher-Kennung. Es werden <strong>keine</strong> Klarnamen, IP-Adressen oder Daten an Dritte (z.&nbsp;B. Google Analytics) übermittelt – die Auswertung läuft ausschließlich auf unseren eigenen Systemen.</li>
+                        </ul>
+                        <p><strong>Speicherung der Einwilligung:</strong> Ihre Entscheidung wird in Ihrem Browser (localStorage) gespeichert und ist <strong>12 Monate</strong> gültig; danach fragen wir erneut. <strong>Rechtsgrundlage:</strong> Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;a DSGVO (Einwilligung) bzw. § 25 Abs.&nbsp;1 TTDSG.</p>
+                        <p><strong>Widerruf:</strong> Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen oder ändern – klicken Sie dazu auf das Cookie-Symbol (🍪) unten links auf jeder Seite.</p>
                         <p>Weitere Informationen finden Sie in unserer <a href="cookies.html">Cookie-Richtlinie</a>.</p>
 
                         <h2 class="h4 mb-3 mt-4">7. Ihre Rechte</h2>
@@ -175,5 +181,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../widerruf-button.js?v=1.0" defer></script>
+    <script src="../cookie-consent.js?v=1.0" defer></script>
+    <script src="../view-tracker.js?v=1.0" defer></script>
 </body>
 </html>

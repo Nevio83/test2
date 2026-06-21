@@ -1,0 +1,155 @@
+/**
+ * cookie-consent.css — Styles fuer den eigenen Cookie-Consent-Banner.
+ *
+ * Bewusst framework-unabhaengig (eigener .maios-cc-* Namespace), damit der Banner
+ * auf Tailwind-Seiten (index.html) wie auf Bootstrap-Seiten (cart/Produkte/infos)
+ * identisch aussieht und nichts ueberschrieben wird.
+ */
+
+:root {
+  --maios-cc-accent: #667eea;
+  --maios-cc-accent-2: #764ba2;
+}
+
+/* ── Banner (unten fixiert) ─────────────────────────────────────── */
+.maios-cc-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(140%);
+  width: min(960px, calc(100% - 24px));
+  z-index: 2147483000; /* ueber allem, auch ueber Chat-Widgets */
+  background: #ffffff;
+  color: #1f2330;
+  border: 1px solid rgba(102, 126, 234, 0.25);
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(20, 22, 40, 0.28);
+  padding: 20px 22px;
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease, visibility 0.4s;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+.maios-cc-banner.maios-cc-show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.maios-cc-inner {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.maios-cc-icon {
+  font-size: 30px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.maios-cc-text {
+  flex: 1 1 360px;
+  min-width: 260px;
+}
+.maios-cc-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #14162a;
+}
+.maios-cc-desc {
+  font-size: 0.9rem;
+  margin: 0;
+  color: #4a4f63;
+}
+.maios-cc-desc a {
+  color: var(--maios-cc-accent);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.maios-cc-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.maios-cc-btn {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 11px 20px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+.maios-cc-btn:active { transform: translateY(1px); }
+
+.maios-cc-btn-accept {
+  background: linear-gradient(135deg, var(--maios-cc-accent), var(--maios-cc-accent-2));
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+}
+.maios-cc-btn-accept:hover { box-shadow: 0 8px 22px rgba(102, 126, 234, 0.5); }
+
+.maios-cc-btn-essential {
+  background: #eef0f6;
+  color: #2b2f45;
+}
+.maios-cc-btn-essential:hover { background: #e2e5f0; }
+
+/* ── Wiederoeffnen-Button (Widerruf der Einwilligung) ───────────── */
+.maios-cc-reopen {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 2147482000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  background: #ffffff;
+  color: var(--maios-cc-accent);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(20, 22, 40, 0.2);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  line-height: 1;
+}
+.maios-cc-reopen:hover { transform: scale(1.08); box-shadow: 0 8px 24px rgba(20, 22, 40, 0.3); }
+.maios-cc-reopen.maios-cc-visible { display: flex; }
+
+/* ── Dunkles Farbschema (falls Seite es nutzt) ──────────────────── */
+@media (prefers-color-scheme: dark) {
+  .maios-cc-banner {
+    background: #1d1f2b;
+    color: #eef0f6;
+    border-color: rgba(118, 75, 162, 0.4);
+  }
+  .maios-cc-title { color: #ffffff; }
+  .maios-cc-desc { color: #c3c7d6; }
+  .maios-cc-btn-essential { background: #2c2f40; color: #eef0f6; }
+  .maios-cc-btn-essential:hover { background: #363a4f; }
+  .maios-cc-reopen { background: #1d1f2b; }
+}
+
+/* ── Mobil ──────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .maios-cc-banner { padding: 16px; bottom: 10px; }
+  .maios-cc-inner { gap: 14px; }
+  .maios-cc-actions { width: 100%; }
+  .maios-cc-btn { flex: 1 1 auto; text-align: center; }
+  .maios-cc-icon { display: none; }
+}
