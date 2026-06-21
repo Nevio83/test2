@@ -10,21 +10,34 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 
 ---
 
-## 0. Aktueller Stand (2026-06-20)
+## 0. Aktueller Stand (2026-06-21)
 
 - **Live:** **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet auf Apex) +
   Fallback `https://maios-shop.onrender.com`. Free-Plan (schläft nach 15 Min → erster Aufruf
-  ~50 s). Repo `Nevio83/test2`, nur Branch `main`, Auto-Deploy bei Push.
+  ~50 s; Fix in `CLAUDE-CODE.md` §2). Repo `Nevio83/test2`, nur Branch `main`, Auto-Deploy bei Push.
 - **Datenbank:** **Neon-Postgres** (dauerhaft, kostenlos) via `DATABASE_URL`. SQLite ist Geschichte.
-- **Hosting-Hinweis:** Netlify ist komplett raus (Domain zeigt jetzt auf Render, Repo entkoppelt,
-  `netlify/`-Ordner gelöscht). **Render = einzige Quelle der Wahrheit.**
-- **Aufrufe-Tracking** ist live: Tabelle `page_views`, `POST /api/track/view`, Client
-  `view-tracker.js` (index/cart/Produktseiten), Dashboard-Kacheln + Chart in `orders.html`.
-- **Stripe-Webhook:** zeigt auf `https://maiosshop.com/stripe-webhook` (Nutzlast „Snapshot",
-  Events `checkout.session.completed` + `payment_intent.succeeded`). Offene Aufgaben in `CLAUDE-CODE.md`.
-- **Admin-Dashboard:** `…/a29715347575/orders.html`, Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
-- **Wo anfangen:** offene Aufgaben + nächste Schritte stehen in `CLAUDE-CODE.md` (§5),
-  Design-Themen in `CLAUDE-DESIGN.md`. Großes Repo → erst `/graphify .` (§10).
+- **Hosting:** Netlify ist komplett raus (Domain auf Render, Repo entkoppelt, `netlify/`-Ordner
+  **gelöscht**). **Render = einzige Quelle der Wahrheit.**
+- **SEO-URLs:** Produktseiten haben **sprechende Slug-URLs** (`/produkte/<slug>.html`, z.B.
+  `elektrischer-wasserspender-fuer-schreibtisch.html`). `products.json` hat ein Feld `slug`;
+  `server.js` leitet alte ID-URLs (`/produkte/produkt-NN.html`) per **301** auf den Slug um.
+  Produkt-ID steht zur Laufzeit in `<body data-product-id="NN">` (siehe §4).
+- **Cookie-Consent (DSGVO):** Eigener Banner `cookie-consent.js/.css` (kein Drittanbieter),
+  Zwei-Stufen-Einwilligung (Alle / Nur notwendige), `window.MaiosConsent`-API, 12-Monats-TTL.
+- **Aufrufe-/Besucher-Tracking** (consent-gated): `page_views` + `user_consent_events`,
+  `POST /api/track/view|duration|consent`, Client `view-tracker.js`; Besucher-Insights
+  (Gerät/Browser/OS, Einstiegsseiten, Verweildauer, Wiederkehrer) im Dashboard `orders.html`.
+- **Belege rechtskonform:** Kleinunternehmer **§19 UStG** (kein USt-Ausweis + Pflichthinweis),
+  fortlaufende Rechnungsnummer (`RE-000001`, Postgres-Sequence), echte Firmendaten (ENV),
+  **GoBD**-Archiv: Beleg-PDF zusätzlich per Mail an `RECEIPT_ARCHIVE_EMAIL` (Renders FS ist flüchtig).
+- **EU-Widerruf:** `infos/widerruf.html` (Belehrung + Online-Formular), `POST /api/widerruf`,
+  `widerruf-button.js` (Footer-Button auf allen Seiten).
+- **Stripe-Webhook:** zeigt auf `https://maiosshop.com/stripe-webhook` (Events
+  `checkout.session.completed` + `payment_intent.succeeded`).
+- **Admin-Dashboard:** `…/a29715347575/orders.html` (+ `produkt-analyse.html`), Login via
+  `ADMIN_USER`/`ADMIN_PASSWORD`.
+- **Wo anfangen:** offene Aufgaben stehen in `CLAUDE-CODE.md`, Design-Themen in
+  `CLAUDE-DESIGN.md`. Großes Repo → erst `/graphify .` (§10).
 
 ---
 
@@ -39,9 +52,8 @@ Automatisierung** (`Marketing/`), die TikTok-Creatives generiert.
 **Stack:** Node.js + Express (Backend) · Vanilla JS + Bootstrap/Tailwind (Frontend) ·
 PostgreSQL/Neon (Bestellungen) · **Render** (Hosting, live) · Python (Marketing-Pipelines).
 
-> ⚠️ Produktion läuft komplett aus `server.js` auf **Render**. Der alte **`netlify/`-Pfad ist
-> Altbestand** (nur 2 Functions, divergiert) und soll entfernt werden (`CLAUDE-CODE.md` §2).
-> Bei Checkout-/Zahlungsänderungen ist **`server.js` die Quelle der Wahrheit** (siehe §4).
+> ⚠️ Produktion läuft komplett aus `server.js` auf **Render**. Der alte `netlify/`-Pfad wurde
+> **entfernt** — `server.js` ist die alleinige Quelle der Wahrheit für Checkout/Zahlung (siehe §4).
 
 ---
 
@@ -69,26 +81,26 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 ### Backend (Node/Express)
 | Datei | Zweck |
 |---|---|
-| `server.js` | Express-Server, **alle** API-Routen, Stripe-Webhook, CJ-Auto-Bestellung, Retouren-Logik. ~1665 Zeilen, Herzstück. |
+| `server.js` | Express-Server, **alle** API-Routen, Stripe-Webhook, CJ-Auto-Bestellung, Retouren-Logik, Tracking-/Consent-Endpoints, 301-Slug-Redirects. ~1980 Zeilen, Herzstück. |
 | `database.js` | **PostgreSQL** (`pg`) — Schema + `dbOperations` (orders, order_items, receipts, order_tracking). Verbindung via `DATABASE_URL` (Neon). |
 | `cj-dropshipping-api.js` | Vollständiger CJ-API-Client (Produkte, Orders, Logistik, Disputes, Returns) mit Fallback. |
 | `cj-fallback-system.js` | Lokaler Fallback, wenn CJ-API nicht erreichbar ist. |
-| `cj-payment-calculator.js` | Berechnet CJ-Kosten + Gewinn-Split (auch als Netlify-Function dupliziert). |
-| `price-validator.js` | **Serverseitige Preis-/Mengenvalidierung** gegen `products.json`. Von `server.js` UND der Netlify-Checkout-Function genutzt. Schützt vor Preis-Manipulation. |
+| `cj-payment-calculator.js` | Berechnet CJ-Kosten + Gewinn-Split. |
+| `price-validator.js` | **Serverseitige Preis-/Mengenvalidierung** gegen `products.json` (in `server.js`). Schützt vor Preis-Manipulation. |
 | `exchange-rate-service.js` | Live-Wechselkurse, Cache, `convertPrice()`. |
 | `shipping-calculator.js` | Pauschale Versandkosten nach Land. |
-| `receipt-generator.js` | PDF-Kassenbon (PDFKit) + HTML-Beleg. |
-| `resend-service.js` | Transaktions-Mails (Bestellbestätigung, Admin-Benachrichtigung) via Resend. |
+| `receipt-generator.js` | **Rechnung** (PDFKit-PDF + HTML), Kleinunternehmer §19 UStG ohne USt-Ausweis, echte Firmendaten aus ENV. |
+| `resend-service.js` | Transaktions-Mails (Bestellbestätigung, Admin-Benachrichtigung, **GoBD-Beleg-Archiv** mit PDF-Anhang) via Resend. |
 | `geolocation-tracker.js` | Standort-/Analytics-Tracking (Backend-Helfer für Dashboard). |
 | `get-cj-token.js`, `test-*.js`, `setup-stripe-*.js` | Einmal-/Hilfsskripte. |
 
 ### Frontend (statisch)
 | Datei | Zweck |
 |---|---|
-| `index.html` (165 KB) | Startseite/Shop. Nutzt **Tailwind (CDN)**. `indexoriginal.html` = alte Version. |
-| `app.js` (192 KB) | Haupt-Frontend-Logik: Produkt-Laden, Suche, Kategorien, Warenkorb, Wishlist. |
-| `cart.html` / `cart.js` (101 KB) / `cart.css` (102 KB) | Warenkorb-Seite + Logik + Styles. Nutzt **Bootstrap**. |
-| `products.json` (64 KB) | **Single Source of Truth** für Produkte: id, Preis, SKU, Farben, Bilder, Bundles. |
+| `index.html` (165 KB) | Startseite/Shop. Nutzt **Tailwind (CDN)**. |
+| `app.js` (192 KB) | Haupt-Frontend-Logik: Produkt-Laden, Suche, Kategorien, Warenkorb, Wishlist. Helper `productHref(id)` baut Slug-URLs. |
+| `cart.html` / `cart.js` (101 KB) / `cart.css` (102 KB) | Warenkorb-Seite + Logik + Styles. Nutzt **Bootstrap**. Helper `cartProductHref(id)` für Slug-URLs. |
+| `products.json` (64 KB) | **Single Source of Truth** für Produkte: id, name, **slug**, Preis, SKU, Farben, Bilder, Bundles. |
 | `color-image-selection.js` / `.css` | Farbvarianten-Auswahl auf Produktseiten. |
 | `bundle-images-final.js` | Bundle-/Set-Bildlogik. |
 | `color-cart-bridge.js` | Brücke Farbauswahl → Warenkorb. |
@@ -98,18 +110,20 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 | `gutschein-system.js` (34 KB) / `gutscheine.html/.css` | Gutschein-/Rabattsystem (localStorage). |
 | `keyboard-shortcuts.js` | Tastenkürzel (Capture-Phase; nur **ein** `app.js`-Include erwartet). |
 | `ai-chat-integration.js` | Tawk.to-Live-Chat + OpenAI-Fallback (standardmäßig inaktiv, Platzhalter-IDs). |
+| `cookie-consent.js/.css` | DSGVO-Banner (Zwei-Stufen-Consent, `window.MaiosConsent`-API). Global eingebunden. |
+| `view-tracker.js` | Consent-gated Aufrufe-/Verweildauer-Tracking → `/api/track/*`. |
+| `widerruf-button.js` | Injiziert EU-Widerrufsbutton (Footer) auf allen Kundenseiten. |
 | `wishlist.html/.css`, `success.html/.css`, `tracking.html`, `location-analytics-dashboard.html` | Weitere Seiten. |
 | `styles.css` (219 KB) | Globale Styles (zusätzlich zu Tailwind/Bootstrap — viel Overlap). |
-| `produkte/produkt-10.html … produkt-50.html` | ~45 einzelne Produktseiten. Nutzen **Bootstrap** + Kategorie-CSS (`elektronik.css`, `haushalt-kueche.css`, `beleuchtung.css`, `koerperpflege-wellness.css`). |
-| `infos/` | Statische Seiten: AGB, Datenschutz, Impressum, Versand, Retouren, Kontakt, Kategorien, Cookies. |
-| `a29715347575/` | Admin-Dashboards (orders, Gutscheine). Jetzt per **HTTP Basic Auth** geschützt (`requireAdminAuth` in `server.js`, ENV `ADMIN_USER`/`ADMIN_PASSWORD`). |
+| `produkte/<slug>.html` | 40 einzelne Produktseiten mit **sprechenden Slug-Dateinamen** (aus `products.json`). Jede trägt `<body data-product-id="NN">`. Nutzen **Bootstrap** + Kategorie-CSS (`elektronik.css`, `haushalt-kueche.css`, `beleuchtung.css`, `koerperpflege-wellness.css`). |
+| `infos/` | Statische Seiten: AGB, Datenschutz, Impressum, Versand, Retouren, Kontakt, Kategorien, Cookies, **Widerruf**. |
+| `a29715347575/` | Admin-Dashboards (orders, Gutscheine, **produkt-analyse**). Per **HTTP Basic Auth** geschützt (`requireAdminAuth` in `server.js`, ENV `ADMIN_USER`/`ADMIN_PASSWORD`). |
 | `karten/` | Kartendaten/Assets für Geo-Dashboard. |
 
 ### Infrastruktur / Daten
 | Pfad | Zweck |
 |---|---|
 | `render.yaml` | **Render-Blueprint** (Live-Hosting, Free): ein Node-Service bedient Frontend + API aus `server.js`. |
-| `netlify.toml`, `netlify/functions/` | **Altbestand** (vor Render). Nur Checkout-Session + Payment-Calc. Zum Entfernen (`CLAUDE-CODE.md` §2). |
 | `Marketing/` | Python-Pipelines (`pipelines/*.py`), eigene `products.json`, chromedriver, Daten/Renders. |
 | `.env`, `Marketing/.env` | Secrets, **gitignored & nicht getrackt**. `.env.example` listet alle Schlüssel; Prod-Werte ins Render-Dashboard. |
 | `*.md` | Betriebs-SOPs (CJ, Retouren, Versand, Kassenbon, Exchange) + die drei Kern-Docs (§11). |
@@ -131,24 +145,28 @@ Kunde legt in Warenkorb (localStorage)
       → Tracking-Eintrag
 ```
 
-### Production = `server.js` auf Render (Netlify = Altbestand)
-- **`server.js`** = vollständiges Express-Backend (Webhook, DB, CJ, Mails, Retouren, ~30 Routen).
-  Läuft **live auf Render** (`npm start`) und lokal mit `npm run dev`. **Maßgeblich.**
-- **`netlify/functions/`** = **alter** Pfad (nur Checkout-Session + Payment-Calc, divergiert:
-  rechnet `item.price` direkt in Cents ohne Währungsumrechnung). Wird nicht mehr genutzt →
-  entfernen (`CLAUDE-CODE.md` §2). Solange er existiert: nur `server.js` ändern.
+### Production = `server.js` auf Render
+- **`server.js`** = vollständiges Express-Backend (Webhook, DB, CJ, Mails, Retouren, Tracking,
+  ~30 Routen). Läuft **live auf Render** (`npm start`) und lokal mit `npm run dev`. **Maßgeblich.**
+- Der alte `netlify/`-Pfad ist **entfernt** — keine doppelte Checkout-Logik mehr.
 
 ### Frontend-State
 Warenkorb & Wishlist liegen in `localStorage` (keine Session). Mehrwährung wird clientseitig
 berechnet. **Quelle der Wahrheit für Beträge ist serverseitig:** `price-validator.js` prüft
-den Warenkorb gegen `products.json` (beide Checkout-Pfade), bevor Stripe-Beträge gebildet
-werden. (Die alte Netlify-Function hatte keine Währungsumrechnung — entfällt mit dem Aufräumen.)
+den Warenkorb gegen `products.json`, bevor Stripe-Beträge gebildet werden.
 
-### Produkt-/Bild-Konvention (nicht brechen!)
-Galerien lesen aus `produkt bilder/<Name> bilder/<Name> <farbe>.jpg`. Ordnerstruktur muss 1:1
-zu `products.json` passen, sonst brechen Galerie/Bundle/Farb-Bridge. SKUs, die mit `ALI`
-beginnen, werden überall außer auf direkten Produkt-URLs herausgefiltert (`app.js`).
-Produkt 21 nutzt „Modell" statt „Farbe".
+### Produkt-URL- & Bild-Konvention (nicht brechen!)
+- **URLs:** Produktseiten heißen `produkte/<slug>.html` (Slug aus `products.json`, root-relativ
+  verlinkt: `/produkte/<slug>.html`). Alte ID-URLs `/produkte/produkt-NN.html` werden in
+  `server.js` per **301** auf den Slug umgeleitet (Map aus `products.json`, vor `express.static`).
+- **Produkt-ID zur Laufzeit:** kommt aus `<body data-product-id="NN">` (nicht mehr aus dem
+  Dateinamen!). `product-gallery-complete.js`, `color-image-selection.js`, `bundle-images-final.js`
+  lesen sie von dort (URL-Regex nur noch als Fallback). Interne Links über `productHref(id)`
+  (app.js) bzw. `cartProductHref(id)` (cart.js) — beide lösen den Slug aus der Produktliste auf.
+- **Bilder:** Galerien lesen aus `produkt bilder/<Name> bilder/<Name> <farbe>.jpg`. Ordnerstruktur
+  muss 1:1 zu `products.json` passen (Name-basiert, **unabhängig vom Slug**), sonst brechen
+  Galerie/Bundle/Farb-Bridge. SKUs mit `ALI`-Präfix werden außer auf direkten Produkt-URLs
+  herausgefiltert (`app.js`). Produkt 21 nutzt „Modell" statt „Farbe".
 
 ---
 
@@ -182,18 +200,20 @@ und Analytics-IDs.
 ## 7. Deployment
 
 **Live auf Render** (Free-Plan): ein Node-Web-Service (`render.yaml`) bedient Frontend +
-komplette API aus `server.js`. URL: https://maios-shop.onrender.com. **Auto-Deploy** bei Push auf
-`main`. Node-Version via `NODE_VERSION`/`.nvmrc` (18.x — EOL-Warnung, später auf 20 heben).
+komplette API aus `server.js`. URL: **https://maiosshop.com** (Fallback
+`https://maios-shop.onrender.com`). **Auto-Deploy** bei Push auf `main`. Node-Version via
+`NODE_VERSION`/`.nvmrc` (18.x — EOL-Warnung, Upgrade auf 20 in `CLAUDE-CODE.md` §3).
 
 - **Datenbank:** Neon-Postgres über `DATABASE_URL` (im Render-Dashboard gesetzt).
 - **Env-Vars:** alle Secrets im **Render-Dashboard → Environment** (Stripe, Resend, CJ,
-  ExchangeRate, `DATABASE_URL`, `ADMIN_USER`/`ADMIN_PASSWORD`) — nicht aus `.env`.
+  ExchangeRate, `DATABASE_URL`, `ADMIN_USER`/`ADMIN_PASSWORD`, Firmendaten/`RECEIPT_ARCHIVE_EMAIL`)
+  — nicht aus `.env`.
 - **Build/Start:** `npm install` → `npm start`. Bei Dependency-Änderungen vorher
   `npm install --package-lock-only`, sonst zieht Render eine veraltete Lock-Datei.
 - **Free-Plan-Haken:** Service schläft nach 15 Min (erster Aufruf ~50 s). Daten bleiben (Neon).
-- **Offen:** Stripe-Webhook im Stripe-Dashboard auf
-  `https://maios-shop.onrender.com/stripe-webhook` zeigen lassen (sonst landen Bestellungen
-  nicht in der DB). Alter `netlify/`-Pfad = Altbestand (§4, entfernen).
+  Abhilfe (Ping-Cron) in `CLAUDE-CODE.md` §2.
+- **Stripe-Webhook:** zeigt im Stripe-Dashboard auf `https://maiosshop.com/stripe-webhook`
+  (erledigt — sonst landen Bestellungen nicht in der DB).
 
 ---
 
@@ -206,6 +226,10 @@ komplette API aus `server.js`. URL: https://maios-shop.onrender.com. **Auto-Depl
   `app.js`-Include (sonst Shortcut-Konflikte).
 - Preise sind in EUR in `products.json`; Umrechnung serverseitig. IDs immer numerisch vergleichen
   (`Number(p.id) === Number(id)`), wie im Bestandscode.
+- **Produkt-URLs:** intern nie `produkt-NN.html` hart verlinken — `productHref(id)` (app.js) /
+  `cartProductHref(id)` (cart.js) bzw. `p.slug` nutzen. Neue Produktseite: Slug in `products.json`
+  setzen, Datei `produkte/<slug>.html` mit `<body data-product-id="NN">` anlegen. Bei umbenanntem
+  Produkt 301-Redirect-Map in `server.js` greift automatisch (liest `slug` aus `products.json`).
 - Zwei CSS-Frameworks im Einsatz (Tailwind auf `index.html`, Bootstrap auf Produkt-/Cart-Seiten)
   — beim Bearbeiten das jeweilige Framework der Seite verwenden.
 - Retouren werden bewusst **manuell** genehmigt. Auto-Approve ist per Flag `RETURNS_AUTO_APPROVE`
