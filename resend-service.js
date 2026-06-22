@@ -216,7 +216,7 @@ class ResendService {
   /**
    * Generische E-Mail senden
    */
-  async sendEmail({ to, subject, html, text, replyTo, attachments }) {
+  async sendEmail({ to, subject, html, text, replyTo, attachments, headers }) {
     try {
       if (!this.resend) {
         console.warn('⚠️ Resend nicht initialisiert');
@@ -240,6 +240,10 @@ class ResendService {
 
       if (Array.isArray(attachments) && attachments.length) {
         emailData.attachments = attachments;
+      }
+
+      if (headers && typeof headers === 'object') {
+        emailData.headers = headers;
       }
 
       const data = await this.resend.emails.send(emailData);
@@ -288,6 +292,76 @@ class ResendService {
       console.error('❌ Beleg-Archivierung Fehler:', error.message);
       return { success: false, error: error.message };
     }
+  }
+
+  /**
+   * Branded Newsletter-Layout (gleiche Optik wie die Bestellbestaetigung).
+   * bodyHtml = freier Inhalt, unsubscribeUrl = Pflicht-Abmeldelink im Footer.
+   */
+  generateNewsletterHTML({ title, bodyHtml, unsubscribeUrl }) {
+    return `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background-color:#f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f5;padding:20px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+        <tr><td style="text-align:center;padding:36px 0;background-color:#000000;">
+          <img src="https://i.imgur.com/KqgoTsN.jpeg" alt="Maios" style="width:140px;height:auto;display:block;margin:0 auto;">
+        </td></tr>
+        ${title ? `<tr><td style="padding:36px 40px 8px 40px;text-align:center;">
+          <h1 style="margin:0;color:#1a1a1a;font-size:26px;font-weight:600;">${title}</h1>
+        </td></tr>` : ''}
+        <tr><td style="padding:16px 40px 36px 40px;color:#444;font-size:16px;line-height:1.6;">
+          ${bodyHtml}
+        </td></tr>
+        <tr><td style="background-color:#1a1a1a;padding:26px 40px;text-align:center;">
+          <p style="margin:0 0 8px 0;color:#ffffff;font-size:16px;font-weight:600;letter-spacing:1px;">MAIOS SHOP</p>
+          <p style="margin:0 0 12px 0;"><a href="https://maiosshop.com" style="color:#28a745;text-decoration:none;">maiosshop.com</a></p>
+          ${unsubscribeUrl ? `<p style="margin:0;color:#888;font-size:12px;line-height:1.5;">
+            Du erhältst diese E-Mail, weil du den Maios-Newsletter abonniert hast.<br>
+            <a href="${unsubscribeUrl}" style="color:#aaa;text-decoration:underline;">Vom Newsletter abmelden</a></p>` : ''}
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+  }
+
+  /**
+   * Double-Opt-In: Bestaetigungsmail mit Klick-Link (DSGVO/UWG).
+   */
+  async sendNewsletterConfirmation(email, confirmUrl) {
+    const body =
+      `<p style="text-align:center;">Fast geschafft! Bitte bestätige deine Anmeldung zum Maios-Newsletter, ` +
+      `damit wir dir Angebote, neue Produkte und Aktionen schicken dürfen.</p>` +
+      `<div style="text-align:center;margin:28px 0;">` +
+        `<a href="${confirmUrl}" style="display:inline-block;background:#28a745;color:#fff;text-decoration:none;` +
+        `padding:14px 32px;border-radius:8px;font-weight:600;font-size:16px;">Anmeldung bestätigen</a>` +
+      `</div>` +
+      `<p style="text-align:center;color:#888;font-size:13px;">Wenn du dich nicht angemeldet hast, ignoriere diese E-Mail einfach – ` +
+      `ohne Bestätigung passiert nichts.</p>`;
+    return this.sendEmail({
+      to: email,
+      subject: 'Bitte bestätige deine Newsletter-Anmeldung',
+      html: this.generateNewsletterHTML({ title: 'Newsletter bestätigen', bodyHtml: body, unsubscribeUrl: null })
+    });
+  }
+
+  /**
+   * Newsletter-Kampagne an einen Empfaenger (mit individuellem Abmeldelink).
+   */
+  async sendNewsletterCampaign({ to, subject, bodyHtml, unsubscribeUrl }) {
+    const html = this.generateNewsletterHTML({ title: '', bodyHtml, unsubscribeUrl });
+    return this.sendEmail({
+      to,
+      subject,
+      html,
+      // RFC 8058: Ein-Klick-Abmeldung -> bessere Zustellbarkeit, weniger Spam-Marker
+      headers: unsubscribeUrl ? { 'List-Unsubscribe': `<${unsubscribeUrl}>` } : undefined
+    });
   }
 
   /**

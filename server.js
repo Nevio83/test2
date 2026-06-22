@@ -1715,6 +1715,97 @@ app.post('/api/track/search', async (req, res) => {
   }
 });
 
+// ── Newsletter (Double-Opt-In) ───────────────────────────────────────
+// Oeffentliche Basis-URL fuer Mail-Links (Render setzt x-forwarded-proto).
+function publicBaseUrl(req) {
+  if (process.env.SITE_URL) return process.env.SITE_URL.replace(/\/+$/, '');
+  const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https').split(',')[0].trim();
+  return `${proto}://${req.get('host')}`;
+}
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+// Oeffentlich: Newsletter-Anmeldung. Speichert 'pending' + schickt Bestaetigungsmail
+// (Double-Opt-In). Erst nach Klick auf den Link gilt die Einwilligung (DSGVO/UWG §7).
+app.post('/api/newsletter/subscribe', async (req, res) => {
+  try {
+    const body = req.body || {};
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 254) : '';
+    if (!email || !EMAIL_RE.test(email)) {
+      return res.status(400).json({ success: false, error: 'Bitte eine gültige E-Mail-Adresse angeben.' });
+    }
+    const sub = await dbOperations.upsertNewsletterSubscriber({
+      email,
+      confirm_token: crypto.randomUUID(),
+      unsubscribe_token: crypto.randomUUID(),
+      source: typeof body.source === 'string' ? body.source.slice(0, 64) : 'popup',
+      consent_ip: (req.headers['x-forwarded-for'] || req.ip || '').toString().split(',')[0].trim().slice(0, 64),
+      user_agent: (req.headers['user-agent'] || '').slice(0, 256)
+    });
+    if (sub.status === 'confirmed') {
+      // Schon bestaetigt -> keine neue Mail, aber dem Nutzer Erfolg melden.
+      return res.json({ success: true, alreadyConfirmed: true, message: 'Du bist bereits angemeldet. Danke!' });
+    }
+    const confirmUrl = `${publicBaseUrl(req)}/api/newsletter/confirm?token=${encodeURIComponent(sub.confirm_token)}`;
+    await emailService.sendNewsletterConfirmation(email, confirmUrl);
+    res.json({ success: true, message: 'Fast geschafft! Bitte bestätige den Link in deiner E-Mail.' });
+  } catch (error) {
+    console.error('⚠️ Newsletter-Anmeldung-Fehler:', error.message);
+    res.status(500).json({ success: false, error: 'Anmeldung fehlgeschlagen, bitte später erneut versuchen.' });
+  }
+});
+
+// Kleine, gebrandete Status-Seite fuer Bestaetigung/Abmeldung (kein User-Input im HTML).
+function newsletterStatusPage(title, message) {
+  return `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${title} · Maios</title>
+<style>body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0d0d0d;color:#fff;
+display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:40px 36px;max-width:440px;margin:16px}
+h1{font-size:22px;margin:0 0 12px}p{color:#bbb;line-height:1.6;margin:0 0 24px}
+a{display:inline-block;background:#28a745;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600}
+.logo{font-size:20px;font-weight:700;letter-spacing:2px;margin-bottom:18px}</style></head>
+<body><div class="card"><div class="logo">MAIOS</div><h1>${title}</h1><p>${message}</p>
+<a href="/">Zum Shop</a></div></body></html>`;
+}
+
+// Oeffentlich: Bestaetigungslink aus der Mail -> Abo aktivieren.
+app.get('/api/newsletter/confirm', async (req, res) => {
+  try {
+    const token = typeof req.query.token === 'string' ? req.query.token : '';
+    const r = await dbOperations.confirmNewsletterSubscriber(token);
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    if (r.ok) {
+      return res.send(newsletterStatusPage('Anmeldung bestätigt 🎉',
+        'Danke! Du erhältst ab sofort unsere Angebote und News. Du kannst dich jederzeit wieder abmelden.'));
+    }
+    return res.send(newsletterStatusPage('Link ungültig oder bereits bestätigt',
+      'Dieser Bestätigungslink ist nicht mehr gültig. Falls du dich bereits bestätigt hast, ist alles in Ordnung.'));
+  } catch (error) {
+    console.error('⚠️ Newsletter-Bestätigung-Fehler:', error.message);
+    res.status(500).set('Content-Type', 'text/html; charset=utf-8')
+      .send(newsletterStatusPage('Etwas ist schiefgelaufen', 'Bitte versuche es später erneut.'));
+  }
+});
+
+// Oeffentlich: Abmeldelink aus jeder Kampagnen-Mail.
+app.get('/api/newsletter/unsubscribe', async (req, res) => {
+  try {
+    const token = typeof req.query.token === 'string' ? req.query.token : '';
+    const r = await dbOperations.unsubscribeNewsletter(token);
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    if (r.ok) {
+      return res.send(newsletterStatusPage('Abgemeldet',
+        'Du wurdest erfolgreich vom Newsletter abgemeldet und erhältst keine weiteren Werbe-E-Mails.'));
+    }
+    return res.send(newsletterStatusPage('Bereits abgemeldet',
+      'Diese Adresse ist bereits abgemeldet oder der Link ist ungültig.'));
+  } catch (error) {
+    console.error('⚠️ Newsletter-Abmeldung-Fehler:', error.message);
+    res.status(500).set('Content-Type', 'text/html; charset=utf-8')
+      .send(newsletterStatusPage('Etwas ist schiefgelaufen', 'Bitte versuche es später erneut.'));
+  }
+});
+
 // Admin: Kennzahlen fuer die Dashboard-Kacheln
 // Routen liegen bewusst UNTER /a29715347575/ (= authentifizierter Pfad-Teilbaum),
 // damit der Browser bei fetch() aus dem Dashboard die Basic-Auth-Credentials
@@ -1956,6 +2047,60 @@ app.get('/a29715347575/api/products/analysis', async (req, res) => {
   } catch (error) {
     console.error('Produkt-Analyse-Fehler:', error.message);
     res.status(500).json({ error: 'Analyse nicht verfuegbar' });
+  }
+});
+
+// Admin: Newsletter-Abonnenten + Kennzahlen
+app.get('/a29715347575/api/newsletter/subscribers', async (req, res) => {
+  try {
+    const status = req.query.status;
+    const [stats, subscribers] = await Promise.all([
+      dbOperations.getNewsletterStats(),
+      dbOperations.getNewsletterSubscribers({ status, limit: 500 })
+    ]);
+    res.json({ stats, subscribers });
+  } catch (error) {
+    console.error('Newsletter-Liste-Fehler:', error.message);
+    res.status(500).json({ error: 'Abonnenten nicht verfuegbar' });
+  }
+});
+
+// Admin: Newsletter-Kampagne an alle bestaetigten Abonnenten senden.
+// Jeder Empfaenger bekommt seinen eigenen Abmeldelink (Pflicht). Plain-Text-Eingabe
+// wird HTML-escaped + Zeilenumbrueche in Absaetze gewandelt (kein HTML-Injection-Risiko).
+app.post('/a29715347575/api/newsletter/broadcast', async (req, res) => {
+  try {
+    const body = req.body || {};
+    const subject = typeof body.subject === 'string' ? body.subject.trim().slice(0, 200) : '';
+    const message = typeof body.message === 'string' ? body.message.trim().slice(0, 20000) : '';
+    if (!subject || !message) {
+      return res.status(400).json({ success: false, error: 'Betreff und Nachricht sind erforderlich.' });
+    }
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const bodyHtml = message.split(/\n{2,}/).map(
+      (para) => `<p style="margin:0 0 16px 0;">${esc(para).replace(/\n/g, '<br>')}</p>`
+    ).join('');
+
+    const recipients = await dbOperations.getConfirmedNewsletterRecipients();
+    if (!recipients.length) {
+      return res.json({ success: true, sent: 0, failed: 0, message: 'Keine bestätigten Abonnenten vorhanden.' });
+    }
+    const base = publicBaseUrl(req);
+    let sent = 0, failed = 0;
+    const sentEmails = [];
+    for (const r of recipients) {
+      const unsubscribeUrl = `${base}/api/newsletter/unsubscribe?token=${encodeURIComponent(r.unsubscribe_token || '')}`;
+      const result = await emailService.sendNewsletterCampaign({
+        to: r.email, subject, bodyHtml, unsubscribeUrl
+      });
+      if (result.success) { sent++; sentEmails.push(r.email); } else { failed++; }
+    }
+    await dbOperations.markNewsletterSent(sentEmails);
+    console.log(`📣 Newsletter-Kampagne: ${sent} gesendet, ${failed} fehlgeschlagen`);
+    res.json({ success: true, sent, failed });
+  } catch (error) {
+    console.error('Newsletter-Broadcast-Fehler:', error.message);
+    res.status(500).json({ success: false, error: 'Versand fehlgeschlagen.' });
   }
 });
 

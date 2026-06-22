@@ -42,6 +42,13 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   **GoBD**-Archiv: Beleg-PDF zusätzlich per Mail an `RECEIPT_ARCHIVE_EMAIL` (Renders FS ist flüchtig).
 - **EU-Widerruf:** `infos/widerruf.html` (Belehrung + Online-Formular), `POST /api/widerruf`,
   `widerruf-button.js` (Footer-Button auf allen Seiten).
+- **Newsletter (Double-Opt-In, DSGVO/UWG §7):** Anmelde-Popup `newsletter-popup.js/.css`
+  (erscheint nach 12 s auf der Startseite, wartet auf Cookie-Entscheidung, Cooldown via
+  localStorage). `POST /api/newsletter/subscribe` speichert `pending` + schickt Bestätigungsmail;
+  `GET /api/newsletter/confirm|unsubscribe?token=` aktivieren/abmelden (gebrandete Statusseite).
+  Tabelle `newsletter_subscribers` (Tokens als Einwilligungs-Nachweis). Admin:
+  `a29715347575/newsletter.html` (Abonnenten + Kennzahlen, Werbe-Mail an alle Bestätigten via
+  `POST …/api/newsletter/broadcast`, individueller Abmeldelink + `List-Unsubscribe`-Header).
 - **Stripe-Webhook:** zeigt auf `https://maiosshop.com/stripe-webhook` (Events
   `checkout.session.completed` + `payment_intent.succeeded`).
 - **Admin-Dashboard:** `…/a29715347575/orders.html` (+ `produkt-analyse.html`, `markt-insights.html`),
@@ -92,7 +99,7 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 | Datei | Zweck |
 |---|---|
 | `server.js` | Express-Server, **alle** API-Routen, Stripe-Webhook, CJ-Auto-Bestellung, Retouren-Logik, Tracking-/Consent-Endpoints, Marktforschungs-Insights (`/a29715347575/api/insights/*`, `/api/track/search`), `GET /health` (Keep-Alive), 301-Slug-Redirects. ~2000 Zeilen, Herzstück. |
-| `database.js` | **PostgreSQL** (`pg`) — Schema + `dbOperations`. Tabellen: `orders` (+ `device`), `order_items`, `receipts`, `order_tracking`, `page_views`, `user_consent_events`, `search_events` + Analytics-/Insights-Methoden. Verbindung via `DATABASE_URL` (Neon). |
+| `database.js` | **PostgreSQL** (`pg`) — Schema + `dbOperations`. Tabellen: `orders` (+ `device`), `order_items`, `receipts`, `order_tracking`, `page_views`, `user_consent_events`, `search_events`, `newsletter_subscribers` + Analytics-/Insights-Methoden. Verbindung via `DATABASE_URL` (Neon). |
 | `cj-dropshipping-api.js` | Vollständiger CJ-API-Client (Produkte, Orders, Logistik, Disputes, Returns) mit Fallback. |
 | `cj-fallback-system.js` | Lokaler Fallback, wenn CJ-API nicht erreichbar ist. |
 | `cj-payment-calculator.js` | Berechnet CJ-Kosten + Gewinn-Split. |
@@ -123,11 +130,12 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 | `cookie-consent.js/.css` | DSGVO-Banner (Zwei-Stufen-Consent, `window.MaiosConsent`-API). Global eingebunden. |
 | `view-tracker.js` | Consent-gated Aufrufe-/Verweildauer-Tracking → `/api/track/*`. |
 | `widerruf-button.js` | Injiziert EU-Widerrufsbutton (Footer) auf allen Kundenseiten. |
+| `newsletter-popup.js/.css` | Newsletter-Anmelde-Popup (Double-Opt-In). Selbst-ladende CSS, framework-frei, nur auf `index.html` eingebunden. Sendet an `/api/newsletter/subscribe`. |
 | `wishlist.html/.css`, `success.html/.css`, `tracking.html`, `location-analytics-dashboard.html` | Weitere Seiten. |
 | `styles.css` (219 KB) | Globale Styles (zusätzlich zu Tailwind/Bootstrap — viel Overlap). |
 | `produkte/<slug>.html` | 40 einzelne Produktseiten mit **sprechenden Slug-Dateinamen** (aus `products.json`). Jede trägt `<body data-product-id="NN">`. Nutzen **Bootstrap** + Kategorie-CSS (`elektronik.css`, `haushalt-kueche.css`, `beleuchtung.css`, `koerperpflege-wellness.css`). |
 | `infos/` | Statische Seiten: AGB, Datenschutz, Impressum, Versand, Retouren, Kontakt, Kategorien, Cookies, **Widerruf**. |
-| `a29715347575/` | Admin-Dashboards (orders, Gutscheine, **produkt-analyse**, **markt-insights** = Marktforschung). Per **HTTP Basic Auth** geschützt (`requireAdminAuth` in `server.js`, ENV `ADMIN_USER`/`ADMIN_PASSWORD`). |
+| `a29715347575/` | Admin-Dashboards (orders, Gutscheine, **produkt-analyse**, **markt-insights** = Marktforschung, **newsletter** = Abonnenten + Werbe-Mail-Versand). Per **HTTP Basic Auth** geschützt (`requireAdminAuth` in `server.js`, ENV `ADMIN_USER`/`ADMIN_PASSWORD`). |
 | `karten/` | Kartendaten/Assets für Geo-Dashboard. |
 
 ### Infrastruktur / Daten
@@ -186,7 +194,8 @@ den Warenkorb gegen `products.json`, bevor Stripe-Beträge gebildet werden.
 
 **PostgreSQL** via `database.js` (`pg`-Pool, Verbindung über `DATABASE_URL`). Tabellen:
 `orders` (inkl. Spalte `device`), `order_items`, `receipts`, `order_tracking`, `page_views`,
-`user_consent_events`, `search_events` (+ Indizes, + Sequence `receipt_seq`), werden beim Start
+`user_consent_events`, `search_events`, `newsletter_subscribers` (+ Indizes, + Sequence
+`receipt_seq`), werden beim Start
 automatisch angelegt (`CREATE TABLE IF NOT EXISTS`; Spalten via `ALTER TABLE … ADD COLUMN IF NOT
 EXISTS`). Empfohlen: **Neon** (kostenlos & dauerhaft). Lokal dieselbe `DATABASE_URL` in `.env`.
 Ohne `DATABASE_URL` läuft der Shop, aber Bestell-/Beleg-/Tracking-Funktionen sind deaktiviert.

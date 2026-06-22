@@ -121,6 +121,24 @@ const SCHEMA = [
     session_id TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
   )`,
+  // Newsletter-Abonnenten (Double-Opt-In, DSGVO + UWG §7). 'pending' bis zur
+  // Bestaetigung per E-Mail-Link, 'confirmed' nach Klick, 'unsubscribed' nach Abmeldung.
+  // confirm_token/unsubscribe_token = unguessbare UUIDs fuer die Mail-Links.
+  // consent_ip/user_agent/created_at dienen als Einwilligungs-Nachweis (DOI).
+  `CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+    id SERIAL PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    confirm_token TEXT,
+    unsubscribe_token TEXT,
+    source TEXT,
+    consent_ip TEXT,
+    user_agent TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    confirmed_at TIMESTAMPTZ,
+    unsubscribed_at TIMESTAMPTZ,
+    last_sent_at TIMESTAMPTZ
+  )`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -134,7 +152,10 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS idx_receipts_order_id ON receipts(order_id)`,
   `CREATE INDEX IF NOT EXISTS idx_tracking_order_id ON order_tracking(order_id)`,
   `CREATE INDEX IF NOT EXISTS idx_page_views_created ON page_views(created_at)`,
-  `CREATE INDEX IF NOT EXISTS idx_page_views_session ON page_views(session_id)`
+  `CREATE INDEX IF NOT EXISTS idx_page_views_session ON page_views(session_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_newsletter_status ON newsletter_subscribers(status)`,
+  `CREATE INDEX IF NOT EXISTS idx_newsletter_confirm ON newsletter_subscribers(confirm_token)`,
+  `CREATE INDEX IF NOT EXISTS idx_newsletter_unsub ON newsletter_subscribers(unsubscribe_token)`
 ];
 
 async function initializeDatabase() {
@@ -799,6 +820,110 @@ const dbOperations = {
       byId[id] = cur;
     }
     return { range, sales: sales.rows, views: Object.values(byId) };
+  },
+
+  // ── Newsletter (Double-Opt-In) ──────────────────────────────────
+  // Anmeldung anlegen/auffrischen. Bei bereits bestaetigter Mail nichts aendern
+  // (status bleibt 'confirmed'), sonst auf 'pending' setzen + frische Tokens speichern,
+  // damit ein neuer Bestaetigungslink verschickt werden kann.
+  upsertNewsletterSubscriber: async (s) => {
+    const r = await pool.query(
+      `INSERT INTO newsletter_subscribers
+         (email, status, confirm_token, unsubscribe_token, source, consent_ip, user_agent)
+       VALUES ($1, 'pending', $2, $3, $4, $5, $6)
+       ON CONFLICT (email) DO UPDATE SET
+         status = CASE WHEN newsletter_subscribers.status = 'confirmed'
+                       THEN 'confirmed' ELSE 'pending' END,
+         confirm_token = CASE WHEN newsletter_subscribers.status = 'confirmed'
+                              THEN newsletter_subscribers.confirm_token ELSE EXCLUDED.confirm_token END,
+         unsubscribe_token = COALESCE(newsletter_subscribers.unsubscribe_token, EXCLUDED.unsubscribe_token),
+         source = COALESCE(EXCLUDED.source, newsletter_subscribers.source),
+         consent_ip = EXCLUDED.consent_ip,
+         user_agent = EXCLUDED.user_agent,
+         created_at = CASE WHEN newsletter_subscribers.status = 'unsubscribed'
+                           THEN CURRENT_TIMESTAMP ELSE newsletter_subscribers.created_at END
+       RETURNING status, confirm_token, unsubscribe_token`,
+      [s.email, s.confirm_token, s.unsubscribe_token, s.source || null, s.consent_ip || null, s.user_agent || null]
+    );
+    return r.rows[0];
+  },
+
+  // Bestaetigungslink eingeloest: 'pending' -> 'confirmed'. Idempotent: ein bereits
+  // bestaetigtes Abo gilt weiterhin als Erfolg (alreadyConfirmed).
+  confirmNewsletterSubscriber: async (token) => {
+    if (!token) return { ok: false };
+    const r = await pool.query(
+      `UPDATE newsletter_subscribers
+       SET status = 'confirmed', confirmed_at = CURRENT_TIMESTAMP, confirm_token = NULL
+       WHERE confirm_token = $1 AND status = 'pending'
+       RETURNING email`,
+      [token]
+    );
+    if (r.rows[0]) return { ok: true, email: r.rows[0].email };
+    // Kein pending-Treffer -> evtl. schon bestaetigt (Token wurde geleert)?
+    return { ok: false };
+  },
+
+  // Abmeldung per Link: -> 'unsubscribed'.
+  unsubscribeNewsletter: async (token) => {
+    if (!token) return { ok: false };
+    const r = await pool.query(
+      `UPDATE newsletter_subscribers
+       SET status = 'unsubscribed', unsubscribed_at = CURRENT_TIMESTAMP
+       WHERE unsubscribe_token = $1 AND status <> 'unsubscribed'
+       RETURNING email`,
+      [token]
+    );
+    return r.rows[0] ? { ok: true, email: r.rows[0].email } : { ok: false };
+  },
+
+  // Admin: Abonnenten-Liste (optional nach Status gefiltert).
+  getNewsletterSubscribers: async ({ status, limit = 200, offset = 0 } = {}) => {
+    const params = [];
+    let where = '';
+    if (status && ['pending', 'confirmed', 'unsubscribed'].includes(status)) {
+      params.push(status);
+      where = `WHERE status = $${params.length}`;
+    }
+    params.push(Math.min(limit, 1000), offset);
+    const r = await pool.query(
+      `SELECT id, email, status, source, created_at, confirmed_at, unsubscribed_at, last_sent_at
+       FROM newsletter_subscribers ${where}
+       ORDER BY created_at DESC
+       LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      params
+    );
+    return r.rows;
+  },
+
+  // Admin: Kennzahlen (Anzahl je Status).
+  getNewsletterStats: async () => {
+    const r = await pool.query(
+      `SELECT status, COUNT(*)::int AS count FROM newsletter_subscribers GROUP BY status`
+    );
+    const out = { confirmed: 0, pending: 0, unsubscribed: 0, total: 0 };
+    for (const row of r.rows) {
+      if (out[row.status] != null) out[row.status] = row.count;
+      out.total += row.count;
+    }
+    return out;
+  },
+
+  // Empfaengerliste fuer einen Versand: nur bestaetigte Abos (mit Abmelde-Token).
+  getConfirmedNewsletterRecipients: async () => {
+    const r = await pool.query(
+      `SELECT email, unsubscribe_token FROM newsletter_subscribers WHERE status = 'confirmed'`
+    );
+    return r.rows;
+  },
+
+  // Nach erfolgreichem Versand last_sent_at setzen.
+  markNewsletterSent: async (emails) => {
+    if (!Array.isArray(emails) || !emails.length) return;
+    await pool.query(
+      `UPDATE newsletter_subscribers SET last_sent_at = CURRENT_TIMESTAMP WHERE email = ANY($1)`,
+      [emails]
+    );
   }
 };
 
