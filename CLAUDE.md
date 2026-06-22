@@ -10,7 +10,7 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 
 ---
 
-## 0. Aktueller Stand (2026-06-21)
+## 0. Aktueller Stand (2026-06-22)
 
 - **Live:** **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet auf Apex) +
   Fallback `https://maios-shop.onrender.com`. Free-Plan (schläft nach 15 Min → erster Aufruf
@@ -28,6 +28,15 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 - **Aufrufe-/Besucher-Tracking** (consent-gated): `page_views` + `user_consent_events`,
   `POST /api/track/view|duration|consent`, Client `view-tracker.js`; Besucher-Insights
   (Gerät/Browser/OS, Einstiegsseiten, Verweildauer, Wiederkehrer) im Dashboard `orders.html`.
+  Die Kacheln „Aufrufe"/„Eindeutige Besucher" folgen dem Zeitraum-Filter (`/api/views/totals`).
+- **Marktforschungs-Dashboard** (aggregiert, DSGVO-konform): `a29715347575/markt-insights.html`
+  zeigt Conversion-Funnel (inkl. Warenkorbabbruch- + Gesamt-Conversion), Top-/Null-Treffer-
+  Suchbegriffe, Referrer/Kanäle, Regionen (Land + PLZ-Leitregion), Geräte-Conversion, Zeit-/
+  Tagesmuster, Ein-/Ausstiegsseiten. Net-New: anonymes **Suchbegriff-Tracking** (`search_events`,
+  `POST /api/track/search`, Hook in `app.js`-Suche) + `orders.device` (Gerät an der Bestellung,
+  reine Metadaten). Endpoints unter `/a29715347575/api/insights/*`. Keine Personen-Profile.
+- **Keep-Alive** gegen Free-Plan-Sleep: `GET /health` + GitHub-Actions-Cron
+  `.github/workflows/keep-alive.yml` (alle 10 Min, gratis da Repo öffentlich).
 - **Belege rechtskonform:** Kleinunternehmer **§19 UStG** (kein USt-Ausweis + Pflichthinweis),
   fortlaufende Rechnungsnummer (`RE-000001`, Postgres-Sequence), echte Firmendaten (ENV),
   **GoBD**-Archiv: Beleg-PDF zusätzlich per Mail an `RECEIPT_ARCHIVE_EMAIL` (Renders FS ist flüchtig).
@@ -35,8 +44,8 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   `widerruf-button.js` (Footer-Button auf allen Seiten).
 - **Stripe-Webhook:** zeigt auf `https://maiosshop.com/stripe-webhook` (Events
   `checkout.session.completed` + `payment_intent.succeeded`).
-- **Admin-Dashboard:** `…/a29715347575/orders.html` (+ `produkt-analyse.html`), Login via
-  `ADMIN_USER`/`ADMIN_PASSWORD`.
+- **Admin-Dashboard:** `…/a29715347575/orders.html` (+ `produkt-analyse.html`, `markt-insights.html`),
+  Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
 - **Wo anfangen:** offene Aufgaben stehen in `CLAUDE-CODE.md`, Design-Themen in
   `CLAUDE-DESIGN.md`. Großes Repo → erst `/graphify .` (§10).
 
@@ -82,8 +91,8 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 ### Backend (Node/Express)
 | Datei | Zweck |
 |---|---|
-| `server.js` | Express-Server, **alle** API-Routen, Stripe-Webhook, CJ-Auto-Bestellung, Retouren-Logik, Tracking-/Consent-Endpoints, 301-Slug-Redirects. ~1980 Zeilen, Herzstück. |
-| `database.js` | **PostgreSQL** (`pg`) — Schema + `dbOperations` (orders, order_items, receipts, order_tracking). Verbindung via `DATABASE_URL` (Neon). |
+| `server.js` | Express-Server, **alle** API-Routen, Stripe-Webhook, CJ-Auto-Bestellung, Retouren-Logik, Tracking-/Consent-Endpoints, Marktforschungs-Insights (`/a29715347575/api/insights/*`, `/api/track/search`), `GET /health` (Keep-Alive), 301-Slug-Redirects. ~2000 Zeilen, Herzstück. |
+| `database.js` | **PostgreSQL** (`pg`) — Schema + `dbOperations`. Tabellen: `orders` (+ `device`), `order_items`, `receipts`, `order_tracking`, `page_views`, `user_consent_events`, `search_events` + Analytics-/Insights-Methoden. Verbindung via `DATABASE_URL` (Neon). |
 | `cj-dropshipping-api.js` | Vollständiger CJ-API-Client (Produkte, Orders, Logistik, Disputes, Returns) mit Fallback. |
 | `cj-fallback-system.js` | Lokaler Fallback, wenn CJ-API nicht erreichbar ist. |
 | `cj-payment-calculator.js` | Berechnet CJ-Kosten + Gewinn-Split. |
@@ -118,14 +127,16 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 | `styles.css` (219 KB) | Globale Styles (zusätzlich zu Tailwind/Bootstrap — viel Overlap). |
 | `produkte/<slug>.html` | 40 einzelne Produktseiten mit **sprechenden Slug-Dateinamen** (aus `products.json`). Jede trägt `<body data-product-id="NN">`. Nutzen **Bootstrap** + Kategorie-CSS (`elektronik.css`, `haushalt-kueche.css`, `beleuchtung.css`, `koerperpflege-wellness.css`). |
 | `infos/` | Statische Seiten: AGB, Datenschutz, Impressum, Versand, Retouren, Kontakt, Kategorien, Cookies, **Widerruf**. |
-| `a29715347575/` | Admin-Dashboards (orders, Gutscheine, **produkt-analyse**). Per **HTTP Basic Auth** geschützt (`requireAdminAuth` in `server.js`, ENV `ADMIN_USER`/`ADMIN_PASSWORD`). |
+| `a29715347575/` | Admin-Dashboards (orders, Gutscheine, **produkt-analyse**, **markt-insights** = Marktforschung). Per **HTTP Basic Auth** geschützt (`requireAdminAuth` in `server.js`, ENV `ADMIN_USER`/`ADMIN_PASSWORD`). |
 | `karten/` | Kartendaten/Assets für Geo-Dashboard. |
 
 ### Infrastruktur / Daten
 | Pfad | Zweck |
 |---|---|
-| `render.yaml` | **Render-Blueprint** (Live-Hosting, Free): ein Node-Service bedient Frontend + API aus `server.js`. |
+| `render.yaml` | **Render-Blueprint** (Live-Hosting, Free): ein Node-Service bedient Frontend + API aus `server.js`. `healthCheckPath: /health`, `NODE_VERSION: 20.19.0`. |
+| `.github/workflows/keep-alive.yml` | GitHub-Actions-Cron, pingt alle 10 Min `GET /health` (hält Render-Free wach). |
 | `Marketing/` | Python-Pipelines (`pipelines/*.py`), eigene `products.json`, chromedriver, Daten/Renders. |
+| `excel/` | Produktlisten (CSV/XLSX, getrackt). **Achtung:** Hier lagen versehentlich Secrets (privater Key + Stripe-Code); Secret-Muster (`*.key`/`*.pem`/`*_private_key*`/`stripe_backup_code.txt`) sind gitignored — siehe `CLAUDE-CODE.md` §1. |
 | `.env`, `Marketing/.env` | Secrets, **gitignored & nicht getrackt**. `.env.example` listet alle Schlüssel; Prod-Werte ins Render-Dashboard. |
 | `*.md` | Betriebs-SOPs (CJ, Retouren, Versand, Kassenbon, Exchange) + die drei Kern-Docs (§11). |
 
@@ -174,11 +185,13 @@ den Warenkorb gegen `products.json`, bevor Stripe-Beträge gebildet werden.
 ## 5. Datenbank
 
 **PostgreSQL** via `database.js` (`pg`-Pool, Verbindung über `DATABASE_URL`). Tabellen:
-`orders`, `order_items`, `receipts`, `order_tracking` (+ Indizes), werden beim Start
-automatisch angelegt (`CREATE TABLE IF NOT EXISTS`). Empfohlen: **Neon** (kostenlos & dauerhaft).
-Lokal dieselbe `DATABASE_URL` in `.env`. Ohne `DATABASE_URL` läuft der Shop, aber Bestell-/
-Beleg-/Tracking-Funktionen sind deaktiviert. **Kein Migrationssystem** — Schemaänderungen per
-manuellem `ALTER TABLE`. (Frühere SQLite-Dateien `*.db` sind Altlasten.)
+`orders` (inkl. Spalte `device`), `order_items`, `receipts`, `order_tracking`, `page_views`,
+`user_consent_events`, `search_events` (+ Indizes, + Sequence `receipt_seq`), werden beim Start
+automatisch angelegt (`CREATE TABLE IF NOT EXISTS`; Spalten via `ALTER TABLE … ADD COLUMN IF NOT
+EXISTS`). Empfohlen: **Neon** (kostenlos & dauerhaft). Lokal dieselbe `DATABASE_URL` in `.env`.
+Ohne `DATABASE_URL` läuft der Shop, aber Bestell-/Beleg-/Tracking-Funktionen sind deaktiviert.
+**Kein Migrationssystem** — Schemaänderungen idempotent als `IF NOT EXISTS` in die `SCHEMA`-Liste
+in `database.js` hängen (laufen bei jedem Start). (Frühere SQLite-Dateien `*.db` sind Altlasten.)
 
 ---
 

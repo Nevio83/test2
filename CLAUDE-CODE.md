@@ -3,9 +3,9 @@
 Alles, was an Code zu tun ist: offene Bugs/Sicherheit, Aufräumen, Ausbau, Git-Workflow.
 Architektur & Setup stehen in `CLAUDE.md`, Design in `CLAUDE-DESIGN.md`.
 
-Stand: 2026-06-21 · Live: **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet
-auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (nur `main`)
-· DB: Neon-Postgres · Hosting: Render (Free).
+Stand: 2026-06-22 · Live: **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet
+auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (nur `main`,
+**öffentlich**) · DB: Neon-Postgres · Hosting: Render (Free).
 
 **Prioritäten:** 🔴 kritisch · 🟠 hoch · 🟡 mittel · 🟢 niedrig/optional.
 
@@ -28,6 +28,16 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
   `Get-Content -Raw` + `WriteAllText` bulk-bearbeiten (zerstört Umlaute → Mojibake `Ã¼`).
   Edit-Tool oder `[System.IO.File]::ReadAllBytes/WriteAllBytes` mit korrektem Encoding nutzen.
 - `.env` ist gitignored und nicht getrackt — Prod-Werte gehören ins **Render-Dashboard**, nie ins Repo.
+- **🔴 Secrets niemals committen (Repo ist ÖFFENTLICH).** Vor jedem `git add` prüfen, was reinkommt;
+  nie `git add -A`/blind den ganzen Ordner stagen. Schon passiert: ein privater SSL-Key +
+  Stripe-Backup-Code landeten via `excel/` im öffentlichen Repo. Bereinigt mit `git filter-branch`
+  (`--index-filter` + `git rm --cached`, Globs `*.key`/`stripe_backup_code.txt`/`~*`) + `--force`-Push
+  + lokalem `gc`. **Wichtig:** History-Rewrite ist nur Schadensbegrenzung — ein einmal gepushtes
+  Secret gilt als kompromittiert und **muss rotiert** werden (Zertifikat neu, Stripe-Codes neu).
+  `.gitignore` deckt jetzt `*.key`/`*.pem`/`*_private_key*`/`stripe_backup_code.txt`/`~$*` ab.
+- **Commit-Messages mit `"` (Anführungszeichen):** PowerShell 5.1 zerlegt bei nativen Befehlen
+  Variablen mit `"` falsch in Argumente → `git commit` schlägt fehl. Lösung: Message BOM-frei in
+  eine Datei schreiben (Write-Tool) und `git commit -F <datei>` nutzen, oder `"` in der Message meiden.
 
 ---
 
