@@ -156,7 +156,7 @@ class ResendService {
 
       // Hinweis: Gmail blockiert externe Bilder standardmäßig
       // Der Kunde muss auf "Bilder anzeigen" klicken
-      const data = await this.resend.emails.send({
+      const { data, error } = await this.resend.emails.send({
         from: `${this.fromName} <${this.fromEmail}>`,
         to: [orderData.customer_email],
         subject: `Bestellung ${orderData.order_id} - Vielen Dank!`,
@@ -166,9 +166,14 @@ class ResendService {
         }
       });
 
+      if (error) {
+        console.error('❌ Resend lehnte Bestellbestätigung ab:', error.message);
+        return { success: false, error: error.message };
+      }
+
       console.log('✅ Bestellbestätigung gesendet an:', orderData.customer_email);
       console.log('ℹ️  Hinweis: Gmail blockiert Bilder - Kunde muss "Bilder anzeigen" klicken');
-      return { success: true, messageId: data.id };
+      return { success: true, messageId: data && data.id };
     } catch (error) {
       console.error('❌ Resend Fehler:', error);
       return { success: false, error: error.message };
@@ -198,15 +203,20 @@ class ResendService {
         <p><a href="${process.env.SITE_URL || 'https://maiosshop.com'}/admin/orders/${orderData.order_id}">Bestellung anzeigen</a></p>
       `;
 
-      const data = await this.resend.emails.send({
+      const { data, error } = await this.resend.emails.send({
         from: `${this.fromName} <${this.fromEmail}>`,
         to: ['maioscorporation@gmail.com'], // Admin E-Mail
         subject: `🛒 Neue Bestellung: ${orderData.order_id}`,
         html: html
       });
 
+      if (error) {
+        console.error('❌ Resend lehnte Admin-Benachrichtigung ab:', error.message);
+        return { success: false, error: error.message };
+      }
+
       console.log('✅ Admin-Benachrichtigung gesendet');
-      return { success: true, messageId: data.id };
+      return { success: true, messageId: data && data.id };
     } catch (error) {
       console.error('❌ Admin-Benachrichtigung Fehler:', error);
       return { success: false, error: error.message };
@@ -246,10 +256,15 @@ class ResendService {
         emailData.headers = headers;
       }
 
-      const data = await this.resend.emails.send(emailData);
+      const { data, error } = await this.resend.emails.send(emailData);
+
+      if (error) {
+        console.error('❌ Resend lehnte E-Mail ab an', to, '→', error.message);
+        return { success: false, error: error.message };
+      }
 
       console.log('✅ E-Mail gesendet an:', to);
-      return { success: true, messageId: data.id };
+      return { success: true, messageId: data && data.id };
     } catch (error) {
       console.error('❌ Resend Fehler:', error);
       return { success: false, error: error.message };
@@ -278,7 +293,7 @@ class ResendService {
         });
       }
 
-      const data = await this.resend.emails.send({
+      const { data, error } = await this.resend.emails.send({
         from: `${this.fromName} <${this.fromEmail}>`,
         to: [archiveTo],
         subject: `🗄️ Beleg-Archiv ${orderData.receipt_number} · Bestellung ${orderData.order_id}`,
@@ -286,8 +301,13 @@ class ResendService {
         attachments
       });
 
+      if (error) {
+        console.error('❌ Resend lehnte Beleg-Archiv ab:', error.message);
+        return { success: false, error: error.message };
+      }
+
       console.log('🗄️  Beleg archiviert an:', archiveTo);
-      return { success: true, messageId: data.id };
+      return { success: true, messageId: data && data.id };
     } catch (error) {
       console.error('❌ Beleg-Archivierung Fehler:', error.message);
       return { success: false, error: error.message };

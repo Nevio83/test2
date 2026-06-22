@@ -1746,7 +1746,13 @@ app.post('/api/newsletter/subscribe', async (req, res) => {
       return res.json({ success: true, alreadyConfirmed: true, message: 'Du bist bereits angemeldet. Danke!' });
     }
     const confirmUrl = `${publicBaseUrl(req)}/api/newsletter/confirm?token=${encodeURIComponent(sub.confirm_token)}`;
-    await emailService.sendNewsletterConfirmation(email, confirmUrl);
+    const mail = await emailService.sendNewsletterConfirmation(email, confirmUrl);
+    if (!mail || !mail.success) {
+      // Adresse ist als 'pending' gespeichert, aber die Bestaetigungsmail ging nicht raus
+      // (z.B. Resend falsch konfiguriert). Ehrliche Rueckmeldung statt falschem Erfolg.
+      console.error('⚠️ Newsletter-Bestätigungsmail nicht gesendet:', mail && mail.error);
+      return res.status(502).json({ success: false, error: 'Bestätigungsmail konnte gerade nicht gesendet werden. Bitte versuche es später erneut.' });
+    }
     res.json({ success: true, message: 'Fast geschafft! Bitte bestätige den Link in deiner E-Mail.' });
   } catch (error) {
     console.error('⚠️ Newsletter-Anmeldung-Fehler:', error.message);
