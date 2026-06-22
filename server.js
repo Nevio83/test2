@@ -2110,6 +2110,22 @@ app.post('/a29715347575/api/newsletter/broadcast', async (req, res) => {
   }
 });
 
+// Admin: einzelnen Abonnenten endgueltig loeschen (z.B. auf Wunsch / DSGVO-Loeschung)
+app.delete('/a29715347575/api/newsletter/subscribers/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ success: false, error: 'Ungültige ID.' });
+    }
+    const r = await dbOperations.deleteNewsletterSubscriber(id);
+    if (!r.ok) return res.status(404).json({ success: false, error: 'Abonnent nicht gefunden.' });
+    res.json({ success: true, email: r.email });
+  } catch (error) {
+    console.error('Newsletter-Löschen-Fehler:', error.message);
+    res.status(500).json({ success: false, error: 'Löschen fehlgeschlagen.' });
+  }
+});
+
 // Kassenbon erneut senden
 app.post('/api/receipt/resend/:orderId', async (req, res) => {
   try {

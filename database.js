@@ -924,6 +924,15 @@ const dbOperations = {
       `UPDATE newsletter_subscribers SET last_sent_at = CURRENT_TIMESTAMP WHERE email = ANY($1)`,
       [emails]
     );
+  },
+
+  // Admin: Abonnent endgueltig loeschen (per ID).
+  deleteNewsletterSubscriber: async (id) => {
+    const r = await pool.query(
+      `DELETE FROM newsletter_subscribers WHERE id = $1 RETURNING email`,
+      [id]
+    );
+    return r.rows[0] ? { ok: true, email: r.rows[0].email } : { ok: false };
   }
 };
 

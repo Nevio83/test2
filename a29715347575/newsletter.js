@@ -46,7 +46,7 @@
     var tbody = document.getElementById('subscriber-rows');
     if (!tbody) return;
     if (!rows || !rows.length) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty">Noch keine Abonnenten in dieser Ansicht.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="empty">Noch keine Abonnenten in dieser Ansicht.</td></tr>';
       return;
     }
     tbody.innerHTML = rows.map(function (r) {
@@ -55,8 +55,33 @@
         '<td>' + (STATUS_BADGE[r.status] || escapeHtml(r.status)) + '</td>' +
         '<td class="small text-muted">' + fmtDate(r.created_at) + '</td>' +
         '<td class="small text-muted">' + escapeHtml(r.source || '–') + '</td>' +
+        '<td class="text-end">' +
+          '<button type="button" class="btn btn-sm btn-outline-danger btn-del" ' +
+            'data-id="' + r.id + '" data-email="' + escapeHtml(r.email) + '" title="Abonnent löschen">' +
+            '<i class="bi bi-trash"></i></button>' +
+        '</td>' +
       '</tr>';
     }).join('');
+
+    tbody.querySelectorAll('.btn-del').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        deleteSubscriber(btn.dataset.id, btn.dataset.email);
+      });
+    });
+  }
+
+  function deleteSubscriber(id, email) {
+    if (!id) return;
+    if (!window.confirm('Abonnent „' + email + '" wirklich endgültig löschen?')) return;
+    getJSON('api/newsletter/subscribers/' + encodeURIComponent(id), { method: 'DELETE' })
+      .then(function (d) {
+        if (d && d.success) {
+          loadSubscribers();
+        } else {
+          window.alert('Löschen fehlgeschlagen: ' + ((d && d.error) || 'unbekannter Fehler'));
+        }
+      })
+      .catch(function (e) { window.alert('Fehler beim Löschen: ' + e.message); });
   }
 
   function loadSubscribers() {
@@ -74,7 +99,7 @@
       })
       .catch(function (e) {
         var tbody = document.getElementById('subscriber-rows');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="text-danger small">Fehler beim Laden: ' + escapeHtml(e.message) + '</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-danger small">Fehler beim Laden: ' + escapeHtml(e.message) + '</td></tr>';
       });
   }
   window.loadSubscribers = loadSubscribers;
