@@ -1926,7 +1926,7 @@ app.get('/a29715347575/api/insights/regions', async (req, res) => {
 });
 
 // Erlaubte Zeitraum-Filter fuer die Dashboard-Diagramme
-const TIMESERIES_RANGES = ['7d', '30d', '12m', 'all'];
+const TIMESERIES_RANGES = ['today', '7d', '30d', '12m', 'all'];
 const parseRange = (q) => (TIMESERIES_RANGES.includes(q) ? q : '30d');
 
 // Admin: Zeitreihe fuer den Chart (Aufrufe/Besucher)

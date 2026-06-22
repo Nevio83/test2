@@ -161,6 +161,7 @@ initializeDatabase();
 //     <= 92 Tage -> taeglich (sieht bei jungen Shops nicht leer aus), sonst monatlich.
 // `table` wird nur fuer den MIN()-Query bei 'all' gebraucht.
 async function resolveSeries(range, table) {
+  if (range === 'today') return { gran: 'day', start: 'CURRENT_DATE', params: [] };
   if (range === '7d') return { gran: 'day', start: 'CURRENT_DATE - 6', params: [] };
   if (range === '12m') {
     return { gran: 'month', start: "date_trunc('month', CURRENT_DATE) - INTERVAL '11 months'", params: [] };
@@ -181,6 +182,7 @@ async function resolveSeries(range, table) {
 // (kein User-Input), `range` ist validiert -> sichere Konkatenation.
 function analysisRangeFilter(range, col) {
   switch (range) {
+    case 'today': return `AND ${col} >= CURRENT_DATE`;
     case '7d': return `AND ${col} >= NOW() - INTERVAL '7 days'`;
     case '12m': return `AND ${col} >= NOW() - INTERVAL '1 year'`;
     case 'all': return '';

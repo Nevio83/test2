@@ -56,6 +56,7 @@
 
   // Zeitraum-Optionen: Tagesraster fuer kurze, Monatsraster fuer lange Zeitraeume.
   const RANGES = {
+    'today': { label: 'Heute', gran: 'day' },
     '7d': { label: '7 Tage', gran: 'day' },
     '30d': { label: 'Letzter Monat', gran: 'day' },
     '12m': { label: '1 Jahr', gran: 'month' },
