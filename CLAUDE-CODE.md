@@ -46,23 +46,4 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 2. Ladezeit / Free-Plan-Sleep — Keep-Alive aktiv ✅ (Rest: optionales Upgrade) 🟢
-
-**Erledigt:** GitHub-Actions-Cron `.github/workflows/keep-alive.yml` pingt alle 10 Min den
-leichtgewichtigen Endpoint **`GET /health`** (in `server.js`) und hält den Render-Free-Service
-wach (kein Cold-Start mehr für Besucher). Gratis, da das Repo öffentlich ist (unbegrenzte
-Actions-Minuten). GitHub-Cron ist „best effort", daher 10-Min-Intervall als Puffer zum 15-Min-Sleep.
-
-**Prüfen nach Deploy:** GitHub → Actions → „Keep Render awake" → erster Lauf grün?
-(Scheduled Workflows starten erst, sobald die Datei auf `main` liegt; ggf. einmal manuell
-„Run workflow" auslösen.)
-
-**Langfristig (optional):** Wenn erste Einnahmen fließen, Render Free → **Starter-Plan (7 $/Monat)**.
-Dann entfällt der Sleep komplett, der Keep-Alive-Workflow kann weg.
-
----
-
-> **Keine weiteren offenen Code-Aufgaben.** Node 18→20 ist erledigt (Node 20.19.0 in
-> `.nvmrc`/`render.yaml`/`engines`, `node-fetch` → natives `fetch`). Nach dem nächsten Deploy
-> einmal im Render-Dashboard prüfen, dass keine alte `NODE_VERSION=18.x` als Env-Var den
-> Blueprint überschreibt.
+> **Keine offenen Aufgaben.** Bei neuen Bugs/Features hier eintragen.
