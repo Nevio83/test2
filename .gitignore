@@ -5,6 +5,13 @@
 Marketing/.env
 Marketing/.env.*
 !Marketing/.env.example
+# Private Keys / Backup-Codes (oeffentliches Repo!)
+*.key
+*.pem
+*_private_key*
+**/stripe_backup_code.txt
+# Excel-Sperrdateien (Office-Temp)
+~$*
 
 # ── Datenbanken / lokale Daten ───────────────────────────────
 *.db
