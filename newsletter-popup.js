@@ -13,7 +13,7 @@
 
   var STORE_KEY = 'maios_newsletter';       // 'subscribed' | 'dismissed'
   var STORE_TS = 'maios_newsletter_ts';     // Zeitstempel der letzten Entscheidung
-  var SHOW_DELAY_MS = 12000;                // 12 s nach Laden
+  var SHOW_DELAY_MS = 6000;                 // 6 s nach Laden
   var REASK_DISMISS_MS = 30 * 24 * 60 * 60 * 1000;  // nach Ablehnung 30 Tage Ruhe
 
   // Admin-Bereich braucht kein Popup
@@ -202,27 +202,15 @@
   }
 
   // ── Start ───────────────────────────────────────────────────────
-  // Erst zeigen, wenn der Cookie-Banner entschieden ist (kein Stapeln).
-  function consentPending() {
-    try {
-      return window.MaiosConsent && typeof window.MaiosConsent.hasDecision === 'function'
-        && !window.MaiosConsent.hasDecision();
-    } catch (e) { return false; }
-  }
-
+  // Einfaches, verlaessliches Timeout: nach SHOW_DELAY_MS zeigen. Die kurze
+  // Verzoegerung reicht, damit der Cookie-Banner (unten) zuerst da ist; beide
+  // koennen aber problemlos koexistieren.
   function scheduleShow() {
     if (!shouldShow()) return;
     injectCss();
-    var waited = 0;
-    var timer = setInterval(function () {
-      waited += 500;
-      if (!shouldShow()) { clearInterval(timer); return; }
-      if (consentPending() && waited < 60000) return; // auf Cookie-Entscheidung warten (max 60 s)
-      if (waited >= SHOW_DELAY_MS) {
-        clearInterval(timer);
-        show();
-      }
-    }, 500);
+    setTimeout(function () {
+      if (shouldShow()) show();
+    }, SHOW_DELAY_MS);
   }
 
   if (document.readyState === 'loading') {
