@@ -88,11 +88,21 @@
                             <button type="button" class="btn btn-outline-primary" data-status="unsubscribed">Abgemeldet</button>
                         </div>
                     </div>
+                    <!-- Aktionsleiste fuer Mehrfachauswahl (nur sichtbar wenn etwas markiert ist) -->
+                    <div id="bulk-bar" class="d-none align-items-center justify-content-between bg-light rounded px-3 py-2 mb-2">
+                        <span class="small"><strong id="bulk-count">0</strong> ausgewählt</span>
+                        <button type="button" class="btn btn-sm btn-danger" id="bulk-delete">
+                            <i class="bi bi-trash"></i> Ausgewählte löschen
+                        </button>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-sm table-hover mb-0">
-                            <thead><tr><th>E-Mail</th><th>Status</th><th>Angemeldet</th><th>Quelle</th><th></th></tr></thead>
+                            <thead><tr>
+                                <th style="width:34px;"><input type="checkbox" class="form-check-input" id="select-all" title="Alle auswählen"></th>
+                                <th>E-Mail</th><th>Status</th><th>Angemeldet</th><th>Quelle</th><th></th>
+                            </tr></thead>
                             <tbody id="subscriber-rows">
-                                <tr><td colspan="5" class="empty">Lädt…</td></tr>
+                                <tr><td colspan="6" class="empty">Lädt…</td></tr>
                             </tbody>
                         </table>
                     </div>

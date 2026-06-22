@@ -46,11 +46,14 @@
     var tbody = document.getElementById('subscriber-rows');
     if (!tbody) return;
     if (!rows || !rows.length) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty">Noch keine Abonnenten in dieser Ansicht.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty">Noch keine Abonnenten in dieser Ansicht.</td></tr>';
+      updateBulkBar();
       return;
     }
     tbody.innerHTML = rows.map(function (r) {
       return '<tr>' +
+        '<td><input type="checkbox" class="form-check-input row-check" ' +
+          'data-id="' + r.id + '" data-email="' + escapeHtml(r.email) + '"></td>' +
         '<td>' + escapeHtml(r.email) + '</td>' +
         '<td>' + (STATUS_BADGE[r.status] || escapeHtml(r.status)) + '</td>' +
         '<td class="small text-muted">' + fmtDate(r.created_at) + '</td>' +
@@ -68,6 +71,76 @@
         deleteSubscriber(btn.dataset.id, btn.dataset.email);
       });
     });
+    tbody.querySelectorAll('.row-check').forEach(function (cb) {
+      cb.addEventListener('change', updateBulkBar);
+    });
+
+    // Auswahl nach jedem Neuladen zuruecksetzen
+    var all = document.getElementById('select-all');
+    if (all) { all.checked = false; all.indeterminate = false; }
+    updateBulkBar();
+  }
+
+  // ── Mehrfachauswahl ─────────────────────────────────────────────
+  function rowChecks() {
+    return Array.prototype.slice.call(document.querySelectorAll('.row-check'));
+  }
+  function selectedIds() {
+    return rowChecks().filter(function (cb) { return cb.checked; })
+      .map(function (cb) { return cb.dataset.id; });
+  }
+
+  // Aktionsleiste + "Alle"-Checkbox an den aktuellen Auswahlstand anpassen
+  function updateBulkBar() {
+    var checks = rowChecks();
+    var sel = checks.filter(function (cb) { return cb.checked; });
+    var bar = document.getElementById('bulk-bar');
+    if (bar) bar.classList.toggle('d-none', sel.length === 0);
+    bar && bar.classList.toggle('d-flex', sel.length > 0);
+    setText('bulk-count', sel.length);
+
+    var all = document.getElementById('select-all');
+    if (all) {
+      all.checked = checks.length > 0 && sel.length === checks.length;
+      all.indeterminate = sel.length > 0 && sel.length < checks.length;
+    }
+  }
+
+  function bulkDelete() {
+    var ids = selectedIds();
+    if (!ids.length) return;
+    if (!window.confirm(ids.length + ' ausgewählte Abonnenten wirklich endgültig löschen?')) return;
+    var btn = document.getElementById('bulk-delete');
+    if (btn) btn.disabled = true;
+    getJSON('api/newsletter/subscribers/delete-bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: ids })
+    })
+      .then(function (d) {
+        if (btn) btn.disabled = false;
+        if (d && d.success) {
+          loadSubscribers();
+        } else {
+          window.alert('Löschen fehlgeschlagen: ' + ((d && d.error) || 'unbekannter Fehler'));
+        }
+      })
+      .catch(function (e) {
+        if (btn) btn.disabled = false;
+        window.alert('Fehler beim Löschen: ' + e.message);
+      });
+  }
+
+  function attachBulk() {
+    var all = document.getElementById('select-all');
+    if (all) {
+      all.addEventListener('change', function () {
+        rowChecks().forEach(function (cb) { cb.checked = all.checked; });
+        updateBulkBar();
+      });
+    }
+    var btn = document.getElementById('bulk-delete');
+    if (btn) btn.addEventListener('click', bulkDelete);
   }
 
   function deleteSubscriber(id, email) {
@@ -99,7 +172,7 @@
       })
       .catch(function (e) {
         var tbody = document.getElementById('subscriber-rows');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-danger small">Fehler beim Laden: ' + escapeHtml(e.message) + '</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="text-danger small">Fehler beim Laden: ' + escapeHtml(e.message) + '</td></tr>';
       });
   }
   window.loadSubscribers = loadSubscribers;
@@ -170,6 +243,7 @@
   function init() {
     attachStatusFilter();
     attachSend();
+    attachBulk();
     loadSubscribers();
   }
 

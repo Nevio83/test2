@@ -2110,6 +2110,22 @@ app.post('/a29715347575/api/newsletter/broadcast', async (req, res) => {
   }
 });
 
+// Admin: mehrere Abonnenten auf einmal loeschen (Mehrfachauswahl im Dashboard)
+app.post('/a29715347575/api/newsletter/subscribers/delete-bulk', async (req, res) => {
+  try {
+    const raw = (req.body && req.body.ids) || [];
+    const ids = (Array.isArray(raw) ? raw : [])
+      .map((v) => parseInt(v, 10))
+      .filter((n) => Number.isInteger(n) && n > 0);
+    if (!ids.length) return res.status(400).json({ success: false, error: 'Keine gültigen IDs.' });
+    const r = await dbOperations.deleteNewsletterSubscribers(ids);
+    res.json({ success: true, deleted: r.deleted });
+  } catch (error) {
+    console.error('Newsletter-Sammellöschen-Fehler:', error.message);
+    res.status(500).json({ success: false, error: 'Löschen fehlgeschlagen.' });
+  }
+});
+
 // Admin: einzelnen Abonnenten endgueltig loeschen (z.B. auf Wunsch / DSGVO-Loeschung)
 app.delete('/a29715347575/api/newsletter/subscribers/:id', async (req, res) => {
   try {

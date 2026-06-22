@@ -933,6 +933,16 @@ const dbOperations = {
       [id]
     );
     return r.rows[0] ? { ok: true, email: r.rows[0].email } : { ok: false };
+  },
+
+  // Admin: mehrere Abonnenten auf einmal loeschen (per ID-Liste).
+  deleteNewsletterSubscribers: async (ids) => {
+    if (!Array.isArray(ids) || !ids.length) return { deleted: 0 };
+    const r = await pool.query(
+      `DELETE FROM newsletter_subscribers WHERE id = ANY($1::int[])`,
+      [ids]
+    );
+    return { deleted: r.rowCount };
   }
 };
 
