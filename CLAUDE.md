@@ -10,7 +10,7 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 
 ---
 
-## 0. Aktueller Stand (2026-06-22)
+## 0. Aktueller Stand (2026-06-24)
 
 - **Live:** **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet auf Apex) +
   Fallback `https://maios-shop.onrender.com`. Free-Plan (schläft nach 15 Min → erster Aufruf
@@ -29,6 +29,9 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   `POST /api/track/view|duration|consent`, Client `view-tracker.js`; Besucher-Insights
   (Gerät/Browser/OS, Einstiegsseiten, Verweildauer, Wiederkehrer) im Dashboard `orders.html`.
   Die Kacheln „Aufrufe"/„Eindeutige Besucher" folgen dem Zeitraum-Filter (`/api/views/totals`).
+  Zeitraum-Filter (`orders.html` + `produkt-analyse.html`): **Heute** / 7 Tage / Letzter Monat /
+  1 Jahr / Gesamt (`range=today|7d|30d|12m|all`); `markt-insights.html` nutzt `data-days`
+  (Heute=`1`/7/30/365). „Heute" = Tagesraster ab `CURRENT_DATE` (`resolveSeries`/`analysisRangeFilter`).
 - **Marktforschungs-Dashboard** (aggregiert, DSGVO-konform): `a29715347575/markt-insights.html`
   zeigt Conversion-Funnel (inkl. Warenkorbabbruch- + Gesamt-Conversion), Top-/Null-Treffer-
   Suchbegriffe, Referrer/Kanäle, Regionen (Land + PLZ-Leitregion), Geräte-Conversion, Zeit-/
@@ -43,12 +46,18 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 - **EU-Widerruf:** `infos/widerruf.html` (Belehrung + Online-Formular), `POST /api/widerruf`,
   `widerruf-button.js` (Footer-Button auf allen Seiten).
 - **Newsletter (Double-Opt-In, DSGVO/UWG §7):** Anmelde-Popup `newsletter-popup.js/.css`
-  (erscheint nach 12 s auf der Startseite, wartet auf Cookie-Entscheidung, Cooldown via
-  localStorage). `POST /api/newsletter/subscribe` speichert `pending` + schickt Bestätigungsmail;
+  (erscheint **nach 6 s** auf der Startseite via einfachem `setTimeout`, Cooldown via localStorage;
+  hängt **nicht** mehr an der Cookie-Entscheidung). `POST /api/newsletter/subscribe` speichert
+  `pending` + schickt Bestätigungsmail (bei Mail-Fehlschlag **502** statt falschem Erfolg);
   `GET /api/newsletter/confirm|unsubscribe?token=` aktivieren/abmelden (gebrandete Statusseite).
   Tabelle `newsletter_subscribers` (Tokens als Einwilligungs-Nachweis). Admin:
-  `a29715347575/newsletter.html` (Abonnenten + Kennzahlen, Werbe-Mail an alle Bestätigten via
-  `POST …/api/newsletter/broadcast`, individueller Abmeldelink + `List-Unsubscribe`-Header).
+  `a29715347575/newsletter.html` (Abonnenten + Kennzahlen, **Mehrfachauswahl + Sammel-Löschen**
+  `POST …/subscribers/delete-bulk` bzw. `DELETE …/subscribers/:id`, Werbe-Mail an alle Bestätigten
+  via `POST …/api/newsletter/broadcast`, individueller Abmeldelink + `List-Unsubscribe`-Header).
+- **E-Mail-Versand (Resend) live:** Domain **`maiosshop.com` in Resend verifiziert** (DKIM/SPF bei
+  IONOS), Absender `noreply@maiosshop.com`, `RESEND_API_KEY` im Render-Dashboard. `resend-service.js`
+  wertet jetzt das `{ data, error }`-Resultat aus (früher wurden Resend-Fehler verschluckt → stiller
+  Fehlschlag). Resend-Konto kann bei Neuanlage kurz „suspended"/in Review sein (Reaktivierungsformular).
 - **Stripe-Webhook:** zeigt auf `https://maiosshop.com/stripe-webhook` (Events
   `checkout.session.completed` + `payment_intent.succeeded`).
 - **Admin-Dashboard:** `…/a29715347575/orders.html` (+ `produkt-analyse.html`, `markt-insights.html`),
