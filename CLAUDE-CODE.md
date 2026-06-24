@@ -55,21 +55,22 @@ Preischeck“) ist **umgesetzt**: 15 Produkte (Daten-Bugs A + Pflicht B + option
 Tumbler/Winter 23,99 € + Strohhalm 6,99 €, Klimaanlage/Wasserspender 33,99 €, Krystall 15,99 €,
 Thermische Massage 24,99 €, Distanzmessgerät 21,99 €, Wärmender Untersetzer 18,99 €.
 
-> ⚠️ **Produktseiten hardcoden den Preis.** Jede Preisänderung an **vier** Stellen pflegen:
+> ⚠️ **Produktseiten hardcoden den Preis.** Jede Preisänderung an **fünf** Stellen pflegen:
 > `products.json` · `produkte/<slug>.html` price-tag (`<span class="price-tag">€…`) · das
 > eingebettete Produkt-JSON in derselben HTML (`price`/`"price"` inkl. `colors[]`) · die
-> „Preis: €…“-Detailzeile. Praktisch: per Node-Skript (JSON-Roundtrip von `products.json` ist
-> byte-identisch) + gezählten String-Replacements je Seite (zwei Stile: `price: X` ohne Quotes
-> bzw. `"price": X` mit Quotes). Der `price-validator` lehnt falsche Client-Preise **nicht** ab,
-> sondern nutzt den `products.json`-Basispreis → Kunden zahlen immer korrekt.
+> „Preis: €…“-Detailzeile · die **„Ähnliche Produkte“-Karten** auf ALLEN Seiten (jede Karte
+> trägt den Slug im `onclick`-href → darüber zuordnen, **nicht** über den Preis, da Preise
+> kollidieren). Praktisch: per Node-Skript (JSON-Roundtrip von `products.json` ist byte-identisch)
+> + gezählten String-Replacements je Seite (zwei Stile: `price: X` ohne Quotes bzw. `"price": X`
+> mit Quotes). Der `price-validator` lehnt falsche Client-Preise **nicht** ab, sondern nutzt den
+> `products.json`-Basispreis → Kunden zahlen immer korrekt.
 
 **Noch offen (🟢 niedrig):**
 - **ALI-Produkte ohne Kaufpreis** (~17 Stück) haben in der CSV **keine Kostendaten** → Marge
   ungeprüft. Kosten in der Excel nachtragen, dann ggf. Preise anpassen.
-- **„Ähnliche Produkte“-Karten** (Related-Section unten auf jeder Produktseite) hardcoden die
-  Preise **anderer** Produkte → zeigen für die 15 geänderten Artikel teils noch alte Werte.
-  Rein kosmetisch (Klick führt zur Produktseite mit korrektem Preis, Checkout korrekt). Bei
-  Bedarf zentral nachziehen — wegen Preis-Kollisionen nicht blind ersetzen.
+
+> „Ähnliche Produkte“-Karten sind erledigt: 57 Karten auf 31 Seiten an `products.json` angeglichen
+> (slug-basiert), per Verifikations-Skript geprüft (139 Karten, 0 Abweichungen).
 
 ---
 
