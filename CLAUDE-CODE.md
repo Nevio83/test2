@@ -63,7 +63,13 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 **Zeilenenden:** `.gitattributes` (Repo-Root) erzwingt **LF** für alle Textdateien. Zeigt Git massenhaft Dateien als „geändert“ nur wegen CRLF↔LF, **nicht** committen — stattdessen `git add --renormalize .` in PowerShell.
 
-**Offen (🟢 niedrig):** **9 ALI-Produkte** (SKU `ALI*`) fehlen in `excel/Maios Produkte.csv`
+**Offen (🟢 sehr niedrig — ALI-Produkte sind ausgeblendet):** Alle ALI-Produkte (SKU `ALI*`)
+werden in `app.js` aus **allen** Shop-Listen herausgefiltert (Suche, Kategorien, „Alle Produkte“,
+Bestseller — Bedingung `!sku.startsWith("ALI")`) und sind **nur über die direkte Produkt-URL**
+erreichbar. Sie sind also nicht im aktiven Verkaufsfunnel → die ungeprüfte Marge ist **unkritisch**,
+solange sie ausgeblendet bleiben. Erst relevant, falls eins sichtbar geschaltet wird.
+
+**9 ALI-Produkte** (SKU `ALI*`) fehlen in `excel/Maios Produkte.csv`
 → Marge ungeprüft (nur der Shop-Betreiber kennt die AliExpress-Einkaufspreise; nicht ableitbar).
 Kosten nachtragen, dann Regel **≥ 30 % Marge nach 20 % Rabatt** prüfen/anpassen. Betroffen:
 id 13 (Luft-Wasser-Flasche 24,99 €), 14 (Aroma-Pads 12,99 €), 15 (Espressomaschine 89,99 €),
