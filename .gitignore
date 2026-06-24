@@ -12,6 +12,11 @@ Marketing/.env.*
 **/stripe_backup_code.txt
 # Excel-Sperrdateien (Office-Temp)
 ~$*
+# LibreOffice-Sperrdateien (.~lock.<datei>#)
+.~lock.*#
+# Preis-/Margen-Analyse: enthaelt Lieferanten-Kaufpreise -> NICHT ins oeffentliche Repo
+excel/*Preisanalyse*.xlsx
+excel/*Preisanalyse*.csv
 
 # ── Datenbanken / lokale Daten ───────────────────────────────
 *.db
