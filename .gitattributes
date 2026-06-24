@@ -1,0 +1,42 @@
+# Zeilenenden-Normalisierung — verhindert den CRLF/LF-Drift (siehe CLAUDE-CODE.md §2).
+# Repo speichert ALLE Textdateien als LF; Windows-Arbeitskopien werden beim Commit normalisiert.
+* text=auto eol=lf
+
+# Textuelle Quell-/Konfigdateien explizit auf LF
+*.js     text eol=lf
+*.mjs    text eol=lf
+*.cjs    text eol=lf
+*.json   text eol=lf
+*.html   text eol=lf
+*.css    text eol=lf
+*.md     text eol=lf
+*.txt    text eol=lf
+*.csv    text eol=lf
+*.py     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.svg    text eol=lf
+*.xml    text eol=lf
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+.nvmrc         text eol=lf
+.env.example   text eol=lf
+
+# Binärdateien niemals anfassen
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.pdf  binary
+*.xlsx binary
+*.xls  binary
+*.zip  binary
+*.exe  binary
+*.woff  binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
+*.mp4  binary
+*.mov  binary
