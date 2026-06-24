@@ -45,32 +45,34 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 2. Preise — Anpassung 2026-06-24 erledigt ✅ (Rest-Punkte 🟢)
+## 2. Preise ändern — Arbeitsanweisung
 
-Die Margen-Anpassung aus `excel/Maios Preisanalyse 2026-06.xlsx` (Blatt „Maios-Shop
-Preischeck“) ist **umgesetzt**: 15 Produkte (Daten-Bugs A + Pflicht B + optional C) in
-`products.json` + den Produktseiten aktualisiert. Entscheidungen: **COBLED id 24 → 29,99 €**,
-**Nachtlichter id 25 → 23,99 €** (Streichpreis 34,99 €), Smart Beamer 96,99 €, Haartrockner
-76,99 € (orig 99,99 €), Premium Jade 37,99 €, Mixer 40,99 €, Drucker 32,99 € + Rollen 12,99 €,
-Tumbler/Winter 23,99 € + Strohhalm 6,99 €, Klimaanlage/Wasserspender 33,99 €, Krystall 15,99 €,
-Thermische Massage 24,99 €, Distanzmessgerät 21,99 €, Wärmender Untersetzer 18,99 €.
+> ⚠️ **Produktseiten hardcoden den Preis an FÜNF Stellen.** Jede Preisänderung überall pflegen,
+> sonst driften Seite und Daten:
+> 1. `products.json` — Basispreis + `colors[]` (der `price-validator` nutzt diesen Wert → Kunde zahlt immer korrekt).
+> 2. `produkte/<slug>.html` — price-tag (`<span class="price-tag">€…`).
+> 3. eingebettetes Produkt-JSON in derselben HTML — `price: X` (ohne) bzw. `"price": X` (mit Quotes), inkl. `colors[]`.
+> 4. die „Preis: €…“-Detailzeile.
+> 5. die **„Ähnliche Produkte“-Karten** auf ALLEN Seiten — Zuordnung über den Slug im `onclick`-href,
+>    **nicht** über den Preis (Preise kollidieren).
+>
+> Praktisch per Node-Skript: `products.json`-Roundtrip ist byte-identisch; Seiten/Karten per
+> gezählten String-Replacements (beide Quote-Stile). Danach verifizieren: jede Karte Slug→`products.json`
+> abgleichen, `price-tag`/embedded-JSON/Detailzeile == Basispreis, UVP (`originalPrice`) > Preis.
+> Die Buy-Box-`current-price`-Platzhalter werden per JS aus `product.price` überschrieben → egal.
 
-> ⚠️ **Produktseiten hardcoden den Preis.** Jede Preisänderung an **fünf** Stellen pflegen:
-> `products.json` · `produkte/<slug>.html` price-tag (`<span class="price-tag">€…`) · das
-> eingebettete Produkt-JSON in derselben HTML (`price`/`"price"` inkl. `colors[]`) · die
-> „Preis: €…“-Detailzeile · die **„Ähnliche Produkte“-Karten** auf ALLEN Seiten (jede Karte
-> trägt den Slug im `onclick`-href → darüber zuordnen, **nicht** über den Preis, da Preise
-> kollidieren). Praktisch: per Node-Skript (JSON-Roundtrip von `products.json` ist byte-identisch)
-> + gezählten String-Replacements je Seite (zwei Stile: `price: X` ohne Quotes bzw. `"price": X`
-> mit Quotes). Der `price-validator` lehnt falsche Client-Preise **nicht** ab, sondern nutzt den
-> `products.json`-Basispreis → Kunden zahlen immer korrekt.
+**Zeilenenden:** `.gitattributes` (Repo-Root) erzwingt **LF** für alle Textdateien. Zeigt Git massenhaft Dateien als „geändert“ nur wegen CRLF↔LF, **nicht** committen — stattdessen `git add --renormalize .` in PowerShell.
 
-**Noch offen (🟢 niedrig):**
-- **ALI-Produkte ohne Kaufpreis** (~17 Stück) haben in der CSV **keine Kostendaten** → Marge
-  ungeprüft. Kosten in der Excel nachtragen, dann ggf. Preise anpassen.
-
-> „Ähnliche Produkte“-Karten sind erledigt: 57 Karten auf 31 Seiten an `products.json` angeglichen
-> (slug-basiert), per Verifikations-Skript geprüft (139 Karten, 0 Abweichungen).
+**Offen (🟢 niedrig):** **9 ALI-Produkte** (SKU `ALI*`) fehlen in `excel/Maios Produkte.csv`
+→ Marge ungeprüft (nur der Shop-Betreiber kennt die AliExpress-Einkaufspreise; nicht ableitbar).
+Kosten nachtragen, dann Regel **≥ 30 % Marge nach 20 % Rabatt** prüfen/anpassen. Betroffen:
+id 13 (Luft-Wasser-Flasche 24,99 €), 14 (Aroma-Pads 12,99 €), 15 (Espressomaschine 89,99 €),
+16 (Küchenwaage 49,99 €), 20 (ZigBee-Rollos 89,99 €), 23 (LED Motion Sensor 19,99 €),
+28 (Mini-Massagepistole 24,99 €), 29 (Haaröl-Applikator 8,99 €), 31 (Kopfhaut-Massagekamm 12,99 €).
+ALI id 24 (COBLED 29,99 €) + 25 (Nachtlichter 23,99 €) sind als Daten-Bugs bereits gesetzt.
+Nebenbefund: CSV-Zeile „Crystal Ball Saturn“ hat `????`/`#WERT!` (Kaufpreis fehlt), und die
+`Verkaufspreis`-Spalte ist nach dem Preis-Update teils veraltet — die CSV ist nur Analyse-Quelle,
+nicht maßgeblich (`products.json` zählt).
 
 ---
 
@@ -79,5 +81,4 @@ Thermische Massage 24,99 €, Distanzmessgerät 21,99 €, Wärmender Untersetze
 
 ---
 
-> **Offen:** nur noch die 🟢-Rest-Punkte aus §2 (ALI-Kostendaten, Related-Karten-Kosmetik).
-> Weitere Bugs/Features hier eintragen.
+> **Offen:** nur §2-Rest 🟢 (ALI-Produkte ohne Kaufpreis). Weitere Bugs/Features hier eintragen.
