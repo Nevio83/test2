@@ -45,49 +45,31 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 2. Preise aktualisieren (Shop) — Stand 2026-06-24
+## 2. Preise — Anpassung 2026-06-24 erledigt ✅ (Rest-Punkte 🟢)
 
-Quelle/Details: `excel/Maios Preisanalyse 2026-06.xlsx`, Blatt **„Maios-Shop Preischeck“**.
-Kritischer Wert ist die **Marge nach 20 % Rabatt** (der Shop gewährt 20 %-Gutscheine);
-regulär sehen die Preise gut aus, mit Gutschein rutschen viele ins Minus/fast-null.
+Die Margen-Anpassung aus `excel/Maios Preisanalyse 2026-06.xlsx` (Blatt „Maios-Shop
+Preischeck“) ist **umgesetzt**: 15 Produkte (Daten-Bugs A + Pflicht B + optional C) in
+`products.json` + den Produktseiten aktualisiert. Entscheidungen: **COBLED id 24 → 29,99 €**,
+**Nachtlichter id 25 → 23,99 €** (Streichpreis 34,99 €), Smart Beamer 96,99 €, Haartrockner
+76,99 € (orig 99,99 €), Premium Jade 37,99 €, Mixer 40,99 €, Drucker 32,99 € + Rollen 12,99 €,
+Tumbler/Winter 23,99 € + Strohhalm 6,99 €, Klimaanlage/Wasserspender 33,99 €, Krystall 15,99 €,
+Thermische Massage 24,99 €, Distanzmessgerät 21,99 €, Wärmender Untersetzer 18,99 €.
 
-> ⚠️ **Produktseiten hardcoden den Preis.** Jede Preisänderung an **drei** Stellen pflegen:
-> `products.json` · `produkte/<slug>.html` (`<span class="price-tag">€…`) · das eingebettete
-> Produkt-JSON in derselben HTML (`"price": …` inkl. `colors[]`). Sonst driften Seite und Daten.
+> ⚠️ **Produktseiten hardcoden den Preis.** Jede Preisänderung an **vier** Stellen pflegen:
+> `products.json` · `produkte/<slug>.html` price-tag (`<span class="price-tag">€…`) · das
+> eingebettete Produkt-JSON in derselben HTML (`price`/`"price"` inkl. `colors[]`) · die
+> „Preis: €…“-Detailzeile. Praktisch: per Node-Skript (JSON-Roundtrip von `products.json` ist
+> byte-identisch) + gezählten String-Replacements je Seite (zwei Stile: `price: X` ohne Quotes
+> bzw. `"price": X` mit Quotes). Der `price-validator` lehnt falsche Client-Preise **nicht** ab,
+> sondern nutzt den `products.json`-Basispreis → Kunden zahlen immer korrekt.
 
-### 🔴 A) Seitenpreis ≠ products.json (Daten-Bug, sofort beheben)
-- **COBLED Arbeitsleuchte** (id 24, `produkte/cobled-arbeitsleuchte.html`):
-  Seite zeigt **29,99 €**, `products.json` sagt **12,99 €** → klären welcher korrekt ist, beide angleichen.
-- **Nachtlichter mit Bewegungsmelder** (id 25, `produkte/nachtlichter-mit-bewegungsmelder.html`):
-  Seite **16,99 €**, `products.json` **23,99 €** → angleichen.
-
-### 🟠 B) Marge kritisch/Verlust nach 20 % Rabatt → Preis erhöhen (Pflicht)
-| Produkt | id | jetzt | neu |
-|---|---|---|---|
-| Smart Beamer | 44 | 74,99 € | **96,99 €** *(oder vom 20 %-Gutschein ausnehmen)* |
-| Professioneller 5-in-1 Haartrockner | 37 | 59,99 € | **76,99 €** *(oder vom Gutschein ausnehmen)* |
-| Elektronischer Premium Jade Stein | 39 | 29,99 € | **37,99 €** |
-| 350ml Mixer Entsafter | 11 | 32,99 € | **40,99 €** |
-| Mini Thermal Drucker | 43 | 26,99 € | **32,99 €** |
-
-Dazu die **Rollen-Varianten** des Druckers (Style A/B/C, je **8,99 €**) — Style C macht nach
-Rabatt **Verlust**; alle drei auf **12,99 €** (in `products.json` `colors[]` + HTML-JSON).
-
-### 🟡 C) Marge dünn (10–20 %) → optional erhöhen
-| Produkt | id | jetzt | neu |
-|---|---|---|---|
-| Tumbler Becher (+ Winter) | 47/48 | 19,99 € | 23,99 € |
-| └ Variante „Strohhalm“ | — | 4,99 € | 6,99 € *(kritisch)* |
-| Klimaanlage mit Display | 45 | 28,99 € | 33,99 € |
-| Elektrischer Wasserspender | 10 | 28,99 € | 33,99 € |
-| Krystall Ball Nachtlampe | 50 | 13,99 € | 15,99 € |
-| Thermische Massage | 35 | 21,99 € | 24,99 € |
-| Elektronisches Distanzmessgerät | 19 | 19,99 € | 21,99 € |
-| Wärmender Untersetzer | 40 | 16,99 € | 18,99 € |
-
-Annahmen: 20 % Rabatt, Ziel **≥ 30 % Marge nach Rabatt** → kleinster `x,99`-Preis.
-17 weitere Shop-Produkte (ALI-Lieferant) haben **keinen Kaufpreis** in der CSV — dort Kosten
-nachtragen, um die Marge zu prüfen.
+**Noch offen (🟢 niedrig):**
+- **ALI-Produkte ohne Kaufpreis** (~17 Stück) haben in der CSV **keine Kostendaten** → Marge
+  ungeprüft. Kosten in der Excel nachtragen, dann ggf. Preise anpassen.
+- **„Ähnliche Produkte“-Karten** (Related-Section unten auf jeder Produktseite) hardcoden die
+  Preise **anderer** Produkte → zeigen für die 15 geänderten Artikel teils noch alte Werte.
+  Rein kosmetisch (Klick führt zur Produktseite mit korrektem Preis, Checkout korrekt). Bei
+  Bedarf zentral nachziehen — wegen Preis-Kollisionen nicht blind ersetzen.
 
 ---
 
@@ -96,4 +78,5 @@ nachtragen, um die Marge zu prüfen.
 
 ---
 
-> **Offen:** Shop-Preise aktualisieren (§2). Weitere Bugs/Features hier eintragen.
+> **Offen:** nur noch die 🟢-Rest-Punkte aus §2 (ALI-Kostendaten, Related-Karten-Kosmetik).
+> Weitere Bugs/Features hier eintragen.
