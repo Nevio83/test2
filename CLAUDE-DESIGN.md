@@ -1,13 +1,13 @@
 # CLAUDE-DESIGN.md — UI/UX, Design-System, Accessibility & SEO
 
 Alles fürs Design des Maios-Shops. Technik/Architektur stehen in `CLAUDE.md`, Code-Backlog in
-`CLAUDE-CODE.md`. Sprache überall **Deutsch**. Stand: 2026-06-19.
+`CLAUDE-CODE.md`. Sprache überall **Deutsch**. Stand: 2026-06-24.
 
 ## Design-Kontext (wo was liegt)
 
 - **Startseite** `index.html`: nutzt **Tailwind (CDN)**, eigenes Dark-/Neon-Theme (Violett
   `#8b5cf6`, Cyan `#22d3ee`, Pink `#f472b6`, Glow-Shadows, Glas-Effekte), Fonts Inter + Outfit.
-- **Produktseiten** `produkte/produkt-10..50.html`: **Bootstrap 5** + Kategorie-CSS
+- **Produktseiten** `produkte/<slug>.html` (sprechende Slug-URLs): **Bootstrap 5** + Kategorie-CSS
   (`elektronik.css`, `haushalt-kueche.css`, `beleuchtung.css`, `koerperpflege-wellness.css`) +
   je Seite ein eigener `<style>`-Block.
 - **Cart/Wishlist/Gutscheine/Admin:** Bootstrap. Globale Styles in `styles.css` (215 KB),
@@ -21,7 +21,7 @@ Alles fürs Design des Maios-Shops. Technik/Architektur stehen in `CLAUDE.md`, C
 ## TL;DR
 
 - 🔴 **Zwei Design-Systeme parallel** (Tailwind-Landing vs. Bootstrap-Produktseiten) → Markenbruch.
-- 🔴 **SEO fehlt** auf Produktebene: 0/40 Meta-Description, 0 Open Graph, 0 Canonical, 0 Product-JSON-LD.
+- 🟠 **SEO teilweise:** Meta-Description, Open Graph & Canonical sind jetzt **40/40 ✓** — es fehlt nur noch **Product-JSON-LD (0/40)** für Rich Snippets.
 - 🔴 **Zoom gesperrt** (`user-scalable=no`) → WCAG-Verstoß.
 - 🟠 Kaputte Logo-/Favicon-Referenz (`logo.png` fehlt, nur `logo.jpg`).
 - 🟠 Accessibility dünn: nur 4/61 Seiten mit `aria-`, keine Skip-Links, kein `prefers-reduced-motion`.
@@ -39,19 +39,16 @@ statt CDN). Design-Tokens (Farben, Typo, Spacing, Radius, Schatten) **einmal** z
 referenzieren. Inline-Styles der 40 Produktseiten in ein gemeinsames Komponenten-CSS. Komponenten
 vereinheitlichen: Buttons, Farb-Swatches, Karten, Badges, Galerie, Header/Footer.
 
-## 2. 🔴 SEO auf Produktebene
+## 2. 🟠 SEO auf Produktebene — fast fertig
 
-Messwerte (`produkte/*.html`, 40 Seiten): Meta-Description **0/40**, Open Graph **0/61**,
-`rel="canonical"` **0/61**, Product-JSON-LD **0/40**.
+Stand 2026-06-24 (`produkte/*.html`, 40 Seiten): Meta-Description **40/40 ✓**, Open Graph
+**40/40 ✓**, `rel="canonical"` **40/40 ✓** — **erledigt**. Offen: Product-JSON-LD **0/40**.
 
-**Pro Produktseite (Template, aus `products.json` generieren):**
-- `<meta name="description">` (150–160 Zeichen aus Produktbeschreibung).
-- Open Graph + Twitter Cards (`og:title/description/image/type=product/url`).
-- `<link rel="canonical">`.
+**Noch offen — pro Produktseite (Template, aus `products.json` generieren):**
 - **Product-JSON-LD** (`name, image, description, sku, brand, offers{price, priceCurrency,
-  availability}`) + `BreadcrumbList`.
-- Startseite: `<meta name="keywords">` ist veraltet → weg; Description aussagekräftiger;
-  `sameAs` zeigt auf Platzhalter `facebook.com/deinprofil` → echte Profile oder entfernen.
+  availability}`) + `BreadcrumbList` → Rich Snippets (Preis/Verfügbarkeit/Sterne) in Google.
+- Startseite: `<meta name="keywords">` ist veraltet → weg; `sameAs` zeigt auf Platzhalter
+  `facebook.com/deinprofil` → echte Profile oder entfernen.
 
 ## 3. 🔴 Zoom gesperrt (WCAG)
 
@@ -104,7 +101,7 @@ Nur 4/61 Seiten mit `aria-`, 0 Skip-Links, 0 `prefers-reduced-motion`.
 
 1. 🔴 Viewport-Zoom freigeben (#3) — 1 Zeile.
 2. 🔴 Logo-/Favicon-Pfade reparieren (#4).
-3. 🔴 SEO-Template für Produktseiten (#2) — einmal bauen, aus `products.json` für alle 40.
+3. 🟠 Product-JSON-LD ergänzen (#2) — Meta/OG/Canonical stehen bereits, nur noch JSON-LD + BreadcrumbList aus `products.json`.
 4. 🔴 Design-System-Entscheidung + gemeinsames Produktseiten-Template (#1).
 5. 🟠 Accessibility-Pass (#5) + Build/Bildoptimierung (#6).
 6. 🟡 UX-/Konsistenz-Feinschliff (#7).

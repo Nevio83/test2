@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maios Shop — Neue Ziele & Erfolgsstrategie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070b; --card:rgba(255,255,255,.025); --card-h:rgba(255,255,255,.045);
+  --bd:rgba(255,255,255,.07); --bd-h:rgba(139,92,246,.45);
+  --text:#ECECF2; --muted:#9A9AA8; --label:#6E6E80;
+  --violet:#8b5cf6; --cyan:#22d3ee; --pink:#f472b6; --gold:#fbbf24; --orange:#fb923c; --green:#34d399;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.6;
+  background-image:radial-gradient(900px 500px at 80% -10%,rgba(139,92,246,.18),transparent 60%),
+    radial-gradient(700px 400px at 0% 5%,rgba(34,211,238,.10),transparent 55%);
+  background-attachment:fixed;}
+.wrap{max-width:1000px;margin:0 auto;padding:56px 22px 80px;}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--violet);font-weight:600;margin-bottom:14px}
+h1{font-family:'Outfit',sans-serif;font-weight:800;font-size:clamp(38px,7vw,62px);line-height:1.04;margin:0 0 6px;
+  background:linear-gradient(100deg,#fff 10%,var(--violet) 45%,var(--cyan) 75%,var(--pink));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.subtitle{font-family:'Outfit',sans-serif;font-size:clamp(17px,2.4vw,22px);color:#cfcfe0;font-weight:400;margin:0 0 22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px}
+.chip{font-size:12.5px;color:#c9c9d6;background:rgba(255,255,255,.04);border:1px solid var(--bd);padding:6px 13px;border-radius:999px}
+.chip b{color:#fff;font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 10px}
+.stat{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px 18px}
+.stat .n{font-family:'Outfit',sans-serif;font-weight:700;font-size:25px;
+  background:linear-gradient(90deg,var(--violet),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat .l{font-size:12.5px;color:var(--muted);margin-top:2px}
+.section-label{display:flex;align-items:center;gap:16px;margin:54px 0 18px;
+  font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--label);font-weight:600}
+.section-label::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--bd),transparent)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:22px 24px;margin-bottom:14px;
+  display:flex;gap:16px;align-items:flex-start;transition:.22s ease}
+.card:hover{background:var(--card-h);border-color:var(--bd-h);transform:translateY(-2px);box-shadow:0 10px 30px -12px rgba(139,92,246,.35)}
+.ic{font-size:24px;line-height:1.1;flex-shrink:0;width:30px;text-align:center}
+.body{flex:1;min-width:0}
+.card h3{font-family:'Outfit',sans-serif;font-weight:600;font-size:19px;color:#fff;margin:0 0 6px}
+.card p{color:var(--muted);font-size:14.5px;line-height:1.65;margin:0 0 13px}
+.tag-new{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--cyan);
+  background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.3);padding:2px 7px;border-radius:6px;margin-left:8px;vertical-align:2px}
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 12px;border-radius:999px;border:1px solid transparent}
+.b-vh{color:#f9a8d4;background:rgba(244,114,182,.14);border-color:rgba(244,114,182,.32)}
+.b-h {color:#fcd34d;background:rgba(251,191,36,.13);border-color:rgba(251,191,36,.30)}
+.b-m {color:#fdba74;background:rgba(251,146,60,.13);border-color:rgba(251,146,60,.30)}
+.b-l {color:#6ee7b7;background:rgba(52,211,153,.13);border-color:rgba(52,211,153,.30)}
+.b-done{color:#6ee7b7;background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.28)}
+.b-krit{color:#fda4c4;background:rgba(244,63,110,.15);border-color:rgba(244,63,110,.34)}
+.recap{display:flex;gap:16px;align-items:flex-start;background:linear-gradient(120deg,rgba(52,211,153,.07),rgba(34,211,238,.04));
+  border:1px solid rgba(52,211,153,.2);border-radius:16px;padding:20px 24px}
+.recap p{margin:0 0 11px;color:#c8c8d4;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rc{background:var(--card);border:1px solid var(--bd);border-left-width:3px;border-radius:14px;padding:18px 20px;transition:.22s}
+.rc:hover{background:var(--card-h);transform:translateY(-2px)}
+.rc .top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.rc h4{font-family:'Outfit',sans-serif;font-weight:600;font-size:16px;color:#fff;margin:0}
+.rc ul{margin:0;padding-left:18px;color:var(--muted);font-size:13.5px;line-height:1.7}
+.bl-krit{border-left-color:#ec4899}.bl-mit{border-left-color:#fbbf24}.bl-low{border-left-color:#34d399}
+.foot{margin-top:54px;padding-top:22px;border-top:1px solid var(--bd);color:var(--label);font-size:12.5px;text-align:center}
+@media(max-width:680px){.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.wrap{padding:38px 16px 60px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Strategie · 24. Juni 2026</div>
+  <h1>Neue Ziele</h1>
+  <div class="subtitle">Maios Shop · Was als Nächstes kommt — Wachstum, Conversion & Erfolg</div>
+  <div class="meta">
+    <span class="chip"><b>Live:</b> maiosshop.com</span>
+    <span class="chip"><b>Status:</b> Fundament steht ✓</span>
+    <span class="chip"><b>Fokus:</b> Reichweite & Umsatz</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">14</div><div class="l">neue Ziele</div></div>
+    <div class="stat"><div class="n">5</div><div class="l">Wachstums-Hebel</div></div>
+    <div class="stat"><div class="n">40</div><div class="l">Produkte live</div></div>
+    <div class="stat"><div class="n">✓</div><div class="l">Technik & Recht fertig</div></div>
+  </div>
+
+  <div class="section-label">Bereits erledigt — das Fundament</div>
+  <div class="recap"><div class="ic">🏗️</div><div class="body">
+    <p>In den letzten 7 Tagen gebaut und live: Zahlung &amp; Bestellautomatik, rechtssichere Belege (§19 UStG / GoBD), DSGVO-Bausteine, Newsletter mit Double-Opt-In, Analytics- &amp; Marktforschungs-Dashboard, SEO-Slug-URLs und gesunde, konsistente Preise.</p>
+    <span class="badge b-done">✓ Bau-Phase abgeschlossen — die folgenden Ziele sind alle neu</span>
+  </div></div>
+
+  <div class="section-label">Neue Ziele · Reichweite & Umsatz</div>
+
+  <div class="card"><div class="ic">🎬</div><div class="body">
+    <h3>TikTok-Content wirklich veröffentlichen</h3>
+    <p>Die Creative-Pipeline ist gebaut, aber noch nicht genutzt. Jetzt regelmäßig kurze, ehrliche Produkt-Demos posten. Organische Reichweite kostet nichts — ein viraler Clip kann hunderte Bestellungen bringen.</p>
+    <span class="badge b-vh">Sehr hoher Impact</span></div></div>
+
+  <div class="card"><div class="ic">🎯</div><div class="body">
+    <h3>Auf 3–5 Hero-Produkte fokussieren</h3>
+    <p>40 Produkte aus 4 Kategorien sind für einen jungen Shop zu breit. Mit der vorhandenen Produkt-Analyse die Renner finden und Marketing-Energie nur darauf bündeln. Ein starkes Produkt schlägt 40 mittelmäßige.</p>
+    <span class="badge b-vh">Sehr hoher Impact</span></div></div>
+
+  <div class="card"><div class="ic">🛒</div><div class="body">
+    <h3>Google Merchant Center / Shopping-Feed<span class="tag-new">NEU</span></h3>
+    <p>Einen Produktdaten-Feed bei Google anlegen → kostenlose Produktlistings und später bezahlte Shopping-Ads. Bringt Besucher mit echtem Kaufintent direkt auf die Produktseiten.</p>
+    <span class="badge b-h">Hoher Impact</span></div></div>
+
+  <div class="card"><div class="ic">📈</div><div class="body">
+    <h3>Retargeting-Pixel + erste Test-Ads<span class="tag-new">NEU</span></h3>
+    <p>Meta-/TikTok-Pixel einbauen, um Besucher später wieder anzusprechen. Strikte Regel: erst skalieren, wenn ein Produkt organisch zieht — Budget eng an die Stückkosten-Rechnung koppeln.</p>
+    <span class="badge b-h">Hoher Impact</span></div></div>
+
+  <div class="card"><div class="ic">🤝</div><div class="body">
+    <h3>Trusted-Shops-/Käuferschutz-Siegel<span class="tag-new">NEU</span></h3>
+    <p>Im deutschen Markt ein starker Vertrauens-Booster. Gütesiegel + Käuferschutz senken die Kaufhemmung bei Neukunden spürbar — gerade bei einem unbekannten jungen Shop.</p>
+    <span class="badge b-h">Hoher Impact</span></div></div>
+
+  <div class="section-label">Neue Ziele · Shop & Conversion verbessern</div>
+
+  <div class="card"><div class="ic">⭐</div><div class="body">
+    <h3>Echtes Kundenbewertungs-System</h3>
+    <p>Bisher gibt es nur die interne Produkt-Analyse, aber keine Kundenbewertungen. Sterne + Textbewertungen einbauen und Kunden nach dem Kauf per Mail um eine Bewertung bitten. Social Proof ist für junge Shops entscheidend.</p>
+    <span class="badge b-h">Hoher Impact</span></div></div>
+
+  <div class="card"><div class="ic">💬</div><div class="body">
+    <h3>Warenkorbabbruch-Mails automatisieren</h3>
+    <p>Der Abbruch wird bereits getrackt — die Erinnerungs-Mail fehlt noch. Mit Resend automatisch nach 1 h / 24 h / 3 Tagen erinnern: „Dein Artikel wartet noch“ mit Bild + Link zur Kasse. Einer der höchsten ROIs im E-Commerce.</p>
+    <span class="badge b-h">Hoher Impact</span></div></div>
+
+  <div class="card"><div class="ic">📸</div><div class="body">
+    <h3>Eigene Produktfotos statt CJ-Standard</h3>
+    <p>Die CJ-Dropshipping-Fotos sehen aus wie bei allen anderen Shops. Eigene Lifestyle-/Anwendungsfotos oder hochwertige KI-Produktfotos signalisieren Vertrauen und heben die Conversion deutlich.</p>
+    <span class="badge b-h">Hoher Impact</span></div></div>
+
+  <div class="card"><div class="ic">🔍</div><div class="body">
+    <h3>Product-JSON-LD ergänzen (letzte SEO-Lücke)</h3>
+    <p>Meta-Description, Canonical und Open Graph stehen bereits auf allen 40 Seiten ✓ — nur das Product-JSON-LD fehlt noch (0/40). Damit erscheinen Rich Snippets mit Preis, Verfügbarkeit und Sternen direkt in Google = mehr Klicks ohne Budget.</p>
+    <span class="badge b-h">Hoher Impact</span></div></div>
+
+  <div class="card"><div class="ic">⚡</div><div class="body">
+    <h3>Bilder optimieren (WebP + lazy-load)</h3>
+    <p>161 Bilder sind unoptimiert (0 WebP). Umstellung auf WebP + loading=lazy + feste width/height beschleunigt die Seite spürbar → bessere Rankings und Conversion, besonders mobil.</p>
+    <span class="badge b-m">Mittlerer Impact</span></div></div>
+
+  <div class="card"><div class="ic">🎁</div><div class="body">
+    <h3>Bundles & Cross-Selling aktiv bewerben<span class="tag-new">NEU</span></h3>
+    <p>Bundles liegen bereits in den Produktdaten, werden aber kaum sichtbar genutzt. Prominent bewerben und passende Zusatzartikel im Warenkorb vorschlagen → höherer Warenkorbwert pro Bestellung.</p>
+    <span class="badge b-m">Mittlerer Impact</span></div></div>
+
+  <div class="card"><div class="ic">🎨</div><div class="body">
+    <h3>Design-System vereinheitlichen</h3>
+    <p>Die hochwertige Tailwind-Startseite vs. die biederen Bootstrap-Produktseiten sind ein Markenbruch, der Conversion kostet. Ein System projektweit, gemeinsame Komponenten — konsistenter Premium-Auftritt.</p>
+    <span class="badge b-m">Mittlerer Impact</span></div></div>
+
+  <div class="card"><div class="ic">🔁</div><div class="body">
+    <h3>Empfehlungs- &amp; Treueprogramm<span class="tag-new">NEU</span></h3>
+    <p>Rabattcode für Weiterempfehlungen oder Wiederkäufer (das Gutschein-System ist bereits da). Günstige Neukunden über Mundpropaganda + mehr Bindung bestehender Kunden.</p>
+    <span class="badge b-l">Niedriger Impact</span></div></div>
+
+  <div class="card"><div class="ic">🔎</div><div class="body">
+    <h3>Quick-Wins: Zoom freigeben + Logo/Favicon</h3>
+    <p>Pinch-Zoom freigeben (user-scalable=no entfernen → WCAG) und logo.png / favicon.ico anlegen (aktuell nur logo.jpg). Kleine Fixes, sofort sichtbar in Browser-Tab und beim Teilen.</p>
+    <span class="badge b-l">Niedriger Impact · schnell</span></div></div>
+
+  <div class="section-label">Roadmap · empfohlene Reihenfolge</div>
+
+  <div class="grid">
+    <div class="rc bl-krit"><div class="top"><h4>🚀 Sofort · diese Woche</h4><span class="badge b-krit">Start</span></div>
+      <ul><li>Quick-Wins: Zoom, Logo/Favicon, Product-JSON-LD</li><li>TikTok-Posting-Rhythmus starten (3–5 Hooks)</li><li>Wochen-Ritual: Dashboard auswerten</li></ul></div>
+
+    <div class="rc bl-mit"><div class="top"><h4>📅 Kurzfristig · 2–4 Wochen</h4><span class="badge b-h">Hoch</span></div>
+      <ul><li>Kundenbewertungen einbauen</li><li>Warenkorbabbruch-Mails automatisieren</li><li>Eigene Produktfotos + Bildoptimierung</li></ul></div>
+
+    <div class="rc bl-mit"><div class="top"><h4>🗓️ Mittelfristig · 1–3 Monate</h4><span class="badge b-h">Mittel</span></div>
+      <ul><li>Merchant-Feed + Retargeting-Ads</li><li>Trusted-Shops-Siegel</li><li>Design-System vereinheitlichen + Bundles</li></ul></div>
+
+    <div class="rc bl-low"><div class="top"><h4>♾️ Laufend</h4><span class="badge b-l">Dauerhaft</span></div>
+      <ul><li>Auf Hero-Produkte fokussieren</li><li>Newsletter-Kampagnen + Empfehlungsprogramm</li><li>Margen-Disziplin (≥30 % nach Rabatt)</li></ul></div>
+  </div>
+
+  <div class="foot">Maios Shop · Neue Ziele &amp; Strategie · 24.06.2026 · Erledigtes ist hier bewusst nur als Fundament-Hinweis aufgeführt — alle Ziele sind offen.</div>
+
+</div>
+</body>
+</html>
