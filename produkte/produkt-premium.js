@@ -181,14 +181,33 @@
     const input = document.getElementById('pp-qty') || document.querySelector('.pp-qty-input');
     return input ? Math.max(1, parseInt(input.value, 10) || 1) : 1;
   }
+
+  function updatePriceDisplay(qty) {
+    const p = window.product;
+    if (!p) return;
+    const q = qty || getQtyValue();
+    const totalPrice  = (p.price * q).toFixed(2);
+    const totalOrig   = (p.originalPrice * q).toFixed(2);
+    const totalSaving = ((p.originalPrice - p.price) * q).toFixed(2);
+
+    const elCurrent = document.querySelector('.pp-price-current');
+    const elOrig    = document.querySelector('.pp-price-original');
+    const elSave    = document.querySelector('.pp-price-save');
+    if (elCurrent) elCurrent.textContent = '€' + totalPrice;
+    if (elOrig)    elOrig.textContent    = '€' + totalOrig;
+    if (elSave)    elSave.textContent    = 'Du sparst €' + totalSaving;
+  }
+  window.updatePriceDisplay = updatePriceDisplay;
+
   function initQty() {
     const input = document.getElementById('pp-qty') || document.querySelector('.pp-qty-input');
     const plus  = document.getElementById('pp-qty-plus');
     const minus = document.getElementById('pp-qty-minus');
     if (!input) return;
-    if (plus)  plus.addEventListener('click', () => { input.value = getQtyValue() + 1; });
-    if (minus) minus.addEventListener('click', () => { input.value = Math.max(1, getQtyValue() - 1); });
-    input.addEventListener('change', () => { if (getQtyValue() < 1) input.value = 1; });
+    if (plus)  plus.addEventListener('click',  () => { input.value = getQtyValue() + 1; updatePriceDisplay(); });
+    if (minus) minus.addEventListener('click', () => { input.value = Math.max(1, getQtyValue() - 1); updatePriceDisplay(); });
+    input.addEventListener('change', () => { if (getQtyValue() < 1) input.value = 1; updatePriceDisplay(); });
+    input.addEventListener('input',  () => updatePriceDisplay());
   }
 
   /* --- Button-Bindung --- */
