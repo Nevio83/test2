@@ -142,17 +142,27 @@ img{display:block;max-width:100%}
 .pp-scarcity-bar{height:7px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
 .pp-scarcity-fill{height:100%;background:linear-gradient(90deg,#ffd700,#ef4444);border-radius:999px;animation:barGrow 1.2s ease forwards}
 
-/* Color selection — override light-theme defaults from color-image-selection.js/css */
+/* Color selection — override light-theme inline styles aus color-image-selection.js
+   (Inline-Styles werden mit !important geschlagen) */
 .pp-color-label{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.5);letter-spacing:.06em;margin-bottom:10px}
 .pp-color-selected{color:#fff;font-weight:700}
-#colorSelection,.color-selection-container{background:transparent!important;padding:0!important;border:none!important;border-radius:0!important}
-.color-selection-title,.color-selection-label{color:rgba(255,255,255,.5)!important;font-size:.78rem!important;font-weight:600!important;letter-spacing:.06em!important}
+#colorSelection{background:transparent!important;padding:0!important;border:none!important}
+/* Wrapper-Box (inline bg:#fff) → dunkel */
+.color-selection-wrapper,.color-selection-container{background:rgba(255,255,255,.03)!important;border:1px solid rgba(255,255,255,.1)!important;border-radius:16px!important;box-shadow:none!important;padding:16px 18px!important;margin:4px 0 4px 0!important}
+.color-selection-wrapper h4,.color-selection-title,.color-selection-label{color:rgba(255,255,255,.55)!important;font-size:.78rem!important;font-weight:600!important;letter-spacing:.06em!important;text-transform:uppercase!important}
 .color-option{background:transparent!important}
-.color-image-container{background:rgba(255,255,255,.05)!important;border-color:rgba(255,255,255,.2)!important}
-.color-option.selected .color-image-container,.color-option:focus .color-image-container{border-color:#8b5cf6!important;box-shadow:0 0 0 2px rgba(139,92,246,.35)!important}
-.color-name,.selected-color-text{color:rgba(255,255,255,.7)!important}
-.selected-color-info{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.15)!important;color:#fff!important}
-.selected-color-info span{color:#fff!important;text-shadow:none!important}
+/* Swatch-Rahmen (inline border:#e0e0e0; bg:white) → dunkel */
+.color-image-container{background:rgba(255,255,255,.06)!important;border:3px solid rgba(255,255,255,.14)!important;box-shadow:none!important;transition:all .2s ease!important}
+.color-option:hover .color-image-container{border-color:rgba(139,92,246,.45)!important}
+/* AUSGEWÄHLTE Farbe deutlich sichtbar: kräftiger Rahmen + Glow + Haken */
+.color-option.selected .color-image-container,.color-option:focus .color-image-container{border-color:#8b5cf6!important;box-shadow:0 0 0 3px rgba(139,92,246,.35),0 0 18px rgba(139,92,246,.45)!important;position:relative!important}
+.color-option.selected .color-image-container::after{content:'\2713';position:absolute;top:-9px;right:-9px;width:24px;height:24px;background:#8b5cf6;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;line-height:1;box-shadow:0 2px 8px rgba(139,92,246,.6);z-index:5}
+/* Farbnamen hell, ausgewählter Name betont */
+.color-name{color:rgba(255,255,255,.7)!important;font-weight:500!important}
+.color-option.selected .color-name{color:#fff!important;font-weight:700!important}
+/* "Ausgewählte Farbe: …" — hoher Kontrast (war kaum lesbar) */
+.selected-color-text,.selected-color-info{background:rgba(139,92,246,.18)!important;border-left:3px solid #8b5cf6!important;border-radius:8px!important;color:#fff!important;font-weight:700!important;padding:8px 14px!important}
+.selected-color-text span,.selected-color-info span{color:#fff!important;text-shadow:none!important}
 
 /* Quantity */
 .pp-qty-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}

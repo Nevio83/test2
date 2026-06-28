@@ -2,6 +2,10 @@
    MAIOS PRODUKT PREMIUM — Shared Behaviour
    Countdown · Viewers · Sticky Bar · Toast · Cart ·
    Wishlist · Bundles · UI initialisierung
+
+   WICHTIG: Cart/Wishlist nutzen dieselben localStorage-Keys
+   wie der echte Shop ("cart" / "wishlist") und delegieren an
+   window.addToCart (app.js) für korrektes Farb-/SKU-Handling.
    ======================================================== */
 
 (function () {
@@ -41,7 +45,7 @@
     }, 8000 + Math.random() * 4000);
   }
 
-  /* --- Notification Toast --- */
+  /* --- Notification (kurzer Hinweis oben rechts) --- */
   function showNotif(msg) {
     const el = document.getElementById('pp-notif');
     if (!el) return;
@@ -51,143 +55,167 @@
     el._t = setTimeout(() => el.classList.remove('pp-notif-show'), 3200);
   }
   window.showNotif = showNotif;
+  window.showNotification = showNotif;
 
-  /* --- Cart Helpers --- */
-  function getCart() {
-    try { return JSON.parse(localStorage.getItem('maiosCart') || '[]'); }
+  /* --- localStorage Helpers (SELBE Keys wie der echte Shop!) --- */
+  function readCart() {
+    try { return JSON.parse(localStorage.getItem('cart') || '[]'); }
     catch { return []; }
   }
-  function saveCart(c) { localStorage.setItem('maiosCart', JSON.stringify(c)); }
-  function getCartCount() { return getCart().reduce((s, i) => s + (i.quantity || 1), 0); }
-
+  function cartCount() {
+    return readCart().reduce((s, i) => s + (i.quantity || 1), 0);
+  }
   function updateCartBadge() {
-    const cnt = getCartCount();
+    const c = cartCount();
     document.querySelectorAll('.pp-cart-badge').forEach(b => {
-      b.textContent = cnt;
-      b.style.display = cnt > 0 ? 'flex' : 'none';
+      b.textContent = c;
+      b.style.display = c > 0 ? 'flex' : 'none';
     });
   }
+  window.updateCartBadge = updateCartBadge;
 
-  function addToCartAction(qty) {
-    qty = qty || 1;
+  function readWishlist() {
+    try { return JSON.parse(localStorage.getItem('wishlist') || '[]'); }
+    catch { return []; }
+  }
+
+  /* --- Produkte cachen, damit window.addToCart synchron läuft --- */
+  function ensureProductsCached() {
+    try {
+      const ap = JSON.parse(localStorage.getItem('allProducts') || '[]');
+      if (ap && ap.length) return Promise.resolve();
+    } catch (e) { /* ignore */ }
+    return fetch('../products.json')
+      .then(r => r.json())
+      .then(p => { localStorage.setItem('allProducts', JSON.stringify(p)); })
+      .catch(() => { /* offline → addToCart lädt selbst nach */ });
+  }
+
+  /* --- In den Warenkorb (delegiert an app.js, schreibt "cart") --- */
+  function doAddToCart(qty) {
     const p = window.product;
     if (!p) return;
-    const cart = getCart();
-    const existing = cart.find(i => i.id === p.id);
-    if (existing) {
-      existing.quantity = (existing.quantity || 1) + qty;
+    const id = Number(p.id);
+
+    if (typeof window.addProductToCart === 'function') {
+      // addProductToCart(productsParam, productId) ist die kanonische app.js-Funktion:
+      // sie liest die Farbe selbst via window.getSelectedColor() und schreibt in "cart".
+      // (window.addToCart wird von color-cart-bridge.js überschrieben und erwartet ein
+      //  Objekt — daher rufen wir die rohe Funktion direkt auf.)
+      // Den blauen Standard-Alert unterdrücken — wir zeigen den eigenen Toast.
+      const origAlert = window.showAlert;
+      window.showAlert = function () {};
+      try {
+        for (let i = 0; i < qty; i++) { window.addProductToCart([], id); }
+      } finally {
+        window.showAlert = origAlert;
+      }
     } else {
-      cart.push({
-        id: p.id,
-        name: p.name,
-        price: p.price,
-        image: p.image,
-        slug: p.slug || '',
-        quantity: qty
-      });
+      // Fallback: direkt in "cart" schreiben (ohne Farbe)
+      const cart = readCart();
+      const existing = cart.find(i => Number(i.id) === id && !i.selectedColor);
+      if (existing) {
+        existing.quantity = (existing.quantity || 1) + qty;
+      } else {
+        cart.push({
+          id: p.id, name: p.name, price: p.price, image: p.image,
+          slug: p.slug || '', quantity: qty, cartItemId: id + '-no-color'
+        });
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
     }
-    saveCart(cart);
+
     updateCartBadge();
+    setTimeout(updateCartBadge, 150);
+    setTimeout(updateCartBadge, 500);
     showNotif('✓ Zum Warenkorb hinzugefügt');
     showPurchaseToast();
   }
+
+  function addToCartAction(qty) {
+    qty = Math.max(1, qty || 1);
+    ensureProductsCached().then(() => doAddToCart(qty));
+  }
   window.addToCartAction = addToCartAction;
 
-  /* --- Wishlist Helpers --- */
-  function getWishlist() {
-    try { return JSON.parse(localStorage.getItem('maiosWishlist') || '[]'); }
-    catch { return []; }
+  /* --- Wunschliste (schreibt "wishlist", Shape wie app.js) --- */
+  function syncWishlistBtn() {
+    const p = window.product;
+    if (!p) return;
+    const btn = document.getElementById('wishlistBtn') || document.querySelector('.pp-wish-btn');
+    if (!btn) return;
+    if (readWishlist().some(i => Number(i.id) === Number(p.id))) {
+      btn.innerHTML = '<i class="bi bi-heart-fill"></i>';
+      btn.style.color = '#f472b6';
+    } else {
+      btn.innerHTML = '<i class="bi bi-heart"></i>';
+      btn.style.color = '';
+    }
   }
-  function saveWishlist(w) { localStorage.setItem('maiosWishlist', JSON.stringify(w)); }
 
   function toggleWishlistAction() {
     const p = window.product;
     if (!p) return;
-    const w = getWishlist();
-    const idx = w.findIndex(i => i.id === p.id);
+    const w = readWishlist();
+    const idx = w.findIndex(i => Number(i.id) === Number(p.id));
     const btn = document.getElementById('wishlistBtn') || document.querySelector('.pp-wish-btn');
     if (idx >= 0) {
       w.splice(idx, 1);
-      saveWishlist(w);
+      localStorage.setItem('wishlist', JSON.stringify(w));
       showNotif('Von Wunschliste entfernt');
       if (btn) { btn.innerHTML = '<i class="bi bi-heart"></i>'; btn.style.color = ''; }
     } else {
-      w.push({ id: p.id, name: p.name, price: p.price, image: p.image, slug: p.slug || '' });
-      saveWishlist(w);
+      w.push({
+        id: p.id, name: p.name, price: p.price,
+        image: p.image, description: p.description || ''
+      });
+      localStorage.setItem('wishlist', JSON.stringify(w));
       showNotif('❤ Zur Wunschliste hinzugefügt');
       if (btn) { btn.innerHTML = '<i class="bi bi-heart-fill"></i>'; btn.style.color = '#f472b6'; }
     }
   }
   window.toggleWishlistAction = toggleWishlistAction;
 
-  function syncWishlistBtn() {
-    const p = window.product;
-    if (!p) return;
-    const btn = document.getElementById('wishlistBtn') || document.querySelector('.pp-wish-btn');
-    if (!btn) return;
-    const isWishlisted = getWishlist().some(i => i.id === p.id);
-    if (isWishlisted) {
-      btn.innerHTML = '<i class="bi bi-heart-fill"></i>';
-      btn.style.color = '#f472b6';
-    }
+  /* --- Mengen-Steuerung --- */
+  function getQtyValue() {
+    const input = document.getElementById('pp-qty') || document.querySelector('.pp-qty-input');
+    return input ? Math.max(1, parseInt(input.value, 10) || 1) : 1;
   }
-
-  /* --- Qty Control --- */
   function initQty() {
     const input = document.getElementById('pp-qty') || document.querySelector('.pp-qty-input');
-    const plus  = document.getElementById('pp-qty-plus')  || document.querySelector('.pp-qty-btn[data-dir="+"]');
-    const minus = document.getElementById('pp-qty-minus') || document.querySelector('.pp-qty-btn[data-dir="-"]');
+    const plus  = document.getElementById('pp-qty-plus');
+    const minus = document.getElementById('pp-qty-minus');
     if (!input) return;
-
-    function getQty() { return Math.max(1, parseInt(input.value, 10) || 1); }
-
-    if (plus)  plus.addEventListener('click', () => { input.value = getQty() + 1; });
-    if (minus) minus.addEventListener('click', () => { input.value = Math.max(1, getQty() - 1); });
-    input.addEventListener('change', () => { if (getQty() < 1) input.value = 1; });
+    if (plus)  plus.addEventListener('click', () => { input.value = getQtyValue() + 1; });
+    if (minus) minus.addEventListener('click', () => { input.value = Math.max(1, getQtyValue() - 1); });
+    input.addEventListener('change', () => { if (getQtyValue() < 1) input.value = 1; });
   }
 
-  /* --- Cart / Wishlist Button Binding --- */
+  /* --- Button-Bindung --- */
   function bindButtons() {
-    const cartBtn = document.getElementById('cartBtn') || document.getElementById('heroCartBtn');
-    if (cartBtn) {
-      cartBtn.addEventListener('click', () => {
-        const qtyInput = document.getElementById('pp-qty') || document.querySelector('.pp-qty-input');
-        const qty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
-        addToCartAction(qty);
-      });
-    }
+    const cartBtn = document.getElementById('cartBtn');
+    if (cartBtn) cartBtn.addEventListener('click', () => addToCartAction(getQtyValue()));
 
     const wishBtn = document.getElementById('wishlistBtn') || document.querySelector('.pp-wish-btn');
-    if (wishBtn) {
-      wishBtn.addEventListener('click', toggleWishlistAction);
-    }
+    if (wishBtn) wishBtn.addEventListener('click', toggleWishlistAction);
   }
 
-  /* --- Sticky Bar --- */
+  /* --- Sticky Buy Bar --- */
   function initStickyBar() {
     const bar = document.getElementById('pp-sticky');
     if (!bar) return;
-    const hero = document.querySelector('.pp-buybox') || document.querySelector('.pp-hero');
+    const anchor = document.querySelector('.pp-buybox') || document.querySelector('.pp-hero');
     const stickyBtn = bar.querySelector('.pp-sticky-btn');
+    if (stickyBtn) stickyBtn.addEventListener('click', () => addToCartAction(getQtyValue()));
 
-    if (stickyBtn) {
-      stickyBtn.addEventListener('click', () => {
-        const qtyInput = document.getElementById('pp-qty') || document.querySelector('.pp-qty-input');
-        const qty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
-        addToCartAction(qty);
-      });
-    }
-
+    if (!anchor || !('IntersectionObserver' in window)) return;
     const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        bar.classList.toggle('pp-sticky-show', !e.isIntersecting);
-      });
+      entries.forEach(e => bar.classList.toggle('pp-sticky-show', !e.isIntersecting));
     }, { rootMargin: '0px 0px -80px 0px' });
-
-    if (hero) obs.observe(hero);
+    obs.observe(anchor);
   }
 
-  /* --- Purchase Toast --- */
+  /* --- Kauf-Toast --- */
   function showPurchaseToast() {
     const toast = document.getElementById('pp-toast');
     if (!toast) return;
@@ -197,7 +225,7 @@
   }
   window.showPurchaseToast = showPurchaseToast;
 
-  /* --- Bundles (Fallback wenn bundle-images-final.js nicht greift) --- */
+  /* --- Bundles (Fallback, falls bundle-images-final.js nicht greift) --- */
   function renderBundles(bundles) {
     const section = document.getElementById('bundle-section');
     if (!section) return;
@@ -247,24 +275,22 @@
     const title = card.querySelector('.bundle-title')?.textContent?.trim();
     const p = window.product;
     if (!p) return;
-    const cart = getCart();
+    const cart = readCart();
     cart.push({
       id: p.id,
       name: title || p.name,
       price: parseFloat(price) || p.price,
       image: p.image,
       slug: p.slug || '',
-      quantity: 1
+      quantity: 1,
+      isBundle: true,
+      cartItemId: p.id + '-bundle-' + Date.now()
     });
-    saveCart(cart);
+    localStorage.setItem('cart', JSON.stringify(cart));
     updateCartBadge();
     showNotif('✓ Bundle zum Warenkorb hinzugefügt');
     showPurchaseToast();
   };
-
-  /* --- Notification element (legacy compat) --- */
-  function showNotification(msg) { showNotif(msg); }
-  window.showNotification = showNotification;
 
   /* --- Init --- */
   document.addEventListener('DOMContentLoaded', function () {
@@ -275,6 +301,7 @@
     initStickyBar();
     updateCartBadge();
     syncWishlistBtn();
+    ensureProductsCached();      // Cache vorwärmen → schneller, synchroner Add
   });
 
 })();
