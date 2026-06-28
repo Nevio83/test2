@@ -31,7 +31,8 @@ window.renderBundlesWithImages = async function () {
   }
 
   // 2 verwandte Produkte wählen: zuerst gleiche Kategorie, dann anderen
-  const others  = all.filter(p => Number(p.id) !== Number(current.id));
+  // ALI-Produkte ausschließen (werden im Shop gefiltert)
+  const others  = all.filter(p => Number(p.id) !== Number(current.id) && !(p.sku && p.sku.startsWith('ALI')));
   const sameCat = others.filter(p => p.category === current.category);
   const pool    = sameCat.length >= 2 ? sameCat : others;
   if (pool.length < 1) return;
