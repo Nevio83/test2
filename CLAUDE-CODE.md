@@ -3,7 +3,7 @@
 Alles, was an Code zu tun ist: offene Bugs/Sicherheit, Aufräumen, Ausbau, Git-Workflow.
 Architektur & Setup stehen in `CLAUDE.md`, Design in `CLAUDE-DESIGN.md`.
 
-Stand: 2026-06-24 · Live: **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet
+Stand: 2026-06-29 · Live: **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet
 auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (nur `main`,
 **öffentlich**) · DB: Neon-Postgres · Hosting: Render (Free).
 
@@ -45,7 +45,46 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 ---
 
-## 2. Preise ändern — Arbeitsanweisung
+## 2. CJ Dropshipping & Preisanalyse — Stand 2026-06-29
+
+### CJ-Verbindung (getestet 29.06.2026)
+
+`node test-cj-api.js` ergab **100 % Erfolg (29/29 Tests)**:
+- API-Verbindung, alle 45 Methoden (Auth/Produkte/Bestellungen/Logistik/Lager) verfügbar.
+- Alle Endpoints strukturell valide.
+- ⚠️ `CJ_EMAIL` + `CJ_PASSWORD` fehlen in `.env` → im Render-Dashboard nachtragen (für
+  Token-Refresh via E-Mail/Passwort notwendig, aktuelle `CJ_API_KEY`/`CJ_ACCESS_TOKEN` reichen
+  aber für den normalen Bestellbetrieb).
+
+### Preis-Analyse: 20 % Gewinn inkl. CJ-Versandkosten
+
+**Formel:** VK ≥ (Einkaufspreis + CJ-Versandkosten nach DE) × 1,20, aufgerundet auf x,99.
+
+**Ergebnis:** 4 Produkte lagen darunter → `products.json` am 29.06.2026 korrigiert:
+
+| ID | Produkt | Alt | Neu | EK | CJ-Versand |
+|----|---------|-----|-----|----|-----------|
+| 10 | Elektrischer Wasserspender | 33,99 € | **34,99 €** | 20,50 € | 8,00 € (bestätigt, CSV) |
+| 17 | Bluetooth Anti-Lost Finder | 6,99 € | **8,99 €** | 4,47 € | 2,50 € (geschätzt) |
+| 22 | Waterproof RGB LED Solar | 12,99 € | **13,99 €** | 8,43 € | 3,00 € (geschätzt) |
+| 38 | Jade Stein | 11,99 € | **12,99 €** | 7,79 € | 3,00 € (geschätzt) |
+
+Alle übrigen CJ-Produkte liegen bei ≥ 23 % Gewinn inkl. geschätztem Versand.
+
+⚠️ **TODO (🟠):** CJ-Versandkosten für ID 17, 22, 38 (und alle anderen Produkte) in der CJ-App
+unter „Logistics → Freight Calculate" pro Produkt nachschlagen und `excel/Maios Produkte.csv`
+aktualisieren. Aktuell sind nur für ID 10 (Wasserspender) die 8 € aus dem CSV-Kommentar bekannt.
+
+⚠️ **HTML-Produktseiten müssen ebenfalls angepasst werden!** Die 4 geänderten Produkte haben den
+Preis an 5 Stellen in der jeweiligen `produkte/<slug>.html` (price-tag, eingebettetes JSON,
+Detailzeile, „Ähnliche Produkte"-Karten). Procedure: siehe §2 „Preise ändern — Arbeitsanweisung".
+
+**Produkte ohne Kaufpreis-Daten** (anderer Lieferant, nicht CJ): ID 13, 14, 15, 16, 20, 23,
+24, 25, 28, 29, 31, 51 → Einkaufspreise manuell nachtragen, dann Gewinn-Check wiederholen.
+
+---
+
+## 3. Preise ändern — Arbeitsanweisung
 
 > ⚠️ **Produktseiten hardcoden den Preis an FÜNF Stellen.** Jede Preisänderung überall pflegen,
 > sonst driften Seite und Daten:
@@ -57,34 +96,4 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 >    **nicht** über den Preis (Preise kollidieren).
 >
 > Praktisch per Node-Skript: `products.json`-Roundtrip ist byte-identisch; Seiten/Karten per
-> gezählten String-Replacements (beide Quote-Stile). Danach verifizieren: jede Karte Slug→`products.json`
-> abgleichen, `price-tag`/embedded-JSON/Detailzeile == Basispreis, UVP (`originalPrice`) > Preis.
-> Die Buy-Box-`current-price`-Platzhalter werden per JS aus `product.price` überschrieben → egal.
-
-**Zeilenenden:** `.gitattributes` (Repo-Root) erzwingt **LF** für alle Textdateien. Zeigt Git massenhaft Dateien als „geändert“ nur wegen CRLF↔LF, **nicht** committen — stattdessen `git add --renormalize .` in PowerShell.
-
-**Offen (🟢 sehr niedrig — ALI-Produkte sind ausgeblendet):** Alle ALI-Produkte (SKU `ALI*`)
-werden in `app.js` aus **allen** Shop-Listen herausgefiltert (Suche, Kategorien, „Alle Produkte“,
-Bestseller — Bedingung `!sku.startsWith("ALI")`) und sind **nur über die direkte Produkt-URL**
-erreichbar. Sie sind also nicht im aktiven Verkaufsfunnel → die ungeprüfte Marge ist **unkritisch**,
-solange sie ausgeblendet bleiben. Erst relevant, falls eins sichtbar geschaltet wird.
-
-**9 ALI-Produkte** (SKU `ALI*`) fehlen in `excel/Maios Produkte.csv`
-→ Marge ungeprüft (nur der Shop-Betreiber kennt die AliExpress-Einkaufspreise; nicht ableitbar).
-Kosten nachtragen, dann Regel **≥ 30 % Marge nach 20 % Rabatt** prüfen/anpassen. Betroffen:
-id 13 (Luft-Wasser-Flasche 24,99 €), 14 (Aroma-Pads 12,99 €), 15 (Espressomaschine 89,99 €),
-16 (Küchenwaage 49,99 €), 20 (ZigBee-Rollos 89,99 €), 23 (LED Motion Sensor 19,99 €),
-28 (Mini-Massagepistole 24,99 €), 29 (Haaröl-Applikator 8,99 €), 31 (Kopfhaut-Massagekamm 12,99 €).
-ALI id 24 (COBLED 29,99 €) + 25 (Nachtlichter 23,99 €) sind als Daten-Bugs bereits gesetzt.
-Nebenbefund: CSV-Zeile „Crystal Ball Saturn“ hat `????`/`#WERT!` (Kaufpreis fehlt), und die
-`Verkaufspreis`-Spalte ist nach dem Preis-Update teils veraltet — die CSV ist nur Analyse-Quelle,
-nicht maßgeblich (`products.json` zählt).
-
----
-
-> Großes Repo (~19k JS-Zeilen, 60+ HTML): vor Refactorings `/graphify .` für die
-> Abhängigkeiten (siehe `CLAUDE.md`).
-
----
-
-> **Offen:** nur §2-Rest 🟢 (ALI-Produkte ohne Kaufpreis). Weitere Bugs/Features hier eintragen.
+> gezählten String-Replacements (beide Quote-Stile). 
