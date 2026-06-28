@@ -1,0 +1,11 @@
+/* ============================================================
+   MAIOS — FONTS
+   The storefront uses two Google families:
+     • Outfit  — geometric display (logo, headlines)
+     • Inter   — humanist sans (body, UI)
+   No substitution: these match the live site exactly.
+   The serif "Maios" wordmark in the logo asset is a custom
+   monogram (image), not a webfont.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');

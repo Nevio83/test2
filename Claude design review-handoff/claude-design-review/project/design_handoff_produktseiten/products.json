@@ -1,0 +1,1027 @@
+[
+  {
+    "id": 10,
+    "name": "Elektrischer Wasserspender für Schreibtisch",
+    "price": 28.99,
+    "originalPrice": 69.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
+    "description": "Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.",
+    "sku": "CJ1621032671155597312",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#2C2C2C",
+        "sku": "CJHS167415803CX",
+        "price": 28.99,
+        "originalPrice": 69.99,
+        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJHS167415802BY",
+        "price": 28.99,
+        "originalPrice": 69.99,
+        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Büro Bundle",
+        "description": "Wasserspender + Bürozubehör",
+        "items": ["Ersatzpumpe", "Reinigungsset"],
+        "originalPrice": 75,
+        "bundlePrice": 65,
+        "savings": 10
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Hydration",
+        "description": "Komplettes Hydration-Set",
+        "items": ["Ersatzpumpe", "Reinigungsset", "Wasserfilterset"],
+        "originalPrice": 120,
+        "bundlePrice": 89,
+        "savings": 31
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "name": "350ml Elektrischer Mixer Entsafter",
+    "price": 32.99,
+    "originalPrice": 49.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
+    "description": "Kompakter elektrischer Mixer und Entsafter. Perfekt für Smoothies und frische Säfte unterwegs.",
+    "sku": "CJ1621032671155597313",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "colors": [
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJD112318801AZ",
+        "price": 32.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg"
+      },
+      {
+        "name": "Rosa",
+        "code": "#FFC0CB",
+        "sku": "CJJD112318812LO",
+        "price": 32.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png"
+      },
+      {
+        "name": "Blau",
+        "code": "#4A90E2",
+        "sku": "CJJD112318814NM",
+        "price": 32.99,
+        "originalPrice": 49.99,
+        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Blau.jpg"
+      }
+    ],
+    "story": {
+      "emotion": "Energie & Selbstfürsorge unterwegs",
+      "benefit": "Frische Smoothies in 30 Sekunden – egal ob im Büro, Gym oder Auto.",
+      "problem": "Shakes aus dem Supermarkt sind voller Zucker und der Mixer zuhause bleibt ungenutzt, weil er sperrig ist.",
+      "audience": [
+        "Fitness- und Smoothie-Fans",
+        "Busy Moms & Dads",
+        "Office Meal Prep Lover"
+      ],
+      "hooks": [
+        "Mein Post-Workout Drink passt jetzt in die Handtasche.",
+        "POV: Du bist im Stau und mixt dir trotzdem einen Smoothie.",
+        "Dieses Mini-Gadget ersetzt meinen großen Mixer." 
+      ],
+      "angles": [
+        "Healthy on-the-go",
+        "Mealprep Challenge",
+        "Matching aesthetic kitchen setups"
+      ],
+      "cta": "Blend dir Energie to go – ohne Küche, ohne Kabel.",
+      "assets": {
+        "primaryImage": "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
+        "colorVariants": {
+          "Weiß": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg",
+          "Rosa": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png",
+          "Blau": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Blau.jpg"
+        },
+        "demoIdeas": [
+          "Mealprep POV mit gefrorenen Früchten",
+          "Desk-Setup mit USB-Powerbank",
+          "TikTok Trend: Rate the smoothie color"
+        ]
+      },
+      "hashtags": [
+        "#smoothietok",
+        "#deskessentials",
+        "#fitwithme"
+      ]
+    },
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Smoothie Starter",
+        "description": "Mixer + Zubehör",
+        "items": ["Ersatzbecher", "Reinigungsbürste"],
+        "originalPrice": 35,
+        "bundlePrice": 29,
+        "savings": 6
+      },
+      {
+        "id": "bundle2",
+        "name": "Fitness Bundle",
+        "description": "Komplettes Smoothie-Set",
+        "items": ["2x Ersatzbecher", "Reinigungsbürste", "Rezeptbuch"],
+        "originalPrice": 60,
+        "bundlePrice": 45,
+        "savings": 15
+      },
+      {
+        "id": "bundle3",
+        "name": "Family Pack",
+        "description": "Alles für die Familie",
+        "items": [
+          "3x Ersatzbecher",
+          "2x Reinigungsbürste",
+          "Rezeptbuch",
+          "Transporttasche"
+        ],
+        "originalPrice": 85,
+        "bundlePrice": 59,
+        "savings": 26
+      },
+      {
+        "id": "bundle4",
+        "name": "Professional Set",
+        "description": "Für tägliche Nutzung",
+        "items": [
+          "4x Ersatzbecher",
+          "3x Reinigungsbürste",
+          "Rezeptbuch",
+          "Transporttasche",
+          "Ersatzklingen"
+        ],
+        "originalPrice": 120,
+        "bundlePrice": 79,
+        "savings": 41
+      }
+    ],
+    "tags": [
+      "mixer",
+      "entsafter",
+      "smoothie",
+      "350ml",
+      "elektrisch",
+      "tragbar"
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 12,
+    "name": "Multifunktions Gemüseschneider",
+    "price": 16.99,
+    "originalPrice": 29.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Multifunktions Gemüseschneider.jpg",
+    "description": "Vielseitiger Gemüseschneider mit austauschbaren Klingen. Spart Zeit und Mühe beim Kochen.",
+    "sku": "CJCJ170137301AZ",
+    "inStock": true,
+    "shippingTime": "6-11 Werktage",
+    "story": {
+      "emotion": "Control & Satisfaction beim Kochen",
+      "benefit": "Schneidet Gemüse in Sekunden ohne Chaos.",
+      "problem": "Schneidebretter voll mit Tränen und ungleichmäßigen Würfeln – Mealprep dauert ewig.",
+      "audience": [
+        "Mealprep Fans",
+        "Studierende",
+        "Busy Familienköche"
+      ],
+      "hooks": [
+        "Ich schneide 5 Zutaten in unter 1 Minute.",
+        "Warum ich keine Küchenmesser mehr brauche.",
+        "Mealprep Sonntag ohne Zwiebel-Tränen." 
+      ],
+      "angles": [
+        "Healthy Budget Meals",
+        "TikTok Rezept Hacks",
+        "ASMR Cutting"
+      ],
+      "cta": "Hol dir den Prep-Helfer und spare Zeit beim Kochen.",
+      "assets": {
+        "primaryImage": "produkt bilder/Multifunktions Gemüseschneider.jpg",
+        "demoIdeas": [
+          "Split-Screen vorher/nachher",
+          "Regenbogen-Salat Challenge",
+          "Clean Kitchen ASMR"
+        ]
+      },
+      "hashtags": [
+        "#mealprep",
+        "#kitchenhack",
+        "#foodtok"
+      ]
+    },
+    "tags": ["gemüse", "schneider", "küche", "multifunktion"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Küchen Starter",
+        "description": "Schneider + Zubehör",
+        "items": ["Extra Klingen", "Reinigungsbürste"],
+        "originalPrice": 35,
+        "bundlePrice": 28,
+        "savings": 7
+      },
+      {
+        "id": "bundle2",
+        "name": "Profi Küche",
+        "description": "Professionelles Küchen-Set",
+        "items": ["Extra Klingen", "Reinigungsbürste", "Aufbewahrungsbox"],
+        "originalPrice": 55,
+        "bundlePrice": 40,
+        "savings": 15
+      }
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 13,
+    "name": "Luft Wasser Flasche mit Pumpe",
+    "price": 24.99,
+    "originalPrice": 34.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Luft Wasser Flasche mit Pumpe.jpeg",
+    "description": "Innovative Wasserflasche mit integrierter Luftpumpe. Perfekt für Sport, Reisen und den täglichen Gebrauch.",
+    "sku": "ALI1005007209",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["wasser", "sport", "pumpe", "flasche"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Sport Bundle",
+        "description": "Flasche + Sport Zubehör",
+        "items": ["Trageschlaufe", "Reinigungsset"],
+        "originalPrice": 35,
+        "bundlePrice": 30,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Active Lifestyle",
+        "description": "Komplettes Sport-Set",
+        "items": ["Trageschlaufe", "Reinigungsset", "Ersatzventil"],
+        "originalPrice": 50,
+        "bundlePrice": 40,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 14,
+    "name": "10-1 Stück Aroma-Pads",
+    "price": 12.99,
+    "originalPrice": 18.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/10-1 Stück Aroma-Pads.jpeg",
+    "description": "Hochwertige Aroma-Pads für Kaffeemaschinen. Wiederverwendbar und umweltfreundlich für perfekten Kaffeegenuss.",
+    "sku": "ALI1005008666",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["kaffee", "pads", "wiederverwendbar", "umweltfreundlich"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Kaffee Starter",
+        "description": "Pads + Kaffee Zubehör",
+        "items": ["Reinigungsbürste", "Aufbewahrungsbox"],
+        "originalPrice": 20,
+        "bundlePrice": 17,
+        "savings": 3
+      },
+      {
+        "id": "bundle2",
+        "name": "Barista Set",
+        "description": "Professionelles Kaffee-Set",
+        "items": [
+          "Reinigungsbürste",
+          "Aufbewahrungsbox",
+          "Premium Kaffeebohnen"
+        ],
+        "originalPrice": 35,
+        "bundlePrice": 25,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 15,
+    "name": "Drahtlose elektrische tragbare Espressomaschine",
+    "price": 89.99,
+    "originalPrice": 119.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Drahtlose elektrische tragbare Espressomaschine.jpeg",
+    "description": "Premium tragbare Espressomaschine mit drahtloser Technologie. Perfekter Espresso überall und jederzeit.",
+    "sku": "ALI1005007317",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["espresso", "kaffee", "tragbar", "drahtlos"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Espresso Starter",
+        "description": "Maschine + Grundausstattung",
+        "items": ["Reinigungsset", "Ersatzkapseln"],
+        "originalPrice": 110,
+        "bundlePrice": 99,
+        "savings": 11
+      },
+      {
+        "id": "bundle2",
+        "name": "Barista Professional",
+        "description": "Professionelles Espresso-Set",
+        "items": [
+          "Reinigungsset",
+          "Ersatzkapseln",
+          "Premium Kaffeebohnen",
+          "Milchaufschäumer"
+        ],
+        "originalPrice": 150,
+        "bundlePrice": 125,
+        "savings": 25
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 16,
+    "name": "Elektrische Küchenwaage Digital",
+    "price": 49.99,
+    "originalPrice": 39.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/ware.png",
+    "description": "Präzise digitale Küchenwaage mit LCD-Display. Ideal für genaues Wiegen beim Kochen und Backen.",
+    "sku": "ALI1005007542",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["waage", "küche", "digital", "präzise"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Baking Starter",
+        "description": "Waage + Back-Zubehör",
+        "items": ["Messbecher Set", "Rezeptbuch"],
+        "originalPrice": 40,
+        "bundlePrice": 35,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Master Baker",
+        "description": "Professionelles Back-Set",
+        "items": [
+          "Messbecher Set",
+          "Rezeptbuch",
+          "Silikon Backformen",
+          "Digitaler Timer"
+        ],
+        "originalPrice": 70,
+        "bundlePrice": 55,
+        "savings": 15
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 19,
+    "name": "Elektronisches Distanzmessgerät Digital",
+    "price": 19.99,
+    "originalPrice": 59.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Elektronisches Distanzmessgerät Digital.jpg",
+    "description": "Präzises elektronisches Distanzmessgerät mit LCD-Display. Ideal für Handwerker, Architekten und Heimwerker.",
+    "sku": "CJXFLPJY00674-Black",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "story": {
+      "emotion": "Selbstbewusstsein & Präzision",
+      "benefit": "Misst Räume sekundenschnell – ohne Zollstock und Partner, der das andere Ende hält.",
+      "problem": "Krumme Messwerte ruinieren DIY Projekte und Rücksendungen kosten Zeit.",
+      "audience": [
+        "DIY Heimwerker",
+        "Interior Creator",
+        "Handwerker on the go"
+      ],
+      "hooks": [
+        "Ich messe jetzt mit Laser statt Meterstab.",
+        "Mietwohnung makeover? Erst messen!",
+        "Spoiler: Dieses Tool macht IKEA Hacks easier." 
+      ],
+      "angles": [
+        "Room transformation",
+        "Small Business Packaging",
+        "Minimalist Tool Carry"
+      ],
+      "cta": "Hol dir den Pocket-Laser und mach jedes Projekt messerscharf.",
+      "assets": {
+        "primaryImage": "produkt bilder/Elektronisches Distanzmessgerät Digital.jpg",
+        "demoIdeas": [
+          "Before/After Room Layout",
+          "POV: TikTok Trend ‚rate my landlord fixes‘",
+          "Budget-Reno Step-by-Step"
+        ]
+      },
+      "hashtags": [
+        "#diyszn",
+        "#lasermeasure",
+        "#homeproject"
+      ]
+    },
+    "tags": ["messen", "werkzeug", "elektronisch", "digital"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": ["Bedienungsanleitung", "Garantiekarte"],
+        "originalPrice": 49.99,
+        "bundlePrice": 44.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": ["Bedienungsanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 64.99,
+        "bundlePrice": 54.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 20,
+    "name": "ZigBee Smart DIY Motorisierte Rollos",
+    "price": 89.99,
+    "originalPrice": 129.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg",
+    "description": "Intelligente motorisierte Rollos mit ZigBee-Technologie. Einfache Installation und Smart Home Integration für automatische Lichtsteuerung.",
+    "sku": "ALI1005005801",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["smart", "automation"],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Starter Bundle",
+        "description": "Produkt + Grundzubehör",
+        "items": ["Bedienungsanleitung", "Garantiekarte"],
+        "originalPrice": 99.99,
+        "bundlePrice": 94.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Premium Bundle",
+        "description": "Komplettes Set mit Extras",
+        "items": ["Bedienungsanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 114.99,
+        "bundlePrice": 104.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 24,
+    "name": "COBLED Arbeitsleuchte",
+    "price": 12.99,
+    "originalPrice": 49.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/COBLED Arbeitsleuchte.jpeg",
+    "description": "Professionelle COBLED Arbeitsleuchte mit COB LED-Technologie. Ideal für Werkstatt, Garage, Camping und alle Arbeiten die helles, gleichmäßiges Licht benötigen.",
+    "sku": "ALI1005007024",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "features": [
+      "COB LED-Technologie für gleichmäßiges Licht",
+      "Bis zu 1000 Lumen Helligkeit",
+      "Wiederaufladbar über USB",
+      "Magnetische Befestigung und Haken",
+      "Wasserdicht (IP54) für Outdoor-Einsatz"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Work Starter",
+        "description": "Arbeitsleuchte + Ladezubehör",
+        "items": ["USB-Ladekabel", "Bedienungsanleitung"],
+        "originalPrice": 49.99,
+        "bundlePrice": 39.99,
+        "savings": 10
+      },
+      {
+        "id": "bundle2",
+        "name": "Professional Work",
+        "description": "Komplettes Arbeitsbeleuchtungsset",
+        "items": [
+          "USB-Ladekabel",
+          "Bedienungsanleitung",
+          "Zusätzliche Halterung"
+        ],
+        "originalPrice": 64.99,
+        "bundlePrice": 49.99,
+        "savings": 15
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 25,
+    "name": "Nachtlichter mit Bewegungsmelder",
+    "price": 23.99,
+    "originalPrice": 24.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Nachtlichter mit Bewegungsmelder.jpeg",
+    "description": "Automatische Nachtlichter mit Bewegungsmelder für sicheres Navigieren in der Dunkelheit. Perfekt für Schlafzimmer, Badezimmer, Flure und Kinderzimmer.",
+    "sku": "ALI1005007025",
+    "inStock": true,
+    "features": [
+      "Automatischer Bewegungsmelder",
+      "Warmes, augenschonendes Licht",
+      "Batteriebetrieben - bis zu 12 Monate",
+      "Klebestreifen für einfache Montage",
+      "Kompaktes, unauffälliges Design"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Night Safety",
+        "description": "Nachtlicht + Batterien",
+        "items": ["3x AAA Batterien", "Klebestreifen"],
+        "originalPrice": 24.99,
+        "bundlePrice": 19.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Night Safety",
+        "description": "Komplettes Nachtbeleuchtungsset",
+        "items": [
+          "3x AAA Batterien",
+          "Klebestreifen",
+          "Zusätzliche Befestigungsoptionen"
+        ],
+        "originalPrice": 34.99,
+        "bundlePrice": 24.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 26,
+    "name": "4 In 1 Self Cleaning Hair Brush",
+    "price": 11.99,
+    "originalPrice": 20.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",
+    "description": "Revolutionäre 4-in-1 selbstreinigende haarbürste mit Anti-Statik-Massage-Funktion. Skalierbar, rotierend und selbstreinigend für perfekte haarpflege.",
+    "sku": "CJ1711943102027542528",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "colors": [
+      {
+        "name": "Roland Purple",
+        "code": "#663399",
+        "sku": "CJYD186774301AZ",
+        "price": 11.99,
+        "originalPrice": 20.99,
+        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg"
+      },
+      {
+        "name": "Lunar Rock",
+        "code": "#708090",
+        "sku": "CJYD186774302BY",
+        "price": 11.99,
+        "originalPrice": 21.99,
+        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg"
+      }
+    ],
+    "features": [
+      "4-in-1 Multifunktions-Design",
+      "Selbstreinigende Technologie",
+      "Anti-Statik-Massage-Funktion",
+      "Skalierbar und rotierend",
+      "Ergonomischer Griff"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "originalPrice": 20.99,
+        "bundlePrice": 15.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 35.99,
+        "bundlePrice": 25.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 19,
+    "name": "Mini Muskel Massage Pistole",
+    "price": 24.99,
+    "originalPrice": 44.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Mini Muskel Massage Pistole.jpeg",
+    "description": "Kompakte Mini-Massage-Pistole für Muskelentspannung und Regeneration. Ideal für Sport, Fitness und tägliche Wellness-Routine.",
+    "sku": "ALI1005007060455752",
+    "inStock": true,
+    "shippingTime": "10-20 Werktage",
+    "tags": ["massage", "muskel", "regeneration", "sport"],
+    "story": {
+      "emotion": "Entspannung & Regeneration",
+      "benefit": "Erleichtert Muskelverspannungen und fördert Regeneration.",
+      "problem": "Muskelkater, Verspannungen und Stress.",
+      "audience": [
+        "Fitness Enthusiasten",
+        "Sportler",
+        "Wellness Liebhaber"
+      ],
+      "hooks": [
+        "Ich habe meine Muskelverspannungen gelöst.",
+        "Warum ich meine Massage-Pistole liebe.",
+        "Der Mini-Massager, der TikTok liebt." 
+      ],
+      "angles": [
+        "Fitness Routine",
+        "Wellness Corner",
+        "Anxiety Relief"
+      ],
+      "cta": "Hol dir die Mini-Massage-Pistole und entspanne deine Muskeln.",
+      "assets": {
+        "primaryImage": "produkt bilder/Mini Muskel Massage Pistole.jpeg",
+        "demoIdeas": [
+          "Muskelentspannung",
+          "Regeneration",
+          "Fitness Routine"
+        ]
+      },
+      "hashtags": [
+        "#fitness",
+        "#wellness",
+        "#massagetiktok"
+      ]
+    },
+    "features": [
+      "Kompaktes Mini-Design",
+      "Verschiedene Massage-Aufsätze",
+      "Einstellbare Geschwindigkeitsstufen",
+      "Wiederaufladbar über USB",
+      "Leise Betriebsgeräusche"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "originalPrice": 34.99,
+        "bundlePrice": 29.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 49.99,
+        "bundlePrice": 39.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": false
+  },
+  {
+    "id": 27,
+    "name": "Volcanic Flame Aroma Essential Oil Diffuser",
+    "price": 28.99,
+    "originalPrice": 49.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg",
+    "description": "USB-betriebener Vulkanflammen-Aromadiffuser mit Quallen-Luftbefeuchter und Nachtlicht. Perfekt für entspannende Atmosphäre und Wellness.",
+    "sku": "CJJT163563001AZ",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "aromadiffuser",
+      "luftbefeuchter",
+      "nachtlicht",
+      "wellness"
+    ],
+    "story": {
+      "emotion": "Beruhigung & Cozy Vibes",
+      "benefit": "Erzeugt in Sekunden Lava-Lamp Feeling plus Duft.",
+      "problem": "Wohnungen wirken steril, Stresslevel hoch – Kerzen reichen nicht.",
+      "audience": [
+        "Night Routine Lover",
+        "Home Spa Fans",
+        "Content Creator für Cozy Corner"
+      ],
+      "hooks": [
+        "Ich habe mir einen Vulkan ins Wohnzimmer gestellt.",
+        "Warum mein Schlafzimmer jetzt wie ein Spa riecht.",
+        "Der ruhige Flammen-Diffusor, der TikTok liebt." 
+      ],
+      "angles": [
+        "Night Routine",
+        "Study-with-me Backdrop",
+        "Anxiety Relief Corner"
+      ],
+      "cta": "Hol dir den Flammen-Diffusor und erschaffe dein persönliches Mini-Spa.",
+      "assets": {
+        "primaryImage": "produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg",
+        "demoIdeas": [
+          "Room Glow Transition",
+          "ASMR Wasser + Nebel",
+          "Cozy Desk POV"
+        ]
+      },
+      "hashtags": [
+        "#nightroutine",
+        "#cozycore",
+        "#wellnesstiktok"
+      ]
+    },
+    "features": [
+      "Vulkanflammen-Design für entspannende Atmosphäre",
+      "USB-betrieben für einfache Nutzung",
+      "Quallen-Luftbefeuchter-Funktion",
+      "Integriertes Nachtlicht",
+      "Tragbar und kompakt"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Wellness Starter",
+        "description": "Produkt + Wellness Zubehör",
+        "items": ["Pflegeanleitung", "Garantiekarte"],
+        "originalPrice": 25.99,
+        "bundlePrice": 20.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Wellness",
+        "description": "Komplettes Wellness-Set",
+        "items": ["Pflegeanleitung", "Garantiekarte", "Premium Support"],
+        "originalPrice": 40.99,
+        "bundlePrice": 30.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": true
+  },
+  {
+    "id": 32,
+    "name": "Indoor Sensing Wall Lamp",
+    "price": 17.99,
+    "originalPrice": 39.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Indoor Sensing Wall Lamp.jpg",
+    "description": "USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt für Flure, Treppen und Schränke mit automatischer Ein-/Ausschaltung bei Bewegung.",
+    "sku": "CJ1373821404948074496",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "tags": [
+      "wandlampe",
+      "bewegungsmelder",
+      "usb",
+      "sensor",
+      "beleuchtung",
+      "automatisch"
+    ],
+    "story": {
+      "emotion": "Sicherheit & Komfort",
+      "benefit": "Automatische Beleuchtung bei Bewegung.",
+      "problem": "Dunkle Flure, Treppen und Schränke.",
+      "audience": [
+        "Home Decor Enthusiasten",
+        "Safety Conscious",
+        "Smart Home Fans"
+      ],
+      "hooks": [
+        "Ich habe meine Flure automatisiert.",
+        "Warum ich keine Angst mehr vor dunklen Ecken habe.",
+        "Der Bewegungsmelder, der TikTok liebt." 
+      ],
+      "angles": [
+        "Home Decor Inspiration",
+        "Safety First",
+        "Smart Home Automation"
+      ],
+      "cta": "Hol dir die Indoor Sensing Wall Lamp und erlebe Komfort.",
+      "assets": {
+        "primaryImage": "produkt bilder/Indoor Sensing Wall Lamp.jpg",
+        "demoIdeas": [
+          "Automatische Beleuchtung",
+          "Bewegungsmelder",
+          "Smart Home Integration"
+        ]
+      },
+      "hashtags": [
+        "#homedecor",
+        "#safetyfirst",
+        "#smarthome"
+      ]
+    },
+    "features": [
+      "USB-aufladbar für kabellose Nutzung",
+      "Bewegungssensor mit automatischer Aktivierung",
+      "Verschiedene Größen verfügbar (14x6cm, 22x11cm, 29x11cm)",
+      "Weiß- und Warmlicht-Modi",
+      "Einfache Wandmontage ohne Verkabelung"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Smart Light Starter",
+        "description": "Wandlampe + Grundzubehör",
+        "items": ["USB-Ladekabel", "Montagezubehör"],
+        "originalPrice": 39.99,
+        "bundlePrice": 34.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Complete Smart Lighting",
+        "description": "Komplettes Smart-Beleuchtungsset",
+        "items": ["USB-Ladekabel", "Montagezubehör", "Bedienungsanleitung"],
+        "originalPrice": 54.99,
+        "bundlePrice": 44.99,
+        "savings": 10
+      }
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Professioneller 5 in 1 Haar Trockner",
+    "price": 59.99,
+    "originalPrice": 69.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Professioneller 5 in 1 Haar Trockner .jpg",
+    "description": "Professioneller 5-in-1 Haartrockner mit Bürste, Glätter und Lockenwickler. Elektrisches Haarstyling-Tool für alle Haartypen.",
+    "sku": "CJTF141037802BY",
+    "inStock": true,
+    "shippingTime": "7-13 Werktage",
+    "tags": ["hair dryer", "haarstyling", "föhn", "wellness", "beauty"],
+    "story": {
+      "emotion": "Glow-Up & Salon-Feeling",
+      "benefit": "Trocknet, glättet und lockt mit nur einem Tool.",
+      "problem": "Mehrere Geräte, Hitze-Schäden und stundenlanges Styling nerven.",
+      "audience": [
+        "Curly/Wavy Hair Girls",
+        "Creator, die Hair Tutorials drehen",
+        "Busy Moms mit wenig Zeit"
+      ],
+      "hooks": [
+        "Ich ersetze 5 Tools mit einem.",
+        "POV: Dyson Dupe unter 70€.",
+        "Get ready with me – 10 Min Blowout." 
+      ],
+      "angles": [
+        "Dyson Dupe Vergleich",
+        "Morning Routine",
+        "HairTok Transformations"
+      ],
+      "cta": "Hol dir den 5-in-1 Styler und kreier Salonlooks zuhause.",
+      "assets": {
+        "primaryImage": "produkt bilder/Professioneller 5 in 1 Haar Trockner .jpg",
+        "demoIdeas": [
+          "30-sec curl transition",
+          "Root volume hack",
+          "Heat damage comparison"
+        ]
+      },
+      "hashtags": [
+        "#hairtiktok",
+        "#dysondupe",
+        "#grwm"
+      ]
+    },
+    "showInSlider": true
+  },
+  {
+    "id": 50,
+    "name": "Krystall Ball Nachtlampe",
+    "price": 13.99,
+    "originalPrice": 29.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Krystall Ball Nachtlampe.jpg",
+    "description": "Leuchtende Kristallkugel mit verschiedenen Motiven - Sternenhimmel, Planeten, Mond und mehr. Perfekte Dekoration für Zuhause oder als Geschenk.",
+    "sku": "CJJT153840401AZ",
+    "inStock": true,
+    "shippingTime": "7-15 Werktage",
+    "tags": [
+      "kristallkugel",
+      "leuchtend",
+      "dekoration",
+      "geschenk",
+      "sternenhimmel"
+    ],
+    "story": {
+      "emotion": "Staunen & Nostalgie",
+      "benefit": "Projiziert Lieblingsmotive als sanftes Nachtlicht.",
+      "problem": "Kinder wollen beruhigende Rituale, Erwachsenen-Deko wirkt oft zu kitschig.",
+      "audience": [
+        "Kids Room Creator",
+        "Geschenkjäger",
+        "Spiritual & Astrology Fans"
+      ],
+      "hooks": [
+        "Ich habe einen Mini-Planeten in mein Zimmer geholt.",
+        "Geschenk, das alle anstarren.",
+        "POV: Dein Nachtlicht erzählt Geschichten." 
+      ],
+      "angles": [
+        "Cozy Night Routine",
+        "Crystal Core Decor",
+        "Mindfulness Corner"
+      ],
+      "cta": "Hol dir die Kristallkugel und lass Motive schweben.",
+      "assets": {
+        "primaryImage": "produkt bilder/Krystall Ball Nachtlampe.jpg",
+        "colorVariants": {
+          "Mond": "produkt bilder/Krystall Ball Nachtlampe bilder/Krystall Ball Mond.jpg",
+          "Riesenrad": "produkt bilder/Krystall Ball Nachtlampe bilder/Riesenrad.jpg",
+          "Wassermolch": "produkt bilder/Krystall Ball Nachtlampe bilder/Wassermolch.jpg",
+          "Saturn": "produkt bilder/Krystall Ball Nachtlampe bilder/Saturn.jpg",
+          "Segelboot": "produkt bilder/Krystall Ball Nachtlampe bilder/Segelboot.jpg",
+          "Schneemann": "produkt bilder/Krystall Ball Nachtlampe bilder/Schneemann.jpg",
+          "Sternenhimmel": "produkt bilder/Krystall Ball Nachtlampe bilder/Sternenhimmel.jpg"
+        },
+        "demoIdeas": [
+          "Dark room glow-up",
+          "Gift unboxing POV",
+          "Astro ASMR"
+        ]
+      },
+      "hashtags": [
+        "#roommakeover",
+        "#nightlight",
+        "#giftidea"
+      ]
+    },
+    "features": [
+      "Leuchtende Kristallkugel",
+      "7 verschiedene Motive",
+      "Perfekte Dekoration",
+      "Ideal als Geschenk",
+      "Hochwertige Verarbeitung"
+    ],
+    "bundles": [
+      {
+        "id": "bundle1",
+        "name": "Crystal Starter",
+        "description": "Kristallkugel + Basis",
+        "items": ["LED-Basis", "USB-Kabel"],
+        "originalPrice": 24.99,
+        "bundlePrice": 19.99,
+        "savings": 5
+      },
+      {
+        "id": "bundle2",
+        "name": "Crystal Premium",
+        "description": "Komplettes Deko-Set",
+        "items": ["LED-Basis", "USB-Kabel", "Geschenkbox"],
+        "originalPrice": 34.99,
+        "bundlePrice": 24.99,
+        "savings": 10
+      }
+    ],
+    "showInSlider": true
+  }
+]
