@@ -1,1799 +1,557 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.">
-    <link rel="canonical" href="https://maiosshop.com/produkte/waterproof-rgb-led-solar-light.html">
-    <meta property="og:type" content="product">
-    <meta property="og:title" content="Waterproof RGB LED Solar Light - Maios">
-    <meta property="og:url" content="https://maiosshop.com/produkte/waterproof-rgb-led-solar-light.html">
-    <title>Wasserdichte RGB LED Solar Stufenleuchte - Maios</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="beleuchtung.css" rel="stylesheet">
-    <link href="../color-selection.css" rel="stylesheet">
-    <style>
-        /* Farbauswahl CSS */
-        .selected-color-info {
-            background: rgba(255,255,255,0.2);
-            color: white !important;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 500;
-            margin-top: 10px;
-            border: 1px solid rgba(255,255,255,0.3);
-            backdrop-filter: blur(10px);
-        }
-        .selected-color-info span {
-            font-weight: 700;
-            color: #ffffff !important;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
-        .color-selection{margin:1rem 0}.color-selection h5{font-size:1.1rem;font-weight:600;margin-bottom:0.75rem}.color-options{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem}.color-option{width:45px;height:45px;border-radius:50%;border:3px solid transparent;cursor:pointer;transition:all 0.3s ease;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.1)}.color-option:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(0,0,0,0.2)}.color-option.selected{border-color:#fff;box-shadow:0 0 0 2px #007bff,0 4px 12px rgba(0,0,0,0.2);transform:scale(1.1)}.color-option.selected::after{content:"âœ“";color:white;font-weight:bold;font-size:18px;text-shadow:0 0 3px rgba(0,0,0,0.5)}.color-option[data-color="#FFFFFF"],.color-option[data-color="#FFF0F5"]{border:2px solid #ddd}.color-option[data-color="#FFFFFF"].selected::after,.color-option[data-color="#FFF0F5"].selected::after{color:#333;text-shadow:none}.selected-color-info{font-size:0.9rem;opacity:0.8}.selected-color-info span{font-weight:600}@media (max-width:768px){.color-option{width:40px;height:40px}.color-options{gap:0.4rem}}.color-change-animation{animation:colorChange 0.3s ease}@keyframes colorChange{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
-
-        /* ============================================
-           LIQUID GLASS BUNDLE DESIGN - BELEUCHTUNG
-           ============================================ */
-        .bundle-box,
-        .bundle-container {
-            position: relative;
-            padding: 2.5rem;
-            border-radius: 28px;
-            overflow: hidden;
-            margin: 2rem 0;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 
-                0 8px 32px 0 rgba(31, 38, 135, 0.2),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
-        }
-
-        .bundle-box::before,
-        .bundle-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: -1;
-            opacity: 0.7;
-            background: linear-gradient(135deg, 
-                rgba(255, 107, 107, 0.85) 0%, 
-                rgba(238, 90, 36, 0.85) 25%, 
-                rgba(255, 71, 87, 0.85) 50%, 
-                rgba(255, 99, 72, 0.85) 75%, 
-                rgba(255, 107, 107, 0.85) 100%
-            );
-            animation: gradientShift 10s ease infinite;
-            background-size: 200% 200%;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .bundle-box::after,
-        .bundle-container::after {
-            content: '';
-            position: absolute;
-            font-size: 4rem;
-            top: 20px;
-            right: 30px;
-            opacity: 0.15;
-            pointer-events: none;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-        }
-
-        .bundle-header,
-        .bundle-title {
-            font-size: 2rem;
-            font-weight: 900;
-            text-align: center;
-            margin-bottom: 2rem;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 
-                0 2px 15px rgba(0, 0, 0, 0.4),
-                0 0 30px rgba(255, 255, 255, 0.3);
-            position: relative;
-            z-index: 1;
-        }
-
-        .bundle-card {
-            position: relative;
-            padding: 1.8rem;
-            margin-bottom: 1.2rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 
-                0 4px 20px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.25);
-        }
-
-        .bundle-card:hover {
-            transform: translateY(-6px) scale(1.02);
-            background: rgba(255, 255, 255, 0.22);
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            box-shadow: 
-                0 12px 35px rgba(0, 0, 0, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4),
-                0 0 25px rgba(255, 255, 255, 0.15);
-        }
-
-        .bundle-card.selected {
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 
-                0 12px 40px rgba(0, 0, 0, 0.3),
-                inset 0 2px 0 rgba(255, 255, 255, 0.5),
-                0 0 40px rgba(255, 255, 255, 0.4);
-            transform: scale(1.04);
-        }
-
-        .bundle-card.selected::before {
-            content: '\2713' !important;
-            position: absolute !important;
-            top: 10px !important;
-            right: 10px !important;
-            left: auto !important;
-            width: 35px !important;
-            height: 35px !important;
-            background: rgba(255, 255, 255, 0.95) !important;
-            color: #667eea !important;
-            border-radius: 50% !important;
-            display: grid !important;
-            place-items: center !important;
-            font-weight: bold !important;
-            font-size: 1.3rem !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
-            z-index: 10 !important;
-            text-align: center !important;
-            line-height: 35px !important;
-        }
-
-        .bundle-radio {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .bundle-info {
-            position: relative;
-            z-index: 1;
-        }
-
-        .bundle-title {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 0.8rem;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-        }
-
-        .bundle-badge { display: none !important; }
-
-        .bundle-label { display: none !important; }
-                /* Liquid Glass Buttons */
-        #cartBtn, #heroCartBtn {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
-            color: #333333 !important;
-            font-weight: 600 !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-        }
-
-        #cartBtn:hover, #heroCartBtn:hover {
-            background: rgba(255, 255, 255, 1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.8) !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
-        }
-
-        #wishlistBtn {
-            background: rgba(220, 53, 69, 0.9) !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            color: #ffffff !important;
-            font-weight: 600 !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-        }
-
-        #wishlistBtn:hover {
-            background: rgba(220, 53, 69, 1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-        }
-
-        .bundle-prices {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .bundle-prices .savings {
-            display: block;
-            font-size: 1rem;
-            color: #ffeb3b;
-            font-weight: 600;
-            margin-top: 0.3rem;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-        }
-
-        .bundle-total {
-            margin-top: 0.8rem;
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.95);
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .bundle-add-btn {
-            width: 100%;
-            padding: 1.2rem;
-            margin-top: 1.5rem;
-            font-size: 1.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border: none;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #ff6b6b;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 
-                0 6px 25px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-        }
-
-        .bundle-add-btn:hover {
-            transform: translateY(-3px);
-            background: #ffffff;
-            box-shadow: 
-                0 10px 35px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-        }
-
-        @media (max-width: 768px) {
-            .bundle-box,
-            .bundle-container {
-                padding: 1.5rem;
-                border-radius: 20px;
-            }
-            .bundle-header,
-            .bundle-title {
-                font-size: 1.5rem;
-                letter-spacing: 2px;
-            }
-            .bundle-card {
-                padding: 1.2rem;
-            }
-            .bundle-title {
-                font-size: 1.1rem;
-            }
-            .bundle-prices {
-                font-size: 1.2rem;
-            }
-        }
-    
-        /* Mobile Logo Optimierung */
-        @media (max-width: 768px) {
-            .navbar-brand img {
-                height: 50px !important;
-            }
-            .navbar-brand span {
-                font-size: 1.4rem !important;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .navbar-brand img {
-                height: 42px !important;
-            }
-            .navbar-brand span {
-                font-size: 1.3rem !important;
-            }
-        }
-    
-    </style>
-    <!-- Added animation styles for consistent animations -->
-    <style>
-        .success-animation {
-            animation: success-animation 0.8s ease-in-out;
-        }
-        .cart-icon-pulse {
-            animation: cart-icon-pulse 0.5s ease-in-out;
-        }
-        .cart-rainbow-bounce {
-            animation: cart-rainbow-bounce 0.8s ease-in-out;
-        }
-        .heart-pulse {
-            animation: heart-pulse 0.5s ease-in-out;
-        }
-        @keyframes success-animation {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        @keyframes cart-icon-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        @keyframes cart-rainbow-bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        @keyframes heart-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        /* ============================================
-           LIQUID GLASS BUNDLE DESIGN - BELEUCHTUNG
-           ============================================ */
-        .bundle-box,
-        .bundle-container {
-            position: relative;
-            padding: 2.5rem;
-            border-radius: 28px;
-            overflow: hidden;
-            margin: 2rem 0;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 
-                0 8px 32px 0 rgba(31, 38, 135, 0.2),
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
-        }
-
-        .bundle-box::before,
-        .bundle-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: -1;
-            opacity: 0.7;
-            background: linear-gradient(135deg, 
-                rgba(255, 107, 107, 0.85) 0%, 
-                rgba(238, 90, 36, 0.85) 25%, 
-                rgba(255, 71, 87, 0.85) 50%, 
-                rgba(255, 99, 72, 0.85) 75%, 
-                rgba(255, 107, 107, 0.85) 100%
-            );
-            animation: gradientShift 10s ease infinite;
-            background-size: 200% 200%;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .bundle-box::after,
-        .bundle-container::after {
-            content: '';
-            position: absolute;
-            font-size: 4rem;
-            top: 20px;
-            right: 30px;
-            opacity: 0.15;
-            pointer-events: none;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-        }
-
-        .bundle-header,
-        .bundle-title {
-            font-size: 2rem;
-            font-weight: 900;
-            text-align: center;
-            margin-bottom: 2rem;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 
-                0 2px 15px rgba(0, 0, 0, 0.4),
-                0 0 30px rgba(255, 255, 255, 0.3);
-            position: relative;
-            z-index: 1;
-        }
-
-        .bundle-card {
-            position: relative;
-            padding: 1.8rem;
-            margin-bottom: 1.2rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 
-                0 4px 20px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.25);
-        }
-
-        .bundle-card:hover {
-            transform: translateY(-6px) scale(1.02);
-            background: rgba(255, 255, 255, 0.22);
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            box-shadow: 
-                0 12px 35px rgba(0, 0, 0, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4),
-                0 0 25px rgba(255, 255, 255, 0.15);
-        }
-
-        .bundle-card.selected {
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 
-                0 12px 40px rgba(0, 0, 0, 0.3),
-                inset 0 2px 0 rgba(255, 255, 255, 0.5),
-                0 0 40px rgba(255, 255, 255, 0.4);
-            transform: scale(1.04);
-        }
-
-        .bundle-card.selected::before {
-            content: '\2713' !important;
-            position: absolute !important;
-            top: 10px !important;
-            right: 10px !important;
-            left: auto !important;
-            width: 35px !important;
-            height: 35px !important;
-            background: rgba(255, 255, 255, 0.95) !important;
-            color: #667eea !important;
-            border-radius: 50% !important;
-            display: grid !important;
-            place-items: center !important;
-            font-weight: bold !important;
-            font-size: 1.3rem !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
-            z-index: 10 !important;
-            text-align: center !important;
-            line-height: 35px !important;
-        }
-
-        .bundle-radio {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .bundle-info {
-            position: relative;
-            z-index: 1;
-        }
-
-        .bundle-title {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 0.8rem;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-        }
-
-        .bundle-badge { display: none !important; }
-
-        .bundle-label { display: none !important; }
-                /* Liquid Glass Buttons */
-        #cartBtn, #heroCartBtn {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
-            color: #333333 !important;
-            font-weight: 600 !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-        }
-
-        #cartBtn:hover, #heroCartBtn:hover {
-            background: rgba(255, 255, 255, 1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.8) !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 1) !important;
-        }
-
-        #wishlistBtn {
-            background: rgba(220, 53, 69, 0.9) !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            color: #ffffff !important;
-            font-weight: 600 !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-        }
-
-        #wishlistBtn:hover {
-            background: rgba(220, 53, 69, 1) !important;
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
-            transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-        }
-
-        .bundle-prices {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .bundle-prices .savings {
-            display: block;
-            font-size: 1rem;
-            color: #ffeb3b;
-            font-weight: 600;
-            margin-top: 0.3rem;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-        }
-
-        .bundle-total {
-            margin-top: 0.8rem;
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.95);
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .bundle-add-btn {
-            width: 100%;
-            padding: 1.2rem;
-            margin-top: 1.5rem;
-            font-size: 1.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            border: none;
-            border-radius: 16px;
-            background: rgba(255, 255, 255, 0.95);
-            color: #ff6b6b;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 
-                0 6px 25px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-        }
-
-        .bundle-add-btn:hover {
-            transform: translateY(-3px);
-            background: #ffffff;
-            box-shadow: 
-                0 10px 35px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 1);
-        }
-
-        @media (max-width: 768px) {
-            .bundle-box,
-            .bundle-container {
-                padding: 1.5rem;
-                border-radius: 20px;
-            }
-            .bundle-header,
-            .bundle-title {
-                font-size: 1.5rem;
-                letter-spacing: 2px;
-            }
-            .bundle-card {
-                padding: 1.2rem;
-            }
-            .bundle-title {
-                font-size: 1.1rem;
-            }
-            .bundle-prices {
-                font-size: 1.2rem;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="../product-image-fullscreen.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waterproof RGB LED Solar Light — Maios Shop</title>
+  <meta name="description" content="Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../produkt-premium.css">
 </head>
 <body data-product-id="22">
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/index.html" style="font-size: 2rem; display: flex; align-items: center; gap: 10px; cursor: pointer; pointer-events: auto;" onclick="window.location.href='/index.html'; return false;">
-                <img src="/images/logo.jpg" alt="Maios Logo" style="height: 70px; width: auto;">
-                <span style="font-weight: 900; letter-spacing: -0.5px; font-size: 2rem;">MAIOS</span>
-            </a>
-            <div class="navbar-nav ms-auto">
-                <a href="/index.html" class="nav-link modern-nav-link">
-                    <i class="bi bi-house-door-fill"></i> Startseite
-                </a>
-                <a href="../cart.html" class="nav-link modern-nav-link cart-nav-link">
-                    <i class="bi bi-cart3-fill"></i> Warenkorb
-                </a>
-            </div>
+
+  <div class="pp-orbs">
+    <div class="pp-orb pp-orb-1"></div>
+    <div class="pp-orb pp-orb-2"></div>
+  </div>
+
+  <div class="pp-announce">
+    <span>🔥 FLASH SALE AKTIV</span>
+    <span class="pp-dot">·</span>
+    <span>Kostenloser Versand auf alle Bestellungen</span>
+    <span class="pp-dot">·</span>
+    <span>30 Tage Rückgaberecht</span>
+  </div>
+
+  <nav class="pp-nav">
+    <div class="pp-container pp-nav-inner">
+      <a href="/" class="pp-logo">
+        <div class="pp-logo-dot"></div>
+        <div class="pp-logo-text">Maios</div>
+      </a>
+      <div class="pp-nav-links">
+        <a href="/" class="pp-nav-link"><i class="bi bi-house"></i> Startseite</a>
+        <a href="/cart.html" class="pp-nav-link pp-cart-link">
+          <i class="bi bi-bag"></i> Warenkorb
+          <span class="pp-cart-badge" style="display:none">0</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="pp-hero">
+    <div class="pp-container">
+      <div class="pp-bc-wrap">
+        <nav class="pp-breadcrumb" aria-label="Breadcrumb">
+          <a href="/" class="pp-bc-link">Startseite</a>
+          <span class="pp-bc-sep"><i class="bi bi-chevron-right"></i></span>
+          <a href="/" class="pp-bc-link">Beleuchtung</a>
+          <span class="pp-bc-sep"><i class="bi bi-chevron-right"></i></span>
+          <span class="pp-bc-current">Waterproof RGB LED Solar Light</span>
+        </nav>
+      </div>
+
+      <div class="pp-hero-grid" style="margin-top:28px">
+
+        <div style="position:relative">
+          <div class="pp-gallery">
+            <img class="main-product-image pp-main-img" src="../produkt bilder/Waterproof RGB LED Solar Light.jpg" alt="Waterproof RGB LED Solar Light">
+          </div>
+          <div class="pp-badges">
+            <div class="pp-badge-flash"><i class="bi bi-lightning-charge-fill"></i> -63% FLASH</div>
+            <div class="pp-badge-bestseller">★ BESTSELLER</div>
+          </div>
         </div>
-    </nav>
 
-    <!-- Produkt Hero Section -->
-    <section class="product-hero">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6">
-                    <h1 class="display-4 fw-bold mb-3">Waterproof RGB LED Solar Light</h1>
-                    <p class="lead mb-4">Wasserdichte Solarleuchten für Stufen, Wege und mehr mit 16 Farben</p>
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <span class="price-tag">€12.99</span>
-                        <span class="text-muted text-decoration-line-through">€34.99</span>
-                        <span class="badge bg-success">Kostenloser Versand in Europa</span>
-                    </div>
-                    <!-- Added proper CSS classes and onclick handler for animations -->
-                    <button class="btn btn-light btn-lg me-3 add-to-cart" id="heroCartBtn" onclick="addToCartAndRedirect()">
-                        <i class="bi bi-cart-plus"></i> In den Warenkorb
-                    </button>
-                    <button class="btn btn-outline-light btn-lg wishlist-button" id="wishlistBtn" data-product-id="6">
-                        <i class="bi bi-heart"></i> Zur Wunschliste
-                    </button>
-                </div>
-                <div class="col-lg-6 text-center">
-                    <img src="../produkt bilder/Waterproof RGB LED Solar Light.jpg" alt="Waterproof RGB LED Solar Light" class="img-fluid product-image main-product-image" style="max-height: 400px; max-width: 400px;">
-                </div>
+        <div class="pp-buybox">
+
+          <div>
+            <span class="pp-viewers-pill">
+              <span class="pp-flame">🔥</span>
+              <span id="pp-viewers-count">20</span> Personen sehen sich das gerade an
+            </span>
+          </div>
+
+          <div class="pp-title-block">
+            <div class="pp-cat-pill pp-cat-beleuchtung">
+              <i class="bi bi-lightning-charge-fill"></i> BELEUCHTUNG
             </div>
-        </div>
-    </section>
+            <h1 class="pp-h1">Waterproof RGB LED Solar Light</h1>
+          </div>
 
-    <!-- Produktdetails -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8">
-                    <h2 class="mb-4">Produktbeschreibung</h2>
-                    <p class="lead mb-4">Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.</p>
-                    
-                    <h3>Hauptmerkmale</h3>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Energieeffizient</li>
-                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Dimmbar</li>
-                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Langlebig</li>
-                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Einfache Installation</li>
-                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Modernes Design</li>
-                    </ul>
-
-                    <h3 class="mt-4">Technische Spezifikationen</h3>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Kategorie:</strong> Beleuchtung</p>
-                            <p><strong>Preis:</strong> €12.99</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Verfügbarkeit:</strong> Auf Lager</p>
-                            <p><strong>Lieferzeit:</strong> 6-11 Werktage</p>
-                            <p><strong>Lieferumfang:</strong> Produkt, Anleitung, Garantiekarte</p>
-                        </div>
-                    </div>
-
-                    <!-- Schnellbestellung (Mobile only) -->
-                    <div class="quick-order-card mt-5 d-lg-none">
-                        <div class="quick-order-header">
-                            <h4>Schnellbestellung</h4>
-                        </div>
-                        <div class="quick-order-body">
-                            <div class="quantity-section">
-                                <label class="quantity-label">Menge:</label>                                <div class="quantity-input-group" style="display: flex; align-items: center; background: #f8f9fa; border-radius: 12px; padding: 4px; gap: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                                    <button class="quantity-btn" onclick="decreaseMobileQuantity()" style="width: 45px; height: 45px; background: #e67e22; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">-</button>
-                                    <select class="form-select" id="quantity-mobile" onchange="updateTotalPrice()" style="flex: 1; border: none; background: transparent; text-align: center; font-size: 18px; font-weight: 600; padding: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3e%3cpolyline points=%226 9 12 15 18 9%22%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 8px center; background-size: 20px; padding-right: 30px;">
-                                        <!-- Options will be generated by JavaScript -->
-                                    </select>
-                                    <button class="quantity-btn" onclick="increaseMobileQuantity()" style="width: 45px; height: 45px; background: #e67e22; color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer;">+</button>
-                                </div>
-                            </div>
-                            <div class="price-section">
-                                <!-- Simplified price display to match reference -->
-                                <div class="current-price">€24.00</div>
-                            </div>
-                            <div class="action-buttons">
-                                <!-- Added proper CSS classes and event handler -->
-                                <button class="buy-now-btn wishlist-style-btn" onclick="addToCartWithQuantity(event)">
-                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
-                                </button>
-                                <button class="wishlist-btn wishlist-button" data-product-id="6">
-                                    <i class="bi bi-heart"></i> Zur Wunschliste
-                                </button>
-                            </div>
-                            <div class="features-section">
-                                <ul class="features-list">
-                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
-                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
-                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bundle-Box -->
-                    <div id="bundle-section" class="mt-5"></div>
-                </div>
-                
-                <div class="col-lg-4">
-                    <div class="quick-order-card d-none d-lg-block">
-                        <div class="quick-order-header">
-                            <h4>Schnellbestellung</h4>
-                        </div>
-                        <div class="quick-order-body">
-                            <div class="quantity-section">
-                                <label class="quantity-label">Menge:</label>
-                                <div class="quantity-input-group">
-                                    <!-- Added event parameter to +/- buttons -->
-                                    <button class="quantity-btn" onclick="decreaseQuantity(event)">-</button>
-                                    <input type="number" class="quantity-input" id="quantity-desktop" value="1" min="1" max="999" maxlength="3" oninput="if(this.value.length > 3) this.value = this.value.slice(0,3); if(this.value > 999) this.value = 999;">
-                                    <button class="quantity-btn" onclick="increaseQuantity(event)">+</button>
-                                </div>
-                            </div>
-                            
-                            <div class="price-section">
-                                <!-- Simplified price display to match reference -->
-                                <div class="current-price">€24.00</div>
-                            </div>
-                            
-                            <div class="action-buttons">
-                                <!-- Added proper CSS classes and event handler -->
-                                <button class="buy-now-btn wishlist-style-btn" id="buyNowBtn" onclick="addToCartWithQuantity(event)">
-                                    <i class="bi bi-cart-plus"></i> Jetzt kaufen
-                                </button>
-                                <button class="wishlist-btn wishlist-button" id="cardWishlistBtn" data-product-id="6">
-                                    <i class="bi bi-heart"></i> Zur Wunschliste
-                                </button>
-                            </div>
-                            
-                            <div class="features-section">
-                                <ul class="features-list">
-                                    <li><i class="bi bi-truck"></i> Kostenloser Versand in Europa</li>
-                                    <li><i class="bi bi-shield-check"></i> Garantie inklusive</li>
-                                    <li><i class="bi bi-arrow-return-left"></i> 30 Tage Rückgaberecht</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          <div class="pp-rating">
+            <div class="pp-stars">
+              <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
             </div>
-        </div>
-    </section>
+            <span class="pp-rating-num">4.9</span>
+            <a href="#reviews" class="pp-rating-count">95 Bewertungen</a>
+            <span class="pp-sold"><i class="bi bi-bag-check"></i> 91x bestellt</span>
+          </div>
 
-    <!-- Ähnliche Produkte -->
-        <section class="py-5 similar-products-section">
-            <div class="container">
-                <div class="section-header text-center mb-5">
-                    <h2 class="section-title">Ähnliche Produkte</h2>
-                    <p class="section-subtitle">Entdecken Sie weitere Produkte, die Ihnen gefallen könnten</p>
-                </div>
-                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3 g-md-4">
-                <div class="col">
-                    <div class="similar-product-card" onclick="window.location.href='/produkte/nordic-crystal-lamp.html'">
-                        <div class="product-image-wrapper">
-                            <img src="../produkt bilder/Nordic Crystal Lamp.jpg" class="product-image" alt="Nordic Crystal Lamp">
-                        </div>
-                        <div class="product-info">
-                            <h5 class="product-title">Nordic Crystal Lamp</h5>
-                            <div class="price-container"><span class="current-price">€24.99</span></div>
-                            <div class="view-product-btn">
-                                <span>Jetzt ansehen</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="similar-product-card" onclick="window.location.href='/produkte/led-crystal-lampe.html'">
-                        <div class="product-image-wrapper">
-                            <img src="../produkt bilder/Led crystal lampe .jpg" class="product-image" alt="Led crystal lampe">
-                        </div>
-                        <div class="product-info">
-                            <h5 class="product-title">Led crystal lampe</h5>
-                            <div class="price-container"><span class="current-price">€18.99</span></div>
-                            <div class="view-product-btn">
-                                <span>Jetzt ansehen</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="similar-product-card" onclick="window.location.href='/produkte/indoor-sensing-wall-lamp.html'">
-                        <div class="product-image-wrapper">
-                            <img src="../produkt bilder/Indoor Sensing Wall Lamp.jpg" class="product-image" alt="Indoor Sensing Wall Lamp">
-                        </div>
-                        <div class="product-info">
-                            <h5 class="product-title">Indoor Sensing Wall Lamp</h5>
-                            <div class="price-container"><span class="current-price">€17.99</span></div>
-                            <div class="view-product-btn">
-                                <span>Jetzt ansehen</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="similar-product-card" onclick="window.location.href='/produkte/krystall-ball-nachtlampe.html'">
-                        <div class="product-image-wrapper">
-                            <img src="../produkt bilder/Krystall Ball Nachtlampe.jpg" class="product-image" alt="Krystall Ball Nachtlampe">
-                        </div>
-                        <div class="product-info">
-                            <h5 class="product-title">Krystall Ball Nachtlampe</h5>
-                            <div class="price-container"><span class="current-price">€15.99</span></div>
-                            <div class="view-product-btn">
-                                <span>Jetzt ansehen</span>
-                                <i class="bi bi-arrow-right"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+          <div class="pp-price-block">
+            <div class="pp-prices">
+              <span class="pp-price-current">€12.99</span>
+              <span class="pp-price-original">€34.99</span>
+              <span class="pp-price-save">Du sparst €22.00</span>
             </div>
-            </div>
-        </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
-        <div class="container text-center">
-            <p>&copy; 2024 Maios - Alle Rechte vorbehalten</p>
-        </div>
-    </footer>
-
-    <script>
-  // Produktdaten für diese Seite
-  const product = {
-    id: 22,
-    name: "Wasserdichte RGB LED Solar Stufenleuchte",
-    price: 12.99,
-    image: "produkt bilder/Waterproof RGB LED Solar Light.jpg",
-    description: "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung."
-  };
-
-  // Bundles dynamisch laden
-  fetch('../products.json')
-    .then(res => res.json())
-    .then(products => {
-      const prod = products.find(p => p.id === product.id);
-      if (prod && prod.bundles && prod.bundles.length > 0) {
-        renderBundles(prod.bundles);
-      } else {
-        // Fallback: Bundle-Box immer anzeigen
-        renderBundles();
-      }
-    });
-
-  function renderBundles() {
-    const einzelpreis = 12.99;
-    const staffel = [      {qty:2, price: einzelpreis, original:einzelpreis},
-      {qty:3, price: einzelpreis, original:einzelpreis}
-    ];
-    const section = document.getElementById('bundle-section');
-    let selected = 0;
-    section.innerHTML = `
-      <div class="bundle-box">
-        <div class="bundle-header">BUNDLE & SPARE</div>
-        <form id="bundleForm">
-          ${staffel.map((s, i) => `
-            <div class="bundle-card${i===selected?' selected':''}" data-index="${i}">
-              <input type="radio" name="bundle" class="bundle-radio" id="bundleRadio${i}" value="${i}" ${i===selected?'checked':''}>
-              <div class="bundle-info">
-                <div class="bundle-title">
-                  ${s.qty} Set${s.qty>1?'s':''} kaufen                </div>
-                <div class="bundle-prices">
-                  €${s.price.toFixed(2)} pro Set
-                  
-                </div>
-                ${s.qty>1?`<div style='margin-top:.7em;font-size:.97rem;'>Gesamt: <b>€${(s.price*s.qty).toFixed(2)}</b></div>`:''}
+            <div class="pp-price-hint">Inkl. MwSt. · <span class="pp-free-ship"><i class="bi bi-truck"></i> Kostenloser Versand</span></div>
+            <div class="pp-countdown">
+              <div class="pp-countdown-label"><i class="bi bi-alarm-fill"></i> Angebot endet in:</div>
+              <div class="pp-countdown-timer">
+                <div class="pp-cd-box" data-unit="h">00</div>
+                <span class="pp-cd-sep">:</span>
+                <div class="pp-cd-box" data-unit="m">00</div>
+                <span class="pp-cd-sep">:</span>
+                <div class="pp-cd-box" data-unit="s">00</div>
               </div>
             </div>
-          `).join('')}
-          <!-- Added proper CSS class and event handler for bundle button -->
-          <button type="submit" class="btn bundle-add-btn wishlist-style-btn" onclick="addBundleAndRedirect(event)">In den Warenkorb</button>
-        </form>
+          </div>
+
+          <div>
+            <div class="pp-scarcity-header">
+              <span class="pp-scarcity-label">
+                <i class="bi bi-exclamation-triangle-fill pp-scarcity-icon"></i>
+                Nur noch <strong class="pp-scarcity-num">12 Stück</strong> verfügbar!
+              </span>
+              <span class="pp-scarcity-pct">88% verkauft</span>
+            </div>
+            <div class="pp-scarcity-bar">
+              <div class="pp-scarcity-fill" style="width:88%"></div>
+            </div>
+          </div>
+
+          <div id="colorSelection"></div>
+
+          <div class="pp-qty-row">
+            <div class="pp-qty-col">
+              <div class="pp-qty-label">MENGE</div>
+              <div class="pp-qty-ctrl">
+                <button class="pp-qty-btn" id="pp-qty-minus" data-dir="-" aria-label="Weniger">−</button>
+                <input class="pp-qty-input" id="pp-qty" type="number" value="1" min="1" max="99" aria-label="Anzahl">
+                <button class="pp-qty-btn" id="pp-qty-plus" data-dir="+" aria-label="Mehr">+</button>
+              </div>
+            </div>
+            <div class="pp-bundle-hint">
+              <i class="bi bi-gift pp-purple"></i> Spare mehr beim Kauf von 2+ Stück!
+            </div>
+          </div>
+
+          <div class="pp-ctas-row">
+            <button class="pp-cart-btn" id="cartBtn">
+              <i class="bi bi-bag-plus-fill"></i> In den Warenkorb
+            </button>
+            <button class="pp-wish-btn" id="wishlistBtn" aria-label="Zur Wunschliste">
+              <i class="bi bi-heart"></i>
+            </button>
+          </div>
+
+          <div class="pp-delivery">
+            <div class="pp-delivery-icon"><i class="bi bi-truck-front-fill"></i></div>
+            <div class="pp-delivery-text">
+              <strong>Kostenloser Versand</strong> · Lieferzeit: <strong>7-15 Werktage</strong><br>
+              Bestellung heute → voraussichtlich in Kürze bei Ihnen
+            </div>
+          </div>
+
+          <div class="pp-trust-row">
+            <div class="pp-trust-item"><i class="bi bi-shield-lock-fill pp-purple"></i> Sichere Zahlung</div>
+            <div class="pp-trust-item"><i class="bi bi-arrow-counterclockwise pp-cyan"></i> 30 Tage Rückgabe</div>
+            <div class="pp-trust-item"><i class="bi bi-headset pp-green"></i> Kunden-Support</div>
+            <div class="pp-trust-item"><i class="bi bi-patch-check-fill pp-gold"></i> Geprüfte Qualität</div>
+          </div>
+
+        </div>
       </div>
-    `;
-    // Interaktive Auswahl
-    const cards = section.querySelectorAll('.bundle-card');
-    const radios = section.querySelectorAll('.bundle-radio');
-    
-    // Event-Listener für Radio-Buttons
-    radios.forEach((radio, i) => {
-      radio.addEventListener('change', () => {
-        cards.forEach(c => c.classList.remove('selected'));
-        cards[i].classList.add('selected');
-      });
-    });
+    </div>
+  </section>
 
-    // Event-Listener für Bundle-Cards
-    cards.forEach((card, i) => {
-      card.addEventListener('click', (e) => {
-        // Verhindere Bubbling wenn auf Radio geklickt wurde
-        if (e.target === radios[i]) return;
-        
-        // Wähle Radio-Button aus
-        radios[i].checked = true;
-        
-        // Aktualisiere Selected-Status
-        cards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        
-        // Trigger change Event auf Radio
-        radios[i].dispatchEvent(new Event('change'));
-      });
-    });
+  <div class="pp-trust-strip">
+    <div class="pp-trust-grid pp-container">
+      <div class="pp-guarantee">
+        <div class="pp-guarantee-icon" style="background:rgba(139,92,246,.12)">🛡️</div>
+        <div><div class="pp-guarantee-title">Sicher bezahlen</div><div class="pp-guarantee-sub">Stripe · PayPal · Karte</div></div>
+      </div>
+      <div class="pp-guarantee">
+        <div class="pp-guarantee-icon" style="background:rgba(34,211,238,.12)">🔄</div>
+        <div><div class="pp-guarantee-title">30 Tage Rückgabe</div><div class="pp-guarantee-sub">Keine Fragen gestellt</div></div>
+      </div>
+      <div class="pp-guarantee">
+        <div class="pp-guarantee-icon" style="background:rgba(67,233,123,.12)">🚚</div>
+        <div><div class="pp-guarantee-title">Kostenloser Versand</div><div class="pp-guarantee-sub">Auf alle Bestellungen</div></div>
+      </div>
+      <div class="pp-guarantee">
+        <div class="pp-guarantee-icon" style="background:rgba(255,215,0,.12)">⭐</div>
+        <div><div class="pp-guarantee-title">Geprüfte Qualität</div><div class="pp-guarantee-sub">Jeden Artikel getestet</div></div>
+      </div>
+    </div>
+  </div>
 
-    section.querySelector('#bundleForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const idx = Array.from(radios).findIndex(r => r.checked);
-      const s = staffel[idx];
-      addBundleToCart({
-        id: product.id,
-        name: product.name + ` (${s.qty} Set${s.qty>1?'s':''})`,
-        price: s.price * s.qty, // Gesamtpreis für das Bundle
-        image: product.image,
-        description: product.description + ` (Bundle: ${s.qty} Set${s.qty>1?'s':''})`,
-        bundleId: `${product.id}-qty${s.qty}`,
-        quantity: 1
-      });
-    });
-  }
+  <section class="pp-benefits-section">
+    <div class="pp-benefits-glow"></div>
+    <div class="pp-benefits-topline"></div>
+    <div class="pp-benefits-inner pp-container">
+      <div class="pp-benefits-eyebrow">WARUM MAIOS?</div>
+      <div class="pp-benefits-grid">
+          <div class="pp-benefit-card">
+            <div class="pp-benefit-icon" style="background:rgba(255,215,0,.12)">💡</div>
+            <div class="pp-benefit-title">Brillante Helligkeit</div>
+            <div class="pp-benefit-text">Gleichmäßiges, augenfreundliches Licht für jede Umgebung.</div>
+          </div>
+          <div class="pp-benefit-card">
+            <div class="pp-benefit-icon" style="background:rgba(67,233,123,.12)">🌿</div>
+            <div class="pp-benefit-title">Energiesparsam</div>
+            <div class="pp-benefit-text">Bis zu 80 % weniger Energieverbrauch gegenüber herkömmlichen Glühbirnen.</div>
+          </div>
+          <div class="pp-benefit-card">
+            <div class="pp-benefit-icon" style="background:rgba(139,92,246,.12)">🎭</div>
+            <div class="pp-benefit-title">Stimmungslicht</div>
+            <div class="pp-benefit-text">Passen Sie die Atmosphäre an — dimmbar und in vielen Farben verfügbar.</div>
+          </div>
+          <div class="pp-benefit-card">
+            <div class="pp-benefit-icon" style="background:rgba(34,211,238,.12)">🔒</div>
+            <div class="pp-benefit-title">Langlebig & Sicher</div>
+            <div class="pp-benefit-text">Zertifiziert nach EU-Normen — bis zu 50.000 Stunden Lebensdauer.</div>
+          </div>
+      </div>
+    </div>
+  </section>
 
-  function addBundleToCart(bundle) {
-    let cart = getCart();
-    // Bundle als eigenes Cart-Item mit bundleId
-    const bundleId = bundle.bundleId;
-    const existing = cart.find(item => item.bundleId === bundleId);
-    if (existing) {
-      // Erhöhe die Menge bei wiederholtem Hinzufügen
-      existing.quantity++;
-    } else {
-      cart.push({
-        id: product.id,
-        name: bundle.name,
-        price: bundle.price,
-        image: product.image,
-        description: bundle.description,
-        bundleId: bundleId,
-        bundleItems: [], // Keine Items für die neue Staffel
-        quantity: 1
-      });
-    }
-    setCart(cart);
-  }
+  <div class="pp-bundle-wrap">
+    <div id="bundle-section" style="display:none"></div>
+  </div>
 
-  function addBundleAndRedirect(event) {
-    event.preventDefault();
-    const form = event.target.closest('form');
-    const selectedRadio = form.querySelector('input[name="bundle"]:checked');
-    if (!selectedRadio) return;
-    
-    const idx = parseInt(selectedRadio.value);
-    const staffel = [
-      {qty: 1, price: product.price, original: product.price},
-      {qty: 2, price: product.price, original: product.price},
-      {qty: 3, price: product.price, original: product.price}
-    ];
-    const s = staffel[idx];
-    
-    addBundleToCart({
-      id: product.id,
-      name: product.name + ` (${s.qty} Set${s.qty>1?'s':''})`,
-      price: s.price * s.qty, // Gesamtpreis für das Bundle
-      image: product.image,
-      description: product.description + ` (Bundle: ${s.qty} Set${s.qty>1?'s':''})`,
-      bundleId: `${product.id}-qty${s.qty}`,
-      quantity: 1
-    });
-    
-    // Enhanced animations for bundle
-    triggerBundleButtonAnimation(event.target);
-    triggerNavCartAnimation();
-    
-    // Popup anzeigen statt direkter Weiterleitung
-    if (typeof showAlert === 'function') {
-      showAlert('Bundle zum Warenkorb hinzugefügt', 'cart.html');
-    } else {
-      showNotification('Bundle zum Warenkorb hinzugefügt');
-    }
-  }
+  <section class="pp-desc-section">
+    <div class="pp-container" style="padding-top:64px">
+      <div class="pp-desc-grid">
+        <div class="pp-desc-card">
+          <h2 class="pp-section-h2">Produktbeschreibung</h2>
+          <p class="pp-desc-text">Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.</p>
+          <div class="pp-features">
+              <div class="pp-feature-item">
+                <div class="pp-check-icon"><i class="bi bi-check-lg"></i></div>
+                <span class="pp-feature-text">Energieeffizient</span>
+              </div>
+              <div class="pp-feature-item">
+                <div class="pp-check-icon"><i class="bi bi-check-lg"></i></div>
+                <span class="pp-feature-text">Dimmbar</span>
+              </div>
+              <div class="pp-feature-item">
+                <div class="pp-check-icon"><i class="bi bi-check-lg"></i></div>
+                <span class="pp-feature-text">Langlebig</span>
+              </div>
+              <div class="pp-feature-item">
+                <div class="pp-check-icon"><i class="bi bi-check-lg"></i></div>
+                <span class="pp-feature-text">Einfache Installation</span>
+              </div>
+              <div class="pp-feature-item">
+                <div class="pp-check-icon"><i class="bi bi-check-lg"></i></div>
+                <span class="pp-feature-text">Modernes Design</span>
+              </div>
+          </div>
+        </div>
+        <div class="pp-specs-card">
+          <h2 class="pp-section-h2">Technische Details</h2>
+          <div class="pp-specs-grid">
+            <div class="pp-spec-item">
+              <div class="pp-spec-label">Kategorie</div>
+              <div class="pp-spec-value">Beleuchtung</div>
+            </div>
+            <div class="pp-spec-item">
+              <div class="pp-spec-label">Preis</div>
+              <div class="pp-spec-value">€12.99</div>
+            </div>
+            <div class="pp-spec-item">
+              <div class="pp-spec-label">Verfügbarkeit</div>
+              <div class="pp-spec-value">Auf Lager</div>
+            </div>
+            <div class="pp-spec-item">
+              <div class="pp-spec-label">Lieferzeit</div>
+              <div class="pp-spec-value">6-11 Werktage</div>
+            </div>
+            <div class="pp-spec-item">
+              <div class="pp-spec-label">Lieferumfang</div>
+              <div class="pp-spec-value">Produkt, Anleitung, Garantiekarte</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  function getWishlist() {
-    return JSON.parse(localStorage.getItem('wishlist')) || [];
-  }
-  function setWishlist(wishlist) {
-    localStorage.setItem('wishlist', JSON.stringify(wishlist));
-  }
-  function isInWishlist(id) {
-    return getWishlist().some(item => Number(item.id) === Number(id));
-  }
-  function toggleWishlist(product) {
-    let wishlist = getWishlist();
-    if (isInWishlist(product.id)) {
-      wishlist = wishlist.filter(item => Number(item.id) !== Number(product.id));
-      setWishlist(wishlist);
-      updateAllWishlistButtons(); // Update all wishlist buttons
-      
-      if (typeof showAlert === 'function') {
-        showAlert('Produkt von der Wunschliste entfernt', 'wishlist.html');
-      } else {
-        showNotification('Produkt von der Wunschliste entfernt');
-      }
-    } else {
-      wishlist.push({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        description: product.description
-      });
-      setWishlist(wishlist);
-      
-      // Enhanced wishlist animation only when adding (same as index.html)
-      triggerWishlistButtonAnimation(product.id);
-      updateAllWishlistButtons(); // Update all wishlist buttons
-      
-      if (typeof showAlert === 'function') {
-        showAlert('Produkt zur Wunschliste hinzugefügt', 'wishlist.html');
-      } else {
-        showNotification('Produkt zur Wunschliste hinzugefügt');
-      }
-    }
-  }
+  <section class="pp-reviews-section" id="reviews">
+    <div class="pp-reviews-glow"></div>
+    <div class="pp-reviews-topline"></div>
+    <div class="pp-reviews-inner pp-container">
+      <div class="pp-reviews-wrap">
+        <div class="pp-reviews-grid">
+          <div class="pp-reviews-summary">
+            <div class="pp-rating-big">4.9<span class="pp-rating-denom">/5</span></div>
+            <div class="pp-stars" style="margin:8px 0;font-size:1.2rem">
+              <i class="bi bi-star-fill" style="color:#ffd700"></i><i class="bi bi-star-fill" style="color:#ffd700"></i><i class="bi bi-star-fill" style="color:#ffd700"></i><i class="bi bi-star-fill" style="color:#ffd700"></i><i class="bi bi-star-half" style="color:#ffd700"></i>
+            </div>
+            <div class="pp-review-base">Basierend auf 95 Bewertungen</div>
+            <div class="pp-rbar-row">
+              <span class="pp-rbar-label">5★</span>
+              <div class="pp-rbar-track"><div class="pp-rbar-fill" style="width:68%"></div></div>
+              <span class="pp-rbar-count">65</span>
+            </div>
+            <div class="pp-rbar-row">
+              <span class="pp-rbar-label">4★</span>
+              <div class="pp-rbar-track"><div class="pp-rbar-fill" style="width:18%"></div></div>
+              <span class="pp-rbar-count">17</span>
+            </div>
+            <div class="pp-rbar-row">
+              <span class="pp-rbar-label">3★</span>
+              <div class="pp-rbar-track"><div class="pp-rbar-fill" style="width:9%"></div></div>
+              <span class="pp-rbar-count">9</span>
+            </div>
+            <div class="pp-rbar-row">
+              <span class="pp-rbar-label">2★</span>
+              <div class="pp-rbar-track"><div class="pp-rbar-fill" style="width:3%"></div></div>
+              <span class="pp-rbar-count">3</span>
+            </div>
+            <div class="pp-rbar-row">
+              <span class="pp-rbar-label">1★</span>
+              <div class="pp-rbar-track"><div class="pp-rbar-fill" style="width:2%"></div></div>
+              <span class="pp-rbar-count">2</span>
+            </div>
+          </div>
+          <div class="pp-review-cards">
+          <div class="pp-review-card">
+            <div class="pp-reviewer">
+              <div class="pp-avatar" style="background:#ffd700">TH</div>
+              <div class="pp-reviewer-info">
+                <span class="pp-reviewer-name">Thomas H.<span class="pp-verified"><i class="bi bi-patch-check-fill"></i> Verifiziert</span></span>
+                <div class="pp-reviewer-date">24. Juni 2026</div>
+              </div>
+              <div class="pp-review-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+            </div>
+            <div class="pp-review-title">Setzt wunderschöne Akzente!</div>
+            <div class="pp-review-text">Die Lichtqualität ist fantastisch. Mein Wohnzimmer sieht damit komplett anders aus — sehr empfehlenswert!</div>
+            <div class="pp-review-helpful"><i class="bi bi-hand-thumbs-up"></i> 15 Personen fanden das hilfreich</div>
+          </div>
+          <div class="pp-review-card">
+            <div class="pp-reviewer">
+              <div class="pp-avatar" style="background:#8b5cf6">LR</div>
+              <div class="pp-reviewer-info">
+                <span class="pp-reviewer-name">Lisa R.<span class="pp-verified"><i class="bi bi-patch-check-fill"></i> Verifiziert</span></span>
+                <div class="pp-reviewer-date">17. Juni 2026</div>
+              </div>
+              <div class="pp-review-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+            </div>
+            <div class="pp-review-title">Stimmungslicht vom Feinsten</div>
+            <div class="pp-review-text">Endlich die richtige Atmosphäre zuhause. Installation war kinderleicht und die Lichtfarben sind wunderschön.</div>
+            <div class="pp-review-helpful"><i class="bi bi-hand-thumbs-up"></i> 22 Personen fanden das hilfreich</div>
+          </div>
+          <div class="pp-review-card">
+            <div class="pp-reviewer">
+              <div class="pp-avatar" style="background:#22d3ee">MF</div>
+              <div class="pp-reviewer-info">
+                <span class="pp-reviewer-name">Michael F.<span class="pp-verified"><i class="bi bi-patch-check-fill"></i> Verifiziert</span></span>
+                <div class="pp-reviewer-date">31. Mai 2026</div>
+              </div>
+              <div class="pp-review-stars"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star"></i></div>
+            </div>
+            <div class="pp-review-title">Sehr zufrieden</div>
+            <div class="pp-review-text">Hält was es verspricht. Gute Helligkeit, energiesparend und sehr langlebig. Werde mehr davon bestellen.</div>
+            <div class="pp-review-helpful"><i class="bi bi-hand-thumbs-up"></i> 21 Personen fanden das hilfreich</div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  function updateAllWishlistButtons() {
-    const isInList = isInWishlist(product.id);
-    
-    // Update main wishlist button
-    const mainBtn = document.getElementById('wishlistBtn');
-    if (mainBtn) {
-      if (isInList) {
-        mainBtn.classList.add('active');
-        mainBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
-      } else {
-        mainBtn.classList.remove('active');
-        mainBtn.innerHTML = '<i class="bi bi-heart"></i> Zur Wunschliste';
-      }
-    }
-    
-    // Update all quick order wishlist buttons
-    const quickOrderBtns = document.querySelectorAll('.wishlist-button');
-    quickOrderBtns.forEach(btn => {
-      if (isInList) {
-        btn.classList.add('active');
-        btn.innerHTML = '<i class="bi bi-heart-fill"></i> Entfernen';
-      } else {
-        btn.classList.remove('active');
-        btn.innerHTML = '<i class="bi bi-heart"></i> Zur Wunschliste';
-      }
-    });
-  }
+  <section class="pp-similar-section">
+    <div class="pp-container" style="padding-top:64px">
+      <div class="pp-similar-header">
+        <div class="pp-similar-eyebrow">ENTDECKE MEHR</div>
+        <h2 class="pp-similar-title">Ähnliche Produkte</h2>
+      </div>
+      <div class="pp-similar-grid">
+      <div class="pp-similar-card" onclick="window.location.href='/produkte/nordic-crystal-lamp.html'">
+        <div class="pp-similar-img">
+          <img src="../produkt bilder/Nordic Crystal Lamp.jpg" alt="Nordic Crystal Lamp" loading="lazy">
+          <div class="pp-similar-sale">-38%</div>
+        </div>
+        <div class="pp-similar-info">
+          <div class="pp-similar-stars-row">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+          </div>
+          <div class="pp-similar-name">Nordic Crystal Lamp</div>
+          <div class="pp-similar-prices">
+            <span class="pp-similar-price">€24.99</span>
+            <span class="pp-similar-orig">€39.99</span>
+          </div>
+        </div>
+      </div>
+      <div class="pp-similar-card" onclick="window.location.href='/produkte/led-crystal-lampe.html'">
+        <div class="pp-similar-img">
+          <img src="../produkt bilder/Led crystal lampe .jpg" alt="Led crystal lampe" loading="lazy">
+          <div class="pp-similar-sale">-68%</div>
+        </div>
+        <div class="pp-similar-info">
+          <div class="pp-similar-stars-row">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+          </div>
+          <div class="pp-similar-name">Led crystal lampe</div>
+          <div class="pp-similar-prices">
+            <span class="pp-similar-price">€18.99</span>
+            <span class="pp-similar-orig">€59.99</span>
+          </div>
+        </div>
+      </div>
+      <div class="pp-similar-card" onclick="window.location.href='/produkte/indoor-sensing-wall-lamp.html'">
+        <div class="pp-similar-img">
+          <img src="../produkt bilder/Indoor Sensing Wall Lamp.jpg" alt="Indoor Sensing Wall Lamp" loading="lazy">
+          <div class="pp-similar-sale">-55%</div>
+        </div>
+        <div class="pp-similar-info">
+          <div class="pp-similar-stars-row">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+          </div>
+          <div class="pp-similar-name">Indoor Sensing Wall Lamp</div>
+          <div class="pp-similar-prices">
+            <span class="pp-similar-price">€17.99</span>
+            <span class="pp-similar-orig">€39.99</span>
+          </div>
+        </div>
+      </div>
+      <div class="pp-similar-card" onclick="window.location.href='/produkte/krystall-ball-nachtlampe.html'">
+        <div class="pp-similar-img">
+          <img src="../produkt bilder/Krystall Ball Nachtlampe.jpg" alt="Krystall Ball Nachtlampe" loading="lazy">
+          <div class="pp-similar-sale">-47%</div>
+        </div>
+        <div class="pp-similar-info">
+          <div class="pp-similar-stars-row">
+            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+          </div>
+          <div class="pp-similar-name">Krystall Ball Nachtlampe</div>
+          <div class="pp-similar-prices">
+            <span class="pp-similar-price">€15.99</span>
+            <span class="pp-similar-orig">€29.99</span>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
 
-  function getCart() {
-    return JSON.parse(localStorage.getItem('cart')) || [];
-            }
-  function setCart(cart) {
-            localStorage.setItem('cart', JSON.stringify(cart));
-  }
-  function addToCart(product) {
-    let cart = getCart();
-    // Only match regular products (items without bundleId)
-    const existing = cart.find(item => Number(item.id) === Number(product.id) && !item.bundleId);
-    if (existing) {
-      existing.quantity += product.quantity || 1;
-    } else {
-      cart.push({ ...product, quantity: product.quantity || 1 });
-    }
-    setCart(cart);
-    // Keine direkte Weiterleitung mehr, da wir das Popup verwenden
-  }
-  
-  // showAlert function for cart popup
-  function showAlert(message, redirectTo = 'cart.html') {
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-success position-fixed end-0 m-4 shadow-lg fade show';
-    alert.style.zIndex = '20000';
-    alert.style.fontSize = '1rem';
-    alert.style.minWidth = '160px';
-    alert.style.maxWidth = '320px';
-    alert.style.padding = '0.75rem 2rem';
-    alert.style.textAlign = 'center';
-    alert.style.borderRadius = '2rem';
-    alert.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
-    alert.style.background = 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)';
-    alert.style.color = '#fff';
-    alert.style.fontWeight = '500';
-    alert.style.letterSpacing = '0.02em';
-    alert.style.pointerEvents = 'auto';
-    alert.style.position = 'fixed';
-    alert.style.right = '2.5rem';
-    alert.style.top = 'calc(56px + 1.2rem)';
-    alert.style.cursor = 'pointer';
-    alert.textContent = message;
-    alert.addEventListener('click', () => {
-      window.location.href = '../' + redirectTo;
-    });
-    document.body.appendChild(alert);
-    setTimeout(() => {
-      if (document.body.contains(alert)) {
-        alert.classList.remove('show');
-        alert.classList.add('fade');
-        setTimeout(() => alert.remove(), 400);
-      }
-    }, 1700);
-  }
-  
-  function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    notification.className = `alert alert-${type} position-fixed end-0 m-4 shadow-lg fade show`;
-    notification.style.zIndex = '20000';
-    notification.style.fontSize = '1rem';
-    notification.style.minWidth = '160px';
-    notification.style.maxWidth = '320px';
-    notification.style.padding = '0.75rem 2rem';
-    notification.style.textAlign = 'center';
-    notification.style.borderRadius = '2rem';
-    notification.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
-    notification.style.background = type === 'success' 
-      ? 'linear-gradient(90deg, #4f8cff 0%, #38c6ff 100%)' 
-      : 'linear-gradient(90deg, #ff6b6b 0%, #ee5a24 100%)';
-    notification.style.color = '#fff';
-    notification.style.fontWeight = '500';
-    notification.style.letterSpacing = '0.02em';
-    notification.style.pointerEvents = 'auto';
-    notification.style.position = 'fixed';
-    notification.style.right = '2.5rem';
-    notification.style.top = 'calc(56px + 1.2rem)';
-    notification.style.cursor = 'pointer';
-    notification.textContent = message;
-    
-    // Klick-Event hinzufügen
-    notification.addEventListener('click', function() {
-      notification.classList.remove('show');
-      notification.classList.add('fade');
-      setTimeout(() => notification.remove(), 400);
-      // Zur Wishlist-Seite weiterleiten (aus dem produkte/ Ordner)
-      window.location.href = '../wishlist.html';
-    });
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      if (document.body.contains(notification)) {
-        notification.classList.remove('show');
-        notification.classList.add('fade');
-        setTimeout(() => notification.remove(), 400);
-      }
-    }, 2000);
-  }
+  <footer class="pp-footer">
+    <div class="pp-footer-inner">
+      <div class="pp-footer-grid">
+        <div>
+          <div class="pp-footer-brand">Maios</div>
+          <div class="pp-footer-tagline">Qualitätsprodukte für Ihren modernen Lebensstil — direkt zu Ihnen nach Hause.</div>
+        </div>
+        <div>
+          <div class="pp-footer-col-title">Shop</div>
+          <div class="pp-footer-links">
+            <a href="/" class="pp-footer-link">Startseite</a>
+            <a href="/wishlist.html" class="pp-footer-link">Wunschliste</a>
+            <a href="/cart.html" class="pp-footer-link">Warenkorb</a>
+          </div>
+        </div>
+        <div>
+          <div class="pp-footer-col-title">Hilfe</div>
+          <div class="pp-footer-links">
+            <a href="/infos/versand.html" class="pp-footer-link">Versand</a>
+            <a href="/infos/retouren.html" class="pp-footer-link">Retouren</a>
+            <a href="/infos/kontakt.html" class="pp-footer-link">Kontakt</a>
+          </div>
+        </div>
+        <div>
+          <div class="pp-footer-col-title">Rechtliches</div>
+          <div class="pp-footer-links">
+            <a href="/infos/impressum.html" class="pp-footer-link">Impressum</a>
+            <a href="/infos/datenschutz.html" class="pp-footer-link">Datenschutz</a>
+            <a href="/infos/agb.html" class="pp-footer-link">AGB</a>
+            <a href="/infos/widerruf.html" class="pp-footer-link">Widerruf</a>
+          </div>
+        </div>
+      </div>
+      <div class="pp-footer-divider"></div>
+      <div class="pp-footer-copy">© 2026 Maios Shop · Alle Rechte vorbehalten · Kleinunternehmer gemäß §19 UStG</div>
+    </div>
+  </footer>
 
-  function addToCartAndRedirect() {
-    const productToAdd = {
-      ...product,
-      quantity: 1
+  <div class="pp-sticky" id="pp-sticky">
+    <div class="pp-sticky-inner">
+      <div class="pp-sticky-product">
+        <div class="pp-sticky-thumb" style="background-image:url('../produkt bilder/Waterproof RGB LED Solar Light.jpg')"></div>
+        <div class="pp-sticky-info">
+          <div class="pp-sticky-name">Waterproof RGB LED Solar Light</div>
+          <div class="pp-sticky-prices">
+            <span class="pp-sticky-price">€12.99</span>
+            <span class="pp-sticky-orig">€34.99</span>
+          </div>
+        </div>
+      </div>
+      <button class="pp-sticky-btn">
+        <i class="bi bi-bag-plus-fill"></i> In den Warenkorb
+      </button>
+    </div>
+  </div>
+
+  <div class="pp-toast" id="pp-toast">
+    <div class="pp-toast-inner">
+      <span class="pp-toast-icon">✓</span>
+      <span class="pp-toast-text">Zum Warenkorb hinzugefügt</span>
+    </div>
+  </div>
+
+  <div class="pp-notif" id="pp-notif"></div>
+
+  <script>
+    var product = {
+      id:            22,
+      name:          "Waterproof RGB LED Solar Light",
+      price:         12.99,
+      originalPrice: 34.99,
+      description:   "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.",
+      sku:           "CJLE101693101AZ",
+      category:      "Beleuchtung",
+      image:         "produkt bilder/Waterproof RGB LED Solar Light.jpg",
+      slug:          "waterproof-rgb-led-solar-light",
+      shippingTime:  "7-15 Werktage",
+      inStock:       true,
+      colors:        [],
+      tags:          []
     };
-    addToCart(productToAdd);
-    
-    // Enhanced animations for product page
-    triggerCartButtonAnimation();
-    triggerNavCartAnimation();
-    
-    // Popup anzeigen statt direkter Weiterleitung für "In den Warenkorb" Button
-    if (typeof showAlert === 'function') {
-      showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
-    } else {
-      showNotification('Zum Warenkorb hinzugefügt');
-    }
-  }
+    window.product = product;
 
-  function triggerCartButtonAnimation() {
-    const cartButton = document.getElementById('heroCartBtn');
-    if (cartButton) {
-      // Use wishlist-style animation for main cart button
-      cartButton.classList.add('success-animation');
-      setTimeout(() => {
-        cartButton.classList.remove('success-animation');
-      }, 800);
-      
-      // Add cart icon pulse animation (red effect)
-      const cartIcon = cartButton.querySelector('i');
-      if (cartIcon) {
-        cartIcon.classList.add('cart-icon-pulse');
-        setTimeout(() => {
-          cartIcon.classList.remove('cart-icon-pulse');
-        }, 500);
-      }
-    }
-  }
-
-  // New animation function for quick order buttons (wishlist-style)
-  function triggerQuickOrderAnimation() {
-    const quickOrderButtons = document.querySelectorAll('.wishlist-style-btn');
-    quickOrderButtons.forEach(button => {
-      button.classList.add('success-animation');
-      setTimeout(() => {
-        button.classList.remove('success-animation');
-      }, 800);
-      
-      // Add cart icon pulse animation to button icon (red effect)
-      const buttonIcon = button.querySelector('i');
-      if (buttonIcon) {
-        buttonIcon.classList.add('cart-icon-pulse');
-        setTimeout(() => {
-          buttonIcon.classList.remove('cart-icon-pulse');
-        }, 500);
-      }
-    });
-  }
-
-  function triggerNavCartAnimation() {
-    const navCartButton = document.querySelector('.cart-nav-link');
-    if (navCartButton) {
-      navCartButton.classList.add('cart-rainbow-bounce');
-      setTimeout(() => {
-        navCartButton.classList.remove('cart-rainbow-bounce');
-      }, 800);
-    }
-  }
-
-  // Animation function for bundle button (wishlist-style)
-  function triggerBundleButtonAnimation(button) {
-    if (button) {
-      button.classList.add('success-animation');
-      setTimeout(() => {
-        button.classList.remove('success-animation');
-      }, 800);
-      
-      // Add cart icon pulse animation to bundle button icon (red effect)
-      const buttonIcon = button.querySelector('i');
-      if (buttonIcon) {
-        buttonIcon.classList.add('cart-icon-pulse');
-        setTimeout(() => {
-          buttonIcon.classList.remove('cart-icon-pulse');
-        }, 500);
-      }
-    }
-  }
-
-  // Enhanced wishlist animation (only for main button, not quick order)
-  function triggerWishlistButtonAnimation(productId) {
-    // Only animate the main wishlist button, not the quick order ones
-    const wishlistButton = document.getElementById('wishlistBtn');
-    
-    if (wishlistButton) {
-      wishlistButton.classList.add('success-animation');
-      setTimeout(() => {
-        wishlistButton.classList.remove('success-animation');
-      }, 800);
-      
-      // Heart pulse animation
-      const heartIcon = wishlistButton.querySelector('i');
-      if (heartIcon) {
-        heartIcon.classList.add('heart-pulse');
-        setTimeout(() => {
-          heartIcon.classList.remove('heart-pulse');
-        }, 500);
-      }
-    }
-  }
-
-  function increaseQuantity(event) {
-    // Determine which quantity input to use based on the clicked button
-    const button = event ? event.target : null;
-    const isDesktop = button && button.closest('.d-none.d-lg-block');
-    
-    const inputId = isDesktop ? 'quantity-desktop' : 'quantity';
-    const input = document.getElementById(inputId);
-    
-    if (input) {
-      const currentValue = parseInt(input.value, 10) || 1;
-      if (currentValue < 999) {
-        input.value = currentValue + 1;
-        updateTotalPrice();
-      }
-    }
-  }
-
-  function decreaseQuantity(event) {
-    // Determine which quantity input to use based on the clicked button
-    const button = event ? event.target : null;
-    const isDesktop = button && button.closest('.d-none.d-lg-block');
-    
-    const inputId = isDesktop ? 'quantity-desktop' : 'quantity';
-    const input = document.getElementById(inputId);
-    
-    if (input) {
-      const currentValue = parseInt(input.value, 10) || 1;
-      if (currentValue > 1) {
-        input.value = currentValue - 1;
-        updateTotalPrice();
-      }
-    }
-  }
-
-  function updateTotalPrice() {
-    // Update both mobile and desktop total prices
-    const mobileQuantity = parseInt(document.getElementById('quantity-mobile')?.value, 10) || 1;
-    const desktopQuantity = parseInt(document.getElementById('quantity')?.value, 10) || parseInt(document.getElementById('quantity-desktop')?.value, 10) || 1;
-    
-    // Calculate total prices
-    const mobileTotal = (product.price * mobileQuantity).toFixed(2);
-    const desktopTotal = (product.price * desktopQuantity).toFixed(2);
-    
-    // Update mobile price displays
-    const mobilePriceSection = document.querySelector('.d-lg-none .price-section');
-    if (mobilePriceSection) {
-      const currentPriceElement = mobilePriceSection.querySelector('.current-price');
-      const totalPriceElement = document.getElementById('totalPrice-mobile');
-      
-      if (currentPriceElement) {
-        currentPriceElement.textContent = `€${mobileTotal}`;
-      }
-      if (totalPriceElement) {
-        totalPriceElement.textContent = `€${mobileTotal}`;
-      }
-    }
-    
-    // Update desktop price displays
-    const desktopPriceSection = document.querySelector('.d-none.d-lg-block .price-section');
-    if (desktopPriceSection) {
-      const currentPriceElement = desktopPriceSection.querySelector('.current-price');
-      const totalPriceElement = document.getElementById('totalPrice');
-      
-      if (currentPriceElement) {
-        currentPriceElement.textContent = `€${desktopTotal}`;
-      }
-      if (totalPriceElement) {
-        totalPriceElement.textContent = `€${desktopTotal}`;
-      }
-    }
-  }
-
-  function addToCartWithQuantity(event) {
-    // Verhindere doppelte Ausführung
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    
-    // Determine which quantity input to use based on the clicked button
-    const button = event ? event.target : null;
-    const isDesktop = button && button.closest('.d-none.d-lg-block');
-    
-    const inputId = isDesktop ? 'quantity-desktop' : 'quantity';
-    const quantityInput = document.getElementById(inputId);
-    const quantity = quantityInput ? parseInt(quantityInput.value, 10) || 1 : 1;
-    
-    const productToCart = {
-      ...product,
-      quantity: quantity
-    };
-    addToCart(productToCart);
-    
-    // Enhanced animations for product page - wishlist style for quick order
-    triggerQuickOrderAnimation();
-    triggerNavCartAnimation();
-    
-    // Direkt zum Warenkorb weiterleiten
-    setTimeout(() => {
-      window.location.href = '../cart.html';
-    }, 500); // Kurze Verzögerung für die Animation
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const allWishlistButtons = document.querySelectorAll('.wishlist-button');
-    allWishlistButtons.forEach(button => {
-      button.addEventListener('click', function(e) {
-        e.preventDefault();
-        toggleWishlist(product);
+    fetch('../products.json')
+      .then(function(r){ return r.json(); })
+      .then(function(prods){
+        var prod = prods.find(function(x){ return Number(x.id) === Number(product.id); });
+        setTimeout(function(){
+          if (window.renderBundlesWithImages) {
+            window.renderBundlesWithImages();
+          } else if (prod && prod.bundles && prod.bundles.length && window.renderBundles) {
+            window.renderBundles(prod.bundles);
+          }
+        }, 400);
+      })
+      .catch(function(){
+        setTimeout(function(){
+          if (window.renderBundles) window.renderBundles([]);
+        }, 400);
       });
-    });
-    
-    // Cart button uses onclick attribute, no need for additional event listener
-    
-    // Update all wishlist buttons on page load
-    updateAllWishlistButtons();
-    
-    // Buy Now Button
-    const quantityInput = document.getElementById('quantity');
-    const buyNowBtn = document.getElementById('buyNowBtn');
-    
-    if (quantityInput && buyNowBtn) {
-      quantityInput.addEventListener('input', updateTotalPrice);
-      quantityInput.addEventListener('change', updateTotalPrice);
-      updateTotalPrice();
-      
-      buyNowBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        const qty = parseInt(quantityInput.value, 10) || 1;
-        const productToCart = {
-          ...product,
-          quantity: qty
-        };
-        addToCart(productToCart);
-        
-        // Enhanced animations for product page - wishlist style for quick order
-        triggerQuickOrderAnimation();
-        triggerNavCartAnimation();
-        
-        // Popup anzeigen statt direkter Weiterleitung
-        if (typeof showAlert === 'function') {
-          showAlert('Produkt zum Warenkorb hinzugefügt', 'cart.html');
-        } else {
-          showNotification('Zum Warenkorb hinzugefügt');
-        }
-      });
-    }
+  </script>
 
-    // Event-Listener für Quantity-Input (Mobile)
-    const quantityInputMobile = document.getElementById('quantity');
-    if (quantityInputMobile) {
-      quantityInputMobile.addEventListener('input', updateTotalPrice);
-      quantityInputMobile.addEventListener('change', updateTotalPrice);
-    }
+  <script src="../produkt-premium.js"></script>
+  <script src="../keyboard-shortcuts.js"></script>
+  <script src="../app.js"></script>
+  <script src="../color-cart-bridge.js"></script>
+  <script src="../bundle-images-final.js"></script>
+  <script src="../color-image-selection.js"></script>
+  <script src="../product-gallery-complete.js"></script>
+  <script src="../cookie-consent.js?v=1.0"></script>
+  <script src="../view-tracker.js?v=1.0"></script>
+  <script src="../widerruf-button.js?v=1.0"></script>
 
-    // Event-Listener für Quantity-Input (Desktop)
-    const quantityInputDesktop = document.getElementById('quantity-desktop');
-    if (quantityInputDesktop) {
-      quantityInputDesktop.addEventListener('input', updateTotalPrice);
-      quantityInputDesktop.addEventListener('change', updateTotalPrice);
-    }
-
-    // Initialisiere die Preise
-    updateTotalPrice();
-  });
-</script>
-<script src="../keyboard-shortcuts.js"></script>
-
-<!-- Warenkorb-Farbauswahl-Erweiterung -->
-<script src="../cart-color-extension.js"></script>
-
-<!-- Bundle-Farbauswahl-Erweiterung -->
-
-<!-- CJ Dropshipping Farbauswahl-Integration -->
-<script src="../cj-color-integration.js"></script>
-
-<!-- Farbauswahl JavaScript -->
-<script src="../color-selection.js"></script>
-
-<!-- Inline Farbauswahl -->
-<script>
-// Kopie von Produkt 26 mit verbesserter updatePrices
-class ColorSelection {
-    constructor() {
-        this.selectedColor = null;
-        this.productId = null;
-        this.colors = [];
-        this.init();
-    }
-
-    init() {
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                this.initializeColorSelection();
-            }, 100);
-        });
-        
-        if (document.readyState === 'complete') {
-            setTimeout(() => {
-                this.initializeColorSelection();
-            }, 100);
-        }
-    }
-
-    async initializeColorSelection() {
-        try {
-            this.productId = this.extractProductIdFromUrl();
-            if (!this.productId) return;
-            
-            const productData = await this.loadProductData(this.productId);
-            if (!productData || !productData.colors || productData.colors.length === 0) return;
-            
-            this.colors = productData.colors;
-            this.renderColorSelection();
-        } catch (error) {
-            console.error('Fehler:', error);
-        }
-    }
-
-    extractProductIdFromUrl() {
-        const path = window.location.pathname;
-        const match = path.match(/produkt-(\d+)\.html/);
-        return match ? parseInt(match[1]) : null;
-    }
-
-    async loadProductData(productId) {
-        try {
-            const response = await fetch('../products.json');
-            const products = await response.json();
-            return products.find(p => p.id === productId);
-        } catch (error) {
-            return null;
-        }
-    }
-
-    renderColorSelection() {
-        let container = document.getElementById('colorSelection');
-        if (!container) {
-            container = this.createColorSelectionContainer();
-        }
-        if (!container) return;
-        
-        const colorOptionsContainer = container.querySelector('#colorOptions') || 
-                                    container.querySelector('.color-options');
-        if (colorOptionsContainer) {
-            this.renderColorOptions(colorOptionsContainer);
-        }
-        
-        if (this.colors.length > 0) {
-            this.selectColor(this.colors[0]);
-        }
-    }
-
-    createColorSelectionContainer() {
-        const possibleParents = [
-            document.querySelector('.product-hero .container .row .col-lg-6'),
-            document.querySelector('.product-hero .container'),
-            document.querySelector('main'),
-            document.body
-        ];
-
-        for (const parent of possibleParents) {
-            if (parent) {
-                const container = document.createElement('div');
-                container.className = 'color-selection mb-4';
-                container.id = 'colorSelection';
-                container.innerHTML = `
-                    <h5 class="mb-3 text-white">Farbe wählen:</h5>
-                    <div class="color-options d-flex gap-2 flex-wrap" id="colorOptions"></div>
-                    <div class="selected-color-info mt-2" id="selectedColorInfo">
-                        Ausgewählte Farbe: <span id="selectedColorName">-</span>
-                    </div>
-                `;
-                
-                const priceSection = parent.querySelector('.price-tag')?.closest('.d-flex');
-                if (priceSection) {
-                    priceSection.insertAdjacentElement('afterend', container);
-                } else {
-                    parent.insertBefore(container, parent.firstChild);
-                }
-                return container;
-            }
-        }
-        return null;
-    }
-
-    renderColorOptions(container) {
-        container.innerHTML = '';
-        this.colors.forEach((color) => {
-            const colorOption = document.createElement('div');
-            colorOption.className = 'color-option';
-            colorOption.style.backgroundColor = color.code;
-            colorOption.setAttribute('data-color', color.code);
-            colorOption.setAttribute('data-sku', color.sku);
-            colorOption.setAttribute('title', color.name);
-            colorOption.addEventListener('click', () => this.selectColor(color));
-            container.appendChild(colorOption);
-        });
-    }
-
-    selectColor(color) {
-        document.querySelectorAll('.color-option.selected').forEach(option => {
-            option.classList.remove('selected');
-        });
-        
-        const selectedOption = document.querySelector(`[data-sku="${color.sku}"]`);
-        if (selectedOption) {
-            selectedOption.classList.add('selected');
-        }
-        
-        this.selectedColor = color;
-        
-        const selectedColorName = document.getElementById('selectedColorName');
-        if (selectedColorName) {
-            selectedColorName.textContent = color.name;
-        }
-        
-        this.updatePrices(color);
-        this.updateCartIntegration(color);
-    }
-
-    updatePrices(color) {
-        // Hero-Bereich Preise aktualisieren
-        const priceTag = document.querySelector('.price-tag');
-        if (priceTag && color.price) {
-            priceTag.textContent = `€${color.price}`;
-        }
-        
-        // Alle Preis-Displays aktualisieren - erweiterte Selektoren
-        const priceSelectors = [
-            '.price-tag', 
-            '.current-price', 
-            '.hero-price', 
-            'h2.display-4',
-            '.price-section .current-price',
-            '#totalPrice',
-            '#totalPrice-mobile'
-        ];
-        
-        priceSelectors.forEach(selector => {
-            const elements = document.querySelectorAll(selector);
-            elements.forEach(el => {
-                if (color.price && el.textContent.includes('€')) {
-                    // Für Total-Preise: Menge berücksichtigen
-                    if (selector.includes('total') || selector.includes('Total')) {
-                        const quantityInput = document.getElementById('quantity') || 
-                                            document.getElementById('quantity-mobile');
-                        const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
-                        el.textContent = `€${(color.price * quantity).toFixed(2)}`;
-                    } else {
-                        el.textContent = `€${color.price}`;
-                    }
-                }
-            });
-        });
-
-        // Update window.product
-        if (window.product) {
-            window.product.price = color.price || window.product.price;
-            window.product.originalPrice = color.originalPrice || window.product.originalPrice;
-        }
-
-        // Trigger updateTotalPrice
-        if (typeof updateTotalPrice === 'function') {
-            updateTotalPrice();
-        }
-    }
-
-    updateCartIntegration(color) {
-        if (window.product) {
-            window.product.selectedColor = color.name;
-            window.product.selectedColorCode = color.code;
-            window.product.selectedColorSku = color.sku;
-            window.product.price = color.price || window.product.price;
-            window.product.originalPrice = color.originalPrice || window.product.originalPrice;
-        }
-    }
-
-    getSelectedColor() {
-        return this.selectedColor;
-    }
-
-    enhanceAddToCartButtons() {
-        const originalAddToCart = window.addToCart;
-        if (originalAddToCart && !window.addToCart._colorEnhanced22) {
-            window.addToCart = (product) => {
-                const selectedColor = this.getSelectedColor();
-                if (selectedColor) {
-                    let cleanName = product.name.replace(/\s*\([^)]*\)$/, '');
-                    const enhancedProduct = {
-                        ...product,
-                        name: `${cleanName} (${selectedColor.name})`,
-                        selectedColor: selectedColor.name,
-                        selectedColorCode: selectedColor.code,
-                        selectedColorSku: selectedColor.sku,
-                        price: selectedColor.price || product.price,
-                        originalPrice: selectedColor.originalPrice || product.originalPrice
-                    };
-                    return originalAddToCart(enhancedProduct);
-                } else {
-                    return originalAddToCart(product);
-                }
-            };
-            window.addToCart._colorEnhanced22 = true;
-        }
-    }
-}
-
-const colorSelection = new ColorSelection();
-window.getSelectedColor = () => colorSelection.getSelectedColor();
-
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        colorSelection.enhanceAddToCartButtons();
-    }, 500);
-});
-</script>
-
-<!-- Farbauswahl JavaScript inline -->
-<script>
-  // Populate mobile quantity dropdown on page load
-  function populateMobileQuantityDropdown() {
-    const select = document.getElementById('quantity-mobile');
-    if (select && select.options.length === 0) {
-      for (let i = 1; i <= 999; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        select.appendChild(option);
-      }
-    }
-  }
-
-  // Call on page load
-  document.addEventListener('DOMContentLoaded', populateMobileQuantityDropdown);
-  // Also call immediately in case DOM is already loaded
-  populateMobileQuantityDropdown();
-
-  // Mobile-specific quantity functions
-  function increaseMobileQuantity() {
-    const select = document.getElementById('quantity-mobile');
-    if (select) {
-      const currentValue = parseInt(select.value, 10) || 1;
-      if (currentValue < 999) {
-        select.value = currentValue + 1;
-        updateTotalPrice();
-      }
-    }
-  }
-
-  function decreaseMobileQuantity() {
-    const select = document.getElementById('quantity-mobile');
-    if (select) {
-      const currentValue = parseInt(select.value, 10) || 1;
-      if (currentValue > 1) {
-        select.value = currentValue - 1;
-        updateTotalPrice();
-      }
-    }
-  }
-</script>
-
-<script>
-// Fullscreen-Funktionalität
-const mainImg = document.querySelector('.main-product-image');
-if (mainImg) {
-    mainImg.style.cursor = 'zoom-in';
-    mainImg.onclick = () => {
-        const modal = document.createElement('div');
-        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;cursor:zoom-out';
-        const img = document.createElement('img');
-        img.src = mainImg.src; img.style.cssText = 'max-width:90%;max-height:90%;object-fit:contain;border-radius:8px';
-        const close = document.createElement('span');
-        close.innerHTML = '&times;'; close.style.cssText = 'position:absolute;top:20px;right:30px;color:white;font-size:40px;cursor:pointer';
-        modal.append(img, close); document.body.appendChild(modal); document.body.style.overflow = 'hidden';
-        const closeModal = () => { document.body.removeChild(modal); document.body.style.overflow = 'auto'; };
-        modal.onclick = closeModal; close.onclick = closeModal;
-        document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
-    };
-}
-</script>
-    <script src="../cookie-consent.js?v=1.0" defer></script>
-    <script src="../view-tracker.js?v=1.0" defer></script>
-    <script src="../widerruf-button.js?v=1.0" defer></script>
 </body>
 </html>
