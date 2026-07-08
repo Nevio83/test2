@@ -1,39 +1,46 @@
-# Hält den Render-Free-Service wach, damit Besucher nicht ~50 s auf den Cold-Start
-# warten. Render schläft nach 15 Min Inaktivität – dieser Cron pingt alle 10 Min
-# den leichtgewichtigen /health-Endpoint (siehe server.js).
+# Hält den Render-Free-Service wach, damit Besucher nie ~50 s auf den Cold-Start
+# warten. Render schläft nach 15 Min Inaktivität – dieser Workflow pingt den
+# leichtgewichtigen /health-Endpoint (siehe server.js).
 #
 # Kostenlos: das Repo ist öffentlich → GitHub-Actions-Minuten sind unbegrenzt.
-# Hinweis: GitHub-Cron ist "best effort" und kann bei Last ein paar Minuten später
-# laufen; deshalb 10-Min-Intervall (Puffer zum 15-Min-Sleep). Manuell startbar via
-# "Run workflow" (workflow_dispatch).
+#
+# ⚠️ WICHTIG: GitHub-Cron ist "best effort" und kann bei Last 10–20 Min später
+# laufen — deshalb ist das KEINE 100%-Garantie gegen den Sleep. Zwei Gegenmaßnahmen:
+#   1) Jeder Lauf pingt ~13 Min lang alle 60 s (nicht nur einmal) und die Läufe
+#      werden serialisiert (concurrency, cancel-in-progress: false) → nahezu
+#      durchgehende Abdeckung, auch wenn ein Lauf mal verspätet startet.
+#   2) Für echte Garantie zusätzlich einen externen Pinger nutzen (cron-job.org,
+#      1-Min-Intervall, gratis) oder Render Starter-Plan (kein Sleep). Siehe CLAUDE-CODE.md.
 
 name: Keep Render awake
 
 on:
   schedule:
-    - cron: "*/10 * * * *" # alle 10 Minuten (UTC)
+    - cron: "*/10 * * * *" # alle 10 Minuten (UTC, best effort)
   workflow_dispatch: # manueller Start im Actions-Tab
 
-# Parallele Läufe vermeiden; ein neuer Lauf bricht einen hängenden alten ab.
+# Läufe serialisieren statt abbrechen: ein neuer Lauf wartet, bis der aktuelle
+# fertig ist -> back-to-back Abdeckung statt Lücken.
 concurrency:
   group: keep-alive
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
-      - name: Ping /health (mit Cold-Start-Toleranz)
+      - name: Render warmhalten (mehrere Pings pro Lauf)
         run: |
           URL="https://maiosshop.com/health"
-          echo "Pinge $URL"
-          # --max-time 90: Cold-Start kann ~50 s dauern. --retry deckt kurze 5xx/Timeouts ab.
-          code=$(curl -sS -o /tmp/health.txt -w "%{http_code}" \
-            --max-time 90 --retry 3 --retry-delay 10 --retry-all-errors \
-            "$URL" || true)
-          echo "HTTP $code"
-          cat /tmp/health.txt || true
-          if [ "$code" != "200" ]; then
-            echo "::warning::Health-Ping lieferte HTTP $code (Shop evtl. im Aufwachen)"
-          fi
+          echo "Halte $URL warm (~13 Min, alle 60 s)"
+          for i in $(seq 1 13); do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" \
+              --max-time 90 --retry 2 --retry-delay 5 --retry-all-errors \
+              "$URL" || echo "000")
+            echo "Ping $i/13: HTTP $code"
+            if [ "$code" != "200" ]; then
+              echo "::warning::Health-Ping lieferte HTTP $code (Shop evtl. im Aufwachen)"
+            fi
+            [ "$i" -lt 13 ] && sleep 60
+          done

@@ -38,8 +38,10 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   Tagesmuster, Ein-/Ausstiegsseiten. Net-New: anonymes **Suchbegriff-Tracking** (`search_events`,
   `POST /api/track/search`, Hook in `app.js`-Suche) + `orders.device` (Gerät an der Bestellung,
   reine Metadaten). Endpoints unter `/a29715347575/api/insights/*`. Keine Personen-Profile.
-- **Keep-Alive** gegen Free-Plan-Sleep: `GET /health` + GitHub-Actions-Cron
-  `.github/workflows/keep-alive.yml` (alle 10 Min, gratis da Repo öffentlich).
+- **Keep-Alive** gegen Free-Plan-Sleep: `GET /health` + GitHub-Actions-Workflow
+  `.github/workflows/keep-alive.yml` (jeder Lauf pingt ~13 Min alle 60 s, gratis da Repo
+  öffentlich). GitHub-Cron ist „best effort" → **keine 100%-Garantie**; für „nie wieder
+  Cold-Start" zusätzlich externer Pinger (cron-job.org, gratis) oder Render Starter-Plan.
 - **Belege rechtskonform:** Kleinunternehmer **§19 UStG** (kein USt-Ausweis + Pflichthinweis),
   fortlaufende Rechnungsnummer (`RE-000001`, Postgres-Sequence), echte Firmendaten (ENV),
   **GoBD**-Archiv: Beleg-PDF zusätzlich per Mail an `RECEIPT_ARCHIVE_EMAIL` (Renders FS ist flüchtig).
@@ -151,7 +153,7 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 | Pfad | Zweck |
 |---|---|
 | `render.yaml` | **Render-Blueprint** (Live-Hosting, Free): ein Node-Service bedient Frontend + API aus `server.js`. `healthCheckPath: /health`, `NODE_VERSION: 20.19.0`. |
-| `.github/workflows/keep-alive.yml` | GitHub-Actions-Cron, pingt alle 10 Min `GET /health` (hält Render-Free wach). |
+| `.github/workflows/keep-alive.yml` | GitHub-Actions-Workflow, hält Render-Free warm (jeder Lauf pingt ~13 Min alle 60 s `GET /health`). Best-effort — echte Garantie via externem Pinger/Paid. |
 | `Marketing/` | Python-Pipelines (`pipelines/*.py`), eigene `products.json`, chromedriver, Daten/Renders. |
 | `excel/` | Produktlisten (CSV/XLSX, getrackt). **Achtung:** Hier lagen versehentlich Secrets (privater Key + Stripe-Code); Secret-Muster (`*.key`/`*.pem`/`*_private_key*`/`stripe_backup_code.txt`) sind gitignored — siehe `CLAUDE-CODE.md` §1. |
 | `.env`, `Marketing/.env` | Secrets, **gitignored & nicht getrackt**. `.env.example` listet alle Schlüssel; Prod-Werte ins Render-Dashboard. |
@@ -243,8 +245,9 @@ komplette API aus `server.js`. URL: **https://maiosshop.com** (Fallback
 - **Build/Start:** `npm install` → `npm start`. Bei Dependency-Änderungen vorher
   `npm install --package-lock-only`, sonst zieht Render eine veraltete Lock-Datei.
 - **Free-Plan-Haken:** Service schläft nach 15 Min (erster Aufruf ~50 s). Daten bleiben (Neon).
-  **Keep-Alive aktiv:** `.github/workflows/keep-alive.yml` pingt alle 10 Min `GET /health`
-  (gratis, Repo ist öffentlich). Hält den Service warm; details in `CLAUDE-CODE.md` §2.
+  **Keep-Alive:** `.github/workflows/keep-alive.yml` (jeder Lauf pingt ~13 Min alle 60 s `GET /health`,
+  gratis). GitHub-Cron ist „best effort" → für eine echte Garantie zusätzlich **cron-job.org**
+  (gratis, 1-Min-Intervall, `https://maiosshop.com/health`) oder **Render Starter (7 $/Monat, kein Sleep)**.
 - **Stripe-Webhook:** zeigt im Stripe-Dashboard auf `https://maiosshop.com/stripe-webhook`
   (erledigt — sonst landen Bestellungen nicht in der DB).
 
