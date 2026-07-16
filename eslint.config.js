@@ -10,6 +10,8 @@ module.exports = [
       'node_modules/**',
       'Marketing/**',
       'graphify-out/**',
+      'design_handoff_*/**',
+      'Claude design review-handoff/**',
       '**/*.min.js'
     ]
   },

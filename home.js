@@ -122,6 +122,12 @@
       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
   function eur(n) { return (Number(n) || 0).toFixed(2).replace('.', ',') + ' €'; }
+  // API-Basis: live/npm run dev same-origin; statische Dev-Server (z.B. Live
+  // Server :5500) haben kein Backend → aufs lokale Node-Backend :3000 zeigen.
+  function apiUrl(path) {
+    var isLocalStatic = ['localhost', '127.0.0.1'].indexOf(location.hostname) !== -1 && location.port !== '3000';
+    return (isLocalStatic ? 'http://localhost:3000' : '') + path;
+  }
   function el(id) { return document.getElementById(id); }
   function acFor(cat) { return CAT_META[cat] || FALLBACK_AC; }
   function imgUrl(p) { return encodeURI('/' + String(p).replace(/^\//, '')); }
@@ -262,7 +268,7 @@
       if (level !== 'all' && level !== 'essential') return;
       var sid = null;
       try { sid = level === 'all' ? localStorage.getItem('maios_vid') : sessionStorage.getItem('maios_sid'); } catch (e) { /* ignore */ }
-      fetch('/api/track/search', {
+      fetch(apiUrl('/api/track/search'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         keepalive: true,
@@ -794,7 +800,7 @@
       btn.disabled = true;
       msg.className = 'nl-msg';
       msg.textContent = 'Einen Moment …';
-      fetch('/api/newsletter/subscribe', {
+      fetch(apiUrl('/api/newsletter/subscribe'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, source: 'startseite' })

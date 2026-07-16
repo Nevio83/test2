@@ -78,7 +78,10 @@ app.use((req, res, next) => {
     'http://localhost:3000',
     'http://localhost:5000',
     'http://127.0.0.1:3000',
-    'http://127.0.0.1:5000'
+    'http://127.0.0.1:5000',
+    // VS-Code Live Server (statisches Frontend in Dev, API laeuft auf :3000)
+    'http://localhost:5500',
+    'http://127.0.0.1:5500'
   ];
   
   const origin = req.headers.origin;
@@ -386,9 +389,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
           shop_domain: 'maiosshop.com'
         }
       },
-      automatic_payment_methods: {
-        enabled: true
-      },
+      // HINWEIS: automatic_payment_methods ist ein PaymentIntent-Parameter und
+      // in der Checkout-Session-API UNGUELTIG — Stripe lehnte damit JEDE
+      // Session ab (500, Checkout unmoeglich). Zahlarten steuern hier
+      // payment_method_types bzw. die Dashboard-Einstellungen.
       line_items,
       mode: 'payment',
       success_url: `${process.env.REPL_URL || 'https://maiosshop.com'}/success.html`,

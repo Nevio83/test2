@@ -540,17 +540,20 @@ function updateCartPage() {
                             </a>
                             <div class="cart-item-details">
                                 <h5>${item.name}</h5>
-                                ${isBundle ? '<div class="bundle-badge" title="Bundle" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-top: 4px; display:inline-flex; align-items:center; gap:6px;"><i class="bi bi-box-seam"></i> Bundle</div>' : ''}
-                                <div class="cart-item-price">${currentCurrency.symbol}${convertPrice(item.price, currentCurrency.code).toFixed(2)}</div>
+                                ${isBundle ? '<div class="bundle-badge" title="Bundle" style="display:inline-flex; align-items:center; gap:6px; background:rgba(216,181,108,.12); color:#D8B56C; border:1px solid rgba(216,181,108,.4); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; margin-top:4px;"><i class="bi bi-box-seam"></i> Bundle</div>' : ''}
+                                <div class="cart-item-price">${currentCurrency.symbol}${convertPrice(item.price, currentCurrency.code).toFixed(2)}${item.originalPrice && item.originalPrice > item.price ? `<span class="uvp">${currentCurrency.symbol}${convertPrice(item.originalPrice, currentCurrency.code).toFixed(2)}</span>` : ''}</div>
+                                <div class="cart-item-ship"><i class="bi bi-truck"></i> Lieferung in ${item.shippingTime || '7-13 Werktage'}${shipping === 0 ? ' · Gratis' : ''}</div>
                             </div>
                             <div class="quantity-controls">
-                                <button class="quantity-btn" onclick="changeQuantity(${item.id}, -1)">
-                                    <i class="bi bi-dash"></i>
-                                </button>
-                                <span class="quantity-display">${item.quantity}</span>
-                                <button class="quantity-btn" onclick="changeQuantity(${item.id}, 1)">
-                                    <i class="bi bi-plus"></i>
-                                </button>
+                                <span class="qty-pill">
+                                    <button class="quantity-btn" onclick="changeQuantity(${item.id}, -1)">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <span class="quantity-display">${item.quantity}</span>
+                                    <button class="quantity-btn" onclick="changeQuantity(${item.id}, 1)">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </span>
                                 <button class="remove-btn" onclick="removeFromCart('${item.id}')">
                                     <i class="bi bi-trash"></i>
                                 </button>
@@ -590,7 +593,7 @@ function updateCartPage() {
                 
                 <!-- Clear Cart Button -->
                 <div class="text-center mt-4 mb-3">
-                    <button type="button" onclick="clearCart()" class="btn btn-outline-danger w-100" style="border-radius: 12px; padding: 12px 24px; font-weight: 500; max-width: 400px;">
+                    <button type="button" onclick="clearCart()" class="clear-cart-btn">
                         <i class="bi bi-trash"></i> Warenkorb leeren
                     </button>
                 </div>
@@ -614,10 +617,9 @@ function updateCartPage() {
                         <span>${shipping === 0 ? 'Kostenlos' : currentCurrency.symbol + shippingConverted.toFixed(2)}</span>
                     </div>
                     <div class="summary-row total">
-                </div>
-                <div class="summary-row total">
-                    <span>Gesamt:</span>
-                    <span>${currentCurrency.symbol}${total.toFixed(2)}</span>
+                        <span>Gesamt:</span>
+                        <span>${currentCurrency.symbol}${total.toFixed(2)}</span>
+                    </div>
                 </div>
                 
                 <form id="stripe-form" class="payment-form">
@@ -663,37 +665,25 @@ function updateCartPage() {
                     <input type="hidden" id="postcode" value="12345">
                     
                     <!-- AGB und Datenschutz Checkboxen -->
-                    <div class="agb-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); border: 2px solid #e9ecef; border-radius: 16px; padding: 1.8rem; margin: 2rem 0 1.5rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-                        <h5 style="color: #2c3e50; font-size: 1.1rem; font-weight: 600; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="bi bi-shield-check" style="color: #667eea; font-size: 1.3rem;"></i>
-                            Rechtliche Vereinbarungen
-                        </h5>
-                        
-                        <div style="background: white; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; border: 1px solid #e3e8f0; position: relative;">
-                            <div class="form-check" style="margin: 0; padding-left: 1.8rem;">
-                                <input class="form-check-input" type="checkbox" id="agbCheckbox" required style="width: 20px; height: 20px; border: 2px solid #dee2e6; border-radius: 4px; position: absolute; left: 0; top: 0.2rem; cursor: pointer;">
-                                <label class="form-check-label" for="agbCheckbox" style="display: block; margin: 0; font-size: 0.95rem; line-height: 1.6; color: #495057; cursor: pointer;">
-                                    Ich habe die <a href="infos/agb.html" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500; border-bottom: 1px solid #667eea;">Allgemeinen Geschäftsbedingungen</a> und die 
-                                    <a href="infos/datenschutz.html" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500; border-bottom: 1px solid #667eea;">Datenschutzbestimmungen</a> gelesen und bin mit deren Geltung einverstanden.
-                                </label>
-                            </div>
+                    <div class="agb-section">
+                        <h5><i class="bi bi-shield-check"></i> Rechtliche Vereinbarungen</h5>
+                        <div class="agb-check">
+                            <input type="checkbox" id="agbCheckbox" required>
+                            <label for="agbCheckbox">
+                                Ich habe die <a href="infos/agb.html" target="_blank">Allgemeinen Geschäftsbedingungen</a> und die
+                                <a href="infos/datenschutz.html" target="_blank">Datenschutzbestimmungen</a> gelesen und bin mit deren Geltung einverstanden.
+                            </label>
                         </div>
-                        
-                        <div style="background: white; border-radius: 12px; padding: 1.2rem; margin-bottom: 1rem; border: 1px solid #e3e8f0; position: relative;">
-                            <div class="form-check" style="margin: 0; padding-left: 1.8rem;">
-                                <input class="form-check-input" type="checkbox" id="newsletterCheckbox" style="width: 20px; height: 20px; border: 2px solid #dee2e6; border-radius: 4px; position: absolute; left: 0; top: 0.2rem; cursor: pointer;">
-                                <label class="form-check-label" for="newsletterCheckbox" style="display: block; margin: 0; font-size: 0.95rem; line-height: 1.6; color: #495057; cursor: pointer;">
-                                    Ich bin einverstanden, dass MAIOS meine Daten für personalisierte Werbung und zur Verbesserung der Services nutzt. Dies umfasst auch die Weitergabe an Marketing-Partner.
-                                </label>
-                            </div>
+                        <div class="agb-check">
+                            <input type="checkbox" id="newsletterCheckbox">
+                            <label for="newsletterCheckbox">
+                                Ich bin einverstanden, dass MAIOS meine Daten für personalisierte Werbung und zur Verbesserung der Services nutzt. Dies umfasst auch die Weitergabe an Marketing-Partner.
+                            </label>
                         </div>
-                        
-                        <div style="text-align: center; margin-top: 1rem;">
-                            <small style="color: #6c757d;">
-                                Weitere Informationen: 
-                                <a href="infos/datenschutz.html" target="_blank" style="color: #667eea; text-decoration: none;">Datenschutzerklärung</a> • 
-                                <a href="infos/cookies.html" target="_blank" style="color: #667eea; text-decoration: none;">Cookie-Richtlinie</a>
-                            </small>
+                        <div class="agb-links">
+                            Weitere Informationen:
+                            <a href="infos/datenschutz.html" target="_blank">Datenschutzerklärung</a> ·
+                            <a href="infos/cookies.html" target="_blank">Cookie-Richtlinie</a>
                         </div>
                     </div>
                     
@@ -701,7 +691,21 @@ function updateCartPage() {
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
                         <span class="button-text"><i class="bi bi-lock"></i> Jetzt bestellen - ${currentCurrency.symbol}${total.toFixed(2)}</span>
                     </button>
-                    
+
+                    <!-- Express-Zahlung (führt in denselben Stripe-Checkout, dort stehen die Methoden zur Wahl) -->
+                    <div class="express-divider"><div class="line"></div><span class="lbl">Oder Express</span><div class="line"></div></div>
+                    <div class="express-row">
+                        <button type="button" class="express-btn" onclick="handleCheckout()" aria-label="Mit PayPal bezahlen"><img src="images/pay-paypal.jpg" alt="PayPal"></button>
+                        <button type="button" class="express-btn" onclick="handleCheckout()" aria-label="Mit Google Pay bezahlen"><img src="images/pay-gpay.png" alt="Google Pay" style="height:21px;"></button>
+                        <button type="button" class="express-btn" onclick="handleCheckout()" aria-label="Mit Klarna bezahlen"><img src="images/pay-klarna.png" alt="Klarna" style="height:17px;"></button>
+                    </div>
+
+                    <div class="trust-row">
+                        <span><i class="bi bi-shield-check"></i> Käuferschutz</span>
+                        <span><i class="bi bi-arrow-repeat"></i> 30 Tage Rückgabe</span>
+                        <span><i class="bi bi-lock"></i> SSL</span>
+                    </div>
+
                 </form>
             </div>
         </div>
@@ -963,11 +967,14 @@ window.handleCheckout = async function() {
         if (!customerInfo.metadata) customerInfo.metadata = {};
         customerInfo.metadata.allow_express_checkout = 'true';
         
-        // Konfiguriere die richtige API-URL für verschiedene Umgebungen
-        // API liegt same-origin auf Render (statische Seite + API aus server.js).
-        // Relative URL funktioniert lokal (Port 3000) wie auch live auf maiosshop.com.
-        // (Früher zeigte maiosshop.com hier auf einen Netlify-Function-Pfad → 404; Netlify ist raus.)
-        const apiUrl = '/api/create-checkout-session';
+        // Konfiguriere die richtige API-URL für verschiedene Umgebungen.
+        // Live + npm run dev (Port 3000): same-origin, relative URL.
+        // Statische Dev-Server (z.B. VS-Code Live Server auf :5500) haben KEIN
+        // Backend (POST → 405) → dort aufs lokale Node-Backend :3000 zeigen
+        // (muss parallel laufen: npm run dev). CORS erlaubt 5500 serverseitig.
+        const isLocalStatic = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+            && window.location.port !== '3000';
+        const apiUrl = (isLocalStatic ? 'http://localhost:3000' : '') + '/api/create-checkout-session';
             
         console.log('🌐 API URL:', apiUrl);
         const response = await fetch(apiUrl, {
@@ -1992,132 +1999,14 @@ function setupPostcodeAutocomplete() {
     }
 
     function ensureCouponInputExists() {
-        // Check if we're on mobile
-        if (window.innerWidth <= 768) {
-            console.log('📱 Mobile device detected, ensuring coupon input exists');
-            
-            // Check if gutschein-system.js has already created the voucher section
-            let voucherSection = document.getElementById('voucherSection');
-            
-            // If not found, create a simplified mobile version
-            if (!voucherSection) {
-                console.log('📱 Creating mobile-friendly coupon input');
-                
-                const voucherHTML = `
-                    <div id="voucherSection" class="mobile-voucher-section">
-                        <style>
-                            .mobile-voucher-section {
-                                background: white;
-                                border-radius: 12px;
-                                padding: 15px;
-                                margin: 15px 0;
-                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                            }
-                            
-                            .mobile-voucher-section h3 {
-                                margin-bottom: 12px;
-                                color: #333;
-                                font-size: 1.1rem;
-                            }
-                            
-                            .mobile-voucher-input-wrapper {
-                                display: flex;
-                                flex-direction: column;
-                                gap: 10px;
-                            }
-                            
-                            .mobile-voucher-input-wrapper input {
-                                padding: 12px;
-                                border: 2px solid #e2e8f0;
-                                border-radius: 8px;
-                                font-size: 0.95rem;
-                                width: 100%;
-                                box-sizing: border-box;
-                            }
-                            
-                            .mobile-voucher-input-wrapper button {
-                                padding: 12px;
-                                background: linear-gradient(135deg, #667eea, #764ba2);
-                                border: none;
-                                border-radius: 8px;
-                                color: white;
-                                font-weight: 600;
-                                cursor: pointer;
-                                width: 100%;
-                                font-size: 0.95rem;
-                            }
-                        </style>
-                        
-                        <h3>
-                            <i class="bi bi-ticket-perforated" style="color: #667eea;"></i>
-                            Gutschein einlösen
-                        </h3>
-                        
-                        <div class="mobile-voucher-input-wrapper">
-                            <input 
-                                type="text" 
-                                id="voucherInput" 
-                                placeholder="Gutscheincode eingeben..."
-                            >
-                            <button id="applyVoucherBtn">
-                                Einlösen
-                            </button>
-                        </div>
-                        
-                        <div id="voucherMessage" style="display: none; padding: 10px; border-radius: 8px; margin-top: 10px;"></div>
-                        
-                        <div id="appliedVoucherDisplay" style="display: none; background: #f0fdf4; border: 2px solid #86efac; border-radius: 8px; padding: 15px; margin-top: 15px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <div style="font-weight: 600; color: #16a34a; margin-bottom: 5px;">
-                                        <i class="bi bi-check-circle-fill"></i> Gutschein angewendet
-                                    </div>
-                                    <div id="voucherDetails" style="color: #15803d; font-size: 0.9rem;"></div>
-                                </div>
-                                <button 
-                                    id="removeVoucherBtn"
-                                    style="background: transparent; border: none; color: #dc2626; cursor: pointer; font-size: 1.2rem;"
-                                >
-                                    <i class="bi bi-x-circle"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                // Insert after page-header
-                const pageHeader = document.querySelector('.page-header');
-                if (pageHeader) {
-                    pageHeader.insertAdjacentHTML('afterend', voucherHTML);
-                    
-                    // Add event listeners
-                    setTimeout(() => {
-                        const applyBtn = document.getElementById('applyVoucherBtn');
-                        const input = document.getElementById('voucherInput');
-                        const removeBtn = document.getElementById('removeVoucherBtn');
-                        
-                        if (applyBtn && window.applyCartVoucher) {
-                            applyBtn.addEventListener('click', window.applyCartVoucher);
-                        }
-                        
-                        if (input && window.applyCartVoucher) {
-                            input.addEventListener('keypress', function(e) {
-                                if (e.key === 'Enter') window.applyCartVoucher();
-                            });
-                        }
-                        
-                        if (removeBtn && window.removeCartVoucher) {
-                            removeBtn.addEventListener('click', window.removeCartVoucher);
-                        }
-                        
-                        // Check if there's an applied voucher
-                        if (window.checkAppliedVoucher) {
-                            window.checkAppliedVoucher();
-                        }
-                    }, 100);
-                }
-            }
-        }
+        // Bewusst leer: Früher baute diese Funktion auf Mobile (<=768px) eine
+        // EIGENE #voucherSection als Fallback. Deren Listener hingen an
+        // window.applyCartVoucher — das existiert nicht (IIFE-intern in
+        // gutschein-system.js). Gleichzeitig sah gutschein-system.js die
+        // vorhandene Sektion und hängte seine Listener nicht mehr an →
+        // Gutschein-Einlösen war auf Mobile komplett tot.
+        // gutschein-system.js erstellt die Sektion inkl. Listener selbst.
+        return;
     }
 
     function setupMutationObserver() {
