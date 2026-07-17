@@ -530,6 +530,125 @@ button { font-family: var(--sans); }
   body { padding-bottom: 84px; } /* Platz für Mobile-Sticky */
 }
 
+/* ── Handy-Feinschliff (Display-Typo & Innenabstände verkleinern) ──
+   Die Editorial-Riesentypo ist für Desktop gedacht; auf ~360–430px
+   Screens bricht sie mehrzeilig und wirkt erdrückend. Hier gezielt
+   herunterskaliert, Sektions-Rhythmus gestrafft, Newsletter gestapelt. */
+@media (max-width: 600px) {
+  /* Ganze Seite gleichmäßig verkleinern → echtes Handy-Format. `zoom`
+     skaliert alles (inkl. fixierter Leisten) proportional, füllt die
+     volle Breite ohne Seitwärts-Scrollen und macht mehr sichtbar. */
+  body { zoom: 0.85; }
+
+  /* Vertikaler Rhythmus der Sektionen straffen (Inline-Paddings überschreiben) */
+  section > .wrap { padding-top: 46px !important; padding-bottom: 24px !important; }
+  #statsSec > .wrap { padding-top: 36px !important; padding-bottom: 36px !important; }
+
+  /* Sektions-Überschriften */
+  .sec-eyebrow { margin-bottom: 10px; }
+  .sec-eyebrow .lbl { font-size: 12px; letter-spacing: .26em; }
+  .sec-head { margin-bottom: 24px !important; }
+  .sec-title { font-size: 30px; line-height: 1.12; }
+  .sec-sub { font-size: 11px; }
+
+  /* Marquee dezenter */
+  .marquee { padding: 12px 0; }
+  .marquee-seq { font-size: 17px; gap: 40px; padding-right: 40px; }
+
+  /* Announcement + Trust-Zeile */
+  .announce { font-size: 10.5px; letter-spacing: .16em; padding: 9px 16px; }
+  .trust-row { gap: 8px 18px; }
+  .trust-row span { font-size: 11px; letter-spacing: .1em; }
+
+  /* Hero */
+  .hero-inner { padding-top: 28px; padding-bottom: 26px; }
+  .hero-head { margin-bottom: 20px; }
+  .hero-title { font-size: 27px; line-height: 1.16; }
+  .overline { margin-bottom: 12px; font-size: 10.5px; }
+
+  /* Showreel */
+  .reel-head { padding: 12px 18px; }
+  .reel-stage { min-height: 300px; padding: 22px; }
+  .reel-stage img.product { max-width: 84%; }
+  .reel-text { padding: 26px 22px; }
+  .reel-name { font-size: 29px; }
+  .reel-desc { font-size: 14px; margin-bottom: 18px; }
+  .reel-price { font-size: 40px; }
+  .reel-priceline { margin-bottom: 20px; }
+  .cta-gold, .cta-line { padding: 14px 22px; font-size: 14px; flex: 1 1 auto; justify-content: center; }
+  .reel-thumbs { padding: 12px 18px; }
+
+  /* Kategorie-Kacheln kompakter */
+  .cat-tile .img-wrap { padding: 34px 24px 108px; }
+  .cat-tile .label { font-size: 22px; }
+  .cat-tile .info { left: 18px; right: 18px; bottom: 18px; }
+
+  /* Deal des Tages */
+  .deal-stage { min-height: 300px; padding: 26px; }
+  .deal-stage img { max-height: 240px; }
+  .deal-info { padding: 28px 22px; gap: 13px; }
+  .deal-name { font-size: 29px; }
+  .deal-desc { font-size: 14px; }
+  .deal-price { font-size: 40px; }
+  .cd-num { font-size: 36px; }
+  .cd-sep { font-size: 30px; }
+  .countdown { gap: 10px; }
+  .deal-add { padding: 15px 24px; font-size: 14.5px; }
+
+  /* Stats */
+  .stat-card { padding: 28px 22px; }
+  .stat-num { font-size: 44px; }
+  .stat-lbl { font-size: 10.5px; letter-spacing: .22em; margin-top: 9px; }
+
+  /* Produktkarten */
+  .pcard .stage { padding: 24px; }
+  .pcard .body { padding: 15px 17px 18px; }
+  .pcard h3 { font-size: 15.5px; min-height: 42px; }
+  .pcard .price { font-size: 27px; }
+
+  /* Sortiment-Filter */
+  .filter-row { margin-bottom: 22px; gap: 12px; }
+  .chip { padding: 9px 16px; font-size: 11.5px; letter-spacing: .08em; }
+  .sort-pill { padding: 7px 12px; }
+
+  /* Kundenstimmen */
+  .voice { padding: 26px 24px; gap: 14px; }
+  .voice p { font-size: 19px; }
+  .voice .quote-mark { font-size: 52px; margin-top: 10px; }
+
+  /* Newsletter — Eingabe + Button stapeln, Titel kleiner */
+  .newsletter { padding-top: 52px; padding-bottom: 52px; }
+  .newsletter h2 { font-size: 31px; line-height: 1.08; }
+  .newsletter .sub { font-size: 14.5px; margin-bottom: 24px; }
+  .nl-form { flex-direction: column; gap: 10px; }
+  .nl-form input, .nl-form button { width: 100%; box-sizing: border-box; }
+  .nl-trust { gap: 12px; font-size: 11px; }
+
+  /* Promo-Banner */
+  .promo { min-height: 0; padding: 28px 20px; gap: 18px; }
+  .promo .title { font-size: 29px; }
+  .promo .sub { font-size: 14px; }
+  .promo .cta { padding: 15px 26px; font-size: 14px; }
+
+  /* Kürzlich angesehen */
+  .recent-card { width: 140px; }
+
+  /* Footer */
+  .footer { padding-top: 48px; }
+  .footer .cols { gap: 30px; margin-bottom: 36px; }
+  .footer .brand { font-size: 26px; }
+}
+
+/* Sehr schmale Geräte (≤380px) */
+@media (max-width: 380px) {
+  .nav-logo { font-size: 30px; }
+  .sec-title { font-size: 27px; }
+  .hero-title { font-size: 25px; }
+  .reel-name, .deal-name, .promo .title { font-size: 26px; }
+  .reel-price, .deal-price { font-size: 36px; }
+  .stat-num { font-size: 40px; }
+}
+
     </style>
 </head>
 <body>
