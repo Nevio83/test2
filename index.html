@@ -540,6 +540,11 @@ button { font-family: var(--sans); }
      volle Breite ohne Seitwärts-Scrollen und macht mehr sichtbar. */
   body { zoom: 0.85; }
 
+  /* Seitenränder auf dem Handy großzügiger → Inhalt wirkt als schmalere,
+     app-artige Spalte statt randlos bis an den Bildschirmrand (full-bleed). */
+  .wrap, .nav, .hero-inner, .newsletter, .footer { padding-left: 28px !important; padding-right: 28px !important; }
+  .announce { padding-left: 28px !important; padding-right: 28px !important; }
+
   /* Vertikaler Rhythmus der Sektionen straffen (Inline-Paddings überschreiben) */
   section > .wrap { padding-top: 46px !important; padding-bottom: 24px !important; }
   #statsSec > .wrap { padding-top: 36px !important; padding-bottom: 36px !important; }
@@ -611,6 +616,13 @@ button { font-family: var(--sans); }
   .chip { padding: 9px 16px; font-size: 11.5px; letter-spacing: .08em; }
   .sort-pill { padding: 7px 12px; }
 
+  /* Sortier-Zeile (29 Produkte · SORTIEREN · Pillen) lief bisher rechts über
+     den Bildschirmrand hinaus und wurde abgeschnitten. Jetzt bricht sie
+     kontrolliert um, statt Inhalt unsichtbar zu clippen. */
+  .sort-row { flex: 1 1 100%; flex-wrap: wrap; row-gap: 8px; justify-content: space-between; }
+  .sort-group { flex-wrap: wrap; row-gap: 8px; }
+  .sort-pills { flex-wrap: wrap; }
+
   /* Kundenstimmen */
   .voice { padding: 26px 24px; gap: 14px; }
   .voice p { font-size: 19px; }
@@ -632,6 +644,29 @@ button { font-family: var(--sans); }
 
   /* Kürzlich angesehen */
   .recent-card { width: 140px; }
+
+  /* Schnellansicht (Ansicht-/Augen-Knopf auf Produktkarten): war bisher ein
+     kleines, mittig schwebendes Panel mit viel ungenutztem dunklem Rand.
+     Auf dem Handy jetzt echt bildschirmfüllend — startet ganz oben, nutzt
+     die komplette Höhe/Breite, kein Rand, keine Ecken-Rundung mehr nötig. */
+  /* Gegen-Zoom: body ist oben auf 0.85 verkleinert (siehe „Ganze Seite
+     verkleinern"), dadurch würde 100vh hier nur 85 % des echten Bildschirms
+     füllen. 1/0.85 hebt den Eltern-Zoom für dieses Overlay wieder auf. */
+  .qv-overlay { padding: 0; align-items: stretch; zoom: 1.17647; }
+  .qv { width: 100%; max-width: 100%; height: 100vh; max-height: 100vh; border-radius: 0; animation: none; }
+  .qv .stage { min-height: 0; padding: 16px; }
+  .qv .stage img { max-height: 150px; }
+  .qv .info { padding: 24px 22px 28px; border-left: none; border-top: 1px solid rgba(216,181,108,.15); }
+  .qv h3 { font-size: 25px; }
+  .qv .price { font-size: 34px; }
+  .qv .close { top: 12px; right: 12px; }
+
+  /* Warenkorb-Drawer (Warenkorb-Icon in der Nav): war eine 94vw-Seitenleiste,
+     die durch den Seiten-Zoom zusätzlich verkleinert wirkte und rechts nicht
+     bündig abschloss. Jetzt auf dem Handy komplett bildschirmfüllend, wie
+     die Schnellansicht — inkl. Gegen-Zoom für den gemeinsamen Wrapper. */
+  #drawerWrap { zoom: 1.17647; }
+  .drawer { width: 100%; max-width: 100%; border-left: none; animation: none; }
 
   /* Footer */
   .footer { padding-top: 48px; }
