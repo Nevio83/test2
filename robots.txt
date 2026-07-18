@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Admin-Dashboards nicht crawlen
+Disallow: /a29715347575/
+
+Sitemap: https://maiosshop.com/sitemap.xml

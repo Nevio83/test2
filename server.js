@@ -3,6 +3,24 @@ const express = require('express');
 const path = require('path');
 const compression = require('compression');
 
+// ── Log-Level ────────────────────────────────────────────────────
+// Der Shop nutzt projektweit ~1000 console.log-Ausgaben. Damit die vor mehr
+// Traffic gedaempft werden koennen, OHNE alle Aufrufe umschreiben zu muessen,
+// laesst sich das Log-Level per ENV steuern. Opt-in: ist LOG_LEVEL nicht gesetzt,
+// bleibt alles wie bisher (keine Regression). Setze in Render z.B. LOG_LEVEL=quiet.
+//   quiet | error | warn -> console.log/info/debug werden stummgeschaltet
+//   silent               -> zusaetzlich console.warn stumm (nur noch console.error)
+(() => {
+  const lvl = (process.env.LOG_LEVEL || '').toLowerCase();
+  if (['quiet', 'error', 'warn', 'silent'].includes(lvl)) {
+    const noop = () => {};
+    console.log = noop;
+    console.info = noop;
+    console.debug = noop;
+    if (lvl === 'silent') console.warn = noop;
+  }
+})();
+
 // Initialize Stripe only if API key is available
 let stripe = null;
 if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'your_stripe_secret_key_here') {
@@ -228,6 +246,50 @@ app.use((req, res, next) => {
 });
 
 // Serve static files with no cache for development
+// ── XML-Sitemap fuer Suchmaschinen ───────────────────────────────
+// Dynamisch aus products.json (Slug-URLs) + statischen Seiten. In der Google
+// Search Console als https://maiosshop.com/sitemap.xml einreichen. MUSS vor
+// express.static stehen (es gibt keine statische sitemap.xml-Datei).
+app.get('/sitemap.xml', (req, res) => {
+  try {
+    const base = 'https://maiosshop.com';
+    const products = require('./products.json');
+    const staticPaths = [
+      ['/', '1.0', 'daily'],
+      ['/cart.html', '0.4', 'monthly'],
+      ['/wishlist.html', '0.3', 'monthly'],
+      ['/gutscheine.html', '0.5', 'weekly'],
+      ['/infos/agb.html', '0.3', 'yearly'],
+      ['/infos/datenschutz.html', '0.3', 'yearly'],
+      ['/infos/impressum.html', '0.3', 'yearly'],
+      ['/infos/versand.html', '0.4', 'monthly'],
+      ['/infos/retouren.html', '0.4', 'monthly'],
+      ['/infos/widerruf.html', '0.3', 'yearly'],
+      ['/infos/kontakt.html', '0.4', 'monthly'],
+      ['/infos/kategorien.html', '0.5', 'weekly']
+    ];
+    const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const rows = [];
+    staticPaths.forEach(([p, prio, freq]) =>
+      rows.push(`  <url><loc>${base}${p}</loc><changefreq>${freq}</changefreq><priority>${prio}</priority></url>`)
+    );
+    products.forEach((p) => {
+      if (p && p.slug) {
+        rows.push(`  <url><loc>${esc(`${base}/produkte/${p.slug}.html`)}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
+      }
+    });
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+      rows.join('\n') + `\n</urlset>\n`;
+    res.set('Content-Type', 'application/xml; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.send(xml);
+  } catch (e) {
+    console.error('❌ Sitemap-Erzeugung fehlgeschlagen:', e.message);
+    res.status(500).send('sitemap error');
+  }
+});
+
 app.use(express.static(path.join(__dirname), {
   maxAge: 0, // No caching for development
   etag: false,
@@ -374,8 +436,18 @@ app.post('/api/create-checkout-session', async (req, res) => {
 
   try {
     // Erweiterte Stripe Checkout-Konfiguration für maiosshop.com
+    // Zahlarten: Karte immer; Klarna zusaetzlich — aber nur fuer von Klarna
+    // unterstuetzte Waehrungen. WICHTIG: Wird eine Zahlart explizit gelistet,
+    // deren Session-Waehrung Klarna NICHT unterstuetzt, lehnt Stripe JEDE Session
+    // dieser Waehrung ab -> Kasse tot. Darum die Allowlist. Google Pay / Apple Pay
+    // laufen automatisch ueber 'card' (Express-Buttons), sobald im Stripe-
+    // Dashboard aktiviert — kein eigener Eintrag noetig.
+    const KLARNA_CURRENCIES = new Set(['EUR', 'GBP', 'USD', 'DKK', 'SEK', 'NOK', 'CHF', 'PLN', 'CZK', 'AUD', 'CAD', 'NZD']);
+    const paymentMethods = ['card'];
+    if (KLARNA_CURRENCIES.has(currency)) paymentMethods.push('klarna');
+
     const sessionConfig = {
-      payment_method_types: ['card'], // Nur Kreditkarten für maximale Kompatibilität
+      payment_method_types: paymentMethods,
 
       // Session-Metadaten (rein informativ) – im Webhook auslesbar.
       metadata: deviceTag ? { device: deviceTag } : {},
@@ -383,7 +455,9 @@ app.post('/api/create-checkout-session', async (req, res) => {
       payment_intent_data: {
         description: 'Einkauf bei Maios',
         capture_method: 'automatic',
-        setup_future_usage: 'off_session',
+        // setup_future_usage NICHT global setzen: Klarna & andere Nicht-Karten-
+        // Zahlarten unterstuetzen es nicht -> mit gelistetem Klarna waere die
+        // Session ungueltig. Deshalb unten karten-spezifisch (payment_method_options.card).
         metadata: {
           order_id: `ORD-${Date.now()}`,
           shop_domain: 'maiosshop.com'
@@ -407,7 +481,8 @@ app.post('/api/create-checkout-session', async (req, res) => {
       locale: 'de',
       payment_method_options: {
         card: {
-          request_three_d_secure: 'automatic'
+          request_three_d_secure: 'automatic',
+          setup_future_usage: 'off_session'
         }
       }
     };
@@ -1716,6 +1791,66 @@ app.post('/api/track/search', async (req, res) => {
   } catch (error) {
     console.error('⚠️ Such-Tracking-Fehler:', error.message);
     res.json({ success: false });
+  }
+});
+
+// ── Produktbewertungen (oeffentlich) ─────────────────────────────────
+// GET: Sterne-Aggregat + Liste fuer ein Produkt. POST: neue Bewertung anlegen.
+// Faellt ohne DB auf eine leere, gueltige Antwort zurueck -> Widget bleibt nutzbar.
+app.get('/api/reviews/:productId', async (req, res) => {
+  try {
+    const pid = String(req.params.productId).replace(/[^0-9]/g, '').slice(0, 12);
+    if (!pid) return res.json({ ok: true, average: 0, count: 0, reviews: [] });
+    const [reviews, stats] = await Promise.all([
+      dbOperations.getReviewsByProduct(pid),
+      dbOperations.getReviewStats(pid)
+    ]);
+    res.json({
+      ok: true,
+      average: Math.round((stats.average || 0) * 10) / 10,
+      count: stats.count || 0,
+      reviews
+    });
+  } catch (error) {
+    console.error('⚠️ Bewertungen laden fehlgeschlagen:', error.message);
+    res.json({ ok: true, average: 0, count: 0, reviews: [] });
+  }
+});
+
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const { productId, name, rating, title, body, website } = req.body || {};
+    // Honeypot: Bots fuellen versteckte Felder aus -> als Erfolg quittieren, nichts speichern.
+    if (website) return res.status(200).json({ ok: true });
+
+    const pid = String(productId || '').replace(/[^0-9]/g, '').slice(0, 12);
+    const author = String(name || '').trim().slice(0, 60);
+    const text = String(body || '').trim().slice(0, 2000);
+    const r = Number(rating);
+    if (!pid || !author || text.length < 3 || !(r >= 1 && r <= 5)) {
+      return res.status(400).json({ ok: false, error: 'Name, Bewertung (1–5 Sterne) und ein Text sind erforderlich.' });
+    }
+
+    const ip = (req.headers['x-forwarded-for'] || req.socket.remoteAddress || '')
+      .toString().split(',')[0].trim();
+    try {
+      if (await dbOperations.countRecentReviewsByIp(ip, 10) >= 3) {
+        return res.status(429).json({ ok: false, error: 'Zu viele Bewertungen in kurzer Zeit. Bitte später erneut.' });
+      }
+    } catch (_) { /* ohne DB kein Rate-Limit */ }
+
+    const saved = await dbOperations.createReview({
+      product_id: pid,
+      author_name: author,
+      rating: Math.round(r),
+      title: String(title || '').trim().slice(0, 120) || null,
+      body: text,
+      ip
+    });
+    res.status(201).json({ ok: true, id: saved.id, created_at: saved.created_at });
+  } catch (error) {
+    console.error('❌ Bewertung speichern fehlgeschlagen:', error.message);
+    res.status(503).json({ ok: false, error: 'Bewertung konnte nicht gespeichert werden.' });
   }
 });
 

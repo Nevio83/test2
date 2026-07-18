@@ -139,6 +139,20 @@ const SCHEMA = [
     unsubscribed_at TIMESTAMPTZ,
     last_sent_at TIMESTAMPTZ
   )`,
+  // Produktbewertungen (Sterne + Text). product_id = numerische Produkt-ID als TEXT
+  // (passend zu order_items.product_id). status='approved' -> sofort sichtbar; ein
+  // Admin kann Eintraege spaeter loeschen. ip nur fuer einfachen Spam-Schutz.
+  `CREATE TABLE IF NOT EXISTS product_reviews (
+    id SERIAL PRIMARY KEY,
+    product_id TEXT NOT NULL,
+    author_name TEXT NOT NULL,
+    rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    title TEXT,
+    body TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'approved',
+    ip TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  )`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -155,7 +169,9 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS idx_page_views_session ON page_views(session_id)`,
   `CREATE INDEX IF NOT EXISTS idx_newsletter_status ON newsletter_subscribers(status)`,
   `CREATE INDEX IF NOT EXISTS idx_newsletter_confirm ON newsletter_subscribers(confirm_token)`,
-  `CREATE INDEX IF NOT EXISTS idx_newsletter_unsub ON newsletter_subscribers(unsubscribe_token)`
+  `CREATE INDEX IF NOT EXISTS idx_newsletter_unsub ON newsletter_subscribers(unsubscribe_token)`,
+  `CREATE INDEX IF NOT EXISTS idx_reviews_product ON product_reviews(product_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_reviews_created ON product_reviews(created_at)`
 ];
 
 async function initializeDatabase() {
@@ -274,6 +290,48 @@ const dbOperations = {
       ]);
     }
     return items.length;
+  },
+
+  // ── Produktbewertungen ───────────────────────────────────────
+  createReview: async (r) => {
+    const sql = `INSERT INTO product_reviews (product_id, author_name, rating, title, body, status, ip)
+                 VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, created_at`;
+    const res = await pool.query(sql, [
+      String(r.product_id), r.author_name, r.rating,
+      r.title || null, r.body, r.status || 'approved', r.ip || null
+    ]);
+    return { id: res.rows[0].id, created_at: res.rows[0].created_at };
+  },
+
+  getReviewsByProduct: async (product_id, limit = 100) => {
+    const r = await pool.query(
+      `SELECT id, author_name, rating, title, body, created_at
+         FROM product_reviews
+        WHERE product_id = $1 AND status = 'approved'
+        ORDER BY created_at DESC LIMIT $2`,
+      [String(product_id), limit]
+    );
+    return r.rows;
+  },
+
+  getReviewStats: async (product_id) => {
+    const r = await pool.query(
+      `SELECT COUNT(*)::int AS count, COALESCE(AVG(rating), 0)::float AS average
+         FROM product_reviews WHERE product_id = $1 AND status = 'approved'`,
+      [String(product_id)]
+    );
+    return r.rows[0];
+  },
+
+  // Einfacher Spam-Schutz: wie viele Bewertungen kamen zuletzt von dieser IP?
+  countRecentReviewsByIp: async (ip, minutes = 10) => {
+    if (!ip) return 0;
+    const r = await pool.query(
+      `SELECT COUNT(*)::int AS n FROM product_reviews
+        WHERE ip = $1 AND created_at > NOW() - ($2 || ' minutes')::interval`,
+      [ip, String(minutes)]
+    );
+    return r.rows[0].n;
   },
 
   // Naechste fortlaufende Rechnungsnummer (Format RE-000001, lueckenlos).
