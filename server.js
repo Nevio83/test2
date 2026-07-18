@@ -1541,7 +1541,14 @@ app.post('/api/receipt/create', async (req, res) => {
     // Speichere Bestellung in Datenbank
     await dbOperations.createOrder(orderData);
     await dbOperations.addOrderItems(orderId, orderItems);
-    
+
+    // Warenkorb-Abbrecher: nach erfolgreichem Kauf keine Erinnerung mehr (best effort).
+    try {
+      await dbOperations.markAbandonedCartConverted(orderData.customer_email);
+    } catch (e) {
+      console.warn('⚠️ Abbrecher-Status nach Kauf nicht aktualisiert:', e.message);
+    }
+
     // Generiere PDF-Kassenbon
     const pdfResult = await receiptGenerator.generateReceipt(orderData);
     
@@ -1949,6 +1956,117 @@ app.get('/api/newsletter/unsubscribe', async (req, res) => {
     res.status(500).set('Content-Type', 'text/html; charset=utf-8')
       .send(newsletterStatusPage('Etwas ist schiefgelaufen', 'Bitte versuche es später erneut.'));
   }
+});
+
+// ── Warenkorb-Abbrecher (opt-in, DSGVO/UWG §7) ───────────────────────
+// Erfassung nur bei aktiver Einwilligung. Der VERSAND ist zusaetzlich per ENV
+// gated: ABANDONED_CART_ENABLED=true. Ohne das Flag wird nichts verschickt.
+const ABANDONED_ENABLED = process.env.ABANDONED_CART_ENABLED === 'true';
+const ABANDONED_STAGE1_MIN = Number(process.env.ABANDONED_CART_STAGE1_MIN || 60);
+const ABANDONED_STAGE2_MIN = Number(process.env.ABANDONED_CART_STAGE2_MIN || 1440);
+
+// Speichert/aktualisiert einen offenen Warenkorb, sobald der Kunde die Erinnerung
+// aktiv ankreuzt (consent===true). Ohne Einwilligung wird nichts gespeichert.
+app.post('/api/cart/remind-optin', async (req, res) => {
+  try {
+    const body = req.body || {};
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 254) : '';
+    const consent = body.consent === true || body.consent === 'true';
+    if (!consent) return res.status(400).json({ ok: false, error: 'Einwilligung fehlt.' });
+    if (!email || !EMAIL_RE.test(email)) return res.status(400).json({ ok: false, error: 'Ungültige E-Mail-Adresse.' });
+    const cartIn = Array.isArray(body.cart) ? body.cart : [];
+    if (!cartIn.length) return res.status(400).json({ ok: false, error: 'Warenkorb ist leer.' });
+    // Nur die benoetigten Felder uebernehmen und Groessen begrenzen.
+    const items = cartIn.slice(0, 50).map((it) => ({
+      id: it && it.id,
+      name: String((it && it.name) || '').slice(0, 200),
+      price: Number((it && it.price) || 0),
+      image: String((it && it.image) || '').slice(0, 400),
+      quantity: Math.max(1, Math.min(99, Math.round(Number((it && it.quantity) || 1)) || 1))
+    }));
+    const total = items.reduce((s, it) => s + it.price * it.quantity, 0);
+    const currency = typeof body.currency === 'string' ? body.currency.slice(0, 8).toUpperCase() : 'EUR';
+    await dbOperations.upsertAbandonedCart({
+      email,
+      cart_json: JSON.stringify(items),
+      currency,
+      total,
+      unsubscribe_token: crypto.randomUUID(),
+      consent_ip: (req.headers['x-forwarded-for'] || req.ip || '').toString().split(',')[0].trim().slice(0, 64),
+      user_agent: (req.headers['user-agent'] || '').slice(0, 256)
+    });
+    res.json({ ok: true });
+  } catch (error) {
+    console.error('⚠️ Warenkorb-Optin-Fehler:', error.message);
+    res.status(503).json({ ok: false });
+  }
+});
+
+// Kunde hakt die Einwilligung wieder ab -> abmelden.
+app.post('/api/cart/remind-optout', async (req, res) => {
+  try {
+    const email = typeof (req.body && req.body.email) === 'string'
+      ? req.body.email.trim().toLowerCase().slice(0, 254) : '';
+    if (email && EMAIL_RE.test(email)) await dbOperations.optOutAbandonedCart(email);
+    res.json({ ok: true });
+  } catch (error) {
+    res.json({ ok: true });
+  }
+});
+
+// Abmeldelink aus der Erinnerungs-Mail (gebrandete Statusseite wie beim Newsletter).
+app.get('/api/cart/unsubscribe', async (req, res) => {
+  try {
+    const token = typeof req.query.token === 'string' ? req.query.token : '';
+    const r = await dbOperations.unsubscribeAbandonedCartByToken(token);
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    return res.send(newsletterStatusPage(
+      r.found ? 'Abgemeldet' : 'Bereits abgemeldet',
+      r.found ? 'Du erhältst keine Warenkorb-Erinnerungen mehr.'
+              : 'Diese Adresse ist bereits abgemeldet oder der Link ist ungültig.'));
+  } catch (error) {
+    console.error('⚠️ Warenkorb-Abmeldung-Fehler:', error.message);
+    res.status(500).set('Content-Type', 'text/html; charset=utf-8')
+      .send(newsletterStatusPage('Etwas ist schiefgelaufen', 'Bitte versuche es später erneut.'));
+  }
+});
+
+// Kern: faellige Erinnerungen verschicken. Nur wenn ABANDONED_CART_ENABLED=true.
+// Wird intern per Intervall UND ueber einen Admin-Endpoint (manueller Trigger) aufgerufen.
+async function runAbandonedCartSweep() {
+  if (!ABANDONED_ENABLED) return { skipped: true, reason: 'ABANDONED_CART_ENABLED != true' };
+  let sent = 0, failed = 0;
+  try {
+    const due = await dbOperations.getDueAbandonedCarts(ABANDONED_STAGE1_MIN, ABANDONED_STAGE2_MIN, 50);
+    const base = (process.env.SITE_URL || 'https://maiosshop.com').replace(/\/+$/, '');
+    for (const row of due) {
+      let items = [];
+      try { items = JSON.parse(row.cart_json) || []; } catch (_) { items = []; }
+      if (!items.length) continue;
+      const unsubscribeUrl = `${base}/api/cart/unsubscribe?token=${encodeURIComponent(row.unsubscribe_token || '')}`;
+      const mail = await emailService.sendAbandonedCartReminder({
+        to: row.email,
+        items,
+        currency: row.currency || 'EUR',
+        total: row.total || 0,
+        cartUrl: `${base}/cart.html`,
+        unsubscribeUrl,
+        stage: (row.reminder_count || 0) + 1
+      });
+      if (mail && mail.success) { await dbOperations.markAbandonedCartReminded(row.id); sent++; }
+      else failed++;
+    }
+  } catch (error) {
+    console.error('⚠️ Abbrecher-Sweep-Fehler:', error.message);
+  }
+  if (sent || failed) console.log(`📮 Abbrecher-Sweep: ${sent} gesendet, ${failed} fehlgeschlagen`);
+  return { sent, failed };
+}
+
+// Manueller Trigger fuer Admin/Tests (unter Basic-Auth-Pfad).
+app.post('/a29715347575/api/cart/sweep', async (req, res) => {
+  const result = await runAbandonedCartSweep();
+  res.json({ ok: true, ...result });
 });
 
 // Admin: Kennzahlen fuer die Dashboard-Kacheln
@@ -2436,6 +2554,17 @@ app.listen(PORT, HOST, () => {
   console.log(`💻 API-Endpunkte:`);
   console.log(`   ✅ /api/create-checkout-session (Stripe Checkout)`); 
   console.log(`   ✅ /api/exchange-rates (Währungskurse)`);  
-  console.log(`   ✅ /stripe-webhook (Stripe Events)`);  
+  console.log(`   ✅ /stripe-webhook (Stripe Events)`);
   console.log('='.repeat(50));
+
+  // Warenkorb-Abbrecher-Sweep: laeuft nur wenn ABANDONED_CART_ENABLED=true.
+  // Interner Intervall (kein externer Cron noetig); greift, solange der Service
+  // wach ist (Keep-Alive haelt ihn wach). Standard: alle 15 Minuten.
+  if (ABANDONED_ENABLED) {
+    const everyMs = Math.max(5, Number(process.env.ABANDONED_CART_SWEEP_MIN || 15)) * 60 * 1000;
+    console.log(`📮 Warenkorb-Abbrecher-Mails AKTIV (Sweep alle ${everyMs / 60000} Min, Stufen ${ABANDONED_STAGE1_MIN}/${ABANDONED_STAGE2_MIN} Min)`);
+    setInterval(() => { runAbandonedCartSweep().catch(() => {}); }, everyMs).unref();
+  } else {
+    console.log('📮 Warenkorb-Abbrecher-Mails INAKTIV (ABANDONED_CART_ENABLED != true)');
+  }
 });

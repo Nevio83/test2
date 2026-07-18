@@ -153,6 +153,27 @@ const SCHEMA = [
     ip TEXT,
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
   )`,
+  // Warenkorb-Abbrecher (opt-in, DSGVO/UWG §7). Nur wer aktiv einwilligt, landet
+  // hier. status: 'open' (offener Warenkorb) -> 'reminded' (Erinnerung ging raus)
+  // -> 'converted' (doch gekauft) | 'unsubscribed' (abgemeldet). Ein Datensatz je
+  // E-Mail (UNIQUE), wird bei Warenkorb-Aenderung aktualisiert. unsubscribe_token
+  // = unguessbarer Link zum Abmelden. Versand ist zusaetzlich per ENV-Flag gated.
+  `CREATE TABLE IF NOT EXISTS abandoned_carts (
+    id SERIAL PRIMARY KEY,
+    email TEXT UNIQUE NOT NULL,
+    cart_json TEXT NOT NULL,
+    currency TEXT DEFAULT 'EUR',
+    total REAL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'open',
+    reminder_count INTEGER DEFAULT 0,
+    unsubscribe_token TEXT,
+    consent_ip TEXT,
+    user_agent TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_activity_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    reminded_at TIMESTAMPTZ
+  )`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -171,7 +192,9 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS idx_newsletter_confirm ON newsletter_subscribers(confirm_token)`,
   `CREATE INDEX IF NOT EXISTS idx_newsletter_unsub ON newsletter_subscribers(unsubscribe_token)`,
   `CREATE INDEX IF NOT EXISTS idx_reviews_product ON product_reviews(product_id)`,
-  `CREATE INDEX IF NOT EXISTS idx_reviews_created ON product_reviews(created_at)`
+  `CREATE INDEX IF NOT EXISTS idx_reviews_created ON product_reviews(created_at)`,
+  `CREATE INDEX IF NOT EXISTS idx_abandoned_status ON abandoned_carts(status)`,
+  `CREATE INDEX IF NOT EXISTS idx_abandoned_unsub ON abandoned_carts(unsubscribe_token)`
 ];
 
 async function initializeDatabase() {
@@ -332,6 +355,99 @@ const dbOperations = {
       [ip, String(minutes)]
     );
     return r.rows[0].n;
+  },
+
+  // ── Warenkorb-Abbrecher ──────────────────────────────────────
+  // Legt bei aktiver Einwilligung einen offenen Warenkorb an bzw. aktualisiert ihn.
+  // Respektiert eine bestehende Abmeldung ('unsubscribed' bleibt bestehen) und
+  // behaelt einen einmal vergebenen unsubscribe_token bei.
+  upsertAbandonedCart: async (c) => {
+    const sql = `
+      INSERT INTO abandoned_carts
+        (email, cart_json, currency, total, status, reminder_count,
+         unsubscribe_token, consent_ip, user_agent, last_activity_at, updated_at)
+      VALUES ($1,$2,$3,$4,'open',0,$5,$6,$7,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
+      ON CONFLICT (email) DO UPDATE SET
+        cart_json = EXCLUDED.cart_json,
+        currency = EXCLUDED.currency,
+        total = EXCLUDED.total,
+        -- Abmeldung nie ueberschreiben; sonst zurueck auf 'open' (neue Aktivitaet)
+        status = CASE WHEN abandoned_carts.status = 'unsubscribed'
+                      THEN 'unsubscribed' ELSE 'open' END,
+        reminder_count = CASE WHEN abandoned_carts.status = 'unsubscribed'
+                              THEN abandoned_carts.reminder_count ELSE 0 END,
+        unsubscribe_token = COALESCE(abandoned_carts.unsubscribe_token, EXCLUDED.unsubscribe_token),
+        consent_ip = EXCLUDED.consent_ip,
+        user_agent = EXCLUDED.user_agent,
+        last_activity_at = CURRENT_TIMESTAMP,
+        updated_at = CURRENT_TIMESTAMP
+      RETURNING id, status`;
+    const r = await pool.query(sql, [
+      c.email, c.cart_json, c.currency || 'EUR', c.total || 0,
+      c.unsubscribe_token || null, c.consent_ip || null, c.user_agent || null
+    ]);
+    return r.rows[0];
+  },
+
+  // Nutzer hakt die Checkbox wieder ab -> 'declined' (NICHT permanent: ein
+  // erneutes Ankreuzen reaktiviert via upsert). Der Abmeldelink aus der Mail
+  // setzt dagegen 'unsubscribed' und bleibt bestehen.
+  optOutAbandonedCart: async (email) => {
+    const r = await pool.query(
+      `UPDATE abandoned_carts SET status='declined', updated_at=CURRENT_TIMESTAMP
+        WHERE email = $1 AND status <> 'unsubscribed'`, [email]
+    );
+    return { changes: r.rowCount };
+  },
+
+  // Faellige Erinnerungen: Stufe 1 nach stage1Min (noch keine Mail), Stufe 2 nach
+  // stage2Min ab der ersten Mail. Max. 2 Erinnerungen.
+  getDueAbandonedCarts: async (stage1Min = 60, stage2Min = 1440, limit = 50) => {
+    const r = await pool.query(
+      `SELECT * FROM abandoned_carts
+        WHERE status IN ('open','reminded')
+          AND email IS NOT NULL
+          AND (
+            (reminder_count = 0 AND last_activity_at < NOW() - ($1 || ' minutes')::interval)
+            OR (reminder_count = 1 AND reminded_at < NOW() - ($2 || ' minutes')::interval)
+          )
+        ORDER BY last_activity_at ASC
+        LIMIT $3`,
+      [String(stage1Min), String(stage2Min), limit]
+    );
+    return r.rows;
+  },
+
+  markAbandonedCartReminded: async (id) => {
+    const r = await pool.query(
+      `UPDATE abandoned_carts
+          SET reminder_count = reminder_count + 1,
+              reminded_at = CURRENT_TIMESTAMP,
+              status = 'reminded',
+              updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1`, [id]
+    );
+    return { changes: r.rowCount };
+  },
+
+  // Nach einem Kauf: offene Warenkoerbe dieser Adresse als eingeloest markieren
+  // -> keine (weitere) Erinnerung.
+  markAbandonedCartConverted: async (email) => {
+    if (!email) return { changes: 0 };
+    const r = await pool.query(
+      `UPDATE abandoned_carts SET status='converted', updated_at=CURRENT_TIMESTAMP
+        WHERE lower(email) = lower($1) AND status IN ('open','reminded')`, [email]
+    );
+    return { changes: r.rowCount };
+  },
+
+  unsubscribeAbandonedCartByToken: async (token) => {
+    if (!token) return { found: false };
+    const r = await pool.query(
+      `UPDATE abandoned_carts SET status='unsubscribed', updated_at=CURRENT_TIMESTAMP
+        WHERE unsubscribe_token = $1 RETURNING id`, [token]
+    );
+    return { found: r.rowCount > 0 };
   },
 
   // Naechste fortlaufende Rechnungsnummer (Format RE-000001, lueckenlos).

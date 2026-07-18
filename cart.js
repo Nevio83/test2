@@ -155,6 +155,58 @@ function getCart() {
     }
 }
 
+// ── Warenkorb-Abbrecher-Erinnerung (Opt-in) ──────────────────────────
+// Speichert E-Mail + Warenkorb NUR wenn der Kunde die Checkbox aktiv ankreuzt
+// und eine gueltige E-Mail eingetragen hat (DSGVO/UWG §7). Backend versendet
+// zusaetzlich nur bei aktivem ENV-Flag.
+function cartApiBase() {
+    const isLocalStatic = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+        && window.location.port !== '3000';
+    return isLocalStatic ? 'http://localhost:3000' : '';
+}
+
+function maybeCaptureCart() {
+    try {
+        const cb = document.getElementById('cartRemindCheckbox');
+        const emailEl = document.getElementById('email');
+        if (!cb || !cb.checked || !emailEl) return;
+        const email = (emailEl.value || '').trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return;
+        const cart = getCart();
+        if (!cart || !cart.length) return;
+        const items = cart.map(i => ({
+            id: i.id, name: i.name, price: i.price, image: i.image, quantity: i.quantity
+        }));
+        const currency = (window.currentCurrency && window.currentCurrency.code) || 'EUR';
+        fetch(cartApiBase() + '/api/cart/remind-optin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, cart: items, consent: true, currency })
+        }).catch(() => {});
+    } catch (e) { /* still */ }
+}
+
+function cartRemindOptout() {
+    try {
+        const emailEl = document.getElementById('email');
+        const email = (emailEl && emailEl.value || '').trim();
+        if (!email) return;
+        fetch(cartApiBase() + '/api/cart/remind-optout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        }).catch(() => {});
+    } catch (e) { /* still */ }
+}
+
+function onCartRemindToggle() {
+    const cb = document.getElementById('cartRemindCheckbox');
+    if (cb && cb.checked) maybeCaptureCart();
+    else cartRemindOptout();
+}
+window.maybeCaptureCart = maybeCaptureCart;
+window.onCartRemindToggle = onCartRemindToggle;
+
 // Funktion zum Rendern des Warenkorbs
 function renderCart() {
     updateCartPage();
@@ -627,9 +679,16 @@ function updateCartPage() {
                         <label for="email" class="form-label">
                             <i class="bi bi-envelope"></i> E-Mail-Adresse
                         </label>
-                        <input type="email" id="email" class="form-control" required autocomplete="email" placeholder="ihre@email.de">
+                        <input type="email" id="email" class="form-control" required autocomplete="email" placeholder="ihre@email.de" onblur="maybeCaptureCart()">
+                        <div class="agb-check cart-remind-check" style="margin-top:10px;">
+                            <input type="checkbox" id="cartRemindCheckbox" onchange="onCartRemindToggle()">
+                            <label for="cartRemindCheckbox">
+                                <i class="bi bi-bell"></i> Erinnere mich per E-Mail an meinen Warenkorb, falls ich die Bestellung nicht sofort abschließe.
+                                <a href="infos/datenschutz.html" target="_blank">Datenschutz</a>
+                            </label>
+                        </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="country" class="form-label">
                             <i class="bi bi-globe"></i> Land

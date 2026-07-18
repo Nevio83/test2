@@ -385,6 +385,56 @@ class ResendService {
   }
 
   /**
+   * Warenkorb-Abbrecher-Erinnerung. Nur an Empfaenger mit aktiver Einwilligung.
+   * stage 1 = erste Erinnerung, stage 2 = letzte. Enthaelt Abmeldelink + List-Unsubscribe.
+   */
+  async sendAbandonedCartReminder({ to, items, currency, total, cartUrl, unsubscribeUrl, stage = 1 }) {
+    const esc = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const sym = currency === 'USD' ? '$' : currency === 'GBP' ? '£' : currency === 'CHF' ? 'CHF ' : '€';
+    const money = (n) => `${sym}${Number(n || 0).toFixed(2)}`;
+
+    const rows = (items || []).slice(0, 8).map((it) =>
+      `<tr>` +
+        `<td style="padding:10px 0;border-bottom:1px solid #eee;font-size:15px;color:#222;">` +
+          `${esc(it.name)}${it.quantity > 1 ? ` <span style="color:#888;">× ${Number(it.quantity)}</span>` : ''}` +
+        `</td>` +
+        `<td style="padding:10px 0;border-bottom:1px solid #eee;font-size:15px;color:#222;text-align:right;white-space:nowrap;">` +
+          `${money(it.price * (it.quantity || 1))}` +
+        `</td>` +
+      `</tr>`
+    ).join('');
+
+    const headline = stage >= 2 ? 'Letzte Erinnerung an deinen Warenkorb' : 'Du hast etwas vergessen 👀';
+    const intro = stage >= 2
+      ? 'Dein Warenkorb ist gleich weg. Falls du Interesse hast, kannst du deine Auswahl mit einem Klick abschließen:'
+      : 'Du hattest dir etwas Schönes ausgesucht, aber die Bestellung noch nicht abgeschlossen. Dein Warenkorb wartet noch auf dich:';
+
+    const body =
+      `<h2 style="text-align:center;color:#222;margin:0 0 8px;font-size:22px;">${headline}</h2>` +
+      `<p style="text-align:center;color:#555;font-size:15px;margin:0 0 22px;">${intro}</p>` +
+      `<table style="width:100%;border-collapse:collapse;margin:0 0 6px;">${rows}` +
+        `<tr><td style="padding:12px 0 0;font-weight:700;font-size:16px;color:#222;">Gesamt</td>` +
+        `<td style="padding:12px 0 0;font-weight:700;font-size:16px;color:#222;text-align:right;">${money(total)}</td></tr>` +
+      `</table>` +
+      `<div style="text-align:center;margin:28px 0 8px;">` +
+        `<a href="${esc(cartUrl)}" style="display:inline-block;background:#6a5cff;color:#fff;text-decoration:none;` +
+        `padding:14px 34px;border-radius:8px;font-weight:600;font-size:16px;">Jetzt zur Kasse →</a>` +
+      `</div>` +
+      `<p style="text-align:center;color:#999;font-size:13px;margin:18px 0 0;">` +
+      `Du bekommst diese E-Mail, weil du auf der Warenkorb-Seite der Erinnerung zugestimmt hast.</p>`;
+
+    return this.sendEmail({
+      to,
+      subject: stage >= 2
+        ? 'Dein Warenkorb wartet noch – letzte Erinnerung'
+        : 'Du hast etwas in deinem Warenkorb vergessen 👀',
+      html: this.generateNewsletterHTML({ title: '', bodyHtml: body, unsubscribeUrl }),
+      headers: unsubscribeUrl ? { 'List-Unsubscribe': `<${unsubscribeUrl}>` } : undefined
+    });
+  }
+
+  /**
    * Test-E-Mail senden
    */
   async sendTestEmail(toEmail) {
