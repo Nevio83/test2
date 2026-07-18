@@ -435,6 +435,36 @@ class ResendService {
   }
 
   /**
+   * Retouren-Entscheidung an den Kunden (genehmigt/abgelehnt).
+   */
+  async sendReturnDecision({ to, orderId, approved, refunded, note, total, currency }) {
+    const esc = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const sym = currency === 'USD' ? '$' : currency === 'GBP' ? '£' : currency === 'CHF' ? 'CHF ' : '€';
+    let body;
+    if (approved) {
+      body =
+        `<h2 style="text-align:center;color:#222;margin:0 0 8px;">Deine Retoure wurde genehmigt ✅</h2>` +
+        `<p style="text-align:center;color:#555;margin:0 0 6px;">Bestellung <strong>${esc(orderId)}</strong></p>` +
+        (refunded
+          ? `<p style="text-align:center;color:#555;">Wir haben die Rückerstattung${total ? ` über ${sym}${Number(total).toFixed(2)}` : ''} veranlasst. Je nach Bank dauert die Gutschrift 5–10 Werktage.</p>`
+          : `<p style="text-align:center;color:#555;">Wir kümmern uns um die Rückerstattung und melden uns mit den nächsten Schritten.</p>`);
+    } else {
+      body =
+        `<h2 style="text-align:center;color:#222;margin:0 0 8px;">Deine Retoure-Anfrage</h2>` +
+        `<p style="text-align:center;color:#555;margin:0 0 6px;">Bestellung <strong>${esc(orderId)}</strong></p>` +
+        `<p style="text-align:center;color:#555;">Leider können wir deine Retoure nicht genehmigen.` +
+        (note ? ` Grund: ${esc(note)}` : '') +
+        ` Bei Fragen antworte einfach auf diese E-Mail.</p>`;
+    }
+    return this.sendEmail({
+      to,
+      subject: approved ? `Retoure genehmigt – Bestellung ${orderId}` : `Retoure-Anfrage – Bestellung ${orderId}`,
+      html: this.generateNewsletterHTML({ title: '', bodyHtml: body, unsubscribeUrl: null })
+    });
+  }
+
+  /**
    * Test-E-Mail senden
    */
   async sendTestEmail(toEmail) {

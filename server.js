@@ -625,6 +625,7 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         total_amount: fullSession.amount_total / 100,
         currency: fullSession.currency.toUpperCase(),
         notes: `Stripe Payment ID: ${session.payment_intent}`,
+        payment_intent_id: session.payment_intent || null,
         device: fullSession.metadata?.device || null,
         items: fullSession.line_items.data.map(item => ({
           product_id: item.price.product,
@@ -1101,7 +1102,26 @@ app.post('/api/return-request', async (req, res) => {
       console.warn('⚠️ Datenbank-Validierung fehlgeschlagen:', dbError.message);
       // Fahre fort ohne Validierung (Fallback)
     }
-    
+
+    // Retoure in der DB ablegen, damit sie im Admin-Panel sichtbar ist und
+    // dort entschieden werden kann (pending), bzw. bei Auto-Approve als approved.
+    try {
+      const rec = await dbOperations.createReturnRequest({
+        order_id: orderId,
+        customer_email: email,
+        customer_name: orderDetails?.customer_name || null,
+        reason: reason || null,
+        items_json: items ? JSON.stringify(items).slice(0, 4000) : null,
+        order_total: orderDetails?.total_amount ?? null,
+        currency: orderDetails?.currency || 'EUR',
+        status: autoApproved ? 'approved' : 'pending',
+        refund_status: refundProcessed ? 'refunded' : 'none'
+      });
+      if (autoApproved) await dbOperations.updateReturnRequest(rec.id, { decided: true });
+    } catch (e) {
+      console.warn('⚠️ Retoure nicht in DB gespeichert:', e.message);
+    }
+
     // Erstelle professionelle HTML-E-Mail
     const htmlContent = `
 <!DOCTYPE html>
@@ -1240,6 +1260,104 @@ app.post('/api/return-request', async (req, res) => {
   } catch (error) {
     console.error('❌ Retoure-Fehler:', error);
     res.status(500).json({ error: 'Senden fehlgeschlagen' });
+  }
+});
+
+// ── Retouren-Verwaltung (Admin) ──────────────────────────────────────
+// Liste aller Retouren + Entscheidung (genehmigen/ablehnen). Geschuetzt durch
+// app.use('/a29715347575', requireAdminAuth). PaymentIntent kommt aus der
+// orders-Spalte oder (Alt-Bestellungen) aus dem notes-Feld.
+function extractPaymentIntent(order) {
+  if (!order) return null;
+  if (order.payment_intent_id) return order.payment_intent_id;
+  const m = /Stripe Payment ID:\s*(pi_[A-Za-z0-9]+)/.exec(order.notes || '');
+  return m ? m[1] : null;
+}
+
+app.get('/a29715347575/api/returns', async (req, res) => {
+  try {
+    const status = typeof req.query.status === 'string' ? req.query.status : 'all';
+    const [rows, counts] = await Promise.all([
+      dbOperations.getReturnRequests(status, 200),
+      dbOperations.getReturnCounts()
+    ]);
+    res.json({ ok: true, counts, returns: rows });
+  } catch (error) {
+    console.error('❌ Retouren-Liste Fehler:', error.message);
+    res.status(500).json({ ok: false, error: 'Retouren konnten nicht geladen werden.' });
+  }
+});
+
+app.post('/a29715347575/api/returns/:id/approve', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const ret = await dbOperations.getReturnRequestById(id);
+    if (!ret) return res.status(404).json({ ok: false, error: 'Retoure nicht gefunden.' });
+    if (ret.status !== 'pending') return res.status(409).json({ ok: false, error: `Retoure ist bereits „${ret.status}".` });
+
+    const order = await dbOperations.getOrderByOrderId(ret.order_id).catch(() => null);
+    const pi = extractPaymentIntent(order);
+    let refundStatus = 'manual';
+    let refundId = null;
+
+    if (stripe && pi) {
+      try {
+        const refund = await stripe.refunds.create({
+          payment_intent: pi,
+          reason: 'requested_by_customer',
+          metadata: { order_id: ret.order_id, return_id: String(id), source: 'admin_panel' }
+        });
+        refundStatus = 'refunded';
+        refundId = refund.id;
+        await dbOperations.updateOrderStatus(ret.order_id, 'refunded').catch(() => {});
+      } catch (e) {
+        if (/already been refunded|already_refunded|charge_already_refunded/i.test(e.message)) {
+          refundStatus = 'refunded';
+        } else {
+          console.error('❌ Stripe-Refund fehlgeschlagen:', e.message);
+          return res.status(502).json({ ok: false, error: 'Stripe-Rückerstattung fehlgeschlagen: ' + e.message });
+        }
+      }
+    }
+
+    await dbOperations.updateReturnRequest(id, {
+      status: 'approved', refund_status: refundStatus, refund_id: refundId, decided: true
+    });
+
+    try {
+      await emailService.sendReturnDecision({
+        to: ret.customer_email, orderId: ret.order_id, approved: true,
+        refunded: refundStatus === 'refunded', total: ret.order_total, currency: ret.currency
+      });
+    } catch (e) { console.warn('⚠️ Kunden-Mail (genehmigt) nicht gesendet:', e.message); }
+
+    res.json({ ok: true, status: 'approved', refund_status: refundStatus, refund_id: refundId });
+  } catch (error) {
+    console.error('❌ Retoure-Genehmigung Fehler:', error.message);
+    res.status(500).json({ ok: false, error: 'Fehler beim Genehmigen.' });
+  }
+});
+
+app.post('/a29715347575/api/returns/:id/reject', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const ret = await dbOperations.getReturnRequestById(id);
+    if (!ret) return res.status(404).json({ ok: false, error: 'Retoure nicht gefunden.' });
+    if (ret.status !== 'pending') return res.status(409).json({ ok: false, error: `Retoure ist bereits „${ret.status}".` });
+
+    const note = typeof (req.body && req.body.note) === 'string' ? req.body.note.slice(0, 500) : null;
+    await dbOperations.updateReturnRequest(id, { status: 'rejected', admin_note: note, decided: true });
+
+    try {
+      await emailService.sendReturnDecision({
+        to: ret.customer_email, orderId: ret.order_id, approved: false, note
+      });
+    } catch (e) { console.warn('⚠️ Kunden-Mail (abgelehnt) nicht gesendet:', e.message); }
+
+    res.json({ ok: true, status: 'rejected' });
+  } catch (error) {
+    console.error('❌ Retoure-Ablehnung Fehler:', error.message);
+    res.status(500).json({ ok: false, error: 'Fehler beim Ablehnen.' });
   }
 });
 

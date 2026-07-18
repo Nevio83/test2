@@ -174,6 +174,28 @@ const SCHEMA = [
     last_activity_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     reminded_at TIMESTAMPTZ
   )`,
+  // Retouren-Antraege. Werden bei /api/return-request angelegt (status 'pending')
+  // und im Admin-Panel entschieden: 'approved' (mit Stripe-Refund) oder 'rejected'.
+  // refund_status: none | refunded | manual (kein payment_intent -> manuell in Stripe).
+  `CREATE TABLE IF NOT EXISTS return_requests (
+    id SERIAL PRIMARY KEY,
+    order_id TEXT NOT NULL,
+    customer_email TEXT NOT NULL,
+    customer_name TEXT,
+    reason TEXT,
+    items_json TEXT,
+    order_total REAL,
+    currency TEXT DEFAULT 'EUR',
+    status TEXT NOT NULL DEFAULT 'pending',
+    refund_status TEXT DEFAULT 'none',
+    refund_id TEXT,
+    admin_note TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    decided_at TIMESTAMPTZ
+  )`,
+  // Stripe PaymentIntent an der Bestellung ablegen (fuer Rueckerstattungen).
+  // Fuer Alt-Bestellungen liegt die ID noch im notes-Feld ("Stripe Payment ID: pi_...").
+  `ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_intent_id TEXT`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -194,7 +216,9 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS idx_reviews_product ON product_reviews(product_id)`,
   `CREATE INDEX IF NOT EXISTS idx_reviews_created ON product_reviews(created_at)`,
   `CREATE INDEX IF NOT EXISTS idx_abandoned_status ON abandoned_carts(status)`,
-  `CREATE INDEX IF NOT EXISTS idx_abandoned_unsub ON abandoned_carts(unsubscribe_token)`
+  `CREATE INDEX IF NOT EXISTS idx_abandoned_unsub ON abandoned_carts(unsubscribe_token)`,
+  `CREATE INDEX IF NOT EXISTS idx_returns_status ON return_requests(status)`,
+  `CREATE INDEX IF NOT EXISTS idx_returns_order ON return_requests(order_id)`
 ];
 
 async function initializeDatabase() {
@@ -291,12 +315,13 @@ const dbOperations = {
     const sql = `INSERT INTO orders (
       order_id, receipt_number, customer_email, customer_name, customer_phone,
       shipping_address, billing_address, payment_method, subtotal,
-      shipping_cost, tax_amount, total_amount, currency, notes, device
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`;
+      shipping_cost, tax_amount, total_amount, currency, notes, device, payment_intent_id
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING id`;
     const r = await pool.query(sql, [
       o.order_id, o.receipt_number, o.customer_email, o.customer_name, o.customer_phone,
       o.shipping_address, o.billing_address, o.payment_method, o.subtotal,
-      o.shipping_cost, o.tax_amount, o.total_amount, o.currency, o.notes, o.device || null
+      o.shipping_cost, o.tax_amount, o.total_amount, o.currency, o.notes, o.device || null,
+      o.payment_intent_id || null
     ]);
     return { id: r.rows[0].id, order_id: o.order_id };
   },
@@ -448,6 +473,64 @@ const dbOperations = {
         WHERE unsubscribe_token = $1 RETURNING id`, [token]
     );
     return { found: r.rowCount > 0 };
+  },
+
+  // ── Retouren ─────────────────────────────────────────────────
+  createReturnRequest: async (r) => {
+    const sql = `INSERT INTO return_requests
+      (order_id, customer_email, customer_name, reason, items_json, order_total,
+       currency, status, refund_status)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id, created_at`;
+    const res = await pool.query(sql, [
+      r.order_id, r.customer_email, r.customer_name || null, r.reason || null,
+      r.items_json || null, r.order_total || null, r.currency || 'EUR',
+      r.status || 'pending', r.refund_status || 'none'
+    ]);
+    return { id: res.rows[0].id, created_at: res.rows[0].created_at };
+  },
+
+  getReturnRequests: async (status = null, limit = 200) => {
+    if (status && status !== 'all') {
+      const r = await pool.query(
+        `SELECT * FROM return_requests WHERE status = $1 ORDER BY created_at DESC LIMIT $2`,
+        [status, limit]
+      );
+      return r.rows;
+    }
+    const r = await pool.query(
+      `SELECT * FROM return_requests ORDER BY created_at DESC LIMIT $1`, [limit]
+    );
+    return r.rows;
+  },
+
+  getReturnRequestById: async (id) => {
+    const r = await pool.query(`SELECT * FROM return_requests WHERE id = $1`, [id]);
+    return r.rows[0] || null;
+  },
+
+  getReturnCounts: async () => {
+    const r = await pool.query(
+      `SELECT status, COUNT(*)::int AS n FROM return_requests GROUP BY status`
+    );
+    const out = { pending: 0, approved: 0, rejected: 0, total: 0 };
+    for (const row of r.rows) { out[row.status] = row.n; out.total += row.n; }
+    return out;
+  },
+
+  updateReturnRequest: async (id, fields) => {
+    const sets = [];
+    const vals = [];
+    let i = 1;
+    for (const k of ['status', 'refund_status', 'refund_id', 'admin_note']) {
+      if (fields[k] !== undefined) { sets.push(`${k} = $${i++}`); vals.push(fields[k]); }
+    }
+    if (fields.decided) sets.push(`decided_at = CURRENT_TIMESTAMP`);
+    if (!sets.length) return { changes: 0 };
+    vals.push(id);
+    const r = await pool.query(
+      `UPDATE return_requests SET ${sets.join(', ')} WHERE id = $${i} RETURNING *`, vals
+    );
+    return { changes: r.rowCount, row: r.rows[0] || null };
   },
 
   // Naechste fortlaufende Rechnungsnummer (Format RE-000001, lueckenlos).
