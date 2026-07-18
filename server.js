@@ -11,7 +11,7 @@ const compression = require('compression');
 //   quiet | error | warn -> console.log/info/debug werden stummgeschaltet
 //   silent               -> zusaetzlich console.warn stumm (nur noch console.error)
 (() => {
-  const lvl = (process.env.LOG_LEVEL || '').toLowerCase();
+  const lvl = (process.env.LOG_LEVEL || '').trim().toLowerCase();
   if (['quiet', 'error', 'warn', 'silent'].includes(lvl)) {
     const noop = () => {};
     console.log = noop;
@@ -1961,7 +1961,7 @@ app.get('/api/newsletter/unsubscribe', async (req, res) => {
 // ── Warenkorb-Abbrecher (opt-in, DSGVO/UWG §7) ───────────────────────
 // Erfassung nur bei aktiver Einwilligung. Der VERSAND ist zusaetzlich per ENV
 // gated: ABANDONED_CART_ENABLED=true. Ohne das Flag wird nichts verschickt.
-const ABANDONED_ENABLED = process.env.ABANDONED_CART_ENABLED === 'true';
+const ABANDONED_ENABLED = (process.env.ABANDONED_CART_ENABLED || '').trim() === 'true';
 const ABANDONED_STAGE1_MIN = Number(process.env.ABANDONED_CART_STAGE1_MIN || 60);
 const ABANDONED_STAGE2_MIN = Number(process.env.ABANDONED_CART_STAGE2_MIN || 1440);
 
