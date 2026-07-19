@@ -196,6 +196,8 @@ const SCHEMA = [
   // Stripe PaymentIntent an der Bestellung ablegen (fuer Rueckerstattungen).
   // Fuer Alt-Bestellungen liegt die ID noch im notes-Feld ("Stripe Payment ID: pi_...").
   `ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_intent_id TEXT`,
+  // Zeitpunkt der automatischen Bewertungs-Anfrage (NULL = noch nicht gefragt).
+  `ALTER TABLE orders ADD COLUMN IF NOT EXISTS review_request_sent_at TIMESTAMPTZ`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -531,6 +533,32 @@ const dbOperations = {
       `UPDATE return_requests SET ${sets.join(', ')} WHERE id = $${i} RETURNING *`, vals
     );
     return { changes: r.rowCount, row: r.rows[0] || null };
+  },
+
+  // ── Bewertungs-Anfrage nach Kauf ─────────────────────────────
+  // Bestellungen, die aelter als `days` sind, noch keine Anfrage bekommen haben
+  // und nicht storniert/erstattet wurden. Items werden pro Bestellung nachgeladen.
+  getOrdersDueForReviewRequest: async (days = 7, limit = 50) => {
+    const r = await pool.query(
+      `SELECT order_id, customer_email, customer_name, created_at
+         FROM orders
+        WHERE review_request_sent_at IS NULL
+          AND customer_email IS NOT NULL
+          AND order_status NOT IN ('cancelled', 'refunded')
+          AND created_at < NOW() - ($1 || ' days')::interval
+        ORDER BY created_at ASC
+        LIMIT $2`,
+      [String(days), limit]
+    );
+    return r.rows;
+  },
+
+  markReviewRequestSent: async (order_id) => {
+    const r = await pool.query(
+      `UPDATE orders SET review_request_sent_at = CURRENT_TIMESTAMP WHERE order_id = $1`,
+      [order_id]
+    );
+    return { changes: r.rowCount };
   },
 
   // Naechste fortlaufende Rechnungsnummer (Format RE-000001, lueckenlos).

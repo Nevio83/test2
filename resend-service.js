@@ -465,6 +465,37 @@ class ResendService {
   }
 
   /**
+   * Bewertungs-Anfrage nach Kauf: bittet den Kunden, die gekauften Produkte zu
+   * bewerten (Direktlinks zum Bewertungs-Widget). products = [{ name, url }].
+   */
+  async sendReviewRequest({ to, customerName, products, shopUrl }) {
+    const esc = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const rows = (products || []).slice(0, 8).map((p) =>
+      `<tr>` +
+        `<td style="padding:11px 0;border-bottom:1px solid #eee;font-size:15px;color:#222;">${esc(p.name)}</td>` +
+        `<td style="padding:11px 0;border-bottom:1px solid #eee;text-align:right;white-space:nowrap;">` +
+          (p.url ? `<a href="${esc(p.url)}" style="color:#6a5cff;text-decoration:none;font-weight:600;font-size:14px;">Jetzt bewerten →</a>` : '') +
+        `</td>` +
+      `</tr>`
+    ).join('');
+    const greeting = customerName ? `Hallo ${esc(String(customerName).split(' ')[0])},` : 'Hallo,';
+    const body =
+      `<h2 style="text-align:center;color:#222;margin:0 0 8px;">Wie zufrieden bist du? ⭐</h2>` +
+      `<p style="text-align:center;color:#555;font-size:15px;margin:0 0 6px;">${greeting}</p>` +
+      `<p style="text-align:center;color:#555;font-size:15px;margin:0 0 22px;">deine Bestellung ist hoffentlich gut angekommen. Eine kurze Bewertung hilft anderen Kundinnen und Kunden sehr — es dauert nur eine Minute:</p>` +
+      (rows
+        ? `<table style="width:100%;border-collapse:collapse;margin:0 0 8px;">${rows}</table>`
+        : `<div style="text-align:center;margin:20px 0;"><a href="${esc(shopUrl || 'https://maiosshop.com')}" style="display:inline-block;background:#6a5cff;color:#fff;text-decoration:none;padding:14px 30px;border-radius:8px;font-weight:600;">Zum Shop</a></div>`) +
+      `<p style="text-align:center;color:#999;font-size:13px;margin:18px 0 0;">Danke, dass du bei Maios eingekauft hast!</p>`;
+    return this.sendEmail({
+      to,
+      subject: 'Wie zufrieden bist du mit deiner Bestellung? ⭐',
+      html: this.generateNewsletterHTML({ title: '', bodyHtml: body, unsubscribeUrl: null })
+    });
+  }
+
+  /**
    * Test-E-Mail senden
    */
   async sendTestEmail(toEmail) {

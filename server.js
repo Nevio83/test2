@@ -2225,6 +2225,76 @@ app.post('/a29715347575/api/cart/sweep', async (req, res) => {
   res.json({ ok: true, ...result });
 });
 
+// ── Bewertungs-Anfrage nach Kauf (opt-in per ENV) ────────────────────
+// X Tage nach dem Kauf eine Mail mit Direktlinks zum Bewerten. Versand nur bei
+// REVIEW_REQUEST_ENABLED=true. Pro Bestellung genau einmal (review_request_sent_at).
+const REVIEW_REQUEST_ENABLED = (process.env.REVIEW_REQUEST_ENABLED || '').trim() === 'true';
+const REVIEW_REQUEST_DAYS = Number(process.env.REVIEW_REQUEST_DAYS || 7);
+
+// order_items speichern den (Stripe-)Produktnamen, nicht Slug/ID -> Name->Slug
+// aufloesen (normalisiert: klein, ohne Farbzusatz in Klammern).
+const productSlugByName = (() => {
+  const norm = (s) => String(s || '').toLowerCase().replace(/\([^)]*\)/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  try {
+    const list = require('./products.json');
+    const map = {};
+    list.forEach((p) => { if (p && p.slug && p.name) map[norm(p.name)] = p.slug; });
+    return { map, norm };
+  } catch (e) {
+    return { map: {}, norm };
+  }
+})();
+function resolveProductSlugByName(name) {
+  const key = productSlugByName.norm(name);
+  if (!key) return null;
+  if (productSlugByName.map[key]) return productSlugByName.map[key];
+  for (const k of Object.keys(productSlugByName.map)) {
+    if (k && (key.includes(k) || k.includes(key))) return productSlugByName.map[k];
+  }
+  return null;
+}
+
+async function runReviewRequestSweep() {
+  if (!REVIEW_REQUEST_ENABLED) return { skipped: true, reason: 'REVIEW_REQUEST_ENABLED != true' };
+  let sent = 0, failed = 0;
+  try {
+    const base = (process.env.SITE_URL || 'https://maiosshop.com').replace(/\/+$/, '');
+    const due = await dbOperations.getOrdersDueForReviewRequest(REVIEW_REQUEST_DAYS, 30);
+    for (const o of due) {
+      const full = await dbOperations.getOrder(o.order_id).catch(() => null);
+      const items = (full && full.items) || [];
+      const seen = new Set();
+      const products = [];
+      for (const it of items) {
+        const rawName = it.product_name || '';
+        const slug = resolveProductSlugByName(rawName);
+        const key = slug || rawName;
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        products.push({
+          name: rawName.replace(/\s*\([^)]*\)\s*$/, '').trim() || rawName,
+          url: slug ? `${base}/produkte/${slug}.html#produktbewertungen` : null
+        });
+      }
+      const mail = await emailService.sendReviewRequest({
+        to: o.customer_email, customerName: o.customer_name, products, shopUrl: base
+      });
+      if (mail && mail.success) { await dbOperations.markReviewRequestSent(o.order_id); sent++; }
+      else failed++;
+    }
+  } catch (error) {
+    console.error('⚠️ Bewertungs-Sweep-Fehler:', error.message);
+  }
+  if (sent || failed) console.log(`⭐ Bewertungs-Anfragen: ${sent} gesendet, ${failed} fehlgeschlagen`);
+  return { sent, failed };
+}
+
+// Manueller Trigger fuer Admin/Tests.
+app.post('/a29715347575/api/reviews/request-sweep', async (req, res) => {
+  const result = await runReviewRequestSweep();
+  res.json({ ok: true, ...result });
+});
+
 // Admin: Kennzahlen fuer die Dashboard-Kacheln
 // Routen liegen bewusst UNTER /a29715347575/ (= authentifizierter Pfad-Teilbaum),
 // damit der Browser bei fetch() aus dem Dashboard die Basic-Auth-Credentials
@@ -2722,5 +2792,13 @@ app.listen(PORT, HOST, () => {
     setInterval(() => { runAbandonedCartSweep().catch(() => {}); }, everyMs).unref();
   } else {
     console.log('📮 Warenkorb-Abbrecher-Mails INAKTIV (ABANDONED_CART_ENABLED != true)');
+  }
+
+  // Bewertungs-Anfragen: stuendlicher Sweep, nur wenn REVIEW_REQUEST_ENABLED=true.
+  if (REVIEW_REQUEST_ENABLED) {
+    console.log(`⭐ Bewertungs-Anfragen AKTIV (${REVIEW_REQUEST_DAYS} Tage nach Kauf, Sweep stündlich)`);
+    setInterval(() => { runReviewRequestSweep().catch(() => {}); }, 60 * 60 * 1000).unref();
+  } else {
+    console.log('⭐ Bewertungs-Anfragen INAKTIV (REVIEW_REQUEST_ENABLED != true)');
   }
 });
