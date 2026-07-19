@@ -215,8 +215,9 @@ app.use('/api/receipt', (req, res, next) => {
   const path0 = (req.originalUrl || '').split('?')[0];
   const isPublic =
     (req.method === 'POST' && /^\/api\/receipt\/create\/?$/.test(path0)) ||
-    (req.method === 'GET'  && /^\/api\/receipt\/order\/[^/]+\/?$/.test(path0)) ||
-    (req.method === 'GET'  && /^\/api\/receipt\/orders\/email\/[^/]+\/?$/.test(path0));
+    (req.method === 'GET'  && /^\/api\/receipt\/order\/[^/]+\/?$/.test(path0));
+  // /api/receipt/orders/email/:email ist NICHT mehr oeffentlich (Enumeration fremder
+  // Bestellungen). Kundenseitige Statusabfrage laeuft ueber /api/order-status (Bestellnr + E-Mail).
   if (isPublic) return next();
   return requireAdminAuth(req, res, next);
 });
@@ -1794,7 +1795,7 @@ app.post('/api/receipt/order/:orderId/tracking', async (req, res) => {
   }
 });
 
-// Bestellungen nach E-Mail suchen
+// Bestellungen nach E-Mail suchen (nur Admin — s. /api/receipt-Auth oben)
 app.get('/api/receipt/orders/email/:email', async (req, res) => {
   try {
     const { email } = req.params;
@@ -1803,6 +1804,43 @@ app.get('/api/receipt/orders/email/:email', async (req, res) => {
   } catch (error) {
     console.error('E-Mail-Suche Fehler:', error);
     res.status(500).json({ error: 'Interner Serverfehler.' });
+  }
+});
+
+// ── Kundenseitige Bestellstatus-Abfrage (oeffentlich, aber verifiziert) ──────
+// Braucht Bestellnummer UND passende E-Mail. Gibt nur einen minimalen, sicheren
+// Ausschnitt zurueck (Status, Datum, Betrag, Artikelnamen, Sendungsverlauf) —
+// KEINE Adresse/Telefon. Bei fehlender Uebereinstimmung generische 404 (kein Leak).
+app.post('/api/order-status', async (req, res) => {
+  try {
+    const orderId = String((req.body && req.body.orderId) || '').trim().slice(0, 80);
+    const email = String((req.body && req.body.email) || '').trim().toLowerCase().slice(0, 254);
+    if (!orderId || !email) {
+      return res.status(400).json({ ok: false, error: 'Bitte Bestellnummer und E-Mail-Adresse angeben.' });
+    }
+    const order = await dbOperations.getOrder(orderId);
+    if (!order || String(order.customer_email || '').toLowerCase() !== email) {
+      return res.status(404).json({ ok: false, error: 'Keine Bestellung zu dieser Kombination gefunden.' });
+    }
+    const tracking = await dbOperations.getTracking(orderId).catch(() => []);
+    res.json({
+      ok: true,
+      order: {
+        order_id: order.order_id,
+        status: order.order_status,
+        created_at: order.created_at,
+        total_amount: order.total_amount,
+        currency: order.currency,
+        items: (order.items || []).map((i) => ({ name: i.product_name, quantity: i.quantity }))
+      },
+      tracking: (tracking || []).map((t) => ({
+        status: t.status, description: t.description,
+        tracking_number: t.tracking_number, carrier: t.carrier, created_at: t.created_at
+      }))
+    });
+  } catch (error) {
+    console.error('⚠️ Bestellstatus-Fehler:', error.message);
+    res.status(500).json({ ok: false, error: 'Status konnte gerade nicht geladen werden.' });
   }
 });
 

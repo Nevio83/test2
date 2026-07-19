@@ -163,16 +163,21 @@
             <!-- Suchformular -->
             <div class="tracking-form">
                 <div class="row g-3">
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" id="tracking-input" 
-                               placeholder="Bestellnummer oder E-Mail-Adresse eingeben...">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="order-input"
+                               placeholder="Bestellnummer (z.B. ORD-…)">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
+                        <input type="email" class="form-control" id="email-input"
+                               placeholder="E-Mail-Adresse der Bestellung">
+                    </div>
+                    <div class="col-12">
                         <button class="btn btn-primary w-100" onclick="trackOrder()">
-                            <i class="bi bi-search"></i> Suchen
+                            <i class="bi bi-search"></i> Bestellung anzeigen
                         </button>
                     </div>
                 </div>
+                <p class="text-muted small mt-2 mb-0"><i class="bi bi-shield-lock"></i> Aus Datenschutzgründen brauchen wir beides — Bestellnummer und die zugehörige E-Mail.</p>
             </div>
 
             <!-- Tracking-Ergebnis -->
@@ -190,10 +195,7 @@
 
                 <!-- Aktionen -->
                 <div class="text-center mt-4">
-                    <button class="btn btn-outline-primary" onclick="downloadReceipt()">
-                        <i class="bi bi-download"></i> Kassenbon herunterladen
-                    </button>
-                    <button class="btn btn-outline-secondary ms-2" onclick="contactSupport()">
+                    <button class="btn btn-outline-secondary" onclick="contactSupport()">
                         <i class="bi bi-headset"></i> Support kontaktieren
                     </button>
                 </div>
@@ -216,100 +218,59 @@
     </div>
 
     <script>
-        let currentOrder = null;
-
-        // URL-Parameter prüfen
+        // Bestellnummer aus URL vorbefüllen (?order=…); E-Mail muss der Kunde ergänzen.
         window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const orderId = urlParams.get('order');
-            
-            if (orderId) {
-                document.getElementById('tracking-input').value = orderId;
-                trackOrder();
-            }
+            const orderId = new URLSearchParams(window.location.search).get('order');
+            if (orderId) document.getElementById('order-input').value = orderId;
         });
 
-        async function trackOrder() {
-            const input = document.getElementById('tracking-input').value.trim();
-            
-            if (!input) {
-                alert('Bitte geben Sie eine Bestellnummer oder E-Mail-Adresse ein.');
-                return;
-            }
+        function esc(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function currencySymbol(c) {
+            return c === 'USD' ? '$' : c === 'GBP' ? '£' : c === 'CHF' ? 'CHF ' : '€';
+        }
 
-            // Verstecke vorherige Ergebnisse
+        async function trackOrder() {
+            const orderId = document.getElementById('order-input').value.trim();
+            const email = document.getElementById('email-input').value.trim();
             document.getElementById('tracking-result').style.display = 'none';
             document.getElementById('no-order').style.display = 'none';
 
+            if (!orderId || !email) {
+                alert('Bitte Bestellnummer UND die zugehörige E-Mail-Adresse eingeben.');
+                return;
+            }
             try {
-                let response;
-                
-                // Prüfe ob es eine E-Mail oder Bestellnummer ist
-                if (input.includes('@')) {
-                    // E-Mail-Suche
-                    response = await fetch(`/api/receipt/orders/email/${encodeURIComponent(input)}`);
-                    const orders = await response.json();
-                    
-                    if (orders && orders.length > 0) {
-                        // Zeige die neueste Bestellung
-                        showOrder(orders[0]);
-                    } else {
-                        showNoOrder();
-                    }
-                } else {
-                    // Bestellnummer-Suche
-                    response = await fetch(`/api/receipt/order/${encodeURIComponent(input)}`);
-                    
-                    if (response.ok) {
-                        const order = await response.json();
-                        showOrder(order);
-                    } else {
-                        showNoOrder();
-                    }
-                }
+                const response = await fetch('/api/order-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ orderId, email })
+                });
+                const data = await response.json();
+                if (response.ok && data.ok) showOrder(data);
+                else showNoOrder();
             } catch (error) {
                 console.error('Tracking-Fehler:', error);
                 showNoOrder();
             }
         }
 
-        function showOrder(order) {
-            currentOrder = order;
-            
-            // Zeige Bestellinfo
-            const infoHtml = `
-                <div class="info-row">
-                    <span><strong>Bestellnummer:</strong></span>
-                    <span>${order.order_id}</span>
-                </div>
-                <div class="info-row">
-                    <span><strong>Kassenbon-Nr:</strong></span>
-                    <span>${order.receipt_number}</span>
-                </div>
-                <div class="info-row">
-                    <span><strong>Bestelldatum:</strong></span>
-                    <span>${new Date(order.created_at).toLocaleString('de-DE')}</span>
-                </div>
-                <div class="info-row">
-                    <span><strong>Kunde:</strong></span>
-                    <span>${order.customer_name}</span>
-                </div>
-                <div class="info-row">
-                    <span><strong>Gesamtbetrag:</strong></span>
-                    <span><strong>€ ${order.total_amount.toFixed(2)}</strong></span>
-                </div>
-                <div class="info-row">
-                    <span><strong>Status:</strong></span>
-                    <span class="status-badge status-${order.order_status}">${getStatusText(order.order_status)}</span>
-                </div>
+        function showOrder(data) {
+            const o = data.order;
+            const sym = currencySymbol(o.currency);
+            const itemsHtml = (o.items || []).map(i =>
+                `<div class="info-row"><span>${esc(i.name)}</span><span>× ${Number(i.quantity)}</span></div>`
+            ).join('');
+            document.getElementById('order-info').innerHTML = `
+                <div class="info-row"><span><strong>Bestellnummer:</strong></span><span>${esc(o.order_id)}</span></div>
+                <div class="info-row"><span><strong>Bestelldatum:</strong></span><span>${new Date(o.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' })}</span></div>
+                <div class="info-row"><span><strong>Status:</strong></span><span class="status-badge status-${esc(o.status)}">${getStatusText(o.status)}</span></div>
+                <div class="info-row"><span><strong>Gesamtbetrag:</strong></span><span><strong>${sym}${Number(o.total_amount).toFixed(2)}</strong></span></div>
+                ${itemsHtml}
             `;
-            document.getElementById('order-info').innerHTML = infoHtml;
-
-            // Zeige Timeline
-            const timeline = getOrderTimeline(order);
-            document.getElementById('tracking-timeline').innerHTML = timeline;
-
-            // Zeige Ergebnis
+            document.getElementById('tracking-timeline').innerHTML = buildTimeline(o, data.tracking || []);
             document.getElementById('tracking-result').style.display = 'block';
         }
 
@@ -317,73 +278,46 @@
             document.getElementById('no-order').style.display = 'block';
         }
 
-        function getOrderTimeline(order) {
-            const steps = [
-                { 
-                    status: 'pending', 
-                    title: 'Bestellung eingegangen',
-                    description: 'Ihre Bestellung wurde erfolgreich aufgenommen.',
-                    icon: 'bi-cart-check'
-                },
-                { 
-                    status: 'processing', 
-                    title: 'In Bearbeitung',
-                    description: 'Ihre Bestellung wird vorbereitet.',
-                    icon: 'bi-box-seam'
-                },
-                { 
-                    status: 'shipped', 
-                    title: 'Versendet',
-                    description: 'Ihre Bestellung wurde versendet.',
-                    icon: 'bi-truck'
-                },
-                { 
-                    status: 'delivered', 
-                    title: 'Zugestellt',
-                    description: 'Ihre Bestellung wurde zugestellt.',
-                    icon: 'bi-house-check'
-                }
-            ];
-
-            const currentStatusIndex = steps.findIndex(s => s.status === order.order_status);
-            
-            return steps.map((step, index) => {
-                let itemClass = 'timeline-item';
-                if (index <= currentStatusIndex) itemClass += ' completed';
-                if (index === currentStatusIndex) itemClass += ' active';
-                
-                return `
-                    <div class="${itemClass}">
+        // Echte Sendungs-Events (order_tracking) bevorzugen; sonst Status-basierte Standard-Schritte.
+        function buildTimeline(order, tracking) {
+            if (tracking && tracking.length) {
+                return tracking.map(t => `
+                    <div class="timeline-item completed">
                         <div class="timeline-dot"></div>
                         <div class="timeline-content">
-                            <h6><i class="bi ${step.icon}"></i> ${step.title}</h6>
-                            <p class="mb-0 text-muted">${step.description}</p>
-                            ${index <= currentStatusIndex ? `
-                                <small class="text-muted">
-                                    ${index === 0 ? new Date(order.created_at).toLocaleString('de-DE') : ''}
-                                </small>
-                            ` : ''}
+                            <h6><i class="bi bi-check-circle"></i> ${getStatusText(t.status)}</h6>
+                            <p class="mb-0 text-muted">${esc(t.description || '')}</p>
+                            ${t.tracking_number ? `<small class="text-muted">${esc(t.carrier || 'Sendung')}: ${esc(t.tracking_number)}</small><br>` : ''}
+                            <small class="text-muted">${new Date(t.created_at).toLocaleString('de-DE')}</small>
                         </div>
                     </div>
-                `;
+                `).join('');
+            }
+            const steps = [
+                { status: 'pending', title: 'Bestellung eingegangen', description: 'Ihre Bestellung wurde erfolgreich aufgenommen.', icon: 'bi-cart-check' },
+                { status: 'processing', title: 'In Bearbeitung', description: 'Ihre Bestellung wird vorbereitet.', icon: 'bi-box-seam' },
+                { status: 'shipped', title: 'Versendet', description: 'Ihre Bestellung wurde versendet.', icon: 'bi-truck' },
+                { status: 'delivered', title: 'Zugestellt', description: 'Ihre Bestellung wurde zugestellt.', icon: 'bi-house-check' }
+            ];
+            const idx = steps.findIndex(s => s.status === order.status);
+            return steps.map((step, i) => {
+                let cls = 'timeline-item';
+                if (i <= idx) cls += ' completed';
+                if (i === idx) cls += ' active';
+                return `<div class="${cls}"><div class="timeline-dot"></div><div class="timeline-content">
+                    <h6><i class="bi ${step.icon}"></i> ${step.title}</h6>
+                    <p class="mb-0 text-muted">${step.description}</p>
+                    ${i === 0 ? `<small class="text-muted">${new Date(order.created_at).toLocaleString('de-DE')}</small>` : ''}
+                </div></div>`;
             }).join('');
         }
 
         function getStatusText(status) {
             const texts = {
-                'pending': 'Ausstehend',
-                'processing': 'In Bearbeitung',
-                'shipped': 'Versendet',
-                'delivered': 'Zugestellt',
-                'cancelled': 'Storniert'
+                pending: 'Ausstehend', processing: 'In Bearbeitung', shipped: 'Versendet',
+                delivered: 'Zugestellt', cancelled: 'Storniert', refunded: 'Erstattet'
             };
             return texts[status] || status;
-        }
-
-        function downloadReceipt() {
-            if (currentOrder) {
-                window.open(`/receipts/receipt_${currentOrder.receipt_number}.pdf`, '_blank');
-            }
         }
 
         function contactSupport() {
