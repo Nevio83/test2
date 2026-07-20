@@ -150,6 +150,19 @@ app.get(['/health', '/healthz'], (req, res) => {
   res.status(200).json({ status: 'ok', ts: new Date().toISOString(), uptime: process.uptime() });
 });
 
+// Oeffentliche Site-Konfiguration fuer Front-End-Integrationen (Meta Pixel, GA4,
+// Tawk.to Live-Chat). Diese IDs sind ohnehin oeffentlich (stehen im Seitenquelltext).
+// Ohne gesetzte ENV-Variablen sind die Werte leer -> site-integrations.js laedt nichts.
+app.get('/api/site-config', (req, res) => {
+  res.set('Cache-Control', 'public, max-age=300');
+  res.json({
+    metaPixelId: (process.env.META_PIXEL_ID || '').trim(),
+    ga4Id: (process.env.GA4_MEASUREMENT_ID || '').trim(),
+    tawkPropertyId: (process.env.TAWK_PROPERTY_ID || '').trim(),
+    tawkWidgetId: (process.env.TAWK_WIDGET_ID || 'default').trim()
+  });
+});
+
 // Sicherheits-Header
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
