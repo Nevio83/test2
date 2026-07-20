@@ -1774,21 +1774,48 @@ app.put('/api/receipt/order/:orderId/status', async (req, res) => {
   }
 });
 
-// Tracking-Info hinzufügen
+// Tracking-Info hinzufügen (Admin). Legt einen Sendungs-Eintrag an, setzt den
+// Bestellstatus (Default 'shipped') und benachrichtigt den Kunden per E-Mail
+// (Tracking-Nr + Link zur Bestellstatus-Seite). notifyCustomer:false unterdrueckt die Mail.
 app.post('/api/receipt/order/:orderId/tracking', async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { trackingNumber, carrier, status, description } = req.body;
-    
+    const { trackingNumber, carrier, status, description, notifyCustomer } = req.body || {};
+    const newStatus = status || 'shipped';
+
     await dbOperations.addTracking({
       order_id: orderId,
-      status: status || 'shipped',
+      status: newStatus,
       description: description || 'Sendung wurde verschickt',
-      tracking_number: trackingNumber,
-      carrier: carrier
+      tracking_number: trackingNumber || null,
+      carrier: carrier || null
     });
-    
-    res.json({ success: true, message: 'Tracking-Info hinzugefügt' });
+
+    // Bestellstatus mitziehen + Kundendaten holen (best effort).
+    let order = null;
+    try {
+      await dbOperations.updateOrderStatus(orderId, newStatus);
+      order = await dbOperations.getOrder(orderId);
+    } catch (e) {
+      console.warn('⚠️ Status/Order beim Tracking nicht aktualisierbar:', e.message);
+    }
+
+    // Kunden benachrichtigen (best effort, unterdrueckbar).
+    let emailed = false;
+    if (notifyCustomer !== false && order && order.customer_email) {
+      const base = (process.env.SITE_URL || 'https://maiosshop.com').replace(/\/+$/, '');
+      const mail = await emailService.sendShippingConfirmation({
+        to: order.customer_email,
+        customerName: order.customer_name,
+        orderId,
+        trackingNumber,
+        carrier,
+        trackingUrl: `${base}/tracking.html?order=${encodeURIComponent(orderId)}`
+      }).catch((e) => ({ success: false, error: e.message }));
+      emailed = !!(mail && mail.success);
+    }
+
+    res.json({ success: true, message: 'Tracking hinzugefügt', emailed });
   } catch (error) {
     console.error('Tracking-Update Fehler:', error);
     res.status(500).json({ error: 'Interner Serverfehler.' });

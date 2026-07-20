@@ -496,6 +496,33 @@ class ResendService {
   }
 
   /**
+   * Versandbestaetigung an den Kunden (Tracking-Nr + Link zur Sendungsverfolgung).
+   */
+  async sendShippingConfirmation({ to, customerName, orderId, trackingNumber, carrier, trackingUrl }) {
+    const esc = (s) => String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const greeting = customerName ? `Hallo ${esc(String(customerName).split(' ')[0])},` : 'Hallo,';
+    const body =
+      `<h2 style="text-align:center;color:#222;margin:0 0 8px;">Deine Bestellung ist unterwegs 📦</h2>` +
+      `<p style="text-align:center;color:#555;font-size:15px;margin:0 0 6px;">${greeting}</p>` +
+      `<p style="text-align:center;color:#555;font-size:15px;margin:0 0 20px;">gute Neuigkeiten — deine Bestellung <strong>${esc(orderId)}</strong> wurde verschickt.</p>` +
+      (trackingNumber
+        ? `<div style="background:#f6f6fb;border-radius:10px;padding:16px;text-align:center;margin:0 0 20px;">` +
+          `<p style="margin:0;color:#888;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">Sendungsnummer</p>` +
+          `<p style="margin:6px 0 0;color:#222;font-size:18px;font-weight:700;">${esc(carrier ? carrier + ': ' : '')}${esc(trackingNumber)}</p></div>`
+        : '') +
+      (trackingUrl
+        ? `<div style="text-align:center;margin:0 0 8px;"><a href="${esc(trackingUrl)}" style="display:inline-block;background:#6a5cff;color:#fff;text-decoration:none;padding:14px 30px;border-radius:8px;font-weight:600;">Bestellung verfolgen</a></div>`
+        : '') +
+      `<p style="text-align:center;color:#999;font-size:13px;margin:18px 0 0;">Danke für deinen Einkauf bei Maios!</p>`;
+    return this.sendEmail({
+      to,
+      subject: `Deine Bestellung ${orderId} ist unterwegs 📦`,
+      html: this.generateNewsletterHTML({ title: '', bodyHtml: body, unsubscribeUrl: null })
+    });
+  }
+
+  /**
    * Test-E-Mail senden
    */
   async sendTestEmail(toEmail) {

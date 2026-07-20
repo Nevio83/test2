@@ -170,6 +170,9 @@ class AdminOrdersDashboard {
             <button class="btn btn-sm btn-warning" onclick="adminDashboard.updateStatus('${order.order_id}')" title="Status ändern">
               <i class="bi bi-pencil"></i>
             </button>
+            <button class="btn btn-sm btn-info" onclick="adminDashboard.markShipped('${order.order_id}')" title="Als versendet markieren + Tracking">
+              <i class="bi bi-truck"></i>
+            </button>
           </div>
         </td>
       </tr>
@@ -425,6 +428,38 @@ class AdminOrdersDashboard {
     } catch (error) {
       console.error('Status-Update Fehler:', error);
       alert('Fehler beim Aktualisieren des Status');
+    }
+  }
+
+  // Als versendet markieren: Tracking-Nr + Versanddienst erfassen, Status auf
+  // 'shipped' setzen und den Kunden automatisch per E-Mail benachrichtigen.
+  async markShipped(orderId) {
+    const trackingNumber = prompt('Sendungs-/Tracking-Nummer eingeben:');
+    if (trackingNumber === null) return; // Abbruch
+    const carrier = prompt('Versanddienst (z.B. DHL, DPD, CJ Dropshipping):', 'DHL');
+    if (carrier === null) return; // Abbruch
+
+    try {
+      const response = await fetch(`/api/receipt/order/${orderId}/tracking`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trackingNumber: (trackingNumber || '').trim(),
+          carrier: (carrier || '').trim(),
+          status: 'shipped',
+          description: 'Sendung wurde verschickt'
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Fehler beim Versenden');
+
+      alert(data.emailed
+        ? 'Als versendet markiert + Kunde per E-Mail benachrichtigt ✅'
+        : 'Als versendet markiert ✅ (keine Kunden-Mail — E-Mail-Adresse fehlt oder Versand fehlgeschlagen)');
+      this.loadOrders();
+    } catch (error) {
+      console.error('Versenden-Fehler:', error);
+      alert('Fehler: ' + error.message);
     }
   }
 
