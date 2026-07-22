@@ -158,6 +158,7 @@ app.get('/api/site-config', (req, res) => {
   res.json({
     metaPixelId: (process.env.META_PIXEL_ID || '').trim(),
     ga4Id: (process.env.GA4_MEASUREMENT_ID || '').trim(),
+    tiktokPixelId: (process.env.TIKTOK_PIXEL_ID || '').trim(),
     tawkPropertyId: (process.env.TAWK_PROPERTY_ID || '').trim(),
     tawkWidgetId: (process.env.TAWK_WIDGET_ID || 'default').trim()
   });

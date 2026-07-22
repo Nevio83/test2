@@ -12,7 +12,7 @@
   'use strict';
 
   var cfg = null;
-  var loaded = { pixel: false, ga: false, tawk: false, pageEvents: false };
+  var loaded = { pixel: false, ga: false, tiktok: false, tawk: false, pageEvents: false };
 
   function consentOK() {
     return !!(window.MaiosConsent && window.MaiosConsent.allowsTracking && window.MaiosConsent.allowsTracking());
@@ -45,6 +45,26 @@
     window.gtag('config', id, { anonymize_ip: true });
   }
 
+  // ── TikTok Pixel ──────────────────────────────────────────────────
+  function loadTikTokPixel(id) {
+    if (loaded.tiktok || !id) return;
+    loaded.tiktok = true;
+    !function (w, d, t) {
+      w.TiktokAnalyticsObject = t; var ttq = w[t] = w[t] || [];
+      ttq.methods = ['page', 'track', 'identify', 'instances', 'debug', 'on', 'off', 'once', 'ready', 'alias', 'group', 'enableCookie', 'disableCookie', 'holdConsent', 'revokeConsent', 'grantConsent'];
+      ttq.setAndDefer = function (a, e) { a[e] = function () { a.push([e].concat(Array.prototype.slice.call(arguments, 0))); }; };
+      for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
+      ttq.instance = function (a) { for (var e = ttq._i[a] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]); return e; };
+      ttq.load = function (e, n) {
+        var r = 'https://analytics.tiktok.com/i18n/pixel/events.js';
+        ttq._i = ttq._i || {}; ttq._i[e] = []; ttq._i[e]._u = r; ttq._t = ttq._t || {}; ttq._t[e] = +new Date(); ttq._o = ttq._o || {}; ttq._o[e] = n || {};
+        var s = d.createElement('script'); s.type = 'text/javascript'; s.async = !0; s.src = r + '?sdkid=' + e + '&lib=' + t;
+        var f = d.getElementsByTagName('script')[0]; f.parentNode.insertBefore(s, f);
+      };
+      ttq.load(id); ttq.page();
+    }(window, document, 'ttq');
+  }
+
   // ── Tawk.to Live-Chat ─────────────────────────────────────────────
   function loadTawk(propertyId, widgetId) {
     if (loaded.tawk || !propertyId) return;
@@ -65,6 +85,8 @@
     track: function (event, params) {
       try { if (window.fbq) window.fbq('track', event, params || {}); } catch (e) { /* still */ }
       try { if (window.gtag) window.gtag('event', event, params || {}); } catch (e) { /* still */ }
+      // TikTok nutzt eigene Event-Namen (Purchase -> CompletePayment).
+      try { if (window.ttq) window.ttq.track(event === 'Purchase' ? 'CompletePayment' : event, params || {}); } catch (e) { /* still */ }
     }
   };
 
@@ -82,6 +104,7 @@
     if (!cfg || !consentOK()) return;
     loadMetaPixel(cfg.metaPixelId);
     loadGA4(cfg.ga4Id);
+    loadTikTokPixel(cfg.tiktokPixelId);
     loadTawk(cfg.tawkPropertyId, cfg.tawkWidgetId);
     firePageEvents();
   }
@@ -91,7 +114,7 @@
       .then(function (r) { return r.json(); })
       .then(function (c) {
         cfg = c || {};
-        if (!cfg.metaPixelId && !cfg.ga4Id && !cfg.tawkPropertyId) return; // nichts konfiguriert
+        if (!cfg.metaPixelId && !cfg.ga4Id && !cfg.tiktokPixelId && !cfg.tawkPropertyId) return; // nichts konfiguriert
         if (consentOK()) activate();
         // Bei späterer Zustimmung nachladen.
         if (window.MaiosConsent && window.MaiosConsent.onChange) window.MaiosConsent.onChange(activate);
