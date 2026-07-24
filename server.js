@@ -165,6 +165,40 @@ app.get('/api/site-config', (req, res) => {
   });
 });
 
+// ── Rate-Limiting fuer oeffentliche Schreib-Endpoints ────────────────
+// Leichtgewichtiger In-Memory-Limiter (kein neues npm-Paket): pro IP + Route ein
+// Fixed-Window-Zaehler. Schuetzt Bewertungen/Newsletter/Warenkorb-Opt-in/Kontakt
+// vor Bot-Spam, sobald mehr Traffic kommt. Ergaenzt den bereits bestehenden
+// IP-Spam-Schutz bei Bewertungen (countRecentReviewsByIp) als schnellen Vorfilter.
+// In-Memory ist bei einem einzelnen Render-Prozess ausreichend; kein Redis noetig.
+const __rateLimitBuckets = new Map();
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, bucket] of __rateLimitBuckets) {
+    if (now - bucket.windowStart > 30 * 60 * 1000) __rateLimitBuckets.delete(key);
+  }
+}, 10 * 60 * 1000).unref();
+
+function rateLimit(routeKey, { windowMs, max }) {
+  return (req, res, next) => {
+    const ip = (req.headers['x-forwarded-for'] || req.ip || '').toString().split(',')[0].trim() || 'unknown';
+    const key = `${routeKey}:${ip}`;
+    const now = Date.now();
+    let bucket = __rateLimitBuckets.get(key);
+    if (!bucket || now - bucket.windowStart > windowMs) {
+      bucket = { windowStart: now, count: 0 };
+      __rateLimitBuckets.set(key, bucket);
+    }
+    bucket.count++;
+    if (bucket.count > max) {
+      const retryAfterSec = Math.ceil((bucket.windowStart + windowMs - now) / 1000);
+      res.set('Retry-After', String(Math.max(1, retryAfterSec)));
+      return res.status(429).json({ error: 'Zu viele Anfragen. Bitte in ein paar Minuten erneut versuchen.' });
+    }
+    next();
+  };
+}
+
 // Sicherheits-Header
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
@@ -917,7 +951,7 @@ app.post('/api/create-payment-intent', async (req, res) => {
 });
 
 // Kontaktformular-Endpunkt
-app.post('/api/contact', async (req, res) => {
+app.post('/api/contact', rateLimit('contact', { windowMs: 15 * 60 * 1000, max: 5 }), async (req, res) => {
   try {
     const { name, email, message } = req.body || {};
     if (!name || !email || !message) {
@@ -2040,7 +2074,7 @@ app.get('/api/reviews/:productId', async (req, res) => {
   }
 });
 
-app.post('/api/reviews', async (req, res) => {
+app.post('/api/reviews', rateLimit('reviews', { windowMs: 15 * 60 * 1000, max: 8 }), async (req, res) => {
   try {
     const { productId, name, rating, title, body, website } = req.body || {};
     // Honeypot: Bots fuellen versteckte Felder aus -> als Erfolg quittieren, nichts speichern.
@@ -2088,7 +2122,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 // Oeffentlich: Newsletter-Anmeldung. Speichert 'pending' + schickt Bestaetigungsmail
 // (Double-Opt-In). Erst nach Klick auf den Link gilt die Einwilligung (DSGVO/UWG §7).
-app.post('/api/newsletter/subscribe', async (req, res) => {
+app.post('/api/newsletter/subscribe', rateLimit('newsletter', { windowMs: 15 * 60 * 1000, max: 5 }), async (req, res) => {
   try {
     const body = req.body || {};
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 254) : '';
@@ -2183,7 +2217,7 @@ const ABANDONED_STAGE2_MIN = Number(process.env.ABANDONED_CART_STAGE2_MIN || 144
 
 // Speichert/aktualisiert einen offenen Warenkorb, sobald der Kunde die Erinnerung
 // aktiv ankreuzt (consent===true). Ohne Einwilligung wird nichts gespeichert.
-app.post('/api/cart/remind-optin', async (req, res) => {
+app.post('/api/cart/remind-optin', rateLimit('cart-optin', { windowMs: 15 * 60 * 1000, max: 20 }), async (req, res) => {
   try {
     const body = req.body || {};
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 254) : '';
