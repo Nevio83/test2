@@ -198,6 +198,18 @@ const SCHEMA = [
   `ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_intent_id TEXT`,
   // Zeitpunkt der automatischen Bewertungs-Anfrage (NULL = noch nicht gefragt).
   `ALTER TABLE orders ADD COLUMN IF NOT EXISTS review_request_sent_at TIMESTAMPTZ`,
+  // Admin-Audit-Log: wer hat im Panel welche Aktion mit welcher Wirkung ausgefuehrt
+  // (Retoure genehmigt/abgelehnt, Bestellstatus geaendert, Newsletter versendet).
+  // Nachvollziehbarkeit, seit das Panel echtes Geld bewegen kann (Refunds).
+  `CREATE TABLE IF NOT EXISTS admin_audit_log (
+    id SERIAL PRIMARY KEY,
+    actor TEXT NOT NULL,
+    action TEXT NOT NULL,
+    details TEXT,
+    ip TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_audit_created ON admin_audit_log(created_at)`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -533,6 +545,22 @@ const dbOperations = {
       `UPDATE return_requests SET ${sets.join(', ')} WHERE id = $${i} RETURNING *`, vals
     );
     return { changes: r.rowCount, row: r.rows[0] || null };
+  },
+
+  // ── Admin-Audit-Log ──────────────────────────────────────────
+  addAdminAuditLog: async (l) => {
+    const r = await pool.query(
+      `INSERT INTO admin_audit_log (actor, action, details, ip) VALUES ($1,$2,$3,$4) RETURNING id, created_at`,
+      [l.actor, l.action, l.details || null, l.ip || null]
+    );
+    return { id: r.rows[0].id, created_at: r.rows[0].created_at };
+  },
+
+  getAdminAuditLog: async (limit = 100) => {
+    const r = await pool.query(
+      `SELECT * FROM admin_audit_log ORDER BY created_at DESC LIMIT $1`, [limit]
+    );
+    return r.rows;
   },
 
   // ── Bewertungs-Anfrage nach Kauf ─────────────────────────────

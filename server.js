@@ -247,10 +247,24 @@ function requireAdminAuth(req, res, next) {
     const idx = decoded.indexOf(':');
     const user = decoded.slice(0, idx);
     const pass = decoded.slice(idx + 1);
-    if (safeEqual(user, USER) && safeEqual(pass, PASS)) return next();
+    if (safeEqual(user, USER) && safeEqual(pass, PASS)) { req.adminUser = user; return next(); }
   }
   res.set('WWW-Authenticate', 'Basic realm="Maios Admin", charset="UTF-8"');
   return res.status(401).json({ error: 'Authentifizierung erforderlich' });
+}
+
+// Admin-Audit-Log: haelt fest, wer im Panel welche Aktion mit welcher Wirkung
+// ausgefuehrt hat (Retoure genehmigt/abgelehnt, Bestellstatus geaendert, Newsletter
+// versendet). "Best effort" -> ein Logging-Fehler darf die eigentliche Aktion nie
+// verhindern, deshalb wird der Fehler nur geloggt statt geworfen.
+async function logAdminAction(req, action, details) {
+  try {
+    const actor = (req && req.adminUser) || 'unknown';
+    const ip = (req && (req.headers['x-forwarded-for'] || req.ip) || '').toString().split(',')[0].trim().slice(0, 64);
+    await dbOperations.addAdminAuditLog({ actor, action, details: details || null, ip });
+  } catch (e) {
+    console.warn('⚠️ Admin-Audit-Log nicht gespeichert:', e.message);
+  }
 }
 
 // Admin-Dashboard-Ordner schützen (VOR express.static)
@@ -1342,6 +1356,17 @@ function extractPaymentIntent(order) {
   return m ? m[1] : null;
 }
 
+// Admin-Audit-Log auslesen (letzte 100 Aktionen).
+app.get('/a29715347575/api/audit-log', async (req, res) => {
+  try {
+    const rows = await dbOperations.getAdminAuditLog(100);
+    res.json({ ok: true, entries: rows });
+  } catch (error) {
+    console.error('❌ Audit-Log Fehler:', error.message);
+    res.status(500).json({ ok: false, error: 'Audit-Log konnte nicht geladen werden.' });
+  }
+});
+
 app.get('/a29715347575/api/returns', async (req, res) => {
   try {
     const status = typeof req.query.status === 'string' ? req.query.status : 'all';
@@ -1399,6 +1424,8 @@ app.post('/a29715347575/api/returns/:id/approve', async (req, res) => {
       });
     } catch (e) { console.warn('⚠️ Kunden-Mail (genehmigt) nicht gesendet:', e.message); }
 
+    await logAdminAction(req, 'return_approved', `Retoure #${id} (${ret.order_id}) genehmigt — Refund: ${refundStatus}`);
+
     res.json({ ok: true, status: 'approved', refund_status: refundStatus, refund_id: refundId });
   } catch (error) {
     console.error('❌ Retoure-Genehmigung Fehler:', error.message);
@@ -1421,6 +1448,8 @@ app.post('/a29715347575/api/returns/:id/reject', async (req, res) => {
         to: ret.customer_email, orderId: ret.order_id, approved: false, note
       });
     } catch (e) { console.warn('⚠️ Kunden-Mail (abgelehnt) nicht gesendet:', e.message); }
+
+    await logAdminAction(req, 'return_rejected', `Retoure #${id} (${ret.order_id}) abgelehnt${note ? ` — Grund: ${note}` : ''}`);
 
     res.json({ ok: true, status: 'rejected' });
   } catch (error) {
@@ -1833,7 +1862,9 @@ app.put('/api/receipt/order/:orderId/status', async (req, res) => {
       tracking_number: null,
       carrier: null
     });
-    
+
+    await logAdminAction(req, 'order_status_changed', `Bestellung ${orderId} → Status „${status}"`);
+
     res.json({ success: true, message: 'Status aktualisiert' });
   } catch (error) {
     console.error('Status-Update Fehler:', error);
@@ -1881,6 +1912,8 @@ app.post('/api/receipt/order/:orderId/tracking', async (req, res) => {
       }).catch((e) => ({ success: false, error: e.message }));
       emailed = !!(mail && mail.success);
     }
+
+    await logAdminAction(req, 'order_shipped', `Bestellung ${orderId} als versendet markiert${trackingNumber ? ` — ${carrier || ''} ${trackingNumber}`.trim() : ''}`);
 
     res.json({ success: true, message: 'Tracking hinzugefügt', emailed });
   } catch (error) {
@@ -2680,6 +2713,9 @@ app.post('/a29715347575/api/newsletter/broadcast', async (req, res) => {
     }
     await dbOperations.markNewsletterSent(sentEmails);
     console.log(`📣 Newsletter-Kampagne: ${sent} gesendet, ${failed} fehlgeschlagen`);
+
+    await logAdminAction(req, 'newsletter_broadcast', `„${subject}" an ${sent} Abonnenten gesendet (${failed} fehlgeschlagen)`);
+
     res.json({ success: true, sent, failed });
   } catch (error) {
     console.error('Newsletter-Broadcast-Fehler:', error.message);
