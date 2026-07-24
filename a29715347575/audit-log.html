@@ -20,6 +20,7 @@
         .action-order_status_changed { background: #e3edfb; color: #2e6bc4; }
         .action-order_shipped { background: #e3edfb; color: #2e6bc4; }
         .action-newsletter_broadcast { background: #fff3e6; color: #b5560a; }
+        .action-admin_login_blocked { background: #fdeaea; color: #c92a2a; }
         .empty { color: #adb5bd; font-style: italic; padding: 2rem 0; text-align: center; }
         table td, table th { vertical-align: middle; }
         .details-cell { font-size: 0.88rem; color: #495057; max-width: 480px; }
@@ -78,7 +79,8 @@
             return_rejected: 'Retoure abgelehnt',
             order_status_changed: 'Status geändert',
             order_shipped: 'Als versendet markiert',
-            newsletter_broadcast: 'Newsletter versendet'
+            newsletter_broadcast: 'Newsletter versendet',
+            admin_login_blocked: 'Login-Versuche gesperrt'
         };
         function actionBadge(a) {
             const label = ACTION_LABELS[a] || a;

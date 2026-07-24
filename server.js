@@ -234,12 +234,25 @@ function safeEqual(a, b) {
   if (ba.length !== bb.length) return false;
   return crypto.timingSafeEqual(ba, bb);
 }
+// Brute-Force-Schutz: nur FEHLversuche zaehlen, richtige Zugangsdaten funktionieren
+// IMMER (auch waehrend eine IP gerade gesperrt ist) — sonst koennte jemand ueber
+// einen gefaelschten X-Forwarded-For-Header gezielt die IP des echten Admins
+// "sperren" und ihn selbst aussperren. Zugangsdaten werden deshalb zuerst
+// geprueft; erst bei falschem Passwort greift der Lockout (429 statt 401).
+const ADMIN_LOGIN_MAX_FAILURES = 8;
+const ADMIN_LOGIN_WINDOW_MS = 15 * 60 * 1000;
+
 function requireAdminAuth(req, res, next) {
   const USER = process.env.ADMIN_USER || 'admin';
   const PASS = process.env.ADMIN_PASSWORD;
   if (!PASS) {
     return res.status(503).json({ error: 'Admin-Zugang nicht konfiguriert (ADMIN_PASSWORD fehlt)' });
   }
+
+  const ip = (req.headers['x-forwarded-for'] || req.ip || '').toString().split(',')[0].trim() || 'unknown';
+  const failKey = `admin-fail:${ip}`;
+  const now = Date.now();
+
   const header = req.headers.authorization || '';
   const [scheme, encoded] = header.split(' ');
   if (scheme === 'Basic' && encoded) {
@@ -247,8 +260,28 @@ function requireAdminAuth(req, res, next) {
     const idx = decoded.indexOf(':');
     const user = decoded.slice(0, idx);
     const pass = decoded.slice(idx + 1);
-    if (safeEqual(user, USER) && safeEqual(pass, PASS)) { req.adminUser = user; return next(); }
+    if (safeEqual(user, USER) && safeEqual(pass, PASS)) {
+      __rateLimitBuckets.delete(failKey); // erfolgreicher Login -> Zaehler zuruecksetzen
+      req.adminUser = user;
+      return next();
+    }
   }
+
+  // Ab hier: falsche oder fehlende Zugangsdaten.
+  let failBucket = __rateLimitBuckets.get(failKey);
+  if (failBucket && now - failBucket.windowStart > ADMIN_LOGIN_WINDOW_MS) failBucket = null;
+  if (!failBucket) { failBucket = { windowStart: now, count: 0 }; __rateLimitBuckets.set(failKey, failBucket); }
+  failBucket.count++;
+
+  if (failBucket.count >= ADMIN_LOGIN_MAX_FAILURES) {
+    if (failBucket.count === ADMIN_LOGIN_MAX_FAILURES) {
+      logAdminAction(req, 'admin_login_blocked', `Zu viele fehlgeschlagene Login-Versuche von IP ${ip} — 15 Min gedrosselt`);
+    }
+    const retryAfterSec = Math.ceil((failBucket.windowStart + ADMIN_LOGIN_WINDOW_MS - now) / 1000);
+    res.set('Retry-After', String(Math.max(1, retryAfterSec)));
+    return res.status(429).json({ error: 'Zu viele fehlgeschlagene Anmeldeversuche. Bitte später erneut versuchen.' });
+  }
+
   res.set('WWW-Authenticate', 'Basic realm="Maios Admin", charset="UTF-8"');
   return res.status(401).json({ error: 'Authentifizierung erforderlich' });
 }
