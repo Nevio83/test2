@@ -319,27 +319,38 @@ app.get('/sitemap.xml', (req, res) => {
     const base = 'https://maiosshop.com';
     const products = require('./products.json');
     const staticPaths = [
-      ['/', '1.0', 'daily'],
-      ['/cart.html', '0.4', 'monthly'],
-      ['/wishlist.html', '0.3', 'monthly'],
-      ['/gutscheine.html', '0.5', 'weekly'],
-      ['/infos/agb.html', '0.3', 'yearly'],
-      ['/infos/datenschutz.html', '0.3', 'yearly'],
-      ['/infos/impressum.html', '0.3', 'yearly'],
-      ['/infos/versand.html', '0.4', 'monthly'],
-      ['/infos/retouren.html', '0.4', 'monthly'],
-      ['/infos/widerruf.html', '0.3', 'yearly'],
-      ['/infos/kontakt.html', '0.4', 'monthly'],
-      ['/infos/kategorien.html', '0.5', 'weekly']
+      ['/', 'index.html', '1.0', 'daily'],
+      ['/cart.html', 'cart.html', '0.4', 'monthly'],
+      ['/wishlist.html', 'wishlist.html', '0.3', 'monthly'],
+      ['/gutscheine.html', 'gutscheine.html', '0.5', 'weekly'],
+      ['/infos/agb.html', 'infos/agb.html', '0.3', 'yearly'],
+      ['/infos/datenschutz.html', 'infos/datenschutz.html', '0.3', 'yearly'],
+      ['/infos/impressum.html', 'infos/impressum.html', '0.3', 'yearly'],
+      ['/infos/versand.html', 'infos/versand.html', '0.4', 'monthly'],
+      ['/infos/retouren.html', 'infos/retouren.html', '0.4', 'monthly'],
+      ['/infos/widerruf.html', 'infos/widerruf.html', '0.3', 'yearly'],
+      ['/infos/kontakt.html', 'infos/kontakt.html', '0.4', 'monthly'],
+      ['/infos/kategorien.html', 'infos/kategorien.html', '0.5', 'weekly']
     ];
     const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Echtes Aenderungsdatum der Datei (kein erfundenes Datum) -> aktualisiert sich
+    // automatisch, sobald eine Seite tatsaechlich geaendert wird.
+    const lastmodOf = (relPath) => {
+      try {
+        return fs.statSync(path.join(__dirname, relPath)).mtime.toISOString().slice(0, 10);
+      } catch (e) {
+        return null;
+      }
+    };
     const rows = [];
-    staticPaths.forEach(([p, prio, freq]) =>
-      rows.push(`  <url><loc>${base}${p}</loc><changefreq>${freq}</changefreq><priority>${prio}</priority></url>`)
-    );
+    staticPaths.forEach(([p, file, prio, freq]) => {
+      const lastmod = lastmodOf(file);
+      rows.push(`  <url><loc>${base}${p}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}<changefreq>${freq}</changefreq><priority>${prio}</priority></url>`);
+    });
     products.forEach((p) => {
       if (p && p.slug) {
-        rows.push(`  <url><loc>${esc(`${base}/produkte/${p.slug}.html`)}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
+        const lastmod = lastmodOf(`produkte/${p.slug}.html`);
+        rows.push(`  <url><loc>${esc(`${base}/produkte/${p.slug}.html`)}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}<changefreq>weekly</changefreq><priority>0.8</priority></url>`);
       }
     });
     const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
