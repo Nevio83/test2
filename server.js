@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const compression = require('compression');
 
 // ── Log-Level ────────────────────────────────────────────────────
@@ -302,6 +303,24 @@ app.get('/sitemap.xml', (req, res) => {
   } catch (e) {
     console.error('❌ Sitemap-Erzeugung fehlgeschlagen:', e.message);
     res.status(500).send('sitemap error');
+  }
+});
+
+// WebP-Auslieferung: Wenn der Browser image/webp akzeptiert UND eine .webp-Variante
+// der angefragten JPG/PNG existiert, liefere die WebP-Datei aus (~70% kleiner, schneller
+// auf Mobil). Transparent -> keine HTML-Aenderung noetig. MUSS vor express.static stehen.
+app.get(/\.(jpe?g|png)$/i, (req, res, next) => {
+  try {
+    if (!(req.headers.accept || '').includes('image/webp')) return next();
+    const rel = decodeURIComponent(req.path).replace(/^\/+/, '');
+    const webpAbs = path.join(__dirname, rel.replace(/\.(jpe?g|png)$/i, '.webp'));
+    if (!webpAbs.startsWith(__dirname) || !fs.existsSync(webpAbs)) return next();
+    res.set('Content-Type', 'image/webp');
+    res.set('Vary', 'Accept');
+    res.set('Cache-Control', 'public, max-age=86400');
+    return res.sendFile(webpAbs);
+  } catch (e) {
+    return next();
   }
 });
 
