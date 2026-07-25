@@ -55,5 +55,5 @@ jobs:
               echo "::error::$FAIL_STREAK aufeinanderfolgende Fehlschlaege - maiosshop.com scheint nicht erreichbar."
               exit 1
             fi
-            [ "$i" -lt 13 ] && sleep 60
+            if [ "$i" -lt 13 ]; then sleep 60; fi
           done
