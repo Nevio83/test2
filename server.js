@@ -22,6 +22,16 @@ const compression = require('compression');
   }
 })();
 
+// sharp fuer automatische WebP-Konvertierung (siehe WebP-Middleware unten). Falls das
+// native Modul auf einer Plattform je nicht laedt, darf das den Server NIE crashen —
+// die Middleware faellt dann einfach auf die Original-Bilder zurueck.
+let sharp = null;
+try {
+  sharp = require('sharp');
+} catch (e) {
+  console.warn('⚠️ sharp nicht verfuegbar — automatische WebP-Konvertierung fuer neue Bilder deaktiviert:', e.message);
+}
+
 // Initialize Stripe only if API key is available
 let stripe = null;
 if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'your_stripe_secret_key_here') {
@@ -399,15 +409,44 @@ app.get('/sitemap.xml', (req, res) => {
   }
 });
 
-// WebP-Auslieferung: Wenn der Browser image/webp akzeptiert UND eine .webp-Variante
-// der angefragten JPG/PNG existiert, liefere die WebP-Datei aus (~70% kleiner, schneller
-// auf Mobil). Transparent -> keine HTML-Aenderung noetig. MUSS vor express.static stehen.
-app.get(/\.(jpe?g|png)$/i, (req, res, next) => {
+// Automatische WebP-Konvertierung fuer NEUE Produktbilder: wird eine .webp-Datei
+// angefragt, die noch nicht existiert, aber die Quelle (JPG/PNG) schon, wird sie
+// on-demand erzeugt und auf Platte zwischengespeichert (danach normaler schneller
+// Datei-Zugriff, kein erneutes Konvertieren). Ein In-Flight-Lock verhindert, dass
+// mehrere gleichzeitige Requests dieselbe Datei doppelt konvertieren. Faellt bei
+// jedem Fehler (sharp fehlt, defektes Bild, o.ae.) sauber auf "nichts tun" zurueck.
+const __webpConversionInFlight = new Map();
+function ensureWebpVariant(srcAbs, webpAbs) {
+  if (!sharp) return Promise.resolve(false);
+  if (fs.existsSync(webpAbs)) return Promise.resolve(true);
+  if (__webpConversionInFlight.has(webpAbs)) return __webpConversionInFlight.get(webpAbs);
+  const p = sharp(srcAbs).webp({ quality: 80 }).toFile(webpAbs)
+    .then(() => true)
+    .catch((e) => {
+      console.warn('⚠️ WebP-Konvertierung fehlgeschlagen fuer', srcAbs, '-', e.message);
+      return false;
+    })
+    .finally(() => __webpConversionInFlight.delete(webpAbs));
+  __webpConversionInFlight.set(webpAbs, p);
+  return p;
+}
+
+// WebP-Auslieferung: Wenn der Browser image/webp akzeptiert, liefere die WebP-Variante
+// der angefragten JPG/PNG aus (~70% kleiner, schneller auf Mobil) — erzeugt sie bei
+// Bedarf automatisch (siehe oben). Transparent -> keine HTML-Aenderung noetig.
+// MUSS vor express.static stehen.
+app.get(/\.(jpe?g|png)$/i, async (req, res, next) => {
   try {
     if (!(req.headers.accept || '').includes('image/webp')) return next();
     const rel = decodeURIComponent(req.path).replace(/^\/+/, '');
-    const webpAbs = path.join(__dirname, rel.replace(/\.(jpe?g|png)$/i, '.webp'));
-    if (!webpAbs.startsWith(__dirname) || !fs.existsSync(webpAbs)) return next();
+    const srcAbs = path.join(__dirname, rel);
+    const webpAbs = srcAbs.replace(/\.(jpe?g|png)$/i, '.webp');
+    if (!webpAbs.startsWith(__dirname)) return next();
+    if (!fs.existsSync(webpAbs)) {
+      if (!fs.existsSync(srcAbs)) return next(); // Quelle fehlt -> regulaeres 404 ueber static
+      await ensureWebpVariant(srcAbs, webpAbs);
+    }
+    if (!fs.existsSync(webpAbs)) return next(); // Konvertierung nicht moeglich -> Original ausliefern
     res.set('Content-Type', 'image/webp');
     res.set('Vary', 'Accept');
     res.set('Cache-Control', 'public, max-age=86400');
