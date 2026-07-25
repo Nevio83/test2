@@ -2362,6 +2362,111 @@ app.get('/api/newsletter/unsubscribe', async (req, res) => {
   }
 });
 
+// ── DSGVO-Selbstauskunft & -Loeschung (Art. 15/17) ───────────────────
+// Schritt 1: Adresse + Wunsch (Auskunft/Löschung) -> Bestaetigungsmail (Double-
+// Opt-In-Prinzip wie beim Newsletter). Schritt 2: Klick auf den Link bestaetigt
+// UND fuehrt die Aktion sofort aus. Neutrale Antwort in Schritt 1, unabhaengig
+// davon ob die Adresse bekannt ist (keine Auskunft ueber Kundendaten per Enumeration).
+app.post('/api/privacy/request', rateLimit('privacy-request', { windowMs: 15 * 60 * 1000, max: 5 }), async (req, res) => {
+  try {
+    const body = req.body || {};
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase().slice(0, 254) : '';
+    const type = body.type === 'delete' ? 'delete' : (body.type === 'access' ? 'access' : '');
+    if (!email || !EMAIL_RE.test(email) || !type) {
+      return res.status(400).json({ success: false, error: 'Bitte eine gültige E-Mail-Adresse und Anfrageart angeben.' });
+    }
+    const token = crypto.randomUUID();
+    await dbOperations.createPrivacyRequest(email, type, token);
+    const confirmUrl = `${publicBaseUrl(req)}/api/privacy/confirm?token=${encodeURIComponent(token)}`;
+    const mail = await emailService.sendPrivacyConfirmation(email, confirmUrl, type);
+    if (!mail || !mail.success) {
+      console.error('⚠️ DSGVO-Bestätigungsmail nicht gesendet:', mail && mail.error);
+      // Trotzdem neutrale Erfolgsmeldung -> keine Rueckschluesse auf Mail-Zustellbarkeit/Existenz der Adresse.
+    }
+    res.json({ success: true, message: 'Falls diese Adresse bei uns hinterlegt ist, hast du gleich eine Bestätigungsmail erhalten.' });
+  } catch (error) {
+    console.error('⚠️ DSGVO-Anfrage-Fehler:', error.message);
+    res.json({ success: true, message: 'Falls diese Adresse bei uns hinterlegt ist, hast du gleich eine Bestätigungsmail erhalten.' });
+  }
+});
+
+function privacyDataPage(data) {
+  const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const money = (n, c) => n == null ? '–' : `${Number(n).toFixed(2)} ${esc(c || 'EUR')}`;
+  const date = (d) => d ? new Date(d).toLocaleDateString('de-DE') : '–';
+  const section = (title, rows) => rows.length
+    ? `<h3>${title} (${rows.length})</h3><table>${rows}</table>`
+    : `<h3>${title}</h3><p class="muted">Keine Daten vorhanden.</p>`;
+
+  const ordersRows = data.orders.map((o) =>
+    `<tr><td>${esc(o.order_id)}</td><td>${date(o.created_at)}</td><td>${esc(o.order_status)}</td><td>${money(o.total_amount, o.currency)}</td></tr>`
+  ).join('');
+  const newsletterRows = data.newsletter.map((n) =>
+    `<tr><td>${esc(n.status)}</td><td>${esc(n.source || '–')}</td><td>${date(n.created_at)}</td></tr>`
+  ).join('');
+  const cartRows = data.abandonedCarts.map((c) =>
+    `<tr><td>${esc(c.status)}</td><td>${money(c.total, c.currency)}</td><td>${date(c.created_at)}</td></tr>`
+  ).join('');
+  const returnRows = data.returns.map((r) =>
+    `<tr><td>${esc(r.order_id)}</td><td>${esc(r.reason || '–')}</td><td>${esc(r.status)}</td><td>${money(r.order_total, r.currency)}</td></tr>`
+  ).join('');
+
+  return `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Deine Daten · Maios</title>
+<style>body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0d0d0d;color:#fff;padding:40px 16px}
+.wrap{max-width:720px;margin:0 auto;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:16px;padding:36px}
+.logo{font-size:18px;font-weight:700;letter-spacing:2px;margin-bottom:8px;color:#28a745}
+h1{font-size:22px;margin:0 0 6px}h3{font-size:15px;margin:26px 0 8px;color:#eee}
+p.muted{color:#888;font-size:14px;margin:0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td{padding:8px 6px;border-bottom:1px solid #2a2a2a;color:#ddd}
+.intro{color:#bbb;line-height:1.6;font-size:14.5px}
+a.back{display:inline-block;margin-top:28px;background:#28a745;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600}
+</style></head>
+<body><div class="wrap"><div class="logo">MAIOS</div><h1>Deine gespeicherten Daten</h1>
+<p class="intro">Das sind die personenbezogenen Daten, die wir zu deiner E-Mail-Adresse gespeichert haben (Art.&nbsp;15 DSGVO). Bewertungen sind hier nicht enthalten, da sie sich nicht eindeutig einer E-Mail-Adresse zuordnen lassen.</p>
+${section('Bestellungen', ordersRows)}
+${section('Newsletter', newsletterRows)}
+${section('Warenkorb-Erinnerung', cartRows)}
+${section('Retouren', returnRows)}
+<a class="back" href="/">Zum Shop</a></div></body></html>`;
+}
+
+app.get('/api/privacy/confirm', async (req, res) => {
+  res.set('Content-Type', 'text/html; charset=utf-8');
+  try {
+    const token = typeof req.query.token === 'string' ? req.query.token : '';
+    const reqRow = await dbOperations.getPrivacyRequestByToken(token);
+    if (!reqRow) {
+      return res.send(newsletterStatusPage('Link ungültig', 'Dieser Bestätigungslink ist ungültig oder wurde bereits verwendet.'));
+    }
+    if (reqRow.status === 'completed') {
+      return res.send(newsletterStatusPage('Bereits erledigt', 'Diese Anfrage wurde bereits bearbeitet.'));
+    }
+    const ageMs = Date.now() - new Date(reqRow.created_at).getTime();
+    if (ageMs > 24 * 60 * 60 * 1000) {
+      return res.send(newsletterStatusPage('Link abgelaufen', 'Dieser Bestätigungslink ist nach 24 Stunden abgelaufen. Bitte stelle die Anfrage erneut.'));
+    }
+
+    if (reqRow.type === 'access') {
+      const data = await dbOperations.gatherPersonalData(reqRow.email);
+      await dbOperations.markPrivacyRequestCompleted(reqRow.id);
+      return res.send(privacyDataPage(data));
+    }
+
+    // type === 'delete'
+    const result = await dbOperations.eraseOrAnonymizePersonalData(reqRow.email, reqRow.id);
+    await dbOperations.markPrivacyRequestCompleted(reqRow.id);
+    return res.send(newsletterStatusPage('Daten gelöscht ✅',
+      `Erledigt: ${result.newsletterDeleted} Newsletter-Eintrag(e) und ${result.abandonedCartsDeleted} Warenkorb-Erinnerung(en) wurden vollständig gelöscht. ` +
+      `${result.ordersAnonymized} Bestellung(en) und ${result.returnsAnonymized} Retoure(n) wurden anonymisiert (Name/E-Mail/Adresse entfernt) — ` +
+      `Rechnungsdaten müssen aus gesetzlichen Gründen (§ 147 AO) 10 Jahre aufbewahrt werden, enthalten aber keine persönlichen Angaben mehr.`));
+  } catch (error) {
+    console.error('⚠️ DSGVO-Bestätigung-Fehler:', error.message);
+    res.status(500).send(newsletterStatusPage('Etwas ist schiefgelaufen', 'Bitte versuche es später erneut oder schreib uns direkt.'));
+  }
+});
+
 // ── Warenkorb-Abbrecher (opt-in, DSGVO/UWG §7) ───────────────────────
 // Erfassung nur bei aktiver Einwilligung. Der VERSAND ist zusaetzlich per ENV
 // gated: ABANDONED_CART_ENABLED=true. Ohne das Flag wird nichts verschickt.

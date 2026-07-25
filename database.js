@@ -210,6 +210,20 @@ const SCHEMA = [
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE INDEX IF NOT EXISTS idx_audit_created ON admin_audit_log(created_at)`,
+  // DSGVO-Selbstauskunft/-Loeschung (Art. 15/17). type: 'access' | 'delete'.
+  // status: 'pending' (Mail raus, noch nicht bestaetigt) -> 'completed' (Klick auf
+  // den Bestaetigungslink hat die Aktion sofort ausgefuehrt). Der Bestaetigungslink
+  // ist zugleich der Identitaetsnachweis (nur der Inhaber der Adresse kann klicken).
+  `CREATE TABLE IF NOT EXISTS privacy_requests (
+    id SERIAL PRIMARY KEY,
+    email TEXT NOT NULL,
+    type TEXT NOT NULL,
+    token TEXT UNIQUE NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMPTZ
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_privacy_token ON privacy_requests(token)`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -561,6 +575,90 @@ const dbOperations = {
       `SELECT * FROM admin_audit_log ORDER BY created_at DESC LIMIT $1`, [limit]
     );
     return r.rows;
+  },
+
+  // ── DSGVO-Selbstauskunft & -Loeschung (Art. 15/17) ────────────────
+  createPrivacyRequest: async (email, type, token) => {
+    const r = await pool.query(
+      `INSERT INTO privacy_requests (email, type, token) VALUES ($1,$2,$3) RETURNING id, created_at`,
+      [email, type, token]
+    );
+    return { id: r.rows[0].id, created_at: r.rows[0].created_at };
+  },
+
+  getPrivacyRequestByToken: async (token) => {
+    const r = await pool.query(`SELECT * FROM privacy_requests WHERE token = $1`, [token]);
+    return r.rows[0] || null;
+  },
+
+  markPrivacyRequestCompleted: async (id) => {
+    await pool.query(
+      `UPDATE privacy_requests SET status='completed', completed_at=CURRENT_TIMESTAMP WHERE id = $1`, [id]
+    );
+  },
+
+  // Read-only Uebersicht fuer die Auskunft (Art. 15). product_reviews sind bewusst
+  // ausgenommen -> dort gibt es keine E-Mail-Spalte, eine Bewertung laesst sich
+  // nicht zuverlaessig einem Anfragenden zuordnen.
+  gatherPersonalData: async (email) => {
+    const orders = await pool.query(
+      `SELECT order_id, created_at, order_status, total_amount, currency, shipping_address
+         FROM orders WHERE lower(customer_email) = lower($1) ORDER BY created_at DESC`,
+      [email]
+    );
+    const newsletter = await pool.query(
+      `SELECT status, source, created_at, confirmed_at FROM newsletter_subscribers WHERE lower(email) = lower($1)`,
+      [email]
+    );
+    const abandonedCarts = await pool.query(
+      `SELECT status, total, currency, created_at FROM abandoned_carts WHERE lower(email) = lower($1)`,
+      [email]
+    );
+    const returns = await pool.query(
+      `SELECT order_id, reason, status, order_total, currency, created_at FROM return_requests WHERE lower(customer_email) = lower($1)`,
+      [email]
+    );
+    return {
+      orders: orders.rows,
+      newsletter: newsletter.rows,
+      abandonedCarts: abandonedCarts.rows,
+      returns: returns.rows
+    };
+  },
+
+  // Loeschung (Art. 17) — abgewogen gegen die 10-jaehrige Aufbewahrungspflicht fuer
+  // Rechnungen (§ 147 AO/GoBD): Bestellungen werden ANONYMISIERT (Name/E-Mail/
+  // Telefon/Adresse entfernt), NICHT geloescht — Beleg-Nummer/Betraege/Datum
+  // bleiben fuer die Buchhaltung erhalten. Newsletter- und Warenkorb-Daten haben
+  // keine solche Pflicht und werden vollstaendig geloescht.
+  eraseOrAnonymizePersonalData: async (email, requestId) => {
+    const placeholder = `geloescht-anfrage-${requestId}@anonymisiert.invalid`;
+    const orders = await pool.query(
+      `UPDATE orders SET
+         customer_name = '[Gelöscht auf Kundenanfrage]',
+         customer_email = $2,
+         customer_phone = NULL,
+         shipping_address = '[Gelöscht]',
+         billing_address = '[Gelöscht]',
+         review_request_sent_at = COALESCE(review_request_sent_at, CURRENT_TIMESTAMP)
+       WHERE lower(customer_email) = lower($1)`,
+      [email, placeholder]
+    );
+    const returns = await pool.query(
+      `UPDATE return_requests SET
+         customer_name = '[Gelöscht auf Kundenanfrage]',
+         customer_email = $2
+       WHERE lower(customer_email) = lower($1)`,
+      [email, placeholder]
+    );
+    const newsletter = await pool.query(`DELETE FROM newsletter_subscribers WHERE lower(email) = lower($1)`, [email]);
+    const abandonedCarts = await pool.query(`DELETE FROM abandoned_carts WHERE lower(email) = lower($1)`, [email]);
+    return {
+      ordersAnonymized: orders.rowCount,
+      returnsAnonymized: returns.rowCount,
+      newsletterDeleted: newsletter.rowCount,
+      abandonedCartsDeleted: abandonedCarts.rowCount
+    };
   },
 
   // ── Bewertungs-Anfrage nach Kauf ─────────────────────────────

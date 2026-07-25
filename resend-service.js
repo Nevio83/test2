@@ -353,6 +353,29 @@ class ResendService {
   /**
    * Double-Opt-In: Bestaetigungsmail mit Klick-Link (DSGVO/UWG).
    */
+  /**
+   * DSGVO-Selbstauskunft/-Loeschung (Art. 15/17): Bestaetigungs-Mail mit Link.
+   * Der Klick auf den Link ist zugleich der Identitaetsnachweis UND loest die
+   * Aktion sofort aus (wie beim Newsletter-Opt-in) — es gibt keinen zweiten Schritt.
+   */
+  async sendPrivacyConfirmation(email, confirmUrl, type) {
+    const isDelete = type === 'delete';
+    const body =
+      `<p style="text-align:center;">Du hast ${isDelete ? 'eine Löschung' : 'eine Auskunft'} zu deinen bei uns gespeicherten Daten angefragt. ` +
+      `Bitte bestätige das über den Button — ${isDelete ? 'danach werden deine Daten sofort gelöscht bzw. anonymisiert' : 'danach zeigen wir dir direkt eine Übersicht deiner Daten'}.</p>` +
+      `<div style="text-align:center;margin:28px 0;">` +
+        `<a href="${confirmUrl}" style="display:inline-block;background:${isDelete ? '#dc3545' : '#28a745'};color:#fff;text-decoration:none;` +
+        `padding:14px 32px;border-radius:8px;font-weight:600;font-size:16px;">${isDelete ? 'Löschung bestätigen' : 'Auskunft anzeigen'}</a>` +
+      `</div>` +
+      `<p style="text-align:center;color:#888;font-size:13px;">Wenn du das nicht angefragt hast, ignoriere diese E-Mail einfach – ` +
+      `ohne Klick auf den Link passiert nichts. Der Link ist 24 Stunden gültig.</p>`;
+    return this.sendEmail({
+      to: email,
+      subject: isDelete ? 'Bitte bestätige deine Datenlöschung' : 'Bitte bestätige deine Datenauskunft',
+      html: this.generateNewsletterHTML({ title: '', bodyHtml: body, unsubscribeUrl: null })
+    });
+  }
+
   async sendNewsletterConfirmation(email, confirmUrl) {
     const body =
       `<p style="text-align:center;">Fast geschafft! Bitte bestätige deine Anmeldung zum Maios-Newsletter, ` +
