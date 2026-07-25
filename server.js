@@ -94,6 +94,7 @@ const ReceiptGenerator = require('./receipt-generator');
 const emailService = require('./resend-service'); // Resend E-Mail Service
 const { v4: uuidv4 } = require('uuid');
 const { runDatabaseBackup } = require('./db-backup');
+const { runCjPriceSync } = require('./cj-price-sync');
 
 const receiptGenerator = new ReceiptGenerator();
 
@@ -2657,6 +2658,15 @@ app.post('/a29715347575/api/backup/run', async (req, res) => {
   res.status(result.success ? 200 : 502).json({ ok: result.success, ...result });
 });
 
+// CJ-Preisabgleich manuell auf Knopfdruck ausloesen. Aendert NIE automatisch
+// Verkaufspreise -> nur Beobachtung + Mail-Warnung bei Abweichung (s. cj-price-sync.js).
+app.post('/a29715347575/api/cj-price-sync/run', async (req, res) => {
+  const result = await runCjPriceSync(cjAPI);
+  await logAdminAction(req, 'cj_price_sync',
+    `${result.matched} Produkte zugeordnet, ${result.checked} geprüft, ${result.unavailable} CJ-Antwort fehlte, ${result.changes.length} Preisänderung(en)`);
+  res.json({ ok: true, ...result });
+});
+
 // Admin: Kennzahlen fuer die Dashboard-Kacheln
 // Routen liegen bewusst UNTER /a29715347575/ (= authentifizierter Pfad-Teilbaum),
 // damit der Browser bei fetch() aus dem Dashboard die Basic-Auth-Credentials
@@ -3175,5 +3185,14 @@ app.listen(PORT, HOST, () => {
     setInterval(() => { runDatabaseBackup().catch(() => {}); }, 24 * 60 * 60 * 1000).unref();
   } else {
     console.log('🗄️ Datenbank-Backup-Zeitplan INAKTIV (DB_BACKUP_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
+  }
+
+  // CJ-Preisabgleich: woechentlicher Lauf, nur wenn CJ_PRICE_SYNC_ENABLED=true.
+  // Aendert nie automatisch Preise -> nur Beobachtung + Mail-Warnung.
+  if ((process.env.CJ_PRICE_SYNC_ENABLED || '').trim() === 'true') {
+    console.log('💱 CJ-Preisabgleich AKTIV (woechentlicher Lauf)');
+    setInterval(() => { runCjPriceSync(cjAPI).catch(() => {}); }, 7 * 24 * 60 * 60 * 1000).unref();
+  } else {
+    console.log('💱 CJ-Preisabgleich-Zeitplan INAKTIV (CJ_PRICE_SYNC_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
   }
 });

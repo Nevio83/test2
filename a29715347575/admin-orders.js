@@ -520,6 +520,34 @@ async function runBackupNow() {
   }
 }
 
+// Loest den CJ-Preis-Abgleich manuell aus. Aendert nie automatisch Preise —
+// vergleicht nur CJ-Einkaufspreise gegen den letzten bekannten Stand und
+// verschickt bei Abweichung eine Mail (siehe cj-price-sync.js).
+async function runCjPriceSyncNow() {
+  const btn = document.getElementById('cjSyncBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Prüfe …';
+  try {
+    const res = await fetch('/a29715347575/api/cj-price-sync/run', { method: 'POST' });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Preis-Abgleich fehlgeschlagen');
+    let msg = `Preis-Abgleich fertig ✅\n${data.matched} Produkte zugeordnet, ${data.checked} geprüft.`;
+    if (data.unavailable) msg += `\n${data.unavailable}x keine CJ-Antwort.`;
+    if (data.changes && data.changes.length) {
+      msg += `\n\n${data.changes.length} Preisänderung(en) erkannt — Warnmail wurde verschickt.`;
+    } else {
+      msg += `\nKeine relevante Preisänderung.`;
+    }
+    alert(msg);
+  } catch (error) {
+    alert('Preis-Abgleich fehlgeschlagen: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
 function exportOrders() {
   // Erstelle CSV
   let csv = 'Bestellnr,Kassenbon,Kunde,E-Mail,Datum,Betrag,Status\n';

@@ -224,6 +224,17 @@ const SCHEMA = [
     completed_at TIMESTAMPTZ
   )`,
   `CREATE INDEX IF NOT EXISTS idx_privacy_token ON privacy_requests(token)`,
+  // CJ-Preis-Beobachtung: merkt sich pro Produkt den zuletzt bei CJ gesehenen
+  // Einkaufspreis. Erster Lauf = Baseline (kein Alarm), danach Vergleich bei
+  // jedem weiteren Lauf. AENDERT NIE automatisch den Verkaufspreis -> nur
+  // Beobachtung + Mail-Warnung, damit ein Mensch entscheidet.
+  `CREATE TABLE IF NOT EXISTS cj_price_watch (
+    product_id INTEGER PRIMARY KEY,
+    cj_pid TEXT NOT NULL,
+    last_price REAL NOT NULL,
+    last_checked_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_alert_at TIMESTAMPTZ
+  )`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -659,6 +670,24 @@ const dbOperations = {
       newsletterDeleted: newsletter.rowCount,
       abandonedCartsDeleted: abandonedCarts.rowCount
     };
+  },
+
+  // ── CJ-Preis-Beobachtung ──────────────────────────────────────
+  getCjPriceWatch: async (productId) => {
+    const r = await pool.query(`SELECT * FROM cj_price_watch WHERE product_id = $1`, [productId]);
+    return r.rows[0] || null;
+  },
+
+  upsertCjPriceWatch: async (productId, cjPid, price, markAlerted) => {
+    await pool.query(
+      `INSERT INTO cj_price_watch (product_id, cj_pid, last_price, last_checked_at, last_alert_at)
+       VALUES ($1,$2,$3,CURRENT_TIMESTAMP,${markAlerted ? 'CURRENT_TIMESTAMP' : 'NULL'})
+       ON CONFLICT (product_id) DO UPDATE SET
+         cj_pid = EXCLUDED.cj_pid, last_price = EXCLUDED.last_price,
+         last_checked_at = CURRENT_TIMESTAMP
+         ${markAlerted ? ', last_alert_at = CURRENT_TIMESTAMP' : ''}`,
+      [productId, cjPid, price]
+    );
   },
 
   // ── Bewertungs-Anfrage nach Kauf ─────────────────────────────
