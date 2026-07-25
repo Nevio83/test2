@@ -217,6 +217,43 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── Fehler-Alarm bei gehaeuften Server-Fehlern ───────────────────────
+// Zaehlt Antworten mit Status >=500 in einem gleitenden Zeitfenster. Ab einer
+// Schwelle geht EINMALIG eine Alarm-Mail raus (mit Cooldown, damit ein
+// anhaltendes Problem das Postfach nicht flutet) — damit ein Ausfall auffaellt,
+// bevor ihn ein Kunde meldet (oder gar nicht meldet und einfach wegklickt).
+const ERROR_ALERT_THRESHOLD = 10;
+const ERROR_ALERT_WINDOW_MS = 15 * 60 * 1000;
+const ERROR_ALERT_COOLDOWN_MS = 60 * 60 * 1000;
+let __errorWindowStart = Date.now();
+let __errorCount = 0;
+let __lastErrorAlertAt = 0;
+const __recentErrorSamples = [];
+
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    if (res.statusCode < 500) return;
+    const now = Date.now();
+    if (now - __errorWindowStart > ERROR_ALERT_WINDOW_MS) { __errorWindowStart = now; __errorCount = 0; }
+    __errorCount++;
+    __recentErrorSamples.push(`${new Date(now).toISOString()} — ${req.method} ${req.originalUrl} → ${res.statusCode}`);
+    if (__recentErrorSamples.length > 10) __recentErrorSamples.shift();
+
+    if (__errorCount >= ERROR_ALERT_THRESHOLD && now - __lastErrorAlertAt > ERROR_ALERT_COOLDOWN_MS) {
+      __lastErrorAlertAt = now;
+      const to = process.env.ERROR_ALERT_EMAIL || process.env.RECEIPT_ARCHIVE_EMAIL || 'maioscorporation@gmail.com';
+      const rows = __recentErrorSamples.map((s) => `<li>${s}</li>`).join('');
+      emailService.sendEmail({
+        to,
+        subject: `🚨 ${__errorCount} Serverfehler in 15 Minuten — Maios Shop`,
+        html: `<h2>Erhöhte Fehlerrate</h2><p>${__errorCount} Server-Fehler (5xx) in den letzten 15 Minuten auf maiosshop.com.</p>` +
+          `<p>Letzte Beispiele:</p><ul>${rows}</ul>`
+      }).catch((e) => console.warn('⚠️ Fehler-Alarm-Mail fehlgeschlagen:', e.message));
+    }
+  });
+  next();
+});
+
 // ── Admin-Authentifizierung (HTTP Basic Auth) ───────────────────────
 // Schützt Admin-Dashboards und sensible API-Routen. Login via Browser-Dialog;
 // Zugangsdaten aus ENV: ADMIN_USER (Default 'admin') + ADMIN_PASSWORD.

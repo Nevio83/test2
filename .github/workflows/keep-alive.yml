@@ -34,13 +34,26 @@ jobs:
         run: |
           URL="https://maiosshop.com/health"
           echo "Halte $URL warm (~13 Min, alle 60 s)"
+          # Uptime-Alarm: ein einzelner Fehlschlag ist meist nur ein normaler
+          # Cold-Start (nach Sleep) und kein Vorfall. Erst bei MEHREREN Fehlschlägen
+          # HINTEREINANDER faellt dieser Job fehl -> GitHub schickt dem Repo-Besitzer
+          # automatisch eine "Workflow failed"-Mail (kein neuer externer Dienst noetig).
+          FAIL_STREAK=0
+          FAIL_THRESHOLD=3
           for i in $(seq 1 13); do
             code=$(curl -sS -o /dev/null -w "%{http_code}" \
               --max-time 90 --retry 2 --retry-delay 5 --retry-all-errors \
               "$URL" || echo "000")
             echo "Ping $i/13: HTTP $code"
             if [ "$code" != "200" ]; then
-              echo "::warning::Health-Ping lieferte HTTP $code (Shop evtl. im Aufwachen)"
+              FAIL_STREAK=$((FAIL_STREAK + 1))
+              echo "::warning::Health-Ping lieferte HTTP $code (Streak: $FAIL_STREAK, evtl. Cold-Start)"
+            else
+              FAIL_STREAK=0
+            fi
+            if [ "$FAIL_STREAK" -ge "$FAIL_THRESHOLD" ]; then
+              echo "::error::$FAIL_STREAK aufeinanderfolgende Fehlschlaege - maiosshop.com scheint nicht erreichbar."
+              exit 1
             fi
             [ "$i" -lt 13 ] && sleep 60
           done
