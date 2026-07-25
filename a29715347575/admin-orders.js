@@ -499,6 +499,27 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Export-Funktion
+// Loest ein Datenbank-Backup manuell aus (unabhaengig vom Zeitplan-Flag) und
+// verschickt es per Mail als gzip-JSON-Anhang. Nur als kurze Statusmeldung noetig.
+async function runBackupNow() {
+  const btn = document.getElementById('backupBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sichere …';
+  try {
+    const res = await fetch('/a29715347575/api/backup/run', { method: 'POST' });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Backup fehlgeschlagen');
+    const total = Object.values(data.counts || {}).reduce((s, n) => s + n, 0);
+    alert(`Backup gesendet ✅\n${total} Zeilen, ${data.sizeKb} KB, per Mail archiviert.`);
+  } catch (error) {
+    alert('Backup fehlgeschlagen: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
 function exportOrders() {
   // Erstelle CSV
   let csv = 'Bestellnr,Kassenbon,Kunde,E-Mail,Datum,Betrag,Status\n';

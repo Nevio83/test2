@@ -83,6 +83,7 @@ const { dbOperations } = require('./database');
 const ReceiptGenerator = require('./receipt-generator');
 const emailService = require('./resend-service'); // Resend E-Mail Service
 const { v4: uuidv4 } = require('uuid');
+const { runDatabaseBackup } = require('./db-backup');
 
 const receiptGenerator = new ReceiptGenerator();
 
@@ -2466,6 +2467,15 @@ app.post('/a29715347575/api/reviews/request-sweep', async (req, res) => {
   res.json({ ok: true, ...result });
 });
 
+// Datenbank-Backup manuell auf Knopfdruck ausloesen (unabhaengig vom Zeitplan-Flag).
+app.post('/a29715347575/api/backup/run', async (req, res) => {
+  const result = await runDatabaseBackup();
+  if (result.success) {
+    await logAdminAction(req, 'backup_created', `Manuelles Backup: ${Object.values(result.counts).reduce((s, n) => s + n, 0)} Zeilen, ${result.sizeKb} KB`);
+  }
+  res.status(result.success ? 200 : 502).json({ ok: result.success, ...result });
+});
+
 // Admin: Kennzahlen fuer die Dashboard-Kacheln
 // Routen liegen bewusst UNTER /a29715347575/ (= authentifizierter Pfad-Teilbaum),
 // damit der Browser bei fetch() aus dem Dashboard die Basic-Auth-Credentials
@@ -2974,5 +2984,15 @@ app.listen(PORT, HOST, () => {
     setInterval(() => { runReviewRequestSweep().catch(() => {}); }, 60 * 60 * 1000).unref();
   } else {
     console.log('⭐ Bewertungs-Anfragen INAKTIV (REVIEW_REQUEST_ENABLED != true)');
+  }
+
+  // Datenbank-Backup: taeglicher Mail-Export, nur wenn DB_BACKUP_ENABLED=true.
+  // Ergaenzt Neons eigene Backups -> manueller Trigger (Admin-Panel) geht immer,
+  // unabhaengig von diesem Flag.
+  if ((process.env.DB_BACKUP_ENABLED || '').trim() === 'true') {
+    console.log('🗄️ Datenbank-Backup AKTIV (taeglicher Mail-Export)');
+    setInterval(() => { runDatabaseBackup().catch(() => {}); }, 24 * 60 * 60 * 1000).unref();
+  } else {
+    console.log('🗄️ Datenbank-Backup-Zeitplan INAKTIV (DB_BACKUP_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
   }
 });
