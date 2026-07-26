@@ -520,18 +520,29 @@ async function createOrGetCoupon(percent, code) {
   if (percentNum < 1 || percentNum > 100) {
     throw new Error('Percent must be between 1 and 100');
   }
-  
+
+  // Coupon-ID enthaelt den Prozentsatz. Sonst koennte ein bereits vorhandener
+  // Stripe-Coupon mit gleichem Namen, aber abweichendem Satz (z.B. aus der Zeit
+  // vor der serverseitigen Pruefung) ungeprueft weiterverwendet werden — die
+  // Rabatthoehe haenge dann an einem Altbestand statt an voucher-validator.js.
+  const couponId = `${code}-${percentNum}`;
+
   try {
     // Versuche existierenden Coupon zu holen
-    const existingCoupon = await stripe.coupons.retrieve(code);
-    console.log('✅ Existierender Coupon gefunden:', code);
+    const existingCoupon = await stripe.coupons.retrieve(couponId);
+    if (existingCoupon.percent_off !== percentNum) {
+      // Sollte durch die ID nicht vorkommen — lieber hart abbrechen als falsch rabattieren.
+      throw new Error(
+        `Coupon ${couponId} hat ${existingCoupon.percent_off}% statt erwarteter ${percentNum}%`);
+    }
+    console.log('✅ Existierender Coupon gefunden:', couponId);
     return existingCoupon.id;
   } catch (error) {
     if (error.code === 'resource_missing') {
       // Coupon existiert nicht, erstelle neuen
-      console.log('🆕 Erstelle neuen Coupon:', code);
+      console.log('🆕 Erstelle neuen Coupon:', couponId);
       const coupon = await stripe.coupons.create({
-        id: code,
+        id: couponId,
         percent_off: percentNum,
         duration: 'once',
         name: `${percentNum}% Rabatt`
@@ -742,19 +753,37 @@ app.post('/api/create-checkout-session', async (req, res) => {
       console.log('🌍 Setze Standard-Land für Stripe:', country);
     }
     
-    // Füge Rabatt hinzu wenn vorhanden
-    if (discount && discount.percent && discount.code) {
-      try {
-        console.log('🎫 Erstelle Coupon:', discount.code, discount.percent + '%');
-        const couponId = await createOrGetCoupon(discount.percent, discount.code);
-        sessionConfig.discounts = [{
-          coupon: couponId
-        }];
-        console.log('✅ Coupon erfolgreich hinzugefügt:', couponId);
-      } catch (couponError) {
-        console.error('❌ Coupon-Fehler:', couponError.message);
-        // Fahre ohne Coupon fort, anstatt zu scheitern
-        console.log('⚠️ Fahre ohne Rabatt fort');
+    // Rabatt: NUR der Code aus der Anfrage wird verwendet. Der vom Browser
+    // mitgeschickte Prozentsatz wird bewusst ignoriert — Rabatthoehe und
+    // Bedingungen kommen aus voucher-validator.js und werden gegen den bereits
+    // preis-validierten Warenkorb geprueft (Manipulationsschutz).
+    if (discount && discount.code) {
+      const { validateVoucher } = require('./voucher-validator');
+      const check = validateVoucher(discount.code, validatedCart);
+
+      if (!check.ok) {
+        console.warn(`🚫 Gutschein abgelehnt: "${discount.code}" — ${check.reason}` +
+          (discount.percent ? ` (Client wollte ${discount.percent}%)` : ''));
+      } else if (check.type === 'shipping') {
+        // Gratis-Versand wirkt nicht auf den Warenwert -> kein Stripe-Coupon.
+        console.log(`🚚 Gutschein ${check.code} akzeptiert (Gratis-Versand, kein Betragsrabatt)`);
+      } else {
+        if (Number(discount.percent) !== check.percent) {
+          console.warn(`⚠️ Client meldete ${discount.percent}% für ${check.code}, ` +
+            `serverseitig gültig sind ${check.percent}% — Serverwert wird verwendet.`);
+        }
+        try {
+          console.log('🎫 Erstelle Coupon:', check.code, check.percent + '%');
+          const couponId = await createOrGetCoupon(check.percent, check.code);
+          sessionConfig.discounts = [{
+            coupon: couponId
+          }];
+          console.log('✅ Coupon erfolgreich hinzugefügt:', couponId);
+        } catch (couponError) {
+          console.error('❌ Coupon-Fehler:', couponError.message);
+          // Fahre ohne Coupon fort, anstatt zu scheitern
+          console.log('⚠️ Fahre ohne Rabatt fort');
+        }
       }
     }
     

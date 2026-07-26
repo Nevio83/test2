@@ -3,6 +3,11 @@
     console.log('🎫 Gutschein-System NEU geladen');
 
     // ===== GUTSCHEIN-DATEN =====
+    // ⚠️ NUR FUER DIE ANZEIGE. Massgeblich fuer Rabatthoehe, Mindestbestellwert
+    // und Mindestmenge ist voucher-validator.js auf dem Server — der Checkout
+    // ignoriert den hier berechneten Prozentsatz komplett. Wer hier Werte
+    // aendert, muss sie dort mitziehen, sonst zeigt der Shop einen anderen
+    // Rabatt an als er an der Kasse tatsaechlich gewaehrt.
     const availableVouchers = [
         {
             id: 1,
