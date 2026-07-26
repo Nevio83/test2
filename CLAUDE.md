@@ -134,6 +134,7 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 | `color-cart-bridge.js` | Brücke Farbauswahl → Warenkorb. |
 | `product-gallery-complete.js` (60 KB) | Produkt-Bildergalerie/Lightbox. Baut ihre Galerie nur für eine **fest kodierte ID-Liste** (Produkte mit Bildordner), alle anderen Seiten behalten das schlichte Einzelbild. |
 | `product-video.js` | Optionales Produktvideo als erstes Galerie-Thumbnail (Play-Overlay). Liest `video`/`videoPoster` aus `products.json`; ohne `video`-Feld null Footprint. Bewusst **nicht** in die Galerie integriert (die arbeitet mit Positions-Indizes über `.gallery-thumbnail`) — eigene Klasse `.pv-thumb` + Overlay. Anleitung: `produkt videos/README.md`. |
+| `product-availability.js` | Sperrt die Kaufbuttons + Hinweis, wenn `inStock === false`. Quelle ist `GET /products.json` — **diese Route mischt in `server.js` den CJ-Bestandsstand aus der DB dazu** (`cj_stock_watch`), die Datei selbst bleibt unverändert. Verbindlich gesperrt wird serverseitig im Checkout (409), die Browser-Sperre ist nur die sichtbare Hälfte. |
 | `cart-color-images-only.js` | Injiziert Warenkorb-Farb-Thumbnails (+ CSS). |
 | `checkout-receipt.js` | Beleg-Anzeige im Checkout. |
 | `gutschein-system.js` (34 KB) / `gutscheine.html/.css` | Gutschein-/Rabattsystem (localStorage). |

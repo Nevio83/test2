@@ -235,6 +235,18 @@ const SCHEMA = [
     last_checked_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     last_alert_at TIMESTAMPTZ
   )`,
+  // Verfuegbarkeit aus dem CJ-Lagerbestand. Liegt bewusst in der Datenbank und
+  // nicht in products.json: Renders Dateisystem ist fluechtig und wird bei jedem
+  // Deploy aus Git neu befuellt — eine zur Laufzeit geschriebene Datei waere
+  // beim naechsten Neustart wieder weg.
+  `CREATE TABLE IF NOT EXISTS cj_stock_watch (
+    product_id INTEGER PRIMARY KEY,
+    cj_pid TEXT NOT NULL,
+    stock INTEGER,
+    available BOOLEAN NOT NULL DEFAULT TRUE,
+    last_checked_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_alert_at TIMESTAMPTZ
+  )`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -688,6 +700,40 @@ const dbOperations = {
          ${markAlerted ? ', last_alert_at = CURRENT_TIMESTAMP' : ''}`,
       [productId, cjPid, price]
     );
+  },
+
+  // ── CJ-Lagerbestand / Verfuegbarkeit ─────────────────────────
+  getCjStockWatch: async (productId) => {
+    const r = await pool.query(`SELECT * FROM cj_stock_watch WHERE product_id = $1`, [productId]);
+    return r.rows[0] || null;
+  },
+
+  upsertCjStockWatch: async (productId, cjPid, stock, available, markAlerted) => {
+    await pool.query(
+      `INSERT INTO cj_stock_watch (product_id, cj_pid, stock, available, last_checked_at, last_alert_at)
+       VALUES ($1,$2,$3,$4,CURRENT_TIMESTAMP,${markAlerted ? 'CURRENT_TIMESTAMP' : 'NULL'})
+       ON CONFLICT (product_id) DO UPDATE SET
+         cj_pid = EXCLUDED.cj_pid, stock = EXCLUDED.stock,
+         available = EXCLUDED.available, last_checked_at = CURRENT_TIMESTAMP
+         ${markAlerted ? ', last_alert_at = CURRENT_TIMESTAMP' : ''}`,
+      [productId, cjPid, stock, available]
+    );
+  },
+
+  /**
+   * Produkt-IDs, die laut CJ-Abgleich NICHT lieferbar sind — als Set.
+   * Nur diese Abweichung wird gespeichert; alles andere gilt als verfuegbar.
+   */
+  getUnavailableProductIds: async () => {
+    const r = await pool.query(`SELECT product_id FROM cj_stock_watch WHERE available = FALSE`);
+    return new Set(r.rows.map((row) => Number(row.product_id)));
+  },
+
+  /** Voller Bestands-Stand fuers Admin-Panel. */
+  getCjStockOverview: async () => {
+    const r = await pool.query(
+      `SELECT * FROM cj_stock_watch ORDER BY available ASC, product_id ASC`);
+    return r.rows;
   },
 
   // ── Bewertungs-Anfrage nach Kauf ─────────────────────────────

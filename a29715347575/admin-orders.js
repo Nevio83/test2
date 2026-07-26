@@ -587,6 +587,41 @@ async function runReconcileNow() {
   }
 }
 
+// Gleicht den Lagerbestand mit CJ ab. Markiert ein Produkt nur dann als nicht
+// lieferbar, wenn CJ eindeutig Bestand 0 meldet — nie auf Verdacht.
+async function runStockSyncNow() {
+  const btn = document.getElementById('stockSyncBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Prüfe …';
+  try {
+    const res = await fetch('/a29715347575/api/cj-stock-sync/run', { method: 'POST' });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Bestandsabgleich fehlgeschlagen');
+    let msg = `Bestandsabgleich fertig ✅\n${data.matched} Produkte zugeordnet, ${data.checked} geprüft.`;
+    if (data.unavailable) {
+      msg += `\n${data.unavailable}× keine belastbare CJ-Antwort — Verfügbarkeit dort unverändert gelassen.`;
+    }
+    if (data.nowUnavailable && data.nowUnavailable.length) {
+      msg += `\n\n🚫 Neu ausverkauft (im Shop gesperrt):\n` +
+        data.nowUnavailable.map(p => `• ${p.name}`).join('\n');
+    }
+    if (data.backInStock && data.backInStock.length) {
+      msg += `\n\n✅ Wieder lieferbar (im Shop freigegeben):\n` +
+        data.backInStock.map(p => `• ${p.name}`).join('\n');
+    }
+    if (!data.nowUnavailable?.length && !data.backInStock?.length) {
+      msg += `\n\nKeine Änderung der Verfügbarkeit.`;
+    }
+    alert(msg);
+  } catch (error) {
+    alert('Bestandsabgleich fehlgeschlagen: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
 function exportOrders() {
   // Erstelle CSV
   let csv = 'Bestellnr,Kassenbon,Kunde,E-Mail,Datum,Betrag,Status\n';

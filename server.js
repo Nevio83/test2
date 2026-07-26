@@ -96,6 +96,7 @@ const { v4: uuidv4 } = require('uuid');
 const { runDatabaseBackup } = require('./db-backup');
 const { runCjPriceSync } = require('./cj-price-sync');
 const { runStripeReconcile } = require('./stripe-reconcile');
+const { runCjStockSync } = require('./cj-stock-sync');
 
 const receiptGenerator = new ReceiptGenerator();
 
@@ -392,6 +393,46 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── products.json mit aktueller Verfuegbarkeit ausliefern ────────
+// Der CJ-Bestandsabgleich schreibt "nicht lieferbar" in die Datenbank, nicht in
+// die Datei — Renders Dateisystem ist fluechtig und wird bei jedem Deploy aus
+// Git neu befuellt. Diese Route mischt den DB-Stand beim Ausliefern dazu, damit
+// der komplette Shop (Startseite, Suche, Warenkorb) ohne eigene Aenderung die
+// richtige Verfuegbarkeit sieht. MUSS vor express.static stehen.
+let __stockOverrideCache = { at: 0, ids: new Set() };
+const STOCK_CACHE_MS = 60 * 1000;
+
+async function getUnavailableIds() {
+  if (Date.now() - __stockOverrideCache.at < STOCK_CACHE_MS) return __stockOverrideCache.ids;
+  if (!process.env.DATABASE_URL) return new Set();
+  try {
+    const ids = await dbOperations.getUnavailableProductIds();
+    __stockOverrideCache = { at: Date.now(), ids };
+    return ids;
+  } catch (e) {
+    // Datenbank kurz weg -> lieber den letzten bekannten Stand als gar keine Produkte.
+    console.warn('⚠️ Verfuegbarkeits-Overrides nicht ladbar:', e.message);
+    return __stockOverrideCache.ids;
+  }
+}
+
+app.get('/products.json', async (req, res) => {
+  try {
+    const base = require('./products.json');
+    const unavailable = await getUnavailableIds();
+    if (!unavailable.size) return res.json(base);
+    // Kopieren ist Pflicht: require() cached das Objekt, und price-validator.js
+    // arbeitet mit derselben Instanz — direktes Mutieren wuerde die
+    // Preisvalidierung verfaelschen.
+    const merged = base.map((p) =>
+      unavailable.has(Number(p.id)) ? { ...p, inStock: false } : p);
+    res.json(merged);
+  } catch (e) {
+    console.error('❌ products.json konnte nicht ausgeliefert werden:', e.message);
+    res.status(500).json({ error: 'Produktliste nicht verfügbar' });
+  }
+});
+
 // Serve static files with no cache for development
 // ── XML-Sitemap fuer Suchmaschinen ───────────────────────────────
 // Dynamisch aus products.json (Slug-URLs) + statischen Seiten. In der Google
@@ -598,6 +639,24 @@ app.post('/api/create-checkout-session', async (req, res) => {
     // 🔒 Preise serverseitig gegen products.json validieren (Manipulationsschutz)
     const { validateCart } = require('./price-validator');
     var validatedCart = validateCart(cart);
+
+    // 📦 Nicht lieferbare Produkte gar nicht erst verkaufen. Quelle ist der
+    // CJ-Bestandsabgleich (cj-stock-sync.js); eine Sperre nur im Browser waere
+    // wirkungslos, weil der Warenkorb aus localStorage kommt.
+    const unavailableIds = await getUnavailableIds();
+    if (unavailableIds.size) {
+      const blocked = validatedCart.filter((i) => unavailableIds.has(Number(i.id)));
+      if (blocked.length) {
+        console.warn('🚫 Checkout abgelehnt, nicht lieferbar:', blocked.map((b) => `${b.id} ${b.name}`).join(', '));
+        return res.status(409).json({
+          error: 'Nicht lieferbar',
+          message: blocked.length === 1
+            ? `„${blocked[0].name}" ist derzeit nicht lieferbar. Bitte aus dem Warenkorb entfernen.`
+            : `${blocked.length} Artikel im Warenkorb sind derzeit nicht lieferbar. Bitte entfernen.`,
+          unavailable: blocked.map((b) => ({ id: b.id, name: b.name }))
+        });
+      }
+    }
 
     const cartItems = validatedCart.map(item => ({
       id: item.id,
@@ -2697,6 +2756,26 @@ app.post('/a29715347575/api/cj-price-sync/run', async (req, res) => {
   res.json({ ok: true, ...result });
 });
 
+// CJ-Bestandsabgleich manuell ausloesen. Setzt "nicht lieferbar" nur bei einer
+// eindeutigen CJ-Antwort mit Bestand 0 — nie auf Verdacht (siehe cj-stock-sync.js).
+app.post('/a29715347575/api/cj-stock-sync/run', async (req, res) => {
+  const result = await runCjStockSync(cjAPI);
+  __stockOverrideCache = { at: 0, ids: new Set() }; // Cache sofort verwerfen
+  await logAdminAction(req, 'cj_stock_sync',
+    `${result.matched} zugeordnet, ${result.checked} geprüft, ${result.unavailable} ohne CJ-Antwort, ` +
+    `${result.nowUnavailable.length} neu ausverkauft, ${result.backInStock.length} wieder lieferbar`);
+  res.json({ ok: true, ...result });
+});
+
+// Aktueller Verfuegbarkeits-Stand fuers Admin-Panel.
+app.get('/a29715347575/api/cj-stock', async (req, res) => {
+  try {
+    res.json({ ok: true, rows: await dbOperations.getCjStockOverview() });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
 // Abgleich "bezahlt, aber keine Bestellung" manuell ausloesen. Rein lesend —
 // legt nie automatisch eine Bestellung an (siehe stripe-reconcile.js).
 app.post('/a29715347575/api/reconcile/run', async (req, res) => {
@@ -3247,5 +3326,18 @@ app.listen(PORT, HOST, () => {
     setInterval(() => { runStripeReconcile(stripe).catch(() => {}); }, 24 * 60 * 60 * 1000).unref();
   } else {
     console.log('🧾 Stripe-Abgleich-Zeitplan INAKTIV (RECONCILE_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
+  }
+
+  // CJ-Bestandsabgleich: taeglich, nur wenn CJ_STOCK_SYNC_ENABLED=true.
+  // Markiert nur bei eindeutiger CJ-Antwort mit Bestand 0 als nicht lieferbar.
+  if ((process.env.CJ_STOCK_SYNC_ENABLED || '').trim() === 'true') {
+    console.log('📦 CJ-Bestandsabgleich AKTIV (taeglicher Lauf)');
+    setInterval(() => {
+      runCjStockSync(cjAPI)
+        .then(() => { __stockOverrideCache = { at: 0, ids: new Set() }; })
+        .catch(() => {});
+    }, 24 * 60 * 60 * 1000).unref();
+  } else {
+    console.log('📦 CJ-Bestandsabgleich-Zeitplan INAKTIV (CJ_STOCK_SYNC_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
   }
 });
