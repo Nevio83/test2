@@ -3294,6 +3294,27 @@ app.post('/api/exchange-rates/clear-cache', (req, res) => {
   }
 });
 
+// ── 404: eigene Seite statt Express-Standard ─────────────────────
+// MUSS als LETZTE Route stehen — alles davor hat Vorrang. Vorher lieferte
+// Express seine nackte Standardmeldung ("Cannot GET /…", englisch, ohne
+// Layout): sieht aus wie ein kaputter Shop und kostet Besucher, die ueber
+// alte Links oder Tippfehler kommen.
+app.use((req, res) => {
+  // API-Aufrufe bekommen weiterhin JSON — eine HTML-Seite wuerde dort nur
+  // Parser-Fehler im aufrufenden Code ausloesen.
+  if (req.path.startsWith('/api/') || req.path.startsWith('/a29715347575/api/')) {
+    return res.status(404).json({ error: 'Nicht gefunden', path: req.path });
+  }
+  // Nur bei echten Seitenaufrufen die HTML-Seite; fehlende Bilder/Skripte
+  // sollen keine 60-KB-HTML-Antwort bekommen.
+  const wantsHtml = (req.headers.accept || '').includes('text/html');
+  if (!wantsHtml) return res.status(404).type('txt').send('Nicht gefunden');
+
+  res.status(404).sendFile(path.join(__dirname, '404.html'), (err) => {
+    if (err && !res.headersSent) res.status(404).type('txt').send('Seite nicht gefunden');
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 app.listen(PORT, HOST, () => {
