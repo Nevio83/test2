@@ -433,6 +433,33 @@ app.get('/products.json', async (req, res) => {
   }
 });
 
+// ── Produktdatenfeed fuers Google Merchant Center ────────────────
+// Einmalig im Merchant Center als geplanter Abruf eintragen
+// (https://maiosshop.com/google-feed.xml, taeglich) — danach haelt er sich
+// selbst aktuell. Verfuegbarkeit kommt aus dem CJ-Bestandsabgleich, damit im
+// Feed nichts als lieferbar steht, was der Shop gar nicht verkauft.
+// MUSS vor express.static stehen.
+app.get('/google-feed.xml', async (req, res) => {
+  try {
+    const { buildGoogleFeed } = require('./google-feed');
+    const products = require('./products.json');
+    const unavailableIds = await getUnavailableIds();
+    const base = (process.env.REPL_URL || 'https://maiosshop.com').replace(/\/+$/, '');
+    const { xml, included, skipped } = buildGoogleFeed({ products, unavailableIds, baseUrl: base });
+    if (skipped.length) {
+      console.warn(`⚠️ Google-Feed: ${skipped.length} Produkt(e) ausgelassen —`,
+        skipped.map((s) => `${s.id}: ${s.grund}`).join(' | '));
+    }
+    res.set('Content-Type', 'application/xml; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.set('X-Feed-Items', String(included));
+    res.send(xml);
+  } catch (e) {
+    console.error('❌ Google-Feed konnte nicht erzeugt werden:', e.message);
+    res.status(500).send('Feed nicht verfügbar');
+  }
+});
+
 // Serve static files with no cache for development
 // ── XML-Sitemap fuer Suchmaschinen ───────────────────────────────
 // Dynamisch aus products.json (Slug-URLs) + statischen Seiten. In der Google
