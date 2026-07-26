@@ -548,6 +548,45 @@ async function runCjPriceSyncNow() {
   }
 }
 
+// Prueft, ob es zu jeder bezahlten Stripe-Zahlung der letzten Tage auch eine
+// Bestellung im System gibt. Rein lesend — legt nie automatisch etwas an.
+async function runReconcileNow() {
+  const btn = document.getElementById('reconcileBtn');
+  const original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Prüfe …';
+  try {
+    const res = await fetch('/a29715347575/api/reconcile/run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ days: 7 })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Abgleich fehlgeschlagen');
+    if (data.skipped) {
+      alert('Abgleich übersprungen: ' + data.skipped);
+      return;
+    }
+    let msg = `Abgleich der letzten ${data.days} Tage ✅\n` +
+      `${data.checked} Zahlungen geprüft, ${data.matched} zugeordnet.`;
+    if (data.tooRecent) msg += `\n${data.tooRecent} noch zu frisch (Webhook darf noch kommen).`;
+    if (data.orphans && data.orphans.length) {
+      const list = data.orphans
+        .map(o => `• ${o.paidAt.slice(0, 10)} — ${o.amount.toFixed(2)} ${o.currency} — ${o.email || 'ohne E-Mail'}`)
+        .join('\n');
+      msg += `\n\n🚨 ${data.orphans.length} Zahlung(en) OHNE Bestellung:\n${list}\n\nWarnmail wurde verschickt.`;
+    } else {
+      msg += `\n\nKeine Zahlung ohne Bestellung — alles sauber.`;
+    }
+    alert(msg);
+  } catch (error) {
+    alert('Abgleich fehlgeschlagen: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = original;
+  }
+}
+
 function exportOrders() {
   // Erstelle CSV
   let csv = 'Bestellnr,Kassenbon,Kunde,E-Mail,Datum,Betrag,Status\n';

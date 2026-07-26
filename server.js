@@ -95,6 +95,7 @@ const emailService = require('./resend-service'); // Resend E-Mail Service
 const { v4: uuidv4 } = require('uuid');
 const { runDatabaseBackup } = require('./db-backup');
 const { runCjPriceSync } = require('./cj-price-sync');
+const { runStripeReconcile } = require('./stripe-reconcile');
 
 const receiptGenerator = new ReceiptGenerator();
 
@@ -2696,6 +2697,18 @@ app.post('/a29715347575/api/cj-price-sync/run', async (req, res) => {
   res.json({ ok: true, ...result });
 });
 
+// Abgleich "bezahlt, aber keine Bestellung" manuell ausloesen. Rein lesend —
+// legt nie automatisch eine Bestellung an (siehe stripe-reconcile.js).
+app.post('/a29715347575/api/reconcile/run', async (req, res) => {
+  const days = Math.min(Math.max(parseInt(req.body?.days, 10) || 7, 1), 90);
+  const result = await runStripeReconcile(stripe, { days });
+  await logAdminAction(req, 'stripe_reconcile',
+    result.skipped
+      ? `übersprungen: ${result.skipped}`
+      : `${result.checked} Zahlungen geprüft, ${result.matched} zugeordnet, ${result.orphans.length} ohne Bestellung`);
+  res.json({ ok: true, days, ...result });
+});
+
 // Admin: Kennzahlen fuer die Dashboard-Kacheln
 // Routen liegen bewusst UNTER /a29715347575/ (= authentifizierter Pfad-Teilbaum),
 // damit der Browser bei fetch() aus dem Dashboard die Basic-Auth-Credentials
@@ -3223,5 +3236,16 @@ app.listen(PORT, HOST, () => {
     setInterval(() => { runCjPriceSync(cjAPI).catch(() => {}); }, 7 * 24 * 60 * 60 * 1000).unref();
   } else {
     console.log('💱 CJ-Preisabgleich-Zeitplan INAKTIV (CJ_PRICE_SYNC_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
+  }
+
+  // Abgleich "bezahlt, aber keine Bestellung": taeglich, nur wenn
+  // RECONCILE_ENABLED=true. Rein lesend, legt nie automatisch etwas an.
+  // Erster Lauf verzoegert, damit der Start nicht ausgebremst wird.
+  if ((process.env.RECONCILE_ENABLED || '').trim() === 'true') {
+    console.log('🧾 Stripe-Abgleich AKTIV (taeglicher Lauf, letzte 7 Tage)');
+    setTimeout(() => { runStripeReconcile(stripe).catch(() => {}); }, 5 * 60 * 1000).unref();
+    setInterval(() => { runStripeReconcile(stripe).catch(() => {}); }, 24 * 60 * 60 * 1000).unref();
+  } else {
+    console.log('🧾 Stripe-Abgleich-Zeitplan INAKTIV (RECONCILE_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
   }
 });

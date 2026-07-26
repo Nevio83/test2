@@ -740,6 +740,26 @@ const dbOperations = {
 
   getOrderByOrderId: (order_id) => dbOperations.getOrder(order_id),
 
+  /**
+   * Alle bekannten Stripe-Payment-Intent-IDs seit einem Zeitpunkt — als Set.
+   * Fuer den Abgleich "bezahlt, aber keine Bestellung": eine Abfrage statt
+   * einer pro Stripe-Zahlung. Beruecksichtigt auch Altbestellungen, bei denen
+   * die ID nur in notes steht ("Stripe Payment ID: pi_...").
+   */
+  getPaymentIntentIdsSince: async (sinceIso) => {
+    const r = await pool.query(
+      `SELECT payment_intent_id, notes FROM orders WHERE created_at >= $1`,
+      [sinceIso]
+    );
+    const set = new Set();
+    for (const row of r.rows) {
+      if (row.payment_intent_id) set.add(row.payment_intent_id);
+      const m = typeof row.notes === 'string' && row.notes.match(/\b(pi_[A-Za-z0-9]+)/);
+      if (m) set.add(m[1]);
+    }
+    return set;
+  },
+
   getAllOrders: async (limit = 50, offset = 0) => {
     const r = await pool.query(
       `SELECT * FROM orders ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
