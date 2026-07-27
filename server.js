@@ -214,11 +214,67 @@ function rateLimit(routeKey, { windowMs, max }) {
 }
 
 // Sicherheits-Header
+const { CSP_VALUE, isEnforcing, headerName } = require('./csp-policy');
+
+// Verstoss-Meldungen des Browsers. Ringpuffer im Speicher statt Datenbank:
+// die Meldungen sind Diagnose-Material fuer die Einfuehrungsphase, kein
+// Geschaeftsdatensatz — und ein Bot koennte den Endpunkt sonst zumuellen.
+const CSP_REPORT_MAX = 200;
+const __cspReports = [];
+let __cspReportCount = 0;
+
+function recordCspReport(body, ip) {
+  const r = (body && (body['csp-report'] || body.body || body)) || {};
+  const blocked = r['blocked-uri'] || r.blockedURL || '(unbekannt)';
+  const directive = r['violated-directive'] || r.effectiveDirective || '(unbekannt)';
+  const doc = r['document-uri'] || r.documentURL || '';
+  __cspReportCount++;
+
+  // Gleiche Kombination nur einmal fuehren, mit Zaehler — sonst ist der
+  // Puffer nach einem einzigen Seitenaufruf voll mit Duplikaten.
+  const vorhanden = __cspReports.find((x) => x.blocked === blocked && x.directive === directive);
+  if (vorhanden) {
+    vorhanden.count++;
+    vorhanden.lastAt = new Date().toISOString();
+    return;
+  }
+  __cspReports.unshift({
+    blocked, directive, document: doc, count: 1,
+    firstAt: new Date().toISOString(), lastAt: new Date().toISOString(), ip
+  });
+  if (__cspReports.length > CSP_REPORT_MAX) __cspReports.length = CSP_REPORT_MAX;
+  console.warn(`🛡️ CSP-Verstoss (${isEnforcing() ? 'blockiert' : 'nur gemeldet'}): ${directive} → ${blocked}`);
+}
+
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  // Der Shop braucht weder Kamera noch Mikrofon noch Standort-Abfrage.
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.stripe.com")');
+  // Nur auf Seiten-Antworten. Schnittstellen liefern JSON, das der Browser
+  // nicht als Markup ausfuehrt — dort waere die Kopfzeile wirkungslos.
+  // Die Admin-Seiten bekommen sie bewusst mit: dort liegen die Bestelldaten.
+  if (!req.path.startsWith('/api/')) {
+    res.setHeader(headerName(), `${CSP_VALUE}; report-uri /api/csp-report`);
+  }
   next();
 });
+
+// Browser senden Verstossmeldungen mit eigenen Inhaltstypen, die express.json()
+// nicht annimmt — daher ein eigener Parser genau fuer diesen Pfad.
+app.post('/api/csp-report',
+  express.json({ type: ['application/csp-report', 'application/reports+json', 'application/json'], limit: '32kb' }),
+  rateLimit('csp-report', { windowMs: 60 * 1000, max: 60 }),
+  (req, res) => {
+    try {
+      const payload = Array.isArray(req.body) ? req.body : [req.body];
+      payload.forEach((entry) => recordCspReport(entry, req.ip));
+    } catch (e) {
+      console.warn('⚠️ CSP-Meldung nicht lesbar:', e.message);
+    }
+    res.status(204).end(); // Browser erwartet keine Antwort
+  });
 
 // ── Fehler-Alarm bei gehaeuften Server-Fehlern ───────────────────────
 // Zaehlt Antworten mit Status >=500 in einem gleitenden Zeitfenster. Ab einer
@@ -2792,6 +2848,19 @@ app.post('/a29715347575/api/cj-stock-sync/run', async (req, res) => {
     `${result.matched} zugeordnet, ${result.checked} geprüft, ${result.unavailable} ohne CJ-Antwort, ` +
     `${result.nowUnavailable.length} neu ausverkauft, ${result.backInStock.length} wieder lieferbar`);
   res.json({ ok: true, ...result });
+});
+
+// CSP-Verstoesse einsehen — die Grundlage, um zu entscheiden, ob scharf
+// geschaltet werden kann. Leere Liste nach ein paar Tagen echtem Verkehr = alles
+// Noetige ist erlaubt, CSP_ENFORCE=true ist gefahrlos.
+app.get('/a29715347575/api/csp-reports', (req, res) => {
+  res.json({
+    ok: true,
+    modus: isEnforcing() ? 'blockierend' : 'nur beobachtend',
+    meldungenGesamt: __cspReportCount,
+    verschiedene: __cspReports.length,
+    reports: __cspReports
+  });
 });
 
 // Aktueller Verfuegbarkeits-Stand fuers Admin-Panel.
