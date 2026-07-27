@@ -1,7 +1,20 @@
 /**
  * IP-basierte Geolocation und Standort-Tracking System
- * Automatische Ländererkennung ohne Benutzererlaubnis
- * Analytics und Statistiken für Standortdaten
+ * Ländererkennung für die Besucher-Statistik.
+ *
+ * ⚠️ DSGVO: Dieses Skript reicht die IP-Adresse des Besuchers an externe
+ * Dienste weiter. Eine IP ist ein personenbezogenes Datum — das darf NICHT
+ * ohne Einwilligung passieren. Frueher lief die Abfrage direkt im Konstruktor
+ * los, also noch bevor der Besucher den Cookie-Banner ueberhaupt gesehen hatte;
+ * damit lief die eigene Einwilligungsabfrage ins Leere.
+ *
+ * Jetzt gilt dieselbe Regel wie in site-integrations.js: erst bei
+ * „Alle Cookies akzeptieren" (window.MaiosConsent). Wer ablehnt oder noch
+ * nicht entschieden hat, loest keine einzige externe Anfrage aus.
+ *
+ * Kostet nichts an Funktion: die Laenderkennung wird ausschliesslich von
+ * view-tracker.js verwendet, und der ist selbst einwilligungsgesteuert — ohne
+ * Einwilligung wird ohnehin nichts erfasst, wofuer das Land gebraucht wuerde.
  */
 
 class GeolocationTracker {
@@ -9,7 +22,8 @@ class GeolocationTracker {
         this.userLocation = null;
         this.ipData = null;
         this.initialized = false;
-        
+        this.started = false;
+
         // Kostenlose IP-Geolocation APIs (keine API-Keys erforderlich)
         this.apis = [
             'https://ipapi.co/json/',
@@ -17,13 +31,25 @@ class GeolocationTracker {
             'https://ipwhois.app/json/',
             'https://geolocation-db.com/json/'
         ];
-        
-        this.init();
+
+        // Bewusst KEIN init() hier — siehe Kopfkommentar.
     }
-    
+
+    /** Einwilligung fuer Tracking erteilt? Gleiche Pruefung wie site-integrations.js. */
+    static consentOK() {
+        return !!(window.MaiosConsent &&
+                  window.MaiosConsent.allowsTracking &&
+                  window.MaiosConsent.allowsTracking());
+    }
+
     async init() {
-        console.log('🌍 Geolocation Tracker wird initialisiert...');
-        
+        // Doppelstart verhindern: onChange und das Event koennen beide feuern.
+        if (this.started) return;
+        if (!GeolocationTracker.consentOK()) return;
+        this.started = true;
+
+        console.log('🌍 Geolocation Tracker wird initialisiert (Einwilligung liegt vor)...');
+
         // Versuche Standort aus localStorage zu laden
         const cached = this.loadFromCache();
         if (cached && this.isCacheValid(cached)) {
@@ -32,7 +58,7 @@ class GeolocationTracker {
             console.log('✅ Standort aus Cache geladen:', cached.country);
             return;
         }
-        
+
         // Hole neue Standortdaten
         await this.fetchLocation();
         this.initialized = true;
@@ -294,13 +320,48 @@ class GeolocationTracker {
     }
 }
 
-// Globale Instanz erstellen
+// Globale Instanz erstellen — startet noch NICHTS, siehe Kopfkommentar.
 window.geolocationTracker = new GeolocationTracker();
 
-// Helper-Funktionen für einfachen Zugriff
+// Helper-Funktionen für einfachen Zugriff. Ohne Einwilligung liefern sie die
+// unverfaenglichen Standardwerte ('Unbekannt' / 'XX'), statt zu scheitern —
+// view-tracker.js prueft ohnehin auf 'XX' und laesst das Feld dann leer.
 window.getUserCountry = () => window.geolocationTracker.getCountry();
 window.getUserCountryCode = () => window.geolocationTracker.getCountryCode();
 window.getUserLanguage = () => window.geolocationTracker.getLanguage();
 window.isEuropeanUser = () => window.geolocationTracker.isEuropean();
+
+// Start erst bei vorliegender Einwilligung — und nachtraeglich, falls der
+// Besucher erst spaeter zustimmt.
+//
+// Die Pruefung laeuft bewusst erst bei DOMContentLoaded: dieses Skript ist in
+// index.html VOR cookie-consent.js eingebunden, window.MaiosConsent existiert
+// zum Ausfuehrungszeitpunkt also noch nicht. Wuerde man hier sofort pruefen,
+// bliebe die Erkennung bei jedem wiederkehrenden Besucher dauerhaft aus —
+// dessen Einwilligung liegt ja schon gespeichert vor, es feuert also auch kein
+// Aenderungs-Ereignis mehr.
+(function () {
+  'use strict';
+  const start = () => window.geolocationTracker.init();
+
+  // Zustimmung waehrend des Besuchs: greift unabhaengig von der Ladereihenfolge.
+  window.addEventListener('maios:consent', start);
+
+  function wire() {
+    if (GeolocationTracker.consentOK()) {
+      start();
+      return;
+    }
+    console.log('🌍 Standort-Erkennung wartet auf Cookie-Einwilligung (bisher keine externe Abfrage)');
+    if (window.MaiosConsent && window.MaiosConsent.onChange) window.MaiosConsent.onChange(start);
+  }
+
+  // Erst NACH DOMContentLoaded pruefen — dann sind alle defer-Skripte durch und
+  // MaiosConsent steht. Achtung: waehrend der Ausfuehrung eines defer-Skripts ist
+  // readyState bereits 'interactive', nicht 'loading'. Eine Pruefung auf 'loading'
+  // wuerde hier also sofort durchlaufen — wieder zu frueh.
+  if (document.readyState === 'complete') wire();
+  else document.addEventListener('DOMContentLoaded', wire);
+})();
 
 console.log('✅ Geolocation Tracker geladen');
