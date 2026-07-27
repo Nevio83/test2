@@ -619,6 +619,13 @@ app.get(/\.(jpe?g|png)$/i, async (req, res, next) => {
   }
 });
 
+// 🔒 Datei-Freigabe: express.static wuerde sonst das GESAMTE Projekt
+// ausliefern — inklusive Backend-Code, Gutscheinliste, interner Doku und
+// erzeugter Beleg-PDFs. Details und Begruendung in static-guard.js.
+// MUSS direkt vor express.static stehen.
+const { createStaticGuard } = require('./static-guard');
+app.use(createStaticGuard(__dirname));
+
 app.use(express.static(path.join(__dirname), {
   maxAge: 0, // No caching for development
   etag: false,
