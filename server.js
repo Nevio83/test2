@@ -45,8 +45,10 @@ if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'your_str
 const CJDropshippingAPI = require('./cj-dropshipping-api');
 const cjAPI = new CJDropshippingAPI();
 
-// Initialize Shipping Calculator
-const { calculateShippingCost } = require('./shipping-calculator');
+// Hinweis: shipping-calculator.js wird hier nicht mehr eingebunden. Einziger
+// Nutzer war der entfernte Endpunkt /api/create-payment-intent (siehe unten).
+// Die Stripe-Kasse schlaegt keine Versandkosten auf — Versand nach DE/EU ist
+// laut shipping-calculator.js kostenlos, und der Google-Feed weist das so aus.
 
 // Initialize Exchange Rate Service
 const ExchangeRateService = require('./exchange-rate-service');
@@ -1221,49 +1223,24 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
   }
 });
 
-app.post('/api/create-payment-intent', async (req, res) => {
-  const { cart, email, country, city, firstname, lastname } = req.body;
-  const currency = getCurrencyByCountry(country);
-  
-  // Berechne Gesamtbetrag in EUR
-  let amountInEUR = 0;
-  for (const item of cart) {
-    amountInEUR += (item.price || 0) * item.quantity;
-  }
-
-  // Versandkosten in EUR (pauschale Kosten basierend auf Land)
-  const shippingCostEUR = calculateShippingCost(country);
-  amountInEUR += shippingCostEUR;
-  
-  console.log(`📦 Versandkosten für ${country}: €${shippingCostEUR.toFixed(2)}`);
-  
-  // Rechne Gesamtbetrag in Zielwährung um
-  const convertedAmount = await convertPrice(amountInEUR, currency);
-  const amount = Math.round(convertedAmount * 100);
-
-  try {
-    if (amount < 50) {
-      return res.status(400).json({ error: 'Gesamtbetrag zu niedrig für Stripe.' });
-    }
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: currency.toLowerCase(),
-      receipt_email: email,
-      description: 'Maios Bestellung',
-      payment_method_types: ['card'],
-      metadata: {
-        customer_name: `${firstname || ''} ${lastname || ''}`.trim(),
-        customer_city: city || '',
-        customer_country: country || '',
-        order_source: 'web'
-      }
-    });
-    res.json({ clientSecret: paymentIntent.client_secret });
-  } catch (err) {
-    console.error('Payment Intent Error:', err);
-    res.status(500).json({ error: 'Interner Serverfehler.' });
-  }
-});
+// ── ENTFERNT: POST /api/create-payment-intent ────────────────────
+// War ein aelterer, zweiter Zahlungsweg neben der Stripe-Kasse und wurde von
+// KEINER Seite des Shops mehr aufgerufen — stand aber weiterhin offen im Netz.
+// Zwei Probleme, beide am 27.07. nachgewiesen:
+//
+//   1) Er bildete die Summe direkt aus den Preisen der Anfrage, ohne sie gegen
+//      products.json zu pruefen. Genau die Absicherung, die der echte
+//      Checkout ueber price-validator.js hat, fehlte hier.
+//   2) Die Schleife ueber den Warenkorb lag AUSSERHALB des try-Blocks. Eine
+//      Anfrage mit leerem Body ({}) liess sie ueber undefined laufen — der
+//      Fehler blieb unbehandelt und hat den gesamten Node-Prozess beendet.
+//      Ein einzelner Aufruf legte damit den kompletten Shop lahm.
+//
+// Ersatzlos gestrichen statt repariert: Bestellungen entstehen ausschliesslich
+// ueber checkout.session.completed, dieser Weg haette also ohnehin nie zu einer
+// Bestellung gefuehrt. Toter Code mit Angriffsflaeche ist schlechter als kein Code.
+// Der Webhook-Zweig fuer payment_intent.succeeded bleibt bestehen: Stripe sendet
+// dieses Ereignis auch fuer regulaere Kassenvorgaenge.
 
 // Kontaktformular-Endpunkt
 app.post('/api/contact', rateLimit('contact', { windowMs: 15 * 60 * 1000, max: 5 }), async (req, res) => {
