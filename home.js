@@ -138,6 +138,9 @@
   function rating(id) { return 4.2 + ((id * 7) % 8) / 10; }
   function reviews(id) { return 23 + ((id * 13) % 180); }
   function stockOf(id) { return 3 + ((id * 5) % 15); }
+  // Nicht lieferbar? Kommt aus products.json — der Server mischt dort den
+  // aktuellen CJ-Bestandsstand dazu (siehe server.js / cj-stock-sync.js).
+  function soldOut(p) { return !!p && p.inStock === false; }
   function soldToday(id) { return 8 + ((id * 37) % 40); }
   function stars(r) { var f = Math.round(r); return '★★★★★'.slice(0, f) + '☆☆☆☆☆'.slice(0, 5 - f); }
 
@@ -323,17 +326,22 @@
     var sec = secondImg(p);
     var href = productHref(p);
     var wished = isWished(p.id);
+    var weg = soldOut(p);
     return '<div class="pcard-wrap" style="animation-delay:' + ((rank != null ? rank : 0) % 12) * 50 + 'ms;">' +
-      '<div class="pcard" style="--ac:' + ac.accent + ';--ac-rgb:' + ac.rgb + ';">' +
+      '<div class="pcard' + (weg ? ' soldout' : '') + '" style="--ac:' + ac.accent + ';--ac-rgb:' + ac.rgb + ';">' +
         '<span class="rail"></span>' +
         '<div class="stagewrap">' +
           '<a class="stage" href="' + href + '" aria-label="' + esc(p.name) + '">' +
             '<img class="main" src="' + imgUrl(p.image) + '" alt="' + esc(p.name) + '" loading="lazy">' +
             (sec ? '<img class="second" src="' + imgUrl(sec) + '" alt="" aria-hidden="true" loading="lazy">' : '') +
-            (hasDisc ? '<span class="disc">' + discountPct(p.price, p.originalPrice) + '</span>' : '') +
+            // Bei ausverkauft kein Rabatt-Stoerer — sonst wirbt die Kachel mit
+            // einem Preisvorteil fuer etwas, das man nicht kaufen kann.
+            (hasDisc && !weg ? '<span class="disc">' + discountPct(p.price, p.originalPrice) + '</span>' : '') +
+            (weg ? '<span class="soldout-band">Ausverkauft</span>' : '') +
           '</a>' +
           '<button class="wish' + (wished ? ' active' : '') + '" data-id="' + p.id + '" data-action="wish" aria-label="Merken"><i class="bi ' + (wished ? 'bi-heart-fill' : 'bi-heart') + '"></i></button>' +
-          '<button class="quickadd" data-id="' + p.id + '" data-action="add" aria-label="Schnell in den Warenkorb"><i class="bi bi-lightning-charge-fill"></i> Quick-Add</button>' +
+          // Quick-Add nur, wenn auch wirklich kaufbar.
+          (weg ? '' : '<button class="quickadd" data-id="' + p.id + '" data-action="add" aria-label="Schnell in den Warenkorb"><i class="bi bi-lightning-charge-fill"></i> Quick-Add</button>') +
         '</div>' +
         '<div class="body">' +
           '<div class="toprow">' +
@@ -344,9 +352,13 @@
           '<div class="rating"><span class="stars">' + stars(r) + '</span> ' + r.toFixed(1).replace('.', ',') + ' (' + reviews(p.id) + ')</div>' +
           '<div class="social"><i class="bi bi-fire"></i> ' + soldToday(p.id) + ' heute gekauft</div>' +
           '<div class="priceline"><span class="price">' + eur(p.price) + '</span>' + (hasDisc ? '<span class="strike">' + eur(p.originalPrice) + '</span>' : '') + '</div>' +
-          (stock <= 8 ? '<div class="lowstock">Nur noch ' + stock + ' Stück</div>' : '') +
+          // "Nur noch X Stueck" waere bei ausverkaufter Ware ein Widerspruch.
+          (stock <= 8 && !weg ? '<div class="lowstock">Nur noch ' + stock + ' Stück</div>' : '') +
+          (weg ? '<div class="soldout-hint">Zurzeit nicht lieferbar — Benachrichtigung auf der Produktseite</div>' : '') +
           '<div class="ctas">' +
-            '<button class="addbtn" data-id="' + p.id + '" data-action="add">In den Warenkorb</button>' +
+            (weg
+              ? '<a class="addbtn addbtn-soldout" href="' + href + '">Benachrichtigen lassen</a>'
+              : '<button class="addbtn" data-id="' + p.id + '" data-action="add">In den Warenkorb</button>') +
             '<button class="eyebtn" data-id="' + p.id + '" data-action="qv" aria-label="Schnellansicht" title="Schnellansicht"><i class="bi bi-eye"></i></button>' +
           '</div>' +
         '</div>' +
@@ -363,6 +375,9 @@
       var p = byId(btn.getAttribute('data-id'));
       if (!p) return;
       var action = btn.getAttribute('data-action');
+      // Letzte Absicherung: falls die Kachel aus einem alten Zwischenspeicher
+      // stammt, landet Ausverkauftes trotzdem nicht im Warenkorb.
+      if (action === 'add' && soldOut(p)) return;
       if (action === 'add') quickAdd(p, 1);
       else if (action === 'qv') openQv(p.id);
       else if (action === 'wish') toggleWish(p);
@@ -562,6 +577,9 @@
     var list = currentCat === 'alle' ? products.slice() : products.filter(function (p) { return p.category === currentCat; });
     var sort = SORTS.find(function (s) { return s.key === currentSort; }) || SORTS[0];
     list.sort(sort.fn);
+    // Ausverkauftes ans Ende — innerhalb beider Gruppen bleibt die gewaehlte
+    // Sortierung erhalten. Kunden sollen zuerst sehen, was sie kaufen koennen.
+    list.sort(function (a, b) { return (soldOut(a) ? 1 : 0) - (soldOut(b) ? 1 : 0); });
     el('gridCount').textContent = list.length + (list.length === 1 ? ' Produkt' : ' Produkte');
     el('allGrid').innerHTML = list.map(function (p, i) { return cardHTML(p, i); }).join('');
     updateWishUI();
@@ -732,13 +750,17 @@
             (colors.length ? '<div><div class="var-lbl">' + varLabel + ': <span>' + esc(sel ? sel.name : '') + '</span></div><div class="swatches">' + swatches + '</div></div>' : '') +
             '<div class="shiprow">' +
               '<span><i class="bi bi-truck"></i> Lieferung: ' + esc(p.shippingTime || '6–13 Werktage') + '</span>' +
-              (stock <= 8 ? '<span class="low">Nur noch ' + stock + ' Stück</span>' : '') +
+              (soldOut(p)
+                ? '<span class="low">Zurzeit nicht lieferbar</span>'
+                : (stock <= 8 ? '<span class="low">Nur noch ' + stock + ' Stück</span>' : '')) +
             '</div>' +
             '<div class="buyrow">' +
               '<div class="stepper">' +
                 '<button id="qvDec" aria-label="Weniger">−</button><span id="qvQty">' + qvState.qty + '</span><button id="qvInc" aria-label="Mehr">+</button>' +
               '</div>' +
-              '<button class="addbtn" id="qvAdd">In den Warenkorb — ' + eur(vPrice * qvState.qty) + '</button>' +
+              (soldOut(p)
+                ? '<a class="addbtn addbtn-soldout" href="' + productHref(p) + '">Benachrichtigen lassen</a>'
+                : '<button class="addbtn" id="qvAdd">In den Warenkorb — ' + eur(vPrice * qvState.qty) + '</button>') +
             '</div>' +
             '<a class="detail-link" href="' + productHref(p) + '">Zur Produktseite mit allen Details →</a>' +
             '<div class="trust">' +
@@ -753,10 +775,14 @@
     el('qvClose').addEventListener('click', closeQv);
     el('qvInc').addEventListener('click', function () { qvState.qty++; renderQv(); });
     el('qvDec').addEventListener('click', function () { qvState.qty = Math.max(1, qvState.qty - 1); renderQv(); });
-    el('qvAdd').addEventListener('click', function () {
-      addToCart(p, qvState.qty, colors[qvState.colorIdx]);
-      closeQv();
-    });
+    // Bei ausverkaufter Ware gibt es diesen Knopf nicht — dann auch nichts binden.
+    var qvAddBtn = el('qvAdd');
+    if (qvAddBtn) {
+      qvAddBtn.addEventListener('click', function () {
+        addToCart(p, qvState.qty, colors[qvState.colorIdx]);
+        closeQv();
+      });
+    }
     el('qvWrap').querySelectorAll('[data-cidx]').forEach(function (b) {
       b.addEventListener('click', function () { qvState.colorIdx = Number(b.getAttribute('data-cidx')); renderQv(); });
     });

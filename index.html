@@ -306,6 +306,20 @@ button { font-family: var(--sans); }
 .pcard:hover .quickadd { opacity: 1; transform: translateY(0); }
 .pcard .quickadd:hover { background: var(--gold); color: var(--bg-deep); }
 .pcard .disc { position: absolute; top: 14px; left: 14px; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 4px 12px; font-size: 11px; letter-spacing: .16em; z-index: 2; }
+/* ── Ausverkauft ──────────────────────────────────────────────
+   Das Band liegt quer ueber dem Produktbild, die Kachel wird entsaettigt und
+   abgedunkelt. Sie bleibt bewusst anklickbar: auf der Produktseite kann man
+   sich benachrichtigen lassen, sobald der Artikel wieder da ist. */
+.pcard.soldout .stage img.main,
+.pcard.soldout .stage img.second { filter: grayscale(.85) brightness(.62); }
+.pcard.soldout { border-color: rgba(255, 255, 255, .09); }
+.pcard.soldout .rail { background: rgba(255, 255, 255, .14); }
+.pcard .soldout-band { position: absolute; top: 20px; left: -34px; z-index: 3; transform: rotate(-38deg); background: rgba(20, 18, 14, .93); color: #E8E2D6; border-top: 1px solid rgba(255, 255, 255, .22); border-bottom: 1px solid rgba(255, 255, 255, .22); padding: 6px 46px; font-size: 11px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; box-shadow: 0 6px 18px rgba(0, 0, 0, .5); pointer-events: none; }
+.pcard .soldout-hint { font-size: 11.5px; color: var(--dim2); line-height: 1.4; }
+.pcard .addbtn-soldout { display: flex; align-items: center; justify-content: center; text-decoration: none; background: none; border: 1px solid rgba(216, 181, 108, .45); color: var(--gold); }
+.pcard .addbtn-soldout:hover { border-color: var(--gold); background: rgba(216, 181, 108, .1); }
+.qv-panel .addbtn-soldout { display: flex; align-items: center; justify-content: center; text-decoration: none; background: none; border: 1px solid rgba(216, 181, 108, .45); color: var(--gold); }
+
 .pcard .wish { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(216, 181, 108, .3); background: rgba(11, 10, 9, .55); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all .2s; z-index: 3; color: var(--gold); }
 .pcard .wish:hover { border-color: var(--gold); }
 .pcard .wish.active { color: #C97A5A; }
