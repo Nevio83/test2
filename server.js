@@ -104,21 +104,24 @@ const receiptGenerator = new ReceiptGenerator();
 
 const app = express();
 
+// Eigene Herkuenfte des Shops. Eine Liste fuer beides — CORS und den
+// CSRF-Schutz der Admin-Aktionen weiter unten. Frueher lag sie nur in der
+// CORS-Pruefung; zwei getrennte Listen wuerden zwangslaeufig auseinanderlaufen.
+const allowedOrigins = [
+  'https://maiosshop.com',
+  'https://www.maiosshop.com',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5000',
+  // VS-Code Live Server (statisches Frontend in Dev, API laeuft auf :3000)
+  'http://localhost:5500',
+  'http://127.0.0.1:5500'
+];
+
 // CORS-Konfiguration für maiosshop.com und lokale Entwicklung
 app.use((req, res, next) => {
   // Erlaubte Domains
-  const allowedOrigins = [
-    'https://maiosshop.com',
-    'https://www.maiosshop.com',
-    'http://localhost:3000',
-    'http://localhost:5000',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:5000',
-    // VS-Code Live Server (statisches Frontend in Dev, API laeuft auf :3000)
-    'http://localhost:5500',
-    'http://127.0.0.1:5500'
-  ];
-  
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
@@ -408,6 +411,60 @@ async function logAdminAction(req, action, details) {
     console.warn('⚠️ Admin-Audit-Log nicht gespeichert:', e.message);
   }
 }
+
+// ── CSRF-Schutz fuer schreibende Admin-Aktionen ──────────────────
+// Problem: Der Admin-Bereich haengt an HTTP-Basic-Auth. Der Browser merkt sich
+// diese Zugangsdaten pro Herkunft und schickt sie AUCH mit, wenn eine fremde
+// Webseite im Hintergrund eine Anfrage dorthin ausloest — anders als bei
+// Sitzungs-Cookies greift hier kein SameSite-Schutz. Waehrend du im Admin
+// eingeloggt bist, koennte eine untergeschobene Seite damit echte Aktionen
+// ausloesen: Werbe-Mail an alle Abonnenten, Retoure genehmigen (loest eine
+// Rueckerstattung aus), Abonnenten loeschen.
+//
+// Gegenmittel: Bei aendernden Anfragen pruefen, ob sie von der eigenen Seite
+// kommen. Der Browser setzt bei fremder Herkunft zwingend einen abweichenden
+// Origin-Header und laesst ihn nicht faelschen.
+//
+// Verglichen wird gegen den HOST DER ANFRAGE, nicht gegen eine feste Liste —
+// so funktioniert es auf jeder Domain und jedem Port ohne Pflege.
+// Fehlen Origin UND Referer, wird durchgelassen: das sind Aufrufe ausserhalb
+// eines Browsers (curl, Skripte), und die haben keine gespeicherten
+// Zugangsdaten, die sich unterschieben liessen.
+const SCHREIBEND = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+
+function hostVon(urlOderOrigin) {
+  try {
+    return new URL(urlOderOrigin).host;
+  } catch (e) {
+    return null;
+  }
+}
+
+function requireSameOrigin(req, res, next) {
+  if (!SCHREIBEND.has(req.method)) return next();
+
+  const herkunft = req.headers.origin
+    ? hostVon(req.headers.origin)
+    : (req.headers.referer ? hostVon(req.headers.referer) : null);
+
+  if (!herkunft) return next(); // kein Browser-Aufruf -> kein CSRF-Weg
+
+  const eigene = new Set([req.headers.host]);
+  allowedOrigins.forEach((o) => { const h = hostVon(o); if (h) eigene.add(h); });
+
+  if (eigene.has(herkunft)) return next();
+
+  console.warn(`🚫 Admin-Aktion von fremder Herkunft abgewiesen: ${herkunft} → ${req.method} ${req.path}`);
+  return res.status(403).json({
+    error: 'Anfrage von fremder Herkunft abgelehnt',
+    hinweis: 'Diese Aktion lässt sich nur direkt aus dem Admin-Bereich auslösen.'
+  });
+}
+
+// Reihenfolge: erst Herkunft, dann Zugangsdaten. Ein untergeschobener Aufruf
+// wird so abgewiesen, ohne dass ueberhaupt Zugangsdaten geprueft werden.
+app.use('/a29715347575', requireSameOrigin);
+app.use('/api/cj', requireSameOrigin);
 
 // Admin-Dashboard-Ordner schützen (VOR express.static)
 app.use('/a29715347575', requireAdminAuth);
