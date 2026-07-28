@@ -2576,6 +2576,67 @@ app.get('/api/newsletter/unsubscribe', async (req, res) => {
   }
 });
 
+// ── "Bescheid geben, wenn wieder lieferbar" ──────────────────────────
+// Bewusst OHNE Bestaetigungsmail (anders als beim Newsletter): Es ist keine
+// Werbung, sondern eine einzige vom Kunden selbst angeforderte Nachricht zu
+// genau einem Produkt. Eine vorgeschaltete Bestaetigungsmail waere hier eine
+// zusaetzliche Mail an dieselbe Adresse und wuerde die Funktion praktisch
+// unbrauchbar machen (kaum jemand bestaetigt fuer eine Vormerkung).
+// Missbrauchsschutz stattdessen ueber: Rate-Limit, nur ein Eintrag pro Adresse
+// und Produkt, Abmeldelink in der Nachricht, und der Eintrag wird nach dem
+// Versand geloescht — es entsteht keine Adresssammlung.
+app.post('/api/stock-notify', rateLimit('stock-notify', { windowMs: 15 * 60 * 1000, max: 10 }), async (req, res) => {
+  try {
+    if (!process.env.DATABASE_URL) {
+      return res.status(503).json({ ok: false, error: 'Vormerkung derzeit nicht möglich.' });
+    }
+    const email = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
+    const productId = Number(req.body?.productId);
+
+    if (!EMAIL_RE.test(email)) {
+      return res.status(400).json({ ok: false, error: 'Bitte eine gültige E-Mail-Adresse angeben.' });
+    }
+    const produkte = require('./products.json');
+    const produkt = produkte.find((p) => Number(p.id) === productId);
+    if (!produkt) {
+      return res.status(400).json({ ok: false, error: 'Produkt nicht gefunden.' });
+    }
+    // Nur vormerken, was tatsaechlich gesperrt ist — sonst kaeme nie eine
+    // Nachricht (der Versand haengt am Wechsel "gesperrt -> wieder lieferbar").
+    const gesperrt = await getUnavailableIds();
+    if (!gesperrt.has(productId)) {
+      return res.status(409).json({ ok: false, error: 'Dieser Artikel ist aktuell lieferbar.' });
+    }
+
+    const token = crypto.randomBytes(24).toString('hex');
+    await dbOperations.addStockNotification(productId, email, token, req.ip);
+    console.log(`🔔 Vormerkung: Produkt ${productId} für ${email.replace(/(.).*(@.*)/, '$1***$2')}`);
+    res.json({ ok: true, message: 'Wir melden uns, sobald der Artikel wieder da ist.' });
+  } catch (error) {
+    console.error('⚠️ Vormerkung fehlgeschlagen:', error.message);
+    res.status(500).json({ ok: false, error: 'Vormerkung derzeit nicht möglich.' });
+  }
+});
+
+// Abmeldelink aus der Benachrichtigung.
+app.get('/api/stock-notify/cancel', async (req, res) => {
+  try {
+    const token = typeof req.query.token === 'string' ? req.query.token : '';
+    const weg = await dbOperations.cancelStockNotification(token);
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    if (weg) {
+      return res.send(newsletterStatusPage('Vormerkung gelöscht',
+        'Du bekommst zu diesem Artikel keine Benachrichtigung mehr.'));
+    }
+    return res.send(newsletterStatusPage('Nichts zu löschen',
+      'Diese Vormerkung gibt es nicht mehr — vermutlich wurde sie bereits entfernt.'));
+  } catch (error) {
+    console.error('⚠️ Vormerkung-Abmeldung fehlgeschlagen:', error.message);
+    res.status(500).set('Content-Type', 'text/html; charset=utf-8')
+      .send(newsletterStatusPage('Etwas ist schiefgelaufen', 'Bitte versuche es später erneut.'));
+  }
+});
+
 // ── DSGVO-Selbstauskunft & -Loeschung (Art. 15/17) ───────────────────
 // Schritt 1: Adresse + Wunsch (Auskunft/Löschung) -> Bestaetigungsmail (Double-
 // Opt-In-Prinzip wie beim Newsletter). Schritt 2: Klick auf den Link bestaetigt
@@ -2902,6 +2963,24 @@ app.get('/a29715347575/api/csp-reports', (req, res) => {
     verschiedene: __cspReports.length,
     reports: __cspReports
   });
+});
+
+// Wer wartet worauf? Nuetzlich zum Nachbestellen: viele Vormerkungen auf einem
+// Artikel = echte, belegte Nachfrage.
+app.get('/a29715347575/api/stock-notifications', async (req, res) => {
+  try {
+    const zeilen = await dbOperations.getStockNotificationCounts();
+    const produkte = require('./products.json');
+    res.json({
+      ok: true,
+      rows: zeilen.map((z) => ({
+        ...z,
+        name: (produkte.find((p) => Number(p.id) === Number(z.product_id)) || {}).name || `Produkt ${z.product_id}`
+      }))
+    });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
 });
 
 // Aktueller Verfuegbarkeits-Stand fuers Admin-Panel.

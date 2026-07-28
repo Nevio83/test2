@@ -91,7 +91,7 @@ async function fetchCjStock(cjAPI, pid) {
 async function runCjStockSync(cjAPI) {
   const summary = {
     linksInCsv: 0, matched: 0, checked: 0, unavailable: 0,
-    nowUnavailable: [], backInStock: []
+    nowUnavailable: [], backInStock: [], notified: 0
   };
 
   try {
@@ -130,12 +130,76 @@ async function runCjStockSync(cjAPI) {
     if (summary.nowUnavailable.length || summary.backInStock.length) {
       await sendStockAlert(summary);
     }
+
+    // Kunden benachrichtigen, die sich fuer ein wieder lieferbares Produkt
+    // vorgemerkt haben. Laeuft NACH der Betreiber-Meldung und faengt eigene
+    // Fehler ab — ein Mail-Problem darf den Abgleich nicht scheitern lassen.
+    for (const p of summary.backInStock) {
+      try {
+        summary.notified += await notifyWaitingCustomers(p);
+      } catch (e) {
+        console.warn('⚠️ Benachrichtigung der Vormerkungen fehlgeschlagen für', p.productId, '-', e.message);
+      }
+    }
   } catch (e) {
     console.error('❌ CJ-Bestandsabgleich fehlgeschlagen:', e.message);
     summary.error = e.message;
   }
 
   return summary;
+}
+
+/**
+ * Benachrichtigt alle Kunden, die sich fuer dieses Produkt vorgemerkt haben.
+ *
+ * Die Vormerkungen werden erst geloescht, NACHDEM alle Mails abgesetzt wurden —
+ * bricht der Versand vorher ab, bleiben sie erhalten und der naechste Lauf
+ * versucht es erneut. Umgekehrt (erst loeschen, dann senden) waere ein Fehler
+ * mitten im Versand endgueltig.
+ *
+ * @returns {Promise<number>} Anzahl erfolgreich benachrichtigter Adressen
+ */
+async function notifyWaitingCustomers(produkt) {
+  const wartende = await dbOperations.getStockNotifications(produkt.productId);
+  if (!wartende.length) return 0;
+
+  const basis = (process.env.REPL_URL || 'https://maiosshop.com').replace(/\/+$/, '');
+  const produkte = require('./products.json');
+  const daten = produkte.find((p) => Number(p.id) === Number(produkt.productId)) || {};
+  const link = daten.slug ? `${basis}/produkte/${daten.slug}.html` : basis;
+
+  let erfolge = 0;
+  for (const w of wartende) {
+    const abmelden = `${basis}/api/stock-notify/cancel?token=${encodeURIComponent(w.cancel_token)}`;
+    const r = await emailService.sendEmail({
+      to: w.email,
+      subject: `Wieder da: ${produkt.name}`,
+      html:
+        `<div style="font-family:sans-serif;max-width:520px">` +
+        `<h2 style="margin:0 0 12px">Gute Nachricht — wieder verfügbar</h2>` +
+        `<p>Du hattest dich benachrichtigen lassen, sobald <strong>${produkt.name}</strong> ` +
+        `wieder lieferbar ist. Genau das ist jetzt der Fall.</p>` +
+        `<p style="margin:24px 0"><a href="${link}" ` +
+        `style="background:#D8B56C;color:#13100B;text-decoration:none;padding:13px 26px;` +
+        `border-radius:999px;font-weight:700;display:inline-block">Zum Produkt</a></p>` +
+        `<p style="color:#777;font-size:13px">Beliebte Artikel sind erfahrungsgemäß schnell wieder weg.</p>` +
+        `<hr style="border:none;border-top:1px solid #eee;margin:22px 0">` +
+        `<p style="color:#999;font-size:12px">Du erhältst diese Nachricht einmalig, weil du sie ` +
+        `auf maiosshop.com angefordert hast. Es folgt keine weitere E-Mail. ` +
+        `<a href="${abmelden}" style="color:#999">Vormerkung vorher löschen</a></p></div>`,
+      headers: { 'List-Unsubscribe': `<${abmelden}>` }
+    });
+    if (r && r.success !== false) erfolge++;
+  }
+
+  // Nur aufraeumen, wenn wirklich alle durchgingen.
+  if (erfolge === wartende.length) {
+    await dbOperations.clearStockNotifications(produkt.productId);
+    console.log(`🔔 ${erfolge} Vormerkung(en) zu "${produkt.name}" benachrichtigt und entfernt`);
+  } else {
+    console.warn(`⚠️ Nur ${erfolge}/${wartende.length} Vormerkungen zu "${produkt.name}" zugestellt — Rest bleibt für den nächsten Lauf`);
+  }
+  return erfolge;
 }
 
 /** Meldung bei Verfuegbarkeitswechsel. */

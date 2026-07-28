@@ -247,6 +247,20 @@ const SCHEMA = [
     last_checked_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     last_alert_at TIMESTAMPTZ
   )`,
+  // Vormerkungen "Bescheid geben, wenn wieder lieferbar".
+  // Bewusst KEIN Newsletter: eine einzige, vom Kunden selbst angeforderte
+  // Nachricht zu genau einem Produkt. Nach dem Versand wird der Eintrag
+  // geloescht — es bleibt also keine Adresssammlung zurueck.
+  `CREATE TABLE IF NOT EXISTS stock_notifications (
+    id SERIAL PRIMARY KEY,
+    product_id INTEGER NOT NULL,
+    email TEXT NOT NULL,
+    cancel_token TEXT NOT NULL,
+    ip TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (product_id, email)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_stock_notif_product ON stock_notifications(product_id)`,
   // Fortlaufende, lueckenlose Rechnungsnummern (§ 14 UStG): eine DB-Sequence
   // statt Timestamp. nextval() ist atomar -> keine Kollisionen, keine Duplikate.
   `CREATE SEQUENCE IF NOT EXISTS receipt_seq START 1`,
@@ -700,6 +714,53 @@ const dbOperations = {
          ${markAlerted ? ', last_alert_at = CURRENT_TIMESTAMP' : ''}`,
       [productId, cjPid, price]
     );
+  },
+
+  // ── Vormerkungen "wieder lieferbar" ──────────────────────────
+  /**
+   * Vormerkung anlegen. Doppelte Anmeldung (gleiche Adresse, gleiches Produkt)
+   * erneuert nur den Zeitstempel — kein zweiter Eintrag, keine zweite Mail.
+   * @returns {{neu:boolean, cancelToken:string}}
+   */
+  addStockNotification: async (productId, email, cancelToken, ip) => {
+    const r = await pool.query(
+      `INSERT INTO stock_notifications (product_id, email, cancel_token, ip)
+       VALUES ($1,$2,$3,$4)
+       ON CONFLICT (product_id, email) DO UPDATE SET created_at = CURRENT_TIMESTAMP
+       RETURNING cancel_token, (xmax = 0) AS neu`,
+      [productId, String(email).trim().toLowerCase(), cancelToken, ip || null]
+    );
+    return { neu: r.rows[0].neu, cancelToken: r.rows[0].cancel_token };
+  },
+
+  /** Alle Vormerkungen zu einem Produkt (fuer den Versand). */
+  getStockNotifications: async (productId) => {
+    const r = await pool.query(
+      `SELECT id, email, cancel_token FROM stock_notifications WHERE product_id = $1`,
+      [productId]
+    );
+    return r.rows;
+  },
+
+  /** Nach erfolgreichem Versand entfernen — die Vormerkung ist verbraucht. */
+  clearStockNotifications: async (productId) => {
+    const r = await pool.query(`DELETE FROM stock_notifications WHERE product_id = $1`, [productId]);
+    return r.rowCount;
+  },
+
+  /** Abmeldung ueber den Link in der Bestaetigungsmail. */
+  cancelStockNotification: async (token) => {
+    const r = await pool.query(
+      `DELETE FROM stock_notifications WHERE cancel_token = $1 RETURNING product_id`, [token]);
+    return r.rows[0] || null;
+  },
+
+  /** Anzahl Vormerkungen je Produkt — fuers Admin-Panel. */
+  getStockNotificationCounts: async () => {
+    const r = await pool.query(
+      `SELECT product_id, COUNT(*)::int AS anzahl, MIN(created_at) AS aeltester
+       FROM stock_notifications GROUP BY product_id ORDER BY anzahl DESC`);
+    return r.rows;
   },
 
   // ── CJ-Lagerbestand / Verfuegbarkeit ─────────────────────────

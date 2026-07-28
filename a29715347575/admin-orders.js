@@ -613,6 +613,17 @@ async function runStockSyncNow() {
     if (!data.nowUnavailable?.length && !data.backInStock?.length) {
       msg += `\n\nKeine Änderung der Verfügbarkeit.`;
     }
+    if (data.notified) {
+      msg += `\n\n🔔 ${data.notified} vorgemerkte(r) Kunde(n) benachrichtigt.`;
+    }
+    // Offene Vormerkungen anzeigen — viele auf einem Artikel = belegte Nachfrage.
+    try {
+      const v = await (await fetch('/a29715347575/api/stock-notifications')).json();
+      if (v.ok && v.rows.length) {
+        msg += `\n\nOffene Vormerkungen:\n` +
+          v.rows.map(r => `• ${r.name}: ${r.anzahl} Kunde(n)`).join('\n');
+      }
+    } catch (e) { /* Nebeninfo — Hauptmeldung steht auch ohne */ }
     alert(msg);
   } catch (error) {
     alert('Bestandsabgleich fehlgeschlagen: ' + error.message);
