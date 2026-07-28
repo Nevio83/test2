@@ -159,6 +159,7 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 | Pfad | Zweck |
 |---|---|
 | `render.yaml` | **Render-Blueprint** (Live-Hosting, Free): ein Node-Service bedient Frontend + API aus `server.js`. `healthCheckPath: /health`, `NODE_VERSION: 20.19.0`. |
+| `site.webmanifest` + `images/icon-*.png` | PWA-Manifest („zum Startbildschirm hinzufügen") + Favicons. Icons per `sharp` aus `images/logo.jpg` (1024²) erzeugt: 32/192/512 + `logo.png`. **Favicon-Verweise root-relativ**, nicht absolut — über die Render-Ersatzadresse wäre `https://maiosshop.com/...` eine fremde Herkunft und würde von der CSP geblockt. Alle 61 Kundenseiten binden Favicon + Manifest ein. |
 | `.github/workflows/keep-alive.yml` | GitHub-Actions-Workflow, hält Render-Free warm (jeder Lauf pingt ~13 Min alle 60 s `GET /health`). Best-effort — echte Garantie via externem Pinger/Paid. |
 | `Marketing/` | Python-Pipelines (`pipelines/*.py`), eigene `products.json`, chromedriver, Daten/Renders. |
 | `excel/` | Produktlisten (CSV/XLSX, getrackt). **Achtung:** Hier lagen versehentlich Secrets (privater Key + Stripe-Code); Secret-Muster (`*.key`/`*.pem`/`*_private_key*`/`stripe_backup_code.txt`) sind gitignored — siehe `CLAUDE-CODE.md` §1. |

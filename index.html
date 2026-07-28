@@ -12,10 +12,15 @@
     <meta property="og:description" content="Handverlesen, geprüft, in 6–13 Tagen bei dir. Kostenloser Versand nach DE & EU.">
     <meta property="og:url" content="https://maiosshop.com/">
 
-    <!-- Favicons & App Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="https://maiosshop.com/images/logo.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://maiosshop.com/images/logo.png">
-    <link rel="apple-touch-icon" href="https://maiosshop.com/images/logo.png">
+    <!-- Favicons & App Icons.
+         Pfade bewusst root-relativ statt absolut: ueber die Render-Ersatzadresse
+         waere eine absolute maiosshop.com-URL eine fremde Herkunft und wuerde
+         von der Content-Security-Policy geblockt. -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/images/icon-512.png">
+    <link rel="apple-touch-icon" href="/images/logo.png">
+    <meta name="theme-color" content="#13100B">
     <link rel="manifest" href="/site.webmanifest">
 
     <!-- Structured Data -->
