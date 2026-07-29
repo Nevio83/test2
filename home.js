@@ -131,6 +131,34 @@
   function el(id) { return document.getElementById(id); }
   function acFor(cat) { return CAT_META[cat] || FALLBACK_AC; }
   function imgUrl(p) { return encodeURI('/' + String(p).replace(/^\//, '')); }
+
+  // ── Bilder in Anzeigegroesse ausliefern ──────────────────────────────
+  // Gemessen: die Kachelbilder werden mit rund 300 px angezeigt, die Quellen
+  // sind aber bis 1200 px breit — ohne diese Angaben laedt das Handy grob das
+  // Neunfache an Bildpunkten. Der Server liefert unter ?w=<breite> eine
+  // passend verkleinerte Fassung (siehe server.js). Die Breiten muessen zur
+  // Liste dort passen; unbekannte Werte liefert der Server unveraendert aus.
+  var BILD_BREITEN = [320, 480, 640];
+  // Anzeigegroesse laut Messung: 76 vw auf dem Handy, sonst konstant ~310 px.
+  var BILD_SIZES = '(max-width: 720px) 78vw, 310px';
+
+  function imgSrcset(p) {
+    var basis = imgUrl(p);
+    return BILD_BREITEN.map(function (b) { return basis + '?w=' + b + ' ' + b + 'w'; }).join(', ');
+  }
+
+  /** Fertige Attribute fuer ein Kachelbild — Original bleibt als Rueckfallebene in src. */
+  function imgAttrs(p) {
+    return 'src="' + imgUrl(p) + '" srcset="' + imgSrcset(p) + '" sizes="' + BILD_SIZES + '"';
+  }
+
+  /**
+   * Feste kleine Breite fuer Vorschaubilder. Hier braucht es kein srcset: die
+   * Anzeigegroesse steht fest. Gemessen wurden 38-56 px — 160 deckt selbst
+   * feine Displays mit Reserve ab. Vorher lief hier die volle Quelle durch
+   * (im Showreel-Streifen 1500 px fuer 38 px Anzeige).
+   */
+  function thumbUrl(p) { return imgUrl(p) + '?w=160'; }
   function productHref(p) { return p && p.slug ? '/produkte/' + p.slug + '.html' : '/produkte/produkt-' + p.id + '.html'; }
   function byId(id) { return products.find(function (p) { return Number(p.id) === Number(id); }); }
 
@@ -332,8 +360,8 @@
         '<span class="rail"></span>' +
         '<div class="stagewrap">' +
           '<a class="stage" href="' + href + '" aria-label="' + esc(p.name) + '">' +
-            '<img class="main" src="' + imgUrl(p.image) + '" alt="' + esc(p.name) + '" loading="lazy">' +
-            (sec ? '<img class="second" src="' + imgUrl(sec) + '" alt="" aria-hidden="true" loading="lazy">' : '') +
+            '<img class="main" ' + imgAttrs(p.image) + ' alt="' + esc(p.name) + '" loading="lazy">' +
+            (sec ? '<img class="second" ' + imgAttrs(sec) + ' alt="" aria-hidden="true" loading="lazy">' : '') +
             // Bei ausverkauft kein Rabatt-Stoerer — sonst wirbt die Kachel mit
             // einem Preisvorteil fuer etwas, das man nicht kaufen kann.
             (hasDisc && !weg ? '<span class="disc">' + discountPct(p.price, p.originalPrice) + '</span>' : '') +
@@ -420,7 +448,7 @@
       var tp = byId(id);
       var cls = 'reel-thumb' + (i === idx ? ' active' : i < idx ? ' done' : '');
       return '<button class="' + cls + '" data-scene="' + i + '" title="' + esc(tp.name) + '" aria-label="' + esc(tp.name) + '">' +
-        '<img src="' + imgUrl(tp.image) + '" alt="">' + '<span class="bar"></span></button>';
+        '<img src="' + thumbUrl(tp.image) + '" alt="" loading="lazy">' + '<span class="bar"></span></button>';
     }).join('');
     el('reelAdd').addEventListener('click', function () { quickAdd(p, 1); });
     el('reelPrev').addEventListener('click', function () { goScene(idx - 1); });
@@ -594,7 +622,7 @@
   function searchHitHTML(p) {
     var ac = acFor(p.category);
     return '<button class="search-hit" data-id="' + p.id + '">' +
-      '<div class="thumb"><img src="' + imgUrl(p.image) + '" alt=""></div>' +
+      '<div class="thumb"><img src="' + thumbUrl(p.image) + '" alt="" loading="lazy"></div>' +
       '<div class="meta"><div class="cat">' + esc(ac.short) + '</div><div class="name">' + esc(p.name) + '</div></div>' +
       '<span class="price">' + eur(p.price) + '</span></button>';
   }
@@ -638,7 +666,7 @@
     }
     box.innerHTML = cart.map(function (c, i) {
       return '<div class="d-item">' +
-        '<div class="thumb"><img src="' + imgUrl(c.image || '') + '" alt="' + esc(c.name) + '"></div>' +
+        '<div class="thumb"><img src="' + thumbUrl(c.image || '') + '" alt="' + esc(c.name) + '" loading="lazy"></div>' +
         '<div class="mid">' +
           '<div class="name">' + esc(c.name) + '</div>' +
           '<div class="qtyrow">' +
@@ -681,7 +709,7 @@
     }
     var rows = cart.slice(0, 3).map(function (c) {
       return '<div class="mini-row">' +
-        '<div class="thumb"><img src="' + imgUrl(c.image || '') + '" alt=""></div>' +
+        '<div class="thumb"><img src="' + thumbUrl(c.image || '') + '" alt="" loading="lazy"></div>' +
         '<div style="flex:1;min-width:0;"><div class="name">' + esc(c.name) + '</div>' +
         '<div class="sub">' + (Number(c.quantity) || 1) + '× · ' + eur((Number(c.price) || 0) * (Number(c.quantity) || 1)) + '</div></div>' +
       '</div>';
@@ -729,7 +757,7 @@
     var swatches = colors.map(function (c, i) {
       var isSel = i === qvState.colorIdx;
       if (allHaveImg) {
-        return '<button class="motif' + (isSel ? ' sel' : '') + '" data-cidx="' + i + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"><img src="' + imgUrl(c.image) + '" alt="' + esc(c.name) + '" loading="lazy"></button>';
+        return '<button class="motif' + (isSel ? ' sel' : '') + '" data-cidx="' + i + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"><img src="' + thumbUrl(c.image) + '" alt="' + esc(c.name) + '" loading="lazy"></button>';
       }
       return '<button class="swatch' + (isSel ? ' sel' : '') + '" data-cidx="' + i + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '" style="background:' + esc(c.code || '#444') + ';"></button>';
     }).join('');

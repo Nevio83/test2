@@ -47,3 +47,29 @@ graphify-out/
 
 # ── Generierte Artefakte ─────────────────────────────────────
 receipts/*.pdf
+
+# Bildvarianten in Anzeigegroesse (Name-320.webp, Name-640.jpg, …).
+# Entstehen automatisch beim ersten Abruf (Route in server.js) und sind
+# vollstaendig aus dem Original ableitbar. Bewusst NICHT versioniert: es waeren
+# rund 450 Dateien und 2,8 MB, die mit jedem neuen Produkt weiter wachsen.
+# Die einfachen *.webp ohne Groessenangabe bleiben getrackt (Altbestand).
+#
+# Bewusst nur die vier erlaubten Breiten aus BILD_BREITEN, nicht "-<drei Ziffern>":
+# ein allgemeines Muster wuerde auch images/icon-192.png und icon-512.png
+# erfassen — die sind echte Dateien und muessen versioniert bleiben.
+*-160.webp
+*-320.webp
+*-480.webp
+*-640.webp
+*-160.jpg
+*-320.jpg
+*-480.jpg
+*-640.jpg
+*-160.jpeg
+*-320.jpeg
+*-480.jpeg
+*-640.jpeg
+*-160.png
+*-320.png
+*-480.png
+*-640.png

@@ -707,42 +707,79 @@ app.get('/sitemap.xml', (req, res) => {
 // Datei-Zugriff, kein erneutes Konvertieren). Ein In-Flight-Lock verhindert, dass
 // mehrere gleichzeitige Requests dieselbe Datei doppelt konvertieren. Faellt bei
 // jedem Fehler (sharp fehlt, defektes Bild, o.ae.) sauber auf "nichts tun" zurueck.
-const __webpConversionInFlight = new Map();
-function ensureWebpVariant(srcAbs, webpAbs) {
+// Erlaubte Breiten fuer ?w=. Bewusst eine feste Liste: sonst koennte jemand
+// beliebige Groessen anfragen und den Server mit Umrechnungen beschaeftigen.
+// Die Werte stammen aus Messungen der echten Anzeigegroessen:
+//   160  Vorschaubilder (Showreel-Streifen zeigt 38 px — Quelle war 1500 px!)
+//   320  Produktkachel auf normalen Bildschirmen (angezeigt 286-301 px)
+//   480/640  dieselbe Kachel auf feinen Displays (2x)
+const BILD_BREITEN = [160, 320, 480, 640];
+
+const __variantInFlight = new Map();
+
+/**
+ * Erzeugt bei Bedarf eine Bildvariante (kleiner und/oder als WebP) und legt sie
+ * neben dem Original ab. Danach laeuft der Abruf ueber den schnellen
+ * Datei-Zugriff. Ein Lock verhindert doppelte Umrechnung bei gleichzeitigen
+ * Anfragen. Faellt bei jedem Fehler auf "nichts tun" zurueck -> Original.
+ *
+ * @param {number|null} breite  Zielbreite; null = nur Format wechseln
+ */
+function ensureImageVariant(srcAbs, zielAbs, breite) {
   if (!sharp) return Promise.resolve(false);
-  if (fs.existsSync(webpAbs)) return Promise.resolve(true);
-  if (__webpConversionInFlight.has(webpAbs)) return __webpConversionInFlight.get(webpAbs);
-  const p = sharp(srcAbs).webp({ quality: 80 }).toFile(webpAbs)
+  if (fs.existsSync(zielAbs)) return Promise.resolve(true);
+  if (__variantInFlight.has(zielAbs)) return __variantInFlight.get(zielAbs);
+
+  let pipeline = sharp(srcAbs);
+  // withoutEnlargement: kleine Originale werden nicht hochgerechnet — das
+  // wuerde nur Bytes kosten und die Qualitaet nicht verbessern.
+  if (breite) pipeline = pipeline.resize({ width: breite, withoutEnlargement: true });
+  if (/\.webp$/i.test(zielAbs)) pipeline = pipeline.webp({ quality: 80 });
+
+  const p = pipeline.toFile(zielAbs)
     .then(() => true)
     .catch((e) => {
-      console.warn('⚠️ WebP-Konvertierung fehlgeschlagen fuer', srcAbs, '-', e.message);
+      console.warn('⚠️ Bildvariante fehlgeschlagen fuer', srcAbs, '-', e.message);
       return false;
     })
-    .finally(() => __webpConversionInFlight.delete(webpAbs));
-  __webpConversionInFlight.set(webpAbs, p);
+    .finally(() => __variantInFlight.delete(zielAbs));
+  __variantInFlight.set(zielAbs, p);
   return p;
 }
 
-// WebP-Auslieferung: Wenn der Browser image/webp akzeptiert, liefere die WebP-Variante
-// der angefragten JPG/PNG aus (~70% kleiner, schneller auf Mobil) — erzeugt sie bei
-// Bedarf automatisch (siehe oben). Transparent -> keine HTML-Aenderung noetig.
+// Bild-Auslieferung in passender Groesse und Format:
+//   ?w=320|480|640  -> auf diese Breite verkleinert (nie hochgerechnet)
+//   Accept: webp    -> zusaetzlich als WebP (~70 % kleiner)
+// Beides ist optional und kombinierbar. Ohne beides bleibt alles wie vorher.
+// Warum: die Produktbilder sind bis 1200 px breit, angezeigt werden sie mit rund
+// 300 px — ohne Verkleinerung laedt das Handy grob das Neunfache an Bildpunkten.
 // MUSS vor express.static stehen.
 app.get(/\.(jpe?g|png)$/i, async (req, res, next) => {
   try {
-    if (!(req.headers.accept || '').includes('image/webp')) return next();
+    const willWebp = (req.headers.accept || '').includes('image/webp');
+    // Streng auf reine Ziffern pruefen: parseInt wuerde aus "320px" eine 320
+    // machen. Das waere zwar harmlos, erzeugt aber zwei Adressen fuer denselben
+    // Inhalt und belastet damit unnoetig die Zwischenspeicher.
+    const wRoh = /^\d+$/.test(String(req.query.w || '')) ? Number(req.query.w) : NaN;
+    const breite = BILD_BREITEN.includes(wRoh) ? wRoh : null;
+    if (!willWebp && !breite) return next(); // nichts zu tun -> Original
+
     const rel = decodeURIComponent(req.path).replace(/^\/+/, '');
     const srcAbs = path.join(__dirname, rel);
-    const webpAbs = srcAbs.replace(/\.(jpe?g|png)$/i, '.webp');
-    if (!webpAbs.startsWith(__dirname)) return next();
-    if (!fs.existsSync(webpAbs)) {
+    const endung = willWebp ? '.webp' : path.extname(rel).toLowerCase();
+    const zielAbs = srcAbs.replace(/\.(jpe?g|png)$/i, (breite ? `-${breite}` : '') + endung);
+    if (!zielAbs.startsWith(__dirname)) return next();
+
+    if (!fs.existsSync(zielAbs)) {
       if (!fs.existsSync(srcAbs)) return next(); // Quelle fehlt -> regulaeres 404 ueber static
-      await ensureWebpVariant(srcAbs, webpAbs);
+      await ensureImageVariant(srcAbs, zielAbs, breite);
     }
-    if (!fs.existsSync(webpAbs)) return next(); // Konvertierung nicht moeglich -> Original ausliefern
-    res.set('Content-Type', 'image/webp');
+    if (!fs.existsSync(zielAbs)) return next(); // nicht moeglich -> Original ausliefern
+
+    if (willWebp) res.set('Content-Type', 'image/webp');
     res.set('Vary', 'Accept');
     res.set('Cache-Control', 'public, max-age=86400');
-    return res.sendFile(webpAbs);
+    return res.sendFile(zielAbs);
   } catch (e) {
     return next();
   }
