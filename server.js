@@ -305,17 +305,87 @@ app.use((req, res, next) => {
 
     if (__errorCount >= ERROR_ALERT_THRESHOLD && now - __lastErrorAlertAt > ERROR_ALERT_COOLDOWN_MS) {
       __lastErrorAlertAt = now;
-      const to = process.env.ERROR_ALERT_EMAIL || process.env.RECEIPT_ARCHIVE_EMAIL || 'maioscorporation@gmail.com';
       const rows = __recentErrorSamples.map((s) => `<li>${s}</li>`).join('');
-      emailService.sendEmail({
-        to,
-        subject: `🚨 ${__errorCount} Serverfehler in 15 Minuten — Maios Shop`,
-        html: `<h2>Erhöhte Fehlerrate</h2><p>${__errorCount} Server-Fehler (5xx) in den letzten 15 Minuten auf maiosshop.com.</p>` +
-          `<p>Letzte Beispiele:</p><ul>${rows}</ul>`
-      }).catch((e) => console.warn('⚠️ Fehler-Alarm-Mail fehlgeschlagen:', e.message));
+      sendOpsAlert(
+        `🚨 ${__errorCount} Serverfehler in 15 Minuten — Maios Shop`,
+        `<h2>Erhöhte Fehlerrate</h2><p>${__errorCount} Server-Fehler (5xx) in den letzten 15 Minuten auf maiosshop.com.</p>` +
+        `<p>Letzte Beispiele:</p><ul>${rows}</ul>`
+      );
     }
   });
   next();
+});
+
+// Ein Weg fuer alle Betriebs-Warnungen. Frueher stand der Mailversand direkt im
+// Fehlerzaehler; jetzt nutzen ihn auch die Absturz-Handler unten, damit es nicht
+// zwei Stellen mit je eigenem Postfach und eigener Sperre gibt.
+function sendOpsAlert(subject, html) {
+  const to = process.env.ERROR_ALERT_EMAIL || process.env.RECEIPT_ARCHIVE_EMAIL || 'maioscorporation@gmail.com';
+  return emailService.sendEmail({ to, subject, html })
+    .catch((e) => console.warn('⚠️ Betriebs-Warnmail fehlgeschlagen:', e.message));
+}
+
+// ── Absturzschutz ────────────────────────────────────────────────────
+// Ohne diese Handler beendet EIN unbehandelter Fehler in einem asynchronen
+// Ablauf den gesamten Node-Prozess — der Shop ist dann offline. Genau so ist
+// es beim vergessenen Zahlungs-Endpunkt passiert: eine leere Anfrage genuegte.
+// Die Ursache dort ist entfernt, aber die Bauart blieb: jeder kuenftige Fehler
+// dieser Art haette dieselbe Wirkung.
+//
+// Verhalten: protokollieren, einmalig warnen (mit Sperre gegen Mail-Flut) und
+// weiterlaufen. Haeufen sich echte Ausnahmen jedoch, wird bewusst beendet —
+// dann ist der Prozess vermutlich in einem kaputten Zustand, und ein sauberer
+// Neustart durch die Plattform ist besser, als beschaedigte Antworten
+// auszuliefern.
+const CRASH_ALERT_COOLDOWN_MS = 15 * 60 * 1000;
+const CRASH_EXIT_THRESHOLD = 5;             // Ausnahmen …
+const CRASH_EXIT_WINDOW_MS = 60 * 1000;     // … in dieser Zeitspanne -> Neustart
+let __lastCrashAlertAt = 0;
+let __crashWindowStart = Date.now();
+let __crashCount = 0;
+
+function meldeAbsturz(art, fehler) {
+  const text = (fehler && (fehler.stack || fehler.message)) || String(fehler);
+  console.error(`💥 ${art} abgefangen — Shop laeuft weiter:\n`, text);
+
+  const jetzt = Date.now();
+  if (jetzt - __lastCrashAlertAt > CRASH_ALERT_COOLDOWN_MS) {
+    __lastCrashAlertAt = jetzt;
+    sendOpsAlert(
+      `💥 Unbehandelter Fehler im Shop (${art})`,
+      `<h2>Unbehandelter Fehler abgefangen</h2>` +
+      `<p>Der Shop läuft weiter — früher hätte dieser Fehler den Server beendet und die Seite offline genommen.</p>` +
+      `<pre style="white-space:pre-wrap;font-size:12px;background:#f4f4f4;padding:10px;border-radius:6px">${
+        String(text).slice(0, 1500).replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]))}</pre>` +
+      `<p style="color:#777;font-size:13px">Bitte weitergeben — die Stelle sollte behoben werden, der Auffang ist nur das Netz.</p>`
+    );
+  }
+  return jetzt;
+}
+
+process.on('unhandledRejection', (grund) => {
+  meldeAbsturz('nicht behandeltes Promise', grund);
+});
+
+/**
+ * Huelle fuer asynchrone Routen ohne eigenes try/catch.
+ *
+ * Express 4 faengt Fehler aus async-Funktionen NICHT selbst ab: die Anfrage
+ * bleibt unbeantwortet haengen und der Fehler landet als unbehandeltes Promise
+ * beim Prozess. Damit gibt es keine saubere Antwort und im schlimmsten Fall
+ * keinen Server mehr. Mit dieser Huelle geht der Fehler an die zentrale
+ * Fehlerbehandlung am Ende der Datei -> der Aufrufer bekommt einen klaren 500.
+ */
+const asyncSafe = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+
+process.on('uncaughtException', (fehler) => {
+  const jetzt = meldeAbsturz('unerwartete Ausnahme', fehler);
+  if (jetzt - __crashWindowStart > CRASH_EXIT_WINDOW_MS) { __crashWindowStart = jetzt; __crashCount = 0; }
+  __crashCount++;
+  if (__crashCount >= CRASH_EXIT_THRESHOLD) {
+    console.error(`💥 ${__crashCount} Ausnahmen in kurzer Folge — beende fuer einen sauberen Neustart.`);
+    process.exit(1);
+  }
 });
 
 // ── Admin-Authentifizierung (HTTP Basic Auth) ───────────────────────
@@ -2848,10 +2918,10 @@ async function runAbandonedCartSweep() {
 }
 
 // Manueller Trigger fuer Admin/Tests (unter Basic-Auth-Pfad).
-app.post('/a29715347575/api/cart/sweep', async (req, res) => {
+app.post('/a29715347575/api/cart/sweep', asyncSafe(async (req, res) => {
   const result = await runAbandonedCartSweep();
   res.json({ ok: true, ...result });
-});
+}));
 
 // ── Bewertungs-Anfrage nach Kauf (opt-in per ENV) ────────────────────
 // X Tage nach dem Kauf eine Mail mit Direktlinks zum Bewerten. Versand nur bei
@@ -2918,39 +2988,39 @@ async function runReviewRequestSweep() {
 }
 
 // Manueller Trigger fuer Admin/Tests.
-app.post('/a29715347575/api/reviews/request-sweep', async (req, res) => {
+app.post('/a29715347575/api/reviews/request-sweep', asyncSafe(async (req, res) => {
   const result = await runReviewRequestSweep();
   res.json({ ok: true, ...result });
-});
+}));
 
 // Datenbank-Backup manuell auf Knopfdruck ausloesen (unabhaengig vom Zeitplan-Flag).
-app.post('/a29715347575/api/backup/run', async (req, res) => {
+app.post('/a29715347575/api/backup/run', asyncSafe(async (req, res) => {
   const result = await runDatabaseBackup();
   if (result.success) {
     await logAdminAction(req, 'backup_created', `Manuelles Backup: ${Object.values(result.counts).reduce((s, n) => s + n, 0)} Zeilen, ${result.sizeKb} KB`);
   }
   res.status(result.success ? 200 : 502).json({ ok: result.success, ...result });
-});
+}));
 
 // CJ-Preisabgleich manuell auf Knopfdruck ausloesen. Aendert NIE automatisch
 // Verkaufspreise -> nur Beobachtung + Mail-Warnung bei Abweichung (s. cj-price-sync.js).
-app.post('/a29715347575/api/cj-price-sync/run', async (req, res) => {
+app.post('/a29715347575/api/cj-price-sync/run', asyncSafe(async (req, res) => {
   const result = await runCjPriceSync(cjAPI);
   await logAdminAction(req, 'cj_price_sync',
     `${result.matched} Produkte zugeordnet, ${result.checked} geprüft, ${result.unavailable} CJ-Antwort fehlte, ${result.changes.length} Preisänderung(en)`);
   res.json({ ok: true, ...result });
-});
+}));
 
 // CJ-Bestandsabgleich manuell ausloesen. Setzt "nicht lieferbar" nur bei einer
 // eindeutigen CJ-Antwort mit Bestand 0 — nie auf Verdacht (siehe cj-stock-sync.js).
-app.post('/a29715347575/api/cj-stock-sync/run', async (req, res) => {
+app.post('/a29715347575/api/cj-stock-sync/run', asyncSafe(async (req, res) => {
   const result = await runCjStockSync(cjAPI);
   __stockOverrideCache = { at: 0, ids: new Set() }; // Cache sofort verwerfen
   await logAdminAction(req, 'cj_stock_sync',
     `${result.matched} zugeordnet, ${result.checked} geprüft, ${result.unavailable} ohne CJ-Antwort, ` +
     `${result.nowUnavailable.length} neu ausverkauft, ${result.backInStock.length} wieder lieferbar`);
   res.json({ ok: true, ...result });
-});
+}));
 
 // CSP-Verstoesse einsehen — die Grundlage, um zu entscheiden, ob scharf
 // geschaltet werden kann. Leere Liste nach ein paar Tagen echtem Verkehr = alles
@@ -2994,7 +3064,7 @@ app.get('/a29715347575/api/cj-stock', async (req, res) => {
 
 // Abgleich "bezahlt, aber keine Bestellung" manuell ausloesen. Rein lesend —
 // legt nie automatisch eine Bestellung an (siehe stripe-reconcile.js).
-app.post('/a29715347575/api/reconcile/run', async (req, res) => {
+app.post('/a29715347575/api/reconcile/run', asyncSafe(async (req, res) => {
   const days = Math.min(Math.max(parseInt(req.body?.days, 10) || 7, 1), 90);
   const result = await runStripeReconcile(stripe, { days });
   await logAdminAction(req, 'stripe_reconcile',
@@ -3002,7 +3072,7 @@ app.post('/a29715347575/api/reconcile/run', async (req, res) => {
       ? `übersprungen: ${result.skipped}`
       : `${result.checked} Zahlungen geprüft, ${result.matched} zugeordnet, ${result.orphans.length} ohne Bestellung`);
   res.json({ ok: true, days, ...result });
-});
+}));
 
 // Admin: Kennzahlen fuer die Dashboard-Kacheln
 // Routen liegen bewusst UNTER /a29715347575/ (= authentifizierter Pfad-Teilbaum),
@@ -3502,6 +3572,21 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, '404.html'), (err) => {
     if (err && !res.headersSent) res.status(404).type('txt').send('Seite nicht gefunden');
   });
+});
+
+// ── Zentrale Fehlerbehandlung ────────────────────────────────────────
+// MUSS nach allen Routen stehen. Ohne sie liefert Express bei einem Fehler
+// seine Standardseite MIT Stapelspur aus — das verraet Dateipfade und internen
+// Aufbau. Vier Parameter sind Pflicht, daran erkennt Express die
+// Fehlerbehandlung (deshalb ist `next` hier ungenutzt, aber notwendig).
+app.use((err, req, res, next) => {
+  console.error(`❌ Unbehandelter Fehler bei ${req.method} ${req.originalUrl}:`, err && err.message);
+  if (res.headersSent) return; // Antwort laeuft schon -> nichts mehr moeglich
+  const istApi = req.path.startsWith('/api/') || req.path.startsWith('/a29715347575/api/');
+  if (istApi) {
+    return res.status(500).json({ error: 'Interner Serverfehler' });
+  }
+  res.status(500).type('txt').send('Es ist ein Fehler aufgetreten. Bitte später erneut versuchen.');
 });
 
 const PORT = process.env.PORT || 3000;
