@@ -59,7 +59,18 @@ class CJDropshippingAPI {
     if (!erzwingen && this.runtimeToken && this.runtimeTokenExpiry > jetzt + 60000) {
       return this.runtimeToken;
     }
-    if (jetzt - this.lastTokenAttempt < 5 * 60 * 1000) {
+
+    // Sperre gegen zu haeufige Abrufe — CJ begrenzt das streng und sperrt bei
+    // Missbrauch das Konto. Die Dauer haengt davon ab, WARUM gefragt wird:
+    //   * abgelaufener Token nach erfolgreichem Abruf -> kurz. Genau dafuer ist
+    //     die Erneuerung da; eine lange Sperre wuerde sie aushebeln (beim Test
+    //     gegen einen CJ-Nachbau lief der Shop dadurch in den Notbetrieb,
+    //     obwohl gueltige Zugangsdaten vorlagen).
+    //   * letzter Abruf gescheitert -> lang. Dann stimmen vermutlich die
+    //     Zugangsdaten nicht, und haeufiges Nachfragen macht es nur schlimmer.
+    const letzterVersuchGescheitert = !this.runtimeToken;
+    const sperre = (erzwingen && !letzterVersuchGescheitert) ? 10 * 1000 : 5 * 60 * 1000;
+    if (jetzt - this.lastTokenAttempt < sperre) {
       return this.runtimeToken; // Sperre laeuft noch -> nicht erneut anfragen
     }
     this.lastTokenAttempt = jetzt;
