@@ -2120,9 +2120,25 @@ app.get('/api/cj/test', async (req, res) => {
   try {
     const result = await cjAPI.testConnection();
     const fehler = cjAPI.lastError || null;
+    // Welche Zugangsvariablen kommen im Betrieb ueberhaupt an? Ohne diese
+    // Angabe war nicht feststellbar, ob eine im Dashboard geloeschte Variable
+    // wirklich weg ist. Bewusst NUR Vorhandensein und Laenge — nie der Wert.
+    const zustand = (name) => {
+      const v = process.env[name];
+      if (v === undefined) return 'nicht vorhanden';
+      if (v === '') return 'vorhanden, aber leer';
+      return `gesetzt (${v.length} Zeichen)`;
+    };
     res.json({
       ok: !fehler,
       ergebnis: result,
+      konfiguration: {
+        CJ_API_KEY: zustand('CJ_API_KEY'),
+        CJ_ACCESS_TOKEN: zustand('CJ_ACCESS_TOKEN'),
+        CJ_EMAIL: zustand('CJ_EMAIL'),
+        CJ_PASSWORD: zustand('CJ_PASSWORD'),
+        tokenSelbstGeholt: cjAPI.runtimeToken ? 'ja' : 'nein'
+      },
       // Nur Metadaten — niemals der Schluessel selbst.
       diagnose: fehler ? {
         httpStatus: fehler.status,
