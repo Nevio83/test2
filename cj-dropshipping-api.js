@@ -60,15 +60,32 @@ class CJDropshippingAPI {
 
       const response = await fetch(url, config);
       const result = await response.json();
-      
+
       if (!response.ok) {
-        console.log('🔄 API failed, switching to fallback mode');
+        // Grund festhalten, statt ihn zu verschlucken. Vorher stand im Log nur
+        // "API failed" und nach aussen "CJ API unavailable" — ohne Statuscode
+        // und ohne CJs Meldung war nicht unterscheidbar, ob das Token abgelaufen
+        // ist, das Konto gesperrt oder nur ein Rate-Limit zuschlug.
+        const grund = (result && (result.message || result.msg)) || 'ohne Meldung';
+        this.lastError = {
+          status: response.status,
+          message: grund,
+          endpoint,
+          // Welche Zugangsdaten wurden ueberhaupt benutzt? Genau hier lag die
+          // Falle: ein alter CJ_ACCESS_TOKEN hat Vorrang vor CJ_API_KEY.
+          verwendet: (this.accessToken && this.accessToken !== 'your_cj_access_token_here')
+            ? 'CJ_ACCESS_TOKEN' : (this.apiKey ? 'CJ_API_KEY' : 'keine'),
+          at: new Date().toISOString()
+        };
+        console.log(`🔄 CJ lehnte ab (HTTP ${response.status}, ${this.lastError.verwendet}): ${grund} — nutze Notbetrieb`);
         return this.handleFallback(endpoint, data);
       }
-      
+
+      this.lastError = null;
       return result;
     } catch (error) {
-      console.log('🔄 API error, using fallback:', error.message);
+      this.lastError = { status: null, message: error.message, endpoint, at: new Date().toISOString() };
+      console.log('🔄 CJ nicht erreichbar, Notbetrieb:', error.message);
       return this.handleFallback(endpoint, data);
     }
   }

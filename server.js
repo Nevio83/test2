@@ -2112,10 +2112,28 @@ app.post('/api/cj/disputes/create', async (req, res) => {
 });
 
 // Test CJ API Connection
+// Verbindungstest MIT Begruendung. Vorher kam bei jedem Problem nur
+// "CJ API unavailable" — ohne Statuscode und ohne CJs Meldung liess sich nicht
+// unterscheiden, ob das Token abgelaufen ist, das Konto gesperrt oder welche
+// Zugangsdaten ueberhaupt verwendet wurden.
 app.get('/api/cj/test', async (req, res) => {
   try {
     const result = await cjAPI.testConnection();
-    res.json(result);
+    const fehler = cjAPI.lastError || null;
+    res.json({
+      ok: !fehler,
+      ergebnis: result,
+      // Nur Metadaten — niemals der Schluessel selbst.
+      diagnose: fehler ? {
+        httpStatus: fehler.status,
+        cjMeldung: fehler.message,
+        verwendeteZugangsdaten: fehler.verwendet,
+        hinweis: fehler.verwendet === 'CJ_ACCESS_TOKEN'
+          ? 'CJ_ACCESS_TOKEN hat Vorrang vor CJ_API_KEY. Ist er abgelaufen, muss er in Render geleert werden, damit der API-Key greift.'
+          : undefined,
+        zeitpunkt: fehler.at
+      } : undefined
+    });
   } catch (error) {
     console.error('CJ API Test Error:', error);
     res.status(500).json({ error: 'Interner Serverfehler.' });
