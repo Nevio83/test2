@@ -17,36 +17,107 @@ class CJDropshippingAPI {
     this.email = config.email || process.env.CJ_EMAIL;
     this.password = config.password || process.env.CJ_PASSWORD;
     this.fallbackSystem = new CJFallbackSystem();
-    
-    if (!this.apiKey && !this.accessToken) {
+
+    // Zur Laufzeit geholter Token (siehe ensureAccessToken). Bewusst nur im
+    // Speicher: er laeuft ohnehin ab und hat in keiner Datei etwas zu suchen.
+    this.runtimeToken = null;
+    this.runtimeTokenExpiry = 0;
+    this.lastTokenAttempt = 0;
+
+    if (!this.apiKey && !this.accessToken && !(this.email && this.password)) {
       console.warn('⚠️  CJ API credentials not found. Using fallback mode.');
       console.warn('📖 Get your credentials from: https://cjdropshipping.com/my.html#/apikey');
     } else {
-      console.log('✅ CJ Dropshipping API initialized successfully');
+      const wege = [];
+      if (this.email && this.password) wege.push('E-Mail+Passwort (Token wird selbst geholt)');
+      if (this.accessToken && this.accessToken !== 'your_cj_access_token_here') wege.push('CJ_ACCESS_TOKEN');
+      if (this.apiKey) wege.push('CJ_API_KEY');
+      console.log('✅ CJ Dropshipping API bereit — Zugang über:', wege.join(', '));
+    }
+  }
+
+  /**
+   * Besorgt bei Bedarf einen gueltigen Access-Token ueber E-Mail + Passwort.
+   *
+   * Warum das noetig ist: CJ akzeptiert den API-Key nicht als Zugangsschluessel.
+   * Man muss sich damit einen zeitlich begrenzten Token holen (CJs Fehlermeldung
+   * verweist genau darauf). getAccessToken() gab es zwar schon, wurde vom Server
+   * aber NIE aufgerufen — nur vom Hilfsskript get-cj-token.js. Dadurch lief der
+   * Shop dauerhaft im Notbetrieb, sobald der von Hand eingetragene Token ablief.
+   *
+   * CJ begrenzt diesen Aufruf streng (etwa einmal alle 5 Minuten je Konto),
+   * deshalb die Sperre ueber lastTokenAttempt — sonst sperrt CJ das Konto aus.
+   *
+   * @param {boolean} erzwingen  true = auch einen noch gueltigen Token erneuern
+   * @returns {Promise<string|null>}
+   */
+  async ensureAccessToken(erzwingen = false) {
+    if (!this.email || !this.password) return null;
+
+    const jetzt = Date.now();
+    // Eine Minute Sicherheitsabstand vor dem Ablauf.
+    if (!erzwingen && this.runtimeToken && this.runtimeTokenExpiry > jetzt + 60000) {
+      return this.runtimeToken;
+    }
+    if (jetzt - this.lastTokenAttempt < 5 * 60 * 1000) {
+      return this.runtimeToken; // Sperre laeuft noch -> nicht erneut anfragen
+    }
+    this.lastTokenAttempt = jetzt;
+
+    try {
+      const antwort = await this.getAccessToken();
+      const daten = antwort && antwort.data;
+      const token = daten && (daten.accessToken || daten.access_token);
+      if (!token) {
+        console.warn('⚠️ CJ lieferte keinen Token:', (antwort && antwort.message) || 'unbekannter Grund');
+        return this.runtimeToken;
+      }
+      this.runtimeToken = token;
+      // CJ nennt ein Ablaufdatum; ohne Angabe konservativ 12 Stunden annehmen.
+      const ablauf = daten.accessTokenExpiryDate || daten.expiryDate;
+      const ts = ablauf ? Date.parse(String(ablauf).replace(' ', 'T')) : NaN;
+      this.runtimeTokenExpiry = Number.isFinite(ts) ? ts : jetzt + 12 * 60 * 60 * 1000;
+      console.log('🔑 CJ-Access-Token geholt, gültig bis',
+        new Date(this.runtimeTokenExpiry).toISOString().slice(0, 16).replace('T', ' '));
+      return this.runtimeToken;
+    } catch (e) {
+      console.warn('⚠️ CJ-Token konnte nicht geholt werden:', e.message);
+      return this.runtimeToken;
     }
   }
 
   /**
    * Make authenticated request to CJ API with fallback support
    */
-  async makeRequest(endpoint, method = 'GET', data = null, useAuth = true) {
+  async makeRequest(endpoint, method = 'GET', data = null, useAuth = true, istWiederholung = false) {
     try {
       const url = `${this.baseURL}${endpoint}`;
-      
+
       const headers = {
         'Content-Type': 'application/json',
       };
 
-      // Use API key directly for authentication
+      // Die Authentifizierungs-Aufrufe selbst duerfen keinen Token anfordern —
+      // sonst ruft sich das gegenseitig endlos auf.
+      const istAuthAufruf = endpoint.includes('/authentication/');
+
       if (useAuth) {
-        if (this.accessToken && this.accessToken !== 'your_cj_access_token_here') {
-          headers['CJ-Access-Token'] = this.accessToken;
-        } else if (this.apiKey) {
-          headers['CJ-Access-Token'] = this.apiKey;
-        } else {
-          console.log('⚠️ No valid credentials, using fallback mode');
+        // Reihenfolge nach Verlaesslichkeit: selbst geholter Token zuerst, dann
+        // ein von Hand hinterlegter, zuletzt der API-Key. Frueher gewann der
+        // hinterlegte Token immer — ein abgelaufener Wert machte damit jeden
+        // frisch eingetragenen API-Key wirkungslos.
+        const geholt = istAuthAufruf ? null : await this.ensureAccessToken();
+        const hinterlegt = (this.accessToken && this.accessToken !== 'your_cj_access_token_here')
+          ? this.accessToken : null;
+        const schluessel = geholt || hinterlegt || this.apiKey;
+
+        if (!schluessel) {
+          console.log('⚠️ Keine gültigen CJ-Zugangsdaten — Notbetrieb');
           return this.handleFallback(endpoint, data);
         }
+        headers['CJ-Access-Token'] = schluessel;
+        this.zuletztVerwendet = geholt ? 'E-Mail+Passwort (selbst geholter Token)'
+          : (hinterlegt ? 'CJ_ACCESS_TOKEN' : 'CJ_API_KEY');
       }
 
       const config = {
@@ -62,19 +133,33 @@ class CJDropshippingAPI {
       const result = await response.json();
 
       if (!response.ok) {
+        const grund = (result && (result.message || result.msg)) || 'ohne Meldung';
+
+        // Abgelehnt wegen Zugangsdaten? Dann EINMAL einen frischen Token holen
+        // und den Aufruf wiederholen — Token laufen ab, das ist der Normalfall
+        // und kein Grund, in den Notbetrieb zu gehen.
+        const wirktWieAbgelaufen = response.status === 401 || response.status === 403 ||
+          /token|unauthor/i.test(grund);
+        if (wirktWieAbgelaufen && !istWiederholung && !istAuthAufruf && this.email && this.password) {
+          const neu = await this.ensureAccessToken(true);
+          // Nur melden, wenn wirklich ein neuer Token kam. Sonst hat die Sperre
+          // gegriffen (CJ erlaubt den Abruf nur alle paar Minuten) — dann waere
+          // "hole frischen Token" eine irrefuehrende Zeile im Protokoll.
+          if (neu) {
+            console.log('🔑 Zugang war abgelaufen — mit frischem Token erneut versucht');
+            return this.makeRequest(endpoint, method, data, useAuth, true);
+          }
+        }
+
         // Grund festhalten, statt ihn zu verschlucken. Vorher stand im Log nur
         // "API failed" und nach aussen "CJ API unavailable" — ohne Statuscode
         // und ohne CJs Meldung war nicht unterscheidbar, ob das Token abgelaufen
         // ist, das Konto gesperrt oder nur ein Rate-Limit zuschlug.
-        const grund = (result && (result.message || result.msg)) || 'ohne Meldung';
         this.lastError = {
           status: response.status,
           message: grund,
           endpoint,
-          // Welche Zugangsdaten wurden ueberhaupt benutzt? Genau hier lag die
-          // Falle: ein alter CJ_ACCESS_TOKEN hat Vorrang vor CJ_API_KEY.
-          verwendet: (this.accessToken && this.accessToken !== 'your_cj_access_token_here')
-            ? 'CJ_ACCESS_TOKEN' : (this.apiKey ? 'CJ_API_KEY' : 'keine'),
+          verwendet: this.zuletztVerwendet || 'keine',
           at: new Date().toISOString()
         };
         console.log(`🔄 CJ lehnte ab (HTTP ${response.status}, ${this.lastError.verwendet}): ${grund} — nutze Notbetrieb`);
