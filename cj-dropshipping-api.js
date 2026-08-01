@@ -216,34 +216,46 @@ class CJDropshippingAPI {
    */
   async getAccessToken() {
     const url = `${this.baseURL}/api2.0/v1/authentication/getAccessToken`;
-    
-    const headers = {
-      'Content-Type': 'application/json'
-      // No authentication headers for token request
-    };
+    const headers = { 'Content-Type': 'application/json' };
 
-    const config = {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        email: this.email,
-        password: this.password
-      })
+    // CJ erwartet im Feld "password" je nach Konto entweder das Kontopasswort
+    // ODER den API-Key — die Doku ist da uneindeutig, und welches gilt, merkt
+    // man nur am Fehlschlag. Statt zu raten werden beide Moeglichkeiten
+    // durchprobiert; welche funktioniert hat, wird gemerkt und beim naechsten
+    // Mal zuerst genommen (spart Aufrufe gegen CJs strenge Begrenzung).
+    const kandidaten = [];
+    const nimm = (wert, name) => {
+      if (wert && !kandidaten.some((k) => k.wert === wert)) kandidaten.push({ wert, name });
     };
+    if (this.erfolgreichesGeheimnis === 'CJ_API_KEY') { nimm(this.apiKey, 'CJ_API_KEY'); nimm(this.password, 'CJ_PASSWORD'); }
+    else { nimm(this.password, 'CJ_PASSWORD'); nimm(this.apiKey, 'CJ_API_KEY'); }
 
-    try {
-      const response = await fetch(url, config);
-      const result = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(`CJ API Error: ${result.message || response.statusText}`);
+    if (!kandidaten.length) throw new Error('Weder CJ_PASSWORD noch CJ_API_KEY gesetzt');
+
+    let letzterFehler = null;
+    for (const k of kandidaten) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST', headers,
+          body: JSON.stringify({ email: this.email, password: k.wert })
+        });
+        const result = await response.json();
+        if (response.ok && result && result.data &&
+            (result.data.accessToken || result.data.access_token)) {
+          if (this.erfolgreichesGeheimnis !== k.name) {
+            console.log(`🔑 CJ akzeptiert ${k.name} als Zugangsgeheimnis — wird künftig zuerst genutzt`);
+          }
+          this.erfolgreichesGeheimnis = k.name;
+          return result;
+        }
+        letzterFehler = (result && result.message) || `HTTP ${response.status}`;
+        console.log(`🔑 CJ lehnte ${k.name} ab: ${letzterFehler}`);
+      } catch (error) {
+        letzterFehler = error.message;
+        console.log(`🔑 Token-Anfrage mit ${k.name} fehlgeschlagen: ${error.message}`);
       }
-      
-      return result;
-    } catch (error) {
-      console.error('CJ API Request Error:', error);
-      throw error;
     }
+    throw new Error(`CJ verweigert den Token (${letzterFehler || 'ohne Meldung'})`);
   }
 
   /**
