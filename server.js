@@ -2156,6 +2156,24 @@ app.get('/api/cj/test', async (req, res) => {
   }
 });
 
+// Lesender Einblick in einen beliebigen CJ-Endpunkt — zur Fehlersuche.
+// Ohne das musste fuer jede Frage an CJ eine Code-Aenderung deployt werden.
+// Bewusst eng gefasst: nur GET, nur Pfade unterhalb /api2.0/v1/, keine
+// Authentifizierungs-Endpunkte (dort stehen Zugangsdaten im Spiel), und
+// ohnehin nur hinter der Admin-Anmeldung erreichbar.
+app.get('/a29715347575/api/cj-raw', asyncSafe(async (req, res) => {
+  const pfad = typeof req.query.pfad === 'string' ? req.query.pfad : '';
+  if (!pfad.startsWith('/api2.0/v1/') || pfad.includes('..') || pfad.includes('/authentication/')) {
+    return res.status(400).json({
+      ok: false,
+      error: 'Nur lesende Pfade unterhalb /api2.0/v1/ (ohne /authentication/)',
+      beispiel: '/a29715347575/api/cj-raw?pfad=/api2.0/v1/product/variant/query%3FproductId%3D123'
+    });
+  }
+  const antwort = await cjAPI.makeRequest(pfad, 'GET');
+  res.json({ ok: true, pfad, antwort, fehler: cjAPI.lastError || null });
+}));
+
 // Get Available CJ API Methods
 app.get('/api/cj/methods', (req, res) => {
   try {
