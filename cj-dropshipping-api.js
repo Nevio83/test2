@@ -227,13 +227,20 @@ class CJDropshippingAPI {
     const nimm = (wert, name) => {
       if (wert && !kandidaten.some((k) => k.wert === wert)) kandidaten.push({ wert, name });
     };
-    if (this.erfolgreichesGeheimnis === 'CJ_API_KEY') { nimm(this.apiKey, 'CJ_API_KEY'); nimm(this.password, 'CJ_PASSWORD'); }
-    else { nimm(this.password, 'CJ_PASSWORD'); nimm(this.apiKey, 'CJ_API_KEY'); }
+    // API-Key zuerst: CJ empfiehlt in seiner eigenen Fehlermeldung ausdruecklich
+    // den "apiKey mode". Das Kontopasswort bleibt als zweite Moeglichkeit.
+    if (this.erfolgreichesGeheimnis === 'CJ_PASSWORD') { nimm(this.password, 'CJ_PASSWORD'); nimm(this.apiKey, 'CJ_API_KEY'); }
+    else { nimm(this.apiKey, 'CJ_API_KEY'); nimm(this.password, 'CJ_PASSWORD'); }
 
     if (!kandidaten.length) throw new Error('Weder CJ_PASSWORD noch CJ_API_KEY gesetzt');
 
     let letzterFehler = null;
-    for (const k of kandidaten) {
+    for (let i = 0; i < kandidaten.length; i++) {
+      const k = kandidaten[i];
+      // CJ laesst nur EINE Anfrage pro Sekunde zu. Ohne Pause wurde der zweite
+      // Versuch mit "Too Many Requests" abgewiesen — er sah dadurch aus wie ein
+      // falsches Geheimnis, obwohl er nie geprueft wurde.
+      if (i > 0) await new Promise((r) => setTimeout(r, 1300));
       try {
         const response = await fetch(url, {
           method: 'POST', headers,
@@ -249,6 +256,28 @@ class CJDropshippingAPI {
           return result;
         }
         letzterFehler = (result && result.message) || `HTTP ${response.status}`;
+
+        // Ueberlastung ist KEINE Ablehnung des Geheimnisses — es wurde gar nicht
+        // geprueft. Einmal abwarten und denselben Kandidaten wiederholen, sonst
+        // steht im Protokoll faelschlich "abgelehnt" und man sucht am falschen Ende.
+        if (response.status === 429 || /too many requests|qps/i.test(letzterFehler)) {
+          // Grosszuegig warten: CJs Grenze liegt bei 1 s, aber sie greift auf
+          // das ganze Konto — laeuft parallel noch ein anderer Aufruf, reicht
+          // eine knappe Pause nicht. Der Fall ist selten, die Sekunde egal.
+          console.log(`🔑 CJ bremst (${letzterFehler}) — ${k.name} wurde nicht geprüft, warte und wiederhole`);
+          await new Promise((r) => setTimeout(r, 2500));
+          const zweiter = await fetch(url, {
+            method: 'POST', headers,
+            body: JSON.stringify({ email: this.email, password: k.wert })
+          });
+          const rr = await zweiter.json();
+          if (zweiter.ok && rr && rr.data && (rr.data.accessToken || rr.data.access_token)) {
+            this.erfolgreichesGeheimnis = k.name;
+            console.log(`🔑 CJ akzeptiert ${k.name} als Zugangsgeheimnis`);
+            return rr;
+          }
+          letzterFehler = (rr && rr.message) || `HTTP ${zweiter.status}`;
+        }
         console.log(`🔑 CJ lehnte ${k.name} ab: ${letzterFehler}`);
       } catch (error) {
         letzterFehler = error.message;
