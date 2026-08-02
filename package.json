@@ -9,7 +9,7 @@
     "start": "node server.js",
     "test-cj-api": "node test-cj-api.js",
     "dev": "nodemon server.js",
-    "test": "node --test \"test/**/*.test.js\"",
+    "test": "node test/lauf.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
