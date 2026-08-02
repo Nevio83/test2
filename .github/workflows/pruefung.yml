@@ -43,10 +43,13 @@ jobs:
 
     steps:
       - name: Quellcode holen
-        uses: actions/checkout@v4
+        # v7 statt v4: GitHub stellt die Node-20-Laufzeit fuer Actions ein und
+        # warnt bei v4 bereits ("being forced to run on Node.js 24"). Aus einer
+        # Warnung wird irgendwann ein Fehler — dann steht der Prueflauf.
+        uses: actions/checkout@v7
 
       - name: Node einrichten
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # Aus .nvmrc statt fest eingetragen — sonst prüft die CI irgendwann
           # eine andere Version, als Render tatsächlich fährt.
