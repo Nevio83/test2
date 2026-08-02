@@ -83,8 +83,9 @@ async function runCjPriceSync(cjAPI) {
       summary.matched++;
 
       const currentPrice = await fetchCjPrice(cjAPI, pid);
-      // Kleine Pause zwischen Aufrufen -> schont CJs Rate-Limit.
-      await new Promise((r) => setTimeout(r, 400));
+      // CJ laesst rund eine Anfrage pro Sekunde zu. 400 ms waren zu schnell:
+      // beim Lauf am 02.08. kamen von drei Produkten nur zwei durch.
+      await new Promise((r) => setTimeout(r, 1100));
       if (currentPrice == null) { summary.unavailable++; continue; }
       summary.checked++;
 

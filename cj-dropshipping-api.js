@@ -100,7 +100,8 @@ class CJDropshippingAPI {
   /**
    * Make authenticated request to CJ API with fallback support
    */
-  async makeRequest(endpoint, method = 'GET', data = null, useAuth = true, istWiederholung = false) {
+  async makeRequest(endpoint, method = 'GET', data = null, useAuth = true, istWiederholung = false,
+                    istRatenWiederholung = false) {
     try {
       const url = `${this.baseURL}${endpoint}`;
 
@@ -146,6 +147,17 @@ class CJDropshippingAPI {
       if (!response.ok) {
         const grund = (result && (result.message || result.msg)) || 'ohne Meldung';
 
+        // Zu schnell gefragt? CJ laesst rund eine Anfrage pro Sekunde zu. Das
+        // ist kein Fehler, sondern eine Bitte um Geduld — also EINMAL kurz
+        // warten und denselben Aufruf wiederholen. Ohne das rutschte jeder
+        // Abgleich bei mehreren Produkten in den Notbetrieb, obwohl der Zugang
+        // einwandfrei war (live gesehen: von drei Produkten kamen nur zwei an).
+        const zuSchnell = response.status === 429 || /too many requests|qps/i.test(grund);
+        if (zuSchnell && !istRatenWiederholung) {
+          await new Promise((r) => setTimeout(r, 1500));
+          return this.makeRequest(endpoint, method, data, useAuth, istWiederholung, true);
+        }
+
         // Abgelehnt wegen Zugangsdaten? Dann EINMAL einen frischen Token holen
         // und den Aufruf wiederholen — Token laufen ab, das ist der Normalfall
         // und kein Grund, in den Notbetrieb zu gehen.
@@ -158,7 +170,7 @@ class CJDropshippingAPI {
           // "hole frischen Token" eine irrefuehrende Zeile im Protokoll.
           if (neu) {
             console.log('🔑 Zugang war abgelaufen — mit frischem Token erneut versucht');
-            return this.makeRequest(endpoint, method, data, useAuth, true);
+            return this.makeRequest(endpoint, method, data, useAuth, true, istRatenWiederholung);
           }
         }
 
