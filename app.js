@@ -1278,10 +1278,14 @@ function initializeCartDropdown() {
   const cartDropdown = document.getElementById("cartDropdown");
   const closeCartDropdown = document.getElementById("closeCartDropdown");
 
-  console.log("Initializing cart dropdown:", {
-    cartButton: !!cartButton,
-    cartDropdown: !!cartDropdown,
-  });
+  // Hinweis fuer den naechsten Blick hierher: die IDs cartButton/cartDropdown
+  // kommen in KEINER HTML-Datei mehr vor. Die Startseite baut ihre Kopfzeile
+  // seit dem Umbau in home.js (cartBtn, miniCart, cartCount), Produkt- und
+  // Infoseiten haben ueberhaupt kein Warenkorb-Fenster. Dieser Zweig bindet
+  // derzeit also nirgends etwas an. Er bleibt vorerst stehen, weil
+  // renderCartDropdown an rund 20 Stellen in app.js und cart.js haengt und
+  // zur Laufzeit umgebogen wird — das sauber herauszuloesen ist eine eigene
+  // Aufgabe. Was hier NICHT bleibt: die Fehlermeldung dafuer (siehe unten).
 
   if (cartButton && cartDropdown) {
     // Remove any existing event listeners
@@ -1318,12 +1322,18 @@ function initializeCartDropdown() {
     }
 
     cartButton.addEventListener("click", handleCartClick);
-  } else {
-    console.error("Cart elements not found:", {
-      cartButton: !!cartButton,
-      cartDropdown: !!cartDropdown,
+  } else if (cartButton || cartDropdown) {
+    // Nur EIN Teil des Paares da -> die Seite wollte das Fenster haben und es
+    // ist halb gebaut. Das ist ein echter Befund und darf auffallen.
+    console.warn("⚠️ Warenkorb-Fenster nur halb vorhanden auf", location.pathname, {
+      knopf: !!cartButton,
+      fenster: !!cartDropdown,
     });
   }
+  // Fehlt BEIDES, hat die Seite dieses Fenster schlicht nicht — das ist der
+  // Normalfall und kein Fehler. Vorher stand hier ein console.error, der
+  // dadurch auf jeder einzelnen Seite ausloeste. Dauerfehler entwerten genau
+  // das Signal, an dem man echte Fehler erkennt.
   if (closeCartDropdown && cartDropdown) {
     closeCartDropdown.addEventListener("click", (e) => {
       e.preventDefault();
@@ -4125,9 +4135,20 @@ function initializeFullscreenSearch() {
     });
 
     if (!fullscreenSearchBtn || !searchOverlay) {
-      // Only log error if we're on a page where these elements should exist
-      if (!window.location.pathname.includes("cart.html")) {
-        console.error("âŒ Fullscreen search elements not found");
+      // Fehlt BEIDES, hat die Seite diese Suche gar nicht — kein Fehler.
+      // Genau das ist derzeit ueberall der Fall: fullscreenSearchBtn und
+      // fullscreenSearchOverlay kommen in keiner HTML-Datei mehr vor; die
+      // Startseite sucht ueber nav-search/searchInputDesk aus home.js.
+      // Vorher entschied hier eine Ausnahmeliste mit Seitennamen ("ausser
+      // cart.html") — die musste bei jeder neuen Seite nachgepflegt werden
+      // und meldete auf allen uebrigen Seiten dauerhaft einen roten Fehler.
+      // Jetzt zaehlt der Zustand der Seite, nicht ihr Name.
+      if (fullscreenSearchBtn || searchOverlay) {
+        // Halb vorhanden -> die Seite wollte die Suche, sie ist unfertig.
+        console.warn("⚠️ Vollbild-Suche unvollständig auf", window.location.pathname, {
+          knopf: !!fullscreenSearchBtn,
+          overlay: !!searchOverlay,
+        });
       }
       return;
     }
