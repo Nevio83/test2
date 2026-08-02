@@ -52,7 +52,15 @@ receipts/*.pdf
 # Entstehen automatisch beim ersten Abruf (Route in server.js) und sind
 # vollstaendig aus dem Original ableitbar. Bewusst NICHT versioniert: es waeren
 # rund 450 Dateien und 2,8 MB, die mit jedem neuen Produkt weiter wachsen.
-# Die einfachen *.webp ohne Groessenangabe bleiben getrackt (Altbestand).
+# Auch die einfachen *.webp OHNE Groessenangabe entstehen auf Abruf: fragt der
+# Browser ein Bild ohne ?w= an und akzeptiert WebP, legt die Route in server.js
+# eine Datei "<Name>.webp" neben das Original. Der Kommentar hier behauptete
+# frueher, solche Dateien seien Altbestand — das stimmte, bis die Route kam.
+# Beispiel: images/logo.webp tauchte nach ein paar Seitenaufrufen im Status auf.
+# Bereits versionierte *.webp bleiben versioniert (eine Ignorier-Regel entfernt
+# nichts, was schon getrackt ist); neue, abgeleitete kommen nicht mehr dazu.
+# Ein wirklich neues, von Hand erstelltes WebP braucht "git add -f".
+*.webp
 #
 # Bewusst nur die vier erlaubten Breiten aus BILD_BREITEN, nicht "-<drei Ziffern>":
 # ein allgemeines Muster wuerde auch images/icon-192.png und icon-512.png
