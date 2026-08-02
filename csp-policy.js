@@ -69,11 +69,15 @@ const META = ['https://connect.facebook.net'];
 const META_IMG = ['https://www.facebook.com'];
 const TIKTOK = ['https://analytics.tiktok.com'];
 
-// Live-Chat (ai-chat-integration.js, derzeit mit Platzhalter-IDs inaktiv —
+// Live-Chat (site-integrations.js -> loadTawk, laedt nur mit TAWK_PROPERTY_ID —
 // aufgenommen, damit das Aktivieren spaeter nicht an der CSP scheitert).
 const TAWK = ['https://embed.tawk.to', 'https://*.tawk.to'];
 const TAWK_WS = ['wss://*.tawk.to'];
-const OPENAI = ['https://api.openai.com'];
+// api.openai.com stand hier fuer den OpenAI-Rueckfall in ai-chat-integration.js.
+// Diese Datei ist entfernt (sie war durch site-integrations.js abgeloest und
+// wurde von keiner Seite mehr eingebunden), damit ist der Eintrag unbelegt —
+// und jede unbelegte Quelle ist eine Adresse mehr, an die der Browser Daten
+// schicken duerfte. Wird der Chat spaeter mit OpenAI gebaut, kommt sie zurueck.
 
 // Die eigene Domain ausdruecklich mitfuehren. Grund: index.html bindet das
 // Logo als absolute Adresse ein (https://maiosshop.com/images/logo.png). Wird
@@ -106,7 +110,7 @@ function buildCsp() {
     'img-src': dedupe(["'self'", 'data:', 'blob:', ...EIGENE_DOMAIN, ...META_IMG, ...GA_CONNECT, ...TIKTOK, ...TAWK]),
     'connect-src': dedupe([
       "'self'", ...STRIPE_CONNECT, ...ADRESSSUCHE, ...GEO_DIENSTE,
-      ...GA_CONNECT, ...META, ...TIKTOK, ...TAWK, ...TAWK_WS, ...OPENAI
+      ...GA_CONNECT, ...META, ...TIKTOK, ...TAWK, ...TAWK_WS
     ]),
     'frame-src': dedupe([...STRIPE_FRAME, ...TAWK]),
     // Produktvideos liegen im Shop selbst.

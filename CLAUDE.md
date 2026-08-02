@@ -127,9 +127,9 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 |---|---|
 | `index.html` (165 KB) | Startseite/Shop. Nutzt **Tailwind (CDN)**. |
 | `app.js` (192 KB) | Haupt-Frontend-Logik: Produkt-Laden, Suche, Kategorien, Warenkorb, Wishlist. Helper `productHref(id)` baut Slug-URLs. |
-| `cart.html` / `cart.js` (101 KB) / `cart.css` (102 KB) | Warenkorb-Seite + Logik + Styles. Nutzt **Bootstrap**. Helper `cartProductHref(id)` für Slug-URLs. |
+| `cart.html` / `cart.js` (101 KB) | Warenkorb-Seite + Logik. Nutzt **Bootstrap**; die Styles stehen seit dem „Editorial Dark"-Umbau in einem `<style>`-Block in `cart.html` (die frühere `cart.css` war dadurch tot und ist entfernt). Helper `cartProductHref(id)` für Slug-URLs. |
 | `products.json` (64 KB) | **Single Source of Truth** für Produkte: id, name, **slug**, Preis, SKU, Farben, Bilder, Bundles. |
-| `color-image-selection.js` / `.css` | Farbvarianten-Auswahl auf Produktseiten. |
+| `color-image-selection.js` | Farbvarianten-Auswahl auf Produktseiten. |
 | `bundle-images-final.js` | Bundle-/Set-Bildlogik. |
 | `color-cart-bridge.js` | Brücke Farbauswahl → Warenkorb. |
 | `product-gallery-complete.js` (60 KB) | Produkt-Bildergalerie/Lightbox. Baut ihre Galerie nur für eine **fest kodierte ID-Liste** (Produkte mit Bildordner), alle anderen Seiten behalten das schlichte Einzelbild. |
@@ -145,7 +145,7 @@ in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt
 | `checkout-receipt.js` | Beleg-Anzeige im Checkout. |
 | `gutschein-system.js` (34 KB) / `gutscheine.html/.css` | Gutschein-/Rabattsystem (localStorage). |
 | `keyboard-shortcuts.js` | Tastenkürzel (Capture-Phase; nur **ein** `app.js`-Include erwartet). |
-| `ai-chat-integration.js` | Tawk.to-Live-Chat + OpenAI-Fallback (standardmäßig inaktiv, Platzhalter-IDs). |
+| `site-integrations.js` | Lädt Meta Pixel, GA4, TikTok Pixel und den Tawk.to-Live-Chat — nur bei gesetzter ENV-ID und erteilter Einwilligung. Auf allen Kundenseiten eingebunden. (Der frühere `ai-chat-integration.js` war dadurch abgelöst und wurde entfernt.) |
 | `cookie-consent.js/.css` | DSGVO-Banner (Zwei-Stufen-Consent, `window.MaiosConsent`-API). Global eingebunden. |
 | `view-tracker.js` | Consent-gated Aufrufe-/Verweildauer-Tracking → `/api/track/*`. |
 | `widerruf-button.js` | Injiziert EU-Widerrufsbutton (Footer) auf allen Kundenseiten. |

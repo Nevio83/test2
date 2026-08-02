@@ -10,9 +10,10 @@ Alles fürs Design des Maios-Shops. Technik/Architektur stehen in `CLAUDE.md`, C
 - **Produktseiten** `produkte/<slug>.html` (sprechende Slug-URLs): **Bootstrap 5** + Kategorie-CSS
   (`elektronik.css`, `haushalt-kueche.css`, `beleuchtung.css`, `koerperpflege-wellness.css`) +
   je Seite ein eigener `<style>`-Block.
-- **Cart/Wishlist/Gutscheine/Admin:** Bootstrap. Globale Styles in `styles.css` (215 KB),
-  `cart.css` (101 KB).
-- **Farb-/Bundle-Auswahl:** `color-image-selection.js/.css`, `bundle-images-final.js`,
+- **Cart/Wishlist/Gutscheine/Admin:** Bootstrap. Globale Styles in `styles.css` (215 KB).
+  Der Warenkorb bringt seine Styles seit dem „Editorial Dark"-Umbau in einem eigenen
+  `<style>`-Block mit; die alte `cart.css` (100 KB) war danach tot und ist entfernt.
+- **Farb-/Bundle-Auswahl:** `color-image-selection.js`, `bundle-images-final.js`,
   `color-cart-bridge.js`, `cart-color-images-only.js`. Produkt 21 nutzt „Modell" statt „Farbe".
 - **Bild-Konvention:** `produkt bilder/<Name> bilder/<Name> <farbe>.jpg` — 1:1 zu `products.json`.
 
@@ -82,7 +83,8 @@ Nur 4/61 Seiten mit `aria-`, 0 Skip-Links, 0 `prefers-reduced-motion`.
 - **Bilder:** 139 JPG + 22 PNG unoptimiert → WebP/AVIF, `srcset/sizes`, `loading="lazy"`,
   `width/height` gegen Layout-Shift.
 - **Fonts:** nur benötigte Schnitte; `font-display:swap` ist gesetzt (gut); ggf. selbst hosten.
-- **CSS-Größe:** `styles.css` + `cart.css` + Bootstrap + Tailwind = viel Dead-CSS → konsolidieren.
+- **CSS-Größe:** `styles.css` + Bootstrap + Tailwind = viel Dead-CSS → konsolidieren.
+  (`cart.css` ist bereits weg, siehe oben — 100 KB, die niemand mehr eingebunden hat.)
 
 ## 7. 🟡 UX-Detail & Konsistenz
 
