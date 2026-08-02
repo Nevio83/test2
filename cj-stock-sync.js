@@ -26,7 +26,11 @@ const { dbOperations } = require('./database');
 const emailService = require('./resend-service');
 const { extractCjPidsFromCsv, matchProductByPid } = require('./cj-price-sync');
 
-const REQUEST_PAUSE_MS = 400;                          // schont CJs Rate-Limit
+// CJ laesst rund EINE Anfrage pro Sekunde zu (live nachgewiesen an der
+// Token-Anfrage: "QPS limit is 1 time/1second"). Der Bestand muss pro Variante
+// einzeln geholt werden — bei 12 Varianten sind das 12 Aufrufe. Mit 400 ms
+// waeren wir schneller als erlaubt und wuerden uns selbst ausbremsen.
+const REQUEST_PAUSE_MS = 1100;
 const ALERT_COOLDOWN_MS = 24 * 60 * 60 * 1000;         // max. 1 Meldung/Produkt/Tag
 
 /** Liest eine Bestandszahl aus einem CJ-Antwortobjekt. null = keine Aussage. */

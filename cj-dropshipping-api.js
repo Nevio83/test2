@@ -352,7 +352,11 @@ class CJDropshippingAPI {
    * Query Product Variant
    */
   async queryProductVariant(productId) {
-    return this.makeRequest(`/api2.0/v1/product/variant/query?productId=${productId}`);
+    // CJ erwartet "pid", nicht "productId". Mit dem falschen Namen antwortete
+    // die Schnittstelle mit "pid or productSku must be not empty" — der Aufruf
+    // lief also immer in den Notbetrieb, auch bei gueltigem Zugang. Am
+    // 01.08. gegen die echte Schnittstelle geprueft.
+    return this.makeRequest(`/api2.0/v1/product/variant/query?pid=${encodeURIComponent(productId)}`);
   }
 
   /**
