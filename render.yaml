@@ -25,7 +25,19 @@ services:
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /health
-    autoDeploy: true
+    # Bewusst AUS: sonst rollt Render bei jedem Push aus, ohne auf die Pruefung
+    # zu warten — ein fehlgeschlagener Test ginge ungebremst live. Das Ausrollen
+    # loest jetzt der letzte Schritt in .github/workflows/pruefung.yml aus, und
+    # der laeuft nur, wenn Lint, Tests und Startpruefung gruen sind.
+    #
+    # Am 02.08. nachgewiesen, BEVOR umgestellt wurde: der Deploy-Hook wurde aus
+    # dem Prueflauf aufgerufen ("Deploy angestoßen.") und Render startete
+    # daraufhin neu. Erst danach diese Zeile — sonst gaebe es ein Fenster, in
+    # dem gar nicht mehr ausgerollt wird.
+    #
+    # Falls doch einmal von Hand ausgerollt werden muss: im Render-Dashboard
+    # "Manual Deploy", oder diese Zeile wieder auf true.
+    autoDeploy: false
 
     envVars:
       - key: NODE_VERSION
