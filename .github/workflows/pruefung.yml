@@ -1,0 +1,128 @@
+# Prüft bei jedem Push, ob der Code in Ordnung ist.
+#
+# WARUM: Bis hierhin lief vor einem Deploy NICHTS. Render macht nur
+# "npm install" und "npm start" — ein Tippfehler, ein kaputter require oder ein
+# fehlgeschlagener Test gingen ungebremst live. Push heißt sofort live.
+#
+# Kostenlos: das Repo ist öffentlich → GitHub-Actions-Minuten sind unbegrenzt.
+#
+# ⚠️ ZUR DEPLOY-SPERRE (wichtig zu verstehen):
+# Dieser Workflow allein hält Render NICHT auf. Render deployt eigenständig bei
+# jedem Push (render.yaml: autoDeploy: true) und wartet nicht auf GitHub. Der
+# Workflow meldet also schnell rot/grün, verhindert aber zunächst nichts.
+#
+# Für eine echte Sperre sind zwei Handgriffe nötig, beide im Dashboard:
+#   1) Render → Settings → Deploy Hook erzeugen, die URL kopieren.
+#      GitHub → Settings → Secrets → Actions → neues Secret RENDER_DEPLOY_HOOK.
+#   2) Render → Settings → Auto-Deploy auf "Off" (bzw. autoDeploy: false in
+#      render.yaml).
+# Danach deployt ausschließlich der letzte Schritt hier unten — und der läuft
+# nur, wenn Lint, Tests und Startprüfung grün sind.
+#
+# Reihenfolge zählt: erst das Secret, dann Auto-Deploy abschalten. Andersherum
+# gäbe es eine Lücke, in der gar nicht mehr deployt wird.
+
+name: Prüfung
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Bei schnell aufeinanderfolgenden Pushes zählt nur der neueste Stand.
+concurrency:
+  group: pruefung-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Quellcode holen
+        uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          # Aus .nvmrc statt fest eingetragen — sonst prüft die CI irgendwann
+          # eine andere Version, als Render tatsächlich fährt.
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        # ci statt install: installiert exakt die Lock-Datei und schlägt fehl,
+        # wenn package.json und package-lock.json auseinanderlaufen. Genau das
+        # ist in diesem Projekt schon vorgekommen.
+        run: npm ci
+
+      - name: Code-Prüfung
+        run: npm run lint
+
+      - name: Tests
+        run: npm test
+
+      - name: Ereignisbehandler ohne festen Text
+        # Ein onclick mit eingesetztem Wert (onclick="x(${id})") hat bei jedem
+        # Aufruf einen anderen Fingerabdruck und wird von der Schutzregel
+        # blockiert — die Schaltfläche tut dann einfach nichts, ohne Fehler.
+        # Diese Prüfung fängt so eine Stelle ab, bevor sie live geht.
+        run: |
+          node -e "
+          const { baueIndex } = require('./csp-inline');
+          const { statistik } = baueIndex(process.cwd());
+          if (statistik.meldungen.length) {
+            console.error('Behandler mit eingesetzten Werten gefunden — die werden im Browser blockiert:');
+            statistik.meldungen.forEach((m) => console.error('  ' + m));
+            console.error('Lösung: variablen Teil in ein data-Attribut, Handler-Text konstant halten.');
+            process.exit(1);
+          }
+          console.log('Alle Behandler haben festen Text (' + statistik.seiten + ' Seiten geprüft).');
+          "
+
+      - name: Startprüfung
+        # Der wertvollste Schritt: Lint und Tests sehen NICHT, ob der Server
+        # überhaupt hochkommt. Ein kaputter require oder ein Fehler beim Start
+        # fällt sonst erst in Produktion auf. Läuft bewusst ohne Zugangsdaten —
+        # der Shop muss auch ohne sie starten (er schaltet Funktionen ab und
+        # meldet das, statt abzustürzen).
+        run: |
+          PORT=3801 node server.js > start.log 2>&1 &
+          SERVER_PID=$!
+          BEREIT=0
+          for i in $(seq 1 30); do
+            if curl -fsS --max-time 3 http://localhost:3801/health > /dev/null 2>&1; then
+              BEREIT=1
+              break
+            fi
+            sleep 1
+          done
+          kill $SERVER_PID 2>/dev/null || true
+          if [ "$BEREIT" != "1" ]; then
+            echo "Server ist nicht hochgekommen. Startprotokoll:"
+            cat start.log
+            exit 1
+          fi
+          echo "Server gestartet und /health erreichbar."
+
+      - name: Deploy auslösen
+        # Läuft nur bei einem Push auf main und nur, wenn alle Schritte grün
+        # sind (ein fehlgeschlagener Schritt bricht den Job vorher ab).
+        # Ohne hinterlegtes Secret passiert hier nichts — dann deployt Render
+        # weiterhin selbst, und dieser Workflow ist reine Rückmeldung.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "Kein RENDER_DEPLOY_HOOK hinterlegt — Deploy wird nicht von hier ausgelöst."
+            echo "Render deployt weiterhin eigenständig; dieser Lauf ist dann nur Rückmeldung."
+            echo "Einrichtung: siehe Kommentar am Anfang dieser Datei."
+            exit 0
+          fi
+          echo "Alle Prüfungen grün — Deploy wird ausgelöst."
+          curl -fsS -X POST "$HOOK" > /dev/null
+          echo "Deploy angestoßen."
