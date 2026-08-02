@@ -7,19 +7,22 @@
  * Liste der erlaubten Quellen und blockt alles andere.
  *
  * ⚠️ EHRLICHE EINORDNUNG DER SCHUTZWIRKUNG
- * Der Shop hat 59 HTML-Dateien mit Inline-Skripten und rund 1500
- * style="..."-Attribute. Deshalb muss 'unsafe-inline' erlaubt bleiben — der
- * saubere Weg (Nonces) hiesse, jede dieser Dateien und jedes zur Laufzeit
- * erzeugte Skript umzubauen. Was diese Richtlinie damit leistet und was nicht:
  *
  *   ✅ blockiert nachgeladene Fremdskripte (<script src="https://boese.tld/x.js">)
  *      — der uebliche Weg, auf dem Schadcode ueberhaupt erst hereinkommt
  *   ✅ blockiert das Abfliessen von Daten an unbekannte Server (connect-src)
  *   ✅ blockiert <object>/<embed>, fremde Frames und veraenderte Formularziele
- *   ❌ blockiert KEINEN direkt in die Seite geschriebenen Inline-Code
+ *   ✅ blockiert eingeschleusten Inline-Code — seit die Hashes des erlaubten
+ *      Inline-Codes je Seite mitgegeben werden (csp-inline.js). Vorher stand
+ *      hier 'unsafe-inline', womit JEDER in die Seite geschriebene Code lief.
+ *   ⚠️ style-src erlaubt weiterhin 'unsafe-inline': rund 1500 style="..."-
+ *      Attribute. Eingeschleustes CSS kann Seiten verunstalten, aber keine
+ *      Daten abgreifen — der Hebel liegt eindeutig bei script-src.
  *
- * Das ist trotzdem der wirksamste Einzelschritt, der ohne Umbau des gesamten
- * Frontends moeglich ist. Nonces waeren der naechste Ausbauschritt.
+ * Notausstieg: CSP_ALLOW_INLINE_SCRIPTS=true stellt das alte Verhalten wieder
+ * her ('unsafe-inline' in script-src). Gedacht fuer den Fall, dass in
+ * Produktion doch eine Seite haengt — eine falsche CSP legt eine Seite still,
+ * und dann muss ein einziger Schalter genuegen, kein Deploy.
  *
  * Jede Quelle unten ist belegt: sie stammt aus einer Fundstelle im Code, nicht
  * aus einer Vermutung. Fehlt eine, blockiert der Browser sie — deshalb laeuft
@@ -88,8 +91,33 @@ const EIGENE_DOMAIN = ['https://maiosshop.com', 'https://www.maiosshop.com'];
 
 const dedupe = (arr) => [...new Set(arr.filter(Boolean))];
 
-/** Baut den Header-Wert der Richtlinie. */
-function buildCsp() {
+/** true = 'unsafe-inline' bleibt in script-src (Notausstieg, siehe Kopf). */
+function erlaubtInlineSkripte() {
+  return (process.env.CSP_ALLOW_INLINE_SCRIPTS || '').trim() === 'true';
+}
+
+/**
+ * Baut den Header-Wert der Richtlinie.
+ * @param {string[]} [skriptHashes] Hashes des auf DIESER Seite erlaubten
+ *   Inline-Codes (aus csp-inline.js). Ohne Angabe bleibt 'unsafe-inline'
+ *   stehen — das gilt fuer Antworten, die gar kein Markup sind.
+ */
+function buildCsp(skriptHashes) {
+  // Verschaerft wird, sobald die Seite BEKANNT ist — also eine Liste vorliegt,
+  // auch eine leere. Eine leere Liste heisst "diese Seite hat gar keinen
+  // Inline-Code", und das ist der beste Fall, nicht der unsicherste.
+  // (Vorher stand hier "&& length > 0"; dadurch bekam markt-insights.html, die
+  // ohne Inline-Code auskommt, ausgerechnet die laschere Richtlinie.)
+  // Fehlt die Liste ganz (null), ist die Seite unbekannt — dann lieber
+  // 'unsafe-inline' als eine stillgelegte Seite.
+  const verschaerfen = Array.isArray(skriptHashes) && !erlaubtInlineSkripte();
+
+  const skriptQuellen = verschaerfen
+    // 'unsafe-hashes' ist noetig, damit die Hashes auch fuer onclick & Co.
+    // gelten — fuer <script>-Bloecke allein braeuchte es das nicht.
+    ? ["'self'", "'unsafe-hashes'", ...skriptHashes, STRIPE_SCRIPT, CDN, ...GA, ...META, ...TIKTOK, ...TAWK]
+    : ["'self'", "'unsafe-inline'", STRIPE_SCRIPT, CDN, ...GA, ...META, ...TIKTOK, ...TAWK];
+
   const directives = {
     'default-src': ["'self'"],
     // Verhindert, dass eingeschleustes <base href> alle relativen Pfade umbiegt.
@@ -101,9 +129,7 @@ function buildCsp() {
     // Formulare duerfen nur zum Shop selbst oder zur Stripe-Kasse abschicken —
     // ein umgebogenes Formularziel wuerde sonst Adressdaten abgreifen.
     'form-action': ["'self'", 'https://checkout.stripe.com'],
-    'script-src': dedupe([
-      "'self'", "'unsafe-inline'", STRIPE_SCRIPT, CDN, ...GA, ...META, ...TIKTOK, ...TAWK
-    ]),
+    'script-src': dedupe(skriptQuellen),
     'style-src': dedupe(["'self'", "'unsafe-inline'", FONT_CSS, CDN, ...TAWK]),
     'font-src': dedupe(["'self'", 'data:', FONT_FILES, CDN, ...TAWK]),
     // data: fuer eingebettete Platzhalter, blob: fuer im Browser erzeugte Bilder.
@@ -123,6 +149,7 @@ function buildCsp() {
     .join('; ') + '; upgrade-insecure-requests';
 }
 
+/** Grundfassung ohne Seitenbezug (Antworten, die kein Markup sind). */
 const CSP_VALUE = buildCsp();
 
 /** true = scharf blockieren, false = nur beobachten und melden. */
@@ -135,4 +162,4 @@ function headerName() {
   return isEnforcing() ? 'Content-Security-Policy' : 'Content-Security-Policy-Report-Only';
 }
 
-module.exports = { buildCsp, CSP_VALUE, isEnforcing, headerName };
+module.exports = { buildCsp, CSP_VALUE, isEnforcing, headerName, erlaubtInlineSkripte };

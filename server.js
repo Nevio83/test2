@@ -219,7 +219,15 @@ function rateLimit(routeKey, { windowMs, max }) {
 }
 
 // Sicherheits-Header
-const { CSP_VALUE, isEnforcing, headerName } = require('./csp-policy');
+const { CSP_VALUE, buildCsp, isEnforcing, headerName } = require('./csp-policy');
+// Hashes des auf jeder Seite erlaubten Inline-Codes. Einmal beim Start aus den
+// Dateien berechnet — dadurch kann 'unsafe-inline' aus script-src verschwinden,
+// ohne dass eine einzige HTML-Seite umgebaut werden muss.
+const { createInlineHashes } = require('./csp-inline');
+const inlineHashes = createInlineHashes(__dirname);
+// Fertige Kopfzeilen zwischenspeichern: der Wert haengt nur am Pfad, nicht am
+// Aufruf. Ohne das wuerde die Richtlinie bei jedem Bildaufruf neu gebaut.
+const cspCache = new Map();
 
 // Verstoss-Meldungen des Browsers. Ringpuffer im Speicher statt Datenbank:
 // die Meldungen sind Diagnose-Material fuer die Einfuehrungsphase, kein
@@ -261,10 +269,35 @@ app.use((req, res, next) => {
   // nicht als Markup ausfuehrt — dort waere die Kopfzeile wirkungslos.
   // Die Admin-Seiten bekommen sie bewusst mit: dort liegen die Bestelldaten.
   if (!req.path.startsWith('/api/')) {
-    res.setHeader(headerName(), `${CSP_VALUE}; report-uri /api/csp-report`);
+    res.setHeader(headerName(), cspFuerPfad(req.path));
   }
   next();
 });
+
+/**
+ * Richtlinie fuer einen Pfad. Kennt csp-inline.js die Seite, bekommt sie ihre
+ * eigenen Hashes und damit eine Richtlinie OHNE 'unsafe-inline'.
+ *
+ * Ist der Pfad keine bekannte Seite, gilt die Grundfassung mit 'unsafe-inline'.
+ * Das betrifft zwei Faelle: (a) Antworten, die gar kein Markup sind — Bilder,
+ * Skripte, JSON; dort wertet der Browser die Kopfzeile ohnehin nicht aus.
+ * (b) die 404-Seite, die unter beliebigen Pfaden ausgeliefert wird. Bewusst
+ * so herum: eine unbekannte Seite lieber zu lasch schuetzen als sie stillegen.
+ */
+function cspFuerPfad(reqPfad) {
+  const zwischengespeichert = cspCache.get(reqPfad);
+  if (zwischengespeichert) return zwischengespeichert;
+
+  const hashes = inlineHashes.fuerPfad(reqPfad);
+  const wert = (hashes ? buildCsp(hashes) : CSP_VALUE) + '; report-uri /api/csp-report';
+
+  // Der Zwischenspeicher darf nicht unbegrenzt wachsen: die Pfade kommen von
+  // aussen, jemand koennte mit erfundenen Adressen den Speicher vollaufen
+  // lassen. Bekannte Seiten sind endlich, alles andere teilt sich ohnehin
+  // dieselbe Grundfassung — deshalb nur die bekannten merken.
+  if (hashes) cspCache.set(reqPfad, wert);
+  return wert;
+}
 
 // Browser senden Verstossmeldungen mit eigenen Inhaltstypen, die express.json()
 // nicht annimmt — daher ein eigener Parser genau fuer diesen Pfad.
@@ -3658,6 +3691,12 @@ app.use((req, res) => {
   const wantsHtml = (req.headers.accept || '').includes('text/html');
   if (!wantsHtml) return res.status(404).type('txt').send('Nicht gefunden');
 
+  // Hier steht erst fest, dass wirklich 404.html ausgeliefert wird. Die
+  // Kopfzeile weiter oben kannte den angefragten Pfad nicht (er zeigt auf
+  // nichts) und hatte deshalb die laschere Grundfassung gesetzt. Jetzt die
+  // Richtlinie DIESER Seite nachtragen, sonst waere ausgerechnet die Seite,
+  // die jeder Tippfehler aufruft, die einzige mit 'unsafe-inline'.
+  res.setHeader(headerName(), cspFuerPfad('/404.html'));
   res.status(404).sendFile(path.join(__dirname, '404.html'), (err) => {
     if (err && !res.headersSent) res.status(404).type('txt').send('Seite nicht gefunden');
   });

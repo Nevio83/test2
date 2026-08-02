@@ -521,7 +521,7 @@ function updateCartPage() {
                                     <div class="addon-card-title">${product.name}</div>
                                     <div class="addon-card-price">${currentCurrency.symbol}${product.price.toFixed(2)}</div>
                                 </div>
-                                <button class="addon-btn" onclick="addAddonToCart(${product.id})">
+                                <button class="addon-btn" data-artikel="${product.id}" onclick="addAddonToCart(Number(this.dataset.artikel))">
                                     <i class="bi bi-cart-plus"></i> Hinzufügen
                                 </button>
                             </div>
@@ -588,7 +588,7 @@ function updateCartPage() {
                         return `
                         <div class="cart-item" data-id="${item.id}" ${isBundle ? 'data-bundle="true"' : ''}>
                             <a href="${linkHref}" style="text-decoration: none;">
-                                <img src="${item.image}" alt="${item.name}" class="cart-item-image" style="cursor: pointer;" onerror="handleImageError(this, '${item.name}', '${item.image}')" loading="eager" onload="console.log('Bild erfolgreich geladen:', '${item.name}')">
+                                <img src="${item.image}" alt="${item.name}" class="cart-item-image" style="cursor: pointer;" data-fehler-name="${item.name}" data-fehler-bild="${item.image}" onerror="handleImageError(this, this.dataset.fehlerName, this.dataset.fehlerBild)" loading="eager">
                             </a>
                             <div class="cart-item-details">
                                 <h5>${item.name}</h5>
@@ -598,15 +598,15 @@ function updateCartPage() {
                             </div>
                             <div class="quantity-controls">
                                 <span class="qty-pill">
-                                    <button class="quantity-btn" onclick="changeQuantity(${item.id}, -1)">
+                                    <button class="quantity-btn" data-artikel="${item.id}" onclick="changeQuantity(Number(this.dataset.artikel), -1)">
                                         <i class="bi bi-dash"></i>
                                     </button>
                                     <span class="quantity-display">${item.quantity}</span>
-                                    <button class="quantity-btn" onclick="changeQuantity(${item.id}, 1)">
+                                    <button class="quantity-btn" data-artikel="${item.id}" onclick="changeQuantity(Number(this.dataset.artikel), 1)">
                                         <i class="bi bi-plus"></i>
                                     </button>
                                 </span>
-                                <button class="remove-btn" onclick="removeFromCart('${item.id}')">
+                                <button class="remove-btn" data-artikel="${item.id}" onclick="removeFromCart(this.dataset.artikel)">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
@@ -633,7 +633,7 @@ function updateCartPage() {
                                     <div class="addon-card-title">${addon.name}</div>
                                     <div class="addon-card-price">${currentCurrency.symbol}${convertPrice(addon.price, currentCurrency.code).toFixed(2)}</div>
                                 </div>
-                                <button class="addon-btn" onclick="addAddonToCart(${addon.id})">
+                                <button class="addon-btn" data-artikel="${addon.id}" onclick="addAddonToCart(Number(this.dataset.artikel))">
                                     <i class="bi bi-cart-plus"></i> Hinzufügen
                                 </button>
                             </div>

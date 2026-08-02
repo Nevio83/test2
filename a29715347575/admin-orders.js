@@ -161,16 +161,16 @@ class AdminOrdersDashboard {
         </td>
         <td>
           <div class="action-buttons">
-            <button class="btn btn-sm btn-primary" onclick="adminDashboard.viewOrder('${order.order_id}')" title="Details">
+            <button class="btn btn-sm btn-primary" data-bestellung="${order.order_id}" onclick="adminDashboard.viewOrder(this.dataset.bestellung)" title="Details">
               <i class="bi bi-eye"></i>
             </button>
-            <button class="btn btn-sm btn-success" onclick="adminDashboard.downloadReceipt('${order.receipt_number}')" title="Kassenbon">
+            <button class="btn btn-sm btn-success" data-beleg="${order.receipt_number}" onclick="adminDashboard.downloadReceipt(this.dataset.beleg)" title="Kassenbon">
               <i class="bi bi-receipt"></i>
             </button>
-            <button class="btn btn-sm btn-warning" onclick="adminDashboard.updateStatus('${order.order_id}')" title="Status ändern">
+            <button class="btn btn-sm btn-warning" data-bestellung="${order.order_id}" onclick="adminDashboard.updateStatus(this.dataset.bestellung)" title="Status ändern">
               <i class="bi bi-pencil"></i>
             </button>
-            <button class="btn btn-sm btn-info" onclick="adminDashboard.markShipped('${order.order_id}')" title="Als versendet markieren + Tracking">
+            <button class="btn btn-sm btn-info" data-bestellung="${order.order_id}" onclick="adminDashboard.markShipped(this.dataset.bestellung)" title="Als versendet markieren + Tracking">
               <i class="bi bi-truck"></i>
             </button>
           </div>
@@ -195,7 +195,7 @@ class AdminOrdersDashboard {
     // Previous button
     paginationHTML += `
       <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
-        <a class="page-link" href="#" onclick="adminDashboard.goToPage(${this.currentPage - 1})">
+        <a class="page-link" href="#" data-seite="${this.currentPage - 1}" onclick="adminDashboard.goToPage(Number(this.dataset.seite))">
           <i class="bi bi-chevron-left"></i>
         </a>
       </li>
@@ -206,7 +206,7 @@ class AdminOrdersDashboard {
       if (i === 1 || i === totalPages || (i >= this.currentPage - 2 && i <= this.currentPage + 2)) {
         paginationHTML += `
           <li class="page-item ${i === this.currentPage ? 'active' : ''}">
-            <a class="page-link" href="#" onclick="adminDashboard.goToPage(${i})">${i}</a>
+            <a class="page-link" href="#" data-seite="${i}" onclick="adminDashboard.goToPage(Number(this.dataset.seite))">${i}</a>
           </li>
         `;
       } else if (i === this.currentPage - 3 || i === this.currentPage + 3) {
@@ -221,7 +221,7 @@ class AdminOrdersDashboard {
     // Next button
     paginationHTML += `
       <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
-        <a class="page-link" href="#" onclick="adminDashboard.goToPage(${this.currentPage + 1})">
+        <a class="page-link" href="#" data-seite="${this.currentPage + 1}" onclick="adminDashboard.goToPage(Number(this.dataset.seite))">
           <i class="bi bi-chevron-right"></i>
         </a>
       </li>

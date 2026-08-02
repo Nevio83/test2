@@ -257,7 +257,7 @@
       const totalPrice = (einzelpreis * b.quantity + (b.extraCost || 0)).toFixed(2);
       const saving = b.saving ? `${b.saving}` : '';
       return `
-      <div class="bundle-card${i === 0 ? ' selected' : ''}" onclick="selectBundle(${i})">
+      <div class="bundle-card${i === 0 ? ' selected' : ''}" data-bundle="${i}" onclick="selectBundle(Number(this.dataset.bundle))">
         <input class="bundle-radio" type="radio" name="bundle" ${i === 0 ? 'checked' : ''}>
         <div class="bundle-info">
           <div class="bundle-title">${b.title || b.quantity + 'x ' + (p ? p.name : '')}</div>

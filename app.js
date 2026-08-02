@@ -1506,7 +1506,7 @@ function renderCartDropdown() {
                     <div class="recommendation-name">${product.name}</div>
                     <div class="recommendation-price">€${product.price.toFixed(2)}</div>
                   </div>
-                  <button class="recommendation-add-btn" onclick="addRecommendationToCart(${product.id}, this)" title="Zum Warenkorb hinzufügen">
+                  <button class="recommendation-add-btn" data-artikel="${product.id}" onclick="addRecommendationToCart(Number(this.dataset.artikel), this)" title="Zum Warenkorb hinzufügen">
                     <i class="bi bi-cart-plus"></i>
                   </button>
                 </div>
@@ -1553,11 +1553,11 @@ function renderCartDropdown() {
       </div>
       <div class="cart-item-controls">
         <div class="quantity-controls" style="display: flex; align-items: center; gap: 4px;">
-          <button class="quantity-btn" onclick="changeQuantity(${Number(item.id)}, -1)" style="cursor: pointer; pointer-events: auto;">-</button>
+          <button class="quantity-btn" data-artikel="${Number(item.id)}" onclick="changeQuantity(Number(this.dataset.artikel), -1)" style="cursor: pointer; pointer-events: auto;">-</button>
           <span class="quantity-display">${item.quantity}</span>
-          <button class="quantity-btn" onclick="changeQuantity(${Number(item.id)}, 1)" style="cursor: pointer; pointer-events: auto;">+</button>
+          <button class="quantity-btn" data-artikel="${Number(item.id)}" onclick="changeQuantity(Number(this.dataset.artikel), 1)" style="cursor: pointer; pointer-events: auto;">+</button>
         </div>
-        <button class="remove-item" onclick="removeFromCart('${item.id}')" style="cursor: pointer; pointer-events: auto;">&times;</button>
+        <button class="remove-item" data-artikel="${item.id}" onclick="removeFromCart(this.dataset.artikel)" style="cursor: pointer; pointer-events: auto;">&times;</button>
       </div>
     </div>
   `,
@@ -1589,7 +1589,7 @@ function renderCartDropdown() {
                   <div class="recommendation-name">${product.name}</div>
                   <div class="recommendation-price">€${product.price.toFixed(2)}</div>
                 </div>
-                <button class="recommendation-add-btn" onclick="addRecommendationToCart(${product.id}, this)" title="Zum Warenkorb hinzufügen">
+                <button class="recommendation-add-btn" data-artikel="${product.id}" onclick="addRecommendationToCart(Number(this.dataset.artikel), this)" title="Zum Warenkorb hinzufügen">
                   <i class="bi bi-cart-plus"></i>
                 </button>
               </div>
@@ -4729,7 +4729,7 @@ function displaySearchResults(products, query) {
           : parseFloat(price || 0).toFixed(2);
 
       return `
-            <div class="search-result-item" data-product-id="${product.id}" onclick="navigateToProduct(${product.id})">
+            <div class="search-result-item" data-product-id="${product.id}" onclick="navigateToProduct(Number(this.dataset.productId))">
                 <div class="search-result-category">${product.category}</div>
                 <img src="${product.image}" alt="${product.name}" class="search-result-image" loading="lazy">
                 <h4 class="search-result-title">${product.name}</h4>

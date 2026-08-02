@@ -191,7 +191,7 @@
                 <div class="gutschein-code">
                   <span class="code-label">Code:</span>
                   <span class="code-value" id="code${voucher.id}">${voucher.code}</span>
-                  <button class="copy-btn" onclick="copyCode('code${voucher.id}', this)">
+                  <button class="copy-btn" data-ziel="code${voucher.id}" onclick="copyCode(this.dataset.ziel, this)">
                     <i class="bi bi-clipboard"></i>
                   </button>
                 </div>
@@ -210,7 +210,7 @@
                 </div>
               </div>
               <div class="gutschein-footer">
-                <button class="apply-btn" onclick="applyVoucher('${voucher.code}')">
+                <button class="apply-btn" data-code="${voucher.code}" onclick="applyVoucher(this.dataset.code)">
                   <i class="bi bi-check-circle me-2"></i>Jetzt einlösen
                 </button>
               </div>
