@@ -33,7 +33,20 @@ const { extractCjPidsFromCsv, matchProductByPid } = require('./cj-price-sync');
 const REQUEST_PAUSE_MS = 1100;
 const ALERT_COOLDOWN_MS = 24 * 60 * 60 * 1000;         // max. 1 Meldung/Produkt/Tag
 
-/** Liest eine Bestandszahl aus einem CJ-Antwortobjekt. null = keine Aussage. */
+/**
+ * Liest eine Bestandszahl aus einem CJ-Antwortobjekt. null = keine Aussage.
+ *
+ * ⚠️ Hier lag am 02.08. ein teurer Fehler: geprueft wurde mit
+ * `Number.isFinite(Number(c))`. Number(null) ist aber 0 — und 0 ist endlich.
+ * CJ liefert in der Variantenantwort `inventoryNum: null` (der Bestand steht
+ * dort schlicht nicht drin, sondern nur unter /product/stock/queryByVid).
+ * Ein FEHLENDES Feld sah damit aus wie ein LEERES LAGER: drei Produkte wurden
+ * im Live-Shop als ausverkauft gesperrt, obwohl CJ 12.388 Stueck meldete.
+ * Dieselbe Falle gilt fuer '', [] und false — alle ergeben Number() === 0.
+ *
+ * Deshalb: nur echte Zahlen und reine Zahl-Zeichenketten zaehlen. Alles andere
+ * ist "keine Aussage" und laesst die Verfuegbarkeit unveraendert.
+ */
 function readStockValue(obj) {
   if (!obj || typeof obj !== 'object') return null;
   const candidates = [
@@ -41,8 +54,14 @@ function readStockValue(obj) {
     obj.inventoryNum, obj.num, obj.count
   ];
   for (const c of candidates) {
-    const n = Number(c);
-    if (Number.isFinite(n) && n >= 0) return n;
+    if (typeof c === 'number') {
+      if (Number.isFinite(c) && c >= 0) return c;
+      continue;
+    }
+    if (typeof c === 'string' && /^\s*\d+(\.\d+)?\s*$/.test(c)) {
+      const n = Number(c);
+      if (Number.isFinite(n) && n >= 0) return n;
+    }
   }
   return null;
 }
@@ -103,6 +122,10 @@ async function runCjStockSync(cjAPI) {
     summary.linksInCsv = pids.length;
     const products = require('./products.json');
 
+    // Erst alles einsammeln, dann entscheiden. Vorher wurde jedes Produkt
+    // sofort geschrieben — dadurch liess sich nicht mehr erkennen, ob ein
+    // Ergebnis fuer sich plausibel ist oder ob der ganze Lauf danebenlag.
+    const messwerte = [];
     for (const pid of pids) {
       const product = matchProductByPid(pid, products);
       if (!product) continue;
@@ -111,7 +134,27 @@ async function runCjStockSync(cjAPI) {
       const stock = await fetchCjStock(cjAPI, pid);
       if (stock === null) { summary.unavailable++; continue; } // keine Aussage -> nichts aendern
       summary.checked++;
+      messwerte.push({ pid, product, stock });
+    }
 
+    // ⚠️ Plausibilitaetsbremse: melden ALLE geprueften Produkte gleichzeitig
+    // null, ist ein Lesefehler weit wahrscheinlicher als ein gleichzeitiger
+    // Ausverkauf des ganzen Sortiments. Am 02.08. genau so passiert — ein
+    // fehlendes Feld wurde als Bestand 0 gelesen und sperrte drei Produkte im
+    // Live-Shop. Ab zwei geprueften Produkten wird ein solcher Lauf verworfen.
+    const alleNull = messwerte.length >= 2 && messwerte.every((m) => m.stock === 0);
+    if (alleNull) {
+      summary.verworfen = true;
+      summary.checked = 0;
+      summary.unavailable = summary.matched;
+      console.warn(`⚠️ CJ meldete für ALLE ${messwerte.length} geprüften Produkte Bestand 0 — ` +
+        'das sieht nach einem Lesefehler aus, nicht nach Ausverkauf. Lauf verworfen, ' +
+        'Verfügbarkeit unverändert gelassen.');
+      await sendOpsHinweis(messwerte.length);
+      return summary;
+    }
+
+    for (const { pid, product, stock } of messwerte) {
       const isAvailable = stock > 0;
       const cached = await dbOperations.getCjStockWatch(product.id);
       const wasAvailable = cached ? cached.available : true;
@@ -204,6 +247,29 @@ async function notifyWaitingCustomers(produkt) {
     console.warn(`⚠️ Nur ${erfolge}/${wartende.length} Vormerkungen zu "${produkt.name}" zugestellt — Rest bleibt für den nächsten Lauf`);
   }
   return erfolge;
+}
+
+/**
+ * Hinweis, wenn ein Lauf wegen Unplausibilitaet verworfen wurde. Das ist keine
+ * Ausverkauf-Meldung, sondern der Hinweis, dass die CJ-Antwort nicht mehr zum
+ * erwarteten Aufbau passt — dann muss jemand nachsehen.
+ */
+async function sendOpsHinweis(anzahl) {
+  const to = process.env.CJ_STOCK_ALERT_EMAIL ||
+    process.env.RECEIPT_ARCHIVE_EMAIL ||
+    'maioscorporation@gmail.com';
+  await emailService.sendEmail({
+    to,
+    subject: '⚠️ CJ-Bestandsabgleich verworfen — Antwort wirkt unplausibel',
+    html:
+      `<h2>Bestandsabgleich wurde nicht angewendet</h2>` +
+      `<p>CJ meldete für <strong>alle ${anzahl} geprüften Produkte gleichzeitig Bestand 0</strong>. ` +
+      `Ein gleichzeitiger Ausverkauf des gesamten zugeordneten Sortiments ist unwahrscheinlich — ` +
+      `wahrscheinlicher hat sich der Aufbau der CJ-Antwort geändert.</p>` +
+      `<p><strong>Im Shop wurde nichts gesperrt.</strong> Alle Produkte bleiben verkäuflich. ` +
+      `Bitte den Bestandsweg prüfen (<code>/product/stock/queryByVid</code>), bevor der Abgleich ` +
+      `wieder greift.</p>`
+  }).catch((e) => console.warn('⚠️ Hinweis-Mail fehlgeschlagen:', e.message));
 }
 
 /** Meldung bei Verfuegbarkeitswechsel. */
