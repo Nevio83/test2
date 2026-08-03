@@ -15,6 +15,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert');
+const fs = require('fs');
 const path = require('path');
 const { createStaticGuard } = require('../static-guard');
 
@@ -62,8 +63,13 @@ test('Backend-Dateien sind NICHT abrufbar', () => {
 });
 
 test('Lieferantenliste mit Einkaufspreisen ist nicht abrufbar', () => {
+  // Nur versionierte Dateien pruefen: die Freigabe sperrt ausschliesslich das,
+  // was wirklich existiert. Ein Test auf eine nur lokal vorhandene Datei ist
+  // in der Prueflaufumgebung sinnlos — genau daran ist der erste Durchlauf
+  // gescheitert (dort liegt weder .env noch jede Excel-Datei).
   assert.equal(pruefe('/excel/Maios Produkte.csv'), 'geblockt');
-  assert.equal(pruefe('/excel/Maios Preisanalyse 2026-06.xlsx'), 'geblockt');
+  assert.equal(pruefe('/excel/Maios/Maios Produkte.xlsx'), 'geblockt');
+  assert.equal(pruefe('/excel/Maios Produkte/hinzugefügt/neu produkte.txt'), 'geblockt');
   // Ein VERZEICHNIS wird durchgereicht — dort gibt es nichts auszuliefern,
   // express.static zeigt kein Inhaltsverzeichnis, und die 404-Seite greift.
   assert.equal(pruefe('/excel/'), 'durchgelassen');
@@ -135,13 +141,22 @@ test('kaputte Kodierung und Null-Zeichen führen nicht zur Auslieferung', () => 
   assert.doesNotThrow(() => pruefe('/server.js%00.png'));
 });
 
-test('Zugangsdaten und Konfigurationsdateien sind nicht abrufbar', () => {
-  // .env und .nvmrc liegen wirklich im Projekt — sie MÜSSEN gesperrt sein.
-  for (const p of ['/.env', '/.nvmrc', '/.gitignore']) {
+test('Konfigurationsdateien sind nicht abrufbar', () => {
+  // Nur versionierte Dateien — die gibt es in jeder Umgebung.
+  for (const p of ['/.nvmrc', '/.gitignore', '/render.yaml', '/eslint.config.js']) {
     assert.equal(pruefe(p), 'geblockt', 'MUSS gesperrt sein: ' + p);
   }
   // Was es nicht gibt, wird durchgereicht, damit Routen und 404-Seite greifen.
   for (const p of ['/Dockerfile', '/irgendwas.sh']) {
     assert.equal(pruefe(p), 'durchgelassen', 'nicht vorhanden -> durchreichen: ' + p);
   }
+});
+
+test('.env wäre gesperrt, falls sie doch einmal im Verzeichnis liegt', () => {
+  // .env ist gitignored und fehlt in der Prueflaufumgebung — dort ist nichts
+  // auszuliefern. Lokal liegt sie aber sehr wohl, und beim Entwickeln laeuft
+  // derselbe Server. Deshalb: wenn vorhanden, MUSS sie gesperrt sein.
+  const vorhanden = fs.existsSync(path.join(WURZEL, '.env'));
+  if (!vorhanden) return;   // in der CI nichts zu prüfen
+  assert.equal(pruefe('/.env'), 'geblockt', 'lokal vorhandene .env muss gesperrt sein');
 });
