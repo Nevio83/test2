@@ -127,7 +127,20 @@ function collectReferencedAssets(rootDir) {
  * Baut die Pruef-Middleware. Muss VOR express.static registriert werden.
  * @param {string} rootDir Projektverzeichnis
  */
-function createStaticGuard(rootDir) {
+function createStaticGuard(uebergebenesWurzelverzeichnis) {
+  // ⚠️ Wurzel normalisieren, BEVOR sie verglichen wird.
+  //
+  // In existiertAlsDatei wird `path.join(rootDir, p)` gegen `rootDir` mit
+  // startsWith geprueft. path.join liefert unter Windows Backslashes — kommt
+  // die Wurzel mit Schraegstrichen herein ('C:/…/Maios'), passt der Vergleich
+  // nie, existiertAlsDatei liefert immer false und die Pruefung reicht ALLES
+  // durch. Sie faellt also nicht zu, sondern auf: server.js, .env und die
+  // Lieferantenliste waeren wieder abrufbar, ohne dass etwas auffiele.
+  //
+  // Aus server.js kommt __dirname und damit ein sauberer Pfad — der Fehler
+  // kann nur beim Einbau an anderer Stelle auftreten. Genau das ist beim
+  // Schreiben der Tests passiert, deshalb hier abgefangen statt dokumentiert.
+  const rootDir = path.resolve(uebergebenesWurzelverzeichnis);
   let erlaubteAssets;
   try {
     erlaubteAssets = collectReferencedAssets(rootDir);

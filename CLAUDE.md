@@ -91,6 +91,8 @@ PostgreSQL/Neon (Bestellungen) · **Render** (Hosting, live) · Python (Marketin
 npm install                  # Dependencies installieren
 npm run dev                  # Dev-Server mit Auto-Reload (nodemon) -> http://localhost:3000
 npm start                    # Produktions-Server (node server.js)
+npm test                     # Tests (test/lauf.js sammelt alle test/*.test.js ein)
+npm run lint                 # ESLint
 npm run test-cj-api          # CJ Dropshipping API-Integration testen
 node test-retouren-email.js  # Retouren-/Refund-Mail-Flow testen
 node test-cj-api.js          # CJ-Verbindung direkt testen
@@ -101,6 +103,23 @@ node setup-stripe-connect-simple.js    # Vereinfachtes Stripe-Connect-Setup
 
 **Kein Build-Step.** HTML/CSS/JS werden statisch ausgeliefert. Kein Bundler, kein Transpiler
 in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt).
+
+**Tests** (`test/*.test.js`, laufen bei jedem Push über `.github/workflows/pruefung.yml`).
+Abgedeckt sind bewusst die Stellen, an denen ein Fehler **Geld kostet, Daten preisgibt oder
+lautlos wirkt** — jeweils mit einem Test für den real aufgetretenen Fehler:
+
+| Datei | sichert ab | realer Vorfall, der abgedeckt ist |
+|---|---|---|
+| `smoke.test.js` | Preis-/Mengenprüfung, Versandkosten | manipulierte Preise aus dem Browser |
+| `voucher-validator.test.js` | Gutscheine (echtes Geld) | zweite, abweichende Codeliste in einer verwaisten Admin-Seite |
+| `static-guard.test.js` | Datei-Freigabe | `server.js`, Gutscheincodes und Lieferantenliste waren am 27.07. öffentlich |
+| `csp-inline.test.js` | Fingerabdrücke des Inline-Codes | CRLF-Seiten waren **ohne Fehlermeldung** funktionslos |
+| `cj-stock-sync.test.js` | Bestandsauswertung | `Number(null) === 0` sperrte 3 Produkte fälschlich als ausverkauft |
+| `job-scheduler.test.js` | Fälligkeit zeitgesteuerter Läufe | Neustart setzte den Zeitplan zurück → Wochenlauf lief nie |
+
+Faustregel beim Ergänzen: **ein Test, der nur grün werden kann, ist wertlos.** Zu jedem
+behobenen Fehler gehört eine Gegenprobe, die das alte Verhalten nachbildet und belegt, dass
+der Test es rot gemeldet hätte (Beispiele in `job-scheduler.test.js` und `cj-stock-sync.test.js`).
 
 ---
 
