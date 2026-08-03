@@ -98,6 +98,9 @@ const { v4: uuidv4 } = require('uuid');
 const { runDatabaseBackup } = require('./db-backup');
 const { runCjPriceSync } = require('./cj-price-sync');
 const { runStripeReconcile } = require('./stripe-reconcile');
+// Zeitgesteuerte Ablaeufe: Faelligkeit haengt am letzten Lauf in der Datenbank,
+// nicht an der Laufzeit des Prozesses — sonst setzt jeder Neustart alles zurueck.
+const { createScheduler } = require('./job-scheduler');
 const { runCjStockSync } = require('./cj-stock-sync');
 
 const receiptGenerator = new ReceiptGenerator();
@@ -3184,6 +3187,35 @@ app.get('/a29715347575/api/cj-stock', async (req, res) => {
   }
 });
 
+// Wann lief welcher zeitgesteuerte Ablauf zuletzt? Ohne diesen Einblick ist
+// "es ist nichts passiert" nicht von "es hat nicht funktioniert" zu
+// unterscheiden — genau daran lag es vorher jahrelang unbemerkt.
+// Rein lesend. faellig_in zeigt, wie lange es noch bis zum naechsten Lauf ist.
+app.get('/a29715347575/api/jobs', asyncSafe(async (req, res) => {
+  const abstaende = {
+    'warenkorb-abbrecher': Math.max(5, Number(process.env.ABANDONED_CART_SWEEP_MIN || 15)) * 60,
+    'bewertungs-anfragen': 3600,
+    'datenbank-sicherung': 86400,
+    'cj-preisabgleich': 7 * 86400,
+    'stripe-abgleich': 86400,
+    'cj-bestandsabgleich': 86400
+  };
+  const rows = await dbOperations.listJobRuns();
+  res.json({
+    ok: true,
+    jetzt: new Date().toISOString(),
+    laeufe: rows.map((r) => {
+      const abstandSek = abstaende[r.job] || null;
+      const vergangenSek = Math.round((Date.now() - new Date(r.last_run_at).getTime()) / 1000);
+      return {
+        ...r,
+        abstand_sek: abstandSek,
+        faellig_in_sek: abstandSek ? Math.max(0, abstandSek - vergangenSek) : null
+      };
+    })
+  });
+}));
+
 // Abgleich "bezahlt, aber keine Bestellung" manuell ausloesen. Rein lesend —
 // legt nie automatisch eine Bestellung an (siehe stripe-reconcile.js).
 app.post('/a29715347575/api/reconcile/run', asyncSafe(async (req, res) => {
@@ -3729,65 +3761,82 @@ app.listen(PORT, HOST, () => {
   console.log(`   ✅ /stripe-webhook (Stripe Events)`);
   console.log('='.repeat(50));
 
-  // Warenkorb-Abbrecher-Sweep: laeuft nur wenn ABANDONED_CART_ENABLED=true.
-  // Interner Intervall (kein externer Cron noetig); greift, solange der Service
-  // wach ist (Keep-Alive haelt ihn wach). Standard: alle 15 Minuten.
-  if (ABANDONED_ENABLED) {
-    const everyMs = Math.max(5, Number(process.env.ABANDONED_CART_SWEEP_MIN || 15)) * 60 * 1000;
-    console.log(`📮 Warenkorb-Abbrecher-Mails AKTIV (Sweep alle ${everyMs / 60000} Min, Stufen ${ABANDONED_STAGE1_MIN}/${ABANDONED_STAGE2_MIN} Min)`);
-    setInterval(() => { runAbandonedCartSweep().catch(() => {}); }, everyMs).unref();
-  } else {
-    console.log('📮 Warenkorb-Abbrecher-Mails INAKTIV (ABANDONED_CART_ENABLED != true)');
-  }
+  // ── Zeitgesteuerte Ablaeufe ──────────────────────────────────────────
+  //
+  // Frueher hatte jeder Ablauf sein eigenes setInterval. Das hing am
+  // laufenden Prozess und begann bei jedem Neustart von vorn — bei rund zwei
+  // Deploys taeglich kam ein Tageslauf selten durch und ein Wochenlauf
+  // praktisch nie. Jetzt entscheidet der LETZTE LAUF aus der Datenbank ueber
+  // die Faelligkeit, nicht die Laufzeit des Prozesses (siehe job-scheduler.js).
+  //
+  // Die ENV-Schalter bleiben unveraendert: was aus war, bleibt aus. Und die
+  // manuellen Ausloeser im Admin-Panel gehen weiterhin immer, unabhaengig
+  // davon, ob der Ablauf hier eingeplant ist.
+  const planer = createScheduler({
+    dbOperations,
+    hatDatenbank: !!process.env.DATABASE_URL
+  });
 
-  // Bewertungs-Anfragen: stuendlicher Sweep, nur wenn REVIEW_REQUEST_ENABLED=true.
-  if (REVIEW_REQUEST_ENABLED) {
-    console.log(`⭐ Bewertungs-Anfragen AKTIV (${REVIEW_REQUEST_DAYS} Tage nach Kauf, Sweep stündlich)`);
-    setInterval(() => { runReviewRequestSweep().catch(() => {}); }, 60 * 60 * 1000).unref();
-  } else {
-    console.log('⭐ Bewertungs-Anfragen INAKTIV (REVIEW_REQUEST_ENABLED != true)');
-  }
+  const einplanen = (an, name, abstandMs, fn, hinweisAus) => {
+    if (an) planer.registriere(name, abstandMs, fn);
+    else console.log(hinweisAus);
+  };
 
-  // Datenbank-Backup: taeglicher Mail-Export, nur wenn DB_BACKUP_ENABLED=true.
-  // Ergaenzt Neons eigene Backups -> manueller Trigger (Admin-Panel) geht immer,
-  // unabhaengig von diesem Flag.
-  if ((process.env.DB_BACKUP_ENABLED || '').trim() === 'true') {
-    console.log('🗄️ Datenbank-Backup AKTIV (taeglicher Mail-Export)');
-    setInterval(() => { runDatabaseBackup().catch(() => {}); }, 24 * 60 * 60 * 1000).unref();
-  } else {
-    console.log('🗄️ Datenbank-Backup-Zeitplan INAKTIV (DB_BACKUP_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
-  }
+  const STUNDE = 60 * 60 * 1000;
+  const TAG = 24 * STUNDE;
 
-  // CJ-Preisabgleich: woechentlicher Lauf, nur wenn CJ_PRICE_SYNC_ENABLED=true.
-  // Aendert nie automatisch Preise -> nur Beobachtung + Mail-Warnung.
-  if ((process.env.CJ_PRICE_SYNC_ENABLED || '').trim() === 'true') {
-    console.log('💱 CJ-Preisabgleich AKTIV (woechentlicher Lauf)');
-    setInterval(() => { runCjPriceSync(cjAPI).catch(() => {}); }, 7 * 24 * 60 * 60 * 1000).unref();
-  } else {
-    console.log('💱 CJ-Preisabgleich-Zeitplan INAKTIV (CJ_PRICE_SYNC_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
-  }
+  einplanen(
+    ABANDONED_ENABLED,
+    'warenkorb-abbrecher',
+    Math.max(5, Number(process.env.ABANDONED_CART_SWEEP_MIN || 15)) * 60 * 1000,
+    () => runAbandonedCartSweep(),
+    '📮 Warenkorb-Abbrecher-Mails INAKTIV (ABANDONED_CART_ENABLED != true)'
+  );
 
-  // Abgleich "bezahlt, aber keine Bestellung": taeglich, nur wenn
-  // RECONCILE_ENABLED=true. Rein lesend, legt nie automatisch etwas an.
-  // Erster Lauf verzoegert, damit der Start nicht ausgebremst wird.
-  if ((process.env.RECONCILE_ENABLED || '').trim() === 'true') {
-    console.log('🧾 Stripe-Abgleich AKTIV (taeglicher Lauf, letzte 7 Tage)');
-    setTimeout(() => { runStripeReconcile(stripe).catch(() => {}); }, 5 * 60 * 1000).unref();
-    setInterval(() => { runStripeReconcile(stripe).catch(() => {}); }, 24 * 60 * 60 * 1000).unref();
-  } else {
-    console.log('🧾 Stripe-Abgleich-Zeitplan INAKTIV (RECONCILE_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
-  }
+  einplanen(
+    REVIEW_REQUEST_ENABLED,
+    'bewertungs-anfragen',
+    STUNDE,
+    () => runReviewRequestSweep(),
+    '⭐ Bewertungs-Anfragen INAKTIV (REVIEW_REQUEST_ENABLED != true)'
+  );
 
-  // CJ-Bestandsabgleich: taeglich, nur wenn CJ_STOCK_SYNC_ENABLED=true.
-  // Markiert nur bei eindeutiger CJ-Antwort mit Bestand 0 als nicht lieferbar.
-  if ((process.env.CJ_STOCK_SYNC_ENABLED || '').trim() === 'true') {
-    console.log('📦 CJ-Bestandsabgleich AKTIV (taeglicher Lauf)');
-    setInterval(() => {
-      runCjStockSync(cjAPI)
-        .then(() => { __stockOverrideCache = { at: 0, ids: new Set() }; })
-        .catch(() => {});
-    }, 24 * 60 * 60 * 1000).unref();
-  } else {
-    console.log('📦 CJ-Bestandsabgleich-Zeitplan INAKTIV (CJ_STOCK_SYNC_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem');
-  }
+  einplanen(
+    (process.env.DB_BACKUP_ENABLED || '').trim() === 'true',
+    'datenbank-sicherung',
+    TAG,
+    () => runDatabaseBackup(),
+    '🗄️ Datenbank-Backup-Zeitplan INAKTIV (DB_BACKUP_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem'
+  );
+
+  einplanen(
+    (process.env.CJ_PRICE_SYNC_ENABLED || '').trim() === 'true',
+    'cj-preisabgleich',
+    7 * TAG,
+    () => runCjPriceSync(cjAPI),
+    '💱 CJ-Preisabgleich-Zeitplan INAKTIV (CJ_PRICE_SYNC_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem'
+  );
+
+  einplanen(
+    (process.env.RECONCILE_ENABLED || '').trim() === 'true',
+    'stripe-abgleich',
+    TAG,
+    () => runStripeReconcile(stripe),
+    '🧾 Stripe-Abgleich-Zeitplan INAKTIV (RECONCILE_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem'
+  );
+
+  einplanen(
+    (process.env.CJ_STOCK_SYNC_ENABLED || '').trim() === 'true',
+    'cj-bestandsabgleich',
+    TAG,
+    async () => {
+      await runCjStockSync(cjAPI);
+      // Zwischenspeicher leeren, damit /products.json sofort die neue
+      // Verfuegbarkeit zeigt statt bis zum Ablauf die alte.
+      __stockOverrideCache = { at: 0, ids: new Set() };
+    },
+    '📦 CJ-Bestandsabgleich-Zeitplan INAKTIV (CJ_STOCK_SYNC_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem'
+  );
+
+  planer.start();
 });

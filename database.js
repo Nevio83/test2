@@ -283,7 +283,18 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS idx_abandoned_status ON abandoned_carts(status)`,
   `CREATE INDEX IF NOT EXISTS idx_abandoned_unsub ON abandoned_carts(unsubscribe_token)`,
   `CREATE INDEX IF NOT EXISTS idx_returns_status ON return_requests(status)`,
-  `CREATE INDEX IF NOT EXISTS idx_returns_order ON return_requests(order_id)`
+  `CREATE INDEX IF NOT EXISTS idx_returns_order ON return_requests(order_id)`,
+  // Wann lief welcher zeitgesteuerte Ablauf zuletzt? Ohne diese Tabelle
+  // haengen die Ablaeufe an einem Wecker im laufenden Prozess — und der
+  // beginnt bei jedem Neustart von vorn. Bei rund zwei Deploys taeglich kam
+  // ein Tageslauf damit selten durch und ein Wochenlauf praktisch nie.
+  `CREATE TABLE IF NOT EXISTS job_runs (
+    job TEXT PRIMARY KEY,
+    last_run_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    runs INTEGER NOT NULL DEFAULT 0,
+    last_error TEXT,
+    last_error_at TIMESTAMPTZ
+  )`
 ];
 
 async function initializeDatabase() {
@@ -1510,6 +1521,53 @@ const dbOperations = {
       [ids]
     );
     return { deleted: r.rowCount };
+  },
+
+  // ── Zeitgesteuerte Ablaeufe ────────────────────────────────────────────
+  //
+  // Der Kern: EIN Aufruf entscheidet UND belegt den Lauf in einem Schritt.
+  // Die Bedingung steckt im UPDATE, nicht in vorgelagertem JavaScript —
+  // dadurch kann derselbe Lauf nicht zweimal starten, auch nicht bei zwei
+  // Instanzen oder zwei gleichzeitigen Ticks. Wer die Zeile bekommt, laeuft;
+  // alle anderen bekommen null und tun nichts.
+  //
+  // Der erste Eintrag setzt last_run_at bewusst auf JETZT statt auf NULL:
+  // sonst waeren beim allerersten Start alle Ablaeufe auf einmal faellig und
+  // wuerden gleichzeitig losrennen. So laeuft jeder erstmals nach seinem
+  // regulaeren Abstand.
+  claimJobRun: async (job, intervalSeconds) => {
+    await pool.query(
+      `INSERT INTO job_runs (job, last_run_at) VALUES ($1, CURRENT_TIMESTAMP)
+       ON CONFLICT (job) DO NOTHING`,
+      [job]
+    );
+    const r = await pool.query(
+      `UPDATE job_runs
+          SET last_run_at = CURRENT_TIMESTAMP, runs = runs + 1
+        WHERE job = $1
+          AND last_run_at <= CURRENT_TIMESTAMP - make_interval(secs => $2)
+        RETURNING runs`,
+      [job, intervalSeconds]
+    );
+    return r.rows[0] ? { uebernommen: true, runs: r.rows[0].runs } : { uebernommen: false };
+  },
+
+  // Fehlschlag festhalten, damit im Dashboard sichtbar ist, WARUM nichts
+  // passiert. Der Zeitpunkt bleibt stehen — ein dauerhaft kaputter Ablauf
+  // soll nicht in einer Endlosschleife alle paar Minuten neu starten.
+  markJobError: async (job, meldung) => {
+    await pool.query(
+      `UPDATE job_runs SET last_error = $2, last_error_at = CURRENT_TIMESTAMP WHERE job = $1`,
+      [job, String(meldung || '').slice(0, 500)]
+    );
+  },
+
+  listJobRuns: async () => {
+    const r = await pool.query(
+      `SELECT job, last_run_at, runs, last_error, last_error_at
+         FROM job_runs ORDER BY job`
+    );
+    return r.rows;
   }
 };
 
