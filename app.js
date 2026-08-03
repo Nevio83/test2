@@ -1778,8 +1778,9 @@ function updateScrollbarPositionForGrid(gridId) {
 
 // Initialize scrollbar tracking for all grids
 function initializeScrollbarTracking() {
-  // Skip on cart.html page
-  if (window.location.pathname.includes("cart.html")) {
+  // Ohne Raster gibt es keine Bildlaufleisten zu verfolgen. Vorher meldete
+  // diese Funktion auf jeder Produktseite fuenf Raster als "nicht gefunden".
+  if (!hatProduktraster()) {
     return;
   }
 
@@ -2441,12 +2442,15 @@ function initializeCategoryNavigation() {
 // ... rest of the code remains the same ...
 // Function to show/hide category sections based on selection
 function showCategorySections(selectedCategory) {
-  console.log("ðŸ”§ Showing category sections for:", selectedCategory);
-
   // Get all product category sections (but NOT the bestseller section or alle-produkte-grid)
   const categorySections = document.querySelectorAll(
     ".product-category-section:not(.alle-produkte-grid-section)",
   );
+  // Gibt es diese Abschnitte nicht, ist auch nichts ein- oder auszublenden.
+  if (!categorySections.length) {
+    return;
+  }
+  console.log("ðŸ”§ Showing category sections for:", selectedCategory);
 
   // Get the bestseller section (should always stay visible)
   const bestsellerSection = document
@@ -3265,12 +3269,16 @@ window.updateCustomScrollbarPosition = updateCustomScrollbarPosition;
 
 // Initialize category tiles and "Alle Produkte entdecken" button
 function initializeCategoryTiles(products) {
+  const categoryTiles = document.querySelectorAll(".lumiere-feature-item");
+  // Ohne Kacheln nichts zu tun. Vorher meldete diese Funktion auf jeder
+  // Produktseite "Found category tiles: 0" und arbeitete dann leer weiter.
+  if (!categoryTiles.length) {
+    return;
+  }
   console.log(
     "Initializing category tiles with products:",
     products ? products.length : "no products",
   );
-
-  const categoryTiles = document.querySelectorAll(".lumiere-feature-item");
   console.log("Found category tiles:", categoryTiles.length);
 
   categoryTiles.forEach((tile, index) => {
@@ -3949,9 +3957,39 @@ function scrollCategory(gridId, direction) {
 let categoryInitAttempts = 0;
 const maxCategoryInitAttempts = 10;
 
+// Die Behaelter, in die die Startseiten-Logik ueberhaupt schreiben kann.
+// Fehlen sie alle, hat sie auf dieser Seite nichts zu tun.
+const STARTSEITEN_BEHAELTER = [
+  "technikGrid",
+  "beleuchtungGrid",
+  "haushaltGrid",
+  "wellnessGrid",
+  "bestsellerGrid",
+  "alleProdukteMasterGrid",
+  "productGrid",
+];
+
+/**
+ * Hat diese Seite ueberhaupt eines der Produktraster?
+ *
+ * Vorher entschied eine Liste von Seitennamen ("ausser cart.html"), ob die
+ * Startseiten-Logik laeuft. Das war doppelt falsch: sie lief auf allen 40
+ * Produktseiten und allen Infoseiten mit, wo es kein einziges dieser Raster
+ * gibt — und dort drehte sie ZEHN Versuche im Abstand von 500 ms, also fuenf
+ * Sekunden Warteschleife pro Seitenaufruf, um am Ende nichts zu finden.
+ * Am 03.08. im Browser gemessen: 10 von 10 Versuchen, null Zielelemente.
+ *
+ * Jetzt entscheidet der Zustand der Seite. Kommt eine neue Seite mit einem
+ * dieser Raster dazu, greift es automatisch — ohne Liste zum Nachpflegen.
+ */
+function hatProduktraster() {
+  return STARTSEITEN_BEHAELTER.some((id) => document.getElementById(id));
+}
+window.hatProduktraster = hatProduktraster;
+
 function initializeCategoryProducts() {
-  // Skip on cart.html page
-  if (window.location.pathname.includes("cart.html")) {
+  // Kein Raster auf dieser Seite -> nichts zu tun, auch nicht warten.
+  if (!hatProduktraster()) {
     return;
   }
 
@@ -4027,8 +4065,8 @@ function renderBestsellers(products) {
 
 // Load products into category containers
 function loadCategoryProducts(products) {
-  // Skip on cart.html page
-  if (window.location.pathname.includes("cart.html")) {
+  // Ohne Raster gibt es nichts zu befuellen (siehe hatProduktraster).
+  if (!hatProduktraster()) {
     return;
   }
   console.log("ðŸ”„ Loading products into category containers...");
@@ -5557,17 +5595,17 @@ setTimeout(() => {
 
 // Load all products into master grid on index page
 document.addEventListener("DOMContentLoaded", function () {
+  // Ohne das Raster braucht es auch den Timer nicht.
+  if (!document.getElementById("alleProdukteMasterGrid")) return;
   setTimeout(() => {
     loadMasterProductGrid();
   }, 1000);
 });
 
 function loadMasterProductGrid() {
-  console.log("📦 Loading master product grid...");
-
   const masterGrid = document.getElementById("alleProdukteMasterGrid");
   if (!masterGrid) {
-    console.log("❌ Master grid not found!");
+    // Kein Fehler: die meisten Seiten haben dieses Raster gar nicht.
     return;
   }
 
