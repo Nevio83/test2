@@ -1160,12 +1160,9 @@ function changeQuantity(productId, change) {
             if (typeof updateCartPage === 'function') {
                 updateCartPage();
             }
-        } else {
-            // If on main page, update the dropdown
-            if (typeof renderCartDropdown === 'function') {
-                renderCartDropdown();
-            }
         }
+        // (Sonst-Zweig entfernt: er zeichnete das aufklappbare Warenkorb-Fenster
+        //  nach, das es nicht mehr gibt.)
     }
 }
 
@@ -1221,12 +1218,8 @@ function removeFromCart(productId) {
         if (typeof updateCartPage === 'function') {
             updateCartPage();
         }
-    } else {
-        // If on main page, just update the dropdown
-        if (typeof renderCartDropdown === 'function') {
-            renderCartDropdown();
-        }
     }
+    // (Sonst-Zweig entfernt: aufklappbares Warenkorb-Fenster gibt es nicht mehr.)
 }
 
 function clearCart() {
@@ -1239,12 +1232,8 @@ function clearCart() {
         if (typeof updateCartPage === 'function') {
             updateCartPage();
         }
-    } else {
-        // If on main page, update the dropdown
-        if (typeof renderCartDropdown === 'function') {
-            renderCartDropdown();
-        }
     }
+    // (Sonst-Zweig entfernt: aufklappbares Warenkorb-Fenster gibt es nicht mehr.)
     
     if (typeof updateCartCounter === 'function') {
         updateCartCounter();

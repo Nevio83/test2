@@ -727,28 +727,11 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
     showAlert("Produkt wurde zum Warenkorb hinzugefügt");
   }
 
-  // Trigger button animations
-  triggerCartButtonAnimation(productId);
+  // (Die Knopf-Animation gehoerte zum aufklappbaren Warenkorb-Fenster, das es
+  // nicht mehr gibt — siehe Entfernung des toten Fensters.)
 
-  // Update cart dropdown if it's open
-  if (fromCartDropdown) {
-    setTimeout(() => {
-      renderCartDropdown();
-    }, 100);
-  }
-
-  // Keep cart dropdown open if it was open before adding the product
-  if (wasDropdownOpen && cartDropdown) {
-    setTimeout(() => {
-      console.log("Keeping cart dropdown open after adding product");
-      cartDropdown.classList.add("show");
-      cartDropdown.style.display = "block";
-      // Re-render the dropdown to show updated content
-      if (typeof renderCartDropdown === "function") {
-        renderCartDropdown();
-      }
-    }, 100);
-  }
+  // (Hier wurde das aufklappbare Warenkorb-Fenster nachgezeichnet und offen
+  // gehalten. Es gibt kein solches Fenster mehr.)
 
   // --- NEU: Wenn der User auf cart.html ist, direkt die Seite aktualisieren ---
   if (window.location.pathname.endsWith("cart.html")) {
@@ -782,43 +765,11 @@ window.updateCartCounter = function () {
       counter.style.display = "flex";
     }
 
-    // Update dropdown if it's currently open
-    const cartDropdown = document.getElementById("cartDropdown");
-    if (cartDropdown && cartDropdown.classList.contains("show")) {
-      if (typeof renderCartDropdown === "function") {
-        renderCartDropdown();
-      }
-    }
   } else {
     console.log("Cart counter element not found");
   }
 };
 // Animation trigger functions
-function triggerCartButtonAnimation(productId) {
-  // Find ALL buttons for this product and animate them
-  const cartButtons = document.querySelectorAll(
-    `.lumiere-add-to-cart-btn[data-product-id="${productId}"]`,
-  );
-
-  cartButtons.forEach((cartButton) => {
-    cartButton.classList.add("success-animation");
-    setTimeout(() => {
-      cartButton.classList.remove("success-animation");
-    }, 800);
-  });
-
-  // Enhanced colorful cart icon animation (no emojis)
-  const navCartButton = document.querySelector("#cartButton");
-  const cartIcon = document.querySelector("#cartButton i");
-  if (navCartButton && cartIcon) {
-    // Add colorful bounce animation class
-    navCartButton.classList.add("cart-rainbow-bounce");
-
-    setTimeout(() => {
-      navCartButton.classList.remove("cart-rainbow-bounce");
-    }, 800);
-  }
-}
 
 function triggerWishlistButtonAnimation(productId) {
   // Find ALL wishlist buttons for this product
@@ -955,7 +906,6 @@ function changeQuantity(productId, change) {
 
     localStorage.setItem("cart", JSON.stringify(cart));
     updateCartCounter();
-    renderCartDropdown();
   }
 }
 
@@ -968,7 +918,6 @@ function removeFromCart(productId) {
 
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartCounter();
-  renderCartDropdown();
 }
 
 // RADICAL FIX: Clear and reload all product cards
@@ -1268,502 +1217,8 @@ function calculateCategoryCounts(products) {
 }
 
 // Warenkorb Dropdown öffnen/schließen und rendern
-function initializeCartDropdown() {
-  // Skip initialization on cart.html page
-  if (window.location.pathname.includes("cart.html")) {
-    return;
-  }
 
-  const cartButton = document.getElementById("cartButton");
-  const cartDropdown = document.getElementById("cartDropdown");
-  const closeCartDropdown = document.getElementById("closeCartDropdown");
 
-  // Hinweis fuer den naechsten Blick hierher: die IDs cartButton/cartDropdown
-  // kommen in KEINER HTML-Datei mehr vor. Die Startseite baut ihre Kopfzeile
-  // seit dem Umbau in home.js (cartBtn, miniCart, cartCount), Produkt- und
-  // Infoseiten haben ueberhaupt kein Warenkorb-Fenster. Dieser Zweig bindet
-  // derzeit also nirgends etwas an. Er bleibt vorerst stehen, weil
-  // renderCartDropdown an rund 20 Stellen in app.js und cart.js haengt und
-  // zur Laufzeit umgebogen wird — das sauber herauszuloesen ist eine eigene
-  // Aufgabe. Was hier NICHT bleibt: die Fehlermeldung dafuer (siehe unten).
-
-  if (cartButton && cartDropdown) {
-    // Remove any existing event listeners
-    cartButton.removeEventListener("click", handleCartClick);
-
-    function handleCartClick(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log("Cart button clicked");
-
-      // Always render fresh data when opening dropdown
-      renderCartDropdown();
-
-      // Flüssige Animation beim Öffnen/Schließen
-      if (cartDropdown.classList.contains("show")) {
-        // Schließen mit Animation
-        cartDropdown.classList.add("hiding");
-        cartDropdown.classList.remove("show");
-
-        setTimeout(() => {
-          cartDropdown.style.display = "none";
-          cartDropdown.classList.remove("hiding");
-          console.log("Cart dropdown hidden with animation");
-        }, 300); // Wartet auf die Schließ-Animation
-      } else {
-        // Öffnen mit Animation
-        cartDropdown.style.display = "block";
-        // Kurze Verzögerung für smooth Animation
-        requestAnimationFrame(() => {
-          cartDropdown.classList.add("show");
-          console.log("Cart dropdown shown with animation");
-        });
-      }
-    }
-
-    cartButton.addEventListener("click", handleCartClick);
-  } else if (cartButton || cartDropdown) {
-    // Nur EIN Teil des Paares da -> die Seite wollte das Fenster haben und es
-    // ist halb gebaut. Das ist ein echter Befund und darf auffallen.
-    console.warn("⚠️ Warenkorb-Fenster nur halb vorhanden auf", location.pathname, {
-      knopf: !!cartButton,
-      fenster: !!cartDropdown,
-    });
-  }
-  // Fehlt BEIDES, hat die Seite dieses Fenster schlicht nicht — das ist der
-  // Normalfall und kein Fehler. Vorher stand hier ein console.error, der
-  // dadurch auf jeder einzelnen Seite ausloeste. Dauerfehler entwerten genau
-  // das Signal, an dem man echte Fehler erkennt.
-  if (closeCartDropdown && cartDropdown) {
-    closeCartDropdown.addEventListener("click", (e) => {
-      e.preventDefault();
-      // Flüssige Schließ-Animation
-      cartDropdown.classList.add("hiding");
-      cartDropdown.classList.remove("show");
-
-      setTimeout(() => {
-        cartDropdown.style.display = "none";
-        cartDropdown.classList.remove("hiding");
-      }, 300);
-    });
-  }
-
-  // Close cart dropdown when clicking outside
-  document.addEventListener("click", (e) => {
-    if (cartDropdown && cartDropdown.classList.contains("show")) {
-      // Check if click is outside the cart dropdown and cart button
-      if (!cartDropdown.contains(e.target) && !cartButton.contains(e.target)) {
-        // Flüssige Schließ-Animation
-        cartDropdown.classList.add("hiding");
-        cartDropdown.classList.remove("show");
-
-        setTimeout(() => {
-          cartDropdown.style.display = "none";
-          cartDropdown.classList.remove("hiding");
-        }, 300);
-      }
-    }
-  });
-
-  // Prevent cart dropdown from closing when clicking on interactive elements inside it
-  if (cartDropdown) {
-    cartDropdown.addEventListener("click", (e) => {
-      // Check if the clicked element is an interactive element that should not close the dropdown
-      const interactiveElements = [
-        ".quantity-btn",
-        ".remove-item",
-        ".recommendation-add-btn",
-        ".cart-item-controls",
-        ".quantity-controls",
-        ".quantity-display",
-        "button",
-        "input",
-      ];
-
-      // If the clicked element or its parent matches any interactive element, prevent closing
-      const isInteractiveElement = interactiveElements.some(
-        (selector) => e.target.matches(selector) || e.target.closest(selector),
-      );
-
-      if (isInteractiveElement) {
-        e.stopPropagation(); // Prevent the click from bubbling up and closing the dropdown
-      }
-    });
-  }
-
-  // Reset category filter when clicking on Maios logo
-  const navbarBrand = document.querySelector(".navbar-brand");
-  if (navbarBrand) {
-    navbarBrand.addEventListener("click", (e) => {
-      e.preventDefault();
-      const categoryFilter = document.getElementById("categoryFilter");
-      const searchInput = document.getElementById("searchInput");
-
-      if (categoryFilter) {
-        categoryFilter.value = "Alle Kategorien";
-        categoryFilter.dispatchEvent(new Event("change"));
-      }
-
-      // Reset custom dropdown
-      const customDropdown = document.getElementById("categoryDropdown");
-      const categorySelected = document.getElementById("categorySelected");
-      if (customDropdown && categorySelected) {
-        categorySelected.innerHTML = `
-          <span class="category-icon">ðŸ“‹</span>
-          <span class="category-text">Alle Kategorien</span>
-          <span class="dropdown-arrow">â–¼</span>
-        `;
-        customDropdown.classList.remove("open");
-      }
-
-      if (searchInput) {
-        searchInput.value = "";
-        searchInput.dispatchEvent(new Event("input"));
-      }
-    });
-  }
-}
-
-function setupClearCartButton() {
-  // Skip on cart.html page as it has its own clear cart logic
-  if (window.location.pathname.includes("cart.html")) {
-    return;
-  }
-
-  const clearCartBtn = document.getElementById("clearCart");
-  if (clearCartBtn) {
-    console.log("Clear cart button found, adding event listener");
-    // Remove any existing event listeners
-    clearCartBtn.removeEventListener("click", clearCart);
-    clearCartBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      console.log("Clear cart button clicked");
-      clearCart();
-    });
-  } else {
-    console.log("Clear cart button not found");
-  }
-}
-
-function renderCartDropdown() {
-  console.log("renderCartDropdown called");
-  cartItems = JSON.parse(localStorage.getItem("cart")) || [];
-  console.log("Cart items loaded:", cartItems);
-
-  const body = document.getElementById("cartDropdownBody");
-  const footer = document.getElementById("cartDropdownFooter");
-  const totalElement = document.getElementById("cartTotal");
-
-  if (!body || !footer || !totalElement) {
-    console.error("Required cart dropdown elements not found:", {
-      body: !!body,
-      footer: !!footer,
-      totalElement: !!totalElement,
-    });
-    return;
-  }
-
-  if (cartItems.length === 0) {
-    console.log("Cart is empty, showing empty state");
-    // Footer bleibt immer sichtbar
-    footer.style.display = "block";
-    footer.style.visibility = "visible";
-    totalElement.textContent = "0.00"; // Gesamt auf 0 setzen bei leerem Warenkorb
-
-    // Bei leerem Warenkorb: 3 zufällige Produktvorschläge anzeigen
-    loadProducts().then((products) => {
-      if (products.length === 0) {
-        body.innerHTML = `
-          <div class="empty-cart text-center py-4" id="emptyCartMessage">
-            <i class="bi bi-cart-x fs-1 text-muted"></i>
-            <p class="text-muted mt-2">Ihr Warenkorb ist leer</p>
-          </div>
-        `;
-        return;
-      }
-
-      // 3 zufällige Produkte auswählen (ohne AliExpress)
-      const filteredProducts = products.filter((p) => p.showInSlider !== false);
-      const shuffled = [...filteredProducts].sort(() => 0.5 - Math.random());
-      const randomProducts = shuffled.slice(0, 3);
-
-      body.innerHTML = `
-        <div class="empty-cart text-center py-3" id="emptyCartMessage">
-          <i class="bi bi-cart-x fs-1 text-muted"></i>
-          <p class="text-muted mt-2 mb-3">Ihr Warenkorb ist leer</p>
-          
-          <!-- Enhanced Produktvorschläge -->
-          <div class="cart-recommendations">
-            <h6><i class="bi bi-lightbulb"></i> Das könnte Ihnen gefallen</h6>
-            <div class="recommendations-grid">
-              ${randomProducts
-                .map(
-                  (product, index) => `
-                <div class="recommendation-card" style="animation-delay: ${(index + 1) * 0.1}s;">
-                  <img src="${product.image}" class="recommendation-image" alt="${product.name}">
-                  <div class="recommendation-details">
-                    <div class="recommendation-name">${product.name}</div>
-                    <div class="recommendation-price">€${product.price.toFixed(2)}</div>
-                  </div>
-                  <button class="recommendation-add-btn" data-artikel="${product.id}" onclick="addRecommendationToCart(Number(this.dataset.artikel), this)" title="Zum Warenkorb hinzufügen">
-                    <i class="bi bi-cart-plus"></i>
-                  </button>
-                </div>
-              `,
-                )
-                .join("")}
-            </div>
-          </div>
-      `;
-    });
-    return;
-  }
-
-  console.log("Rendering cart items:", cartItems.length);
-  footer.style.display = "block";
-  footer.style.visibility = "visible";
-  console.log(
-    "Footer should now be visible:",
-    footer.style.display,
-    footer.style.visibility,
-  );
-
-  // Calculate total for display
-  const total = cartItems.reduce(
-    (sum, item) =>
-      sum + (typeof item.price === "number" ? item.price * item.quantity : 0),
-    0,
-  );
-  console.log("Cart total calculated:", total);
-
-  // Render cart items and add recommendations
-  const cartItemsHTML = cartItems
-    .map(
-      (item) => `
-    <div class="cart-item">
-      <img src="${item.image}" class="cart-item-image" alt="${item.name}">
-      <div class="cart-item-details">
-        <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-price">
-          €${typeof item.price === "number" ? item.price.toFixed(2) : "0.00"} x 
-          <span class="quantity-display">${item.quantity}</span> = 
-          <strong>€${typeof item.price === "number" ? (item.price * item.quantity).toFixed(2) : "0.00"}</strong>
-        </div>
-      </div>
-      <div class="cart-item-controls">
-        <div class="quantity-controls" style="display: flex; align-items: center; gap: 4px;">
-          <button class="quantity-btn" data-artikel="${Number(item.id)}" onclick="changeQuantity(Number(this.dataset.artikel), -1)" style="cursor: pointer; pointer-events: auto;">-</button>
-          <span class="quantity-display">${item.quantity}</span>
-          <button class="quantity-btn" data-artikel="${Number(item.id)}" onclick="changeQuantity(Number(this.dataset.artikel), 1)" style="cursor: pointer; pointer-events: auto;">+</button>
-        </div>
-        <button class="remove-item" data-artikel="${item.id}" onclick="removeFromCart(this.dataset.artikel)" style="cursor: pointer; pointer-events: auto;">&times;</button>
-      </div>
-    </div>
-  `,
-    )
-    .join("");
-
-  // Add recommendations when cart has items
-  loadProducts().then((products) => {
-    const cartProductIds = cartItems.map((item) => item.id);
-    const availableProducts = products.filter(
-      (product) =>
-        !cartProductIds.includes(product.id) && product.showInSlider !== false,
-    );
-    const shuffled = [...availableProducts].sort(() => 0.5 - Math.random());
-    const randomProducts = shuffled.slice(0, 2); // Show 2 recommendations when cart has items
-
-    let recommendationsHTML = "";
-    if (randomProducts.length > 0) {
-      recommendationsHTML = `
-        <div class="cart-recommendations">
-          <h6><i class="bi bi-lightbulb"></i> Das könnte Ihnen gefallen</h6>
-          <div class="recommendations-grid">
-            ${randomProducts
-              .map(
-                (product, index) => `
-              <div class="recommendation-card" style="animation-delay: ${(index + 1) * 0.1}s;">
-                <img src="${product.image}" class="recommendation-image" alt="${product.name}">
-                <div class="recommendation-details">
-                  <div class="recommendation-name">${product.name}</div>
-                  <div class="recommendation-price">€${product.price.toFixed(2)}</div>
-                </div>
-                <button class="recommendation-add-btn" data-artikel="${product.id}" onclick="addRecommendationToCart(Number(this.dataset.artikel), this)" title="Zum Warenkorb hinzufügen">
-                  <i class="bi bi-cart-plus"></i>
-                </button>
-              </div>
-            `,
-              )
-              .join("")}
-          </div>
-        </div>
-      `;
-    }
-
-    body.innerHTML = cartItemsHTML + recommendationsHTML;
-  });
-
-  // Set initial content without recommendations for immediate rendering
-  body.innerHTML = cartItemsHTML;
-
-  // Update total immediately
-  totalElement.textContent = total.toFixed(2);
-  console.log(
-    "Cart dropdown rendered successfully with total:",
-    total.toFixed(2),
-  );
-
-  // Ensure footer is ALWAYS visible
-  footer.style.display = "block";
-  footer.style.visibility = "visible";
-  footer.style.opacity = "1";
-  footer.style.position = "relative";
-  console.log("Footer forced visible - items:", cartItems.length);
-
-  // Re-initialize add-to-cart buttons for new dropdown content
-  setTimeout(() => {
-    initializeAddToCartButtons();
-  }, 100);
-
-  // Re-initialize clear cart button after rendering
-  setTimeout(() => {
-    const clearCartBtn = document.getElementById("clearCart");
-    if (clearCartBtn) {
-      console.log("Re-initializing clear cart button");
-      // Remove any existing event listeners
-      const newClearCartBtn = clearCartBtn.cloneNode(true);
-      clearCartBtn.parentNode.replaceChild(newClearCartBtn, clearCartBtn);
-
-      newClearCartBtn.addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log("Clear cart button clicked (re-initialized)");
-        clearCart();
-      });
-    }
-  }, 100);
-
-  // Final safety check - ensure footer AND buttons are always visible (especially on PC)
-  setTimeout(() => {
-    const finalFooter = document.getElementById("cartDropdownFooter");
-    const checkoutBtn = document.querySelector(
-      ".cart-dropdown-footer .btn-primary",
-    );
-    const clearBtn = document.getElementById("clearCart");
-
-    console.log("PC Button visibility check - Elements found:", {
-      footer: !!finalFooter,
-      checkoutBtn: !!checkoutBtn,
-      clearBtn: !!clearBtn,
-    });
-
-    if (finalFooter) {
-      finalFooter.style.display = "block";
-      finalFooter.style.visibility = "visible";
-      finalFooter.style.opacity = "1";
-      finalFooter.style.position = "relative";
-      finalFooter.style.zIndex = "9999";
-      finalFooter.style.background = "white";
-      finalFooter.style.borderTop = "1px solid #ddd";
-      finalFooter.style.padding = "16px";
-
-      // Fix button container to use flexbox instead of grid
-      const buttonContainer = finalFooter.querySelector(".d-grid");
-      if (buttonContainer) {
-        buttonContainer.style.display = "flex";
-        buttonContainer.style.flexDirection = "column";
-        buttonContainer.style.gap = "10px";
-        buttonContainer.style.gridTemplateRows = "none";
-      }
-
-      console.log("Final footer visibility check completed");
-    }
-
-    if (checkoutBtn) {
-      // Komplett neu generieren ohne verschachtelte Spans
-      checkoutBtn.innerHTML =
-        '<i class="bi bi-credit-card" style="margin-right: 8px;"></i>Zur Kasse';
-
-      checkoutBtn.style.display = "flex";
-      checkoutBtn.style.alignItems = "center";
-      checkoutBtn.style.justifyContent = "center";
-      checkoutBtn.style.visibility = "visible";
-      checkoutBtn.style.opacity = "1";
-      checkoutBtn.style.position = "relative";
-      checkoutBtn.style.zIndex = "9999";
-      checkoutBtn.style.width = "100%";
-      checkoutBtn.style.height = "48px";
-      checkoutBtn.style.minHeight = "48px";
-      checkoutBtn.style.maxHeight = "48px";
-      checkoutBtn.style.lineHeight = "normal";
-      checkoutBtn.style.textAlign = "center";
-      checkoutBtn.style.marginBottom = "0";
-      checkoutBtn.style.background =
-        "linear-gradient(135deg, #667eea, #764ba2)";
-      checkoutBtn.style.color = "white";
-      checkoutBtn.style.border = "none";
-      checkoutBtn.style.borderRadius = "12px";
-      checkoutBtn.style.textDecoration = "none";
-      checkoutBtn.style.padding = "0 16px";
-      checkoutBtn.style.fontSize = "16px";
-      checkoutBtn.style.fontWeight = "600";
-      checkoutBtn.style.boxShadow = "0 4px 15px rgba(102, 126, 234, 0.4)";
-      checkoutBtn.style.transition = "all 0.3s ease";
-      checkoutBtn.style.boxSizing = "border-box";
-
-      console.log("Checkout button completely regenerated");
-    }
-
-    if (clearBtn) {
-      // Komplett neu generieren ohne verschachtelte Spans
-      clearBtn.innerHTML =
-        '<i class="bi bi-trash" style="font-size: 1.2rem; margin-right: 8px;"></i>Löschen';
-
-      clearBtn.style.display = "flex";
-      clearBtn.style.alignItems = "center";
-      clearBtn.style.justifyContent = "center";
-      clearBtn.style.visibility = "visible";
-      clearBtn.style.opacity = "1";
-      clearBtn.style.position = "relative";
-      clearBtn.style.zIndex = "9999";
-      clearBtn.style.width = "100%";
-      clearBtn.style.height = "48px";
-      clearBtn.style.minHeight = "48px";
-      clearBtn.style.maxHeight = "48px";
-      clearBtn.style.border = "2px solid #dc3545";
-      clearBtn.style.color = "#dc3545";
-      clearBtn.style.background = "white";
-      clearBtn.style.borderRadius = "12px";
-      clearBtn.style.cursor = "pointer";
-      clearBtn.style.fontSize = "16px";
-      clearBtn.style.fontWeight = "600";
-      clearBtn.style.lineHeight = "normal";
-      clearBtn.style.textAlign = "center";
-      clearBtn.style.padding = "0 16px";
-      clearBtn.style.transition = "all 0.3s ease";
-      clearBtn.style.boxSizing = "border-box";
-
-      console.log("Clear button completely regenerated");
-    }
-
-    // Extra check for PC browsers
-    if (window.innerWidth >= 769) {
-      console.log("PC detected - applying extra button visibility measures");
-      const allFooterBtns = document.querySelectorAll(
-        ".cart-dropdown-footer .btn",
-      );
-      allFooterBtns.forEach((btn, index) => {
-        btn.style.display = "block";
-        btn.style.visibility = "visible";
-        btn.style.opacity = "1";
-        btn.style.position = "relative";
-        btn.style.zIndex = "9999";
-        console.log(`PC Button ${index + 1} forced visible`);
-      });
-    }
-  }, 200);
-}
 
 // Update scrollbar position - NEUE METHODE (for bestsellers)
 function updateScrollbarPosition() {
@@ -2575,8 +2030,6 @@ function updateCategoryBodyClass(category) {
 // Filter- und Sortier-Event-Listener
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM Content Loaded - Starting initialization");
-  // Initialize cart dropdown
-  initializeCartDropdown();
   initializeCategoryNavigation();
   initializeProductCardClicks();
   initializeWishlistButtons();
@@ -3239,7 +2692,6 @@ window.testAddProduct17 = function () {
 
   localStorage.setItem("cart", JSON.stringify(cartItems));
   updateCartCounter();
-  renderCartDropdown();
   showAlert("Produkt wurde zum Warenkorb hinzugefügt");
 
   console.log("Product 17 added to cart successfully!");
@@ -4148,114 +3600,6 @@ let searchResults = null;
 let searchResultsGrid = null;
 
 // Initialize fullscreen search when DOM is ready
-function initializeFullscreenSearch() {
-  // Skip initialization on cart.html page
-  if (window.location.pathname.includes("cart.html")) {
-    return;
-  }
-
-  console.log("ðŸ” Initializing fullscreen search...");
-
-  // Wait for DOM elements to be available
-  setTimeout(() => {
-    // Get DOM elements
-    const fullscreenSearchBtn = document.getElementById("fullscreenSearchBtn");
-    const closeSearchBtn = document.getElementById("closeSearchBtn");
-    searchOverlay = document.getElementById("fullscreenSearchOverlay");
-    searchInput = document.getElementById("fullscreenSearchInput");
-    searchResults = document.getElementById("searchResults");
-    searchResultsGrid = document.getElementById("searchResultsGrid");
-
-    console.log("ðŸ” Search elements found:", {
-      searchBtn: !!fullscreenSearchBtn,
-      overlay: !!searchOverlay,
-      input: !!searchInput,
-    });
-
-    if (!fullscreenSearchBtn || !searchOverlay) {
-      // Fehlt BEIDES, hat die Seite diese Suche gar nicht — kein Fehler.
-      // Genau das ist derzeit ueberall der Fall: fullscreenSearchBtn und
-      // fullscreenSearchOverlay kommen in keiner HTML-Datei mehr vor; die
-      // Startseite sucht ueber nav-search/searchInputDesk aus home.js.
-      // Vorher entschied hier eine Ausnahmeliste mit Seitennamen ("ausser
-      // cart.html") — die musste bei jeder neuen Seite nachgepflegt werden
-      // und meldete auf allen uebrigen Seiten dauerhaft einen roten Fehler.
-      // Jetzt zaehlt der Zustand der Seite, nicht ihr Name.
-      if (fullscreenSearchBtn || searchOverlay) {
-        // Halb vorhanden -> die Seite wollte die Suche, sie ist unfertig.
-        console.warn("⚠️ Vollbild-Suche unvollständig auf", window.location.pathname, {
-          knopf: !!fullscreenSearchBtn,
-          overlay: !!searchOverlay,
-        });
-      }
-      return;
-    }
-
-    // Remove any existing event listeners
-    fullscreenSearchBtn.removeEventListener("click", handleSearchButtonClick);
-
-    // Open search overlay
-    fullscreenSearchBtn.addEventListener("click", handleSearchButtonClick);
-
-    // Close search overlay
-    if (closeSearchBtn) {
-      closeSearchBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        closeSearchOverlay();
-      });
-    }
-
-    // Close on escape key
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && searchOverlay.classList.contains("active")) {
-        closeSearchOverlay();
-      }
-    });
-
-    // Close on overlay background click
-    searchOverlay.addEventListener("click", (e) => {
-      if (e.target === searchOverlay) {
-        closeSearchOverlay();
-      }
-    });
-
-    // Search input functionality - FORCE TEST
-    console.log("ðŸ”§ Looking for search input...");
-    const testInput = document.getElementById("fullscreenSearchInput");
-    console.log("ðŸ”§ Found input:", testInput);
-
-    if (testInput) {
-      console.log("âœ… Search input found, adding FORCE event listeners");
-
-      // Multiple event listeners to catch everything
-      testInput.addEventListener("input", function (e) {
-        console.log("ðŸ” INPUT EVENT:", e.target.value);
-        testSearchFunction(e.target.value);
-      });
-
-      testInput.addEventListener("keyup", function (e) {
-        console.log("ðŸ” KEYUP EVENT:", e.target.value);
-        testSearchFunction(e.target.value);
-      });
-
-      testInput.addEventListener("change", function (e) {
-        console.log("ðŸ” CHANGE EVENT:", e.target.value);
-        testSearchFunction(e.target.value);
-      });
-    } else {
-      console.error("âŒ Search input STILL not found!");
-      // Try to find it by class
-      const inputByClass = document.querySelector(".fullscreen-search-input");
-      console.log("ðŸ”§ Input by class:", inputByClass);
-    }
-
-    // Category buttons now use direct onclick handlers
-
-    // Popular search tags (removed - no longer needed)
-
-    console.log("âœ… Search button event listener added");
-  }, 100);
-}
 
 // Handle search button click
 function handleSearchButtonClick(e) {
@@ -4389,229 +3733,10 @@ function openSearchOverlay() {
 }
 
 // Close search overlay
-function closeSearchOverlay() {
-  console.log("ðŸ” Closing search overlay...");
-
-  if (searchOverlay) {
-    searchOverlay.classList.remove("active");
-    document.body.style.overflow = ""; // Restore scrolling
-
-    // Clear search
-    if (searchInput) {
-      searchInput.value = "";
-    }
-    if (searchResults) {
-      searchResults.style.display = "none";
-    }
-  }
-}
 
 // REAL SEARCH FUNCTION
-function testSearchFunction(query) {
-  console.log("ðŸ” REAL SEARCH FUNCTION CALLED WITH:", `"${query}"`);
-
-  const grid = document.getElementById("searchAllProductsGrid");
-  if (!grid) {
-    console.error("âŒ Grid not found!");
-    return;
-  }
-
-  // Reset category buttons
-  const allButtons = document.querySelectorAll(".lumiere-category-tab");
-  allButtons.forEach((btn) => btn.classList.remove("active"));
-
-  if (query.length === 0) {
-    console.log("ðŸ” Empty query - loading all products");
-    const allButton = document.querySelector(
-      '.lumiere-category-tab[data-category="alle"]',
-    );
-    if (allButton) {
-      allButton.classList.add("active");
-    }
-
-    // Reset title
-    const title = document.querySelector(
-      ".search-all-products .search-section-title",
-    );
-    if (title) {
-      title.textContent = "VIELLEICHT INTERESSIERT SIE DAS FOLGENDE";
-    }
-
-    loadAllProducts();
-    return;
-  }
-
-  console.log("ðŸ” Searching for products with:", query);
-
-  // Load products and filter
-  loadProducts()
-    .then((products) => {
-      console.log("📦 Total products:", products.length);
-
-      // Filter out AliExpress products first
-      const nonAliExpressProducts = products.filter(
-        (p) => !p.sku || !p.sku.startsWith("ALI"),
-      );
-      console.log(
-        "📦 After filtering AliExpress:",
-        nonAliExpressProducts.length,
-      );
-
-      const searchText = query.toLowerCase();
-      const filtered = nonAliExpressProducts.filter((product) => {
-        const name = (product.name || "").toLowerCase();
-        const match = name.includes(searchText);
-        if (match) {
-          console.log("✅ Found match:", product.name);
-        }
-        return match;
-      });
-
-      console.log("ðŸ” Filtered results:", filtered.length);
-
-      // Suchbegriff + Trefferzahl anonym fuers Marktforschungs-Dashboard (entprellt)
-      queueSearchTracking(query, filtered.length);
-
-      // Clear and render
-      grid.innerHTML = "";
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `<div style="color: white; text-align: center; padding: 40px; font-size: 16px;">Keine Produkte mit "${query}" im Namen gefunden</div>`;
-      } else {
-        // Group products by category
-        const groupedProducts = {};
-        filtered.forEach((product) => {
-          const category = product.category || "Andere";
-          if (!groupedProducts[category]) {
-            groupedProducts[category] = [];
-          }
-          groupedProducts[category].push(product);
-        });
-
-        console.log("ðŸ“¦ Grouped products:", groupedProducts);
-
-        // Create sorted product array (grouped by category but no titles)
-        let sortedProducts = [];
-
-        // Category order
-        const categoryOrder = [
-          "Technik/Gadgets",
-          "Beleuchtung",
-          "Körperpflege/Wellness",
-          "Haushalt und Küche",
-        ];
-
-        // Add products in category order
-        categoryOrder.forEach((category) => {
-          if (
-            groupedProducts[category] &&
-            groupedProducts[category].length > 0
-          ) {
-            sortedProducts = sortedProducts.concat(groupedProducts[category]);
-          }
-        });
-
-        // Add any remaining categories not in the predefined order
-        Object.keys(groupedProducts).forEach((category) => {
-          if (
-            !categoryOrder.includes(category) &&
-            groupedProducts[category].length > 0
-          ) {
-            sortedProducts = sortedProducts.concat(groupedProducts[category]);
-          }
-        });
-
-        // Render all products in one grid (but grouped by category)
-        grid.innerHTML = sortedProducts
-          .map((product) => {
-            const price = product.price || product.salePrice || 0;
-            const formattedPrice =
-              typeof price === "number"
-                ? price.toFixed(2)
-                : parseFloat(price || 0).toFixed(2);
-
-            return `
-                    <div class="lumiere-product-card search-product-card" data-product-id="${product.id}" data-category="${product.category}">
-                        <div class="lumiere-image-container">
-                            <img src="${product.image}" class="lumiere-product-image" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" loading="lazy">
-                            <div style="display:none; align-items:center; justify-content:center; height:100%; background:#f5f5f5; color:#999; font-size:12px;">Bild nicht verfügbar</div>
-                            <button class="lumiere-wishlist-btn" data-product-id="${product.id}" aria-label="Zur Wunschliste">
-                                <i class="bi bi-heart"></i>
-                            </button>
-                        </div>
-                        <div class="lumiere-card-content">
-                            <h3 class="lumiere-product-title">${product.name}</h3>
-                            <div class="lumiere-price-section">
-                                <span class="lumiere-price">€${formattedPrice}</span>
-                            </div>
-                            <button class="lumiere-add-to-cart-btn" data-product-id="${product.id}">
-                                In den Warenkorb
-                            </button>
-                        </div>
-                    </div>
-                `;
-          })
-          .join("");
-
-        // Initialize buttons for new products
-        initializeAddToCartButtons();
-        initializeWishlistButtons();
-        initializeProductCardClicks();
-      }
-
-      // Update title
-      const title = document.querySelector(
-        ".search-all-products .search-section-title",
-      );
-      if (title) {
-        title.textContent =
-          filtered.length > 0
-            ? `SUCHERGEBNISSE FÜR "${query.toUpperCase()}" (${filtered.length})`
-            : `KEINE ERGEBNISSE FÜR "${query.toUpperCase()}"`;
-      }
-    })
-    .catch((error) => {
-      console.error("âŒ Search error:", error);
-    });
-}
 
 // Simple and direct search function
-function performSearch(query) {
-  console.log("ðŸ” performSearch called with:", `"${query}"`);
-
-  const grid = document.getElementById("searchAllProductsGrid");
-  if (!grid) {
-    console.error("âŒ Grid not found!");
-    return;
-  }
-
-  console.log("âœ… Grid found:", grid);
-
-  if (query.length === 0) {
-    console.log("ðŸ” Empty query - showing all products");
-    loadAllProducts();
-    return;
-  }
-
-  console.log("ðŸ” Filtering products for:", query);
-
-  // Get all products and filter immediately
-  if (window.allProducts && window.allProducts.length > 0) {
-    console.log("ðŸ“¦ Using cached products:", window.allProducts.length);
-    filterAndDisplay(window.allProducts, query, grid);
-  } else {
-    console.log("ðŸ“¦ Loading products from JSON...");
-    loadProducts()
-      .then((products) => {
-        console.log("ðŸ“¦ Products loaded:", products.length);
-        window.allProducts = products; // Cache for next time
-        filterAndDisplay(products, query, grid);
-      })
-      .catch((error) => {
-        console.error("âŒ Error loading products:", error);
-      });
-  }
-}
 
 function filterAndDisplay(products, query, grid) {
   console.log(
@@ -4728,65 +3853,8 @@ function handleCategorySearch(category) {
 }
 
 // Display search results
-function displaySearchResults(products, query) {
-  if (!searchResults || !searchResultsGrid) {
-    console.error("âŒ Search results elements not found");
-    return;
-  }
-
-  // Show results section
-  searchResults.style.display = "block";
-
-  // Update title
-  const title = searchResults.querySelector(".search-section-title");
-  if (title) {
-    title.textContent = `Suchergebnisse für "${query}" (${products.length})`;
-  }
-
-  // Clear previous results
-  searchResultsGrid.innerHTML = "";
-
-  if (products.length === 0) {
-    searchResultsGrid.innerHTML = `
-            <div class="no-results">
-                <i class="bi bi-search" style="font-size: 48px; color: var(--lumiere-gray-400); margin-bottom: 20px;"></i>
-                <h4>Keine Ergebnisse gefunden</h4>
-                <p>Versuche es mit anderen Suchbegriffen oder durchsuche unsere Kategorien.</p>
-            </div>
-        `;
-    return;
-  }
-
-  // Render search results
-  searchResultsGrid.innerHTML = products
-    .map((product) => {
-      const price = product.price || product.salePrice || 0;
-      const formattedPrice =
-        typeof price === "number"
-          ? price.toFixed(2)
-          : parseFloat(price || 0).toFixed(2);
-
-      return `
-            <div class="search-result-item" data-product-id="${product.id}" onclick="navigateToProduct(Number(this.dataset.productId))">
-                <div class="search-result-category">${product.category}</div>
-                <img src="${product.image}" alt="${product.name}" class="search-result-image" loading="lazy">
-                <h4 class="search-result-title">${product.name}</h4>
-                <div class="search-result-price">€${formattedPrice}</div>
-            </div>
-        `;
-    })
-    .join("");
-
-  // Scroll to results
-  searchResults.scrollIntoView({ behavior: "smooth", block: "start" });
-}
 
 // Hide search results
-function hideSearchResults() {
-  if (searchResults) {
-    searchResults.style.display = "none";
-  }
-}
 
 // Load all products for search overlay
 function loadAllProducts() {
@@ -4934,30 +4002,12 @@ function searchCategoryClick(button, category) {
 }
 
 // Navigate to product
-function navigateToProduct(productId) {
-  console.log("ðŸ”— Navigating to product:", productId);
-
-  // Close search overlay first
-  closeSearchOverlay();
-
-  // Navigate to product page (only for products with ID >= 10)
-  if (productId >= 10) {
-    setTimeout(() => {
-      window.location.href = productHref(productId);
-    }, 300);
-  } else {
-    console.log("Product page does not exist for ID:", productId);
-  }
-}
 
 // Make functions globally available
-window.navigateToProduct = navigateToProduct;
 window.openSearchOverlay = openSearchOverlay;
 window.openSearchFromCategory = openSearchFromCategory;
-window.closeSearchOverlay = closeSearchOverlay;
 window.loadAllProducts = loadAllProducts;
 window.searchCategoryClick = searchCategoryClick;
-window.testSearchFunction = testSearchFunction;
 // Funktion zum Öffnen der Suche mit vorausgewählter Kategorie
 window.openSearchWithCategory = function (category) {
   console.log("🔍 Opening search with category:", category);
@@ -5100,81 +4150,13 @@ window.initializeMoreProductsButtons = function () {
 };
 
 // CSS-Styles dynamisch hinzufügen
-function addMoreProductsStyles() {
-  if (document.getElementById("more-products-styles")) return;
-
-  const style = document.createElement("style");
-  style.id = "more-products-styles";
-  style.textContent = `
-      .more-products-button {
-          position: absolute;
-          right: 0;
-          top: 50%;
-          transform: translateY(-50%);
-          background: linear-gradient(135deg, #667eea, #764ba2);
-          color: white;
-          border: none;
-          padding: 15px 25px;
-          border-radius: 30px 0 0 30px;
-          font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-          display: none;
-          align-items: center;
-          gap: 10px;
-          z-index: 100;
-          box-shadow: -5px 5px 20px rgba(0, 0, 0, 0.2);
-          transition: all 0.3s ease;
-      }
-      
-      .more-products-button:hover {
-          transform: translateY(-50%) translateX(-10px);
-          box-shadow: -10px 5px 30px rgba(0, 0, 0, 0.3);
-          background: linear-gradient(135deg, #764ba2, #667eea);
-      }
-      
-      .more-products-button.show {
-          display: flex;
-      }
-      
-      .more-products-button i {
-          font-size: 20px;
-      }
-      
-      .category-technik .more-products-button {
-          background: linear-gradient(135deg, #43e97b, #38a169);
-      }
-      
-      .category-beleuchtung .more-products-button {
-          background: linear-gradient(135deg, #ffd700, #ffb347);
-          color: #333;
-      }
-      
-      .category-haushalt .more-products-button {
-          background: linear-gradient(135deg, #fce7f3, #fbcfe8);
-          color: #be185d;
-      }
-      
-      .category-koerperpflege .more-products-button {
-          background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-      }
-  `;
-  document.head.appendChild(style);
-}
 
 // Initialisierung beim DOM Ready
 document.addEventListener("DOMContentLoaded", function () {
-  addMoreProductsStyles();
   setTimeout(() => {
     initializeMoreProductsButtons();
   }, 1000);
 });
-// Initialize when DOM is ready
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initializeFullscreenSearch);
-} else {
-  initializeFullscreenSearch();
-}
 
 // Additional initialization after window load
 window.addEventListener("load", () => {
@@ -5345,253 +4327,15 @@ document.addEventListener("DOMContentLoaded", function () {
 // Fügen Sie diesen Code am Ende Ihrer app.js Datei hinzu
 
 // Macht Dropdown-Bilder klickbar
-function makeDropdownImagesClickable() {
-  setTimeout(() => {
-    // Produkt-ID Mapping
-    const productIdMap = {
-      // Technik/Gadgets
-      "Elektrischer Wasserspender für Schreibtisch": 10,
-      "350ml Elektrischer Mixer Entsafter": 11,
-      "Bluetooth Anti-Lost Finder Wassertropfen": 17,
-      "Home Electronic Clock Digitale Uhr": 18,
-      "Elektronisches Distanzmessgerät Digital": 19,
-      "ZigBee Smart DIY Motorisierte Rollos": 20,
 
-      // Beleuchtung
-      "Led crystal Lampe ": 21,
-      "LED Wasserwellen Kristall Tischlampe": 21,
-      "Waterproof RGB LED Solar Light": 22,
-      "Waterproof RGB LED Solarleuchte": 22,
-      "Solarleuchte Metall Laterne": 23,
-      "COBLED Arbeitsleuchte": 24,
-      "Nachtlichter mit Bewegungsmelder": 25,
+// (Hier bog ein Block das Zeichnen des Warenkorb-Fensters um, damit dessen
+// Bilder anklickbar werden — inklusive einer Warteschleife alle 100 ms fuer
+// den Fall, dass die Funktion noch nicht da ist. Das Fenster gibt es nicht
+// mehr, also auch diesen Block nicht.)
 
-      // Haushalt & Küche
-      "Multifunktions Gemüseschneider": 12,
-      "Elektrische Küchenwaage Digital": 13,
-      "Automatischer Seifenspender": 14,
-      "Vakuum Aufbewahrungsbeutel Set": 15,
-      "Silikon Stretch Deckel 6er Set": 16,
-
-      // Wellness & Körperpflege
-      "4 In 1 Self Cleaning Hair Brush": 26,
-      "Volcanic Flame Aroma Essential Oil Diffuser": 27,
-      "Mini Muskel Massage Pistole": 28,
-      "Haaröl-Applikator Kopfhaut Massager": 29,
-      "Elektrischer Kopfhaut-Massagekamm": 31,
-    };
-
-    // Verarbeite Warenkorb-Artikel
-    document.querySelectorAll("#cartDropdown .cart-item").forEach((item) => {
-      const img = item.querySelector(".cart-item-image");
-      if (!img || img.parentElement.tagName === "A") return;
-
-      const nameEl = item.querySelector(".cart-item-name");
-      if (!nameEl) return;
-
-      const productName = nameEl.textContent.trim();
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const product = cart.find((p) => p.name === productName);
-
-      if (product && product.id) {
-        const link = document.createElement("a");
-        link.href = productHref(product.id);
-        link.style.textDecoration = "none";
-
-        img.style.cursor = "pointer";
-        img.parentNode.insertBefore(link, img);
-        link.appendChild(img);
-      }
-    });
-
-    // Verarbeite Empfehlungen
-    document
-      .querySelectorAll("#cartDropdown .recommendation-card")
-      .forEach((card) => {
-        const img = card.querySelector(".recommendation-image");
-        if (!img || img.parentElement.tagName === "A") return;
-
-        const nameEl = card.querySelector(".recommendation-name");
-        if (!nameEl) return;
-
-        const productName = nameEl.textContent.trim();
-        const productId =
-          productIdMap[productName] ||
-          (window.products &&
-            window.products.find((p) => p.name === productName)?.id);
-
-        if (productId) {
-          const link = document.createElement("a");
-          link.href = productHref(productId);
-          link.style.textDecoration = "none";
-
-          img.style.cursor = "pointer";
-          img.parentNode.insertBefore(link, img);
-          link.appendChild(img);
-        }
-      });
-  }, 200);
-}
-
-// Erweitere renderCartDropdown Funktion
-(function () {
-  if (typeof window.renderCartDropdown === "function") {
-    const originalRender = window.renderCartDropdown;
-    window.renderCartDropdown = function () {
-      const result = originalRender.apply(this, arguments);
-      makeDropdownImagesClickable();
-      return result;
-    };
-    console.log("âœ… renderCartDropdown erweitert - Bilder sind klickbar");
-  } else {
-    // Fallback: Warte auf die Funktion
-    const checkInterval = setInterval(() => {
-      if (typeof window.renderCartDropdown === "function") {
-        clearInterval(checkInterval);
-        const originalRender = window.renderCartDropdown;
-        window.renderCartDropdown = function () {
-          const result = originalRender.apply(this, arguments);
-          makeDropdownImagesClickable();
-          return result;
-        };
-        console.log("âœ… renderCartDropdown erweitert - Bilder sind klickbar");
-      }
-    }, 100);
-
-    setTimeout(() => clearInterval(checkInterval), 5000);
-  }
-})();
-
-// Fix: Warenkorb-Dropdown soll offen bleiben bei " Das könnte Ihnen gefallen\ Produkten
-(function () {
-  setTimeout(() => {
-    if (window.addRecommendationToCart) {
-      const originalAddRecommendationToCart = window.addRecommendationToCart;
-
-      window.addRecommendationToCart = function (productId, buttonElement) {
-        const cartDropdown = document.getElementById("cartDropdown");
-        const wasDropdownOpen =
-          cartDropdown && cartDropdown.classList.contains("show");
-
-        originalAddRecommendationToCart(productId, buttonElement);
-
-        if (wasDropdownOpen && cartDropdown) {
-          setTimeout(() => {
-            cartDropdown.classList.add("show");
-            cartDropdown.style.display = "block";
-            if (window.renderCartDropdown) {
-              window.renderCartDropdown();
-            }
-          }, 100);
-        }
-      };
-    }
-
-    if (window.addProductToCart) {
-      const originalAddProductToCart = window.addProductToCart;
-
-      window.addProductToCart = function (
-        productsParam,
-        productId,
-        fromCartDropdown = false,
-      ) {
-        const cartDropdown = document.getElementById("cartDropdown");
-        const wasDropdownOpen =
-          cartDropdown && cartDropdown.classList.contains("show");
-
-        const result = originalAddProductToCart(
-          productsParam,
-          productId,
-          fromCartDropdown,
-        );
-
-        if (fromCartDropdown && wasDropdownOpen && cartDropdown) {
-          setTimeout(() => {
-            cartDropdown.classList.add("show");
-            cartDropdown.style.display = "block";
-          }, 150);
-        }
-
-        return result;
-      };
-    }
-  }, 500);
-})();
-// Fix: Warenkorb-Dropdown soll offen bleiben bei "Das könnte Ihnen gefallen" Produkten
-setTimeout(() => {
-  if (window.addRecommendationToCart) {
-    const originalAddRecommendationToCart = window.addRecommendationToCart;
-
-    window.addRecommendationToCart = function (productId, buttonElement) {
-      const cartDropdown = document.getElementById("cartDropdown");
-      const wasDropdownOpen =
-        cartDropdown && cartDropdown.classList.contains("show");
-
-      originalAddRecommendationToCart(productId, buttonElement);
-
-      if (wasDropdownOpen && cartDropdown) {
-        setTimeout(() => {
-          cartDropdown.classList.add("show");
-          cartDropdown.style.display = "block";
-          if (window.renderCartDropdown) {
-            window.renderCartDropdown();
-          }
-        }, 100);
-      }
-    };
-    console.log("âœ… Warenkorb-Dropdown Fix aktiviert");
-  }
-}, 1000);
-// Fix: Warenkorb-Dropdown soll offen bleiben bei "Das könnte Ihnen gefallen" Produkten
-setTimeout(() => {
-  if (window.addRecommendationToCart) {
-    const originalAddRecommendationToCart = window.addRecommendationToCart;
-
-    window.addRecommendationToCart = function (productId, buttonElement) {
-      const cartDropdown = document.getElementById("cartDropdown");
-      const wasDropdownOpen =
-        cartDropdown && cartDropdown.classList.contains("show");
-
-      originalAddRecommendationToCart(productId, buttonElement);
-
-      if (wasDropdownOpen && cartDropdown) {
-        setTimeout(() => {
-          cartDropdown.classList.add("show");
-          cartDropdown.style.display = "block";
-          if (window.renderCartDropdown) {
-            window.renderCartDropdown();
-          }
-        }, 100);
-      }
-    };
-    console.log("âœ… Warenkorb-Dropdown Fix aktiviert");
-  }
-}, 1000);
-// Fix: Warenkorb-Dropdown soll offen bleiben bei "Das könnte Ihnen gefallen" Produkten
-setTimeout(() => {
-  if (window.addRecommendationToCart) {
-    const originalAddRecommendationToCart = window.addRecommendationToCart;
-
-    window.addRecommendationToCart = function (productId, buttonElement) {
-      const cartDropdown = document.getElementById("cartDropdown");
-      const wasDropdownOpen =
-        cartDropdown && cartDropdown.classList.contains("show");
-
-      originalAddRecommendationToCart(productId, buttonElement);
-
-      if (wasDropdownOpen && cartDropdown) {
-        setTimeout(() => {
-          cartDropdown.classList.add("show");
-          cartDropdown.style.display = "block";
-          if (window.renderCartDropdown) {
-            window.renderCartDropdown();
-          }
-        }, 100);
-      }
-    };
-    console.log("âœ… Warenkorb-Dropdown Fix aktiviert");
-  }
-}, 1000);
+// (Hier hielten vier fast gleiche Bloecke das aufklappbare Warenkorb-Fenster
+//  offen, wenn ueber "Das koennte Ihnen gefallen" etwas hinzugefuegt wurde.
+//  Das Fenster gibt es nicht mehr.)
 
 // Load all products into master grid on index page
 document.addEventListener("DOMContentLoaded", function () {
@@ -5632,7 +4376,9 @@ function loadMasterProductGrid() {
         card.className = "lumiere-product-card";
         card.style.cursor = "pointer";
         card.setAttribute("data-product-id", product.id);
-        card.onclick = () => navigateToProduct(product.id);
+        card.onclick = () => {
+          window.location.href = productHref(product.id);
+        };
 
         const price = product.price || product.salePrice || 0;
         const formattedPrice =
