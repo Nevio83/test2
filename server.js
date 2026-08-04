@@ -292,7 +292,8 @@ function cspFuerPfad(reqPfad) {
   if (zwischengespeichert) return zwischengespeichert;
 
   const hashes = inlineHashes.fuerPfad(reqPfad);
-  const wert = (hashes ? buildCsp(hashes) : CSP_VALUE) + '; report-uri /api/csp-report';
+  const stile = inlineHashes.stileFuerPfad(reqPfad);
+  const wert = (hashes ? buildCsp(hashes, stile) : CSP_VALUE) + '; report-uri /api/csp-report';
 
   // Der Zwischenspeicher darf nicht unbegrenzt wachsen: die Pfade kommen von
   // aussen, jemand koennte mit erfundenen Adressen den Speicher vollaufen

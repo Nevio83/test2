@@ -85,6 +85,166 @@ function jsEntmaskieren(s) {
   return s.replace(/\\(['"\\])/g, '$1');
 }
 
+/**
+ * Liest ab einer Position den vollstaendigen Ausdruck bis zum abschliessenden
+ * Semikolon — Zeichenketten dabei als Ganzes behandelt.
+ *
+ * ⚠️ Der naheliegende Weg (bis zum ersten ';' lesen) geht hier schief: CSS
+ * steckt voller Semikolons, und die stehen INNERHALB der Zeichenkette. Beim
+ * ersten Versuch fielen dadurch 41 Seiten auf die alte Regel zurueck —
+ * darunter alle Produktseiten und der Warenkorb.
+ */
+function leseAusdruck(text, ab) {
+  let i = ab, inZeichenkette = null;
+  while (i < text.length) {
+    const c = text[i], vorher = text[i - 1];
+    if (inZeichenkette) {
+      if (c === inZeichenkette && vorher !== '\\') inZeichenkette = null;
+    } else if (c === '"' || c === "'" || c === '`') {
+      inZeichenkette = c;
+    } else if (c === ';') {
+      return text.slice(ab, i);
+    }
+    i++;
+  }
+  return null;
+}
+
+/**
+ * Entfernt Kommentare aus einem Ausdruck — aber nur solche AUSSERHALB von
+ * Zeichenketten. Ein stumpfes Wegschneiden von "//" wuerde CSS zerstoeren:
+ * url(//cdn.example/x) steckt voller doppelter Schraegstriche.
+ *
+ * Noetig, weil die CSS-Verkettungen im Projekt kommentiert sind
+ * (product-availability.js hat mitten in der Kette ein "// Vormerkung").
+ */
+function entferneKommentare(text) {
+  let raus = '', i = 0, inZeichenkette = null;
+  while (i < text.length) {
+    const c = text[i], vorher = text[i - 1];
+    if (inZeichenkette) {
+      raus += c;
+      if (c === inZeichenkette && vorher !== '\\') inZeichenkette = null;
+      i++;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === '`') { inZeichenkette = c; raus += c; i++; continue; }
+    if (c === '/' && text[i + 1] === '/') {
+      while (i < text.length && text[i] !== '\n') i++;
+      continue;
+    }
+    if (c === '/' && text[i + 1] === '*') {
+      i += 2;
+      while (i < text.length && !(text[i] === '*' && text[i + 1] === '/')) i++;
+      i += 2;
+      continue;
+    }
+    raus += c;
+    i++;
+  }
+  return raus;
+}
+
+/**
+ * Wertet einen JS-Ausdruck aus, der NUR aus Zeichenketten und + besteht.
+ * Damit lassen sich zusammengesetzte CSS-Texte exakt rekonstruieren
+ * ('a{…}' + 'b{…}'), ohne die Quelldatei umzuschreiben — ein Umschreiben von
+ * Hand wuerde die Gestaltung riskieren.
+ * @returns {string|null} null, wenn der Ausdruck etwas anderes enthaelt.
+ */
+function werteZeichenkettenAusdruckAus(ausdruck) {
+  const roh = entferneKommentare(ausdruck).trim().replace(/;$/, '');
+  // Erlaubt: '…' "…" `…` (ohne ${), Pluszeichen, Leerraum. Sonst nichts.
+  const erlaubt = /^(?:\s*(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\$]|\\.|\$(?!\{))*`)\s*\+?)+$/;
+  if (!erlaubt.test(roh)) return null;
+  if (/\$\{/.test(roh)) return null;      // eingesetzte Werte -> nicht bestimmbar
+  try {
+    // new Function ist hier vertretbar: der Ausdruck wurde vorher streng
+    // geprueft und darf nur Zeichenketten und + enthalten. Er stammt zudem aus
+    // dem eigenen Quellcode, nicht von aussen.
+    const wert = new Function('return (' + roh + ');')();
+    if (typeof wert !== 'string') return null;
+    // ⚠️ Plausibilitaetspruefung: Wurde der Ausdruck an der falschen Stelle
+    // abgeschnitten, fehlt hinten CSS — und das faellt an unausgeglichenen
+    // geschweiften Klammern auf. Wichtig, weil zwei dieser Stylesheets im
+    // Shop derzeit NIE erscheinen (nur bei Video bzw. ausverkaufter Ware) und
+    // ein falscher Fingerabdruck dort erst auffiele, wenn es so weit ist.
+    const auf = (wert.match(/\{/g) || []).length;
+    const zu = (wert.match(/\}/g) || []).length;
+    if (auf === 0 || auf !== zu) return null;
+    return wert;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * CSS, das ein Skript zur Laufzeit als <style> in die Seite haengt.
+ *
+ * Zwei Bauarten kommen im Projekt vor:
+ *   1) <style>…</style> mitten in einer Markup-Zeichenkette (per innerHTML)
+ *   2) document.createElement('style') + .textContent = <Ausdruck>
+ *      — der Ausdruck ist teils ein Template-Literal, teils eine Verkettung,
+ *        teils eine vorher belegte Variable.
+ *
+ * @returns {{stile: Set<string>, unklar: string[]}} unklar = Stellen, deren
+ *   Inhalt sich nicht sicher bestimmen liess. Gibt es solche, bleibt die Seite
+ *   bei der alten, laschen Regel — lieber kein Gewinn als eine Seite ohne
+ *   Gestaltung.
+ */
+function stileAusJs(quelltext, datei) {
+  const stile = new Set();
+  const unklar = [];
+
+  // (1) <style>…</style> in Markup-Zeichenketten
+  for (const m of quelltext.matchAll(/<style>([\s\S]*?)<\/style>/g)) {
+    if (/\$\{/.test(m[1])) { unklar.push(datei + ': <style> mit eingesetztem Wert'); continue; }
+    if (m[1].trim()) stile.add(m[1]);
+  }
+
+  // (2) .textContent = … bei einem erzeugten <style>
+  for (const treffer of quelltext.matchAll(/createElement\(\s*['"]style['"]\s*\)/g)) {
+    const zeile = quelltext.slice(0, treffer.index).split('\n').length;
+    // Zuweisung nach der Erzeugung suchen (im Umkreis, nicht global).
+    const umkreis = quelltext.slice(treffer.index, treffer.index + 8000);
+    const zuweisung = umkreis.match(/\.(?:textContent|innerHTML)\s*=\s*/);
+    if (!zuweisung) { unklar.push(datei + ':' + zeile + ': Zuweisung nicht gefunden'); continue; }
+
+    const ab = treffer.index + zuweisung.index + zuweisung[0].length;
+    const ausdruck = leseAusdruck(quelltext, ab);
+    if (ausdruck === null) { unklar.push(datei + ':' + zeile + ': Ausdruck nicht abgeschlossen'); continue; }
+
+    // Direkt ein Literal bzw. eine Verkettung ohne eingesetzte Werte?
+    const direkt = werteZeichenkettenAusdruckAus(ausdruck);
+    if (direkt !== null) { stile.add(direkt); continue; }
+
+    // Sonst: Variable, die vorher belegt wurde (var css = '…' + '…';)
+    const name = ausdruck.trim();
+    if (/^[A-Za-z_$][\w$]*$/.test(name)) {
+      const belegStelle = quelltext.slice(0, treffer.index)
+        .search(new RegExp('(?:var|let|const)\\s+' + name + '\\s*=\\s*[^;]', 'g'));
+      if (belegStelle !== -1) {
+        const nachGleich = quelltext.indexOf('=', belegStelle) + 1;
+        const wertAusdruck = leseAusdruck(quelltext, nachGleich);
+        const wert = wertAusdruck === null ? null : werteZeichenkettenAusdruckAus(wertAusdruck);
+        if (wert !== null) { stile.add(wert); continue; }
+      }
+    }
+    unklar.push(datei + ':' + zeile + ': Inhalt nicht eindeutig bestimmbar');
+  }
+
+  return { stile, unklar };
+}
+
+/** <style>-Bloecke einer HTML-Seite. */
+function stileAusHtml(quelltext) {
+  const treffer = new Set();
+  for (const m of quelltext.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) {
+    if (m[1].trim()) treffer.add(m[1]);
+  }
+  return treffer;
+}
+
 /** Inline-<script>-Rumpfe einer HTML-Seite. */
 function skripteAusHtml(quelltext) {
   const treffer = new Set();
@@ -137,8 +297,10 @@ function skriptDateienAusHtml(quelltext) {
 function baueIndex(rootDir) {
   const meldungen = [];
 
-  // Schritt 1: Handler-Hashes je JS-Datei (die landen zur Laufzeit im Markup).
+  // Schritt 1: Handler- und Stil-Hashes je JS-Datei (beides landet zur Laufzeit
+  // in der Seite).
   const jsHandler = new Map();   // Dateiname -> string[]
+  const jsStile = new Map();     // Dateiname -> { hashes: string[], unklar: string[] }
   for (const dir of SEITEN_DIRS) {
     const abs = path.join(rootDir, dir);
     let eintraege = [];
@@ -150,12 +312,18 @@ function baueIndex(rootDir) {
       pruefeAufVariableHandler(src, e.name, meldungen);
       const menge = handlerAusText(src, true);
       if (menge.size) jsHandler.set(e.name, [...menge].map(hash));
+
+      const { stile, unklar } = stileAusJs(src, e.name);
+      if (stile.size || unklar.length) {
+        jsStile.set(e.name, { hashes: [...stile].map(hash), unklar });
+      }
     }
   }
 
   // Schritt 2: je HTML-Seite eigener Satz.
   const index = new Map();
-  let seiten = 0, skriptHashes = 0, handlerHashes = 0;
+  const stilIndex = new Map();
+  let seiten = 0, skriptHashes = 0, handlerHashes = 0, stilHashes = 0, seitenOhneStil = 0;
   for (const dir of SEITEN_DIRS) {
     const abs = path.join(rootDir, dir);
     let eintraege = [];
@@ -170,20 +338,44 @@ function baueIndex(rootDir) {
       const menge = new Set();
       for (const s of skripteAusHtml(src)) { menge.add(hash(s)); skriptHashes++; }
       for (const h of handlerAusText(src, false)) { menge.add(hash(h)); handlerHashes++; }
-      for (const name of skriptDateienAusHtml(src)) {
+      const eingebundeneSkripte = skriptDateienAusHtml(src);
+      for (const name of eingebundeneSkripte) {
         for (const h of (jsHandler.get(name) || [])) menge.add(h);
+      }
+
+      // Stil-Hashes: eigene <style>-Bloecke + das CSS der eingebundenen Skripte.
+      // Ist auch nur EINE Stelle nicht eindeutig bestimmbar, bekommt die Seite
+      // gar keine Stil-Hashes und bleibt bei der alten, laschen Regel. Lieber
+      // kein Gewinn als eine Seite, die ihre Gestaltung verliert.
+      const stile = new Set();
+      let stilUnklar = [];
+      for (const s of stileAusHtml(src)) { stile.add(hash(s)); stilHashes++; }
+      for (const name of eingebundeneSkripte) {
+        const eintrag = jsStile.get(name);
+        if (!eintrag) continue;
+        if (eintrag.unklar.length) stilUnklar = stilUnklar.concat(eintrag.unklar);
+        for (const h of eintrag.hashes) stile.add(h);
       }
 
       const urlPfad = '/' + (dir ? dir + '/' : '') + e.name;
       index.set(urlPfad, [...menge]);
-      if (urlPfad === '/index.html') index.set('/', [...menge]);
+      if (stilUnklar.length) { stilIndex.set(urlPfad, null); seitenOhneStil++; }
+      else stilIndex.set(urlPfad, [...stile]);
+      if (urlPfad === '/index.html') {
+        index.set('/', [...menge]);
+        stilIndex.set('/', stilIndex.get(urlPfad));
+      }
       seiten++;
     }
   }
 
   return {
     index,
-    statistik: { seiten, skriptHashes, handlerHashes, jsDateienMitHandlern: jsHandler.size, meldungen }
+    stilIndex,
+    statistik: {
+      seiten, skriptHashes, handlerHashes, stilHashes, seitenOhneStil,
+      jsDateienMitHandlern: jsHandler.size, meldungen
+    }
   };
 }
 
@@ -193,9 +385,10 @@ function baueIndex(rootDir) {
  */
 function createInlineHashes(rootDir) {
   let index = new Map();
-  let statistik = { seiten: 0, skriptHashes: 0, handlerHashes: 0, meldungen: [] };
+  let stilIndex = new Map();
+  let statistik = { seiten: 0, skriptHashes: 0, handlerHashes: 0, stilHashes: 0, seitenOhneStil: 0, meldungen: [] };
   try {
-    ({ index, statistik } = baueIndex(rootDir));
+    ({ index, stilIndex, statistik } = baueIndex(rootDir));
   } catch (e) {
     console.warn('⚠️ Inline-Hashes konnten nicht berechnet werden:', e.message);
   }
@@ -206,7 +399,12 @@ function createInlineHashes(rootDir) {
     statistik.meldungen.slice(0, 10).forEach((m) => console.warn('   ' + m));
   }
   console.log(`🔐 Inline-Hashes berechnet: ${statistik.seiten} Seiten, ` +
-    `${statistik.skriptHashes} Skriptbloecke, ${statistik.handlerHashes} Behandler`);
+    `${statistik.skriptHashes} Skriptbloecke, ${statistik.handlerHashes} Behandler, ` +
+    `${statistik.stilHashes} Stilbloecke`);
+  if (statistik.seitenOhneStil) {
+    console.log(`   ${statistik.seitenOhneStil} Seite(n) behalten die alte Stil-Regel ` +
+      '(dort liess sich nicht jedes Stylesheet eindeutig bestimmen)');
+  }
 
   /**
    * Hashes fuer einen angefragten Pfad. Leeres Ergebnis = Seite unbekannt.
@@ -219,10 +417,21 @@ function createInlineHashes(rootDir) {
     return null;
   }
 
-  return { fuerPfad, statistik, groesse: () => index.size };
+  /**
+   * Stil-Hashes fuer einen Pfad. null = kein Satz vorhanden -> die Seite
+   * behaelt die alte Regel mit 'unsafe-inline'.
+   */
+  function stileFuerPfad(reqPfad) {
+    let p;
+    try { p = decodeURIComponent(reqPfad); } catch (e) { return null; }
+    return stilIndex.has(p) ? stilIndex.get(p) : null;
+  }
+
+  return { fuerPfad, stileFuerPfad, statistik, groesse: () => index.size };
 }
 
 module.exports = {
   createInlineHashes, baueIndex, skripteAusHtml, handlerAusText,
-  jsEntmaskieren, htmlEntkoden, hash, normalisiere
+  jsEntmaskieren, htmlEntkoden, hash, normalisiere,
+  stileAusHtml, stileAusJs, werteZeichenkettenAusdruckAus
 };

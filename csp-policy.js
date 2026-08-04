@@ -102,7 +102,7 @@ function erlaubtInlineSkripte() {
  *   Inline-Codes (aus csp-inline.js). Ohne Angabe bleibt 'unsafe-inline'
  *   stehen — das gilt fuer Antworten, die gar kein Markup sind.
  */
-function buildCsp(skriptHashes) {
+function buildCsp(skriptHashes, stilHashes) {
   // Verschaerft wird, sobald die Seite BEKANNT ist — also eine Liste vorliegt,
   // auch eine leere. Eine leere Liste heisst "diese Seite hat gar keinen
   // Inline-Code", und das ist der beste Fall, nicht der unsicherste.
@@ -130,6 +130,8 @@ function buildCsp(skriptHashes) {
     // ein umgebogenes Formularziel wuerde sonst Adressdaten abgreifen.
     'form-action': ["'self'", 'https://checkout.stripe.com'],
     'script-src': dedupe(skriptQuellen),
+    // Grundfassung — gilt zugleich als Rueckfall fuer aeltere Browser, die
+    // style-src-elem/-attr noch nicht kennen. Die bekommen das alte Verhalten.
     'style-src': dedupe(["'self'", "'unsafe-inline'", FONT_CSS, CDN, ...TAWK]),
     'font-src': dedupe(["'self'", 'data:', FONT_FILES, CDN, ...TAWK]),
     // data: fuer eingebettete Platzhalter, blob: fuer im Browser erzeugte Bilder.
@@ -143,6 +145,34 @@ function buildCsp(skriptHashes) {
     'media-src': ["'self'"],
     'worker-src': ["'self'", 'blob:']
   };
+
+  // ── Gestaltung: <style>-Bloecke schaerfen, style="…"-Attribute nicht ──
+  //
+  // style-src deckt BEIDES ab und braucht deshalb 'unsafe-inline'. Die
+  // CSP-Stufe 3 trennt das:
+  //   style-src-elem  -> <style>-Bloecke und <link rel=stylesheet>
+  //   style-src-attr  -> style="…"-Attribute
+  //
+  // Der Shop hat rund 1500 style="…"-Attribute; die bleiben erlaubt, daran
+  // aendert sich nichts. Aber ein EINGESCHLEUSTER <style>-Block koennte die
+  // ganze Seite umgestalten — etwa den echten Kasse-Knopf unsichtbar machen
+  // und einen falschen darueberlegen. Genau das wird hier zugemacht.
+  //
+  // Ehrlich zur Reichweite: Datenabfluss ueber CSS (background:url(…)) war nie
+  // moeglich, den deckt img-src ab. Und wer Markup einschleusen kann, kann
+  // weiterhin eigene Elemente mit style="…" mitbringen. Der Gewinn ist also
+  // begrenzt — aber er kostet nichts an Funktion.
+  //
+  // Ohne Hash-Liste (stilHashes == null) bleibt es bei der alten Regel. Das
+  // passiert, wenn sich bei einer Seite auch nur ein Stylesheet nicht
+  // eindeutig bestimmen liess — lieber kein Gewinn als eine Seite ohne
+  // Gestaltung.
+  if (Array.isArray(stilHashes) && !erlaubtInlineSkripte()) {
+    directives['style-src-elem'] = dedupe([
+      "'self'", ...stilHashes, FONT_CSS, CDN, ...TAWK
+    ]);
+    directives['style-src-attr'] = ["'unsafe-inline'"];
+  }
 
   return Object.entries(directives)
     .map(([k, v]) => `${k} ${v.join(' ')}`)
