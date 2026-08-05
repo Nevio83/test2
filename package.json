@@ -10,6 +10,7 @@
     "test-cj-api": "node test-cj-api.js",
     "dev": "nodemon server.js",
     "test": "node test/lauf.js",
+    "seo": "node seo-strukturdaten.js",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

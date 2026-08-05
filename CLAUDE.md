@@ -23,6 +23,13 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   `elektrischer-wasserspender-fuer-schreibtisch.html`). `products.json` hat ein Feld `slug`;
   `server.js` leitet alte ID-URLs (`/produkte/produkt-NN.html`) per **301** auf den Slug um.
   Produkt-ID steht zur Laufzeit in `<body data-product-id="NN">` (siehe §4).
+- **Strukturdaten für Google** (`seo-strukturdaten.js`, `npm run seo`): Die Produktseiten weisen
+  jetzt **kostenlosen Versand, Lieferzeit, 30 Tage Rückgabe, Neuware und Preisgültigkeit** aus —
+  vorher nur Name/Bild/Preis. Alle Angaben kommen aus echten Quellen, nichts ist eingetippt.
+  **Kanonische Adresse** auf allen 54 indexierbaren Seiten, **`noindex`** auf Warenkorb, Merkzettel,
+  Bestellbestätigung, Sendungsverfolgung und Auskunftsformular. Sitemap, Canonical und Noindex
+  hängen an **einer** Liste (`FESTE_SEITEN`). Sterne kommen zur Laufzeit aus der Datenbank
+  (`product-reviews.js`) — **es stehen keine erfundenen Bewertungen im Markup**.
 - **Cookie-Consent (DSGVO):** Eigener Banner `cookie-consent.js/.css` (kein Drittanbieter),
   Zwei-Stufen-Einwilligung (Alle / Nur notwendige), `window.MaiosConsent`-API, 12-Monats-TTL.
 - **Aufrufe-/Besucher-Tracking** (consent-gated): `page_views` + `user_consent_events`,
@@ -93,6 +100,7 @@ npm run dev                  # Dev-Server mit Auto-Reload (nodemon) -> http://lo
 npm start                    # Produktions-Server (node server.js)
 npm test                     # Tests (test/lauf.js sammelt alle test/*.test.js ein)
 npm run lint                 # ESLint
+npm run seo                  # Strukturdaten + kanonische Adressen in die Seiten schreiben
 npm run test-cj-api          # CJ Dropshipping API-Integration testen
 node test-retouren-email.js  # Retouren-/Refund-Mail-Flow testen
 node test-cj-api.js          # CJ-Verbindung direkt testen
@@ -117,6 +125,7 @@ lautlos wirkt** — jeweils mit einem Test für den real aufgetretenen Fehler:
 | `csp-stile.test.js` | Auslesen der Stylesheets aus JS | Kommentar mitten in einer CSS-Verkettung ließ 40 Seiten zurückfallen |
 | `cj-stock-sync.test.js` | Bestandsauswertung | `Number(null) === 0` sperrte 3 Produkte fälschlich als ausverkauft |
 | `job-scheduler.test.js` | Fälligkeit zeitgesteuerter Läufe | Neustart setzte den Zeitplan zurück → Wochenlauf lief nie |
+| `seo-strukturdaten.test.js` | Angaben, die Google ausliest | Preis/Frist im Markup kann von der Wahrheit abweichen — **sichtbar nirgends**, nur im Suchergebnis |
 
 Faustregel beim Ergänzen: **ein Test, der nur grün werden kann, ist wertlos.** Zu jedem
 behobenen Fehler gehört eine Gegenprobe, die das alte Verhalten nachbildet und belegt, dass
@@ -137,7 +146,8 @@ der Test es rot gemeldet hätte (Beispiele in `job-scheduler.test.js` und `cj-st
 | `cj-payment-calculator.js` | Berechnet CJ-Kosten + Gewinn-Split. |
 | `price-validator.js` | **Serverseitige Preis-/Mengenvalidierung** gegen `products.json` (in `server.js`). Schützt vor Preis-Manipulation. |
 | `exchange-rate-service.js` | Live-Wechselkurse, Cache, `convertPrice()`. |
-| `shipping-calculator.js` | Pauschale Versandkosten nach Land. |
+| `shipping-calculator.js` | Pauschale Versandkosten nach Land + **`LIEFERLAENDER`** — die eine Liste, aus der die Länderauswahl der Stripe-Kasse *und* die Versandangaben in den Strukturdaten kommen (vorher stand die Liste doppelt). |
+| `seo-strukturdaten.js` | **Strukturdaten (JSON-LD) + kanonische Adressen.** Erzeugt für alle 40 Produktseiten den `Product`-Block aus echten Quellen: Preis/Lieferzeit aus `products.json`, Versandkosten und Lieferländer aus `shipping-calculator.js`, die 30-Tage-Rückgabe aus `infos/retouren.html`. Zusätzlich `FESTE_SEITEN` — eine Liste, die **Sitemap, `<link rel="canonical">` und `noindex` gemeinsam** steuert (vorher standen Warenkorb und Merkzettel in der Sitemap, während vier echte Inhaltsseiten fehlten). Lauf: `npm run seo`; `--pruefen` schreibt nichts, `--neu-datieren` setzt `priceValidUntil` neu. **Sternebewertungen stehen bewusst NICHT hier** — die trägt `product-reviews.js` zur Laufzeit aus der Datenbank nach, damit nie erfundene Werte im Markup stehen. Tests: `test/seo-strukturdaten.test.js`. |
 | `receipt-generator.js` | **Rechnung** (PDFKit-PDF + HTML), Kleinunternehmer §19 UStG ohne USt-Ausweis, echte Firmendaten aus ENV. |
 | `resend-service.js` | Transaktions-Mails (Bestellbestätigung, Admin-Benachrichtigung, **GoBD-Beleg-Archiv** mit PDF-Anhang) via Resend. |
 | `geolocation-tracker.js` | Standort-/Analytics-Tracking (Backend-Helfer für Dashboard). |

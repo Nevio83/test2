@@ -3,6 +3,11 @@
  * Basierend auf echten CJ Dropshipping Kosten
  */
 
+// Wohin geliefert wird. Diese Liste steuert die Laenderauswahl in der
+// Stripe-Kasse UND die Versandangaben in den Strukturdaten fuer Suchmaschinen.
+// Stehen beide getrennt, weicht irgendwann das eine vom anderen ab.
+const LIEFERLAENDER = ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'PL', 'US', 'GB'];
+
 // PAUSCHALE VERSANDKOSTEN (Durchschnitt für alle Produkte)
 // Einfach und funktioniert für 90% der Fälle
 const FLAT_SHIPPING_COSTS = {
@@ -94,7 +99,8 @@ if (typeof module !== 'undefined' && module.exports) {
     calculateShippingCost,
     analyzeShippingProfit,
     printShippingTable,
-    FLAT_SHIPPING_COSTS
+    FLAT_SHIPPING_COSTS,
+    LIEFERLAENDER
   };
 }
 

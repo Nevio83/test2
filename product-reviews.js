@@ -154,11 +154,45 @@
       .catch(function () { render({ average: 0, count: 0, reviews: [] }); });
   }
 
+  /**
+   * Traegt die Sterne in den Datenblock fuer Suchmaschinen nach.
+   *
+   * Warum hier und nicht fest in der Seite: die Seiten sind statische Dateien,
+   * die Bewertungen stehen in der Datenbank. Ein fester Wert waere ab der
+   * naechsten Bewertung falsch — und erfundene Werte sind bei Google ein Grund,
+   * ALLE Auszeichnungen der Domain zu verwerfen. Also kommt der Wert von dort,
+   * wo er wirklich steht.
+   *
+   * Geaendert wird der VORHANDENE Block, es wird keiner eingehaengt: ein neu
+   * erzeugtes <script>-Element muesste an der Schutzregel (csp-policy.js)
+   * vorbei, ein bereits vorhandenes nicht.
+   */
+  function strukturdatenSterne(count, avg) {
+    if (!(count > 0)) return;   // ohne echte Bewertung bleibt der Block, wie er ist
+    var block = document.querySelector('script[type="application/ld+json"]');
+    if (!block) return;
+    try {
+      var daten = JSON.parse(block.textContent);
+      if (!daten || daten['@type'] !== 'Product') return;
+      daten.aggregateRating = {
+        '@type': 'AggregateRating',
+        ratingValue: Number(avg.toFixed(1)),
+        reviewCount: count,
+        bestRating: 5,
+        worstRating: 1
+      };
+      block.textContent = JSON.stringify(daten);
+    } catch (e) {
+      /* unlesbarer Block: lieber nichts als etwas Falsches */
+    }
+  }
+
   function render(data) {
     var agg = document.getElementById('pr-agg');
     var list = document.getElementById('pr-list');
     var count = data.count || 0;
     var avg = data.average || 0;
+    strukturdatenSterne(count, avg);
     if (count > 0) {
       agg.innerHTML = '<span class="pr-avg">' + avg.toFixed(1).replace('.', ',') + '</span>'
         + '<span>' + starsRow(avg) + '<br><span class="pr-agg-meta">'

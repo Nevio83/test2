@@ -45,10 +45,17 @@ if (process.env.STRIPE_SECRET_KEY && process.env.STRIPE_SECRET_KEY !== 'your_str
 const CJDropshippingAPI = require('./cj-dropshipping-api');
 const cjAPI = new CJDropshippingAPI();
 
-// Hinweis: shipping-calculator.js wird hier nicht mehr eingebunden. Einziger
-// Nutzer war der entfernte Endpunkt /api/create-payment-intent (siehe unten).
-// Die Stripe-Kasse schlaegt keine Versandkosten auf — Versand nach DE/EU ist
+// Aus shipping-calculator.js wird hier nur die Laenderliste gebraucht: sie
+// steuert die Auswahl in der Stripe-Kasse und muss mit den Versandangaben in
+// den Strukturdaten uebereinstimmen (seo-strukturdaten.js liest dieselbe Liste).
+// Versandkosten selbst rechnet die Kasse nicht auf — Versand nach DE/EU ist
 // laut shipping-calculator.js kostenlos, und der Google-Feed weist das so aus.
+const { LIEFERLAENDER } = require('./shipping-calculator');
+
+// Welche festen Seiten in den Suchindex gehoeren, steht an einer Stelle:
+// dieselbe Liste erzeugt die Sitemap hier und die kanonische Adresse in den
+// Seiten selbst (seo-strukturdaten.js).
+const { FESTE_SEITEN, BASIS: SEO_BASIS } = require('./seo-strukturdaten');
 
 // Initialize Exchange Rate Service
 const ExchangeRateService = require('./exchange-rate-service');
@@ -689,22 +696,8 @@ app.get('/google-feed.xml', async (req, res) => {
 // express.static stehen (es gibt keine statische sitemap.xml-Datei).
 app.get('/sitemap.xml', (req, res) => {
   try {
-    const base = 'https://maiosshop.com';
+    const base = SEO_BASIS;
     const products = require('./products.json');
-    const staticPaths = [
-      ['/', 'index.html', '1.0', 'daily'],
-      ['/cart.html', 'cart.html', '0.4', 'monthly'],
-      ['/wishlist.html', 'wishlist.html', '0.3', 'monthly'],
-      ['/gutscheine.html', 'gutscheine.html', '0.5', 'weekly'],
-      ['/infos/agb.html', 'infos/agb.html', '0.3', 'yearly'],
-      ['/infos/datenschutz.html', 'infos/datenschutz.html', '0.3', 'yearly'],
-      ['/infos/impressum.html', 'infos/impressum.html', '0.3', 'yearly'],
-      ['/infos/versand.html', 'infos/versand.html', '0.4', 'monthly'],
-      ['/infos/retouren.html', 'infos/retouren.html', '0.4', 'monthly'],
-      ['/infos/widerruf.html', 'infos/widerruf.html', '0.3', 'yearly'],
-      ['/infos/kontakt.html', 'infos/kontakt.html', '0.4', 'monthly'],
-      ['/infos/kategorien.html', 'infos/kategorien.html', '0.5', 'weekly']
-    ];
     const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     // Echtes Aenderungsdatum der Datei (kein erfundenes Datum) -> aktualisiert sich
     // automatisch, sobald eine Seite tatsaechlich geaendert wird.
@@ -716,9 +709,9 @@ app.get('/sitemap.xml', (req, res) => {
       }
     };
     const rows = [];
-    staticPaths.forEach(([p, file, prio, freq]) => {
-      const lastmod = lastmodOf(file);
-      rows.push(`  <url><loc>${base}${p}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}<changefreq>${freq}</changefreq><priority>${prio}</priority></url>`);
+    FESTE_SEITEN.forEach(({ pfad, datei, gewicht, takt }) => {
+      const lastmod = lastmodOf(datei);
+      rows.push(`  <url><loc>${base}${pfad}</loc>${lastmod ? `<lastmod>${lastmod}</lastmod>` : ''}<changefreq>${takt}</changefreq><priority>${gewicht}</priority></url>`);
     });
     products.forEach((p) => {
       if (p && p.slug) {
@@ -1041,7 +1034,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
       cancel_url: `${process.env.REPL_URL || 'https://maiosshop.com'}/cart.html`,
       billing_address_collection: 'required',
       shipping_address_collection: {
-        allowed_countries: ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'PL', 'US', 'GB']
+        allowed_countries: LIEFERLAENDER
       },
       phone_number_collection: {
         enabled: true
