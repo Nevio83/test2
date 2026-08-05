@@ -182,7 +182,8 @@ der Test es rot gemeldet hätte (Beispiele in `job-scheduler.test.js` und `cj-st
 | `view-tracker.js` | Consent-gated Aufrufe-/Verweildauer-Tracking → `/api/track/*`. |
 | `widerruf-button.js` | Injiziert EU-Widerrufsbutton (Footer) auf allen Kundenseiten. |
 | `newsletter-popup.js/.css` | Newsletter-Anmelde-Popup (Double-Opt-In). Selbst-ladende CSS, framework-frei, nur auf `index.html` eingebunden. Sendet an `/api/newsletter/subscribe`. |
-| `wishlist.html/.css`, `success.html/.css`, `tracking.html`, `location-analytics-dashboard.html` | Weitere Seiten. |
+| `wishlist.html/.css`, `success.html/.css`, `tracking.html` | Weitere Seiten. |
+| `geolocation-tracker.js` | Ermittelt das Land des Besuchers (einwilligungspflichtig, `window.MaiosConsent`). **Einziger echter Abnehmer ist `view-tracker.js`**, das `localStorage.userCountry` ausliest. Die frühere Übersichtsseite `location-analytics-dashboard.html` ist **entfernt** — sie war öffentlich erreichbar, von nirgends verlinkt und zeigte nur die Daten des Browsers, der sie gerade öffnete. Mit ihr sind zwei Altlasten weg: die 50er-Standortliste im Browser (`locationStats`, hatte nach dem Wegfall keinen Leser mehr) und ein Versandbetrag in `localStorage`, der nie gelesen wurde und der echten Tabelle widersprach. **Die IP geht nicht mehr an Google Analytics** — sie hebelte das dort gesetzte `anonymize_ip` aus. Test: `test/geo-tracker.test.js`. |
 | `styles.css` (219 KB) | Globale Styles (zusätzlich zu Tailwind/Bootstrap — viel Overlap). |
 | `produkte/<slug>.html` | 40 einzelne Produktseiten mit **sprechenden Slug-Dateinamen** (aus `products.json`). Jede trägt `<body data-product-id="NN">`. Nutzen **Bootstrap** + Kategorie-CSS (`elektronik.css`, `haushalt-kueche.css`, `beleuchtung.css`, `koerperpflege-wellness.css`). |
 | `infos/` | Statische Seiten: AGB, Datenschutz, Impressum, Versand, Retouren, Kontakt, Kategorien, Cookies, **Widerruf**. |

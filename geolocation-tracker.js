@@ -144,8 +144,8 @@ class GeolocationTracker {
         // Zeige Standort-Banner (optional)
         this.showLocationBanner(location);
         
-        // Passe Versandkosten an
-        this.updateShippingCosts(location);
+        // Land merken (view-tracker.js wertet es aus)
+        this.merkeLand(location);
         
         // Trigger Custom Event für andere Scripts
         window.dispatchEvent(new CustomEvent('locationDetected', {
@@ -196,50 +196,38 @@ class GeolocationTracker {
         return flags[countryCode] || '🌍';
     }
     
-    updateShippingCosts(location) {
-        // Europa: Kostenloser Versand
-        const europeanCountries = ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'GB', 'NL', 'BE', 'PL', 'CZ', 'DK', 'SE', 'NO', 'FI'];
-        const isEurope = europeanCountries.includes(location.countryCode);
-        
-        const shippingCost = isEurope ? 0 : 4.99;
-        localStorage.setItem('shippingCost', shippingCost);
+    merkeLand(location) {
+        // Nur das Laenderkuerzel wird gebraucht: view-tracker.js liest es aus,
+        // um Besuche einer Region zuzuordnen. Frueher stand hier zusaetzlich ein
+        // Versandbetrag (0 bzw. 4,99 EUR) — den hat nie jemand gelesen, und er
+        // widersprach der echten Tabelle in shipping-calculator.js (12 EUR in
+        // die USA). Eine falsche Zahl, die niemand nutzt, ist eine Falle fuer
+        // den Naechsten, der nach der Herkunft der Versandkosten sucht.
         localStorage.setItem('userCountry', location.countryCode);
-        
-        console.log(`📦 Versandkosten: ${shippingCost}€ (${isEurope ? 'Europa' : 'International'})`);
     }
-    
+
     trackLocation(location) {
-        // Speichere Standort-Statistiken
-        const stats = JSON.parse(localStorage.getItem('locationStats') || '[]');
-        
-        stats.push({
-            timestamp: Date.now(),
-            country: location.country,
-            countryCode: location.countryCode,
-            city: location.city,
-            ip: location.ip,
-            source: location.source
-        });
-        
-        // Behalte nur letzte 50 Einträge
-        if (stats.length > 50) {
-            stats.splice(0, stats.length - 50);
-        }
-        
-        localStorage.setItem('locationStats', JSON.stringify(stats));
-        
-        // Sende zu Analytics (optional - wenn implementiert)
+        // Frueher wurde hier zusaetzlich eine Liste der letzten 50 Standorte im
+        // Browser abgelegt. Gelesen hat sie nur eine Uebersichtsseite, die es
+        // nicht mehr gibt — sie zeigte ohnehin nur die Daten des Browsers, der
+        // sie gerade oeffnete, nicht die des Shops. Daten zu sammeln, die
+        // niemand auswertet, ist genau das, was die DSGVO nicht will.
         this.sendToAnalytics(location);
     }
-    
+
     sendToAnalytics(location) {
         // Google Analytics Event (falls GA implementiert ist)
+        //
+        // OHNE IP-ADRESSE. site-integrations.js schaltet fuer GA ausdruecklich
+        // anonymize_ip ein — wurde die IP hier als eigenes Merkmal mitgeschickt,
+        // war diese Anonymisierung wirkungslos, und es lag eine personen-
+        // bezogene Angabe bei einem Drittanbieter. Googles eigene Bedingungen
+        // untersagen das. test/geo-tracker.test.js haelt das fest.
         if (typeof gtag !== 'undefined') {
             gtag('event', 'location_detected', {
                 'country': location.country,
                 'country_code': location.countryCode,
-                'city': location.city,
-                'ip': location.ip
+                'city': location.city
             });
         }
         
@@ -308,14 +296,12 @@ class GeolocationTracker {
         return europeanCountries.includes(this.getCountryCode());
     }
     
-    // Statistiken abrufen
-    getStats() {
-        return JSON.parse(localStorage.getItem('locationStats') || '[]');
-    }
-    
+    // getStats() ist entfallen: es las eine Liste, die niemand mehr schreibt —
+    // es haette also verlaesslich eine leere Liste zurueckgegeben und damit
+    // vorgetaeuscht, es gaebe keine Standortdaten. Ebenso 'locationBannerClosed':
+    // das Banner ist seit Langem abgeschaltet (siehe showLocationBanner).
     clearCache() {
         localStorage.removeItem('userLocation');
-        localStorage.removeItem('locationBannerClosed');
         console.log('🗑️ Geolocation Cache gelöscht');
     }
 }

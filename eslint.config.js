@@ -8,6 +8,10 @@ module.exports = [
   {
     ignores: [
       'node_modules/**',
+      // Arbeitskopien paralleler Sitzungen. Ohne diese Zeile prueft ESLint den
+      // gesamten Shop ein zweites Mal — mitsamt der Ordner, die oben bewusst
+      // ausgenommen sind (die Muster dort greifen nur auf oberster Ebene).
+      '.claude/**',
       'Marketing/**',
       'graphify-out/**',
       'design_handoff_*/**',
