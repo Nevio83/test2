@@ -796,20 +796,31 @@ app.get(/\.(jpe?g|png)$/i, async (req, res, next) => {
 
     const rel = decodeURIComponent(req.path).replace(/^\/+/, '');
     const srcAbs = path.join(__dirname, rel);
+    if (!fs.existsSync(srcAbs)) return next(); // Quelle fehlt -> regulaeres 404 ueber static
     const endung = willWebp ? '.webp' : path.extname(rel).toLowerCase();
-    const zielAbs = srcAbs.replace(/\.(jpe?g|png)$/i, (breite ? `-${breite}` : '') + endung);
-    if (!zielAbs.startsWith(__dirname)) return next();
 
-    if (!fs.existsSync(zielAbs)) {
-      if (!fs.existsSync(srcAbs)) return next(); // Quelle fehlt -> regulaeres 404 ueber static
-      await ensureImageVariant(srcAbs, zielAbs, breite);
-    }
-    if (!fs.existsSync(zielAbs)) return next(); // nicht moeglich -> Original ausliefern
+    /** Liefert den Pfad der Fassung, wenn sie da ist oder erzeugt werden kann. */
+    const fassung = async (b) => {
+      const ziel = srcAbs.replace(/\.(jpe?g|png)$/i, (b ? `-${b}` : '') + endung);
+      if (!ziel.startsWith(__dirname)) return null;
+      if (fs.existsSync(ziel)) return ziel;
+      await ensureImageVariant(srcAbs, ziel, b);
+      return fs.existsSync(ziel) ? ziel : null;
+    };
+
+    // Erst die Wunschfassung. Klappt die nicht, NICHT gleich auf das Original
+    // zurueckfallen: bei einem PNG waere das dramatisch schlechter als nichts
+    // zu tun (gemessen 489 KB statt 36 KB als WebP), weil dabei auch die
+    // Formatumwandlung mit verloren geht. Also erst die volle Groesse im
+    // besseren Format versuchen — die liegt meist ohnehin schon da.
+    let ziel = await fassung(breite);
+    if (!ziel && breite && willWebp) ziel = await fassung(null);
+    if (!ziel) return next();
 
     if (willWebp) res.set('Content-Type', 'image/webp');
     res.set('Vary', 'Accept');
     res.set('Cache-Control', 'public, max-age=86400');
-    return res.sendFile(zielAbs);
+    return res.sendFile(ziel);
   } catch (e) {
     return next();
   }
@@ -822,14 +833,50 @@ app.get(/\.(jpe?g|png)$/i, async (req, res, next) => {
 const { createStaticGuard } = require('./static-guard');
 app.use(createStaticGuard(__dirname));
 
+// ── Zwischenspeicherung ─────────────────────────────────────────────────
+// Vorher stand hier fuer JEDE Datei "no-store" mit dem Kommentar "for
+// development" — im Betrieb hiess das: der Browser darf nichts behalten. Am
+// Handy wurden dadurch bei jedem Seitenaufruf saemtliche Bilder erneut
+// uebertragen, gemessen 290 KB pro Produktseite, auch beim zweiten Besuch.
+//
+// Jetzt drei Stufen:
+//   Bilder/Video/Schriften  einen Tag behalten (wie die ?w=-Route oben schon
+//                           macht) — Inhalte, die sich unter demselben Namen
+//                           praktisch nie aendern.
+//   Seiten mit Bezug zu     weiterhin "no-store": Warenkorb, Merkzettel,
+//   einer Bestellung        Bestellbestaetigung, Sendungsverfolgung,
+//                           Auskunftsformular. Auf einem geteilten Rechner
+//                           soll davon nichts zurueckbleiben.
+//   alles Uebrige           "no-cache" — behalten erlaubt, aber vor jeder
+//                           Nutzung rueckfragen. Mit ETag antwortet der Server
+//                           dann mit 304 statt der ganzen Datei. Ein Deploy
+//                           wirkt weiterhin sofort, weil sich das ETag aendert.
+const EIN_TAG = 24 * 60 * 60;
+const LANGLEBIG = /\.(jpe?g|png|webp|gif|svg|ico|mp4|webm|woff2?|ttf|otf)$/i;
+const NICHT_ABLEGEN = new Set(
+  require('./seo-strukturdaten').NICHT_INDEXIEREN.map((p) => '/' + p)
+);
+
 app.use(express.static(path.join(__dirname), {
-  maxAge: 0, // No caching for development
-  etag: false,
-  setHeaders: (res, path) => {
-    // Disable caching in development
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, dateipfad) => {
+    const rel = '/' + path.relative(__dirname, dateipfad).split(path.sep).join('/');
+    if (LANGLEBIG.test(rel)) {
+      // Vary: Accept auch hier — nicht nur auf dem Weg darueber, der die
+      // verkleinerte Fassung ausliefert. Sonst legt ein Abruf ohne WebP-Kennung
+      // das Original unter derselben Adresse ab, und der Browser reicht es
+      // einen Tag lang auch an Anfragen weiter, die WebP koennen. Solange
+      // nichts zwischengespeichert wurde, war das folgenlos.
+      res.setHeader('Vary', 'Accept');
+      res.setHeader('Cache-Control', `public, max-age=${EIN_TAG}`);
+      return;
+    }
+    if (NICHT_ABLEGEN.has(rel)) {
+      res.setHeader('Cache-Control', 'no-store');
+      return;
+    }
+    res.setHeader('Cache-Control', 'no-cache');
   }
 }));
 

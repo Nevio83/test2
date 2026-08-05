@@ -50,7 +50,11 @@ window.renderBundlesWithImages = async function () {
 function imgPath(p) {
   if (!p.image) return '';
   // Produktseite liegt in /produkte/ → Bilder sind relativ zum Root
-  return p.image.startsWith('../') ? p.image : '../' + p.image;
+  const pfad = p.image.startsWith('../') ? p.image : '../' + p.image;
+  // Diese Kacheln sind 89 px breit, die Quellen bis 800 — geladen wurde also
+  // das Neunfache der noetigen Bildpunkte. 320 deckt 89 px auch auf feinen
+  // Displays ab (Liste der erlaubten Breiten in server.js).
+  return /^data:|\?w=/.test(pfad) ? pfad : pfad + (pfad.includes('?') ? '&' : '?') + 'w=320';
 }
 
 function renderFBT(section, products) {

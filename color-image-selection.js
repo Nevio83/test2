@@ -1,6 +1,35 @@
 // Image Color Selection - Mobile Optimized Version
 console.log('🎨 Image Color Selection wird geladen...');
 
+// ── Bilder in Anzeigegroesse ────────────────────────────────────────────
+// Die Farbkacheln sind 50-75 px breit, die Quellen bis 618 px — am Handy
+// wurde also grob das Zwoelffache an Bildpunkten geladen. Der Server liefert
+// unter ?w=<breite> eine passende Fassung (Liste in server.js: 160/320/480/640).
+// 160 deckt 75 px auch auf feinen Displays mit Reserve ab.
+const KACHEL_BREITE = 160;
+
+function kachelAdresse(pfad) {
+    if (!pfad || /^data:|\?w=/.test(pfad)) return pfad;
+    return pfad + (pfad.includes('?') ? '&' : '?') + 'w=' + KACHEL_BREITE;
+}
+
+/**
+ * Vergleicht zwei Bildadressen so, wie der Browser sie sieht.
+ *
+ * Anlass: hier stand `img.src !== correctImagePath`. Links liefert der Browser
+ * die AUFGELOESTE Adresse ("http://…/produkt%20bilder/x.png"), rechts stand ein
+ * relativer Pfad ("../produkt bilder/x.png"). Die beiden waren nie gleich, also
+ * wurde das Bild bei JEDEM Durchlauf neu zugewiesen — und ein zweites Mal
+ * geladen. Am Handy waren das 77 KB umsonst, pro Produktseite.
+ */
+function gleicheAdresse(a, b) {
+    try {
+        return new URL(a, document.baseURI).href === new URL(b, document.baseURI).href;
+    } catch (e) {
+        return a === b;
+    }
+}
+
 class ImageColorSelection {
     constructor() {
         this.productId = null;
@@ -180,7 +209,7 @@ class ImageColorSelection {
                         background: white;
                         box-shadow: 0 2px 6px rgba(0,0,0,0.08);
                     ">
-                        <img src="${imageUrl}" alt="${color.name}" class="color-option-image" style="
+                        <img src="${kachelAdresse(imageUrl)}" alt="${color.name}" class="color-option-image" style="
                             width: 75px; 
                             height: 75px; 
                             object-fit: cover; 
@@ -372,8 +401,8 @@ class ImageColorSelection {
             const colorName = option.getAttribute('data-color');
             const img = option.querySelector('.color-option-image');
             if (img && colorName) {
-                const correctImagePath = this.getColorSpecificImage(colorName);
-                if (img.src !== correctImagePath) {
+                const correctImagePath = kachelAdresse(this.getColorSpecificImage(colorName));
+                if (!gleicheAdresse(img.src, correctImagePath)) {
                     console.log(`🔄 Aktualisiere Bild für ${colorName}: ${correctImagePath}`);
                     img.src = correctImagePath;
                 }

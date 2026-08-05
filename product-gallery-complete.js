@@ -3,6 +3,27 @@
 // Vereint product-image-gallery.js und product-image-fullscreen.js
 // ============================================
 
+// ── Bilder in Anzeigegroesse ────────────────────────────────────────────
+// Gemessen an der Produktseite: die Vorschaubilder sind 56 px breit (Handy)
+// bzw. 74 px (Rechner), die Quellen bis 800 px — geladen wurde also bis zum
+// Vierzehnfachen der noetigen Bildpunkte. Der Server liefert unter ?w=<breite>
+// eine passende Fassung (Liste in server.js: 160/320/480/640).
+//
+// WICHTIG: verkleinert wird nur, was ANGEZEIGT wird. this.images behaelt die
+// vollen Adressen — Hauptbild und Vollbild-Ansicht haengen daran, und dort
+// waere eine 160-px-Fassung sofort sichtbar unscharf.
+const VORSCHAU_BREITE = 160;
+
+function vorschauAdresse(pfad) {
+    if (!pfad || /^data:|\?w=/.test(pfad)) return pfad;
+    return pfad + (pfad.includes('?') ? '&' : '?') + 'w=' + VORSCHAU_BREITE;
+}
+
+/** Nimmt die Groessenangabe wieder heraus — fuer Wege, die das Original brauchen. */
+function volleAdresse(pfad) {
+    return String(pfad || '').replace(/([?&])w=\d+(&|$)/, '$1').replace(/[?&]$/, '');
+}
+
 // ============================================
 // TEIL 1: PRODUCT IMAGE GALLERY
 // ============================================
@@ -827,8 +848,9 @@ class ProductImageGallery {
                 if (index === 0) thumbnail.classList.add('active');
                 
                 const thumbImg = document.createElement('img');
-                thumbImg.src = image.src;
+                thumbImg.src = vorschauAdresse(image.src);
                 thumbImg.alt = image.alt;
+                thumbImg.loading = 'lazy';
                 thumbnail.appendChild(thumbImg);
                 
                 // Farblabel
@@ -1275,7 +1297,10 @@ class ProductImageFullscreen {
             const allImages = document.querySelectorAll('.gallery-image, .main-product-image, .gallery-thumbnail img');
             if (allImages.length > 1) {
                 galleryImages = Array.from(allImages).map(img => ({
-                    src: img.src,
+                    // Hier stehen auch Vorschaubilder drin. Ohne volleAdresse()
+                    // wuerde die Vollbild-Ansicht eine 160-px-Fassung gross
+                    // ziehen — unscharf, und niemand kaeme auf den Grund.
+                    src: volleAdresse(img.src),
                     alt: img.alt || 'Produktbild'
                 }));
             }
