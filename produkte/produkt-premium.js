@@ -258,7 +258,8 @@
       const saving = b.saving ? `${b.saving}` : '';
       return `
       <div class="bundle-card${i === 0 ? ' selected' : ''}" data-bundle="${i}" onclick="selectBundle(Number(this.dataset.bundle))">
-        <input class="bundle-radio" type="radio" name="bundle" ${i === 0 ? 'checked' : ''}>
+        <input class="bundle-radio" type="radio" name="bundle" ${i === 0 ? 'checked' : ''}
+               aria-label="${(b.title || b.quantity + 'x ' + (p ? p.name : '')).replace(/"/g, '&quot;')}">
         <div class="bundle-info">
           <div class="bundle-title">${b.title || b.quantity + 'x ' + (p ? p.name : '')}</div>
           <div class="bundle-prices">€${totalPrice}</div>

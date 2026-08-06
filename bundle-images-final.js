@@ -47,6 +47,17 @@ window.renderBundlesWithImages = async function () {
   renderFBT(section, picks);
 };
 
+/**
+ * Text fuer ein HTML-Attribut absichern. Produktnamen kommen aus
+ * products.json und sind damit vertrauenswuerdig — ein Anfuehrungszeichen im
+ * Namen wuerde das Attribut aber trotzdem zerreissen und die Kachel zerlegen.
+ */
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function imgPath(p) {
   if (!p.image) return '';
   // Produktseite liegt in /produkte/ → Bilder sind relativ zum Root
@@ -65,11 +76,16 @@ function renderFBT(section, products) {
       ${i > 0 ? '<div class="fbt-plus">+</div>' : ''}
       <div class="fbt-card">
         <label class="fbt-check-wrap">
-          <input class="fbt-check" type="checkbox" checked data-id="${p.id}" data-price="${p.price || 0}">
-          <span class="fbt-checkmark"><i class="bi bi-check"></i></span>
+          <!-- Das umschliessende <label> enthaelt nur ein Haekchen-Symbol, also
+               keinen vorlesbaren Text. Ohne aria-label hoert man an dieser
+               Stelle nur "Kontrollkaestchen" und weiss nicht, welcher Artikel
+               damit ab- oder zugewaehlt wird. -->
+          <input class="fbt-check" type="checkbox" checked data-id="${p.id}" data-price="${p.price || 0}"
+                 aria-label="${esc(p.name)} mitbestellen">
+          <span class="fbt-checkmark" aria-hidden="true"><i class="bi bi-check"></i></span>
         </label>
         <a href="/produkte/${p.slug || ('#')}.html" class="fbt-img-link">
-          <img class="fbt-img" src="${imgPath(p)}" alt="${p.name}" loading="lazy">
+          <img class="fbt-img" src="${imgPath(p)}" alt="${esc(p.name)}" loading="lazy">
         </a>
         <div class="fbt-name">${p.name}</div>
         <div class="fbt-price">€${(p.price || 0).toFixed(2)}</div>

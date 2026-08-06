@@ -132,44 +132,48 @@
       <div class="notification-settings">
         <div class="setting-item">
           <div>
-            <strong>Neue Angebote</strong>
+            <strong id="notifyOffers-text">Neue Angebote</strong>
             <p class="text-muted small mb-0">Erhalten Sie Benachrichtigungen über neue Rabattaktionen</p>
           </div>
+          <!-- Der beschreibende Text steht im Nachbar-Element, nicht im <label>:
+               das umschliesst nur den gezeichneten Schalter und hat keinen
+               vorlesbaren Inhalt. aria-labelledby verweist auf den sichtbaren
+               Text — der bleibt damit die einzige Quelle. -->
           <label class="toggle-switch">
-            <input type="checkbox" id="notifyOffers" checked>
+            <input type="checkbox" id="notifyOffers" aria-labelledby="notifyOffers-text" checked>
             <span class="toggle-slider"></span>
           </label>
         </div>
         
         <div class="setting-item">
           <div>
-            <strong>Bestellupdates</strong>
+            <strong id="notifyOrders-text">Bestellupdates</strong>
             <p class="text-muted small mb-0">Informationen über Ihre Bestellungen und Lieferungen</p>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox" id="notifyOrders" checked>
+            <input type="checkbox" id="notifyOrders" aria-labelledby="notifyOrders-text" checked>
             <span class="toggle-slider"></span>
           </label>
         </div>
         
         <div class="setting-item">
           <div>
-            <strong>Neue Produkte</strong>
+            <strong id="notifyProducts-text">Neue Produkte</strong>
             <p class="text-muted small mb-0">Benachrichtigungen über neue Produkteinführungen</p>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox" id="notifyProducts" checked>
+            <input type="checkbox" id="notifyProducts" aria-labelledby="notifyProducts-text" checked>
             <span class="toggle-slider"></span>
           </label>
         </div>
         
         <div class="setting-item">
           <div>
-            <strong>Newsletter</strong>
+            <strong id="notifyNewsletter-text">Newsletter</strong>
             <p class="text-muted small mb-0">Wöchentliche Updates und exklusive Angebote per E-Mail</p>
           </div>
           <label class="toggle-switch">
-            <input type="checkbox" id="notifyNewsletter">
+            <input type="checkbox" id="notifyNewsletter" aria-labelledby="notifyNewsletter-text">
             <span class="toggle-slider"></span>
           </label>
         </div>

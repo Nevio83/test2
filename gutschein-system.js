@@ -355,7 +355,8 @@
                 <div class="voucher-input-wrapper" style="display: flex; gap: 10px; margin-bottom: 15px;">
                     <input 
                         type="text" 
-                        id="voucherInput" 
+                        id="voucherInput"
+                        aria-label="Gutscheincode"
                         placeholder="Gutscheincode eingeben (z.B. WELCOME25)..."
                         style="flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;"
                     >

@@ -111,19 +111,26 @@
           An Maios, E-Mail: maioscorporation@gmail.com:<br><br>
           Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über den Kauf der folgenden Waren:<br><br>
           — Bestellt am / erhalten am:
-            <input type="date" name="orderDate" class="feld" style="min-width:170px"><br>
+            <input type="date" name="orderDate" class="feld" style="min-width:170px"
+              aria-label="Bestellt am oder erhalten am"><br>
           — Bestellnummer <span class="req">*</span>:
-            <input type="text" name="orderId" class="feld" placeholder="z.B. ORD-…" required><br>
+            <input type="text" name="orderId" class="feld" placeholder="z.B. ORD-…" required
+              aria-label="Bestellnummer (Pflichtfeld)"><br>
           — Name des/der Verbraucher(s) <span class="req">*</span>:
-            <input type="text" name="name" class="feld" required><br>
+            <input type="text" name="name" class="feld" required
+              aria-label="Name des Verbrauchers (Pflichtfeld)" autocomplete="name"><br>
           — Anschrift des/der Verbraucher(s):
-            <input type="text" name="address" class="feld" placeholder="Straße, PLZ, Ort"><br>
+            <input type="text" name="address" class="feld" placeholder="Straße, PLZ, Ort"
+              aria-label="Anschrift des Verbrauchers" autocomplete="street-address"><br>
           — E-Mail für die Bestätigung <span class="req">*</span>:
-            <input type="email" name="email" class="feld" required><br>
+            <input type="email" name="email" class="feld" required
+              aria-label="E-Mail für die Bestätigung (Pflichtfeld)" autocomplete="email"><br>
           — Anmerkung (optional, z.B. welche Artikel):
-            <input type="text" name="note" class="feld"><br>
+            <input type="text" name="note" class="feld"
+              aria-label="Anmerkung, zum Beispiel welche Artikel (optional)"><br>
           — Datum:
-            <input type="date" name="datum" class="feld" style="min-width:170px">
+            <input type="date" name="datum" class="feld" style="min-width:170px"
+              aria-label="Datum">
         </div>
 
         <!-- CAPTCHA -->
@@ -150,6 +157,8 @@
           <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;">
             <input type="text" id="captchaInput" autocomplete="off" inputmode="numeric"
               placeholder="Ergebnis als Zahl"
+              aria-label="Ergebnis der Sicherheitsprüfung als Zahl"
+              aria-describedby="captchaQuestion"
               style="width:150px;border:2px solid #ffc107;border-radius:6px;padding:6px 10px;font-size:1rem;font-family:inherit;">
             <button type="button" id="captchaCheck"
               style="background:#ffc107;color:#212529;font-weight:700;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;font-size:.95rem;">
