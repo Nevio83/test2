@@ -269,10 +269,17 @@ function recordCspReport(body, ip) {
   console.warn(`🛡️ CSP-Verstoss (${isEnforcing() ? 'blockiert' : 'nur gemeldet'}): ${directive} → ${blocked}`);
 }
 
+const { hstsWert } = require('./hsts-policy');
+
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  // Nur bei verschluesselt eingegangenen Anfragen — siehe hsts-policy.js.
+  // Lokal (http://localhost) faellt sie damit von selbst weg; sonst wuerde
+  // der eigene Browser die Entwicklungsumgebung auf https festnageln.
+  const hsts = hstsWert(req);
+  if (hsts) res.setHeader('Strict-Transport-Security', hsts);
   // Der Shop braucht weder Kamera noch Mikrofon noch Standort-Abfrage.
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(self "https://checkout.stripe.com")');
   // Nur auf Seiten-Antworten. Schnittstellen liefern JSON, das der Browser
