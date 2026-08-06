@@ -160,7 +160,7 @@ der Test es rot gemeldet hätte (Beispiele in `job-scheduler.test.js` und `cj-st
 | Datei | Zweck |
 |---|---|
 | `index.html` (165 KB) | Startseite/Shop. Nutzt **Tailwind (CDN)**. |
-| `app.js` (192 KB) | Haupt-Frontend-Logik: Produkt-Laden, Suche, Kategorien, Warenkorb, Wishlist. Helper `productHref(id)` baut Slug-URLs. |
+| `app.js` (56 KB) | Frontend-Logik der **Produktseiten**: Produkte laden, in den Warenkorb legen, Merkzettel, Bildplatzhalter. Helper `productHref(id)` baut Slug-URLs. **Seit 2026-08-06 nur noch 1.798 statt 4.430 Zeilen** — die Kategorie-, Bestseller-, Such-, Sortier- und Scrollleisten-Maschinerie ist raus. Sie sprach **sieben Raster** an (`technikGrid`, `bestsellerGrid`, `productGrid` …), die in **keiner** Seite mehr vorkommen: die Startseite läuft seit ihrem Umbau auf `home.js` und lädt `app.js` nicht einmal, ein Suchfeld gibt es nur in `404.html` — die `app.js` ebenfalls nicht einbindet. **Nicht anfassen:** `addProductToCart` (die Produktseiten rufen sie über `window.addProductToCart([], id)` auf) und der `loadProducts()`-Aufruf beim Start — daraus zieht sie ihre Produktdaten. |
 | `cart.html` / `cart.js` (101 KB) | Warenkorb-Seite + Logik. Nutzt **Bootstrap**; die Styles stehen seit dem „Editorial Dark"-Umbau in einem `<style>`-Block in `cart.html` (die frühere `cart.css` war dadurch tot und ist entfernt). Helper `cartProductHref(id)` für Slug-URLs. |
 | `products.json` (64 KB) | **Single Source of Truth** für Produkte: id, name, **slug**, Preis, SKU, Farben, Bilder, Bundles. |
 | `color-image-selection.js` | Farbvarianten-Auswahl auf Produktseiten. |
