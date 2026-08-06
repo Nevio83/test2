@@ -84,7 +84,11 @@
       </form>
     </div>
 
-    <a class="back-btn" href="/index.html#hilfeButton" onclick="localStorage.setItem('openHelpPanel', 'true')"><i class="bi bi-question-circle"></i> Hilfe & Support öffnen</a>
+    <!-- Hier stand "Hilfe & Support öffnen". Der Knopf sprang zu einem
+         Hilfe-Panel der Startseite, das es nicht mehr gibt (weder #hilfeButton
+         noch #hilfePanel kommen in einer Seite vor), und setzte dabei eine
+         Markierung im Browser, die niemand ausliest. Er landete also schlicht
+         oben auf der Startseite — von der Seite aus, die selbst die Hilfe ist. -->
 
     <div class="footer-spacer"></div>
   </main>

@@ -108,7 +108,50 @@
 
   // ── State ─────────────────────────────────────────────────
   var products = [];      // ohne ALI-Produkte
-  var currentCat = 'alle';
+
+  /**
+   * Vorausgewaehlte Kategorie aus der Adresse (?category=…).
+   *
+   * Die Angebote-Seite verlinkt so auf die Startseite. Frueher las das die
+   * alte Startseiten-Logik aus; seit dem Umbau auf diese Datei wertete den
+   * Parameter niemand mehr aus — der Knopf landete auf "Alle". Unbekannte
+   * Werte fallen bewusst auf "alle" zurueck statt eine leere Liste zu zeigen.
+   */
+  function kategorieAusAdresse() {
+    try {
+      var wunsch = new URLSearchParams(location.search).get('category');
+      return wunsch && CAT_META[wunsch] ? wunsch : 'alle';
+    } catch (e) {
+      return 'alle';
+    }
+  }
+
+  var currentCat = kategorieAusAdresse();
+
+  /**
+   * Springt nach dem Aufbau noch einmal zur Sprungmarke aus der Adresse.
+   *
+   * Noetig, weil fast alles auf dieser Seite erst per JavaScript entsteht:
+   * Der Browser springt beim Laden zur Marke, danach wachsen Showreel,
+   * Bestseller und Kacheln darueber ein — und schieben das Ziel weit nach
+   * unten. Ohne diesen zweiten Sprung landet ein Besucher von "Alle Produkte
+   * ansehen" trotz richtiger Adresse oben auf der Seite.
+   *
+   * Nur, wenn der Besucher noch gar nicht selbst gescrollt hat — sonst wuerde
+   * ihm die Seite unter den Fingern wegspringen.
+   */
+  function springeZurSprungmarke() {
+    var marke = (location.hash || '').slice(1);
+    if (!marke || window.scrollY > 40) return false;
+    var ziel = document.getElementById(marke);
+    if (!ziel) return false;
+    // Ausdruecklich ohne Animation: die Seite setzt scroll-behavior:smooth,
+    // und ein 5000 Pixel langer Weichzeichner beim Seitenaufbau sieht nicht
+    // nach Ankommen aus, sondern nach Fehler — und laesst sich unterwegs
+    // durch jede Nutzereingabe abbrechen.
+    ziel.scrollIntoView({ behavior: 'auto', block: 'start' });
+    return true;
+  }
   var currentSort = 'beliebt';
   var scene = 0;
   var reelTimer = null;
@@ -1016,6 +1059,7 @@
         renderChips();
         renderAllGrid();
         renderRecent();
+        springeZurSprungmarke();
       })
       .catch(function (e) {
         console.error('❌ products.json laden fehlgeschlagen:', e);

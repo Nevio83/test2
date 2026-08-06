@@ -98,7 +98,7 @@
       </template>
     </section>
 
-    <a class="back-btn mt-4 d-inline-flex" href="/index.html#productGrid"><i class="bi bi-lightning-charge"></i> Jetzt Angebote entdecken</a>
+    <a class="back-btn mt-4 d-inline-flex" href="/index.html#sortiment"><i class="bi bi-lightning-charge"></i> Jetzt Angebote entdecken</a>
 
     <div class="footer-spacer"></div>
   </main>
@@ -148,7 +148,7 @@
               <div class="mb-2" style="font-size:2rem;">🛍️</div>
               <h3 class="h5 mb-2">Es gibt gerade keine Angebote</h3>
               <p class="text-muted mb-3">Schau später wieder vorbei – wir aktualisieren regelmäßig.</p>
-              <a href="/index.html#productGrid" class="btn btn-primary rounded-pill px-4">Alle Produkte ansehen</a>
+              <a href="/index.html#sortiment" class="btn btn-primary rounded-pill px-4">Alle Produkte ansehen</a>
             </div>
           </div>
         `;
@@ -168,7 +168,7 @@
         const viewBtn = node.querySelector('.btn.btn-primary');
         viewBtn.href = d.slug ? `/produkte/${d.slug}.html` : `/produkte/produkt-${d.id}.html`;
         const catBtn = node.querySelector('.btn.btn-outline-secondary');
-        catBtn.href = `/index.html?category=${encodeURIComponent(d.category)}#productGrid`;
+        catBtn.href = `/index.html?category=${encodeURIComponent(d.category)}#sortiment`;
         return node.firstElementChild.outerHTML;
       }).join('');
     }
