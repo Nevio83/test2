@@ -112,11 +112,22 @@ jobs:
           echo "Server gestartet und /health erreichbar."
 
       - name: Deploy auslösen
-        # Läuft nur bei einem Push auf main und nur, wenn alle Schritte grün
-        # sind (ein fehlgeschlagener Schritt bricht den Job vorher ab).
+        # Läuft bei einem Push auf main UND bei einem von Hand angestoßenen
+        # Lauf — jeweils nur, wenn alle Schritte grün sind (ein
+        # fehlgeschlagener Schritt bricht den Job vorher ab).
+        #
+        # Warum auch von Hand: Am 6.8. hatte GitHub eine mehrstündige Störung
+        # bei Actions. Der Push kam an, der Prüflauf startete nie — und weil
+        # nur ein Push deployen durfte, gab es von GitHub aus KEINEN Weg mehr
+        # auszurollen. Der nachträglich angestoßene Lauf war grün und
+        # übersprang den Deploy trotzdem. Genau dafür gibt es
+        # workflow_dispatch; die Sicherheitseigenschaft bleibt dieselbe.
+        #
         # Ohne hinterlegtes Secret passiert hier nichts — dann deployt Render
         # weiterhin selbst, und dieser Workflow ist reine Rückmeldung.
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: >-
+          github.ref == 'refs/heads/main' &&
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         env:
           HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
