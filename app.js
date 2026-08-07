@@ -40,8 +40,13 @@ window.clearCart = function () {
 
     console.log("Cart cleared successfully");
   } catch (error) {
+    // Die technische Meldung gehoert in die Konsole, nicht in ein
+    // Meldungsfenster vor dem Kunden. Der Erfolgsfall darueber nutzt bereits
+    // showAlert — der Fehlerfall tat es nicht.
     console.error("Error in clearCart:", error);
-    alert("Fehler beim Leeren des Warenkorbs: " + error.message);
+    if (typeof showAlert === "function") {
+      showAlert("Der Warenkorb konnte nicht geleert werden. Bitte lade die Seite neu.");
+    }
   }
 };
 

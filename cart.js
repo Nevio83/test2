@@ -1051,30 +1051,35 @@ window.handleCheckout = async function() {
         });
         
         if (!response.ok) {
-            // Versuche detaillierte Fehlerinformationen zu erhalten
+            // Was der Kunde hier sieht, sieht er im teuersten Moment: direkt
+            // nach dem Klick auf "Jetzt bestellen".
+            //
+            // Frueher standen hier drei verschachtelte alert()-Fenster mit
+            // Fehlernummer und rohem JSON. Zwei davon gingen sogar gleichzeitig
+            // auf: Das throw stand INNERHALB des try und wurde vom eigenen
+            // catch gefangen — die zweite Meldung behauptete dann "Kein JSON in
+            // Antwort", obwohl das JSON gerade gelesen worden war, und ersetzte
+            // die echte Server-Auskunft durch einen Allgemeinplatz.
+            //
+            // Jetzt: Rohdaten in die Konsole, ein verstaendlicher Satz vor den
+            // Kunden. Verwendet wird ausschliesslich "message" — das ist das
+            // Feld, das der Server bewusst fuer Menschen formuliert. "error"
+            // ist eine technische Kennung ("Warenkorb veraltet") und bleibt
+            // draussen.
+            let rohtext = '';
+            let daten = null;
             try {
-                const errorText = await response.text();
-                console.error('🚨 API-Fehler Raw Response:', errorText);
-                
-                // Versuche JSON zu parsen, falls vorhanden
-                try {
-                    const errorData = JSON.parse(errorText);
-                    console.error('🚨 API-Fehlerdetails (parsed):', errorData);
-                    // Zeige detaillierte Fehlermeldung in einem Alert für bessere Diagnose
-                    alert(`API-Fehler (${response.status}): ${JSON.stringify(errorData, null, 2)}`);
-                    throw new Error(errorData.error || errorData.details || errorData.message || 'Fehler beim Erstellen der Checkout-Session');
-                } catch (jsonError) {
-                    // Text ist kein JSON
-                    console.error('🚨 API-Fehler (kein JSON):', response.status, response.statusText);
-                    alert(`API-Fehler (${response.status}): Kein JSON in Antwort. Rohe Antwort: ${errorText.substring(0, 200)}...`);
-                    throw new Error(`Fehler beim Erstellen der Checkout-Session (${response.status}: ${response.statusText})`);
-                }
-            } catch (parseError) {
-                // Falls keine Antwort verfügbar ist
-                console.error('🚨 API-Fehler ohne Inhalt:', response.status, response.statusText, parseError);
-                alert(`API-Fehler (${response.status}): Konnte Fehlerdetails nicht lesen. ${parseError.message}`);
-                throw new Error(`Fehler beim Erstellen der Checkout-Session (${response.status}: ${response.statusText})`);
+                rohtext = await response.text();
+                daten = JSON.parse(rohtext);
+            } catch (e) {
+                /* keine oder unlesbare Antwort — dann greift der Standardsatz */
             }
+            console.error('Checkout abgelehnt:', response.status, rohtext.slice(0, 400));
+
+            const fuerKunden = daten && typeof daten.message === 'string' && daten.message.trim()
+                ? daten.message.trim()
+                : 'Die Bestellung konnte gerade nicht gestartet werden. Bitte versuche es in einem Moment noch einmal.';
+            throw new Error(fuerKunden);
         }
         
         const { url, error } = await response.json();

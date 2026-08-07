@@ -955,7 +955,13 @@ app.post('/api/create-checkout-session', async (req, res) => {
   
   // Validiere Eingaben
   if (!cart || !Array.isArray(cart) || cart.length === 0) {
-    return res.status(400).json({ error: 'Cart is required and must contain items' });
+    // "message" ist das Feld, das der Warenkorb unveraendert anzeigt —
+    // deshalb hier ein deutscher Satz und keine technische Kennung.
+    return res.status(400).json({
+      error: 'Cart is required and must contain items',
+      message: 'Dein Warenkorb ist leer. Bitte lege zuerst einen Artikel hinein.',
+      code: 'warenkorb_leer'
+    });
   }
   
   console.log('🛒 Checkout-Session Request:', {
@@ -978,7 +984,28 @@ app.post('/api/create-checkout-session', async (req, res) => {
     const { calculateCJCost, calculatePaymentSplit } = require('./cj-payment-calculator');
     // 🔒 Preise serverseitig gegen products.json validieren (Manipulationsschutz)
     const { validateCart } = require('./price-validator');
-    var validatedCart = validateCart(cart);
+    var validatedCart;
+    try {
+      validatedCart = validateCart(cart);
+    } catch (warenkorbFehler) {
+      // KEIN Serverfehler, auch wenn es frueher als 500 rausging: Der Warenkorb
+      // liegt im Browser des Kunden und laeuft nie ab. Faellt ein Produkt aus
+      // dem Sortiment, passt sein Warenkorb irgendwann nicht mehr dazu — das
+      // ist eine veraltete Angabe des Browsers, kein Defekt hier. Ein 500 waere
+      // sachlich falsch und wuerde jede spaetere Fehlerstatistik verzerren.
+      const unbekannt = /Unbekanntes Produkt im Warenkorb: (\S+)/.exec(warenkorbFehler.message);
+      console.warn('🛒 Checkout abgelehnt, Warenkorb passt nicht zum Sortiment:', warenkorbFehler.message);
+      return res.status(400).json({
+        error: 'Warenkorb veraltet',
+        // Dieser Satz landet unveraendert vor dem Kunden — deshalb ohne
+        // Fehlernummern, ohne Produkt-IDs, mit einem naechsten Schritt darin.
+        message: unbekannt
+          ? 'Ein Artikel in deinem Warenkorb wird nicht mehr angeboten. Bitte entferne ihn und versuche es noch einmal.'
+          : 'Dein Warenkorb ist leer oder unvollständig. Bitte lege die Artikel erneut hinein.',
+        code: unbekannt ? 'produkt_unbekannt' : 'warenkorb_ungueltig',
+        productId: unbekannt ? unbekannt[1] : undefined
+      });
+    }
 
     // 📦 Nicht lieferbare Produkte gar nicht erst verkaufen. Quelle ist der
     // CJ-Bestandsabgleich (cj-stock-sync.js); eine Sperre nur im Browser waere
