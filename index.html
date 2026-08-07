@@ -693,6 +693,70 @@ button { font-family: var(--sans); }
   .footer .brand { font-size: 26px; }
 }
 
+/* ── Erster Bildschirm auf dem Handy: Preis und Kaufknopf sichtbar ──
+   Gemessen bei 375×812 (so kommen Besucher aus Kurzvideo-Werbung):
+   Das Produktbild war zwar zu sehen, aber Name (881 px), Preis (996 px)
+   und Knopf (1044 px) lagen ALLE unterhalb des ersten Bildschirms.
+   Sichtbar war also ein Bild mit Rabatt-Aufkleber — ohne zu erfahren,
+   was es ist, was es kostet und wie man es kauft.
+
+   Der Grund lag nicht am Karussell, sondern darueber: 492 der 812 Pixel
+   waren belegt, bevor das Produkt ueberhaupt begann (Ankuendigungsleiste,
+   Navigation, Angebots-Banner, Kopfzeile). Der Banner allein nahm 235 px
+   — mehr als ein Viertel des Bildschirms fuer einen Verweis auf eine
+   andere Seite, oberhalb der eigentlichen Ware.
+
+   Deshalb hier nur gekuerzt, nichts umgestellt: Die Reihenfolge bleibt
+   Bild → Name → Preis → Knopf, wie am Rechner. Gilt ausschliesslich fuer
+   Handy-Breiten; am Rechner aendert sich nichts. */
+@media (max-width: 600px) {
+  /* Angebots-Banner kompakt: Uhr, Titel und Knopf reichen. Der erklaerende
+     Satz darunter bricht auf 375 px auf drei Zeilen und wiederholt, was der
+     Titel schon sagt. */
+  .promo { padding: 16px 20px; gap: 12px; }
+  .promo .sub { display: none; }
+  .promo .icon-circle { width: 44px; height: 44px; font-size: 21px; }
+  .promo .meta { margin-bottom: 7px; }
+  .promo .title { font-size: 25px; }
+  .promo .cta { padding: 11px 20px; font-size: 13px; }
+
+  /* Kopfzeile des Kollektions-Bereichs etwas gedrungener */
+  .hero-inner { padding-top: 20px; }
+  .hero-head { margin-bottom: 12px; }
+  .hero-title { font-size: 24px; }
+
+  /* Buehne des Karussells: Das Bild bleibt gross genug, um zu wirken,
+     verliert aber den Leerraum ringsum. */
+  .reel-head { padding: 9px 18px; }
+  .reel-stage { min-height: 194px; padding: 12px; }
+  .reel-stage img.product { max-height: 172px; width: auto; }
+
+  /* Die zweizeilige Produktbeschreibung weicht — Name, Preis und Knopf
+     sind auf dem ersten Bildschirm wichtiger. Sie steht unveraendert auf
+     der Produktseite. */
+  .reel-desc { display: none; }
+  .reel-text { padding: 18px 22px; }
+  .reel-name { margin-bottom: 10px; }
+  .reel-priceline { margin-bottom: 14px; }
+}
+
+/* Kuerzere Handy-Bildschirme (z. B. 360×740 — verbreitetes Android-Format).
+   Dort fehlten dem Kaufknopf noch 40 px. Die Regel haengt an der HOEHE, nicht
+   an der Breite: Ein 375×812-Geraet soll das groessere Bild behalten. */
+@media (max-width: 600px) and (max-height: 780px) {
+  /* Zuerst Weissraum, erst zuletzt das Bild — das Bild verkauft. */
+  .reel-head { padding: 6px 18px; }
+  .reel-text { padding: 12px 22px; }
+  .reel-name { margin-bottom: 6px; }
+  .reel-priceline { margin-bottom: 8px; }
+  .hero-inner { padding-top: 14px; }
+  .hero-head { margin-bottom: 8px; }
+  .promo { padding: 10px 20px; }
+  .promo .title { font-size: 22px; }
+  .reel-stage { min-height: 142px; padding: 8px; }
+  .reel-stage img.product { max-height: 126px; }
+}
+
 /* Sehr schmale Geräte (≤380px) */
 @media (max-width: 380px) {
   .nav-logo { font-size: 30px; }
