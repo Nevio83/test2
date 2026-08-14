@@ -77,7 +77,7 @@ function initializeProductPageWishlist() {
   const productPageButtons = document.querySelectorAll(".wishlist-button");
   if (productPageButtons.length > 0 && window.product) {
     console.log(
-      `ðŸ’œ Initializing ${productPageButtons.length} wishlist buttons on product page...`,
+      `💜 Initializing ${productPageButtons.length} wishlist buttons on product page...`,
     );
     productPageButtons.forEach((button) => {
       // Remove old listeners to be safe
@@ -141,20 +141,20 @@ async function loadProducts(forceReload = false) {
     // Speichere im localStorage als Backup
     localStorage.setItem("allProducts", JSON.stringify(products));
 
-    console.log("ðŸ“‹ Products loaded with cache-busting:", products.length);
+    console.log("📋 Products loaded with cache-busting:", products.length);
 
     // Validiere kritische Produkte (die 6 problematischen)
     const criticalIds = [10, 11, 19, 20, 24, 25];
     criticalIds.forEach((id) => {
       const product = products.find((p) => Number(p.id) === id);
       if (product) {
-        console.log(`âœ… Critical product ${id} found:`, product.name);
+        console.log(`✅ Critical product ${id} found:`, product.name);
         // Prüfe auf kaputte Preise
         if (typeof product.price !== "number" || isNaN(product.price)) {
-          console.error(`âŒ Product ${id} has invalid price:`, product.price);
+          console.error(`❌ Product ${id} has invalid price:`, product.price);
         }
       } else {
-        console.error(`âŒ Critical product ${id} NOT FOUND!`);
+        console.error(`❌ Critical product ${id} NOT FOUND!`);
       }
     });
 
@@ -297,7 +297,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Add-to-cart Buttons initialisieren
 function initializeAddToCartButtons() {
-  console.log("ðŸ›’ Initializing AddToCart buttons...");
+  console.log("🛒 Initializing AddToCart buttons...");
 
   // Warte kurz, um sicherzustellen, dass alle Elemente gerendert sind
   setTimeout(() => {
@@ -320,11 +320,11 @@ function initializeAddToCartButtons() {
       const problematicIds = [10, 11, 19, 20, 24, 25];
       if (problematicIds.includes(parseInt(productId))) {
         console.log(
-          `ðŸ” SPECIAL: Initializing problematic product button ${productId}`,
+          `🔍 SPECIAL: Initializing problematic product button ${productId}`,
         );
-        console.log(`ðŸ” Button parent:`, button.parentNode?.className);
+        console.log(`🔍 Button parent:`, button.parentNode?.className);
         console.log(
-          `ðŸ” Button data-product-id:`,
+          `🔍 Button data-product-id:`,
           button.getAttribute("data-product-id"),
         );
       }
@@ -384,13 +384,13 @@ function initializeAddToCartButtons() {
       });
     });
 
-    console.log("âœ… AddToCart buttons initialization completed");
+    console.log("✅ AddToCart buttons initialization completed");
   }, 100);
 }
 
 // Produktkarten-Klicks initialisieren
 function initializeProductCardClicks() {
-  console.log("ðŸ”— Initializing product card clicks...");
+  console.log("🔗 Initializing product card clicks...");
 
   document.querySelectorAll(".lumiere-product-card").forEach((card) => {
     const productId = parseInt(card.dataset.productId);
@@ -408,7 +408,7 @@ function initializeProductCardClicks() {
         return;
       }
 
-      console.log(`ðŸ”— Navigating to product page for ID: ${productId}`);
+      console.log(`🔗 Navigating to product page for ID: ${productId}`);
 
       // Only navigate to existing product pages (10+)
       if (productId >= 10) {
@@ -422,7 +422,7 @@ function initializeProductCardClicks() {
     card.style.cursor = "pointer";
   });
 
-  console.log("âœ… Product card clicks initialized");
+  console.log("✅ Product card clicks initialized");
 }
 
 // Warenkorb-Funktionen
@@ -463,13 +463,13 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
     (!products || products.length === 0)
   ) {
     console.log(
-      "âš ï¸ Keine Produkte verfügbar, lade aus localStorage oder JSON...",
+      "⚠️ Keine Produkte verfügbar, lade aus localStorage oder JSON...",
     );
     // Versuche aus localStorage
     const storedProducts = localStorage.getItem("allProducts");
     if (storedProducts) {
       products = JSON.parse(storedProducts);
-      console.log("ðŸ“¦ Produkte aus localStorage geladen:", products.length);
+      console.log("📦 Produkte aus localStorage geladen:", products.length);
     }
   }
 
@@ -527,7 +527,7 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
       sku: window.product.selectedColorSku,
       price: window.product.price,
     };
-    console.log("ðŸŽ¨ Farbe von window.product:", currentColor);
+    console.log("🎨 Farbe von window.product:", currentColor);
   }
 
   // Methode 2: getSelectedColor() (für Produkt 11, 12, 17, 21, 26)
@@ -536,7 +536,7 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
     typeof window.getSelectedColor === "function"
   ) {
     const selectedColorObj = window.getSelectedColor();
-    console.log("ðŸ” getSelectedColor() Ergebnis:", selectedColorObj);
+    console.log("🔍 getSelectedColor() Ergebnis:", selectedColorObj);
 
     if (selectedColorObj && selectedColorObj.name) {
       currentColor = selectedColorObj.name;
@@ -552,7 +552,7 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
     console.log("getSelectedColor() function not found");
   }
 
-  console.log('ðŸ" Finale Farbe für Warenkorb:', currentColor);
+  console.log('Finale Farbe für Warenkorb:', currentColor);
 
   if (currentColor) {
     // Bei Produkten mit Farbe: Nur EXAKT gleiche ID + Farbe ist "existing"
@@ -564,7 +564,7 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
         item.selectedColor === currentColor,
     );
     console.log(
-      `ðŸŽ¨ Suche nach Produkt ${productId} mit Farbe "${currentColor}":`,
+      `🎨 Suche nach Produkt ${productId} mit Farbe "${currentColor}":`,
       existingItem ? "GEFUNDEN - Menge erhöhen" : "NEUER ARTIKEL",
     );
   } else {
@@ -577,7 +577,7 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
         !item.selectedColor,
     );
     console.log(
-      `ðŸ“¦ Suche nach Produkt ${productId} OHNE Farbe:`,
+      `📦 Suche nach Produkt ${productId} OHNE Farbe:`,
       existingItem ? "GEFUNDEN - Menge erhöhen" : "NEUER ARTIKEL",
     );
   }
@@ -604,7 +604,7 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
         cartItemId: `${productId}-${currentColor.replace(/\s+/g, "-").toLowerCase()}`,
       };
       console.log(
-        "ðŸŽ¨ NEUER Artikel mit Farbe:",
+        "🎨 NEUER Artikel mit Farbe:",
         productToAdd.name,
         "- ID:",
         productToAdd.cartItemId,
@@ -615,7 +615,7 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
       // Produkt OHNE Farbe
       productToAdd.cartItemId = `${productId}-no-color`;
       console.log(
-        "ðŸ“¦ NEUER Artikel ohne Farbe:",
+        "📦 NEUER Artikel ohne Farbe:",
         productToAdd.name,
         "- ID:",
         productToAdd.cartItemId,
@@ -623,7 +623,7 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
     }
 
     cartItems.push(productToAdd);
-    console.log("âœ… Artikel zum Warenkorb hinzugefügt:", productToAdd);
+    console.log("✅ Artikel zum Warenkorb hinzugefügt:", productToAdd);
   }
 
   // Speichere den aktuellen Warenkorb immer im localStorage
@@ -819,11 +819,11 @@ function initializeWishlistButtons() {
       const problematicIds = [10, 11, 19, 20, 24, 25];
       if (problematicIds.includes(parseInt(productId))) {
         console.log(
-          `ðŸ” SPECIAL: Initializing problematic wishlist button ${productId}`,
+          `🔍 SPECIAL: Initializing problematic wishlist button ${productId}`,
         );
-        console.log(`ðŸ” Button parent:`, button.parentNode?.className);
+        console.log(`🔍 Button parent:`, button.parentNode?.className);
         console.log(
-          `ðŸ” Button data-product-id:`,
+          `🔍 Button data-product-id:`,
           button.getAttribute("data-product-id"),
         );
       }
@@ -1332,7 +1332,7 @@ let searchResultsGrid = null;
 
 // Handle search button click
 function handleSearchButtonClick(e) {
-  console.log("ðŸ” Search button clicked!");
+  console.log("🔍 Search button clicked!");
   e.preventDefault();
   e.stopPropagation();
   openSearchOverlay();
@@ -1342,7 +1342,7 @@ function handleSearchButtonClick(e) {
 
 // Open search overlay
 function openSearchOverlay() {
-  console.log("ðŸ” Opening search overlay...");
+  console.log("🔍 Opening search overlay...");
 
   if (searchOverlay) {
     searchOverlay.classList.add("active");
@@ -1359,7 +1359,7 @@ function openSearchOverlay() {
     if (allProducts.length === 0) {
       loadProducts().then((products) => {
         allProducts = products;
-        console.log("ðŸ“¦ Products loaded for search:", allProducts.length);
+        console.log("📦 Products loaded for search:", allProducts.length);
         loadAllProducts();
       });
     } else {
@@ -1377,7 +1377,7 @@ function openSearchOverlay() {
 
 // Handle category search
 function handleCategorySearch(category) {
-  console.log("ðŸ” Category search:", category);
+  console.log("🔍 Category search:", category);
 
   // Load products first, then filter
   loadProducts()
@@ -1396,23 +1396,23 @@ function handleCategorySearch(category) {
           const isNotAliExpress =
             !product.sku || !product.sku.startsWith("ALI");
           console.log(
-            `ðŸ” Checking product: ${product.name} - Category: "${productCategory}" vs Filter: "${category}", isNotAli: ${isNotAliExpress}`,
+            `🔍 Checking product: ${product.name} - Category: "${productCategory}" vs Filter: "${category}", isNotAli: ${isNotAliExpress}`,
           );
           return productCategory === category && isNotAliExpress;
         });
       }
 
       console.log(
-        "ðŸ” Found",
+        "🔍 Found",
         filteredProducts.length,
         "products for category:",
         category,
       );
-      console.log("ðŸ” Available categories:", [
+      console.log("🔍 Available categories:", [
         ...new Set(products.map((p) => p.category)),
       ]);
       console.log(
-        "ðŸ” Filtered products:",
+        "🔍 Filtered products:",
         filteredProducts.map((p) => p.name),
       );
 
@@ -1442,7 +1442,7 @@ function handleCategorySearch(category) {
       }
     })
     .catch((error) => {
-      console.error("âŒ Error during category search:", error);
+      console.error("❌ Error during category search:", error);
     });
 }
 
@@ -1452,51 +1452,51 @@ function handleCategorySearch(category) {
 
 // Load all products for search overlay
 function loadAllProducts() {
-  console.log("ðŸ” Loading all products...");
+  console.log("🔍 Loading all products...");
 
   const allProductsGrid = document.getElementById("searchAllProductsGrid");
   if (!allProductsGrid) {
-    console.log("âŒ All products grid not found");
+    console.log("❌ All products grid not found");
     return;
   }
 
   // Always load products fresh
   loadProducts()
     .then((products) => {
-      console.log("ðŸ“¦ Products loaded for search grid:", products.length);
+      console.log("📦 Products loaded for search grid:", products.length);
       // Filter out AliExpress products (SKU starts with "ALI")
       const filteredProducts = products.filter(
         (p) => !p.sku || !p.sku.startsWith("ALI"),
       );
-      console.log("ðŸ“¦ After filtering AliExpress:", filteredProducts.length);
+      console.log("📦 After filtering AliExpress:", filteredProducts.length);
       renderAllProducts(allProductsGrid, filteredProducts);
     })
     .catch((error) => {
-      console.error("âŒ Error loading products:", error);
+      console.error("❌ Error loading products:", error);
     });
 }
 
 function renderAllProducts(allProductsGrid, products) {
   console.log(
-    "ðŸŽ¨ renderAllProducts called with:",
+    "🎨 renderAllProducts called with:",
     products ? products.length : "null",
     "products",
   );
 
   if (!allProductsGrid) {
-    console.error("âŒ Grid element is null!");
+    console.error("❌ Grid element is null!");
     return;
   }
 
   if (!products || products.length === 0) {
-    console.log("âŒ No products to render - clearing grid");
+    console.log("❌ No products to render - clearing grid");
     allProductsGrid.innerHTML =
       '<div style="color: white; text-align: center; padding: 40px; font-size: 16px;">Keine Produkte gefunden</div>';
     return;
   }
 
   console.log(
-    "ðŸŽ¨ Rendering products with category grouping:",
+    "🎨 Rendering products with category grouping:",
     products.length,
   );
 
@@ -1510,7 +1510,7 @@ function renderAllProducts(allProductsGrid, products) {
     groupedProducts[category].push(product);
   });
 
-  console.log("ðŸ“¦ Grouped products:", groupedProducts);
+  console.log("📦 Grouped products:", groupedProducts);
 
   // Create sorted product array (grouped by category but no titles)
   let sortedProducts = [];
@@ -1572,7 +1572,7 @@ function renderAllProducts(allProductsGrid, products) {
     })
     .join("");
 
-  console.log("âœ… Products rendered with category grouping");
+  console.log("✅ Products rendered with category grouping");
 
   // Initialize buttons like on main page
   initializeAddToCartButtons();
@@ -1753,12 +1753,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Additional initialization after window load
 window.addEventListener("load", () => {
-  console.log("ðŸ” Window loaded, ensuring search is initialized...");
+  console.log("🔍 Window loaded, ensuring search is initialized...");
 
   // Double-check initialization
   const searchBtn = document.getElementById("fullscreenSearchBtn");
   if (searchBtn && !searchBtn.hasAttribute("data-initialized")) {
-    console.log("ðŸ” Re-initializing search...");
+    console.log("🔍 Re-initializing search...");
     searchBtn.setAttribute("data-initialized", "true");
     searchBtn.addEventListener("click", handleSearchButtonClick);
   }
@@ -1770,7 +1770,7 @@ document.addEventListener("click", (e) => {
     e.target.id === "fullscreenSearchBtn" ||
     e.target.closest("#fullscreenSearchBtn")
   ) {
-    console.log("ðŸ” Emergency search activation!");
+    console.log("🔍 Emergency search activation!");
     e.preventDefault();
     e.stopPropagation();
     openSearchOverlay();
