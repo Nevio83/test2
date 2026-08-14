@@ -174,12 +174,16 @@
       valText: (r) => r.views + ' Aufrufe (' + r.unique_views + ' Besucher)',
       emptyText: 'Noch keine Länderdaten.'
     });
-    barList(el('devices'), val(4) || [], {
+    // devices/browsers liefern seit Kurzem { rows, total } statt einer
+    // blossen Liste (orders.html zeigt daraus eine Deckungs-Zeile an) --
+    // hier reicht .rows, der feste Hinweis "Nur ... Einwilligung" oben in
+    // dieser Seite deckt denselben Sachverhalt bereits ab.
+    barList(el('devices'), (val(4) || {}).rows || [], {
       label: (r) => r.device, value: (r) => r.views,
       valText: (r) => r.views + ' Aufrufe',
       emptyText: 'Noch keine Gerätedaten (nur bei voller Einwilligung).'
     });
-    barList(el('browsers'), val(5) || [], {
+    barList(el('browsers'), (val(5) || {}).rows || [], {
       label: (r) => r.browser, value: (r) => r.views,
       valText: (r) => r.views + ' Aufrufe',
       emptyText: 'Noch keine Browserdaten (nur bei voller Einwilligung).'

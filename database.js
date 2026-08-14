@@ -995,35 +995,70 @@ const dbOperations = {
   },
 
   // Geraeteverteilung (nur Views mit Consent 'all' liefern device).
+  // Gibt zusaetzlich "total" zurueck (ALLE Aufrufe im selben Zeitfenster,
+  // auch ohne Einwilligung) -> das Dashboard kann daraus anzeigen, wie viele
+  // Besucher in der Aufteilung fehlen, statt sie wie eine vollstaendige
+  // Verteilung aussehen zu lassen. Beide Zahlen kommen aus demselben
+  // Zeitfenster-Ausdruck, damit sie garantiert zusammenpassen.
   getDeviceBreakdown: async (days = 30) => {
-    const r = await pool.query(
-      `SELECT COALESCE(NULLIF(device,''),'Unbekannt') AS device,
-              COUNT(*)::int AS views,
-              COUNT(DISTINCT session_id)::int AS unique_views
-       FROM page_views
-       WHERE device IS NOT NULL
-         AND created_at > NOW() - ($1 || ' days')::interval
-       GROUP BY COALESCE(NULLIF(device,''),'Unbekannt')
-       ORDER BY views DESC`,
-      [String(days)]
-    );
-    return r.rows;
+    const [verteilung, gesamt] = await Promise.all([
+      pool.query(
+        `SELECT COALESCE(NULLIF(device,''),'Unbekannt') AS device,
+                COUNT(*)::int AS views,
+                COUNT(DISTINCT session_id)::int AS unique_views
+         FROM page_views
+         WHERE device IS NOT NULL
+           AND created_at > NOW() - ($1 || ' days')::interval
+         GROUP BY COALESCE(NULLIF(device,''),'Unbekannt')
+         ORDER BY views DESC`,
+        [String(days)]
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS total
+         FROM page_views
+         WHERE created_at > NOW() - ($1 || ' days')::interval`,
+        [String(days)]
+      )
+    ]);
+    return { rows: verteilung.rows, total: gesamt.rows[0].total };
   },
 
-  // Browser-Verteilung (nur Views mit Consent 'all').
+  // Browser-Verteilung (nur Views mit Consent 'all'). "total" siehe
+  // getDeviceBreakdown -- dieselbe Begruendung, dasselbe Zeitfenster.
+  //
+  // "known" zaehlt ALLE Views mit gesetztem Browser, OHNE das LIMIT der
+  // angezeigten Zeilen -- sonst waere bei mehr als "limit" verschiedenen
+  // Browsern ein Teil der Luecke durch die Kuerzung erklaerbar, nicht nur
+  // durch fehlende Einwilligung. Die Kachel soll genau EINEN Grund nennen,
+  // und der muss stimmen.
   getBrowserBreakdown: async (days = 30, limit = 8) => {
-    const r = await pool.query(
-      `SELECT COALESCE(NULLIF(browser,''),'Unbekannt') AS browser,
-              COUNT(*)::int AS views
-       FROM page_views
-       WHERE browser IS NOT NULL
-         AND created_at > NOW() - ($1 || ' days')::interval
-       GROUP BY COALESCE(NULLIF(browser,''),'Unbekannt')
-       ORDER BY views DESC
-       LIMIT $2`,
-      [String(days), limit]
-    );
-    return r.rows;
+    const [verteilung, gesamt, bekannt] = await Promise.all([
+      pool.query(
+        `SELECT COALESCE(NULLIF(browser,''),'Unbekannt') AS browser,
+                COUNT(*)::int AS views
+         FROM page_views
+         WHERE browser IS NOT NULL
+           AND created_at > NOW() - ($1 || ' days')::interval
+         GROUP BY COALESCE(NULLIF(browser,''),'Unbekannt')
+         ORDER BY views DESC
+         LIMIT $2`,
+        [String(days), limit]
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS total
+         FROM page_views
+         WHERE created_at > NOW() - ($1 || ' days')::interval`,
+        [String(days)]
+      ),
+      pool.query(
+        `SELECT COUNT(*)::int AS known
+         FROM page_views
+         WHERE browser IS NOT NULL
+           AND created_at > NOW() - ($1 || ' days')::interval`,
+        [String(days)]
+      )
+    ]);
+    return { rows: verteilung.rows, total: gesamt.rows[0].total, known: bekannt.rows[0].known };
   },
 
   // Einstiegsseiten-Funnel: ueber welche Seite Besucher einsteigen.

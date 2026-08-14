@@ -350,6 +350,35 @@
     }).join('');
   }
 
+  /**
+   * Schreibt die Zeile "Basiert auf X von Y Besuchen mit Einwilligung"
+   * unter eine Geraete-/Browser-Kachel.
+   *
+   * Anlass: Geraet und Browser stehen nur bei voller Cookie-Einwilligung in
+   * der Datenbank -- ohne Einwilligung bleibt das Feld leer. Die Kachel
+   * zeigte bisher nur die Aufteilung der BEKANNTEN Besuche ("Mobil: 9,
+   * Desktop: 11") und sah damit wie eine vollstaendige Verteilung aus.
+   * Tatsaechlich fehlten an einem gemessenen Tag 56 von 175 Besuchen
+   * komplett -- kein Fehler, sondern Absicht (kein Tracking ohne
+   * Einwilligung), aber ohne diese Zeile unsichtbar.
+   *
+   * knownOverride wird nur fuer die Browser-Kachel gebraucht: dort begrenzt
+   * ein LIMIT die angezeigten Zeilen, eine Summe ueber "rows" waere bei mehr
+   * als "limit" verschiedenen Browsern zu klein und wuerde die Kuerzung als
+   * fehlende Einwilligung ausgeben. Ohne LIMIT (Geraete: nur 3 Kategorien)
+   * ist die Summe der Zeilen exakt die bekannte Zahl, kein Override noetig.
+   */
+  function setCoverageNote(el, rows, total, knownOverride) {
+    if (!el) return;
+    const known = typeof knownOverride === 'number'
+      ? knownOverride
+      : (rows || []).reduce(function (sum, r) { return sum + (Number(r.views) || 0); }, 0);
+    if (!total) { el.textContent = ''; return; }
+    el.textContent = known >= total
+      ? 'Vollständig — alle ' + total + ' Besuche mit Einwilligung.'
+      : 'Basiert auf ' + known + ' von ' + total + ' Besuchen mit Einwilligung.';
+  }
+
   async function loadConsent() {
     try {
       const c = await getJSON('api/views/consent?days=30');
@@ -373,15 +402,17 @@
   var DEVICE_ICONS = { 'Desktop': '🖥️', 'Mobil': '📱', 'Tablet': '📲' };
   async function loadDevices() {
     const el = document.getElementById('device-breakdown');
+    const cov = document.getElementById('device-coverage');
     if (!el) return;
     try {
-      const rows = await getJSON('api/views/devices?days=30');
-      renderList(el, rows, {
+      const data = await getJSON('api/views/devices?days=30');
+      renderList(el, data.rows, {
         label: function (r) { return r.device; },
         value: function (r) { return r.views; },
         display: function (r) { return r.views + ' Aufrufe'; },
         icon: function (r) { return DEVICE_ICONS[r.device] || '•'; }
       });
+      setCoverageNote(cov, data.rows, data.total);
     } catch (e) {
       el.innerHTML = '<li class="list-group-item text-danger small">Fehler beim Laden</li>';
     }
@@ -389,14 +420,16 @@
 
   async function loadBrowsers() {
     const el = document.getElementById('browser-breakdown');
+    const cov = document.getElementById('browser-coverage');
     if (!el) return;
     try {
-      const rows = await getJSON('api/views/browsers?days=30&limit=8');
-      renderList(el, rows, {
+      const data = await getJSON('api/views/browsers?days=30&limit=8');
+      renderList(el, data.rows, {
         label: function (r) { return r.browser; },
         value: function (r) { return r.views; },
         display: function (r) { return String(r.views); }
       });
+      setCoverageNote(cov, data.rows, data.total, data.known);
     } catch (e) {
       el.innerHTML = '<li class="list-group-item text-danger small">Fehler beim Laden</li>';
     }
