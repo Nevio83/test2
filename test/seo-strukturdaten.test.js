@@ -144,6 +144,40 @@ test('jede indexierbare Seite nennt sich selbst als kanonische Adresse', () => {
   }
 });
 
+// Liest die Kurzbeschreibung aus einer Seite -- dieselbe Regel gilt fuer den
+// echten Test unten UND fuer dessen Gegenprobe, damit beide garantiert
+// denselben Massstab anlegen.
+function beschreibungLesen(html) {
+  return [...html.matchAll(/<meta name="description" content="([^"]*)">/g)];
+}
+
+test('jede feste Seite hat eine eigene Kurzbeschreibung fuer die Suche', () => {
+  // Vorher hatte nur die Startseite eine eigene Beschreibung -- Google baute
+  // sich fuer die anderen 13 Seiten selbst einen Text zusammen (meist der
+  // erste Absatz), bei den AGB also Paragrafentext im Suchergebnis.
+  for (const s of seo.FESTE_SEITEN) {
+    const html = fs.readFileSync(path.join(WURZEL, s.datei), 'utf8');
+    const treffer = beschreibungLesen(html);
+    assert.equal(treffer.length, 1, `${s.datei}: ${treffer.length} Kurzbeschreibungen`);
+    const text = treffer[0][1];
+    assert.ok(text.trim().length >= 40, `${s.datei}: Beschreibung zu kurz ("${text}")`);
+    assert.ok(text.length <= 160, `${s.datei}: Beschreibung zu lang (${text.length} Zeichen) -- Google schneidet ab`);
+  }
+});
+
+test('GEGENPROBE: eine Seite ohne Kurzbeschreibung faellt auf', () => {
+  // Baut den Zustand nach, in dem 13 der 14 Seiten tatsaechlich waren --
+  // ohne diese Probe waere der Test oben wertlos: er kann nur gruen sein,
+  // wenn er auch rot werden kann.
+  const vorher = '<head><title>Gutscheine</title><link rel="canonical" href="x"></head>';
+  assert.equal(beschreibungLesen(vorher).length, 0, 'die alte Seite hatte keine Beschreibung');
+
+  const nachher = '<head><title>Gutscheine</title>'
+    + '<meta name="description" content="Gutscheine und Rabattcodes fuer den Maios Shop.">'
+    + '<link rel="canonical" href="x"></head>';
+  assert.equal(beschreibungLesen(nachher).length, 1, 'die reparierte Seite muss angeschlagen werden');
+});
+
 test('Seiten ohne Suchwert sind als "nicht indexieren" gekennzeichnet', () => {
   for (const datei of seo.NICHT_INDEXIEREN) {
     const html = fs.readFileSync(path.join(WURZEL, datei), 'utf8');
