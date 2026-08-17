@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Marketing-Automat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { background: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .admin-header {
+            background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
+            color: white; padding: 2rem 0; margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .panel { background: white; border-radius: 10px; padding: 1.25rem 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.08); margin-bottom: 1.5rem; }
+        .panel h5 { font-weight: 700; margin-bottom: 0.25rem; }
+        .panel .sub { color: #6c757d; font-size: 0.85rem; margin-bottom: 1rem; }
+        .kpi-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .kpi { flex: 1; min-width: 150px; background: #f8f9fa; border-radius: 8px; padding: 0.85rem 1rem; text-align: center; }
+        .kpi-val { font-size: 1.7rem; font-weight: 700; color: #0f766e; line-height: 1.1; }
+        .kpi-val.warn { color: #d97706; }
+        .kpi-val.bad { color: #dc3545; }
+        .kpi-lab { font-size: 0.82rem; color: #495057; margin-top: 0.2rem; }
+        table { font-size: 0.88rem; }
+        table td, table th { vertical-align: middle; }
+        .mono { font-family: ui-monospace, Consolas, monospace; font-size: 0.82rem; }
+        .zustand { font-size: 0.78rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600; }
+        .z-an { background: #d1fae5; color: #065f46; }
+        .z-aus { background: #fee2e2; color: #991b1b; }
+        .z-laeuft { background: #dbeafe; color: #1e40af; }
+        .z-lokal { background: #ede9fe; color: #5b21b6; }
+        .balken { height: 6px; background: #e5e7eb; border-radius: 999px; overflow: hidden; }
+        .balken > i { display: block; height: 100%; background: #0f766e; }
+        .notaus { background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; padding: 1rem 1.25rem; }
+        .hinweis { background: #fffbeb; border-left: 4px solid #d97706; padding: 0.9rem 1.1rem; border-radius: 6px; margin-bottom: 1rem; }
+        .leer { color: #9ca3af; font-size: 0.88rem; padding: 0.5rem 0; }
+        .begruendung { font-size: 0.78rem; color: #6b7280; }
+    </style>
+</head>
+<body>
+<div class="admin-header">
+    <div class="container">
+        <h1 class="mb-1"><i class="bi bi-robot"></i> Marketing-Automat</h1>
+        <p class="mb-0 opacity-75">Was das System gerade tut — und der Schalter, um es anzuhalten.</p>
+    </div>
+</div>
+
+<div class="container pb-5">
+
+    <div id="hinweise"></div>
+
+    <!-- Überblick -->
+    <div class="panel">
+        <h5>Überblick</h5>
+        <div class="sub">Stand der gesamten Kette, von den Trends bis zur Veröffentlichung.</div>
+        <div class="kpi-row" id="ueberblick"><div class="leer">Lädt…</div></div>
+    </div>
+
+    <!-- Notaus -->
+    <div class="panel">
+        <h5><i class="bi bi-power"></i> Notaus</h5>
+        <div class="sub">
+            Setzt nur das Flag in der Datenbank — der nächste Takt liest es und hält an.
+            Es wird kein laufender Vorgang mitten im Rendern oder Posten abgeschnitten.
+        </div>
+        <div class="notaus d-flex flex-wrap gap-2 align-items-center">
+            <button class="btn btn-danger" id="btn-stop">
+                <i class="bi bi-stop-circle"></i> Alles anhalten
+            </button>
+            <button class="btn btn-outline-success" id="btn-start">
+                <i class="bi bi-play-circle"></i> Alles wieder freigeben
+            </button>
+            <span class="ms-2 begruendung">
+                Zusätzlich unabhängig davon: <span class="mono">MARKETING_ENABLED=false</span>
+                oder eine Datei <span class="mono">Marketing/STOP</span>. Es reicht einer der drei Wege.
+            </span>
+        </div>
+    </div>
+
+    <!-- Abläufe -->
+    <div class="panel">
+        <h5>Abläufe</h5>
+        <div class="sub">
+            Jeder Zeitplan steht in der Datenbank und übersteht Neustarts.
+            „lokal“ heißt: braucht Browser oder Grafikkarte, läuft also nur auf deinem PC.
+        </div>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead><tr>
+                    <th>Ablauf</th><th>Zustand</th><th>Läufe</th>
+                    <th>nächster Lauf</th><th>letzter Fehler</th><th></th>
+                </tr></thead>
+                <tbody id="jobs"><tr><td colspan="6" class="leer">Lädt…</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel">
+                <h5>Trend-Rangliste</h5>
+                <div class="sub">Bewertet aus Wachstum, Größe, Passung, Shop-Signal, Sättigung und Alter.</div>
+                <div id="trends"><div class="leer">Lädt…</div></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel">
+                <h5>Warteschlange</h5>
+                <div class="sub">Geplante und veröffentlichte Beiträge. „dry_run“ = im Trockenlauf vorgemerkt, nicht gesendet.</div>
+                <div id="warteschlange"><div class="leer">Lädt…</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel">
+                <h5>Ergebnisse</h5>
+                <div class="sub">Veröffentlichte Beiträge mit Kennzahlen und Umsatzzuordnung.</div>
+                <div id="ergebnisse"><div class="leer">Lädt…</div></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel">
+                <h5>Verworfene Videos</h5>
+                <div class="sub">Was die Ausgangsprüfung abgewiesen hat — mit Grund.</div>
+                <div id="verworfen"><div class="leer">Lädt…</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h5>Lernstand</h5>
+        <div class="sub">
+            Erwartungswert je Ausprägung. Höher heißt: hat bisher besser abgeschnitten.
+            Ausprägungen mit wenigen Versuchen sind noch nicht aussagekräftig.
+        </div>
+        <div id="lernstand"><div class="leer">Lädt…</div></div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="panel">
+                <h5>Kosten</h5>
+                <div class="sub">Bei Erreichen der Grenze wird auf den kostenlosen Weg umgeschaltet, nicht abgebrochen.</div>
+                <div id="kosten"><div class="leer">Lädt…</div></div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel">
+                <h5>Gelernte Abweichungen</h5>
+                <div class="sub">Werte, die das System selbst angepasst hat. Alles andere kommt aus der Konfigurationsdatei.</div>
+                <div id="overrides"><div class="leer">Lädt…</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h5>Nachweis-Protokoll</h5>
+        <div class="sub">
+            Jede automatische Entscheidung mit Begründung. Ein System, das ohne Aufsicht
+            postet, muss im Nachhinein erklärbar sein.
+        </div>
+        <div id="protokoll"><div class="leer">Lädt…</div></div>
+    </div>
+
+</div>
+
+<script src="marketing.js"></script>
+</body>
+</html>

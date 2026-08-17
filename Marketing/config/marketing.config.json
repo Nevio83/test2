@@ -1,0 +1,152 @@
+{
+  "_hinweis": "Alle Stellschrauben des Marketing-Automaten. Der Code hat KEINE hartkodierten Gewichte, Budgets oder Zeitplaene — sie stehen alle hier. Das Lernmodul darf einen Teil davon selbst anpassen (siehe 'lernen.darf_aendern'); alles andere ist ihm verboten und wird von guardrails.py durchgesetzt.",
+
+  "notaus": {
+    "_hinweis": "Drei unabhaengige Wege, alles anzuhalten. Es reicht EINER.",
+    "aktiviert": true,
+    "stop_datei": "STOP"
+  },
+
+  "trockenlauf": {
+    "_hinweis": "Standard ist true. Es wird alles gebaut und geplant, aber NICHTS veroeffentlicht. Auf false stellt nur ein Mensch — niemals der Code.",
+    "standard": true
+  },
+
+  "budget": {
+    "_hinweis": "Obergrenzen in Euro. Vor jedem kostenpflichtigen Aufruf wird mkt_cost_ledger summiert. Bei Ueberschreitung wird auf den kostenlosen Pfad umgeschaltet (lokales TTS, lokales Rendering, Vorlagen-Briefings) — NICHT abgebrochen.",
+    "tag_euro": 3.0,
+    "monat_euro": 40.0
+  },
+
+  "jobs": {
+    "_hinweis": "Abstaende in Sekunden. requires_local = braucht Browser oder GPU, laeuft also nur auf dem eigenen PC / Worker.",
+    "trends_ingest":    { "abstand_sek": 1800,   "requires_local": false },
+    "shop_signals":     { "abstand_sek": 3600,   "requires_local": false },
+    "match_and_brief":  { "abstand_sek": 3600,   "requires_local": false },
+    "render_style_a":   { "abstand_sek": 1800,   "requires_local": false },
+    "render_style_b":   { "abstand_sek": 3600,   "requires_local": true  },
+    "publish_due":      { "abstand_sek": 900,    "requires_local": true  },
+    "metrics_collect":  { "abstand_sek": 3600,   "requires_local": false },
+    "learning_update":  { "abstand_sek": 21600,  "requires_local": false },
+    "weekly_report":    { "abstand_sek": 604800, "requires_local": false },
+    "cleanup_assets":   { "abstand_sek": 86400,  "requires_local": false },
+    "budget_rollover":  { "abstand_sek": 86400,  "requires_local": false }
+  },
+
+  "trend_score": {
+    "_hinweis": "score = w1*velocity + w2*volumen_norm + w3*passung_sortiment + w4*shop_signal + w5*saisonalitaet - w6*saettigung - w7*alter_stunden. Startwerte begruendet: Velocity und Shop-Signal stehen oben, weil ein steigender Trend mehr wert ist als ein grosser (bei grossen ist der Wettbewerb schon da), und weil die eigenen Shop-Daten der einzige Vorteil sind, den kein fremdes Trend-Tool hat. Saettigung zieht ab, weil ein Thema mit 10.000 Videos fuer einen kleinen Shop verloren ist.",
+    "w1_velocity": 0.30,
+    "w2_volumen": 0.15,
+    "w3_passung": 0.20,
+    "w4_shop_signal": 0.25,
+    "w5_saisonalitaet": 0.10,
+    "w6_saettigung": 0.20,
+    "w7_alter": 0.05,
+    "max_alter_stunden": 72,
+    "sprache_bevorzugt": "de"
+  },
+
+  "matching": {
+    "_hinweis": "mindest_marge_prozent nach der Formel aus CLAUDE-CODE.md Paragraph 2: VK >= (EK + Versand) * 1,20. WICHTIG: Die Einkaufspreise stehen nur namensbasiert in excel/Maios Produkte.csv, nicht per Produkt-ID. Wo der EK unbekannt ist, entscheidet 'unbekannte_marge': 'sperren' = Produkt wird nicht beworben, 'erlauben_mit_hinweis' = beworben, aber im Audit-Log als ungeprueft vermerkt. Steht auf 'erlauben_mit_hinweis', weil CLAUDE-CODE.md die Marge shopweit bereits geprueft hat (alle CJ-Produkte >= 23 %). Trage EK/Versand unten ein, dann wird echt gerechnet.",
+    "mindest_marge_prozent": 20,
+    "unbekannte_marge": "erlauben_mit_hinweis",
+    "einkaufspreise": {},
+    "max_posts_pro_produkt_pro_woche": 2,
+    "min_passungs_score": 0.15,
+    "max_trends_pro_lauf": 5,
+    "_hinweis_cooldown": "Wie lange ein THEMA (keyword_norm) nach einem Briefing gesperrt ist. Ohne diese Sperre bekommt dasselbe Stichwort bei jedem Lauf ein neues Briefing, weil jede Messung eine neue trend_id hat — gemessen: 10 Briefings fuer 7 Themen. 7 Tage passt zu max_posts_pro_produkt_pro_woche, das ebenfalls wochenweise begrenzt.",
+    "thema_cooldown_tage": 7
+  },
+
+  "llm": {
+    "_hinweis": "Sprachmodell fuer die Briefings. Anthropic hat Vorrang, wenn beide Schluessel gesetzt sind. Fehlt beides ODER ist das Budget erschoepft, werden Briefings aus Vorlagen gebaut — der Ablauf bricht NICHT ab.",
+    "modell_anthropic": "claude-sonnet-5",
+    "modell_openai": "gpt-4o-mini",
+    "_hinweis_preise": "Cent je Million Token. ACHTUNG: Schaetzwerte — gegen die aktuelle Preisliste des Anbieters pruefen. Die Token-ZAHLEN in mkt_cost_ledger stammen aus der echten Antwort und stimmen unabhaengig davon; nur der Eurobetrag haengt an diesen Werten.",
+    "preise": {
+      "anthropic": { "cent_pro_mio_ein": 300, "cent_pro_mio_aus": 1500 },
+      "openai":    { "cent_pro_mio_ein": 15,  "cent_pro_mio_aus": 60 }
+    }
+  },
+
+  "veroeffentlichung": {
+    "_hinweis": "Slots sind Startwerte; ab genug Daten lernt der Bandit die echten Zeiten. Mindestabstand verhindert, dass zwei Videos derselben Plattform aufeinander liegen.",
+    "plattformen": ["tiktok"],
+    "slots": ["07:30", "12:30", "17:30", "20:30"],
+    "zeitzone": "Europe/Berlin",
+    "max_posts_pro_tag": 3,
+    "min_abstand_stunden": 3,
+    "utm_medium": "organic"
+  },
+
+  "video": {
+    "_hinweis": "Harte Vorgaben fuer beide Stile. quality_gate.py weist alles ab, was hier nicht passt — ein 0-Byte-MP4 darf nie in die Warteschlange (genau das ist bis Runde 10 passiert).",
+    "breite": 1080,
+    "hoehe": 1920,
+    "min_dauer_sek": 8,
+    "max_dauer_sek": 60,
+    "ziel_lufs": -14.0,
+    "min_dateigroesse_byte": 20480,
+    "_hinweis_schnitt": "1,2 bis 2,2 Sekunden je Einstellung. Vorher 1,5-3,0 — das ist die Schnittlaenge eines YouTube-Vorspanns, nicht die eines TikToks. Auf TikTok entscheidet die Bildbewegung darueber, ob jemand weiterwischt; ein Schnitt alle drei Sekunden wirkt dort wie Stillstand.",
+    "schnitt_min_sek": 1.2,
+    "schnitt_max_sek": 2.2,
+    "hook_bis_sek": 1.5,
+    "_hinweis_hook": "Der gesprochene Hook allein reicht nicht: Ein grosser Teil schaut ohne Ton. Deshalb steht der Hook zusaetzlich als Text im Bild, ab Bild eins.",
+    "hook_overlay": true,
+    "hook_overlay_sek": 2.5,
+    "stil_mix": { "A": 0.7, "B": 0.3 }
+  },
+
+  "lernen": {
+    "_hinweis": "Kontextueller Bandit mit Thompson Sampling. exploration_min ist eine harte Untergrenze: ohne sie erstarrt das System auf einem lokalen Optimum und probiert nie wieder etwas Neues. reward-Gewichte: Geld schlaegt Eitelkeitszahlen, deshalb 0,40 auf den Deckungsbeitrag.",
+    "exploration_min": 0.15,
+    "min_stichprobe": 8,
+    "sperre_tage": 30,
+    "winsorisieren_perzentil": 95,
+    "reward_gewichte": {
+      "hook_rate": 0.15,
+      "watch_ratio": 0.15,
+      "engagement": 0.10,
+      "ctr_link": 0.20,
+      "deckungsbeitrag": 0.40
+    },
+    "messfenster_stunden": [1, 6, 24, 72, 168],
+    "vorlaeufig_ab_stunden": 6,
+    "final_ab_stunden": 72,
+    "darf_aendern": [
+      "trend_score.w1_velocity",
+      "trend_score.w2_volumen",
+      "trend_score.w3_passung",
+      "trend_score.w4_shop_signal",
+      "trend_score.w5_saisonalitaet",
+      "trend_score.w6_saettigung",
+      "trend_score.w7_alter",
+      "veroeffentlichung.slots",
+      "video.stil_mix"
+    ]
+  },
+
+  "wiederholung": {
+    "_hinweis": "Exponentielles Zurueckhalten nach Fehlern. Nach 3 Fehlversuchen pausiert der Job und es geht eine Warnmail raus.",
+    "backoff_minuten": [1, 4, 16],
+    "max_fehlversuche": 3,
+    "heartbeat_timeout_minuten": 30
+  },
+
+  "rate_limits": {
+    "_hinweis": "Token-Bucket je Anbieter: Anfragen pro Minute.",
+    "google_trends": 6,
+    "reddit": 30,
+    "youtube": 30,
+    "tiktok": 10,
+    "llm": 20,
+    "elevenlabs": 10,
+    "runway": 5
+  },
+
+  "aufraeumen": {
+    "_hinweis": "Renderings und Zwischenstaende, die aelter sind, werden geloescht. Veroeffentlichte Videos bleiben laenger.",
+    "renders_tage": 7,
+    "unveroeffentlicht_tage": 3
+  }
+}

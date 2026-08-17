@@ -1,0 +1,47 @@
+# Marketing-Automat — Python-Abhaengigkeiten
+#
+# Gemessen am 14.08.2026: Auf diesem Rechner laeuft Python 3.14.5 und es ist
+# von allem hier NUR numpy installiert. Der Automat ist deshalb so gebaut,
+# dass er auch ohne jedes dieser Pakete startet — er protokolliert dann, WARUM
+# ein Schritt uebersprungen wird, und erfindet nie Ersatzdaten.
+#
+# Installation der Kernpakete:
+#     py -m pip install -r Marketing/requirements.txt
+#
+# Die optionalen Bloecke sind bewusst auskommentiert. Sie werden erst
+# gebraucht, wenn die jeweilige Quelle bzw. der jeweilige Weg wirklich
+# benutzt werden soll — jedes Paket, das man nicht installiert, kann auch
+# nicht kaputtgehen.
+
+# ── Kern: ohne diese drei laeuft nur der Trockenlauf ohne Datenbank ──
+# Versionen sind die am 14.08.2026 unter Python 3.14.5 TATSAECHLICH
+# installierten und gegen die echte Neon-Datenbank geprueften — nicht die
+# zuerst geschaetzten. Eine requirements.txt, die etwas anderes behauptet
+# als installiert ist, ist schlimmer als gar keine.
+psycopg[binary]==3.3.4     # Postgres (Neon) — dieselbe DB wie der Shop
+python-dotenv==1.2.2       # laedt Marketing/.env + Wurzel-.env
+requests==2.34.2           # HTTP fuer alle Plattform-APIs
+
+# ── Tests ────────────────────────────────────────────────────────────
+# Hinweis: pytest.exe liegt nicht im PATH. Immer "py -m pytest" aufrufen.
+pytest==9.1.1
+
+# ── Trends (optional, je Quelle einzeln) ─────────────────────────────
+# pytrends==4.9.2          # Google Trends (zieht pandas mit — gross)
+# praw==7.8.1              # Reddit
+# google-api-python-client==2.177.0   # YouTube Data API
+
+# ── Video Stil A (optional) ──────────────────────────────────────────
+# ACHTUNG: ffmpeg ist KEIN pip-Paket. Es muss als Programm installiert und
+# im PATH sein — auf diesem Rechner fehlt es aktuell. Ohne ffmpeg kann kein
+# Video gerendert werden, weder Stil A noch Stil B.
+# Pillow==11.3.0           # Endkarte, Text-Overlays
+# faster-whisper==1.1.1    # Wort-Zeitmarken fuer Untertitel + Takes-Index
+
+# ── Video Stil B / lokales Rendern (optional, GPU) ───────────────────
+# torch                    # Version haengt an CUDA — siehe pytorch.org
+# diffusers==0.35.1
+# transformers==4.56.1
+
+# ── Veroeffentlichung (optional) ─────────────────────────────────────
+# selenium==4.34.2         # nur fuer den TikTok-Rueckfallweg ohne API

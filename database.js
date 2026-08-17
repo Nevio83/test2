@@ -102,6 +102,13 @@ const SCHEMA = [
   `ALTER TABLE page_views ADD COLUMN IF NOT EXISTS client_view_id TEXT`,
   // Geraet zur Bestellung (fuer Geraete-Conversion). Rein informativ, optional.
   `ALTER TABLE orders ADD COLUMN IF NOT EXISTS device TEXT`,
+  // Woher kam diese Bestellung? Traegt die Kampagnen-Kennung des
+  // Marketing-Automaten (z.B. "mkt_42"). Ohne diese Spalte laesst sich nicht
+  // sagen, welches Video verkauft hat — und das Lernmodul haette dauerhaft
+  // einen Deckungsbeitrag von 0, obwohl er mit 40 % in die Bewertung eingeht.
+  // Rein informativ, keine personenbezogene Angabe.
+  `ALTER TABLE orders ADD COLUMN IF NOT EXISTS utm_campaign TEXT`,
+  `CREATE INDEX IF NOT EXISTS idx_orders_utm ON orders(utm_campaign)`,
   // Einwilligungs-Log fuer die DSGVO-Auswertung (jede Banner-Entscheidung).
   `CREATE TABLE IF NOT EXISTS user_consent_events (
     id SERIAL PRIMARY KEY,
@@ -294,7 +301,316 @@ const SCHEMA = [
     runs INTEGER NOT NULL DEFAULT 0,
     last_error TEXT,
     last_error_at TIMESTAMPTZ
-  )`
+  )`,
+
+  // ══════════════════════════════════════════════════════════════════
+  // MARKETING-SYSTEM (Runde 10) — Praefix mkt_
+  //
+  // Alles hier gehoert dem Marketing-Automaten (Ordner Marketing/). Der
+  // Shop selbst liest keine dieser Tabellen; sie stehen nur deshalb hier,
+  // damit es EIN Schema-Management gibt statt zwei. Die Python-Seite legt
+  // bewusst nichts an — sie setzt diese Tabellen voraus.
+  //
+  // Warum Postgres und nicht die bisherige SQLite-Datei: Renders
+  // Dateisystem ist fluechtig, eine .db-Datei waere nach jedem Deploy weg.
+  // Genau deshalb liegt auch jeder Zeitplan hier und nicht im Prozess.
+  // ══════════════════════════════════════════════════════════════════
+
+  // Zeitplan der Marketing-Ablaeufe. Eigene Tabelle statt job_runs, weil
+  // hier mehr drinsteht: Ort (requires_local), Ein/Aus-Schalter fuers
+  // Dashboard und ein Lease mit Herzschlag, damit ein abgestuerzter Lauf
+  // nicht ewig blockiert.
+  //
+  // naechster_lauf ist die Faelligkeit — NICHT "letzter Lauf + Abstand"
+  // zur Laufzeit gerechnet. Dadurch kann der Abstand geaendert werden,
+  // ohne dass ein laufender Zeitplan durcheinandergeraet.
+  `CREATE TABLE IF NOT EXISTS mkt_jobs (
+    job TEXT PRIMARY KEY,
+    abstand_sek INTEGER NOT NULL,
+    letzter_lauf TIMESTAMPTZ,
+    naechster_lauf TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    laeufe INTEGER NOT NULL DEFAULT 0,
+    fehler_zaehler INTEGER NOT NULL DEFAULT 0,
+    letzter_fehler TEXT,
+    letzter_fehler_at TIMESTAMPTZ,
+    requires_local BOOLEAN NOT NULL DEFAULT false,
+    enabled BOOLEAN NOT NULL DEFAULT true,
+    laeuft_seit TIMESTAMPTZ,
+    heartbeat_at TIMESTAMPTZ,
+    runner_id TEXT
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_jobs_faellig ON mkt_jobs(naechster_lauf) WHERE enabled`,
+
+  // Lauf-Protokoll. Getrennt von mkt_jobs, damit die Historie erhalten
+  // bleibt, wenn ein Job zurueckgesetzt wird.
+  `CREATE TABLE IF NOT EXISTS mkt_job_events (
+    id SERIAL PRIMARY KEY,
+    job TEXT NOT NULL,
+    runner_id TEXT,
+    gestartet_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    beendet_at TIMESTAMPTZ,
+    dauer_ms INTEGER,
+    ergebnis TEXT,
+    fehlertext TEXT,
+    details JSONB
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_job_events_job ON mkt_job_events(job, gestartet_at DESC)`,
+
+  // Rohtrends je Quelle. rohdaten haelt die Antwort der Quelle fest —
+  // ohne die laesst sich spaeter nicht mehr pruefen, ob ein Wert echt
+  // gemessen oder unterwegs verrechnet wurde.
+  `CREATE TABLE IF NOT EXISTS mkt_trends (
+    id SERIAL PRIMARY KEY,
+    quelle TEXT NOT NULL,
+    keyword TEXT NOT NULL,
+    keyword_norm TEXT NOT NULL,
+    sprache TEXT,
+    volumen REAL,
+    wachstum REAL,
+    saettigung REAL,
+    sentiment REAL,
+    rohdaten JSONB,
+    erfasst_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_trends_norm ON mkt_trends(keyword_norm, erfasst_am DESC)`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_trends_erfasst ON mkt_trends(erfasst_am DESC)`,
+
+  // Score getrennt vom Trend, weil derselbe Trend mit geaenderten
+  // Gewichten neu bewertet wird. bestandteile haelt fest, WARUM der Score
+  // so ausfiel — sonst ist die Auswahl spaeter nicht erklaerbar.
+  `CREATE TABLE IF NOT EXISTS mkt_trend_scores (
+    id SERIAL PRIMARY KEY,
+    trend_id INTEGER NOT NULL REFERENCES mkt_trends(id) ON DELETE CASCADE,
+    score REAL NOT NULL,
+    bestandteile JSONB NOT NULL,
+    gueltig_bis TIMESTAMPTZ,
+    berechnet_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_scores_trend ON mkt_trend_scores(trend_id)`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_scores_rang ON mkt_trend_scores(score DESC, berechnet_am DESC)`,
+
+  // marge_zum_zeitpunkt wird mitgeschrieben, nicht nachgerechnet: der
+  // Preis kann sich spaeter aendern, die Entscheidung von damals soll
+  // trotzdem nachvollziehbar bleiben.
+  `CREATE TABLE IF NOT EXISTS mkt_matches (
+    id SERIAL PRIMARY KEY,
+    trend_id INTEGER NOT NULL REFERENCES mkt_trends(id) ON DELETE CASCADE,
+    produkt_id INTEGER NOT NULL,
+    passungs_score REAL NOT NULL,
+    begruendung TEXT,
+    marge_zum_zeitpunkt REAL,
+    erstellt_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_matches_produkt ON mkt_matches(produkt_id, erstellt_am DESC)`,
+
+  // compliance_status: 'offen' | 'ok' | 'blocked'. Bei 'blocked' wird
+  // weder gerendert noch gepostet (siehe compliance.py).
+  `CREATE TABLE IF NOT EXISTS mkt_briefs (
+    id SERIAL PRIMARY KEY,
+    match_id INTEGER NOT NULL REFERENCES mkt_matches(id) ON DELETE CASCADE,
+    hook_varianten JSONB NOT NULL,
+    skript TEXT NOT NULL,
+    overlays JSONB,
+    cta TEXT,
+    hashtags JSONB,
+    stil TEXT NOT NULL,
+    merkmale JSONB NOT NULL,
+    compliance_status TEXT NOT NULL DEFAULT 'offen',
+    compliance_grund TEXT,
+    erstellt_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_briefs_status ON mkt_briefs(compliance_status, erstellt_am DESC)`,
+
+  // Ein Asset ohne Lizenzeintrag darf nicht ins Video (test_lizenz_pflicht).
+  // hash verhindert, dass dasselbe Bild unter zwei Pfaden doppelt zaehlt.
+  `CREATE TABLE IF NOT EXISTS mkt_assets (
+    id SERIAL PRIMARY KEY,
+    pfad TEXT NOT NULL,
+    typ TEXT NOT NULL,
+    quelle TEXT NOT NULL,
+    lizenz TEXT,
+    lizenz_nachweis_url TEXT,
+    produkt_id INTEGER,
+    hash TEXT,
+    erfasst_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (pfad)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_assets_hash ON mkt_assets(hash)`,
+
+  // pruefergebnis kommt aus quality_gate.py: 'ok' | 'verworfen'.
+  // 0-Byte-Dateien duerfen damit gar nicht erst in die Warteschlange.
+  `CREATE TABLE IF NOT EXISTS mkt_videos (
+    id SERIAL PRIMARY KEY,
+    brief_id INTEGER NOT NULL REFERENCES mkt_briefs(id) ON DELETE CASCADE,
+    stil TEXT NOT NULL,
+    pfad TEXT,
+    dauer_sek REAL,
+    breite INTEGER,
+    hoehe INTEGER,
+    loudness_lufs REAL,
+    renderdauer_sek REAL,
+    kosten_cent INTEGER NOT NULL DEFAULT 0,
+    pruefergebnis TEXT,
+    pruefgrund TEXT,
+    erstellt_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_videos_pruef ON mkt_videos(pruefergebnis, erstellt_am DESC)`,
+
+  // idempotenz_schluessel ist der Schutz gegen Doppel-Posts: Hash aus
+  // (video_id, plattform, geplanter Slot). UNIQUE erzwingt, dass ein
+  // Wiederholungslauf denselben Post nicht ein zweites Mal absetzt.
+  // status: 'geplant' | 'dry_run' | 'gepostet' | 'fehler' | 'uebersprungen'
+  `CREATE TABLE IF NOT EXISTS mkt_posts (
+    id SERIAL PRIMARY KEY,
+    video_id INTEGER NOT NULL REFERENCES mkt_videos(id) ON DELETE CASCADE,
+    plattform TEXT NOT NULL,
+    externe_post_id TEXT,
+    caption TEXT,
+    hashtags JSONB,
+    geplant_fuer TIMESTAMPTZ NOT NULL,
+    gepostet_am TIMESTAMPTZ,
+    slot TEXT,
+    status TEXT NOT NULL DEFAULT 'geplant',
+    fehlertext TEXT,
+    idempotenz_schluessel TEXT NOT NULL,
+    erstellt_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (idempotenz_schluessel)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_posts_faellig ON mkt_posts(status, geplant_fuer)`,
+  // Ein Video darf je Plattform nur EINEN lebenden Beitrag haben.
+  //
+  // Der Fingerabdruck allein genuegt dafuer nicht: Er enthaelt den geplanten
+  // Sendeplatz, und der verschiebt sich bei jedem Lauf (der vorige Lauf hat
+  // den frueheren Platz ja belegt). Zwei Laeufe erzeugten dadurch zwei
+  // verschiedene Fingerabdruecke fuer dasselbe Video — beim Nachmessen
+  // standen nach zwei Durchgaengen 6 statt 3 Beitraege in der Tabelle.
+  //
+  // Fehlgeschlagene Beitraege sind ausgenommen: Nach einem Fehler soll ein
+  // neuer Versuch moeglich sein.
+  `CREATE UNIQUE INDEX IF NOT EXISTS idx_mkt_posts_ein_beitrag_je_video
+     ON mkt_posts(video_id, plattform) WHERE status <> 'fehler'`,
+
+  // Ein Post bekommt mehrere Zeilen — eine je Zeitfenster (1h/6h/24h/72h/7d).
+  // UNIQUE verhindert Doppelzaehlung beim Wiederholungslauf.
+  `CREATE TABLE IF NOT EXISTS mkt_metrics (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER NOT NULL REFERENCES mkt_posts(id) ON DELETE CASCADE,
+    fenster TEXT NOT NULL,
+    views INTEGER,
+    retention_3s REAL,
+    watchtime_sek REAL,
+    likes INTEGER,
+    shares INTEGER,
+    saves INTEGER,
+    kommentare INTEGER,
+    profilklicks INTEGER,
+    linkklicks INTEGER,
+    erfasst_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (post_id, fenster)
+  )`,
+
+  // Die Bruecke von Reichweite zu echtem Geld: UTM -> Shop-Session -> Bestellung.
+  `CREATE TABLE IF NOT EXISTS mkt_attribution (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER NOT NULL REFERENCES mkt_posts(id) ON DELETE CASCADE,
+    utm_kampagne TEXT NOT NULL,
+    shop_sessions INTEGER NOT NULL DEFAULT 0,
+    warenkorb_ereignisse INTEGER NOT NULL DEFAULT 0,
+    bestellungen INTEGER NOT NULL DEFAULT 0,
+    umsatz REAL NOT NULL DEFAULT 0,
+    deckungsbeitrag REAL NOT NULL DEFAULT 0,
+    berechnet_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (post_id)
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_attr_kampagne ON mkt_attribution(utm_kampagne)`,
+
+  // Beta-Posterior je (Dimension, Auspraegung, Kontext). Der Kontext ist
+  // Teil des Schluessels — der Bandit lernt "Hook-Typ 3 ist gut FUER
+  // Kuechenprodukte aus Google-Trends", nicht "Hook-Typ 3 ist gut".
+  `CREATE TABLE IF NOT EXISTS mkt_arms (
+    id SERIAL PRIMARY KEY,
+    dimension TEXT NOT NULL,
+    auspraegung TEXT NOT NULL,
+    kontext TEXT NOT NULL DEFAULT '*',
+    alpha REAL NOT NULL DEFAULT 1.0,
+    beta REAL NOT NULL DEFAULT 1.0,
+    versuche INTEGER NOT NULL DEFAULT 0,
+    erfolge REAL NOT NULL DEFAULT 0,
+    gesperrt_bis TIMESTAMPTZ,
+    aktualisiert_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (dimension, auspraegung, kontext)
+  )`,
+
+  // Vorlaeufiger Reward ab 6 h, finaler erst nach 72 h. Bis dahin wird
+  // kein Arm abgeschaltet (test_reward_verzoegert).
+  `CREATE TABLE IF NOT EXISTS mkt_rewards (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER NOT NULL REFERENCES mkt_posts(id) ON DELETE CASCADE,
+    reward_vorlaeufig REAL,
+    reward_final REAL,
+    bestandteile JSONB,
+    berechnet_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (post_id)
+  )`,
+
+  // Vom Lernmodul angepasste Konfigurationswerte.
+  //
+  // WARUM NICHT IN DIE KONFIGURATIONSDATEI: Der Hauptbetrieb laeuft in
+  // GitHub Actions, und dort ist der Checkout fluechtig — eine dort
+  // geschriebene Datei ist beim naechsten Lauf wieder weg. Gelernte Gewichte
+  // waeren damit nach 30 Minuten verloren, und das System wuerde ewig bei
+  // seinen Startwerten bleiben, ohne dass es jemand merkt. Exakt dieselbe
+  // Falle wie beim alten setInterval-Zeitplan (siehe job-scheduler.js).
+  //
+  // marketing.config.json haelt die Startwerte, diese Tabelle die gelernten
+  // Abweichungen. Die Positivliste in guardrails.darf_aendern() entscheidet
+  // weiterhin, was ueberhaupt hier landen darf.
+  `CREATE TABLE IF NOT EXISTS mkt_config_overrides (
+    pfad TEXT PRIMARY KEY,
+    wert JSONB NOT NULL,
+    gesetzt_von TEXT,
+    gesetzt_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
+
+  `CREATE TABLE IF NOT EXISTS mkt_experiments (
+    id SERIAL PRIMARY KEY,
+    hypothese TEXT NOT NULL,
+    arme JSONB NOT NULL,
+    min_stichprobe INTEGER NOT NULL DEFAULT 8,
+    status TEXT NOT NULL DEFAULT 'laeuft',
+    ergebnis JSONB,
+    erstellt_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    beendet_am TIMESTAMPTZ
+  )`,
+
+  // Jeder kostenpflichtige Aufruf landet hier. Der Budgetwaechter summiert
+  // diese Tabelle, BEVOR er einen weiteren Aufruf zulaesst.
+  `CREATE TABLE IF NOT EXISTS mkt_cost_ledger (
+    id SERIAL PRIMARY KEY,
+    anbieter TEXT NOT NULL,
+    endpunkt TEXT,
+    einheiten REAL NOT NULL DEFAULT 0,
+    kosten_cent INTEGER NOT NULL DEFAULT 0,
+    job TEXT,
+    zeitpunkt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_kosten_zeit ON mkt_cost_ledger(zeitpunkt DESC)`,
+
+  // Nicht optional: ein System, das ohne Aufsicht postet, muss im
+  // Nachhinein erklaerbar sein. Jede automatische Entscheidung landet hier
+  // — inklusive der Alternativen, die NICHT gewaehlt wurden.
+  `CREATE TABLE IF NOT EXISTS mkt_audit_log (
+    id SERIAL PRIMARY KEY,
+    job TEXT,
+    entscheidung TEXT NOT NULL,
+    begruendung TEXT,
+    alternativen JSONB,
+    score REAL,
+    vorher JSONB,
+    nachher JSONB,
+    zeitpunkt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_audit_zeit ON mkt_audit_log(zeitpunkt DESC)`
 ];
 
 async function initializeDatabase() {
@@ -391,13 +707,14 @@ const dbOperations = {
     const sql = `INSERT INTO orders (
       order_id, receipt_number, customer_email, customer_name, customer_phone,
       shipping_address, billing_address, payment_method, subtotal,
-      shipping_cost, tax_amount, total_amount, currency, notes, device, payment_intent_id
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING id`;
+      shipping_cost, tax_amount, total_amount, currency, notes, device, payment_intent_id,
+      utm_campaign
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING id`;
     const r = await pool.query(sql, [
       o.order_id, o.receipt_number, o.customer_email, o.customer_name, o.customer_phone,
       o.shipping_address, o.billing_address, o.payment_method, o.subtotal,
       o.shipping_cost, o.tax_amount, o.total_amount, o.currency, o.notes, o.device || null,
-      o.payment_intent_id || null
+      o.payment_intent_id || null, o.utm_campaign || null
     ]);
     return { id: r.rows[0].id, order_id: o.order_id };
   },

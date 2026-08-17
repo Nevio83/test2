@@ -25,6 +25,18 @@ excel/*Preisanalyse*.csv
 database/*.db
 Marketing/data/*.db
 
+# ── Marketing-Automat (Runde 10) ─────────────────────────────
+# Alles unter Marketing/data/ entsteht zur Laufzeit: Sprachaufnahmen,
+# Stock-Clips, Renderings, Zwischenstaende. Nichts davon gehoert in ein
+# oeffentliches Repo — teils wegen Lizenzen (Stock-Material), teils wegen
+# Groesse (Videos), teils weil es die eigene Stimme ist.
+Marketing/data/
+# Notaus-Datei: existiert nur lokal, wenn jemand das System angehalten hat.
+Marketing/STOP
+# OAuth-Token der Plattformen, falls je als Datei abgelegt.
+Marketing/config/*token*.json
+Marketing/config/*secret*.json
+
 # ── Node / Build ─────────────────────────────────────────────
 node_modules/
 .netlify/

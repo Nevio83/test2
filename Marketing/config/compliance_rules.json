@@ -1,0 +1,66 @@
+{
+  "_hinweis": "Regeln, die eine Veroeffentlichung SPERREN — nicht nur warnen. Zweimal geprueft: vor dem Rendern und noch einmal vor dem Posten. Bei 'blocked' wird weder gerendert noch gepostet. Die Liste ist bewusst eher zu streng: ein blockiertes Video kostet Rechenzeit, ein durchgerutschtes kostet eine Abmahnung.",
+
+  "gesperrte_themen": {
+    "_hinweis": "Trends mit diesen Woertern fliegen schon beim Einlesen raus (normalize.py), bevor ueberhaupt ein Briefing entsteht. Politik/Krisen/Tragoedien: nichts davon soll neben einem Produktvideo stehen. Gesundheit/Medizin: dieser Shop verkauft keine Medizinprodukte und darf entsprechend nichts versprechen.",
+    "begriffe": [
+      "krieg", "attentat", "anschlag", "terror", "amoklauf", "erdbeben",
+      "todesfall", "gestorben", "unfall", "katastrophe", "flut",
+      "wahl", "bundestag", "afd", "partei", "politiker", "regierung",
+      "corona", "impfung", "krebs", "diagnose", "medikament", "rezeptpflichtig",
+      "abnehmen", "diaet", "diät", "potenz", "viagra",
+      "aktien", "krypto", "bitcoin", "investment", "rendite",
+      "sex", "porno", "nackt", "erotik",
+      "waffe", "messer", "drogen", "cannabis", "alkohol", "zigaretten"
+    ]
+  },
+
+  "verbotene_aussagen": {
+    "_hinweis": "Formulierungen, die im Skript oder in der Bildunterschrift nicht vorkommen duerfen. Heilversprechen sind nach dem Heilmittelwerbegesetz auch dann verboten, wenn sie stimmen wuerden.",
+    "heilversprechen": [
+      "heilt", "heilung", "kuriert", "lindert", "therapiert", "medizinisch bewiesen",
+      "gegen schmerzen", "hilft gegen", "beseitigt falten", "entgiftet",
+      "staerkt das immunsystem", "stärkt das immunsystem", "senkt den blutdruck",
+      "wissenschaftlich erwiesen", "klinisch getestet"
+    ],
+    "irrefuehrend": [
+      "garantiert", "100% sicher", "ohne risiko", "beste der welt",
+      "nummer 1", "marktfuehrer", "marktführer", "guenstigster preis",
+      "günstigster preis", "nur heute", "letzte chance", "nur noch wenige"
+    ],
+    "_hinweis_knappheit": "'nur noch wenige' und 'letzte chance' stehen auf der Liste, weil vorgetaeuschte Knappheit seit 2022 ausdruecklich verboten ist. Echte Knappheit darf genannt werden — dann aber aus dem echten Lagerbestand, nicht als Textbaustein."
+  },
+
+  "fremde_rechte": {
+    "_hinweis": "Fremde Marken, Logos und Personen duerfen nicht vorkommen. Die Liste ist nicht vollstaendig und kann es nicht sein — sie faengt die haeufigsten Faelle. Ergaenzend prueft compliance.py auf Grossschreibung mitten im Satz als Hinweis auf einen Markennamen.",
+    "marken": [
+      "apple", "iphone", "samsung", "dyson", "nespresso", "thermomix",
+      "philips", "bosch", "siemens", "ikea", "amazon", "temu", "shein",
+      "tiktok shop", "coca cola", "nike", "adidas", "disney", "netflix"
+    ]
+  },
+
+  "pflichtangaben": {
+    "_hinweis": "Was in JEDEM Beitrag stehen muss. Der eigene Shop ist Werbung — auch ohne Auftraggeber ist die Kennzeichnung Pflicht.",
+    "alle": ["werbung"],
+    "tiktok": ["werbung"],
+    "instagram": ["werbung"],
+    "youtube": ["werbung"],
+    "_hinweis_ki": "Bei Stil B kommt die Kennzeichnung 'KI-generierter Inhalt' dazu — die wird zusaetzlich ueber das Plattform-Feld gesetzt, nicht nur als Text.",
+    "ki_kennzeichnung": "Dieses Video enthält KI-generierte Inhalte."
+  },
+
+  "preisangaben": {
+    "_hinweis": "Preise duerfen genannt werden, aber nur korrekt. Kleinunternehmer nach Paragraph 19 UStG: KEIN Umsatzsteuer-Ausweis, deshalb ist 'zzgl. MwSt.' oder 'inkl. 19% MwSt.' schlicht falsch.",
+    "quelle": "products.json (Wurzel)",
+    "verbotene_zusaetze": ["zzgl. mwst", "zzgl mwst", "inkl. 19", "inkl 19", "netto", "umsatzsteuer"],
+    "pflicht_bei_preisnennung": "Versandhinweis",
+    "toleranz_cent": 0
+  },
+
+  "musik": {
+    "_hinweis": "Nur lizenzfreie Bibliothek oder der Sound-Katalog der Plattform. Jede Musikdatei braucht einen Lizenzeintrag in mkt_assets — ohne den kommt sie nicht ins Video (test_lizenz_pflicht).",
+    "erlaubte_quellen": ["plattform_katalog", "cc0", "eigene_aufnahme"],
+    "lizenz_pflicht": true
+  }
+}
