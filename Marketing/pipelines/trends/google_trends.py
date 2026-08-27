@@ -35,7 +35,45 @@ class GoogleTrends(TrendQuelle):
             return False, "pytrends ist nicht installiert (optional, siehe requirements.txt)"
         return True, None
 
+    @staticmethod
+    def _urllib3_vertraeglich() -> None:
+        """pytrends an das heutige urllib3 anpassen.
+
+        pytrends 4.9.2 ist von 2023 und wird nicht mehr gepflegt. Es ruft
+        Retry(method_whitelist=...) auf — dieser Parameter heisst seit
+        urllib3 2.0 'allowed_methods'. Ergebnis ohne diesen Eingriff:
+
+            Retry.__init__() got an unexpected keyword argument 'method_whitelist'
+
+        Die Alternative waere, urllib3 auf Version 1 festzunageln — das
+        betrifft aber auch requests und den ganzen Rest des Projekts. Eine
+        veraltete Bibliothek darf nicht bestimmen, welche Netzwerkschicht der
+        Shop benutzt.
+
+        Deshalb wird nur der alte Parametername wieder angenommen und intern
+        umgebogen. Wirkt ausschliesslich innerhalb dieses Laufs.
+        """
+        try:
+            from urllib3.util.retry import Retry
+        except ImportError:  # pragma: no cover
+            return
+        if getattr(Retry, "_maios_kompatibel", False):
+            return
+        original = Retry.__init__
+
+        def __init__(self, *args, **kwargs):
+            if "method_whitelist" in kwargs:
+                kwargs["allowed_methods"] = kwargs.pop("method_whitelist")
+            return original(self, *args, **kwargs)
+
+        try:
+            Retry.__init__ = __init__
+            Retry._maios_kompatibel = True
+        except (AttributeError, TypeError):  # pragma: no cover
+            pass
+
     def hole(self) -> list[TrendZeile]:
+        self._urllib3_vertraeglich()
         from pytrends.request import TrendReq
 
         anfrage = TrendReq(hl="de-DE", tz=60, retries=2, backoff_factor=0.3)

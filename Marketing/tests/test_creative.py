@@ -285,6 +285,125 @@ def test_briefing_nennt_nur_den_echten_preis():
 
 
 # ══════════════════════════════════════════════════════════════════════
+# 3b. Die Aufhaenger aus config/hooks.json
+# ══════════════════════════════════════════════════════════════════════
+
+def test_hooks_haben_echte_umlaute():
+    """Diese Texte werden ins Bild gebrannt — 'guenstiger' waere sichtbar.
+
+    Beim ersten Entwurf standen in hooks.json ae/oe/ue, weil der Code
+    ringsherum das in KOMMENTAREN so macht (Konsolen-Zeichensatz). Der
+    Unterschied: Kommentare liest niemand ausser uns, diese Saetze stehen
+    zwei Sekunden gross im Video.
+    """
+    import json
+
+    from pipelines.creative.brief_generator import HOOK_DATEI
+
+    daten = json.loads(HOOK_DATEI.read_text(encoding="utf-8"))
+    verdaechtig = ("ae", "oe", "ue", "ss")
+    treffer = []
+
+    def pruefe_liste(pfad, texte):
+        for t in texte:
+            klein = t.lower()
+            # Woerter, in denen die Ersatzschreibweise typisch vorkommt.
+            for wort in klein.replace(".", " ").replace(",", " ").split():
+                if any(v in wort for v in ("aeg", "oeh", "ueb", "aet", "uen", "oes")) \
+                        or wort in ("fuer", "ueber", "haelt", "taeglich", "guenstig",
+                                    "guenstiger", "aerger", "geraete", "hoechstens",
+                                    "waere", "muessen", "koennen", "gross", "grosse"):
+                    treffer.append(f"{pfad}: {t}")
+                    break
+
+    for kat, typen in (daten.get("kategorien") or {}).items():
+        for typ, texte in typen.items():
+            pruefe_liste(f"{kat}/{typ}", texte)
+    for typ, texte in (daten.get("allgemein") or {}).items():
+        pruefe_liste(f"allgemein/{typ}", texte)
+
+    assert treffer == [], \
+        "Ersatzschreibweise statt Umlaut — landet so im Video:\n  " + "\n  ".join(treffer)
+
+
+def test_hooks_behaupten_nichts_ueber_das_produkt():
+    """Ein Hook darf die Lage des Zuschauers beschreiben, nicht Produktdaten.
+
+    Alles, was das Video ueber das Produkt sagt, muss gegen products.json
+    pruefbar sein. Ein Aufhaenger wie 'haelt eine Woche ohne Steckdose' waere
+    fuer 40 Produkte pauschal gesetzt — und fuer die meisten schlicht falsch.
+    """
+    import json
+    import re
+
+    from pipelines.creative.brief_generator import HOOK_DATEI
+
+    daten = json.loads(HOOK_DATEI.read_text(encoding="utf-8"))
+    # Masseinheiten und Zeitspannen sind das Warnzeichen: Sie behaupten etwas
+    # Pruefbares. Der Preisplatzhalter ist ausdruecklich erlaubt.
+    muster = re.compile(r"\b\d+\s*(mah|watt|w|stunden|std|tage|monate|liter|ml|cm|kg)\b",
+                        re.IGNORECASE)
+    treffer = []
+    for gruppe in ((daten.get("kategorien") or {}).values()):
+        for typ, texte in gruppe.items():
+            for t in texte:
+                if muster.search(t.replace("{preis}", "")):
+                    treffer.append(f"{typ}: {t}")
+    assert treffer == [], f"Hook behauptet Pruefbares ueber das Produkt: {treffer}"
+
+
+def test_jeder_hooktyp_hat_fuer_jede_kategorie_eine_fassung():
+    """Sonst faellt still auf 'allgemein' zurueck — und alles klingt gleich."""
+    import json
+
+    from pipelines.creative.brief_generator import HOOK_DATEI, HOOK_TYPEN
+
+    daten = json.loads(HOOK_DATEI.read_text(encoding="utf-8"))
+    fehlend = []
+    for kat, typen in (daten.get("kategorien") or {}).items():
+        for typ in HOOK_TYPEN:
+            if not (typen.get(typ) or []):
+                fehlend.append(f"{kat}/{typ}")
+    for typ in HOOK_TYPEN:
+        if not ((daten.get("allgemein") or {}).get(typ) or []):
+            fehlend.append(f"allgemein/{typ}")
+    assert fehlend == [], f"ohne Fassung: {fehlend}"
+
+
+def test_hooks_streuen_ueber_das_sortiment():
+    """GEGENPROBE: Es darf nicht wieder ein Satz fuer alles sein.
+
+    Vorher gab es je Typ genau eine Vorlage — 40 Produkte, 6 Formulierungen,
+    jedes Video startete mit demselben Halbsatz.
+    """
+    alle = products.alle()
+    texte = {h["text"]
+             for p in alle
+             for h in brief_generator._hooks_aus_vorlagen(p, p.name)}
+    assert len(texte) >= 40, \
+        f"nur {len(texte)} verschiedene Formulierungen fuer {len(alle)} Produkte"
+
+
+def test_derselbe_fall_ergibt_denselben_hook():
+    """Ein Rendern muss wiederholbar bleiben — sonst ist nichts vergleichbar."""
+    produkt = products.alle()[0]
+    a = brief_generator._hooks_aus_vorlagen(produkt, "testtrend")
+    b = brief_generator._hooks_aus_vorlagen(produkt, "testtrend")
+    assert [h["text"] for h in a] == [h["text"] for h in b]
+
+
+def test_alle_hooks_gehen_durch_die_rechtspruefung():
+    """Der Pflichttest: Ein Aufhaenger, der blockiert wird, ist wertlos."""
+    for produkt in products.alle():
+        for hook in brief_generator._hooks_aus_vorlagen(produkt, produkt.name):
+            befund = compliance.pruefe(
+                _brief(skript=hook["text"], hook_varianten=[hook]),
+                produkt=produkt, stil="A")
+            assert not befund.blockiert, \
+                f"Hook '{hook['text']}' ({produkt.name}) blockiert: {befund.gruende}"
+
+
+# ══════════════════════════════════════════════════════════════════════
 # 4. Ein Thema, ein Briefing — nicht eins je Messung
 # ══════════════════════════════════════════════════════════════════════
 #

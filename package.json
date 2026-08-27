@@ -16,7 +16,14 @@
     "format:check": "prettier --check .",
     "marketing:local": "node Marketing/run-local.js",
     "marketing:once": "node Marketing/run-local.js --once",
-    "marketing:status": "node Marketing/run-local.js --status"
+    "marketing:status": "node Marketing/run-local.js --status",
+    "tiktok": "node bot/tiktok-video-sync.js --interaktiv",
+    "tiktok:status": "node bot/tiktok-video-sync.js --status",
+    "tiktok:finden": "node bot/tiktok-video-sync.js --fund",
+    "tiktok:probe": "node bot/tiktok-video-sync.js",
+    "tiktok:laden": "node bot/tiktok-video-sync.js --laden",
+    "tiktok:aufraeumen": "node bot/tiktok-video-sync.js --aufraeumen",
+    "tiktok:ordner": "node bot/tiktok-video-sync.js --ordner"
   },
   "dependencies": {
     "axios": "^1.13.2",

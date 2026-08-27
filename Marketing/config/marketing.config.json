@@ -94,6 +94,8 @@
     "_hinweis_hook": "Der gesprochene Hook allein reicht nicht: Ein grosser Teil schaut ohne Ton. Deshalb steht der Hook zusaetzlich als Text im Bild, ab Bild eins.",
     "hook_overlay": true,
     "hook_overlay_sek": 2.5,
+    "_hinweis_stock_clips": "Wie viele lizenzierte Stockclips als Zwischenschnitt dazukommen, wenn es KEIN eigenes Produktvideo gibt. Sie zeigen nie das Produkt, nur Stimmung — deshalb bewusst hoechstens zwei, damit das Produkt die Mehrheit der Einstellungen behaelt. 0 schaltet sie ab. Braucht PEXELS_API_KEY; ohne Schluessel passiert nichts.",
+    "stock_clips_max": 2,
     "stil_mix": { "A": 0.7, "B": 0.3 }
   },
 

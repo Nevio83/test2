@@ -1,0 +1,185 @@
+{
+  "_hinweis": "Aufhaenger fuer die ersten anderthalb Sekunden. Diese Datei ist der Ersatz fuer ein Sprachmodell: Ohne ANTHROPIC_API_KEY oder OPENAI_API_KEY baut brief_generator.py die Hooks hieraus. Je Kategorie und Hook-Typ mehrere Fassungen; welche genommen wird, entscheidet eine Saat aus Produkt und Trend — gleicher Fall, gleicher Hook, aber ueber die Produkte gestreut.",
+
+  "_regeln": "Alles hier muss brand_voice.md standhalten: Du-Form, kurze Saetze, keine Superlative, keine Anglizismen-Werbesprache, keine vorgetaeuschte Knappheit. ZWEI HARTE REGELN: (1) Ein Hook darf nichts ueber das Produkt BEHAUPTEN, was nicht geprueft ist — keine Akkulaufzeit, keine Wirkung, keine Materialangabe. Er beschreibt die Situation des Zuschauers. (2) Ein Hook muss fuer JEDES Produkt seiner Kategorie passen. 'Dein Schreibtisch sieht aus wie ein Kabelfriedhof' ist fuer einen Kabelhalter gut und fuer einen Wasserspender Unsinn — genau das ist beim ersten Entwurf passiert.",
+
+  "_umlaute": "In den Hook-Texten stehen ECHTE Umlaute. Die ae/oe/ue-Schreibweise gilt nur fuer Kommentare im Code (Konsolen-Zeichensatz) — diese Texte werden ins Video gebrannt und muessen richtig aussehen.",
+
+  "_platzhalter": {
+    "{name}": "Produktname, unveraendert aus products.json",
+    "{preis}": "Verkaufspreis mit Euro-Zeichen, z.B. '18,99 €'"
+  },
+
+  "kategorien": {
+    "Beleuchtung": {
+      "frage": [
+        "Wie hell ist es bei dir abends eigentlich?",
+        "Zu hell zum Runterkommen, zu dunkel zum Lesen?",
+        "Wann hast du dein Licht zuletzt gedimmt?",
+        "Warum sieht dein Zimmer abends aus wie ein Büro?"
+      ],
+      "behauptung": [
+        "Das Licht macht den halben Raum.",
+        "Deckenlampe aus, das hier an. Mehr war es nicht.",
+        "Steht bei mir seit Wochen und bleibt da.",
+        "Licht ist das Einzige, was ich abends noch umstelle."
+      ],
+      "vorher_nachher": [
+        "Vorher: Deckenlampe. Jetzt: das hier.",
+        "Vorher Bürobeleuchtung, jetzt Feierabend.",
+        "Aus kaltweiß wurde warm. Kleiner Unterschied, große Wirkung."
+      ],
+      "zahl": [
+        "{preis} für besseres Licht am Abend.",
+        "{preis}. Einmal gekauft, jeden Abend an.",
+        "Für {preis} sieht der Raum abends anders aus."
+      ],
+      "pov": [
+        "POV: Es ist 22 Uhr und die Deckenlampe brennt noch.",
+        "POV: Du willst Licht, aber keinen Scheinwerfer.",
+        "POV: Dein Zimmer soll abends nicht nach Büro aussehen."
+      ],
+      "fehler": [
+        "Der häufigste Fehler beim Licht: zu hell und zu kalt.",
+        "Die meisten kaufen die Lampe nach dem Aussehen. Das Licht zählt.",
+        "Eine Deckenlampe für alles — das ist das Problem."
+      ]
+    },
+
+    "Haushalt und Küche": {
+      "frage": [
+        "Wie viel Zeit geht bei dir für Kleinkram drauf?",
+        "Was liegt bei dir in der Schublade und wird nie benutzt?",
+        "Wie viele Geräte hast du für eine Aufgabe?",
+        "Was nervt dich in der Küche jeden Tag ein bisschen?"
+      ],
+      "behauptung": [
+        "Steht bei mir auf der Arbeitsplatte und wird täglich benutzt.",
+        "Ein Handgriff weniger, jeden Tag.",
+        "Das hat bei mir zwei andere Sachen ersetzt.",
+        "Kommt bei mir nicht mehr in den Schrank zurück."
+      ],
+      "vorher_nachher": [
+        "Vorher: drei Teile. Jetzt: eins.",
+        "Vorher jeden Tag dasselbe Gefummel.",
+        "Vorher im Schrank, jetzt auf der Arbeitsplatte."
+      ],
+      "zahl": [
+        "{preis} — und die Schublade bleibt zu.",
+        "{preis}. Rechnet sich, wenn du es täglich nutzt.",
+        "Für {preis} sparst du dir jeden Tag zwei Handgriffe."
+      ],
+      "pov": [
+        "POV: Küche um sieben Uhr morgens.",
+        "POV: Du hast keine Lust auf Abwasch.",
+        "POV: Die Schublade geht schon wieder nicht zu."
+      ],
+      "fehler": [
+        "Der häufigste Fehler in der Küche: zu viele Geräte für eine Aufgabe.",
+        "Die meisten kaufen groß. Klein reicht meistens.",
+        "Gekauft, einmal benutzt, in die Schublade. Kennst du."
+      ]
+    },
+
+    "Körperpflege/Wellness": {
+      "frage": [
+        "Wie lange brauchst du dafür jeden Morgen?",
+        "Was machst du gerade nur, weil du es immer so gemacht hast?",
+        "Wie viele Sachen stehen bei dir vor dem Spiegel?"
+      ],
+      "behauptung": [
+        "Zwei Minuten am Tag, mehr ist es nicht.",
+        "Liegt bei mir neben dem Spiegel und wird auch benutzt.",
+        "Das ist kein Ritual, das ist ein Handgriff."
+      ],
+      "vorher_nachher": [
+        "Vorher umständlich, jetzt nebenbei.",
+        "Vorher drei Sachen, jetzt eine.",
+        "Vorher im Schrank, jetzt täglich in der Hand."
+      ],
+      "zahl": [
+        "{preis} für etwas, das du täglich in die Hand nimmst.",
+        "{preis}. Einmal, nicht monatlich.",
+        "Für {preis} bekommst du zwei Minuten am Morgen zurück."
+      ],
+      "pov": [
+        "POV: Dein Morgen dauert wieder zu lang.",
+        "POV: Du stehst vor dem Spiegel und hast keine Zeit.",
+        "POV: Halb sieben und du bist noch nicht fertig."
+      ],
+      "fehler": [
+        "Die meisten machen es zu kompliziert.",
+        "Der häufigste Fehler: zu viel auf einmal ändern.",
+        "Fünf Produkte für einen Handgriff — das ist das Problem."
+      ]
+    },
+
+    "Technik/Gadgets": {
+      "frage": [
+        "Was steht bei dir am Schreibtisch und wird nie benutzt?",
+        "Wie oft denkst du am Tag: das müsste einfacher gehen?",
+        "Was von deinem Zeug benutzt du eigentlich noch?",
+        "Wie oft nimmst du dafür das Handy in die Hand?"
+      ],
+      "behauptung": [
+        "Steht bei mir am Schreibtisch und fällt gar nicht mehr auf.",
+        "Macht eine Sache. Die aber zuverlässig.",
+        "Das hätte ich mir vor zwei Jahren kaufen sollen.",
+        "Einmal hingestellt, seitdem nicht mehr drüber nachgedacht."
+      ],
+      "vorher_nachher": [
+        "Vorher jedes Mal umständlich. Jetzt einmal drücken.",
+        "Vorher zwei Handgriffe, jetzt keiner.",
+        "Vorher Handy raus, jetzt läuft es von allein."
+      ],
+      "zahl": [
+        "{preis} und du denkst nicht mehr drüber nach.",
+        "{preis}. Günstiger als der Ärger.",
+        "Für {preis} erledigt sich das von selbst."
+      ],
+      "pov": [
+        "POV: Es muss schnell gehen und nichts ist zur Hand.",
+        "POV: Kleinigkeit, aber sie nervt dich jeden Tag.",
+        "POV: Du machst das seit Jahren umständlich."
+      ],
+      "fehler": [
+        "Der häufigste Fehler: das Billigste nehmen und zweimal kaufen.",
+        "Die meisten achten auf die Daten. Wichtig ist, ob du es benutzt.",
+        "Gekauft wegen zehn Funktionen, benutzt wird eine."
+      ]
+    }
+  },
+
+  "allgemein": {
+    "frage": [
+      "Wofür gibst du {preis} aus, wenn es einmal hält?",
+      "Was benutzt du wirklich jeden Tag?",
+      "Kennst du das, wenn Kleinigkeiten jeden Tag nerven?"
+    ],
+    "behauptung": [
+      "{name} macht eine Sache — die aber gut.",
+      "Das steht bei mir seit Wochen und geht nicht mehr weg.",
+      "Kein Zubehör, kein Aufbau. Auspacken und benutzen."
+    ],
+    "vorher_nachher": [
+      "Vorher umständlich. Jetzt nicht mehr.",
+      "Vorher zwei Handgriffe, jetzt einer.",
+      "Vorher im Schrank, jetzt täglich in Gebrauch."
+    ],
+    "zahl": [
+      "{preis}. Mehr kostet es nicht.",
+      "{preis} für etwas, das du täglich benutzt.",
+      "Einmal {preis}, kein Abo, keine Nachfüllpackung."
+    ],
+    "pov": [
+      "POV: Du hast das Problem endlich gelöst.",
+      "POV: Kleinigkeit, aber jeden Tag.",
+      "POV: Du hättest es dir früher kaufen sollen."
+    ],
+    "fehler": [
+      "Die meisten achten auf das Falsche.",
+      "Der häufigste Fehler: zweimal billig statt einmal richtig.",
+      "Gekauft, weil es günstig war. Benutzt: nie."
+    ]
+  }
+}

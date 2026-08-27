@@ -21,7 +21,9 @@ automatisch benutzt — der Code fragt bei jedem Aufruf nach.
 
 from __future__ import annotations
 
+import json
 import random
+from functools import lru_cache
 from typing import Any
 
 from .. import db, matcher, products
@@ -96,29 +98,69 @@ def waehle_stil() -> str:
 
 # ── Vorlagen-Weg (ohne Sprachmodell) ─────────────────────────────────
 
-def _hooks_aus_vorlagen(produkt: Produkt, trend: str) -> list[dict[str, str]]:
-    """Je Hook-Typ eine Variante. Bewusst nuechtern, siehe brand_voice.md.
+HOOK_DATEI = MARKETING_DIR / "config" / "hooks.json"
 
-    Diese Texte sind der Rueckfall, nicht das Ziel — aber sie muessen
-    veroeffentlichungsfaehig sein. Ein Rueckfall, den man nicht senden kann,
-    ist keiner.
+
+@lru_cache(maxsize=1)
+def _hook_vorlagen() -> dict[str, Any]:
+    """Aufhaenger aus config/hooks.json.
+
+    Fehlt die Datei, gibt es einen einzigen nuechternen Rueckfall — lieber
+    ein karger Hook als gar kein Video. Gemeldet wird es trotzdem.
     """
-    name = produkt.name
-    kategorie = produkt.kategorie.split("/")[0]
-    return [
-        {"typ": "frage",
-         "text": f"Kennst du das Problem, das {name.lower()} löst?"},
-        {"typ": "behauptung",
-         "text": f"{name} macht genau eine Sache — die aber gut."},
-        {"typ": "vorher_nachher",
-         "text": f"Vorher: umständlich. Nachher: {name.lower()}."},
-        {"typ": "zahl",
-         "text": f"{produkt.preis:.2f} € für etwas, das du täglich benutzt."},
-        {"typ": "pov",
-         "text": f"POV: Du hast dein {kategorie}-Problem endlich gelöst."},
-        {"typ": "fehler",
-         "text": f"Die meisten kaufen bei {kategorie} das Falsche."},
-    ]
+    try:
+        return json.loads(HOOK_DATEI.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError) as fehler:
+        print(f"[brief] hooks.json nicht lesbar ({fehler}) — karger Rueckfall")
+        return {}
+
+
+def _hooks_aus_vorlagen(produkt: Produkt, trend: str) -> list[dict[str, str]]:
+    """Je Hook-Typ eine Fassung, ausgewaehlt aus config/hooks.json.
+
+    WARUM DAS MEHR IST ALS EINE GROESSERE LISTE
+
+    Die erste Fassung hatte je Typ genau EINEN Satz, in den der Produktname
+    eingesetzt wurde. Ergebnis im echten Video:
+
+        "Kennst du das Problem, das led crystal lampe löst?"
+
+    Zwei Fehler auf einmal: Der Name steht kleingeschrieben mitten im Satz,
+    und der Satz sagt ueber das Produkt genau nichts. Bei 40 Produkten waere
+    jedes Video mit demselben Halbsatz gestartet — auf einer Plattform, auf
+    der die ersten anderthalb Sekunden ueber alles entscheiden.
+
+    Jetzt kommen die Aufhaenger aus einer Datei, getrennt nach Kategorie und
+    Typ, mit mehreren Fassungen je Kombination. Sie beschreiben die SITUATION
+    des Zuschauers statt das Produkt — das ist der Trick, mit dem man ohne
+    Sprachmodell auskommt: Ueber die Lage des Zuschauers laesst sich etwas
+    Wahres sagen, ohne das Produkt zu kennen.
+
+    Die Auswahl haengt an einer Saat aus Produkt und Trend: derselbe Fall
+    ergibt denselben Hook (ein Rendern bleibt wiederholbar), verschiedene
+    Produkte bekommen verschiedene.
+    """
+    vorlagen = _hook_vorlagen()
+    kategorien = vorlagen.get("kategorien") or {}
+    allgemein = vorlagen.get("allgemein") or {}
+    fuer_kategorie = kategorien.get(produkt.kategorie) or {}
+
+    preis = f"{produkt.preis:.2f} €".replace(".", ",")
+    saat = abs(hash((produkt.id, trend))) if trend else abs(hash(produkt.id))
+
+    hooks: list[dict[str, str]] = []
+    for typ in HOOK_TYPEN:
+        fassungen = fuer_kategorie.get(typ) or allgemein.get(typ) or []
+        if not fassungen:
+            # Letzter Rueckfall, wenn die Datei fehlt oder unvollstaendig ist.
+            text = f"{produkt.name} — {preis}."
+        else:
+            text = fassungen[saat % len(fassungen)]
+        hooks.append({
+            "typ": typ,
+            "text": text.replace("{name}", produkt.name).replace("{preis}", preis),
+        })
+    return hooks
 
 
 def _skript_aus_vorlagen(produkt: Produkt, hook: str, laenge: int) -> list[dict[str, Any]]:

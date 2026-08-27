@@ -3,7 +3,8 @@
 > Übergabe-Datei. Nach **jeder** Etappe aktualisieren. Ein Kontextverlust darf diese
 > Runde nicht zurückwerfen.
 
-**Stand:** 2026-08-15 · Etappen 1–10 abgeschlossen · 135 pytest-Tests grün · **Kette läuft vom Trend bis zum Lernen**
+**Stand:** 2026-08-18 · Etappen 1–14 abgeschlossen · 135 pytest-Tests grün · **Kette läuft vom Trend bis zum Lernen**
+· Etappe 14 (fremdes TikTok-Material) mit 29 eigenen Node-Tests, am laufenden TikTok nachgemessen
 
 ---
 
@@ -24,6 +25,7 @@
 | 11 | Admin-Dashboard + Server-Routen | ✅ fertig — **Fund: dasselbe Thema wurde bei jedem Lauf neu beworben** |
 | 12 | Actions-Workflow + `run-local.js` + README | ✅ fertig |
 | 13 | Trockenlauf + Abnahme §15 | ✅ fertig — **14 von 16 Punkten bestanden, 2 brauchen Zugangsdaten** |
+| 14 | Fremdes TikTok-Material als Recherche (`tiktok-video-sync.js`) | ✅ fertig — **Fund: yt-dlp kann bei TikTok gar nicht suchen** |
 
 ---
 
@@ -662,6 +664,179 @@ hintereinander stabil.
 **Gegenprobe:** alte Fassung wieder eingesetzt → **0,121** bei sechs Optionen und **0,072**
 bei zweien. Beides trifft die vorhergesagten Werte (0,125 und 0,075) und beide Tests wurden
 rot. Dazu ein neuer Test, der ausdrücklich den ungünstigsten Fall prüft — zwei Optionen.
+
+---
+
+## Etappe 14 — Fremdes TikTok-Material als Recherche
+
+`tiktok-video-sync.js` (Projektwurzel), `bot/tiktok-quellen.json`,
+`test/tiktok-video-sync.test.js` (29 Tests), `TIKTOK-VIDEO-SYNC.md`, vier npm-Skripte.
+
+**Nicht zu verwechseln mit dem Rest dieser Runde.** Der Automat rendert **eigene** Videos.
+Dieses Programm lädt **fremde** herunter — zum Anschauen, um zu sehen, was in einer
+Produktkategorie funktioniert. Es geht nicht in den Shop, nicht in `products.json` und in
+keine Veröffentlichung.
+
+| | eigene Videos | dieses Programm |
+|---|---|---|
+| Herkunft | selbst gerendert | fremde Creator |
+| Ablage | `Marketing/videos/` (versioniert) | `Marketing/data/tiktok-quellen/` (**gitignored**) |
+| Rechte | eigene | **fremde — ungeprüft** |
+| Aufräumen | `cleanup_assets` | von Hand |
+
+### Der Fund, der die ganze Bauform bestimmt hat
+
+**yt-dlp kann bei TikTok nicht suchen.** Das ist keine Vermutung, sondern aus
+`--list-extractors` der installierten Version 2026.07.04 abgelesen:
+
+```
+TikTok, tiktok:collection, tiktok:effect (CURRENTLY BROKEN), tiktok:live,
+tiktok:sound (CURRENTLY BROKEN), tiktok:tag (CURRENTLY BROKEN), tiktok:user, vm.tiktok
+```
+
+| Quelle | Stand |
+|---|---|
+| feste Video-URLs, Creator-Profile (`tiktok:user`) | ✅ nutzbar |
+| Hashtag-Seiten (`tiktok:tag`) | ❌ vorhanden, aber **upstream als kaputt markiert** |
+| Stichwortsuche | ❌ **kein Suchextractor in der Liste** |
+
+Deshalb ist das Finden **aus dem Programm herausgezogen**: Gesucht wird mit einer
+gewöhnlichen Websuche (TikTok-Videoseiten sind indexiert), und was dabei herauskommt, ist
+eine Liste von Adressen. Die prüft und sortiert `--fund`. Kein Scraper, keine Anmeldung,
+keine umgangene Sperre.
+
+### So läuft es Schritt für Schritt
+
+**Schritt 0 — einmalig: yt-dlp installieren.** Externes Programm, kein npm-Paket, genau wie
+ffmpeg.
+
+```bash
+py -m pip install --upgrade yt-dlp
+```
+
+Die `yt-dlp.exe` landet in einem Ordner, der **nicht im PATH** liegt. Kein Problem: Der Bot
+probiert `yt-dlp`, `yt-dlp.exe`, `py -m yt_dlp` und `python -m yt_dlp` der Reihe nach durch —
+dieselbe Bauform wie die Python-Suche in `run-local.js`. Fester Pfad über `YTDLP_PATH`.
+
+**Schritt 1 — nachsehen, was geht.** Läuft auch **ohne** installiertes yt-dlp durch und sagt
+dann, was fehlt.
+
+```bash
+npm run tiktok:status
+```
+
+**Schritt 2 — Adressen finden.** Im Browser oder per Suchmaschine nach Videos zu einem
+Produkt suchen und die URLs sammeln. Ergiebiger als Einzelvideos sind **Creator-Profile**:
+`tiktok:user` funktioniert, und ein Profil liefert auf einen Schlag viele Kandidaten.
+
+**Schritt 3 — Adressen prüfen und einsortieren.** Holt zu jeder URL die echten Metadaten
+(kein Download), misst sie gegen **alle 40 Produkte** und zeigt, welches am besten passt.
+
+```bash
+npm run tiktok:finden -- "https://www.tiktok.com/@handle/video/123"
+```
+
+Standard ist **Vorschau**. Erst `--schreiben` trägt die Treffer in `tiktok-quellen.json` ein:
+
+```bash
+npm run tiktok:finden -- --schreiben "https://www.tiktok.com/@handle/video/123"
+```
+
+*Eine URL, die niemand aufgerufen hat, ist eine Behauptung* — deshalb wird jede Adresse
+einmal wirklich abgefragt, bevor sie in die Konfiguration wandert.
+
+**Schritt 4 — Trockenlauf.** Sucht, bewertet, schreibt `pruefliste.json`. Lädt **nichts**.
+
+```bash
+npm run tiktok:probe
+```
+
+**Schritt 5 — laden.** Erst wenn die Prüfliste plausibel aussieht.
+
+```bash
+npm run tiktok:laden -- --max 2
+```
+
+**Schritt 6 — Rechte klären.** Jeder Eintrag in `index.json` startet auf
+`rechte_geprueft: false`. Das ist die einzige Stelle, an der steht, wem ein Video gehört.
+
+### Was du tun musst
+
+1. **yt-dlp installieren** (Schritt 0) — einmalig.
+2. **URLs beschaffen** — das kann das Programm nicht, siehe Fund oben. Ohne Einträge in
+   `tiktok-quellen.json` meldet jeder Lauf brav „keine nutzbare Quelle" und lädt nichts.
+3. **Prüfliste durchsehen**, bevor du lädst. Passen die Treffer nicht, gehören die
+   `stichworte` je Produkt geschärft — **nicht** die Schwelle gesenkt.
+4. **Rechte je Video klären**, bevor irgendetwas davon weiterverwendet wird.
+
+### Am echten System nachgemessen
+
+Zwei echte Videos geladen, gegen das laufende TikTok:
+
+```
+✅ 10 Elektrischer Wasserspender für Schreibtisch ← 1,75 MB (Trefferwert 0.667)
+✅ 28 Mini Muskel Massage Pistole                 ← 2,32 MB (Trefferwert 0.5)
+— geladen: 2 · Prueflíste: 0 · uebersprungen: 17 · yt-dlp-Aufrufe: 5
+```
+
+Zweiter Lauf mit identischem Aufruf: **0 Downloads**, beide über den Index übersprungen,
+Dateien unangetastet. Jeder Eintrag trägt Produkt-ID, Creator, Quell-URL, Zeitstempel,
+Größe, SHA-256, Trefferwert und `rechte_geprueft: false`.
+
+### 🔴 Drei echte Fehler, alle erst im Live-Betrieb sichtbar
+
+1. **Ein kaputter Extractor galt als vorhandene Fähigkeit.** Die erste Fassung prüfte nur, ob
+   „tag" im Extractor-Namen vorkommt, und meldete „Hashtag-Seiten: ja" für `tiktok:tag` —
+   den yt-dlp selbst als `CURRENTLY BROKEN` ausweist. Der Marker wird jetzt ausgewertet.
+   Folge sonst: statt einer klaren Meldung eine Fehlermeldung je Quelle.
+2. **„Smart Beamer" schnappte sich eine Küchenwaage.** Trefferwert 0.5 — im Videotext stand
+   „SmartKitchen", und „smart" ist die Hälfte von zwei Begriffen. Bei kurzen Produktnamen
+   reißt ein einzelnes Modewort die Schwelle. Seitdem müssen **zwei verschiedene** Begriffe
+   treffen; nur bei einem Produkt mit bloß einem Begriff zählt dieser eine.
+3. **Eine Regionssperre riss den ganzen Lauf um.** TikTok meldete „blocked from accessing
+   **this post**" für ein einzelnes Video — der Bot warf alles hin. Das ist keine
+   Ratenbegrenzung: Die anderen Videos derselben Sitzung liefen einwandfrei. Jetzt getrennt:
+   einzelnes gesperrtes Video → überspringen und vermerken; CAPTCHA/429/Anmeldezwang →
+   sofort Schluss. Weiterzumachen ist hier keine Umgehung — das gesperrte Video wird gerade
+   nicht geholt und auch nicht erneut versucht.
+
+### Gegenproben
+
+| Prüfung | Gegenprobe, die belegt, dass der Test rot gemeldet hätte |
+|---|---|
+| Trockenlauf lädt nichts | derselbe Fall mit `--laden` lädt sehr wohl |
+| unter der Schwelle wird nicht geladen | mit Schwelle 0 wird geladen (Kandidat, der **nur** an der Schwelle scheitert) |
+| indizierte URL wird übersprungen | bei leerem Index lädt derselbe zweite Lauf |
+| `Marketing/STOP` hält an | ohne die Datei läuft genau derselbe Aufruf durch |
+| kaputter Extractor zählt nicht | dieselbe Liste **ohne** den Marker → Fähigkeit ist da |
+| ein Modewort reicht nicht | genau dieser Wert (0.5) lag über der Standardschwelle |
+| einzelne Sperre stoppt nicht | ein 429 stoppt weiterhin sofort |
+
+Fehler 2 hat beim Beheben eine **bestehende Gegenprobe zu Recht rot gemacht**: Sie lud bei
+Schwelle 0 ein Katzenvideo, was die neue Regel verhindert. Sie wurde auf einen Kandidaten
+umgebaut, der ausschließlich an der Schwelle scheitert.
+
+### Zwei Fallen beim Ablegen
+
+**Der Ordner `Marketing/videos/` ist versioniert und das Repo öffentlich.** Wer fremdes
+Material dorthin kopiert, hat es beim nächsten `git add .` auf GitHub. Zwei Videos liegen
+dort inzwischen bewusst (zum Vergleich neben den eigenen Renderings) und sind über
+`.gitignore` abgesichert.
+
+**Umbenennen hebelt diese Absicherung aus.** Das Muster in `.gitignore` unterscheidet fremd
+von eigen **am Dateinamen**:
+
+```
+fremd  10_7410474104903453984.mp4              → nach dem Unterstrich: Ziffern
+eigen  01_nordic-crystal-lamp_20s_stil-a.mp4   → nach dem Unterstrich: Buchstaben
+```
+
+Werden die Fremdvideos auf das Render-Schema umgetauft
+(`07_elektrischer-wasserspender_14s_stil-b.mp4`), greift das Muster nicht mehr — sie standen
+prompt als neu im `git status`. Solche Dateien müssen **einzeln** in `.gitignore` stehen.
+Wer weiteres Fremdmaterial umbenennt, muss eine Zeile ergänzen. Und: Am Dateinamen ist die
+Herkunft dann nicht mehr zu sehen — `Marketing/data/tiktok-quellen/index.json` ist die
+einzige Stelle, die sie noch festhält.
 
 ---
 

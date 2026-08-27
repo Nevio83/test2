@@ -171,6 +171,10 @@
     color:var(--muted-2);white-space:nowrap;}
   .wirkung dd{margin:0;font-size:13.5px;line-height:1.55;color:var(--text);}
   .wirkung dd strong{color:var(--text);}
+  /* Eine Idee, die nach der Messung wieder rausflog — sie steht bewusst da,
+     denn eine verworfene Idee ist ein Ergebnis, kein Versaeumnis. */
+  .wirkung dt.verworfen{color:var(--muted);text-decoration:line-through;
+    text-decoration-thickness:1px;text-underline-offset:2px;white-space:normal;}
   .wirkung code{background:color-mix(in srgb, var(--muted-2) 16%, transparent);color:var(--text);
     padding:1px 5px;border-radius:4px;font-size:11.5px;font-family:ui-monospace,Consolas,monospace;}
   @media(max-width:640px){.wirkung dl{grid-template-columns:1fr;gap:3px;}
@@ -1898,6 +1902,400 @@
         </dl></div>
       </div>
 
+    </div>
+  </div>
+
+
+
+  <div class="section">
+    <div class="section-head">
+      <span class="section-label">TikTok-Rohmaterial — fremde Videos als Recherche</span>
+      <span class="section-rule"></span>
+    </div>
+    <p class="section-note">Nicht zu verwechseln mit dem Automaten darüber: <strong>Der baut eigene Videos. Dieser Teil lädt fremde herunter</strong> — zum Anschauen, um zu sehen, was in einer Produktkategorie funktioniert. Nichts davon geht in den Shop, nichts in die Produktliste, nichts in eine Veröffentlichung.</p>
+
+    <div class="pruef-banner">
+      <h3>⚙️ So läuft es Schritt für Schritt</h3>
+      <p><strong>1. Voraussetzung prüfen</strong> (<code>npm run tiktok:status</code>) → sucht das Hilfsprogramm <code>yt-dlp</code>, indem es <code>yt-dlp</code>, <code>yt-dlp.exe</code> und <code>py -m yt_dlp</code> der Reihe nach ausprobiert. Dann liest es aus dem Programm heraus, <em>was bei TikTok überhaupt geht</em>. Läuft auch dann durch, wenn nichts installiert ist — und sagt, was fehlt.<br>
+      <strong>1b. Bei Fehlern zuerst aktualisieren</strong> (<code>py -m pip install --upgrade yt-dlp</code>) → <em>die wichtigste Regel überhaupt.</em> TikTok ändert seine Seiten regelmäßig; ein veraltetes Hilfsprogramm scheitert dann an <strong>jeder</strong> Adresse und sieht aus wie eine Sperre. Genau darauf bin ich einmal hereingefallen — siehe Fehler 3 unten.<br>
+      <strong>2. Suchen — außerhalb</strong> → <em>Das ist der Knackpunkt:</em> <code>yt-dlp</code> hat für TikTok <strong>gar keine Stichwortsuche</strong>, und die Hashtag-Seiten sind vom Hersteller selbst als kaputt gekennzeichnet. Gesucht wird deshalb über eine ganz gewöhnliche Websuche. Heraus kommen einzelne Video-Adressen.<br>
+      <strong>3. Prüfen und zuordnen</strong> (<code>npm run tiktok:finden</code>) → holt zu jeder Adresse die echten Angaben (Titel, Beschreibung, Hashtags, Laufzeit) — <em>ohne</em> etwas herunterzuladen. Misst sie gegen <strong>alle 40 Produkte</strong> und vergibt einen Trefferwert zwischen 0 und 1. Standard ist eine Vorschau; erst mit <code>--schreiben</code> wird etwas eingetragen.<br>
+      <strong>4. Trockenlauf</strong> (<code>npm run tiktok:probe</code>) → bewertet alles und schreibt eine Prüfliste. <strong>Lädt nichts.</strong> Das ist der Standard — genau wie beim Automaten darüber.<br>
+      <strong>5. Herunterladen</strong> (<code>npm run tiktok:laden -- --max 2</code>) → erst jetzt, und nur bis zur angegebenen Obergrenze. Dazu feste Bremsen: höchstens 40 MB je Datei, 3 Sekunden Pause zwischen Anfragen, höchstens 60 Anfragen im ganzen Durchgang.<br>
+      <strong>6. Herkunft festhalten</strong> → zu jeder Datei werden Produkt, Urheber, Quell-Adresse, Zeitpunkt, Größe, Prüfsumme und Trefferwert gespeichert — dazu <code>rechte_geprueft: false</code>. Ein zweiter Durchgang überspringt alles, was schon in dieser Liste steht, und lädt es nicht noch einmal.<br>
+      <strong>7. Notaus</strong> → eine Datei namens <code>STOP</code> im Marketing-Ordner, oder <code>MARKETING_ENABLED=false</code>. Dann geht <em>kein einziger</em> Aufruf raus — nicht einmal die harmlose Abfrage aus Schritt 1.</p>
+    </div>
+
+    <div class="grid">
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🎛️</span>Ein Befehl, vier Fragen — <code>npm run tiktok</code></div>
+          <span class="badge badge-done">Gebaut &amp; live geprüft</span>
+        </div>
+        <p class="desc">Der geführte Ablauf. Du sagst, welches Produkt, wie viele Videos, welche Sprache und ob geredet werden darf — den Rest macht er allein. Jede Antwort ist <strong>eine Taste</strong>: 1 oder 2.</p>
+        <div class="wirkung"><dl>
+          <dt>So sieht es aus</dt><dd><code>Produktnummer? 10</code> → er nennt dir das Produkt zur Kontrolle → <code>Wie viele Videos? 1</code> → <code>Sprache? 1 = deutsch 2 = englisch</code> → <code>Ton? 1 = keine Sprache 2 = mit Sprache</code> → er sucht, prüft jede Adresse, überspringt was schon da ist, lädt bis zur gewünschten Zahl, <strong>hört jede geladene Datei ab</strong>, benennt auf <code>NN_&lt;slug&gt;_&lt;dauer&gt;s_stil-b.mp4</code> um, trägt jede Datei in <code>.gitignore</code> ein und schreibt den Herkunftsnachweis. <strong>Die drei Handgriffe, die vorher von Hand kamen, macht er selbst.</strong></dd>
+          <dt>Woher die Adressen kommen</dt><dd>Aus einer Suchmaschinen-API, weil yt-dlp bei TikTok nicht suchen kann. <strong>Tavily</strong> (1000 Abfragen im Monat, keine Kreditkarte) oder Brave (verlangt eine Karte). Ein Durchgang kostet <em>eine</em> Abfrage, egal wie viele Videos dabei herauskommen. Ohne Schlüssel läuft er trotzdem und nutzt die Adressen aus der Konfiguration — und sagt, was fehlt.</dd>
+          <dt>Wie „ohne Sprache" wirklich geprüft wird</dt><dd>Erst über die Tonspur (<code>original sound</code> = eigene Aufnahme, sonst lizenzierte Musik) — das ist aber nur ein Indiz und lag <strong>bei vier von sieben angeblichen Musikvideos falsch</strong>, weil Leute über den lizenzierten Titel reden. Deshalb wird jede geladene Datei zusätzlich <strong>abgehört</strong> (faster-whisper, kleinstes Modell, auf der CPU). Der Unterschied ist eindeutig: <em>geredet</em> 38–173 Wörter bei 71–99 % Redeanteil, <em>nur Ton</em> 0–1 Wort bei 0–5 %. Wird geredet, obwohl du „keine Sprache" gewählt hast, fliegt die Datei wieder weg. <strong>Der erkannte Text wird nirgends gespeichert — nur Kennzahlen.</strong></dd>
+          <dt>Deutsch heißt auch deutsch <em>gesprochen</em></dt><dd>Die Sprachwahl greift an <strong>drei</strong> Stellen: mit welchen Begriffen gesucht wird, in welcher Sprache der Untertitel steht — und seit zuletzt auch, <strong>was im Ton wirklich gesagt wird</strong>. Das war eine echte Lücke: Untertitel und Ansage sind zwei verschiedene Dinge, ein deutsch beschriftetes, englisch gesprochenes Video kam vorher als „deutsch" durch. Bei Stille nennt der Erkenner trotzdem eine Sprache — gemessen ausnahmslos „en", obwohl kein Wort fällt. Deshalb gilt seine Angabe erst ab einer Sicherheit von <strong>0,7</strong> als Sprache; gemessen liegt alles Geredete bei 0,977–0,998, alle Stille bei 0,258–0,580. Unterhalb steht im Nachweis <code>null</code> statt eines Ratewerts.</dd>
+        </dl></div>
+        <span class="built-note">✓ Live geprüft mit echter Suche und echten Downloads: „2 von 2 gewünschten Videos geladen" — umbenannt, geschützt, im Nachweis</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🧹</span>Aufräumen, ohne das Gedächtnis zu verlieren</div>
+          <span class="badge badge-done">Gebaut &amp; ausgeführt</span>
+        </div>
+        <p class="desc">Der Herkunftsnachweis enthielt Einträge zu Dateien, die längst gelöscht waren — <strong>26 von 36</strong>. Ein Eintrag ohne Datei weist nichts mehr nach, er fälscht nur die Zahl im Zustandsbericht.</p>
+        <div class="wirkung"><dl>
+          <dt>Der Befehl</dt><dd><code>npm run tiktok:aufraeumen</code> zeigt erst nur an, was ginge; geschrieben wird ausschließlich mit <code>-- --schreiben</code> — dieselbe Linie wie beim Laden, wo <code>--laden</code> nötig ist. Ein Herkunftsnachweis ist nichts, was ein Programm ungefragt kürzen sollte. Braucht <strong>kein yt-dlp</strong>.</dd>
+          <dt>Die Falle dabei</dt><dd>Der Index ist zugleich das Gedächtnis, welche Videos schon einmal da waren. Hätte man die Einträge einfach gelöscht, <strong>hätte der nächste Lauf exakt dieselben 26 Videos zurückgeholt</strong> — auch die, die du absichtlich weggeworfen hast. Ihre Kennungen bleiben deshalb in einer schmalen zweiten Liste (<code>frueher_geladen</code>) stehen: ohne Herkunftsangaben, denn es gibt keine Datei mehr, für die sie gälten. Übersprungen wird, was in <em>einer von beiden</em> Listen steht.</dd>
+        </dl></div>
+        <span class="built-note">✓ Ausgeführt: 36 → 11 Einträge mit Datei, 26 in <code>frueher_geladen</code>; ein Test bildet die alte Fassung nach und belegt, dass sie die Videos wiedergeholt hätte</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🎯</span>Genauer treffen — gemessen, nicht geschätzt</div>
+          <span class="badge badge-done">Gebaut &amp; nachgemessen</span>
+        </div>
+        <p class="desc">Grundlage sind <strong>36 echte Untertitel</strong> aus dem Herkunftsnachweis. Jede Änderung hat einen Messwert davor und danach — und eine Idee, die ich nach der Messung wieder verworfen habe.</p>
+        <div class="wirkung"><dl>
+          <dt>Hashtag-Untertitel sind jetzt entscheidbar</dt><dd>Fast jeder fünfte Untertitel (<strong>7 von 36</strong>) besteht nur aus Hashtags und enthält kein einziges Funktionswort. „Smart table water dispenser #tiktokshop" ist unübersehbar englisch, galt aber als <em>nicht entscheidbar</em> und flog raus. Als zweites Merkmal dient jetzt der <strong>zweisprachige Wortschatz des Produkts</strong>: Aus den Suchbegriffen wird behalten, was nur in <em>einer</em> Liste steht — <code>wasserspender</code> verrät Deutsch, <code>dispenser</code> Englisch, <code>smart</code> und <code>gadget</code> verraten nichts. Gemessen: <strong>7 → 1</strong> unentscheidbar, und <strong>kein einziger</strong> Untertitel wird dabei anders eingeordnet, denn das Merkmal greift nur bei Gleichstand. Die Hürde bleibt gleich hoch, sie hat nur eine zweite Quelle.</dd>
+          <dt>Kurz und lang wird unterschieden</dt><dd><code>dispenser</code> darf im Wort stehen (trifft <code>#waterdispenser</code>), <code>jug</code> muss ein ganzes Wort sein — sonst fände es jedes „juggling". Erst dadurch lassen sich gängige kurze Bezeichnungen überhaupt eintragen; bei Produkt 10 kamen <code>jug</code>, <code>gallon</code>, <code>kanister</code>, <code>hydration</code> und sieben weitere dazu.</dd>
+          <dt>Tierprodukte fliegen zuverlässiger raus</dt><dd>„<code>#petpeer #wasserspender</code>" und „Immer frisches Wasser für die <strong>Fellnasen</strong>" kamen beide durch. Die Ausschlussliste wuchs von 11 auf 28 Wörter. Bewusst <em>ohne</em> Kurzformen: Verglichen wird als Wortanfang, <code>pet</code> träfe „Peter" und „petite", <code>cat</code> jede „Kategorie".</dd>
+          <dt>Derselbe Clip landet nur noch einmal da</dt><dd>Ein gut laufendes Video wird von anderen Konten neu hochgeladen — andere Adresse, andere ID, dieselbe Datei. Im Nachweis lagen zwei bitgleiche Paare. Jetzt wird nach dem Laden die <strong>Prüfsumme</strong> verglichen und die Dublette wieder entfernt.</dd>
+          <dt>Ein Umlaut an der Blockgrenze</dt><dd>Node reicht die Ausgabe eines Programms blockweise herein, und die Grenze fällt irgendwohin — auch mitten in ein Zeichen. „ü" sind zwei Bytes; getrennt gelesen wird daraus Zeichenmüll. <strong>Auffallen würde es nirgends</strong> — es stünde nur Unsinn im Untertitel, und Sprache, Kernwort und Bewertung griffen alle daneben, ausgerechnet bei den <em>deutschen</em> Videos, denn nur die haben Umlaute. Jetzt werden erst die Bytes zusammengelegt und dann einmal am Stück gelesen.</dd>
+          <dt class="verworfen">Verworfen: den Creator-Namen mitprüfen</dt><dd>Klang naheliegend — Konten heißen <code>desktopwaterdispenser</code> oder <code>deskdispenser</code>. Gemessen an denselben 36: Der Name rettet <strong>0 von 16</strong> Videos, die am Kernwort scheitern, bringt aber neue Fehlgriffe mit (<code>edelholz_manufaktur</code> ist eine Tischlerei). <strong>Nicht eingebaut.</strong> Auch die vermutete Dublette bei den Suchadressen gab es nicht: 39 Adressen, 0 doppelte.</dd>
+        </dl></div>
+        <span class="built-note">✓ 277 Tests grün, davon 18 neue mit Gegenprobe · Live-Lauf: 11 Adressen geprüft, 2 geladen, beide belegt ohne Sprache</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🔬</span>Ist es wirklich <em>dieses</em> Gerät?</div>
+          <span class="badge badge-done">Gebaut &amp; live geprüft</span>
+        </div>
+        <p class="desc">Das Kernwort sagt nur: „hier geht es um einen Wasserspender". Davon gibt es Standgeräte fürs Büro, Kühlschrankspender, Filterkannen und Katzenbrunnen. Eine <strong>zweite, unabhängige Prüfung direkt vor dem Laden</strong> beantwortet die andere Hälfte der Frage.</p>
+        <div class="wirkung"><dl>
+          <dt>Woher die Merkmale kommen</dt><dd>Aus der Produktbeschreibung in <code>products.json</code>, nicht aus einer Vermutung: „<em>Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.</em>" Daraus vier Gruppen — sitzt auf einer <strong>Flasche/Gallone/Kanister</strong>, hat einen <strong>Akku/USB</strong>, <strong>pumpt elektrisch</strong>, steht auf einem <strong>Schreibtisch/Nachttisch</strong>. 40 Wörter insgesamt.</dd>
+          <dt>Warum ein Merkmal genügt</dt><dd>Untertitel sind kurz; zwei zu verlangen hieße, fast alles abzulehnen. Die Härte kommt daher, dass diese Prüfung <em>zusätzlich</em> zu Kernwort, Ausschlussliste und Trefferwert kommt — nicht daraus, dass eine einzelne Hürde unmöglich zu nehmen wäre. Fehlt die Liste (39 der 40 Produkte), greift die Prüfung nicht: Ein leeres Feld darf nicht dazu führen, dass lautlos gar nichts mehr durchkommt.</dd>
+          <dt>Im Nachweis steht das Warum</dt><dd>Nicht nur <em>dass</em> zugeordnet wurde, sondern <em>warum</em>: <code>"merkmale": ["akku","flasche","gallone"]</code>. Der Trefferwert allein stünde auch unter einem Standgerät.</dd>
+          <dt>Was der Live-Lauf zeigte</dt><dd>Die Prüfung warf unter anderem raus: „Catch our special flash sale deals tomorrow" (Verkaufsankündigung) und „Time to ditch my big bulky water dispenser" — <strong>das Gegenteil</strong> des Produkts, jemand schafft ein Standgerät ab. Beide hatten Kernwort und Trefferwert.</dd>
+        </dl></div>
+        <span class="built-note">✓ Produkt 10: 48 Suchbegriffe (24 de + 24 en), 40 Merkmale, 36 eigene Ausschlusswörter</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🎧</span>Er sucht jetzt weiter, bis die Zahl steht</div>
+          <span class="badge badge-done">Gebaut &amp; live geprüft</span>
+        </div>
+        <p class="desc">Vorher liefen alle Suchbegriffe vorweg durch, dann wurde die Sammlung abgearbeitet — war sie zu dünn, endete der Lauf eben mit „1 von 3 geladen". Mit den strengeren Prüfungen wäre das der Normalfall geworden.</p>
+        <div class="wirkung"><dl>
+          <dt>Nachlegen statt vorab sammeln</dt><dd>Suchbegriffe gehen <strong>einer nach dem anderen</strong> raus — der nächste erst, wenn die Warteschlange leer und die Zahl noch nicht erreicht ist. Das spart nebenbei Abfragen: Bei 48 hinterlegten Begriffen wären 48 Anfragen im Voraus reine Verschwendung, wenn die erste schon reicht (Kontingent: 1000 im Monat).</dd>
+          <dt>Die Tonspur bestimmt nur noch die Reihenfolge</dt><dd><code>original sound</code> heißt bloß: eigene Aufnahme statt lizenzierter Titel. Ein <strong>Indiz</strong> — nachgemessen bei <strong>vier von sieben</strong> falsch. Als hartes Urteil war es teuer: Im Live-Lauf fielen daran <strong>34 von 50</strong> Kandidaten. Jetzt werden sie <em>zurückgestellt</em>; reicht der Rest nicht, kommt eine <strong>zweite Runde</strong>, in der sie geladen und abgehört werden. Dann entscheidet der Ton, nicht das Feld.</dd>
+          <dt>Das Ergebnis, gemessen</dt><dd>Lauf über drei Videos: 34 zurückgestellt, in der zweiten Runde 9 wegen echtem Gerede verworfen (71–310 Wörter) — und <strong>alle drei geladenen Videos hatten <code>original sound</code></strong>. Mit dem alten Filter wäre derselbe Lauf bei <strong>0 von 3</strong> geendet. Ergebnis: <strong>3 von 3</strong>, 50 Adressen geprüft, 24 von 24 Begriffen gebraucht.</dd>
+          <dt>Die Ausnahme, die die Lockerung trägt</dt><dd>Fällt das Abhören aus (Python fehlt, Datei unlesbar), gilt die Tonspur <strong>wieder als Urteil</strong> und das Video bleibt draußen. Die Lockerung existiert nur, <em>weil</em> abgehört wird — ohne Abhören wäre sie im Fehlerfall eine Verschlechterung. Ein Test bildet genau diesen Fall nach.</dd>
+          <dt>Am Ende steht, warum Schluss war</dt><dd>Statt eines wortlosen „1 von 3": „alle Suchbegriffe abgearbeitet", „Obergrenze von 60 Anfragen erreicht" oder „Suche nicht möglich: kein Schlüssel". Die Obergrenzen selbst bleiben unverändert.</dd>
+        </dl></div>
+        <span class="built-note">✓ 287 Tests grün, davon 10 neue mit Gegenprobe · live: 3 von 3 geladen, alle drei belegt ohne Sprache</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🔎</span>Der eigentliche Engpass saß in der Suche</div>
+          <span class="badge badge-done">Gemessen &amp; behoben</span>
+        </div>
+        <p class="desc">Ein Lauf über drei Videos brauchte <strong>alle 24 Suchbegriffe</strong>. Der Grund lag nicht bei den Filtern — die Suche lieferte schlicht kaum Videos.</p>
+        <div class="wirkung"><dl>
+          <dt>Was die Suche wirklich findet</dt><dd>Von <strong>94 Treffern</strong> aus sechs Anfragen waren ganze <strong>sechs</strong> Videoadressen. 53 waren <code>/discover/</code>-Seiten — TikToks eigene Themenseiten — und 33 Shop-Seiten. Creator-Profile: null. Die Suchmaschine findet fast nur Seiten <em>über</em> das Thema, kaum einzelne Videos.</dd>
+          <dt>Wo die Videos stattdessen stehen</dt><dd>Auf genau diesen Themenseiten. Die Such-API liefert den <strong>Seitentext</strong> auf Wunsch gleich mit — sie hat die Seite ohnehin abgerufen. Daraus werden die Adressen gelesen. Dieselben vier Suchbegriffe: <strong>5 Adressen vorher, 413 nachher</strong>, davon 404 noch nie geladen. Es bleibt <em>eine</em> Anfrage je Begriff.</dd>
+          <dt class="verworfen">Verworfen: die Seite selbst abrufen</dt><dd>Ausprobiert. TikTok antwortet einem eigenen Abruf mit 385 000 Zeichen Prüfseite und <strong>null</strong> Videoadressen. Das zu umgehen verbietet die Aufgabenstellung ausdrücklich — und es wäre ohnehin aussichtslos. Ebenso geprüft, ob yt-dlp die Themenseiten öffnen kann: <code>/discover/</code> → <em>Unsupported URL</em>, <code>/tag/</code> → <em>No working app info</em>, <code>/@handle</code> → <em>Failed to parse JSON</em>. Alle drei mit der aktuellen Fassung.</dd>
+          <dt>Reihenfolge wurde dadurch wichtig</dt><dd>Die Trefferadressen sind von der Suchmaschine <em>sortiert</em>, die aus dem Seitentext stehen in zufälliger Seitenreihenfolge. Da eine Anfrage über 200 Adressen liefern kann und die Obergrenze bei 60 Abrufen liegt, entscheidet die Reihenfolge, <strong>welche 60</strong> geprüft werden. Erst die sortierten, dann die Masse — festgeschrieben und mit einem Test gesichert.</dd>
+        </dl></div>
+        <span class="built-note">✓ Gemessen durch die echte Bot-Funktion: 4 Anfragen → 5 Adressen vorher, 413 nachher</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">⏸️</span>Die Pause, die nie stattfand</div>
+          <span class="badge badge-done">Gefunden &amp; behoben</span>
+        </div>
+        <p class="desc">Beim Messen bin ich selbst in TikToks Ratenbegrenzung gefahren. Die Ursachensuche förderte zwei echte Fehler zutage.</p>
+        <div class="wirkung"><dl>
+          <dt>Die Pause stand da, wirkte aber nicht</dt><dd><code>pause_zwischen_anfragen_sek: 3</code> wurde als <code>--sleep-requests</code> weitergereicht — das bremst nur <em>innerhalb</em> eines yt-dlp-Aufrufs. Jeder Abruf ist aber ein eigener Prozess mit genau einer Adresse; zwischen zwei Abrufen lag <strong>nichts</strong>. Nach rund 50 Abrufen ohne Pause beantwortete TikTok auch eine Adresse nicht mehr, die eine Stunde vorher noch funktionierte. Ein Lauf, der in die Ratenbegrenzung fährt, bringt gar nichts mehr — die Pause ist nicht bloß Anstand, sie ist der günstigere Weg.</dd>
+          <dt>Und der Bot merkte es nicht</dt><dd>Die Meldung lautet <code>Unexpected response from webpage request</code> und passt in <strong>kein</strong> Sperrmuster (<code>captcha</code>, <code>429</code>, <code>rate limit</code>) — sie sieht aus wie ein gewöhnlicher Einzelfehler. Der Lauf hätte alle Adressen einzeln durchprobiert und jedes Mal dieselbe Antwort bekommen; jeder Versuch verlängert eine Ratenbegrenzung eher, als sie zu lösen.</dd>
+          <dt>Erkannt am Muster, nicht am Wortlaut</dt><dd>Ein einzelner Fehlschlag heißt „dieses Video gibt es nicht mehr". <strong>Fünf hintereinander ohne einen einzigen Erfolg</strong> heißen: Die Gegenseite redet nicht mehr mit uns. Dann hört der Lauf auf und sagt warum — samt der zwei möglichen Ursachen in der richtigen Reihenfolge. <strong>Live bestätigt:</strong> 217 Adressen in der Warteschlange, nach 5 Fehlschlägen war Schluss.</dd>
+        </dl></div>
+        <span class="built-note">✓ 294 Tests grün · Abbruch live bestätigt · Herunterladen noch offen, solange TikTok nicht antwortet</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">📚</span>Alle 40 Produkte, nicht nur das eine</div>
+          <span class="badge badge-done">Gebaut &amp; selbstprüfend</span>
+        </div>
+        <p class="desc">Merkmale und produkteigene Ausschlusswörter gab es bisher nur für den Wasserspender. Jetzt für alle — und alle Wörter stammen aus Name, Kategorie und Beschreibung in <code>products.json</code>, keines ist erfunden.</p>
+        <div class="wirkung"><dl>
+          <dt>Was jetzt hinterlegt ist</dt><dd><strong>984</strong> Suchbegriffe (zweisprachig, ~24 je Produkt), <strong>403</strong> Kernwörter, <strong>820</strong> Merkmale und <strong>552</strong> produkteigene Ausschlusswörter. Vorher: 640 Begriffe, 190 Kernwörter, 40 Merkmale für ein einziges Produkt.</dd>
+          <dt>Das prüft sich selbst — 212 echte Fehler gefunden</dt><dd>Diese Menge kann niemand mehr von Hand überblicken. Drei Prüfungen liefen beim Anlegen und laufen als Tests weiter. <strong>210</strong> Suchbegriffe benannten das Produkt gar nicht — aus jedem Begriff wird auch eine Prüfgruppe, und „tiktok made me buy it" hätte jedem Einkaufsvideo Punkte gegeben.</dd>
+          <dt>Die gefährlichste Prüfung</dt><dd>Kein Ausschlusswort darf ein <em>eigenes</em> Wort treffen. Verglichen wird als Wortanfang — <code>gun</code> als Ausschluss für die Massagepistole hätte das englische „massage gun" ausgeschlossen und das Produkt <strong>unauffindbar</strong> gemacht, ohne dass irgendwo ein Fehler erschiene. Ich habe den Fehler zur Kontrolle echt eingebaut: Test rot, Wort entfernt, Test grün.</dd>
+          <dt>Und die schärfste</dt><dd>Jedes Produkt muss <strong>seinen eigenen Text erkennen</strong> — Name plus Beschreibung sind der ehrlichste denkbare Untertitel dafür. Zwei fielen durch: Bei „Mini Muskel <em>Massage Pistole</em>" und „<em>Aroma-Pads</em>" schreibt der deutsche Name das Produkt getrennt, meine Kernwörter waren zusammengeschrieben. Beide hätten ihren eigenen Namen nicht erkannt. Jetzt: <strong>40 von 40</strong>.</dd>
+          <dt>Getrennt und zusammen</dt><dd><code>massage gun</code> trifft „mini massage gun", <code>massagegun</code> trifft „#massagegun" — es braucht beides. Mehrwortige Einträge verlangen, dass die Wörter nebeneinander stehen; deshalb wurden fünf Suchbegriffe umgestellt („solar fence lights" → „solar lights fence"), statt die Hürde zu senken.</dd>
+        </dl></div>
+        <span class="built-note">✓ 300 Tests, 294 grün, 0 rot · 40 von 40 Produkten erkennen ihren eigenen Text</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🔑</span>Es war nie eine Sperre — es fehlte ein Paket</div>
+          <span class="badge badge-done">Gefunden &amp; behoben</span>
+        </div>
+        <p class="desc">Tagelang scheiterte jeder Abruf mit <code>Unexpected response from webpage request</code>. Ich habe das zweimal falsch gedeutet, bevor die richtige Ursache dastand.</p>
+        <div class="wirkung"><dl>
+          <dt>Was wirklich fehlte</dt><dd>Das Python-Paket <code>curl_cffi</code>. TikTok liefert die Videoseite nur brauchbar aus, wenn die Verbindung wie die eines gewöhnlichen Browsers aussieht — ohne dieses Paket kann yt-dlp die Antwort nicht einmal lesen. <strong>Einmal <code>py -m pip install curl_cffi</code>, und dieselbe Adresse, die stundenlang scheiterte, liefert sofort Daten.</strong></dd>
+          <dt class="verworfen">Verworfen: Ratenbegrenzung</dt><dd>Klang plausibel, weil die Fehler auf viele Testabrufe folgten. Widerlegt: Eine Adresse, die eine Stunde vorher noch funktionierte, scheiterte auch nach Stunden Pause genauso.</dd>
+          <dt class="verworfen">Verworfen: veraltetes yt-dlp</dt><dd>Die installierte 2026.08.19 <em>war</em> die neueste stabile Fassung. Widerlegt durch die Nightly vom selben Tag, isoliert in einem Testordner installiert: exakt derselbe Fehler.</dd>
+          <dt>Der Hinweis stand die ganze Zeit da</dt><dd>yt-dlp meldet <em>„attempting impersonation, but no impersonate target is available"</em> — aber nur als <strong>Warnung neben dem Fehler</strong>, und der Bot setzt <code>--no-warnings</code>, damit die Ausgabe lesbar bleibt. Genau dadurch war der entscheidende Satz unsichtbar.</dd>
+          <dt>Jetzt wird gefragt statt geraten</dt><dd><code>npm run tiktok:status</code> zeigt eine Zeile <strong>Browser-Kennung</strong> (aktuell: 38 Ziele verfügbar). Der geführte Lauf prüft es <strong>vor dem ersten Abruf</strong> und bricht mit dem Installationsbefehl ab, statt fünf Anfragen ins Leere zu schicken. Die Ursachenliste im Abbruch nennt jetzt die häufigste zuerst.</dd>
+        </dl></div>
+        <span class="built-note">✓ Live: 5 von 5 geladen — der erste vollständige Durchlauf seit Tagen</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">⚖️</span>Drei Fehler, die erst der echte Lauf zeigte</div>
+          <span class="badge badge-done">Gefunden &amp; behoben</span>
+        </div>
+        <p class="desc">Sobald wieder geladen wurde, kamen drei Probleme zum Vorschein, die kein Test hätte finden können — sie entstehen erst aus dem Zusammenspiel im Betrieb.</p>
+        <div class="wirkung"><dl>
+          <dt>Zwei von fünf waren das falsche Gerät</dt><dd>Ein Standgerät („Fujidenzo <strong>Bottom Load</strong>") und eine fest verbaute Anlage („<strong>water filter</strong> dispenser system") kamen durch — beide mit nur <em>einem</em> allgemeinen Merkmal (<code>pump</code>, <code>gallon</code>). Ausschlusswörter treffen jetzt auch als <strong>Wendung</strong>: <code>bottom</code> allein auszuschließen wäre unbrauchbar, <code>bottom load</code> trennt sauber. Beide Dateien habe ich entfernt.</dd>
+          <dt>Ein Suchbegriff fraß das ganze Budget</dt><dd>Seit die Adressen aus dem Seitentext kommen, liefert eine Anfrage über 200 Stück. Ungebremst rannte der Lauf in die 60er-Grenze und kam nie zu Begriff 2: <em>„0 von 3 geladen, 60 Adressen geprüft, 1 von 24 Suchbegriffen gebraucht."</em> Jetzt nimmt jeder Begriff nur sein Kontingent (20), der Rest wandert in eine Reserve.</dd>
+          <dt>Die Obergrenze würgte Geprüftes ab</dt><dd>Sie zählt <em>Abrufe</em> bei TikTok — zurückgestellte Kandidaten brauchen keinen einzigen mehr, ihre Angaben liegen vor. Ein Lauf endete mit „2 von 3", während <strong>39 fertig geprüfte Kandidaten</strong> unangetastet in der zweiten Reihe standen.</dd>
+          <dt>Das Ergebnis, gemessen</dt><dd>Vorher: 0 von 3 bei 60 geprüften Adressen. Nach dem Kontingent: 2 von 3 bei 60. Nach der Ausnahme für Geprüftes: <strong>3 von 3 bei nur 20 geprüften Adressen</strong> — und alle drei belegt das richtige Gerät (<code>desk/office/portable</code>, zweimal <code>nightstand</code>) und ohne Sprache.</dd>
+        </dl></div>
+        <span class="built-note">✓ 306 Tests, 300 grün, 0 rot · jeder der drei Fehler hat einen eigenen Test mit Gegenprobe</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🎯</span>Die Prüfung vor dem Laden, an echten Texten geschärft</div>
+          <span class="badge badge-done">Gemessen &amp; behoben</span>
+        </div>
+        <p class="desc">Statt eine neue Regel zu erfinden, habe ich <strong>80 echte Untertitel</strong> zusammengetragen — aus dem Herkunftsnachweis und allen Laufprotokollen — und nachgesehen, was die Prüfung damit macht. Vier Fehlgriffe, vier verschiedene Ursachen.</p>
+        <div class="wirkung"><dl>
+          <dt>Behälter ist nicht Gerät</dt><dd><code>jug</code> und <code>carafe</code> standen als <em>Kernwörter</em>, weil das Gerät auf einem Kanister sitzt. Damit kamen zwei Videos durch, die schlicht ein Gefäß zeigen: „I use a smaller <strong>jug</strong>" und „<strong>Bedside carafe and cup set</strong>". Beide sind jetzt <em>Merkmale</em> — dort gehören sie hin. Ein Kernwort benennt das Gerät, kein Gefäß und keinen Ort.</dd>
+          <dt>Verneinungen entwerten den Treffer</dt><dd>„Genius DIY Water Dispenser – <strong>No Electricity</strong> Needed" wurde angenommen, weil das Merkmal <code>elektrisch</code> im Wort „Electricity" steckt — in einem Satz, der wörtlich das Gegenteil sagt. Steht ein verneinendes Wort direkt davor, zählt der Treffer nicht. <strong>Bewusst nur ein Wort Abstand:</strong> In „<em>No</em> More Heavy Water Bottles! <em>USB</em> Rechargeable Pump" liegen vier Wörter dazwischen — und das ist genau das Produkt.</dd>
+          <dt>Einzahl und Mehrzahl</dt><dd><code>pets</code> stand in der Ausschlussliste, der Untertitel schrieb „portable <strong>pet dispenser</strong>". Als Wendung eindeutig auszuschließen — als Wortanfang wäre <code>pet</code> unbrauchbar („Peter", „petite").</dd>
+          <dt>Das Ergebnis</dt><dd>Angenommen vorher <strong>22, davon 4 falsch</strong>. Nachher <strong>18, davon 0 falsch</strong> — und <em>kein einziger richtiger Treffer</em> ging verloren. Die vier Ausfälle waren genau die vier Fehlgriffe.</dd>
+          <dt>Und es bleibt messbar</dt><dd>Die echten Untertitel stehen jetzt im Testlauf: vier Tests mit dem tatsächlichen Wortlaut, dazu die Gegenproben. Wer die Prüfung künftig ändert, sieht sofort, ob sie das eigene Produkt noch erkennt oder ob ein Fehlgriff zurückkehrt. Ausgedachte Beispiele bestätigen nur die Regel, die man gerade geschrieben hat.</dd>
+        </dl></div>
+        <span class="built-note">✓ 310 Tests, 304 grün, 0 rot · 40 von 40 Produkten erkennen weiterhin ihren eigenen Text</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">📁</span>Je Produkt ein Ordner — und eine Regel statt 24</div>
+          <span class="badge badge-done">Gebaut &amp; umgezogen</span>
+        </div>
+        <p class="desc">Flach in einem Ordner war es ab etwa zwanzig Dateien unbrauchbar: Alles hieß gleich, und welches Video zu welchem Produkt gehörte, stand nur im Dateinamen.</p>
+        <div class="wirkung"><dl>
+          <dt>Die neue Ablage</dt><dd><code>Marketing/videos/rohmaterial/&lt;NN&gt;_&lt;slug&gt;/</code> — die Nummer sortiert, der Slug sagt was drin ist. Die laufende Nummer beginnt in jedem Ordner wieder bei <code>01</code>. Dazu <code>geschnitten/</code> für eigene Schnitte, mit einer <code>README.md</code>, die erklärt warum auch der Ordner nicht ins Repo geht: <strong>Ein Schnitt aus fremdem Material bleibt fremdes Material.</strong> Die eigenen Renderings liegen weiter eine Ebene höher und sind versioniert.</dd>
+          <dt>Der eigentliche Gewinn</dt><dd>Der Zwischenordner trägt die Grenze zwischen Fremdem und Eigenem — damit reicht <strong>eine</strong> <code>.gitignore</code>-Zeile je Zweig. Vorher stand dort <em>je Datei</em> eine Zeile, weil nur das Namensmuster beides trennte. Beim Umbenennen fiel das <strong>zweimal</strong> auseinander, und fremde Videos tauchten im Status eines öffentlichen Repos auf. <strong>24 Einzelzeilen sind entfallen</strong> — eine Ordner-Regel kann man beim Umbenennen nicht vergessen.</dd>
+          <dt>Der Umzug selbst</dt><dd>19 vorhandene Dateien, jede <strong>vor</strong> dem Verschieben über ihre Prüfsumme gegen den Herkunftsnachweis geprüft — ohne das könnte eine Umbenennung Datei und Herkunft entkoppeln, und die Herkunft ist das Einzige, was sich nicht wiederherstellen lässt. Danach: 19 Einträge, 19 Dateien, keine Abweichung.</dd>
+        </dl></div>
+        <span class="built-note">✓ Live geprüft: der Bot legt in <code>rohmaterial/10_elektrischer-wasserspender-fuer-schreibtisch/</code> ab</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🔢</span>Eine gelöschte Nummer hat ein Video überschrieben</div>
+          <span class="badge badge-done">Gefunden &amp; behoben</span>
+        </div>
+        <p class="desc">Beim Umzug fiel auf, dass neun Einträge auf Dateien zeigten, die es nicht gab — und zwei Nummern doppelt vergeben waren. Das war kein Zufall.</p>
+        <div class="wirkung"><dl>
+          <dt>Was passiert ist</dt><dd>Die laufende Nummer wurde <strong>nur aus dem Ordner</strong> gelesen. Nach jedem Löschen war sie wieder frei — und ein <em>anderes</em> Video bekam denselben Dateinamen:<br><code>16_…_12s_stil-b.mp4 (15:42)</code> ← überschrieben, Video verloren<br><code>16_…_12s_stil-b.mp4 (16:41)</code> ← anderes Video, gleicher Name<br>Im Nachweis standen danach zwei Einträge für dieselbe Datei, und die Herkunft der verbliebenen war nicht mehr feststellbar.</dd>
+          <dt>Die Nummer kommt jetzt aus zwei Quellen</dt><dd>Ordner <strong>und</strong> Herkunftsnachweis. Der vergisst nicht, wenn jemand eine Datei löscht.</dd>
+          <dt>Und das Aufräumen prüft die Prüfsumme</dt><dd>Es fragte bisher nur, <em>ob</em> eine Datei da ist. Damit galt der falsche Eintrag als in Ordnung — eine Datei existierte ja — und der Nachweis behauptete weiter eine Herkunft, die zu ihr nicht gehörte. Jetzt gilt „eine <em>andere</em> Datei unter demselben Namen" ebenfalls als verwaist. Genau so wurde der kaputte Eintrag gefunden.</dd>
+        </dl></div>
+        <span class="built-note">✓ Beide Fehler haben einen Test mit Gegenprobe, die das alte Verhalten nachbildet</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🔟</span>Mehr Videos je Lauf — und das Budget dazu</div>
+          <span class="badge badge-done">Gebaut</span>
+        </div>
+        <p class="desc">Die Obergrenze lag immer schon bei 25, die <code>5</code> war nur die Vorgabe — in der Frage stand das aber nirgends, also sah es nach „höchstens 5" aus.</p>
+        <div class="wirkung"><dl>
+          <dt>Jetzt bis 50, und sichtbar</dt><dd>Die Frage lautet <code>Wie viele Videos? [5, hoechstens 50]</code>. Geladen wird weiterhin <em>nacheinander</em>, mit drei Sekunden Pause — parallel zu laden hieße, genau die Ratenbegrenzung zu provozieren, gegen die diese Pause eingebaut wurde.</dd>
+          <dt>Das Abruf-Budget wächst mit</dt><dd>Sonst wäre die Zahl eine Attrappe: <code>max_anfragen</code> (60) war auf drei bis fünf Videos gemünzt. Gemessen über mehrere echte Läufe wird etwa <strong>jede zehnte bis zwölfte</strong> geprüfte Adresse ein brauchbares Video — der Rest fällt durch Sprache, Ausschluss, Merkmale oder das Abhören. Das Budget ist deshalb <code>Anzahl × 12</code>, nach oben auf 300 begrenzt: mehr wären über eine Viertelstunde am Stück gegen TikTok.</dd>
+        </dl></div>
+        <span class="built-note">✓ Live: „Budget: 96 Abrufe (statt 60) — 8 Videos brauchen erfahrungsgemäß rund 96."</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🔍</span>Warum man nicht einfach „suchen" kann</div>
+          <span class="badge badge-done">Geprüft, nicht angenommen</span>
+        </div>
+        <p class="desc">Der naheliegende Weg — „such mir Videos zum Wasserspender" — geht nicht, und zwar aus einem Grund, der nichts mit diesem Projekt zu tun hat.</p>
+        <div class="wirkung"><dl>
+          <dt>Was das Hilfsprogramm bei TikTok wirklich kann</dt><dd>Abgefragt, nicht vermutet. Die installierte Fassung (2026.07.04) führt für TikTok acht Zugänge — <strong>drei davon sind vom Hersteller selbst als „CURRENTLY BROKEN" gekennzeichnet</strong>, darunter ausgerechnet der für Hashtag-Seiten. Einen Zugang für eine <em>Stichwortsuche</em> gibt es überhaupt nicht.</dd>
+          <dt>Der Fehler, den ich dabei selbst gebaut hatte</dt><dd>Meine erste Fassung prüfte nur, ob „tag" im Namen des Zugangs vorkommt — und meldete fröhlich „Hashtag-Seiten: ja" für einen Zugang, den der Hersteller für defekt erklärt. Behoben: Die Kennzeichnung wird ausgewertet, nicht nur der Name.</dd>
+          <dt>Die Lösung</dt><dd>Die Suche wandert nach draußen: eine normale Websuche findet TikTok-Videoseiten, weil die öffentlich sind. Was sie ausspuckt, ist eine Liste Adressen — und die prüft das Programm dann einzeln nach. <strong>Eine Adresse, die niemand abgerufen hat, ist eine Behauptung</strong>, deshalb wird jede einmal wirklich abgefragt, bevor sie eingetragen wird.</dd>
+        </dl></div>
+        <span class="built-note">✓ die Fähigkeiten werden bei <em>jedem</em> Lauf frisch gelesen — mit einer neueren Fassung des Hilfsprogramms kann sich das jederzeit ändern, ohne dass jemand etwas umbauen muss</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🎯</span>Drei Fehler, die erst der echte Betrieb zeigte</div>
+          <span class="badge badge-done">Gefunden &amp; behoben</span>
+        </div>
+        <p class="desc">Alle drei tauchten erst im Betrieb gegen das echte TikTok auf, nicht in der Planung. Die ersten beiden sind die stille Sorte — sie hätten funktioniert ausgesehen. Der dritte war kein Programmfehler, sondern eine Fehldiagnose von mir.</p>
+        <div class="wirkung"><dl>
+          <dt>1. „Smart Beamer" schnappte sich eine Küchenwaage</dt><dd>Ein Video über eine Küchenwaage bekam den Trefferwert <strong>0,5</strong> für das Produkt <em>Smart Beamer</em> — weil im Videotext „SmartKitchen" stand und „smart" nun einmal die Hälfte von zwei Suchwörtern ist. Damit lag es <em>genau auf</em> der Aufnahmeschwelle. Bei kurzen Produktnamen reißt ein einzelnes Modewort die Hürde.<br><br><strong>Behoben:</strong> Es müssen jetzt <strong>zwei verschiedene</strong> Suchwörter treffen. Nur bei einem Produkt, das überhaupt bloß ein Wort hat, zählt dieses eine.</dd>
+          <dt>2. Eine Regionssperre riss den ganzen Durchgang um</dt><dd>TikTok meldete für <em>ein</em> Video „blocked from accessing this post" — eine Sperre für genau dieses Video, die anderen liefen einwandfrei. Das Programm warf trotzdem alles hin, weil es jede Sperre gleich behandelte.<br><br><strong>Behoben:</strong> Ein einzelnes gesperrtes Video wird übersprungen und vermerkt, der Durchgang geht weiter. Eine <em>Ratenbegrenzung</em> dagegen (zu viele Anfragen, CAPTCHA, Anmeldezwang) beendet den Lauf weiterhin sofort — die betrifft die ganze Leitung, und Weitermachen wäre der Anfang einer Umgehung.</dd>
+          <dt>3. Einen kaputten Extractor für eine Sperre gehalten — mein Fehler</dt><dd>Nach einer Reihe von Testabfragen scheiterte plötzlich <em>jede</em> Adresse mit „Unexpected response". Ich schloss auf eine Ratenbegrenzung, weil es zeitlich auf meine Testserie folgte — und stellte das Laden ein. <strong>Falsch.</strong> Auch am nächsten Tag scheiterte alles unverändert, was zu einer Ratenbegrenzung nicht passt: Die löst sich nach Stunden.<br><br>Tatsächlich hatte TikTok seine Seiten geändert und der Extractor konnte die Antwort nicht mehr lesen. Am Folgetag erschien yt-dlp <strong>2026.08.19</strong> — nach dem Update lief sofort alles. <strong>Ein Tag ging mit der falschen Diagnose verloren</strong>, obwohl die Fehlermeldung selbst auf ein Update hinwies.<br><br><em>Die Lehre, jetzt im Skill an erster Stelle:</em> Bei „Unexpected response" oder „Failed to parse JSON" <strong>zuerst aktualisieren</strong>. Eine Ratenbegrenzung trifft nach vielen Anfragen und vergeht; ein veralteter Extractor trifft jede Adresse sofort und bleibt.</dd>
+        </dl></div>
+        <span class="built-note">✓ Fehler 1 und 2 mit Gegenprobe abgesichert: bei 1 belegt der Gegentest, dass die Schwelle allein die Fehlzuordnung durchgelassen hätte · bei 2, dass eine Ratenbegrenzung nach wie vor sofort Schluss macht · Fehler 3 war kein Programmfehler, sondern eine Fehldiagnose von mir</span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">📁</span>Wo die Dateien liegen — und die eine Stolperfalle</div>
+          <span class="badge badge-medium">Aufpassen</span>
+        </div>
+        <p class="desc">Das Projekt ist öffentlich einsehbar. Fremde Videos dürfen dort unter keinen Umständen hineingeraten.</p>
+        <div class="wirkung"><dl>
+          <dt>Normaler Ablageort</dt><dd><code>Marketing/data/tiktok-quellen/</code> — dieser Ordner ist vom Projekt ausgenommen und kann gar nicht versehentlich veröffentlicht werden. Dort liegen auch der Herkunftsnachweis und die Prüfliste.</dd>
+          <dt>Die geladenen Videos liegen woanders</dt><dd>Auf Wunsch bei den eigenen Videos in <code>Marketing/videos/</code>, umbenannt auf dasselbe Namensschema <code>NN_&lt;produkt-slug&gt;_&lt;dauer&gt;s_stil-b.mp4</code>. Inzwischen sind es <strong>sieben</strong>: <code>07</code> und <code>08</code> aus dem ersten Durchgang, dazu <code>09</code>–<code>13</code> — fünf weitere zum Wasserspender mit 40 bis 103 Sekunden Laufzeit. Die Nummern schließen an deine sechs eigenen Renderings an, die Laufzeit im Namen stammt aus den echten TikTok-Angaben.</dd>
+          <dt>⚠️ Genau daraus entsteht die Falle</dt><dd>Dieser Ordner <em>ist</em> Teil des öffentlichen Projekts — die eigenen Videos liegen ja darin. Der Schutz unterschied fremd von eigen <strong>am Dateinamen</strong> (fremd = Ziffern nach dem Unterstrich, eigen = Buchstaben). <strong>Durch das Umbenennen fiel dieser Schutz weg</strong>, und beide Dateien standen sofort als „neu, wird veröffentlicht" da. Sie sind jetzt namentlich ausgenommen.<br><br><strong>Merksatz:</strong> Jedes weitere fremde Video, das hier umbenannt wird, braucht eine eigene Ausnahme — sonst landet es beim nächsten Hochladen öffentlich im Netz.<br><br><em>Und genau das ist inzwischen zweimal passiert:</em> beim zweiten Schwung standen nach dem Umbenennen wieder fünf Dateien ungeschützt im Status. Sie sind einzeln eingetragen, und geprüft wurde in <strong>beide</strong> Richtungen — die sieben fremden Dateien sind ausgenommen, deine eigenen Renderings nicht, auch ein künftiges <code>14_neues-produkt_20s_stil-b.mp4</code> nicht. Ein zu breites Muster wäre schlimmer als gar keins: Es würde stillschweigend deine eigene Arbeit aussperren.</dd>
+          <dt>Was die Namen jetzt verschweigen</dt><dd>„stil-b" heißt beim Automaten <em>selbst erzeugtes KI-Video</em>. Diese sieben sind das nicht — sie stammen von <code>smart_produkt</code>, <code>ivonneskleinewelt</code>, <code>deskdispenser</code>, <code>diamondquenshay</code>, <code>sturmwaffel</code>, <code>tutich_official</code> und <code>tiktopmademebuyit</code>. Am Dateinamen ist das nicht mehr zu erkennen; die einzige Stelle, die es festhält, ist <code>Marketing/data/tiktok-quellen/index.json</code> — dort steht zu jeder Datei der Urheber, die Quell-Adresse und <code>rechte_geprueft: false</code>.</dd>
+        </dl></div>
+        <span class="built-note">✓ in beide Richtungen nachgeprüft: die vier fremden Dateien sind ausgenommen, die eigenen Videos bleiben normal versionierbar — auch ein künftiges <code>09_…_stil-b.mp4</code></span>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">⚖️</span>Was es bewusst nicht tut</div>
+          <span class="badge badge-done">Grenzen gesetzt</span>
+        </div>
+        <p class="desc">Die Grenzen sind nicht Beiwerk, sondern der Grund, warum man so etwas überhaupt laufen lassen kann.</p>
+        <div class="wirkung"><dl>
+          <dt>Keine Anmeldung, keine Umgehung</dt><dd>Es meldet sich nirgends an, löst keine Sicherheitsabfragen, umgeht keine Sperre. Blockt TikTok wegen zu vieler Anfragen, endet der Lauf — er wird nicht mit anderer Kennung wiederholt.</dd>
+          <dt>Es erfindet nichts</dt><dd>Fehlt das Hilfsprogramm, bricht es mit Hinweis ab, statt eine leere Liste als Erfolg zu melden. Kann ein Zugang etwas nicht, wird das protokolliert statt umgangen. Alles Übersprungene steht mit Grund in der Prüfliste.</dd>
+          <dt>Im Zweifel wird nicht geladen</dt><dd>Wer unter der Schwelle liegt, landet in der Prüfliste — nicht im Ordner. <strong>Eine stille Fehlzuordnung ist schlimmer als gar keine:</strong> Sie sieht im Ordner exakt aus wie ein Treffer und fällt erst auf, wenn jemand die Datei öffnet.</dd>
+          <dt>Die Rechtefrage bleibt offen — mit Absicht</dt><dd>Jeder Eintrag startet auf <code>rechte_geprueft: false</code>. Das Material gehört fremden Leuten. Als Recherche ist das unbedenklich; alles darüber hinaus braucht eine Entscheidung von Hand, Video für Video.</dd>
+        </dl></div>
+        <span class="built-note">✓ 29 eigene Prüfungen für diesen Teil, jede mit Gegenprobe · Gesamtstand 220 Prüfungen, alle grün · die Prüfungen brauchen weder Internet noch das Hilfsprogramm</span>
+      </div>
+
+    </div>
+
+    <div class="todo-block">
+      <div class="todo-group free">
+        <p class="todo-group-title">① Einmalig einrichten · ✓ erledigt</p>
+        <div class="todo">
+          <div class="mark" style="background:var(--green);border-color:var(--green);">✓</div>
+          <div class="body">
+            <h4>Hilfsprogramm installiert <span class="who who-me">Erledigt</span></h4>
+            <p><code>py -m pip install --upgrade yt-dlp</code> — Fassung 2026.07.04 liegt bereit. Es ist ein eigenständiges Programm, kein Projekt-Baustein — genau wie <code>ffmpeg</code>, das schon vorhanden war. Die Programmdatei liegt <em>nicht</em> im Suchpfad; gefunden wird sie über <code>py -m yt_dlp</code>, weil das Programm alle Varianten durchprobiert statt eine zu raten.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark" style="background:var(--green);border-color:var(--green);">✓</div>
+          <div class="body">
+            <h4>Erster echter Durchlauf gemacht <span class="who who-me">Erledigt</span></h4>
+            <p><strong>Sieben Videos liegen geladen vor</strong>, alle mit Urheber, Quell-Adresse, Prüfsumme und ungeklärten Rechten im Nachweis.<br><br>Erster Durchgang: zwei Treffer aus sieben geprüften Adressen (Wasserspender, Massagepistole) — automatisch bewertet und zugeordnet. Zweiter Durchgang lud korrekt <em>nichts</em> nach, weil beide schon im Nachweis standen.<br><br>Zweiter Anlauf nach dem yt-dlp-Update: <strong>fünf weitere</strong> zum Wasserspender (40–103 s, 3,9–13,2 MB), von Hand ausgewählt statt automatisch bewertet — deshalb steht bei ihnen kein Trefferwert, sondern der Vermerk „von Hand ausgewählt".<br><br>Damals war die Ausbeute noch Handarbeit — inzwischen sucht das Programm selbst.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark" style="background:var(--green);border-color:var(--green);">✓</div>
+          <div class="body">
+            <h4>Suchschlüssel eingetragen <span class="who who-you">Erledigt</span></h4>
+            <p><code>TAVILY_API_KEY</code> steht in deiner <code>.env</code> — 1000 Abfragen im Monat, keine Kreditkarte. Ein Durchgang verbraucht <strong>eine</strong> Abfrage, egal wie viele Videos dabei herauskommen.<br><br>
+            <em>Der Haken, der dabei auffiel:</em> Der Schlüssel lag korrekt in der Datei, aber das Programm las die <code>.env</code> gar nicht ein und meldete „kein Suchschlüssel gesetzt". Man verdächtigt dann den Schlüssel statt das Programm. Behoben.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark" style="background:var(--green);border-color:var(--green);">✓</div>
+          <div class="body">
+            <h4>Suchbegriffe für alle 40 Produkte <span class="who who-me">Erledigt</span></h4>
+            <p><strong>160 Begriffe</strong> in <code>tiktok-quellen.json</code>, vier je Produkt: direkter Produktbegriff, Anwendungsfall, Stil-Winkel und einer, der auf Musik statt Kommentarstimme zielt (<code>asmr</code>, <code>satisfying</code>, <code>aesthetic</code>).<br><br>
+            Alle <strong>englisch</strong>, und das aus gemessenem Grund: „elektrischer wasserspender schreibtisch" lieferte 7 Treffer, davon <em>null</em> zum Produkt — lauter Tischlerei-Videos, weil „Schreibtisch" dort als Möbelstück trifft.<br><br>
+            Warum vier und nicht einer: Bei der Küchenwaage brachte der erste Begriff <strong>0</strong> Adressen, der vierte <strong>13</strong>. Ein einzelner Begriff reicht nicht, weil der Musikfilter den größten Teil aussortiert.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="todo-group free">
+        <p class="todo-group-title">So testest du es · fünf Schritte</p>
+        <div class="todo">
+          <div class="mark" style="background:var(--green);border-color:var(--green);">✓</div>
+          <div class="body">
+            <h4>1. Vorbedingungen <span class="who who-me">bereits geprüft</span></h4>
+            <p><code>npm run tiktok:status</code><br><br>
+            Ergebnis bei dir: <code>yt-dlp: ✅ py -m yt_dlp (Version 2026.08.19)</code>, <code>Notaus: nicht aktiv</code>, 11 Einträge im Nachweis.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark" style="background:var(--green);border-color:var(--green);">✓</div>
+          <div class="body">
+            <h4>2. Sieht er deinen Schlüssel? <span class="who who-me">bereits geprüft — sagt „gesetzt"</span></h4>
+            <p><code>node -e "require('dotenv').config();console.log(process.env.TAVILY_API_KEY?'gesetzt':'FEHLT')"</code></p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">3</div>
+          <div class="body">
+            <h4>Der kleinste echte Lauf <span class="who who-you">hier fängst du an</span></h4>
+            <p><code>npm run tiktok</code><br><br>
+            Produktnummer <strong>10</strong>, Anzahl <strong>1</strong>. Mit einem Video, nicht mit fünf: gleiches Verhalten, aber in einer Minute kontrolliert.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">4</div>
+          <div class="body">
+            <h4>Die wichtigste Kontrolle <span class="who who-you">nicht überspringen</span></h4>
+            <p><code>git status</code><br><br>
+            <strong>Es darf kein Video auftauchen.</strong> Wenn doch, greift der Schutz nicht und die Datei würde beim nächsten Hochladen öffentlich im Netz landen.<br><br>
+            <code>ls Marketing/videos</code><br><br>
+            Die neue Datei muss bei <code>18_</code> anfangen und <code>elektrischer-wasserspender</code> im Namen tragen — die Schreibweise übernimmt er von deinen vorhandenen Dateien.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">5</div>
+          <div class="body">
+            <h4>Nochmal derselbe Lauf <span class="who who-you">die Gegenprobe</span></h4>
+            <p>Er darf das Video <strong>nicht erneut laden</strong>. Das beweist, dass der Nachweis gelesen wird.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="todo-group later">
+        <p class="todo-group-title">② Im Betrieb · ein einziger Befehl</p>
+        <div class="todo">
+          <div class="mark">1</div>
+          <div class="body">
+            <h4><code>npm run tiktok</code> <span class="who who-you">mehr ist es nicht</span></h4>
+            <p>Produktnummer, Anzahl, Sprache (1 oder 2), Ton (1 oder 2) — fertig. Er sucht die Adressen selbst, prüft jede gegen das Produkt, überspringt was schon geladen ist, lädt, <strong>hört die Datei ab</strong> und wirft sie wieder weg, wenn Ton oder Sprache nicht zur Wahl passen, benennt auf dein Namensschema um, trägt die Datei in <code>.gitignore</code> ein und schreibt den Herkunftsnachweis.<br><br>
+            <em>Was hier vorher stand, ist überholt:</em> Bis die Suche eingebaut war, musstest du die Adressen selbst zusammensuchen und eintragen — das war der eigentliche Aufwand. <strong>Er entfällt.</strong> Für alle 40 Produkte sind je <strong>acht deutsche und acht englische</strong> Suchbegriffe hinterlegt — 640 insgesamt, dazu 190 Kernwörter, an denen geprüft wird, ob das Video überhaupt das Produkt zeigt.<br><br>
+            Welche Nummer zu welchem Produkt gehört, zeigt <code>infos/nummernprodukte.html</code> mit Bildern und Suchfeld — nur lokal, bewusst nicht im Repo.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">2</div>
+          <div class="body">
+            <h4>Rechte klären, bevor du etwas davon verwendest <span class="who who-you">bleibt bei dir</span></h4>
+            <p>Alle Einträge stehen auf <code>rechte_geprueft: false</code>. <strong>Solange das so ist, ist das Material ausschließlich zum Anschauen.</strong> Nichts davon in ein eigenes Video schneiden, in den Shop stellen oder erneut hochladen — auch nicht als kurzer Ausschnitt. Wer, was und woher steht in <code>Marketing/data/tiktok-quellen/index.json</code>.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

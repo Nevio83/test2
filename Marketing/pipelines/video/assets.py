@@ -162,6 +162,30 @@ def eigene_bilder(produkt: Produkt) -> list[Asset]:
     return treffer
 
 
+def _asset_ordner():
+    """Wohin geladenes Stockmaterial gehoert.
+
+    Vorher stand hier ein fester Pfad in den Projektordner. Das war an zwei
+    Stellen falsch:
+
+      * Es umging MARKETING_DATA_DIR — also genau die Variable, die es gibt,
+        damit Renderings NICHT im Projektordner landen. In Umgebungen, in
+        denen ein Unterprozess dort nicht schreiben darf, scheiterte der
+        Download mit "No such file or directory", und die Quelle lieferte
+        stillschweigend null Clips.
+      * In GitHub Actions waere fremdes Stockmaterial in den Checkout
+        geschrieben worden statt in den Temp-Ordner des Laufs.
+
+    common.DATEN beruecksichtigt die Variable und faellt sonst auf
+    Marketing/data zurueck — dasselbe Verhalten wie bisher, nur richtig.
+    """
+    from . import common
+
+    ordner = common.DATEN / "assets"
+    ordner.mkdir(parents=True, exist_ok=True)
+    return ordner
+
+
 def stock_bilder(suchbegriff: str, anzahl: int = 3) -> list[Asset]:
     """Lizenzfreier Stock — nur mit Schluessel UND mit Lizenzeintrag.
 
@@ -178,8 +202,7 @@ def stock_bilder(suchbegriff: str, anzahl: int = 3) -> list[Asset]:
     if not guardrails.ratenbegrenzer.warte_bis_erlaubt("pexels", max_sek=15):
         return []
 
-    ordner = REPO_ROOT / "Marketing" / "data" / "assets"
-    ordner.mkdir(parents=True, exist_ok=True)
+    ordner = _asset_ordner()
     treffer: list[Asset] = []
     try:
         antwort = requests.get(
@@ -210,21 +233,116 @@ def stock_bilder(suchbegriff: str, anzahl: int = 3) -> list[Asset]:
     return treffer
 
 
+def stock_videos(suchbegriff: str, anzahl: int = 2) -> list[Asset]:
+    """Lizenzfreie Videoclips von Pexels — Hochformat, kurz genug zum Schneiden.
+
+    WAS SOLCHE CLIPS SIND UND WAS NICHT
+    Sie zeigen NIE das Produkt. Sie zeigen Stimmung: Schreibtisch, Haende,
+    Licht, Wohnraum. Als Zwischenschnitt zwischen echten Produktbildern
+    machen sie viel aus — als Produktzeigung nichts. Deshalb stehen sie in
+    der Reihenfolge HINTER dem eigenen Material und werden nur aufgefuellt,
+    nie als erste Einstellung genommen.
+
+    Warum trotzdem lohnend: Ohne sie besteht jedes Video aus Kamerafahrten
+    ueber dieselben zwei, drei Lieferantenfotos. Bewegtes Material bricht das
+    auf, und auf TikTok entscheidet Bildbewegung darueber, ob jemand
+    weiterwischt.
+
+    Ohne PEXELS_API_KEY gibt es nichts — kein Rueckfall auf irgendeine
+    Video-URL. Jeder Clip wird mit Lizenz und Nachweisadresse registriert.
+    """
+    schluessel = (os.environ.get("PEXELS_API_KEY") or "").strip()
+    if not schluessel:
+        return []
+    try:
+        import requests
+    except ImportError:
+        return []
+    if not guardrails.ratenbegrenzer.warte_bis_erlaubt("pexels", max_sek=15):
+        return []
+
+    ordner = _asset_ordner()
+    treffer: list[Asset] = []
+    try:
+        antwort = requests.get(
+            "https://api.pexels.com/videos/search",
+            headers={"Authorization": schluessel},
+            params={"query": suchbegriff, "per_page": max(anzahl * 3, 6),
+                    "orientation": "portrait", "size": "medium"},
+            timeout=25,
+        )
+        antwort.raise_for_status()
+        for video in antwort.json().get("videos", []):
+            if len(treffer) >= anzahl:
+                break
+            # Zu lange Clips laden unnoetig lange; aus 60 Sekunden schneiden
+            # wir ohnehin nur zwei. Zu kurze reichen fuer keinen Schnitt.
+            dauer = float(video.get("duration") or 0)
+            if not (3 <= dauer <= 45):
+                continue
+            # Die kleinste Fassung waehlen, die noch 1080 breit ist: groesser
+            # bringt nichts, das Ziel ist 1080x1920.
+            dateien = sorted(
+                (d for d in video.get("video_files", [])
+                 if (d.get("height") or 0) >= 1280 and d.get("link")),
+                key=lambda d: d.get("height") or 0,
+            )
+            if not dateien:
+                continue
+            url = dateien[0]["link"]
+            ziel = ordner / f"pexels_video_{video.get('id')}.mp4"
+            if not ziel.exists():
+                inhalt = requests.get(url, timeout=90)
+                inhalt.raise_for_status()
+                ziel.write_bytes(inhalt.content)
+            treffer.append(Asset(
+                ziel, "video", "pexels",
+                lizenz="Pexels License (frei nutzbar, keine Namensnennung noetig)",
+                lizenz_url=video.get("url"),
+            ))
+    except Exception as fehler:
+        print(f"[assets] Pexels-Videos nicht erreichbar: {fehler}")
+        return []
+    return treffer
+
+
 def bildquellen_fuer(produkt: Produkt, *, mindestens: int = 4) -> list[Asset]:
     """Material fuer ein Video, in der vorgesehenen Reihenfolge.
 
     Jedes zurueckgegebene Asset ist registriert und hat damit eine Lizenz —
     der Renderer muss nicht noch einmal pruefen, tut es aber trotzdem.
     """
+    eigenes_video = eigene_videos(produkt)
     gesammelt: list[Asset] = []
-    for asset in eigene_videos(produkt) + eigene_bilder(produkt):
+    for asset in eigenes_video + eigene_bilder(produkt):
         if registriere(asset):
             gesammelt.append(asset)
         if len(gesammelt) >= mindestens:
-            return gesammelt
+            break
+
+    begriff = produkt.kategorie.split("/")[0] or produkt.name
+
+    # ── Bewegung dazu, auch wenn die Mindestzahl schon erreicht ist ──
+    #
+    # Die erste Fassung fuellte Stockmaterial nur auf, wenn zu WENIG eigenes
+    # da war. Damit bekam ausgerechnet ein Produkt mit sechs Fotos nie einen
+    # bewegten Schnitt — und blieb eine Diaschau aus immer denselben
+    # Lieferantenbildern. Genau das sollte der Zusatz aber aufbrechen.
+    #
+    # Deshalb jetzt: Gibt es kein EIGENES Produktvideo, kommen bis zu zwei
+    # lizenzierte Clips als Zwischenschnitt dazu — unabhaengig davon, wie
+    # viele Standbilder vorliegen. Gibt es ein eigenes, braucht es sie nicht.
+    #
+    # Die Obergrenze zwei ist bewusst niedrig: Diese Clips zeigen nie das
+    # Produkt. Es soll ein Produktvideo bleiben, kein Stimmungsfilm mit
+    # Produkt am Ende. Ueber 'video.stock_clips_max' abschaltbar (0).
+    hoechstens = int(guardrails.wert("video.stock_clips_max", 2))
+    if hoechstens > 0 and not eigenes_video:
+        for asset in stock_videos(begriff, anzahl=hoechstens):
+            if registriere(asset):
+                gesammelt.append(asset)
 
     if len(gesammelt) < mindestens:
-        begriff = produkt.kategorie.split("/")[0] or produkt.name
         for asset in stock_bilder(begriff, anzahl=mindestens - len(gesammelt)):
             if registriere(asset):
                 gesammelt.append(asset)
