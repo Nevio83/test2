@@ -1,0 +1,206 @@
+# Der Takt des Marketing-Automaten.
+#
+# WARUM ÜBERHAUPT VON AUSSEN GETAKTET WIRD
+# Der Shop läuft auf Render-Free und schläft nach 15 Minuten. Ein Marketing-Loop
+# im Shop-Prozess würde also praktisch nie durchlaufen — genau dieser Fehler ist
+# im Projekt schon einmal nachgewiesen worden (Kommentarkopf `job-scheduler.js`:
+# bei ~2 Deploys täglich kam ein Tageslauf selten durch, ein Wochenlauf nie).
+#
+# Deshalb: Der Takt kommt von hier, der Zustand liegt in Postgres. Dieser
+# Workflow ist bewusst DUMM — er ruft alle 30 Minuten einen Durchgang auf. Was
+# fällig ist, entscheidet allein `mkt_jobs.naechster_lauf` in der Datenbank.
+# Fällt ein Lauf aus (GitHub-Cron ist "best effort"), holt der nächste ihn nach.
+#
+# Kostenlos: das Repo ist öffentlich → GitHub-Actions-Minuten sind unbegrenzt.
+#
+# WAS HIER NICHT LÄUFT
+# Alles mit `requires_local = true` (Browser, GPU): der Veröffentlichungs-Job
+# und Stil B. Die übernimmt `Marketing/run-local.js` auf dem eigenen PC. Der
+# Runner hier meldet sich als `actions` an und bekommt diese Jobs vom
+# Orchestrator gar nicht erst zugeteilt (`state.uebernimm`, Bedingung
+# `NOT requires_local OR %s`).
+#
+# ⚠️ MARKETING_DRY_RUN STEHT HIER NICHT.
+# Ohne die Variable gilt der Standard aus `marketing.config.json`
+# (`trockenlauf.standard: true`) — es wird alles gebaut und geplant, aber
+# NICHTS veröffentlicht. Das umzustellen ist eine bewusste Entscheidung eines
+# Menschen im Repository-Secret, nicht eine Zeile, die man beim Aufräumen
+# übersieht.
+
+name: Marketing-Automat
+
+on:
+  schedule:
+    - cron: "*/30 * * * *" # alle 30 Minuten (UTC, best effort)
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "Nur diesen Ablauf versuchen (leer = alle fälligen)"
+        required: false
+        type: string
+      nur_status:
+        description: "Nur den Zustand anzeigen, nichts ausführen"
+        required: false
+        type: boolean
+        default: false
+
+# Läufe SERIALISIEREN, nicht abbrechen. Ein abgebrochener Lauf hinterlässt
+# einen belegten Job (`laeuft_seit` gesetzt), der erst nach dem
+# Herzschlag-Timeout von 30 Minuten wieder freigegeben wird — der nächste Lauf
+# würde ihn also überspringen, ohne dass jemand sieht warum.
+concurrency:
+  group: marketing-automat
+  cancel-in-progress: false
+
+# Standardrechte reichen: Der Workflow liest nur den Quellcode. Er schreibt
+# ausschließlich in die Datenbank, nicht ins Repository.
+permissions:
+  contents: read
+
+jobs:
+  durchlauf:
+    runs-on: ubuntu-latest
+    # 25 Minuten Frist im Programm + Aufschlag fürs Einrichten. Die harte
+    # Grenze hier ist die zweite Sicherung: Ein hängender HTTP-Aufruf soll
+    # nicht 6 Stunden lang einen Runner blockieren.
+    timeout-minutes: 32
+
+    steps:
+      - name: Quellcode holen
+        uses: actions/checkout@v7
+
+      - name: Python einrichten
+        uses: actions/setup-python@v6
+        with:
+          # 3.14 wie auf dem Entwicklungsrechner. Läuft die CI auf einer
+          # anderen Version, prüft sie etwas anderes, als tatsächlich läuft.
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: Marketing/requirements.txt
+
+      - name: Abhängigkeiten installieren
+        run: python -m pip install --disable-pip-version-check -r Marketing/requirements.txt
+
+      - name: ffmpeg bereitstellen
+        # Nicht vorausgesetzt, sondern geprüft: Ob ein Runner-Abbild ffmpeg
+        # mitbringt, ändert sich zwischen Abbild-Versionen. Fehlt es, rendert
+        # Stil A nicht — und zwar lautlos, weil der Job den Grund brav
+        # protokolliert und der Lauf grün bleibt.
+        run: |
+          if command -v ffmpeg > /dev/null 2>&1; then
+            echo "ffmpeg schon vorhanden: $(ffmpeg -version | head -1)"
+          else
+            echo "ffmpeg fehlt im Abbild — wird nachinstalliert."
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg
+            ffmpeg -version | head -1
+          fi
+
+      - name: Stimmmodell aus dem Zwischenspeicher
+        # 108 MB bei jedem Lauf neu zu laden waere Verschwendung — die Datei
+        # aendert sich nie. Der Schluessel enthaelt den Dateinamen, ein
+        # Stimmwechsel loest den Download also von selbst neu aus.
+        id: stimme
+        uses: actions/cache@v4
+        with:
+          path: Marketing/data/piper/piper
+          key: piper-de_DE-thorsten-high-v1
+
+      - name: Sprachausgabe bereitstellen
+        # OHNE DIESEN SCHRITT HAT DER LAUF GAR KEINE STIMME.
+        # Die Windows-Sprachausgabe gibt es auf Linux nicht, eigene Aufnahmen
+        # liegen im Repo nicht bei, und ElevenLabs braucht einen Schluessel.
+        # Stil A waere hier also stumm — und der Lauf bliebe gruen, weil der
+        # Job den Grund brav protokolliert und nicht wirft.
+        run: |
+          set -e
+          ORDNER=Marketing/data/piper/piper
+          mkdir -p "$ORDNER"
+          if [ ! -f "$ORDNER/de_DE-thorsten-high.onnx" ]; then
+            echo "Stimmmodell fehlt im Zwischenspeicher — wird geladen."
+            BASIS=https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/high
+            curl -sSL -o "$ORDNER/de_DE-thorsten-high.onnx"      "$BASIS/de_DE-thorsten-high.onnx"
+            curl -sSL -o "$ORDNER/de_DE-thorsten-high.onnx.json" "$BASIS/de_DE-thorsten-high.onnx.json"
+          else
+            echo "Stimmmodell kam aus dem Zwischenspeicher."
+          fi
+          python -m pip install --disable-pip-version-check piper-tts
+          # Das PyPI-Paket legt "piper" in den PATH; die Suche in
+          # piper_local.py findet es dort vor dem Ordner.
+          piper --version || echo "::warning::piper meldet keine Version — Stimme pruefen"
+          ls -la "$ORDNER"
+
+      - name: Zustand anzeigen
+        # Läuft VOR dem Durchgang und ist bewusst harmlos: Ohne Datenbank oder
+        # bei aktivem Notaus steht es hier im Protokoll, statt dass man sich
+        # später fragt, warum nichts passiert ist.
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MARKETING_RUNNER: actions
+        working-directory: Marketing
+        run: python -m pipelines.orchestrator.run_loop --status
+
+      - name: Ein Durchgang
+        if: ${{ github.event.inputs.nur_status != 'true' }}
+        env:
+          # Ohne DATABASE_URL kann nichts belegt werden — der Lauf meldet das
+          # je Job und endet sauber. Alle übrigen Schlüssel sind optional:
+          # Fehlt einer, wird der betroffene Schritt mit Grund übersprungen.
+          # Es wird nie ein fehlender Schlüssel durch Beispieldaten ersetzt.
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MARKETING_RUNNER: actions
+
+          # Trends
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          EXPLODING_TOPICS_API_KEY: ${{ secrets.EXPLODING_TOPICS_API_KEY }}
+
+          # Briefings + Stimme
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+
+          # Kennzahlen der Plattformen (nur lesend)
+          TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_ACCESS_TOKEN: ${{ secrets.TIKTOK_ACCESS_TOKEN }}
+
+          # Wochenbericht per Mail
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+
+          # Nur setzen, wenn wirklich veröffentlicht werden soll. Fehlt das
+          # Secret, gilt der Trockenlauf aus der Konfigurationsdatei.
+          MARKETING_DRY_RUN: ${{ secrets.MARKETING_DRY_RUN }}
+
+          # Die Eingabe kommt über die Umgebung, NICHT per ${{ }} in die
+          # Befehlszeile. Direkt eingesetzt würde GitHub den Text vor der
+          # Shell ersetzen — ein Ablaufname wie `x; rm -rf .` wäre dann ein
+          # eigener Befehl. Als Variable gelesen ist er nur ein Wert.
+          JOB_EINGABE: ${{ github.event.inputs.job }}
+        working-directory: Marketing
+        run: |
+          if [ -n "$JOB_EINGABE" ]; then
+            python -m pipelines.orchestrator.run_loop --job "$JOB_EINGABE" --max-minutes 25
+          else
+            python -m pipelines.orchestrator.run_loop --once --max-minutes 25
+          fi
+
+      - name: Erzeugte Dateien verwerfen
+        # Renderings gehören NICHT ins Repository (sie liegen in
+        # Marketing/data/ und sind gitignored). Dieser Schritt ist eine
+        # Kontrolle, keine Aufräumaktion: Taucht hier etwas Verfolgtes auf,
+        # hat eine Pipeline in den Projektordner geschrieben statt in
+        # MARKETING_DATA_DIR — und das würde beim nächsten Push mitfliegen.
+        if: always()
+        run: |
+          GEAENDERT=$(git status --porcelain)
+          if [ -n "$GEAENDERT" ]; then
+            echo "::warning::Der Lauf hat verfolgte Dateien verändert:"
+            echo "$GEAENDERT"
+          else
+            echo "Arbeitsverzeichnis unverändert — wie erwartet."
+          fi

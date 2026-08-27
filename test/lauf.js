@@ -21,14 +21,30 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
+// Test-Ordner: dieser hier, plus die Ordner von Programmen, die ihre Tests bei
+// sich liegen haben. `bot/` gehoert dazu, seit der TikTok-Bot dorthin gezogen
+// ist — ohne diesen Eintrag waere sein Test beim Umzug LAUTLOS aus `npm test`
+// gefallen: keine Fehlermeldung, nur eine kleinere Zahl am Ende. Genau die
+// Sorte Ausfall, die man wochenlang nicht bemerkt.
 const ordner = __dirname;
-const dateien = fs.readdirSync(ordner)
-  .filter((n) => n.endsWith('.test.js'))
-  .sort()
-  .map((n) => path.join(ordner, n));
+const weitereOrdner = [path.join(__dirname, '..', 'bot')];
+
+const sammle = (verzeichnis) => {
+  try {
+    return fs.readdirSync(verzeichnis)
+      .filter((n) => n.endsWith('.test.js'))
+      .sort()
+      .map((n) => path.join(verzeichnis, n));
+  } catch {
+    return [];          // Ordner gibt es (noch) nicht — kein Fehlerfall
+  }
+};
+
+const dateien = [ordner, ...weitereOrdner].flatMap(sammle);
 
 if (!dateien.length) {
-  console.error('Keine Testdateien in ' + ordner + ' gefunden (*.test.js).');
+  console.error('Keine Testdateien gefunden (*.test.js) in: '
+    + [ordner, ...weitereOrdner].join(', '));
   process.exit(1);
 }
 

@@ -25,6 +25,53 @@ excel/*Preisanalyse*.csv
 database/*.db
 Marketing/data/*.db
 
+# ── Marketing-Automat (Runde 10) ─────────────────────────────
+# Alles unter Marketing/data/ entsteht zur Laufzeit: Sprachaufnahmen,
+# Stock-Clips, Renderings, Zwischenstaende. Nichts davon gehoert in ein
+# oeffentliches Repo — teils wegen Lizenzen (Stock-Material), teils wegen
+# Groesse (Videos), teils weil es die eigene Stimme ist.
+Marketing/data/
+# Musikstuecke selbst bleiben lokal — auch CC0-Dateien blaehen das Repo auf
+# und sind jederzeit neu ladbar. Die Anleitung daneben gehoert dazu.
+Marketing/musik/*
+!Marketing/musik/README.md
+# Notaus-Datei: existiert nur lokal, wenn jemand das System angehalten hat.
+Marketing/STOP
+
+# ── Fremdes TikTok-Rohmaterial (bot/tiktok-video-sync.js) ────
+# Heruntergeladene FREMDE Videos plus Herkunftsnachweis. Das Repo ist
+# oeffentlich, die Videos gehoeren anderen Leuten — sie duerfen hier unter
+# keinen Umstaenden landen.
+Marketing/data/tiktok-quellen/
+#
+# Marketing/videos/ ist versioniert: Dort liegen die EIGENEN Renderings
+# (01_nordic-crystal-lamp_20s_stil-a.mp4). Fremdes Material und alles daraus
+# Geschnittene liegen in zwei eigenen Unterordnern, und die sind komplett
+# ausgenommen:
+#
+#   Marketing/videos/rohmaterial/<NN>_<slug>/   je Produkt ein Ordner
+#   Marketing/videos/geschnitten/               eigene Schnitte daraus
+#
+# WARUM ORDNER STATT EINZELZEILEN: Vorher stand hier je Datei eine Zeile,
+# weil das Namensmuster fremdes von eigenem Material trennte. Beim
+# Umbenennen fiel das zweimal auseinander, und fremde Videos tauchten im
+# Status auf — in einem oeffentlichen Repo. Eine Ordner-Regel kann man beim
+# Umbenennen nicht vergessen.
+Marketing/videos/rohmaterial/
+Marketing/videos/geschnitten/
+# Der Herkunftsnachweis, der zu den Dateien gehoert.
+Marketing/videos/index.json
+#
+# Altbestand: fremde Videos, die noch flach in Marketing/videos/ liegen.
+# Das Muster trennt sie von den eigenen Renderings — nach dem Unterstrich
+# stehen bei fremdem Material Ziffern (TikTok-ID), bei eigenem Buchstaben.
+Marketing/videos/*_[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]*
+# Und die bereits umbenannten Altbestaende, bis sie umgezogen sind.
+Marketing/videos/*_stil-b.*
+# OAuth-Token der Plattformen, falls je als Datei abgelegt.
+Marketing/config/*token*.json
+Marketing/config/*secret*.json
+
 # ── Node / Build ─────────────────────────────────────────────
 node_modules/
 .netlify/
@@ -81,3 +128,11 @@ receipts/*.pdf
 *-320.png
 *-480.png
 *-640.png
+
+# ── Nur-lokale Nachschlageseite ──────────────────────────────
+# infos/ wird vom Shop ausgeliefert. Diese Uebersicht (Produktnummer -> Produkt,
+# mit Bildern) ist reines Arbeitsmaterial und soll auf maiosshop.com NICHT
+# erreichbar sein. Sie bleibt deshalb aus dem Repo: Was nicht committet ist,
+# wird von Render auch nicht ausgerollt. Neu bauen laesst sie sich jederzeit
+# aus products.json.
+infos/nummernprodukte.html

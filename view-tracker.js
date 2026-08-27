@@ -136,8 +136,30 @@
     if (!level) return; // keine Einwilligung -> nichts senden
     sent = true;
 
+    // Kampagnen-Kennung des Marketing-Automaten (z.B. ?utm_campaign=mkt_42).
+    //
+    // WARUM SIE AN DEN PFAD GEHAENGT WIRD: location.pathname schneidet alle
+    // Parameter ab. Ohne diese Zeile kommt die Kennung nie in der Datenbank
+    // an — und dann laesst sich nicht sagen, welches Video Besucher gebracht
+    // hat. Bewusst NUR utm_campaign und nichts anderes aus der Adresse: eine
+    // Kampagnen-Kennung ist keine Person, ein beliebiger Parameter koennte
+    // eine sein.
+    var kampagne = '';
+    try {
+      var wert = new URLSearchParams(location.search).get('utm_campaign');
+      if (wert) {
+        wert = wert.slice(0, 40);
+        kampagne = '?utm_campaign=' + encodeURIComponent(wert);
+        // Merken, damit die Kennung bis zur Kasse ueberlebt: Zwischen dem
+        // Klick auf den Link und dem Kauf liegen mehrere Seitenwechsel, und
+        // die Adresse traegt die Kennung nur beim ersten Aufruf. Ohne das
+        // waere die Bestellung wieder herkunftslos.
+        localStorage.setItem('mkt_campaign', wert);
+      }
+    } catch (e) { /* alter Browser ohne URLSearchParams - dann eben ohne */ }
+
     var payload = {
-      path: location.pathname,
+      path: location.pathname + kampagne,
       referrer: document.referrer ? safeHost(document.referrer) : '',
       country: getCountry(),
       session_id: getSessionId(level),

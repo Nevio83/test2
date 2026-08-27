@@ -949,9 +949,16 @@ app.post('/api/create-checkout-session', async (req, res) => {
     return res.status(503).json({ error: 'Payment system not configured. Please set up Stripe API key.' });
   }
   
-  const { cart, country, discount, customerInfo, device } = req.body;
+  const { cart, country, discount, customerInfo, device, utm_campaign } = req.body;
   // Geraet rein informativ (fuer Geraete-Conversion). Beeinflusst Zahlung/Betrag nicht.
   const deviceTag = typeof device === 'string' ? device.slice(0, 16) : null;
+  // Kampagnen-Kennung des Marketing-Automaten (z.B. "mkt_42"), ebenfalls rein
+  // informativ. Streng begrenzt und gefiltert, weil der Wert aus dem Browser
+  // kommt: nur Buchstaben, Ziffern, Unterstrich und Bindestrich, hoechstens
+  // 40 Zeichen. Er beeinflusst weder Preis noch Versand.
+  const utmTag = typeof utm_campaign === 'string'
+    ? (utm_campaign.replace(/[^\w-]/g, '').slice(0, 40) || null)
+    : null;
   
   // Validiere Eingaben
   if (!cart || !Array.isArray(cart) || cart.length === 0) {
@@ -1092,7 +1099,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
       payment_method_types: paymentMethods,
 
       // Session-Metadaten (rein informativ) – im Webhook auslesbar.
-      metadata: deviceTag ? { device: deviceTag } : {},
+      metadata: {
+        ...(deviceTag ? { device: deviceTag } : {}),
+        ...(utmTag ? { utm_campaign: utmTag } : {})
+      },
 
       payment_intent_data: {
         description: 'Einkauf bei Maios',
@@ -1287,6 +1297,7 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         notes: `Stripe Payment ID: ${session.payment_intent}`,
         payment_intent_id: session.payment_intent || null,
         device: fullSession.metadata?.device || null,
+        utm_campaign: fullSession.metadata?.utm_campaign || null,
         items: fullSession.line_items.data.map(item => ({
           product_id: item.price.product,
           product_name: item.description,
@@ -3510,6 +3521,76 @@ app.get('/a29715347575/api/insights/regions', async (req, res) => {
   } catch (error) {
     console.error('PLZ-Regionen-Fehler:', error.message);
     res.status(500).json({ error: 'PLZ-Regionen nicht verfuegbar' });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════
+// Marketing-Automat (Runde 10) — Dashboard-Routen
+//
+// Die Abfragen selbst stehen in Marketing/api.js, damit dieser Block
+// schlank bleibt und der Shop-Code moeglichst unberuehrt.
+//
+// Alles hier ist LESEND bis auf die beiden Schalter am Ende. Das Dashboard
+// startet keine Prozesse und rendert keine Videos — es zeigt an, was der
+// Automat tut, und kann ihn anhalten.
+//
+// Geschuetzt durch app.use('/a29715347575', requireAdminAuth) weiter oben,
+// Schreibzugriffe zusaetzlich durch requireSameOrigin.
+// ══════════════════════════════════════════════════════════════════
+const marketingApi = require('./Marketing/api');
+
+// Eine Huelle fuer alle Lese-Routen: einheitliche Fehlerbehandlung, ohne
+// dass jede Route ihr eigenes try/catch braucht.
+function marketingRoute(pfad, holen) {
+  app.get(`/a29715347575/api/marketing/${pfad}`, async (req, res) => {
+    try {
+      res.json(await holen(req));
+    } catch (error) {
+      console.error(`Marketing-${pfad}-Fehler:`, error.message);
+      res.status(500).json({ error: `${pfad} nicht verfuegbar` });
+    }
+  });
+}
+
+const marketingLimit = (req, standard, max) =>
+  Math.min(parseInt(req.query.limit) || standard, max);
+
+marketingRoute('ueberblick', () => marketingApi.ueberblick());
+marketingRoute('jobs', () => marketingApi.jobs());
+marketingRoute('laeufe', (req) => marketingApi.laeufe(marketingLimit(req, 25, 100)));
+marketingRoute('trends', (req) => marketingApi.trends(marketingLimit(req, 20, 100)));
+marketingRoute('warteschlange', (req) => marketingApi.warteschlange(marketingLimit(req, 25, 100)));
+marketingRoute('verworfen', (req) => marketingApi.verworfen(marketingLimit(req, 15, 50)));
+marketingRoute('ergebnisse', (req) => marketingApi.ergebnisse(marketingLimit(req, 20, 100)));
+marketingRoute('lernstand', () => marketingApi.lernstand());
+marketingRoute('kosten', () => marketingApi.kosten());
+marketingRoute('protokoll', (req) => marketingApi.protokoll(marketingLimit(req, 40, 200)));
+marketingRoute('overrides', () => marketingApi.overrides());
+
+// Einzelnen Ablauf an-/abschalten. Setzt nur das Flag in der Datenbank —
+// der naechste Takt des Automaten liest es und haelt an.
+app.post('/a29715347575/api/marketing/schalte', async (req, res) => {
+  try {
+    const { job, an } = req.body || {};
+    if (typeof job !== 'string' || !job) {
+      return res.status(400).json({ error: 'job fehlt' });
+    }
+    const ergebnis = await marketingApi.schalte(job, an === true || an === 'true');
+    res.status(ergebnis.ok ? 200 : 400).json(ergebnis);
+  } catch (error) {
+    console.error('Marketing-Schalter-Fehler:', error.message);
+    res.status(500).json({ error: 'Schalter nicht verfuegbar' });
+  }
+});
+
+// Notaus fuer alle Ablaeufe auf einmal.
+app.post('/a29715347575/api/marketing/notaus', async (req, res) => {
+  try {
+    const an = (req.body || {}).an === true || (req.body || {}).an === 'true';
+    res.json(await marketingApi.schalte_alle(an));
+  } catch (error) {
+    console.error('Marketing-Notaus-Fehler:', error.message);
+    res.status(500).json({ error: 'Notaus nicht verfuegbar' });
   }
 });
 

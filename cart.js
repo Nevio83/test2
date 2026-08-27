@@ -1046,7 +1046,15 @@ window.handleCheckout = async function() {
                 country,
                 discount: discountData,
                 customerInfo: customerInfo,
-                device: detectDeviceType() // rein informativ (Geraete-Conversion)
+                device: detectDeviceType(), // rein informativ (Geraete-Conversion)
+                // Kampagnen-Kennung des Marketing-Automaten, beim Ankommen
+                // von view-tracker.js gemerkt. Rein informativ: Sie
+                // beeinflusst weder Preis noch Versand, sondern beantwortet
+                // nur die Frage, welches Video diese Bestellung gebracht hat.
+                utm_campaign: (function () {
+                    try { return localStorage.getItem('mkt_campaign') || null; }
+                    catch (e) { return null; }
+                })()
             })
         });
         
