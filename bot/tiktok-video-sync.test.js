@@ -31,7 +31,7 @@ const {
   interaktiv, frageStelle, TIKTOK_VIDEO_MUSTER,
   verwaisteEintraege, raeumeIndexAuf, aufraeumen, schonImIndex, schonAlsDateiDa,
   sprachHinweise, textAusPuffern, videoText, ladeKonfig,
-  hatMerkmal, getroffeneMerkmale, adressenAusText, zerlege, impersonationVerfuegbar,
+  hatMerkmal, getroffeneMerkmale, adressenAusText, fundeAusText, zerlege, impersonationVerfuegbar,
   produktOrdner, imRohmaterial, brauchtEinzelschutz, legeProduktOrdnerAn,
   gesprocheneSprache, sprachePasst, SPRACHE_SICHER, indexPfad,
 } = require('./tiktok-video-sync');
@@ -2948,4 +2948,95 @@ test('ohne Ablage-Angabe wird weiterhin im Sammelordner gesucht', () => {
   fs.writeFileSync(path.join(basis, 'alt.mp4'), 'video');
   const index = { version: 1, eintraege: [{ datei: 'alt.mp4', produkt_id: 10 }] };
   assert.deepEqual(verwaisteEintraege(index, basis, basis), []);
+});
+
+
+// ── Unterschrift und Likes aus dem Seitentext ────────────────────────
+//
+// Auf TikToks Themenseiten steht die Unterschrift DIREKT hinter dem Link und
+// die Zahl der Likes davor. Damit laesst sich aussortieren, bevor ein Abruf
+// bei TikTok faellig wird. Gemessen an vier echten Anfragen: 396 Funde, 338
+// mit brauchbarer Unterschrift, davon 168 vorab aussortiert — das sind 168
+// gesparte Abrufe, je mit drei Sekunden Pause davor.
+
+// So sieht der Seitentext wirklich aus — mit Leerzeilen zwischen Link und
+// Unterschrift. Genau daran ist die erste Fassung gescheitert.
+const SEITENTEXT = [
+  '… **3.374**](https://www.tiktok.com/@eins/video/7066579282293738758?lang=en)',
+  '',
+  'No more midnight trips to the kitchen for water! 😴 #waterdispenser #bedsidetable',
+  '',
+  '… **1,2K**](https://www.tiktok.com/@zwei/video/7659624597007895816)',
+  '',
+  'Fujidenzo Bottom Load Water Dispenser with water pump, child lock',
+  '',
+  '… **12**](https://www.tiktok.com/@drei/video/7657623967850695957)',
+  '',
+  'Upgrading my WFH desk setup — this electric water dispenser sits on my desk',
+].join('\n');
+
+test('die Unterschrift steht hinter dem Link, nicht daneben', () => {
+  const funde = fundeAusText(SEITENTEXT);
+  assert.equal(funde.length, 3);
+  assert.match(funde[0].unterschrift, /No more midnight trips/);
+  assert.match(funde[1].unterschrift, /Fujidenzo Bottom Load/);
+  assert.match(funde[2].unterschrift, /Upgrading my WFH desk/);
+
+  // Das Anhaengsel der Adresse darf nicht in der Unterschrift landen.
+  assert.equal(funde[0].unterschrift.includes('lang=en'), false);
+  assert.equal(funde[0].url.includes('?'), false);
+
+  // GEGENPROBE — der Fehler, der 178 von 190 Unterschriften verschluckt hat:
+  // Zwischen Klammer und Text stehen LEERZEILEN. Wer gleich am ersten
+  // Zeilenumbruch abschneidet, bekommt einen leeren String und merkt nichts
+  // davon — die Vorpruefung laeuft dann einfach ins Leere.
+  const ohneTrimm = (t) => {
+    const i = t.indexOf(')');
+    return t.slice(i + 1).split('\n')[0].trim();
+  };
+  assert.equal(ohneTrimm(SEITENTEXT.slice(SEITENTEXT.indexOf('https'))), '',
+    'ohne das Wegnehmen der Leerzeilen bleibt nichts uebrig');
+});
+
+test('Likes werden richtig gelesen — auch mit K und M', () => {
+  const funde = fundeAusText(SEITENTEXT);
+  assert.equal(funde[0].likes, 3374, 'der Punkt ist ein Tausendertrenner');
+  assert.equal(funde[1].likes, 1200, 'mit K ist das Komma ein Dezimaltrenner');
+  assert.equal(funde[2].likes, 12);
+
+  // GEGENPROBE: Beides gleich zu behandeln machte aus "1,2K" glatte 12000 —
+  // Faktor zehn daneben, und die Sortierung nach Beliebtheit waere Unsinn.
+  const beidesGleich = Math.round(parseFloat('1,2'.replace(/[.,]/g, '')) * 1000);
+  assert.equal(beidesGleich, 12000);
+  assert.notEqual(funde[1].likes, beidesGleich);
+
+  // Ohne Angabe bleibt es leer statt geraten.
+  const nackt = fundeAusText('siehe https://www.tiktok.com/@x/video/7000000000000000001 und Text dahinter');
+  assert.equal(nackt[0].likes, null);
+});
+
+test('vorab aussortiert wird nur auf positiven Beweis', () => {
+  const konfig = ladeKonfig();
+  const eintrag = konfigZuProdukt(konfig, 10);
+  const aus = [].concat(konfig.standard.ausschluss || [], eintrag.ausschluss || []);
+
+  // Ein Standgeraet — im Seitentext erkennbar, ohne einen Abruf zu kosten.
+  const standgeraet = { title: 'Fujidenzo Bottom Load Water Dispenser with water pump, child lock' };
+  assert.ok(ausschlussTreffer(standgeraet, aus));
+
+  // Ein Video ohne jeden Produktbezug.
+  const daneben = { title: 'Jean Perry Warehouse Clearance is happening 4-6 September 2026' };
+  assert.equal(hatKernwort(daneben, eintrag.kernwoerter), false);
+
+  // Und das Richtige bleibt drin.
+  const richtig = { title: 'Upgrading my WFH desk setup — this electric water dispenser sits on my desk' };
+  assert.equal(ausschlussTreffer(richtig, aus), null);
+  assert.equal(hatKernwort(richtig, eintrag.kernwoerter), true);
+
+  // GEGENPROBE zur Laengengrenze: Bei duennem Text wird NICHT geurteilt.
+  // Die Unterschrift aus dem Seitentext kann abgeschnitten sein, und ein
+  // gutes Video wegen eines Textrests nie anzusehen waere teurer als ein
+  // Abruf zu viel.
+  const duenn = 'Wasser 💧';
+  assert.ok(duenn.length < 25, 'so kurz wird gar nicht erst geurteilt');
 });

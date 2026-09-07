@@ -1,0 +1,921 @@
+<title>Maios Shop — Fortschrittsbericht 3 Monate</title>
+<style>
+  :root{
+    --bg:#0b0b0f;
+    --bg-grad:#101018;
+    --card:#16161d;
+    --card-hover:#191922;
+    --border:#26262f;
+    --text:#ece9f2;
+    --muted:#9b97a8;
+    --muted-2:#716d7d;
+    --green:#33c479;
+    --green-dim:#1c3a2b;
+    --red:#e6487a;
+    --red-dim:#3a1c2a;
+    --orange:#e2963f;
+    --orange-dim:#3a2e1a;
+    --blue:#4d8fe0;
+    --blue-dim:#1a2a3a;
+    --rule:#232329;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#f3f2f6; --bg-grad:#eceaf1; --card:#ffffff; --card-hover:#fbfaff;
+      --border:#e2e0ea; --text:#201e29; --muted:#615c70; --muted-2:#8a8496;
+      --green:#1f9c5c; --green-dim:#e1f6ea; --red:#c9295c; --red-dim:#fbe4ec;
+      --orange:#b06a1a; --orange-dim:#fbedd9; --blue:#2e6bc4; --blue-dim:#e3edfb;
+      --rule:#e2e0ea;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0b0b0f; --bg-grad:#101018; --card:#16161d; --card-hover:#191922;
+    --border:#26262f; --text:#ece9f2; --muted:#9b97a8; --muted-2:#716d7d;
+    --green:#33c479; --green-dim:#1c3a2b; --red:#e6487a; --red-dim:#3a1c2a;
+    --orange:#e2963f; --orange-dim:#3a2e1a; --blue:#4d8fe0; --blue-dim:#1a2a3a;
+    --rule:#232329;
+  }
+  :root[data-theme="light"]{
+    --bg:#f3f2f6; --bg-grad:#eceaf1; --card:#ffffff; --card-hover:#fbfaff;
+    --border:#e2e0ea; --text:#201e29; --muted:#615c70; --muted-2:#8a8496;
+    --green:#1f9c5c; --green-dim:#e1f6ea; --red:#c9295c; --red-dim:#fbe4ec;
+    --orange:#b06a1a; --orange-dim:#fbedd9; --blue:#2e6bc4; --blue-dim:#e3edfb;
+    --rule:#e2e0ea;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 500px at 15% -10%, color-mix(in srgb, var(--blue) 10%, transparent), transparent),
+      linear-gradient(180deg, var(--bg-grad), var(--bg) 400px);
+    color:var(--text);
+    font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:56px 28px 90px;}
+
+  /* ---------- Header ---------- */
+  .report-header{margin-bottom:52px;}
+  .eyebrow{
+    font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--blue);margin:0 0 14px;
+  }
+  h1.title{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(30px,4vw,44px);
+    font-weight:400;
+    margin:0 0 12px;
+    letter-spacing:-.01em;
+    text-wrap:balance;
+  }
+  .subtitle{color:var(--muted);font-size:16px;max-width:640px;margin:0 0 20px;}
+  .meta-row{display:flex;gap:28px;flex-wrap:wrap;font-size:13px;color:var(--muted-2);
+    padding-top:18px;border-top:1px solid var(--rule);}
+  .meta-row strong{color:var(--text);font-weight:600;}
+
+  /* ---------- Section heading ---------- */
+  .section{margin-top:64px;}
+  .section-head{
+    display:flex;align-items:baseline;gap:14px;margin-bottom:22px;
+  }
+  .section-label{
+    font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted-2);white-space:nowrap;
+  }
+  .section-rule{height:1px;background:var(--rule);flex:1;}
+  .section-note{color:var(--muted);font-size:14.5px;margin:-8px 0 24px;max-width:680px;}
+
+  /* ---------- Timeline (Rückblick) ---------- */
+  .timeline{display:flex;flex-direction:column;}
+  .tl-entry{
+    display:grid;grid-template-columns:96px 1fr;gap:22px;
+    padding:20px 0;border-top:1px solid var(--rule);
+  }
+  .tl-entry:first-child{border-top:none;padding-top:0;}
+  .tl-date{
+    font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;
+    padding-top:2px;font-variant-numeric:tabular-nums;
+  }
+  .tl-body h3{margin:0 0 6px;font-size:16.5px;font-weight:600;}
+  .tl-body p{margin:0;color:var(--muted);font-size:14.5px;}
+  .tl-body p code{
+    background:var(--blue-dim);color:var(--blue);padding:1px 6px;border-radius:4px;
+    font-size:12.5px;font-family:ui-monospace,Consolas,monospace;
+  }
+  .tl-tag{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;
+    text-transform:uppercase;padding:2px 8px;border-radius:999px;margin-left:8px;
+    vertical-align:middle;position:relative;top:-1px;
+  }
+  .tag-security{background:var(--red-dim);color:var(--red);}
+  .tag-launch{background:var(--green-dim);color:var(--green);}
+
+  /* ---------- Card grid ---------- */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  /* Raster-Elemente schrumpfen sonst nicht unter ihre laengste unbrechbare
+     Zeichenkette (z.B. ABANDONED_CART_ENABLED=true) -> die Seite bekam dadurch
+     einen waagerechten Balken. min-width:0 hebt diese Sperre auf, das Umbrechen
+     erledigt overflow-wrap. */
+  .grid>*{min-width:0;}
+  .card,.desc,.wirkung,.built-note{overflow-wrap:anywhere;}
+  code{overflow-wrap:anywhere;}
+  @media (max-width:720px){.grid{grid-template-columns:1fr;}}
+  .card{
+    background:var(--card);border:1px solid var(--border);border-left:3px solid var(--muted-2);
+    border-radius:10px;padding:22px 22px 22px 20px;transition:background .15s ease;
+  }
+  .card:hover{background:var(--card-hover);}
+  .card.st-done{border-left-color:var(--green);}
+  .card.st-progress{border-left-color:var(--orange);}
+  .card.st-open{border-left-color:var(--muted-2);}
+  .card.pri-critical{border-left-color:var(--red);}
+  .card.pri-high{border-left-color:var(--red);}
+  .card.pri-medium{border-left-color:var(--orange);}
+  .card.pri-low{border-left-color:var(--green);}
+
+  .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+  .card-title{display:flex;align-items:center;gap:10px;font-size:16.5px;font-weight:600;}
+  .card-title .ico{font-size:19px;line-height:1;}
+  .card p.desc{margin:0;color:var(--muted);font-size:14.5px;}
+  .card p.desc.struck{text-decoration:line-through;text-decoration-color:var(--muted-2);opacity:.6;}
+
+  .badge{
+    font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:4px 10px;border-radius:999px;white-space:nowrap;
+  }
+  .badge-done{background:var(--green-dim);color:var(--green);}
+  .badge-progress{background:var(--orange-dim);color:var(--orange);}
+  .badge-open{background:color-mix(in srgb, var(--muted-2) 18%, transparent);color:var(--muted);}
+  .badge-critical{background:var(--red-dim);color:var(--red);}
+  .badge-high{background:var(--red-dim);color:var(--red);}
+  .badge-medium{background:var(--orange-dim);color:var(--orange);}
+  .badge-low{background:var(--green-dim);color:var(--green);}
+  .badge-input{background:var(--blue-dim);color:var(--blue);}
+  .card.st-built{border-left-color:var(--green);}
+  .card.st-input{border-left-color:var(--blue);}
+  .built-note{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12.5px;
+    font-weight:600;color:var(--green);}
+  .built-note code{background:var(--green-dim);color:var(--green);padding:1px 6px;border-radius:4px;
+    font-size:11.5px;font-family:ui-monospace,Consolas,monospace;}
+  .desc code{background:color-mix(in srgb, var(--muted-2) 16%, transparent);color:var(--text);
+    padding:1px 5px;border-radius:4px;font-size:12px;font-family:ui-monospace,Consolas,monospace;}
+
+  /* Wirkungs-Block: was aendert sich, was wird besser, was bringt es */
+  .wirkung{margin:14px 0 2px;padding:13px 15px;border-radius:10px;
+    background:color-mix(in srgb, var(--muted-2) 8%, transparent);
+    border-left:2px solid color-mix(in srgb, var(--muted-2) 45%, transparent);}
+  .wirkung dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:7px 12px;align-items:baseline;}
+  .wirkung dt{margin:0;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--muted-2);white-space:nowrap;}
+  .wirkung dd{margin:0;font-size:13.5px;line-height:1.55;color:var(--text);}
+  .wirkung dd strong{color:var(--text);}
+  /* Eine Idee, die nach der Messung wieder rausflog — sie steht bewusst da,
+     denn eine verworfene Idee ist ein Ergebnis, kein Versaeumnis. */
+  .wirkung dt.verworfen{color:var(--muted);text-decoration:line-through;
+    text-decoration-thickness:1px;text-underline-offset:2px;white-space:normal;}
+  .wirkung code{background:color-mix(in srgb, var(--muted-2) 16%, transparent);color:var(--text);
+    padding:1px 5px;border-radius:4px;font-size:11.5px;font-family:ui-monospace,Consolas,monospace;}
+  @media(max-width:640px){.wirkung dl{grid-template-columns:1fr;gap:3px;}
+    .wirkung dt{margin-top:7px;}}
+
+  .pruef-banner{margin:0 0 22px;padding:15px 18px;border-radius:12px;
+    background:var(--green-dim);border:1px solid color-mix(in srgb, var(--green) 32%, transparent);}
+  .pruef-banner h3{margin:0 0 5px;font-size:15px;color:var(--green);}
+  .pruef-banner p{margin:0;font-size:13.5px;line-height:1.6;color:var(--text);}
+  .need-note{display:block;margin-top:10px;font-size:12.5px;color:var(--blue);font-weight:600;}
+
+  /* ---------- Impact list ---------- */
+  .impact-list{display:flex;flex-direction:column;gap:14px;}
+  .impact-card{
+    background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:18px 20px;display:flex;gap:16px;align-items:flex-start;
+  }
+  .impact-card .ico{font-size:20px;line-height:1.3;}
+  .impact-card .body{flex:1;}
+  .impact-card h3{margin:0 0 6px;font-size:15.5px;font-weight:600;}
+  .impact-card h3.struck{text-decoration:line-through;text-decoration-color:var(--muted-2);color:var(--muted);}
+  .impact-card p{margin:0 0 10px;color:var(--muted);font-size:14px;}
+  .impact-card.is-done{opacity:.62;}
+
+  footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--rule);color:var(--muted-2);font-size:12.5px;}
+
+  /* ---------- Todo / Nächste Schritte ---------- */
+  .todo-block{background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:8px 24px 20px;margin-top:28px;}
+  .todo-group{margin-top:18px;}
+  .todo-group-title{font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--blue);margin:0 0 4px;display:flex;align-items:center;gap:8px;}
+  .todo-group.free .todo-group-title{color:var(--green);}
+  .todo-group.later .todo-group-title{color:var(--orange);}
+  .todo{display:flex;gap:13px;padding:13px 0;border-top:1px solid var(--rule);align-items:flex-start;}
+  .todo:first-of-type{border-top:none;}
+  .todo .mark{flex:0 0 20px;height:20px;margin-top:1px;border-radius:6px;border:1.5px solid var(--muted-2);
+    display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--bg);font-weight:800;}
+  .todo-group.free .todo .mark{border-color:var(--green);}
+  .todo-group.later .todo .mark{border-color:var(--orange);}
+  .todo .body{flex:1;}
+  .todo .body h4{margin:0 0 3px;font-size:15px;font-weight:600;}
+  .todo .body p{margin:0;color:var(--muted);font-size:13.5px;}
+  .todo .body code{background:color-mix(in srgb, var(--muted-2) 16%, transparent);color:var(--text);
+    padding:1px 6px;border-radius:4px;font-size:12px;font-family:ui-monospace,Consolas,monospace;}
+  .todo .who{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;letter-spacing:.04em;
+    text-transform:uppercase;padding:2px 8px;border-radius:999px;vertical-align:middle;}
+  .who-me{background:var(--blue-dim);color:var(--blue);}
+  .who-you{background:var(--orange-dim);color:var(--orange);}
+
+  /* ---------- Ergaenzungen fuer den Drei-Monats-Bericht ---------- */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:26px;}
+  .stats>*{min-width:0;}
+  @media(max-width:860px){.stats{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:460px){.stats{grid-template-columns:1fr;}}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 18px 16px;}
+  .stat .num{font-family:Georgia,"Times New Roman",serif;font-size:30px;line-height:1.1;
+    font-variant-numeric:tabular-nums;margin-bottom:4px;}
+  .stat .lbl{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted-2);}
+  .stat .sub{margin-top:7px;font-size:13px;color:var(--muted);line-height:1.5;}
+  .stat.acc-green .num{color:var(--green);}
+  .stat.acc-blue .num{color:var(--blue);}
+  .stat.acc-orange .num{color:var(--orange);}
+  .stat.acc-red .num{color:var(--red);}
+
+  .month-head{display:flex;align-items:baseline;gap:12px;margin:34px 0 6px;}
+  .month-name{font-family:Georgia,"Times New Roman",serif;font-size:21px;}
+  .month-sum{font-size:12.5px;color:var(--muted-2);font-weight:600;}
+  .month-rule{height:1px;background:var(--rule);flex:1;}
+
+  table.zahlen{width:100%;border-collapse:collapse;margin-top:16px;font-size:14px;}
+  table.zahlen th,table.zahlen td{text-align:left;padding:9px 12px;border-top:1px solid var(--rule);
+    vertical-align:top;}
+  table.zahlen th{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted-2);border-top:none;}
+  table.zahlen td:first-child{font-weight:600;}
+  table.zahlen td.num{font-variant-numeric:tabular-nums;white-space:nowrap;}
+  table.zahlen td.gut{color:var(--green);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .tbl-scroll{overflow-x:auto;}
+  table.zahlen code{background:color-mix(in srgb, var(--muted-2) 16%, transparent);color:var(--text);
+    padding:1px 5px;border-radius:4px;font-size:12px;font-family:ui-monospace,Consolas,monospace;}
+
+  .tag-fund{background:var(--orange-dim);color:var(--orange);}
+  .tag-neu{background:var(--blue-dim);color:var(--blue);}
+  blockquote.merke{margin:18px 0 0;padding:14px 18px;border-left:3px solid var(--blue);
+    background:var(--blue-dim);border-radius:0 10px 10px 0;}
+  blockquote.merke p{margin:0;font-size:14px;line-height:1.6;color:var(--text);}
+</style>
+
+
+<div class="wrap">
+
+  <div class="report-header">
+    <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
+    <h1 class="title">Maios Shop — Juni bis September 2026</h1>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 2. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 602 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und führt ihn bis heute weiter.</p>
+    <div class="meta-row">
+      <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
+      <span style="color:var(--green);font-weight:600;">✓ 159 Commits an 36 Arbeitstagen</span>
+      <span><strong>602</strong> automatische Prüfungen (322 Shop + 149 Marketing + 131 Bot)</span>
+      <span>Stand <strong>02.09.2026</strong></span>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-label">Die drei Monate in Zahlen</span>
+      <span class="section-rule"></span>
+    </div>
+    <p class="section-note">Alle Werte sind gemessen, nicht geschätzt: <code>git log</code> ab dem 7.&nbsp;Juni, <code>npm test</code> und die Bot-Prüfungen in diesem Durchgang gelaufen, die Python-Prüfungen ausgezählt.</p>
+
+    <div class="stats">
+      <div class="stat acc-blue">
+        <div class="num">159</div>
+        <div class="lbl">Commits</div>
+        <p class="sub">an 36 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
+      </div>
+      <div class="stat acc-green">
+        <div class="num">602</div>
+        <div class="lbl">Automatische Prüfungen</div>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: 322 im Shop, 149 im Marketing, 131 im TikTok-Bot — alle grün.</p>
+      </div>
+      <div class="stat acc-orange">
+        <div class="num">523</div>
+        <div class="lbl">Geänderte Dateien</div>
+        <p class="sub">+84.592 Zeilen hinzugefügt, −96.525 entfernt. Unterm Strich <strong>11.933 Zeilen weniger</strong> — es wurde mehr aufgeräumt als gebaut.</p>
+      </div>
+      <div class="stat acc-red">
+        <div class="num">4</div>
+        <div class="lbl">Vorfälle mit echtem Schaden</div>
+        <p class="sub">Privater Schlüssel im öffentlichen Repo, abrufbarer Quellcode, tote Kasse, Absturz per leerer Anfrage. Alle vier gefunden und behoben.</p>
+      </div>
+    </div>
+
+    <div class="tbl-scroll">
+    <table class="zahlen">
+      <thead>
+        <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">602</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
+        <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
+        <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
+        <tr><td>Bilddaten Startseite</td><td class="num">100 %</td><td class="num">22 %</td><td class="gut">−78 %</td></tr>
+        <tr><td>Bilddaten Produktseite (Erstaufruf)</td><td class="num">678 KB</td><td class="num">237 KB</td><td class="gut">−65 %</td></tr>
+        <tr><td>Produktseite beim zweiten Aufruf</td><td class="num">alles neu geladen</td><td class="num">17 KB gesamt</td><td class="gut">ETag statt <code>no-store</code></td></tr>
+        <tr><td>Adressen in der Sitemap</td><td class="num">keine Sitemap</td><td class="num">54</td><td class="gut">+ <code>noindex</code> auf 5 Seiten</td></tr>
+        <tr><td>Zeilen in <code>app.js</code></td><td class="num">4.430</td><td class="num">1.802</td><td class="gut">−59 %</td></tr>
+        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">10.442 Zeilen, 149 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <blockquote class="merke">
+      <p><strong>Die Zahl, die am meisten sagt:</strong> Von den 96.525 gelöschten Zeilen entfielen rund 5.600 auf toten Code, den niemand mehr aufrief, und weitere Tausende auf die Design-Migration der 40 Produktseiten. Ein Shop wird nicht dadurch besser, dass mehr Code darin steht — sondern dadurch, dass weniger davon lügen kann.</p>
+    </blockquote>
+  </div>
+
+  <!-- ============================================================ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-label">Rückblick — Monat für Monat</span>
+      <span class="section-rule"></span>
+    </div>
+    <p class="section-note">Chronologisch aus der Commit-Historie, gebündelt nach Tagen mit zusammenhängender Arbeit. Bewusst nüchtern: was gebaut wurde — und was dabei kaputt war.</p>
+
+    <div class="month-head">
+      <span class="month-name">Juni</span>
+      <span class="month-sum">60 Commits · Fundament, Recht, Design</span>
+      <span class="month-rule"></span>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-entry">
+        <div class="tl-date">7.–18. Jun</div>
+        <div class="tl-body">
+          <h3>Umzug auf Render, Netlify raus <span class="tl-tag tag-launch">Launch</span></h3>
+          <p>Der Shop lief zweigleisig: Checkout-Logik existierte doppelt, einmal unter <code>netlify/</code> und einmal in <code>server.js</code>. Der Netlify-Pfad wurde gelöscht, <code>server.js</code> ist seitdem die alleinige Quelle der Wahrheit für Kasse und Zahlung. Postgres-Verbindung und Admin-Panel gingen in Betrieb.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">19.–20. Jun</div>
+        <div class="tl-body">
+          <h3>Fundament fertig, Widerruf gebaut <span class="tl-tag tag-security">Sicherheit</span></h3>
+          <p>Datenbank und Admin-Panel live, toter Code und ungenutzte Abhängigkeiten entfernt, CORS und CSP gehärtet, ein doppelter <code>payment_intent_data</code>-Schlüssel im Checkout beseitigt. Aufrufe-Tracking eingebaut. Domain auf <code>maiosshop.com</code> umgestellt. EU-Widerrufsbutton mit funktionierendem Formular und CAPTCHA — vorher gab es nur den Rechtstext, kein Formular.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">21. Jun</div>
+        <div class="tl-body">
+          <h3>Der Tag mit 17 Deploys <span class="tl-tag tag-fund">Fund</span></h3>
+          <p>Rechtskonforme Belege (Kleinunternehmer §19 UStG, fortlaufende Rechnungsnummer, GoBD-Archiv per Mail), DSGVO-Cookie-Banner in Eigenbau, Slug-Adressen für alle 40 Produktseiten samt 301-Umleitung, Keep-Alive gegen den Render-Schlaf, Node 18 → 20 mit nativem <code>fetch</code>, Dashboard-Diagramme mit Zeitraum-Filter, ESLint + Prettier + die ersten Smoke-Tests.<br><br><strong>Dabei aufgefallen:</strong> Die Kasse zeigte <em>live</em> auf einen Netlify-Endpunkt, den es nicht mehr gab — jeder Kaufversuch lief in einen 404. Der Fehler war beim Umzug entstanden und blieb tagelang unbemerkt.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">22. Jun</div>
+        <div class="tl-body">
+          <h3>Privater Schlüssel im öffentlichen Repo <span class="tl-tag tag-security">Sicherheit</span></h3>
+          <p>Über den <code>excel/</code>-Ordner waren ein privater SSL-Schlüssel und ein Stripe-Backup-Code im öffentlichen Repository gelandet. Bereinigt mit <code>git filter-branch</code> und Force-Push, <code>.gitignore</code> um Secret-Muster erweitert. <strong>Ein einmal gepushtes Secret gilt trotzdem als kompromittiert</strong> — der History-Rewrite ist Schadensbegrenzung, kein Ersatz für das Neuausstellen.<br><br>Am selben Tag: Marktforschungs-Dashboard mit anonymem Suchbegriff-Tracking, Geräte-Conversion und PLZ-Leitregionen; Newsletter mit Double-Opt-In und Werbe-Mail-Versand — und der Fund, dass Resend-Fehler bis dahin <em>verschluckt</em> wurden: eine fehlgeschlagene Mail meldete Erfolg.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">24.–29. Jun</div>
+        <div class="tl-body">
+          <h3>Margen nachgerechnet, 40 Produktseiten neu gestaltet</h3>
+          <p>Preisanalyse nach der Formel <em>VK ≥ (Einkauf + CJ-Versand) × 1,20</em> ergab vier Produkte unter der Marge — korrigiert. Danach das „Premium Dark"-Design auf alle 40 Produktseiten, alte Kategorie-CSS gelöscht, „Häufig zusammen gekauft" ergänzt. Nebenbei: Die Preise in den „Ähnliche Produkte"-Karten stimmten nicht mit <code>products.json</code> überein und wurden angeglichen.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="month-head">
+      <span class="month-name">Juli</span>
+      <span class="month-sum">43 Commits · Betrieb, Sicherheit, Reichweite</span>
+      <span class="month-rule"></span>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-entry">
+        <div class="tl-date">8.–17. Jul</div>
+        <div class="tl-body">
+          <h3>Startseite neu, Drittanbieter-Banner raus</h3>
+          <p>Der CookieYes-Banner flog raus — der eigene DSGVO-Banner war längst da, beide gleichzeitig zu zeigen war schlicht falsch. Keep-Alive wurde robuster (Dauer-Ping je Lauf statt eines einzelnen), mit ehrlich dokumentierten Grenzen: GitHub-Cron ist „best effort", das ist keine Garantie. Dazu neues Startseiten-Design, neues Banner und eine überarbeitete Handy-Ansicht.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">18.–24. Jul</div>
+        <div class="tl-body">
+          <h3>Kasse, Kundenbindung, Sichtbarkeit</h3>
+          <p>Klarna im Checkout, Sitemap, dämpfbares Log-Level, Warenkorb-Abbrecher-Mails. Sichere Bestellstatus-Seite (Bestellnummer + E-Mail statt ratbarer Links). Automatische Bewertungs-Anfrage 7 Tage nach dem Kauf. Versand-Markierung mit Kundenmail im Admin. Meta Pixel, GA4, TikTok Pixel und Tawk.to-Chat — alle vier <strong>nur nach erteilter Einwilligung</strong>. Social-Vorschau und Produkt-Strukturdaten je Produktseite. WebP-Auslieferung für 159 Bilder: <strong>−70 % Bilddaten</strong>.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">25. Jul</div>
+        <div class="tl-body">
+          <h3>Zehn Commits Betriebshärtung an einem Tag</h3>
+          <p>Rate-Limiting auf öffentlichen Schreib-Endpunkten, Brute-Force-Schutz am Admin-Login, Admin-Audit-Log, Fehler- und Uptime-Überwachung mit Mail-Alarm, tägliche Datenbank-Sicherung als zusätzliches Netz neben Neon, DSGVO-Selbstauskunft und -Löschung nach Art. 15/17, automatischer CJ-Preis-Abgleich (nur Beobachtung, kein automatisches Überschreiben), Sitemap mit echtem <code>&lt;lastmod&gt;</code>.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">26.–27. Jul</div>
+        <div class="tl-body">
+          <h3>Der Quellcode war öffentlich abrufbar <span class="tl-tag tag-security">Sicherheit</span></h3>
+          <p><code>express.static(__dirname)</code> lieferte das <em>gesamte</em> Projekt aus. Live nachgewiesen abrufbar: <code>server.js</code>, die vollständige Gutscheincode-Liste, die Lieferantentabelle aus <code>excel/</code> und die Beleg-PDFs. Behoben mit <code>static-guard.js</code> nach dem Allowlist-Prinzip: erlaubte Verzeichnisse und Endungen, <code>.js</code>/<code>.css</code> nur, wenn eine HTML-Seite sie einbindet.<br><br>Am selben Tag: Content-Security-Policy eingeführt, IP-Standortabfrage an die Cookie-Einwilligung gebunden, und ein vergessener Zahlungs-Endpunkt entfernt, der <strong>bei einer leeren Anfrage den ganzen Prozess abstürzen ließ</strong>. Dazu Stripe-Abgleich „bezahlt, aber keine Bestellung", CJ-Bestandsabgleich, serverseitige Gutscheinprüfung und der Produktdatenfeed fürs Google Merchant Center.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">28.–30. Jul</div>
+        <div class="tl-body">
+          <h3>CSRF, Absturzschutz, Bilder in Anzeigegröße</h3>
+          <p>Herkunftsprüfung vor allen Admin-Schreibaktionen — nötig, weil Basic Auth kein <code>SameSite</code> kennt und der Browser gespeicherte Zugangsdaten auch an fremd ausgelöste Anfragen hängt. „Ausverkauft" in den Produktlisten plus Vormerkung „Sag mir Bescheid". PWA-Manifest und Favicons (zwei tote Verweise repariert). <strong>Absturzschutz:</strong> Vorher gab es <em>null</em> Handler — ein unbehandelter Fehler beendete den Prozess. Und Bilder werden seitdem in Anzeigegröße ausgeliefert: Startseite <strong>−78 %</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="month-head">
+      <span class="month-name">August</span>
+      <span class="month-sum">56 Commits · Qualität, Automatisierung, Marketing</span>
+      <span class="month-rule"></span>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-entry">
+        <div class="tl-date">1.–2. Aug</div>
+        <div class="tl-body">
+          <h3>Die Lieferanten-Anbindung war an vier Stellen kaputt <span class="tl-tag tag-fund">Fund</span></h3>
+          <p>Sieben Commits, um CJ überhaupt wieder verlässlich zu machen: CJ-Fehler wurden verschluckt (Diagnose statt Ratespiel), der abgelaufene Token wurde nie wirklich erneuert (eine Sperre hebelte die Erneuerung aus), die Variantenabfrage nutzte <code>productId</code> statt <code>pid</code>, und die Ratenbegrenzung des Lieferanten schickte den Shop in den Notbetrieb.<br><br>Dazu der Bestandsfehler mit Ansage: <code>Number(null) === 0</code> sperrte drei Produkte fälschlich als ausverkauft. Und 5.600 Zeilen Altlasten raus. Die CSP kommt seitdem <strong>ohne <code>unsafe-inline</code> für Skripte</strong> aus — eingeschleuster Inline-Code wird geblockt.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">3. Aug</div>
+        <div class="tl-body">
+          <h3>Der Prüflauf wird zur Deploy-Sperre <span class="tl-tag tag-launch">Meilenstein</span></h3>
+          <p>Bis dahin rollte Render bei jedem Push automatisch aus — ungeprüft. Seit dem 3.&nbsp;August steht <code>autoDeploy: false</code>, und erst der letzte grüne Schritt des Prüflaufs löst den Deploy über einen Hook aus. Ist ein Schritt rot, bleibt der alte Stand live. Der wertvollste Schritt ist die <strong>Startprüfung</strong>: Server hochfahren, <code>/health</code> abfragen, beenden — Lint und Tests sehen nicht, ob der Server überhaupt hochkommt.<br><br>Am selben Tag: zeitgesteuerte Abläufe überstehen jetzt einen Neustart. Vorher hatte jeder Ablauf ein eigenes <code>setInterval</code> im Prozess; bei rund zwei Deploys täglich kam ein Tageslauf selten durch und ein <strong>Wochenlauf praktisch nie</strong> — betroffen waren Datenbank-Sicherung, Stripe-Abgleich und beide CJ-Läufe.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">4.–7. Aug</div>
+        <div class="tl-body">
+          <h3>Aufräumen mit Messung</h3>
+          <p><code>app.js</code> von 4.430 auf 1.802 Zeilen: Die Kategorie-, Bestseller-, Such- und Sortier-Maschinerie sprach sieben Raster an, die es in <em>keiner</em> Seite mehr gibt. Eingeschleuste <code>&lt;style&gt;</code>-Blöcke wirken nicht mehr. HSTS eingeführt — bewusst mit <strong>einem Tag</strong> statt einem Jahr, weil sich diese Kopfzeile nicht zurückrufen lässt. Kein Eingabefeld ist mehr für Screenreader stumm. Produktseiten laden 65 % weniger Bilddaten. Und die Kasse zeigt beim Scheitern kein rohes JSON mehr — ein Meldungsfenster mit Entwicklerausgabe im teuersten Moment des Shops.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">14. Aug</div>
+        <div class="tl-body">
+          <h3>Die Sicherung erfasste die Einwilligungs-Nachweise nicht <span class="tl-tag tag-fund">Fund</span></h3>
+          <p><code>user_consent_events</code> — der Nachweis nach Art. 7 Abs. 1 DSGVO, der sich nicht wiederherstellen lässt — fehlte in der täglichen Sicherung. Beim Nachrüsten kam ein zweiter Fehler zum Vorschein: Ein hartes <code>ORDER BY id</code> hätte den <em>gesamten</em> Sicherungslauf lautlos abstürzen lassen, weil drei Tabellen des Schemas gar keine <code>id</code>-Spalte haben. Die Sortierspalte wird jetzt pro Tabelle ermittelt.<br><br>Dazu: 13 Infoseiten bekamen eine eigene Kurzbeschreibung für Google, 16 Textseiten laden nur noch die Regeln, die sie brauchen, und die Browser-Konsole zeigt auf der Live-Domain nur noch echte Fehler.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">17. Aug</div>
+        <div class="tl-body">
+          <h3>Marketing-Automat — Runde 10 <span class="tl-tag tag-launch">Meilenstein</span></h3>
+          <p>Der alte <code>Marketing/</code>-Ordner war beim Nachmessen fast vollständig Attrappe: erfundene Trends, feste „1234 Aufrufe" als Kennzahl, neun MP4-Dateien mit <strong>0 Byte</strong> Inhalt und ein Upload, der auf einen Menschen wartete. Ersetzt durch eine Kette, die von selbst läuft — Details im nächsten Abschnitt.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">24.–27. Aug</div>
+        <div class="tl-body">
+          <h3>TikTok-Rohmaterial als Recherche <span class="tl-tag tag-neu">Neu</span></h3>
+          <p>Ein eigener Bot (<code>bot/</code>) sucht fremdes TikTok-Material zu den eigenen 40 Produkten, prüft jede Adresse gegen die Produktliste und lädt nur, was über der Trefferschwelle liegt. 3.022 Zeilen Programm, 3.042 Zeilen Prüfungen — <strong>mehr Test als Code</strong>. Details im nächsten Abschnitt.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="month-head">
+      <span class="month-name">September</span>
+      <span class="month-sum">laufend · Vorprüfung und Schnitt</span>
+      <span class="month-rule"></span>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-entry">
+        <div class="tl-date">28. Aug – 2. Sep</div>
+        <div class="tl-body">
+          <h3>Aus 23 Rohclips wurde ein fertiger Werbeclip <span class="tl-tag tag-neu">Neu</span></h3>
+          <p>Fünf Schnittfassungen für den Wasserspender, die letzte vom 2.&nbsp;September: 19,5 Sekunden, 1080×1920, H.264 + AAC, mit Musikbett und eingebrannter Bildunterschrift. Parallel wurde der Bot so umgebaut, dass er die Bildunterschrift <em>vor</em> dem Abruf auswertet und damit 77 % der Kandidaten klärt, ohne TikTok überhaupt anzufassen. <strong>Diese Arbeit ist noch nicht committet</strong> — sie liegt im Arbeitsverzeichnis.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-label">Was gebaut wurde — nach Thema</span>
+      <span class="section-rule"></span>
+    </div>
+    <p class="section-note">Dieselbe Arbeit, anders sortiert: nicht nach Datum, sondern danach, wovor sie schützt oder was sie einbringt. Bei jedem Block steht, <strong>was sich ändert</strong> und <strong>was es bringt</strong>.</p>
+
+    <div class="grid">
+
+      <div class="card st-done">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🔒</span> Sicherheit</div>
+          <span class="badge badge-done">Live</span>
+        </div>
+        <p class="desc">Sieben Bausteine, die es Anfang Juni alle nicht gab: Datei-Freigabe (<code>static-guard.js</code>), Content-Security-Policy ohne <code>unsafe-inline</code>, Herkunftsprüfung gegen CSRF, HSTS, Rate-Limiting, Brute-Force-Schutz am Admin-Login und ein Audit-Log über alle Admin-Aktionen.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Ausgeliefert wird nur noch, was auf der Freigabeliste steht. Fremder Code — nachgeladen <em>oder eingeschleust</em> — läuft im Browser nicht mehr.</dd>
+            <dt>Bringt</dt><dd>Am 27. Juli waren <strong>Quellcode, Gutscheincodes und Lieferantenliste live abrufbar</strong>. Das ist seitdem strukturell ausgeschlossen, nicht nur an dieser einen Stelle geflickt.</dd>
+            <dt>Kostet</dt><dd>Nichts im Betrieb. Die Freigabeliste pflegt sich beim Start selbst aus den HTML-Seiten.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-done">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">⚖️</span> Recht &amp; DSGVO</div>
+          <span class="badge badge-done">Live</span>
+        </div>
+        <p class="desc">Belege nach §19 UStG mit fortlaufender Nummer und GoBD-Archiv, eigener Cookie-Banner mit Zwei-Stufen-Einwilligung, EU-Widerrufsformular, Newsletter mit Double-Opt-In, Selbstauskunft und Löschung nach Art. 15/17 — und die Einwilligungs-Nachweise in der täglichen Sicherung.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Jede Einwilligung wird mit Zeitstempel und Beleg festgehalten. Tracker starten erst danach, nicht vorher.</dd>
+            <dt>Bringt</dt><dd>Die Nachweispflicht ist erfüllbar, statt nur behauptet. Der Beleg-Versand ans Archiv fängt ab, dass Renders Dateisystem flüchtig ist.</dd>
+            <dt>Fund</dt><dd>Die IP ging bis Anfang August an Google Analytics mit — und hebelte damit das dort gesetzte <code>anonymize_ip</code> aus. Behoben, mit Prüfung abgesichert.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-done">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">💳</span> Geld &amp; Bestellung</div>
+          <span class="badge badge-done">Live</span>
+        </div>
+        <p class="desc">Serverseitige Preis- und Mengenprüfung, serverseitige Gutscheinprüfung, Klarna, Abgleich „bezahlt, aber keine Bestellung" mit Stripe, CJ-Bestands- und Preis-Abgleich, Versand-Markierung mit Kundenmail, Bewertungs-Anfrage nach dem Kauf.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Kein Betrag kommt mehr aus dem Browser. Preis, Menge und Rabatt werden gegen <code>products.json</code> und die Codeliste geprüft, bevor Stripe etwas sieht.</dd>
+            <dt>Bringt</dt><dd>Manipulierte Preise sind wirkungslos. Der Stripe-Abgleich findet Zahlungen, zu denen keine Bestellung angelegt wurde — der Fall, der sonst erst beim Kunden auffällt.</dd>
+            <dt>Fund</dt><dd>Eine zweite, abweichende Gutscheinliste lag in einer verwaisten Admin-Seite. Genau die Fehlerklasse, die zweimal in diesem Projekt aufgetreten ist — siehe die abweichende Marketing-Produktliste im August.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-done">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">⚡</span> Ladezeit</div>
+          <span class="badge badge-done">Live</span>
+        </div>
+        <p class="desc">WebP für 159 Bilder, Bilder in Anzeigegröße mit fester Breiten-Allowlist, gestufte Zwischenspeicherung mit ETag statt <code>no-store</code> für alles, tote Startseiten-Logik entfernt.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Vorher ging für <em>jede</em> Datei <code>no-store</code> raus („for development", lief aber im Betrieb mit) — jeder Seitenaufruf lud alles neu.</dd>
+            <dt>Bringt</dt><dd>Startseite <strong>−78 %</strong> Bilddaten, Produktseite <strong>678 → 237 KB</strong>, zweiter Aufruf <strong>17 KB</strong>. Ein Deploy wirkt trotzdem sofort, weil sich das ETag ändert.</dd>
+            <dt>Falle</dt><dd>Der Rückfall bei fehlgeschlagener Verkleinerung ging anfangs direkt aufs rohe Original — 489 KB statt 36 KB, also <em>schlechter als gar keine Verkleinerung</em>. Jetzt gestuft: verkleinert → WebP → Original.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-done">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🔎</span> Sichtbarkeit bei Google</div>
+          <span class="badge badge-done">Live</span>
+        </div>
+        <p class="desc">Slug-Adressen mit 301-Umleitung, Sitemap mit echtem Änderungsdatum, kanonische Adresse auf allen 54 indexierbaren Seiten, <code>noindex</code> auf Warenkorb und Merkzettel, Produkt-Strukturdaten mit Versand, Lieferzeit, Rückgabe und Preisgültigkeit, Produktdatenfeed fürs Merchant Center, eigene Kurzbeschreibungen für 13 Infoseiten.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Sitemap, kanonische Adresse und <code>noindex</code> hängen an <strong>einer</strong> Liste. Vorher standen Warenkorb und Merkzettel in der Sitemap, während vier echte Inhaltsseiten fehlten.</dd>
+            <dt>Bringt</dt><dd>Im Suchergebnis stehen jetzt kostenloser Versand, Lieferzeit und 30 Tage Rückgabe — alles aus echten Quellen, nichts eingetippt.</dd>
+            <dt>Bewusst nicht</dt><dd>Keine Sternebewertungen im Markup. Die trägt <code>product-reviews.js</code> zur Laufzeit aus der Datenbank nach, damit dort nie erfundene Werte stehen.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-done">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🛠️</span> Betrieb</div>
+          <span class="badge badge-done">Live</span>
+        </div>
+        <p class="desc">Absturzschutz mit Neustart-Schwelle, Fehler- und Uptime-Überwachung mit Mail-Alarm, Keep-Alive gegen den Render-Schlaf, tägliche Datenbank-Sicherung über 14 Tabellen, zeitgesteuerte Abläufe mit Zustand in der Datenbank.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Fälligkeit entscheidet der <em>letzte Lauf aus der Datenbank</em>, nicht die Prozess-Laufzeit. Prüfen und Belegen passieren in einer SQL-Anweisung — derselbe Lauf kann nicht doppelt starten.</dd>
+            <dt>Bringt</dt><dd>Wochenläufe kommen überhaupt erst durch. Ein unbehandelter Fehler nimmt den Shop nicht mehr offline, bei 5 Ausnahmen in 60 Sekunden gibt es einen sauberen Neustart.</dd>
+            <dt>Ehrlich</dt><dd>GitHub-Cron bleibt „best effort". Für eine echte Garantie gegen Cold-Starts bräuchte es einen externen Pinger oder den bezahlten Render-Plan.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-done">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🧪</span> Prüfungen &amp; Deploy-Sperre</div>
+          <span class="badge badge-done">Live</span>
+        </div>
+        <p class="desc">Von 0 auf 322 Shop-Prüfungen. Abgedeckt sind bewusst die Stellen, an denen ein Fehler <strong>Geld kostet, Daten preisgibt oder lautlos wirkt</strong> — zu jedem behobenen Fehler gehört eine Gegenprobe, die belegt, dass die Prüfung ihn rot gemeldet hätte.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Render rollt nicht mehr von selbst aus. Erst Lint, Tests, die Prüfung auf CSP-blockierende Ereignisbehandler und die Startprüfung — dann der Deploy-Hook.</dd>
+            <dt>Bringt</dt><dd>Ist der Lauf rot, bleibt der alte Stand live. Die Startprüfung fängt genau den Fall ab, den Lint und Tests nicht sehen: der Server kommt gar nicht hoch.</dd>
+            <dt>Grundsatz</dt><dd><strong>Ein Test, der nur grün werden kann, ist wertlos.</strong> Deshalb steht neben jeder Prüfung eine Gegenprobe, die den alten Fehler nachbildet.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-done">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🎨</span> Design &amp; Bedienbarkeit</div>
+          <span class="badge badge-done">Live</span>
+        </div>
+        <p class="desc">„Premium Dark" auf allen 40 Produktseiten, neue Startseite mit neuem Banner, überarbeitete Handy-Ansicht, Preis und Kaufknopf im ersten Handy-Bildschirm, Screenreader-Beschriftung für alle Eingabefelder, eigene 404-Seite.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Ein einheitliches Erscheinungsbild statt vier Kategorie-Stylesheets. Bootstrap ist von den Produktseiten verschwunden.</dd>
+            <dt>Bringt</dt><dd>Auf dem Handy steht der Kaufknopf ohne Scrollen im Bild — die Stelle, an der Käufe entschieden werden.</dd>
+            <dt>Abgesichert</dt><dd>Eine Prüfung zählt die Klammern im Stilblock der Startseite. Eine fehlende <code>}</code> löscht lautlos alle Regeln danach: keine Fehlermeldung, keine Konsolenausgabe.</dd>
+          </dl>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-label">Neu seit dem letzten Bericht (16. August)</span>
+      <span class="section-rule"></span>
+    </div>
+    <p class="section-note">Der letzte Bericht endete mit „Runde 10 ist gebaut, noch nichts ausgerollt". Seitdem ist der Marketing-Automat committet, ein zweites System für fremdes Videomaterial dazugekommen und daraus der erste fertige Werbeclip entstanden.</p>
+
+    <div class="pruef-banner">
+      <h3>✅ Runde 10 ist committet — und es geht weiterhin nichts nach draußen</h3>
+      <p>Der Marketing-Automat liegt seit dem 17.&nbsp;August auf <code>main</code>. Der <strong>Trockenlauf ist der Standard</strong> und lässt sich nur von Hand abschalten (<code>MARKETING_DRY_RUN</code> als Repository-Secret) — bewusst nicht im Code, damit es niemand beim Aufräumen übersieht. Es wird also alles gebaut und geplant, aber nichts veröffentlicht.<br><br>
+      <strong>Drei Notaus-Wege, jeder für sich wirksam:</strong> die Umgebungsvariable <code>MARKETING_ENABLED=false</code>, die Datei <code>Marketing/STOP</code> und ein Kennzeichen in <code>mkt_jobs</code>. Alle drei setzen nur ein Flag — es wird kein laufender Vorgang mitten im Rendern oder Posten abgeschnitten.</p>
+    </div>
+
+    <div class="grid">
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🤖</span> Marketing-Automat</div>
+          <span class="badge badge-done">Committet</span>
+        </div>
+        <p class="desc">Die Kette läuft: <strong>Trend → Produkt zuordnen → Briefing → Rechtsprüfung → Video → Warteschlange → Veröffentlichung → Kennzahlen → Umsatzzuordnung → Lernen.</strong> 10.442 Zeilen Python in 57 Dateien, 149 automatische Prüfungen, Zustand in 17 <code>mkt_*</code>-Tabellen derselben Postgres-Datenbank.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Der Takt kommt von außen (GitHub Actions alle 30 Minuten), die Fälligkeit entscheidet <code>mkt_jobs.naechster_lauf</code>. <strong>Grund:</strong> Der Shop läuft auf Render-Free und startet ständig neu — ein Loop im Shop-Prozess liefe praktisch nie durch. Genau das war am 2.&nbsp;August schon einmal nachgewiesen worden.</dd>
+            <dt>Bringt</dt><dd>Am echten System nachgewiesen, dass eine <strong>Bestellung bis zum auslösenden Beitrag zurückverfolgbar</strong> ist. Dafür trägt <code>orders</code> jetzt eine Spalte <code>utm_campaign</code> — vorher warf <code>view-tracker.js</code> die Kampagnenkennung beim Seitenaufruf weg und die Herkunft ging an der Kasse verloren.</dd>
+            <dt>Fund</dt><dd>Beim Bau kam heraus, dass <strong>bei jedem Lauf dasselbe Thema neu beworben</strong> wurde. Und: Die Marketing-eigene Produktliste hatte nur 17 statt 40 Produkte, <strong>11 davon mit falschem Preis</strong> — bei einem Produkt 17&nbsp;€ zu niedrig. Ein Video hätte einen Preis beworben, den es im Shop nicht gibt.</dd>
+            <dt>Offen</dt><dd>Der Trockenlauf ist noch an. Vorher sollte mindestens ein fertiges Video ganz angeschaut werden — das Bildmaterial ist der schwächste Punkt der Kette.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">📥</span> TikTok-Rohmaterial-Bot</div>
+          <span class="badge badge-done">Committet</span>
+        </div>
+        <p class="desc">Sucht fremdes TikTok-Material zu den eigenen Produkten, prüft jede Adresse gegen alle 40 Produkte und lädt nur über der Trefferschwelle. 3.022 Zeilen Programm, <strong>3.042 Zeilen Prüfungen</strong> (131 Stück), 976 Zeilen Handbuch.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Fund</dt><dd><strong>yt-dlp kann bei TikTok gar nicht suchen.</strong> Der Hashtag-Extractor ist vom Projekt selbst als <code>CURRENTLY BROKEN</code> markiert. Die erste Fassung prüfte nur, ob „tag" im Namen vorkommt, und meldete die Fähigkeit fälschlich als vorhanden. Der Marker wird jetzt ausgewertet.</dd>
+            <dt>Ändert</dt><dd>Adressen kommen über eine Suchmaschine, jede wird einmal wirklich abgefragt, bevor sie in die Konfiguration wandert. <em>Eine Adresse, die niemand aufgerufen hat, ist eine Behauptung.</em></dd>
+            <dt>Bringt</dt><dd>Am laufenden TikTok nachgemessen: 2 Videos geladen, 17 übersprungen, 5 Abrufe. Zweiter Lauf mit identischem Aufruf: <strong>0 Downloads</strong>, beide über den Index übersprungen, Dateien unangetastet. Jeder Eintrag trägt Produkt-ID, Creator, Quelle, Zeitstempel, Größe, Prüfsumme und <code>rechte_geprueft: false</code>.</dd>
+            <dt>Fund</dt><dd>Eine Regionssperre bei <em>einem</em> Video riss anfangs den ganzen Lauf um. Jetzt getrennt: einzelnes gesperrtes Video überspringen und vermerken; CAPTCHA, 429 oder Anmeldezwang → sofort Schluss.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-input">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">✂️</span> Vorprüfung aus dem Seitentext</div>
+          <span class="badge badge-input">Nicht committet</span>
+        </div>
+        <p class="desc">Auf TikToks Themenseiten steht die Bildunterschrift direkt hinter dem Link, davor die Zahl der Likes. Beides wird jetzt mitgelesen und für zwei Dinge benutzt: aussortieren <em>vor</em> dem Abruf, und nach Beliebtheit sortieren.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Bringt</dt><dd>Gemessen an vier echten Anfragen: 396 Funde, 338 mit brauchbarer Unterschrift, davon <strong>168 (50 %) vorab durchgefallen</strong> — rund 14 Minuten gesparte Laufzeit. Im Livelauf danach: 17 ohne Abruf aussortiert, nur <strong>5 echte Abrufe</strong>. Die Ablehnungen sind sichtbar richtig: Standgeräte, Osmose-Anlagen, Thermosbecher.</dd>
+            <dt>Regel</dt><dd><strong>Abgelehnt wird nur auf positiven Beweis.</strong> Unter 25 Zeichen Unterschrift wird gar nicht geurteilt, sondern normal abgerufen. Ein Abruf zu viel ist billiger als ein gutes Video, das nie angesehen wurde. Gegenprobe an den 18 bisher angenommenen Untertiteln: keiner fällt vorab durch.</dd>
+            <dt>Zwei Fallen</dt><dd>Zwischen Klammer und Unterschrift stehen <strong>Leerzeilen</strong> — wer am ersten Zeilenumbruch abschneidet, bekommt einen leeren String und merkt nichts davon (<strong>338 statt 12</strong> Unterschriften nach der Korrektur). Und <code>1,2K</code> sind 1200, nicht 12000: mit Einheit ist das Zeichen ein Dezimaltrenner, ohne Einheit ein Tausendertrenner. Faktor zehn daneben.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-built">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🎬</span> Erster fertiger Werbeclip</div>
+          <span class="badge badge-done">Fertig</span>
+        </div>
+        <p class="desc">Aus 23 gesichteten Rohclips zum Wasserspender sind fünf Schnittfassungen entstanden. Die letzte vom 2.&nbsp;September: <strong>19,5 Sekunden, 1080×1920, H.264 + AAC</strong>, mit Musikbett aus acht eigenen Betten und eingebrannter Bildunterschrift.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Ändert</dt><dd>Eine Merkliste (<code>.bestand.json</code>) hält fest, welche Rohdateien schon verarbeitet sind — die Schnitt-Aufgabe schneidet sonst bei jedem Lauf alles neu.</dd>
+            <dt>Bringt</dt><dd>Der Schritt, den der Automat allein nicht kann: brauchbares Bildmaterial. Der Text ist der schwächste Punkt des generierten Videos — hier steht echtes Material dahinter.</dd>
+            <dt>Handarbeit</dt><dd>Notiert ist auch, was <em>nicht</em> verwendet wurde und warum: Clips mit dem schwarzen Modell nicht mit den weißen mischen, das wirkt wie ein anderes Produkt.</dd>
+          </dl>
+        </div>
+      </div>
+
+    </div>
+
+    <blockquote class="merke">
+      <p><strong>Zwei Fallen beim Ablegen</strong> — beide real aufgetreten: Der Ordner <code>Marketing/videos/</code> ist versioniert und das Repo ist öffentlich. Wer fremdes Material dorthin kopiert, hat es beim nächsten <code>git add .</code> auf GitHub. Und: <em>Umbenennen hebelt die Absicherung aus.</em> Das Muster in <code>.gitignore</code> unterscheidet fremd von eigen am Dateinamen — werden Fremdvideos auf das eigene Schema umgetauft, greift es nicht mehr, und sie standen prompt als neu im <code>git status</code>.</p>
+    </blockquote>
+  </div>
+
+  <!-- ============================================================ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-label">Die teuersten Funde</span>
+      <span class="section-rule"></span>
+    </div>
+    <p class="section-note">Nicht die aufwendigsten Bauarbeiten, sondern die Fehler, die im laufenden Betrieb gefunden wurden. Jeder war unsichtbar, bis jemand gezielt nachgesehen hat — und jeder hat heute eine Prüfung, die ihn beim nächsten Mal rot meldet.</p>
+
+    <div class="impact-list">
+
+      <div class="impact-card">
+        <div class="ico">🔴</div>
+        <div class="body">
+          <h3>Die Kasse zeigte live auf einen toten Endpunkt</h3>
+          <p>Nach dem Umzug von Netlify verwies der Checkout weiter auf eine Adresse, die es nicht mehr gab. Jeder Kaufversuch endete in einem 404 — ohne Fehlermeldung im Betrieb, ohne Alarm. <strong>21. Juni</strong>, behoben am selben Tag. Heute prüft die Startprüfung im Prüflauf, ob der Server mit den echten Routen überhaupt hochkommt.</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🔴</div>
+        <div class="body">
+          <h3>Quellcode, Gutscheincodes und Lieferantenliste waren abrufbar</h3>
+          <p><code>express.static(__dirname)</code> lieferte das gesamte Projekt aus. Live nachgewiesen: <code>server.js</code>, die vollständige Rabattcode-Liste, die Lieferantentabelle und die Beleg-PDFs. <strong>27. Juli.</strong> Die Freigabeliste blockt heute nur, wenn die Datei wirklich existiert — sonst wären die 89 danach registrierten API-Routen tot.</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🟠</div>
+        <div class="body">
+          <h3>Ein privater Schlüssel lag im öffentlichen Repository</h3>
+          <p>Über den <code>excel/</code>-Ordner mitgestaged. <strong>22. Juni</strong>, bereinigt per History-Rewrite. Die Lehre steht seitdem im Handbuch: <em>nie blind den ganzen Ordner stagen</em> — und ein einmal gepushtes Secret muss neu ausgestellt werden, egal wie gründlich die Historie aufgeräumt wurde.</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🟠</div>
+        <div class="body">
+          <h3>Wochenläufe liefen praktisch nie</h3>
+          <p>Jeder zeitgesteuerte Ablauf hatte ein eigenes <code>setInterval</code> im Prozess — das begann bei jedem Neustart von vorn. Bei rund zwei Deploys täglich kam ein Tageslauf selten durch, ein Wochenlauf nie. Betroffen: Datenbank-Sicherung, Stripe-Abgleich, CJ-Bestand, CJ-Preise. <strong>3. August.</strong></p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🟠</div>
+        <div class="body">
+          <h3>Drei Produkte waren fälschlich ausverkauft</h3>
+          <p><code>Number(null) === 0</code>: Ein fehlender Bestandswert vom Lieferanten wurde als „null Stück" gelesen und sperrte den Kaufknopf. <strong>2. August.</strong> Der Fall hat heute eine eigene Prüfung samt Gegenprobe.</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🟡</div>
+        <div class="body">
+          <h3>CRLF-Seiten waren ohne Fehlermeldung funktionslos</h3>
+          <p>Die Hashes für erlaubten Inline-Code werden beim Start berechnet. Der HTML-Parser normalisiert aber <code>\r\n</code> zu <code>\n</code> — ohne diese Normalisierung stimmten die Hashes auf zwei Seiten nicht, und der Inline-Code lief nicht. <strong>Kein Konsolenfehler, keine Meldung.</strong> Genau der Fehlertyp, für den es eine automatische Prüfung braucht.</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🟡</div>
+        <div class="body">
+          <h3>Die Marketing-Produktliste wich vom Shop ab</h3>
+          <p>17 statt 40 Produkte, 11 davon mit falschem Preis — bei einem Produkt 17&nbsp;€ zu niedrig. Ein generiertes Video hätte einen Preis beworben, den es im Shop nicht gibt. <strong>Dieselbe Fehlerklasse wie die zweite Gutscheinliste</strong> im Juni: eine Kopie, die niemand mehr pflegt, aber alle für Wahrheit halten.</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🟡</div>
+        <div class="body">
+          <h3>Ein manueller Prüflauf konnte nicht ausrollen</h3>
+          <p>Während einer mehrstündigen GitHub-Störung am 6.&nbsp;August bekam der Prüflauf keinen Rechner. Ein von Hand angestoßener Lauf wurde zwar grün, übersprang aber den Deploy — der hing an einem Push-Ereignis, und genau das war verlorengegangen. <strong>Es gab von GitHub aus keinen Weg mehr auszurollen.</strong> Behoben, mit derselben Sperre.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-label">Was jetzt offen ist</span>
+      <span class="section-rule"></span>
+    </div>
+    <p class="section-note">Offene Punkte werden mit Status weitergeführt statt stillschweigend zu verschwinden. Sortiert danach, wer dran ist.</p>
+
+    <div class="todo-block">
+
+      <div class="todo-group">
+        <p class="todo-group-title">① Braucht eine Entscheidung von dir</p>
+        <div class="todo">
+          <div class="mark">1</div>
+          <div class="body">
+            <h4>Bot-Arbeit committen <span class="who who-me">Ich</span></h4>
+            <p>Die Vorprüfung aus dem Seitentext und die Likes-Sortierung liegen unversioniert im Arbeitsverzeichnis: <code>bot/tiktok-video-sync.js</code>, die Prüfungen und das Handbuch, zusammen 254 geänderte Zeilen. Alle 131 Bot-Prüfungen sind grün. Sag Bescheid, dann committe ich.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">2</div>
+          <div class="body">
+            <h4>Trockenlauf abschalten — oder bewusst anlassen <span class="who who-you">Du</span></h4>
+            <p>Der Marketing-Automat baut und plant, veröffentlicht aber nichts. Vor dem Umlegen: die Warteschlange im Dashboard durchsehen und <strong>mindestens ein fertiges Video ganz anschauen</strong>. Das Bildmaterial ist der schwächste Punkt der Kette — genau deshalb der Schnitt-Zweig mit echtem Rohmaterial.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">3</div>
+          <div class="body">
+            <h4>Zweite Trendquelle freischalten <span class="who who-you">Du</span></h4>
+            <p>Ohne sie läuft der Automat nur auf den eigenen Shop-Daten. Das funktioniert, nutzt aber nur die Hälfte der Idee. Am schnellsten: ein kostenloser Reddit-Zugang (<code>REDDIT_CLIENT_ID</code> + <code>_SECRET</code>).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="todo-group later">
+        <p class="todo-group-title">② Daten, die nur du beschaffen kannst</p>
+        <div class="todo">
+          <div class="mark">4</div>
+          <div class="body">
+            <h4>Einkaufspreise je Produkt-ID <span class="who who-you">Du</span></h4>
+            <p>Sie stehen bisher nur namensbasiert in <code>excel/Maios Produkte.csv</code>, nicht je Produkt-ID. Solange sie fehlen, gilt im Marketing „bewerben, aber im Nachweis als <strong>ungeprüft</strong> vermerken". Auf „sperren" stellen, wenn dir das zu locker ist — oder Einkauf und Versand je ID eintragen, dann wird echt gerechnet.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">5</div>
+          <div class="body">
+            <h4>CJ-Versandkosten nachschlagen <span class="who who-you">Du</span></h4>
+            <p>Für drei der vier im Juni korrigierten Produkte ist der CJ-Versand geschätzt, nicht bestätigt — nur beim Wasserspender stehen die 8&nbsp;€ belegt in der Tabelle. In der CJ-App unter „Logistics → Freight Calculate" nachschlagen, dann stimmt die Margenrechnung wirklich.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">6</div>
+          <div class="body">
+            <h4>Rechte je Fremdvideo klären <span class="who who-you">Du</span></h4>
+            <p>Jeder geladene Eintrag startet auf <code>rechte_geprueft: false</code>. Das ist die einzige Stelle, an der steht, wem ein Video gehört. Solange dort <code>false</code> steht, ist das Material Recherche — kein Sendematerial.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="todo-group later">
+        <p class="todo-group-title">③ Bekannte Grenzen — bewusst so gelassen</p>
+        <div class="todo">
+          <div class="mark">·</div>
+          <div class="body">
+            <h4>Cold-Start ist gemildert, nicht gelöst</h4>
+            <p>Render-Free schläft nach 15 Minuten, der erste Aufruf dauert dann rund 50 Sekunden. Der Keep-Alive-Workflow drückt das, aber GitHub-Cron ist „best effort". Eine echte Garantie kostet: externer Pinger (gratis) oder Render Starter (7&nbsp;$/Monat).</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">·</div>
+          <div class="body">
+            <h4>HSTS steht auf einem Tag, nicht auf einem Jahr</h4>
+            <p>Diese Kopfzeile lässt sich nicht zurückrufen. Fällt HTTPS später aus, ist der Shop für wiederkehrende Besucher genau so lange nicht erreichbar. Erhöhen geht ohne Deploy über <code>HSTS_MAX_AGE</code>, wenn der Betrieb sich als stabil erwiesen hat.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">·</div>
+          <div class="body">
+            <h4>Preise stehen an fünf Stellen je Produktseite</h4>
+            <p>Preis-Tag, eingebettetes JSON, Detailzeile und die „Ähnliche Produkte"-Karten. Jede Preisänderung muss überall gepflegt werden, sonst driften Seite und Daten auseinander — genau das ist im Juni zweimal passiert.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-label">Zusammengefasst</span>
+      <span class="section-rule"></span>
+    </div>
+
+    <div class="pruef-banner">
+      <h3>✅ Drei Monate, ein Muster</h3>
+      <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen.<br><br>
+      Deshalb sind die 602 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+    </div>
+  </div>
+
+  <footer>
+    Interner Fortschrittsbericht · Zeitraum 7. Juni – 2. September 2026 · Stand 02.09.2026.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (322 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> (131 Prüfungen), ausgezählte Python-Prüfungen (149) sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
+  </footer>
+
+</div>

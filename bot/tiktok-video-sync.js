@@ -1253,13 +1253,75 @@ const TIKTOK_VIDEO_MUSTER = /^https?:\/\/(?:www\.)?tiktok\.com\/@[\w.-]+\/video\
  * verbietet die Aufgabenstellung ausdruecklich, und es waere ohnehin
  * aussichtslos.
  */
+/**
+ * Findet Videos im Seitentext — mit ihrer Bildunterschrift.
+ *
+ * DAS IST DER GANZE PUNKT. Auf TikToks Themenseiten steht die Unterschrift
+ * DIREKT HINTER dem Link, und davor die Zahl der Likes:
+ *
+ *   … **3374**](https://www.tiktok.com/@x/video/706…) refilling💧hello kitty
+ *   water dispenser 🎀 link on insta <3 #kawaii #hellokittywaterdispenser …
+ *
+ * Damit laesst sich pruefen, BEVOR ein Abruf bei TikTok faellig wird. Gemessen
+ * an einem echten Lauf: 29 von 96 geprueften Adressen hatten nicht einmal ein
+ * Produktwort im Text — 29 Abrufe fuer Videos, die von vornherein nicht in
+ * Frage kamen, jeder mit drei Sekunden Pause davor.
+ *
+ * Die Likes sind kein Beiwerk: Seit eine Anfrage ueber 200 Adressen liefert
+ * und das Budget bei 60 bis 300 Abrufen liegt, entscheidet die Reihenfolge,
+ * WELCHE geprueft werden. Nach Beliebtheit sortiert kommt brauchbares
+ * Material frueher dran.
+ */
+function fundeAusText(text) {
+  const roh = String(text || '');
+  const muster = /https?:\/\/(?:www\.)?tiktok\.com\/@[\w.-]+\/video\/(\d{15,25})/gi;
+  const funde = [];
+  for (const treffer of roh.matchAll(muster)) {
+    const ende = treffer.index + treffer[0].length;
+    // Unterschrift: was nach der schliessenden Klammer der Link-Syntax folgt,
+    // bis zur naechsten Zeile oder zum naechsten Link.
+    let dahinter = roh.slice(ende, ende + 400);
+    // Die Adresse kann noch ein "?lang=ur" tragen; die Unterschrift beginnt
+    // erst hinter der schliessenden Klammer der Link-Syntax. Nur wegschneiden,
+    // wenn die Klammer auch wirklich in Reichweite steht — sonst frisst der
+    // Schnitt bei einer nackten Adresse die Unterschrift mit weg.
+    const klammer = dahinter.indexOf(')');
+    if (klammer >= 0 && klammer <= 120) dahinter = dahinter.slice(klammer + 1);
+    // Zwischen Klammer und Unterschrift stehen LEERZEILEN. Ohne sie hier
+    // wegzunehmen schneidet der Zeilenumbruch-Trenner gleich am Anfang, und
+    // die Unterschrift ist leer — gemessen: 178 von 190 Funden ohne Text,
+    // obwohl er in fast allen dastand.
+    dahinter = dahinter.replace(/^\s+/, '');
+    const unterschrift = dahinter.split(/\n|\[|https?:\/\//)[0].replace(/\s+/g, ' ').trim();
+    // Likes: die fettgedruckte Zahl unmittelbar vor dem Link.
+    const davor = roh.slice(Math.max(0, treffer.index - 60), treffer.index);
+    const zahl = davor.match(/\*\*([\d.,]+)\s*(K|M)?\*\*\]?\(?$/i);
+    let likes = null;
+    if (zahl) {
+      const einheit = String(zahl[2] || '');
+      // Mit K/M ist das Zeichen ein DEZIMALtrenner ("1,2K" = 1200), ohne
+      // Einheit ein Tausendertrenner ("3.374" = 3374). Beides gleich zu
+      // behandeln machte aus 1,2K glatte 12000 — Faktor zehn daneben.
+      const wert = einheit
+        ? parseFloat(String(zahl[1]).replace(',', '.'))
+        : parseFloat(String(zahl[1]).replace(/[.,]/g, ''));
+      const faktor = /k/i.test(einheit) ? 1000 : (/m/i.test(einheit) ? 1000000 : 1);
+      if (Number.isFinite(wert)) likes = Math.round(wert * faktor);
+    }
+    funde.push({
+      // Ohne Anhaengsel: dieselbe Adresse steht mit "?lang=ur" und ohne auf
+      // der Seite und waere sonst zweimal in der Warteschlange.
+      url: treffer[0].split('?')[0],
+      unterschrift,
+      likes,
+    });
+  }
+  return funde;
+}
+
+/** Nur die Adressen — fuer Aufrufer, die die Unterschrift nicht brauchen. */
 function adressenAusText(text) {
-  const gefunden = String(text || '').match(
-    /https?:\/\/(?:www\.)?tiktok\.com\/@[\w.-]+\/video\/\d{15,25}/gi,
-  ) || [];
-  // Ohne Anhaengsel: dieselbe Adresse taucht mit "?lang=ur", "?is_from_webapp"
-  // und aehnlichem mehrfach auf und waere sonst mehrfach in der Warteschlange.
-  return gefunden.map((u) => u.split('?')[0]);
+  return fundeAusText(text).map((f) => f.url);
 }
 
 async function sucheAdressen(opt) {
@@ -1278,6 +1340,8 @@ async function sucheAdressen(opt) {
   }
 
   const anbieter = tavily ? 'Tavily' : 'Brave';
+  // Was im Seitentext gefunden wurde, samt Unterschrift und Likes.
+  const funde = [];
   try {
     let roh = [];
     if (tavily) {
@@ -1299,6 +1363,7 @@ async function sucheAdressen(opt) {
       if (!antwort.ok) return { ok: false, grund: `${anbieter} antwortete mit ${antwort.status}`, adressen: [] };
       const daten = await antwort.json();
       const treffer = (daten && daten.results) || [];
+      for (const r of treffer) funde.push(...fundeAusText(r && r.raw_content));
       // REIHENFOLGE: erst die Trefferadressen, dann die aus dem Seitentext.
       // Das ist keine Kosmetik. Die Trefferadressen sind von der Suchmaschine
       // SORTIERT, die aus dem Seitentext stehen in der Reihenfolge, in der sie
@@ -1322,6 +1387,12 @@ async function sucheAdressen(opt) {
     return {
       ok: true, grund: null, anbieter,
       adressen: Array.from(new Set(roh.filter((u) => TIKTOK_VIDEO_MUSTER.test(u)))),
+      // Je Adresse hoechstens ein Fund, der mit der laengsten Unterschrift.
+      funde: Array.from(funde.reduce((m, f) => {
+        const bisher = m.get(f.url);
+        if (!bisher || String(f.unterschrift).length > String(bisher.unterschrift).length) m.set(f.url, f);
+        return m;
+      }, new Map()).values()),
     };
   } catch (fehler) {
     return { ok: false, grund: `${anbieter} nicht erreichbar: ${fehler.message}`, adressen: [] };
@@ -2200,7 +2271,21 @@ async function interaktiv(opt) {
         melde('     BRAVE_API_KEY   — Alternative, verlangt aber eine Kreditkarte');
         return false;
       }
-      const neu = suche.adressen.filter((u) => !gesehen.has(u));
+      // Was der Seitentext ueber die einzelnen Videos verraet.
+      const nachUrl = new Map((suche.funde || []).map((f) => [f.url, f]));
+      const neu = suche.adressen
+        .filter((u) => !gesehen.has(u))
+        .map((url) => {
+          const f = nachUrl.get(url) || {};
+          return { url, meta: null, unterschrift: f.unterschrift || '', likes: f.likes == null ? null : f.likes };
+        })
+        // NACH BELIEBTHEIT, nicht nach Fundreihenfolge. Die Adressen aus dem
+        // Seitentext stehen dort, wie sie zufaellig auf der Seite vorkommen.
+        // Seit eine Anfrage ueber 200 liefert und das Budget bei 60 bis 300
+        // Abrufen liegt, entscheidet die Reihenfolge, WELCHE geprueft werden —
+        // und ein Video mit 3374 Likes ist eher brauchbar als eines mit 12.
+        // Ohne Angabe hinten anstellen, aber nicht aussortieren.
+        .sort((a, x) => (x.likes == null ? -1 : x.likes) - (a.likes == null ? -1 : a.likes));
       // EIN BEGRIFF DARF NICHT DAS GANZE BUDGET FRESSEN.
       //
       // Seit die Adressen aus dem Seitentext kommen, liefert eine einzige
@@ -2217,11 +2302,13 @@ async function interaktiv(opt) {
       const kontingent = Math.max(1, Number(standard.max_kandidaten_je_quelle) || 20);
       const jetztNehmen = neu.slice(0, kontingent);
       const spaeter = neu.slice(kontingent);
-      if (spaeter.length) reserve.push(...spaeter.map((url) => ({ url, meta: null })));
-      melde(`🔎 "${begriff}": ${suche.adressen.length} Adresse(n), ${neu.length} neu — `
-        + `${jetztNehmen.length} jetzt${spaeter.length ? `, ${spaeter.length} in Reserve` : ''}.`);
+      if (spaeter.length) reserve.push(...spaeter);
+      const mitText = neu.filter((k) => k.unterschrift).length;
+      melde(`🔎 "${begriff}": ${suche.adressen.length} Adresse(n), ${neu.length} neu `
+        + `(${mitText} mit Unterschrift) — ${jetztNehmen.length} jetzt`
+        + `${spaeter.length ? `, ${spaeter.length} in Reserve` : ''}.`);
       if (jetztNehmen.length) {
-        warteschlange.push(...jetztNehmen.map((url) => ({ url, meta: null })));
+        warteschlange.push(...jetztNehmen);
         return true;
       }
     }
@@ -2377,6 +2464,31 @@ async function interaktiv(opt) {
         grundFuersEnde = `Obergrenze von ${anfrageBudget} Anfragen erreicht`;
         break;
       }
+      // VORPRUEFUNG AUS DEM SEITENTEXT.
+      //
+      // Auf TikToks Themenseiten steht die Unterschrift direkt neben dem Link.
+      // Damit laesst sich das Offensichtliche aussortieren, bevor ein Abruf
+      // faellig wird — gemessen an einem echten Lauf hatten 29 von 96
+      // geprueften Adressen nicht einmal ein Produktwort im Text.
+      //
+      // ABGELEHNT WIRD NUR AUF POSITIVEN BEWEIS. Die Unterschrift aus dem
+      // Seitentext kann abgeschnitten oder ganz leer sein; bei duennem Text
+      // wird deshalb gar nicht geurteilt, sondern normal abgerufen. Lieber ein
+      // Abruf zu viel als ein gutes Video, das nie angesehen wurde.
+      const vortext = String(kandidat.unterschrift || '');
+      if (vortext.length >= 25) {
+        const vorVideo = { title: vortext };
+        const verbotenVorab = ausschlussTreffer(vorVideo, ausschluss);
+        if (verbotenVorab) {
+          melde(`⏭  vorab aussortiert ("${verbotenVorab}"): ${vortext.slice(0, 44)}`);
+          continue;
+        }
+        if (!hatKernwort(vorVideo, kernwoerter)) {
+          melde(`⏭  vorab aussortiert (kein Produktwort): ${vortext.slice(0, 44)}`);
+          continue;
+        }
+      }
+
       // Vor jedem Abruf ausser dem ersten. Nach einem zurueckgestellten
       // Kandidaten, der gar nicht abgerufen wurde, waere die Pause sinnlos —
       // deshalb steht sie hier drin und nicht am Schleifenanfang.
@@ -2901,7 +3013,7 @@ module.exports = {
   impersonationVerfuegbar,
   ausschlussTreffer, spracheDesTextes, hatKernwort, sprachHinweise, textAusPuffern,
   stehtImText, VERNEINUNG,
-  adressenAusText,
+  adressenAusText, fundeAusText,
   hatMerkmal, getroffeneMerkmale,
   naechsteNummer, slugFuerDateiname, schuetzeDatei,
   produktOrdner, imRohmaterial, brauchtEinzelschutz, ROHMATERIAL, GESCHNITTEN,

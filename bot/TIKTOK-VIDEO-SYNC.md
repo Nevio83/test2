@@ -624,6 +624,44 @@ der aktuellen Fassung 2026.08.19:
 | `/tag/…` | `No working app info is available` |
 | `/@handle` | `Failed to parse JSON` |
 
+### Der Seitentext trägt mehr als die Adresse
+
+Auf den Themenseiten steht die **komplette Bildunterschrift direkt hinter dem
+Link** und davor die Zahl der **Likes**:
+
+```
+… **3.374**](https://www.tiktok.com/@x/video/706…?lang=en)
+
+No more midnight trips to the kitchen for water! 😴 #waterdispenser
+```
+
+Beides wird mitgelesen (`fundeAusText`) und für zwei Dinge benutzt:
+
+**1. Aussortieren, bevor ein Abruf fällig wird.** Gemessen an vier echten
+Anfragen: 396 Funde, 338 mit brauchbarer Unterschrift, davon **168 (50 %)**
+vorab durchgefallen — 168 gesparte Abrufe, rund 14 Minuten Laufzeit. Im
+Livelauf danach: **17 ohne Abruf aussortiert, nur 5 echte Abrufe** (77 % der
+Kandidaten geklärt, ohne TikTok anzufassen). Die Ablehnungen sind sichtbar
+richtig: Brio-Standgeräte, Osmose-Anlagen, Stanley-Thermosbecher.
+
+**Abgelehnt wird nur auf positiven Beweis.** Die Unterschrift kann
+abgeschnitten oder leer sein; unter 25 Zeichen wird gar nicht geurteilt,
+sondern normal abgerufen. Ein Abruf zu viel ist billiger als ein gutes Video,
+das nie angesehen wurde. Gegenprobe an den 18 bisher angenommenen
+Untertiteln: **keiner** fällt vorab durch.
+
+**2. Nach Beliebtheit sortieren.** Die Adressen aus dem Seitentext stehen in
+zufälliger Seitenreihenfolge. Da eine Anfrage über 200 liefert und das Budget
+bei 60–300 Abrufen liegt, entscheidet die Reihenfolge, welche geprüft werden —
+und ein Video mit 3374 Likes ist eher brauchbar als eines mit 12.
+
+> **Zwei Fallen beim Auslesen**, beide selbst hineingetappt: Zwischen Klammer
+> und Unterschrift stehen **Leerzeilen** — wer am ersten Zeilenumbruch
+> abschneidet, bekommt einen leeren String und merkt nichts davon; die
+> Vorprüfung läuft dann stumm ins Leere (**338 statt 12** Unterschriften nach
+> der Korrektur). Und `**1,2K**` sind **1200**, nicht 12000: Mit K/M ist das
+> Zeichen ein Dezimaltrenner, ohne Einheit ein Tausendertrenner.
+
 **Reihenfolge ist wichtig geworden.** Die Trefferadressen sind von der
 Suchmaschine *sortiert*, die aus dem Seitentext stehen in zufälliger
 Seitenreihenfolge. Da eine einzige Anfrage über 200 Adressen liefern kann und

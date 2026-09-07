@@ -1,0 +1,49 @@
+{
+  "hinweis": "Merkliste fuer die taegliche Schnitt-Aufgabe. Verarbeitete Rohdateien pro Produktordner. Nicht von Hand loeschen - sonst schneidet die Aufgabe alles neu.",
+  "zuletzt_gelaufen": "2026-08-30",
+  "mindestens_clips_fuer_ein_video": 4,
+  "mindestens_davon_1080p": 2,
+  "produkte": {
+    "10_elektrischer-wasserspender-fuer-schreibtisch": {
+      "verarbeitet": [
+        "01_elektrischer-wasserspender_14s_stil-b.mp4",
+        "02_elektrischer-wasserspender_49s_stil-b.mp4",
+        "03_elektrischer-wasserspender_34s_stil-b.mp4",
+        "04_elektrischer-wasserspender_57s_stil-b.mp4",
+        "05_elektrischer-wasserspender_19s_stil-b.mp4",
+        "06_elektrischer-wasserspender_14s_stil-b.mp4",
+        "07_elektrischer-wasserspender_12s_stil-b.mp4",
+        "08_elektrischer-wasserspender_12s_stil-b.mp4",
+        "14_elektrischer-wasserspender_20s_stil-b.mp4",
+        "14_elektrischer-wasserspender_32s_stil-b.mp4",
+        "15_elektrischer-wasserspender_28s_stil-b.mp4",
+        "16_elektrischer-wasserspender_26s_stil-b.mp4",
+        "17_elektrischer-wasserspender_26s_stil-b.mp4",
+        "18_elektrischer-wasserspender_17s_stil-b.mp4",
+        "35_elektrischer-wasserspender_6s_stil-b.mp4",
+        "40_elektrischer-wasserspender_62s_stil-b.mp4",
+        "45_elektrischer-wasserspender_12s_stil-b.mp4",
+        "46_elektrischer-wasserspender_11s_stil-b.mp4",
+        "47_elektrischer-wasserspender_51s_stil-b.mp4",
+        "57_elektrischer-wasserspender_9s_stil-b.mp4",
+        "58_elektrischer-wasserspender_14s_stil-b.mp4",
+        "59_elektrischer-wasserspender_14s_stil-b.mp4"
+      ],
+      "ads": [
+        "maios_wasserspender_ad_v2.mp4",
+        "maios_wasserspender_ad_v3.mp4",
+        "maios_wasserspender_ad_v4.mp4",
+        "maios_wasserspender_ad_20260830.mp4"
+      ]
+    },
+    "28_mini-muskel-massage-pistole": {
+      "verarbeitet": [],
+      "ads": []
+    }
+  },
+  "notizen": {
+    "nur-weisses-modell": "Clips mit dem SCHWARZEN Spender (z. B. 45, 57) nicht mit den weissen mischen - wirkt wie ein anderes Produkt.",
+    "57": "gesichtet, bewusst nicht verwendet: schwarzes Modell",
+    "geloescht": "55, 56, 60, 61 hat Nevio selbst geloescht - nicht suchen, nicht neu anfordern."
+  }
+}
