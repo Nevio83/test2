@@ -35,6 +35,31 @@ const PUBLIC_DIRS = new Set([
   'a29715347575'
 ]);
 
+// HTML-Dateien im WURZELVERZEICHNIS: nur diese sind Kundenseiten.
+//
+// Warum eine eigene Liste, obwohl .html schon in PUBLIC_EXT steht: Die
+// Endungs-Freigabe war fuer die Kundenseiten gedacht, gibt aber JEDE
+// HTML-Datei im Wurzelverzeichnis frei. Am 07.09. live nachgewiesen — die
+// internen Fortschrittsberichte antworteten unter maiosshop.com mit 200,
+// ohne noindex, bei "Allow: /" in der robots.txt. Darin stehen alle frueher
+// gefundenen Sicherheitsluecken im Klartext.
+//
+// Bewusst eine Liste statt einer Ableitung: Woran das Frontend haengt, laesst
+// sich bei .js/.css aus den <script src>-Verweisen ablesen — bei einer Seite
+// gibt es kein solches Signal. Ein "wird von einer anderen Seite verlinkt"
+// wuerde success.html erwischen (die ruft Stripe direkt auf, verlinkt ist sie
+// nirgends). Die Wurzel-Seiten sind ein geschlossener, seltener Satz: neue
+// Produktseiten liegen in produkte/, neue Infoseiten in infos/ — beide Ordner
+// bleiben vollstaendig frei. Der Pflegeaufwand ist damit nahe null.
+//
+// Und die Richtung stimmt: Wird hier eine echte neue Kundenseite vergessen,
+// faellt das beim ersten Aufruf sofort auf. Umgekehrt — ein internes Dokument
+// im Wurzelverzeichnis — faellt gar nichts auf, es steht nur oeffentlich da.
+const PUBLIC_ROOT_HTML = new Set([
+  '404.html', 'cart.html', 'gutscheine.html', 'index.html',
+  'success.html', 'tracking.html', 'wishlist.html'
+]);
+
 // Endungen, die im Wurzelverzeichnis und in den freigegebenen Ordnern
 // unbedenklich sind. .js und .json fehlen hier bewusst — siehe unten.
 const PUBLIC_EXT = new Set([
@@ -173,6 +198,11 @@ function createStaticGuard(uebergebenesWurzelverzeichnis) {
     // Genau hier faellt Backend-Code raus: den bindet keine Seite ein.
     if (ext === '.js' || ext === '.css') return erlaubteAssets.has(datei);
 
+    // HTML im Wurzelverzeichnis nur, wenn es eine Kundenseite ist. In den
+    // freigegebenen Ordnern (produkte/, infos/, …) bleibt .html frei — dort
+    // liegen ausschliesslich Seiten, die ohnehin oeffentlich sind.
+    if (teile.length === 1 && ext === '.html') return PUBLIC_ROOT_HTML.has(datei);
+
     // .json bewusst nicht freigegeben: products.json hat eine eigene Route
     // (die frueher greift), package.json & Co. gehen niemanden etwas an.
     return PUBLIC_EXT.has(ext);
@@ -215,4 +245,6 @@ function createStaticGuard(uebergebenesWurzelverzeichnis) {
   };
 }
 
-module.exports = { createStaticGuard, collectReferencedAssets, PUBLIC_DIRS, PUBLIC_EXT };
+module.exports = {
+  createStaticGuard, collectReferencedAssets, PUBLIC_DIRS, PUBLIC_EXT, PUBLIC_ROOT_HTML
+};

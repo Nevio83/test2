@@ -17,7 +17,7 @@ const { test } = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
-const { createStaticGuard } = require('../static-guard');
+const { createStaticGuard, PUBLIC_EXT, PUBLIC_ROOT_HTML } = require('../static-guard');
 
 const WURZEL = path.join(__dirname, '..');
 
@@ -107,6 +107,58 @@ test('Frontend-Dateien sind abrufbar', () => {
   for (const p of oeffentlich) {
     assert.equal(pruefe(p), 'durchgelassen', 'MUSS erreichbar sein: ' + p);
   }
+});
+
+test('interne HTML-Dateien im Wurzelverzeichnis sind NICHT abrufbar', () => {
+  // Am 07.09. live nachgewiesen: Die Fortschrittsberichte antworteten unter
+  // maiosshop.com mit 200 — ohne noindex, bei "Allow: /" in der robots.txt.
+  // Darin stehen alle frueher gefundenen Sicherheitsluecken im Klartext und
+  // im aelteren Bericht zusaetzlich der Pfad des Admin-Bereichs.
+  //
+  // Die Endungs-Freigabe (.html in PUBLIC_EXT) war fuer die Kundenseiten
+  // gedacht, gab aber JEDE HTML-Datei im Wurzelverzeichnis frei.
+  const intern = fs
+    .readdirSync(WURZEL, { withFileTypes: true })
+    .filter((e) => e.isFile() && e.name.toLowerCase().endsWith('.html'))
+    .map((e) => e.name)
+    .filter((n) => !PUBLIC_ROOT_HTML.has(n));
+
+  for (const name of intern) {
+    assert.equal(
+      pruefe('/' + name), 'geblockt',
+      'internes Dokument waere oeffentlich abrufbar: /' + name
+        + ' — gehoert entweder in PUBLIC_ROOT_HTML (dann ist es eine Kundenseite)'
+        + ' oder nicht ins Wurzelverzeichnis.'
+    );
+  }
+});
+
+test('die Kundenseiten im Wurzelverzeichnis bleiben abrufbar', () => {
+  // Die Gegenrichtung: Die Freigabe darf den Shop nicht abwuergen. Geprueft
+  // wird nur, was auch wirklich als Datei existiert — 404.html wird ueber
+  // eine Route ausgeliefert und muss hier nicht liegen.
+  for (const name of PUBLIC_ROOT_HTML) {
+    if (!fs.existsSync(path.join(WURZEL, name))) continue;
+    assert.equal(pruefe('/' + name), 'durchgelassen', 'MUSS erreichbar sein: /' + name);
+  }
+});
+
+test('GEGENPROBE: ohne die Wurzel-Freigabe waere der Bericht ausgeliefert worden', () => {
+  // Bildet den Zustand vor dem 07.09. nach: Damals entschied allein die
+  // Endungsliste. Ohne diese Gegenprobe koennte die Freigabe oben leer
+  // laufen (etwa weil kein internes HTML im Verzeichnis liegt) und der Test
+  // waere gruen, ohne irgendetwas zu belegen.
+  const alteRegel = (datei) => PUBLIC_EXT.has(path.extname(datei).toLowerCase());
+
+  assert.equal(
+    alteRegel('Fortschrittsbericht.html'), true,
+    'Die alte Regel muss den Bericht durchgelassen haben — sonst pruefte dieser Test nichts.'
+  );
+  assert.equal(
+    PUBLIC_ROOT_HTML.has('Fortschrittsbericht.html'), false,
+    'Der Bericht darf nicht auf der Kundenseiten-Liste stehen.'
+  );
+  assert.equal(pruefe('/Fortschrittsbericht.html'), 'geblockt');
 });
 
 test('Pfade, unter denen keine Datei liegt, werden durchgereicht', () => {
