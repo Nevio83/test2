@@ -71,16 +71,63 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 Alle übrigen CJ-Produkte liegen bei ≥ 23 % Gewinn inkl. geschätztem Versand.
 
-⚠️ **TODO (🟠):** CJ-Versandkosten für ID 17, 22, 38 (und alle anderen Produkte) in der CJ-App
-unter „Logistics → Freight Calculate" pro Produkt nachschlagen und `excel/Maios Produkte.csv`
-aktualisieren. Aktuell sind nur für ID 10 (Wasserspender) die 8 € aus dem CSV-Kommentar bekannt.
+⚠️ **TODO (🔴 — hochgestuft am 07.09.2026):** CJ-Versandkosten je Produkt in der CJ-App unter
+„Logistics → Freight Calculate" nachschlagen und `excel/Maios Produkte.csv` aktualisieren.
+Bestätigt ist bis heute **nur ID 10** (Wasserspender, 8 €); alle übrigen Versandwerte in der
+CSV sind Schätzungen.
+
+**Warum das jetzt kritisch ist statt „nice to have":** Seit dem 07.09. rechnet der
+Marketing-Automat mit diesen Zahlen (`matching.einkaufspreise`, 27 von 40 Produkten). Eine
+Belastbarkeitsprobe über alle 27 zeigt, wie dünn das Eis ist:
+
+| Versand | Produkte unter der 20-%-Mindestmarge | schlechteste Marge |
+|---|---|---|
+| wie in der CSV | **0** von 27 | 35,2 % (Thermische Massage) |
+| ×1,5 | **2** von 27 | 18,2 % (Aromatherapy Humidifier) |
+| ×2 | **27** von 27 | 3,0 % |
+| ×3 | **27** von 27 | −18,1 % |
+
+Der Versand ist bei diesen Preisen ein so großer Kostenanteil, dass eine Verdopplung **jedes**
+Produkt unter die Mindestmarge drückt. Die heute ausgewiesenen 35–46 % sind also nur so gut
+wie die Schätzungen — und werden vom Automaten trotzdem als *geprüfte* Marge geführt.
 
 ⚠️ **HTML-Produktseiten müssen ebenfalls angepasst werden!** Die 4 geänderten Produkte haben den
 Preis an 5 Stellen in der jeweiligen `produkte/<slug>.html` (price-tag, eingebettetes JSON,
 Detailzeile, „Ähnliche Produkte"-Karten). Procedure: siehe §2 „Preise ändern — Arbeitsanweisung".
 
-**Produkte ohne Kaufpreis-Daten** (anderer Lieferant, nicht CJ): ID 13, 14, 15, 16, 20, 23,
-24, 25, 28, 29, 31, 51 → Einkaufspreise manuell nachtragen, dann Gewinn-Check wiederholen.
+**Produkte ohne Kaufpreis-Daten (13):** ID 13, 14, 15, 16, 20, 23, 24, 25, 28, 29, 31 (alle
+AliExpress, anderer Lieferant), **42** (Aroma Öl Diffusor) und **51** (Auto Bildschirm).
+→ Einkaufspreise manuell nachtragen, dann Gewinn-Check wiederholen.
+
+> **42 ist am 07.09. neu dazugekommen** und stand vorher nicht in dieser Liste: Das Produkt hat
+> eine CJ-SKU, aber keine Zeile in der CSV. Die CSV-Zeile 51 heißt zwar „Aroma Öl Diffusor",
+> verlinkt aber den *Volcanic Flame Diffuser* — also Produkt **27**, nicht 42. Beide kosten
+> 26,99 €; nach Name und Preis wären sie nicht auseinanderzuhalten gewesen.
+
+### Einkaufspreise je Produkt-ID (erledigt am 07.09.2026)
+
+27 von 40 Produkten stehen jetzt mit EK und Versand in `Marketing/config/marketing.config.json`
+unter `matching.einkaufspreise`. Der Automat rechnet damit echte Margen statt „ungeprüft".
+
+**Zugeordnet wurde über den LINK der CSV-Zeile, nicht über ihre Namensspalte.** Die trägt
+Spitznamen und stimmt stellenweise nicht:
+
+- Zeile 37/38 heißen „LED Water in Crown" / „Led Water Wooden base", verlinken aber ein
+  **Solarlicht** (denselben Artikel wie Zeile 46, dort aber mit anderem EK: 10,50 gegen 8,43).
+  Nach Name und Verkaufspreis (18,99 €) gehören sie zu Produkt **21** (Led crystal lampe) —
+  übernommen, aber im Eintrag als `zahlen` gekennzeichnet, weil der Link widerspricht.
+- Zeile 52 heißt nur „Aroma Öl", ist aber laut Link und SKU-Fragment eindeutig Produkt **33**
+  (Aromatherapy Essential Oil Humidifier).
+
+Jeder Eintrag wurde zusätzlich gegen den Verkaufspreis in `products.json` gegengeprüft; bei
+Abweichung wäre er **nicht** übernommen worden. Es gab keine einzige Abweichung.
+
+⚠️ **Nebenbefund (🟡): Die SKU von Produkt 11 ist vermutlich falsch.** Sie lautet
+`CJ1621032671155597313` — das ist die SKU von Produkt 10 (`…597312`) **plus eins**. Die echte
+CJ-Nummer des Mixers steht im CSV-Link: `1392009095543918592`. Folge heute: `cj-price-sync.js`
+ordnet über `sku.includes(pid)` zu und findet für den Mixer **nichts** — er läuft im
+Preis-Abgleich stillschweigend nicht mit. Für die Bestellung selbst wird die SKU nicht benutzt,
+es entsteht also keine Fehllieferung.
 
 ---
 

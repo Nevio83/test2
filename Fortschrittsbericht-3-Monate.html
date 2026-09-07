@@ -292,11 +292,11 @@
   <div class="report-header">
     <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
     <h1 class="title">Maios Shop — Juni bis September 2026</h1>
-    <p class="subtitle">Zeitraum <strong>7. Juni – 7. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 605 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 7. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 608 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
       <span style="color:var(--green);font-weight:600;">✓ 164 Commits an 37 Arbeitstagen</span>
-      <span><strong>605</strong> automatische Prüfungen (325 Shop + 149 Marketing + 131 Bot)</span>
+      <span><strong>608</strong> automatische Prüfungen (325 Shop + 152 Marketing + 131 Bot)</span>
       <span>Stand <strong>07.09.2026</strong></span>
     </div>
   </div>
@@ -316,9 +316,9 @@
         <p class="sub">an 37 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
       </div>
       <div class="stat acc-green">
-        <div class="num">605</div>
+        <div class="num">608</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: 325 im Shop, 149 im Marketing, 131 im TikTok-Bot — alle grün.</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: 325 im Shop, 152 im Marketing, 131 im TikTok-Bot — alle grün.</p>
       </div>
       <div class="stat acc-orange">
         <div class="num">525</div>
@@ -338,7 +338,7 @@
         <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
       </thead>
       <tbody>
-        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">605</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">608</td><td class="gut">neu aufgebaut</td></tr>
         <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
         <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
         <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
@@ -347,7 +347,7 @@
         <tr><td>Produktseite beim zweiten Aufruf</td><td class="num">alles neu geladen</td><td class="num">17 KB gesamt</td><td class="gut">ETag statt <code>no-store</code></td></tr>
         <tr><td>Adressen in der Sitemap</td><td class="num">keine Sitemap</td><td class="num">54</td><td class="gut">+ <code>noindex</code> auf 5 Seiten</td></tr>
         <tr><td>Zeilen in <code>app.js</code></td><td class="num">4.430</td><td class="num">1.802</td><td class="gut">−59 %</td></tr>
-        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">10.442 Zeilen, 149 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
+        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">10.442 Zeilen, 152 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
       </tbody>
     </table>
     </div>
@@ -702,7 +702,7 @@
           <div class="card-title"><span class="ico">🤖</span> Marketing-Automat</div>
           <span class="badge badge-done">Committet</span>
         </div>
-        <p class="desc">Die Kette läuft: <strong>Trend → Produkt zuordnen → Briefing → Rechtsprüfung → Video → Warteschlange → Veröffentlichung → Kennzahlen → Umsatzzuordnung → Lernen.</strong> 10.442 Zeilen Python in 57 Dateien, 149 automatische Prüfungen, Zustand in 17 <code>mkt_*</code>-Tabellen derselben Postgres-Datenbank.</p>
+        <p class="desc">Die Kette läuft: <strong>Trend → Produkt zuordnen → Briefing → Rechtsprüfung → Video → Warteschlange → Veröffentlichung → Kennzahlen → Umsatzzuordnung → Lernen.</strong> 10.442 Zeilen Python in 57 Dateien, 152 automatische Prüfungen, Zustand in 17 <code>mkt_*</code>-Tabellen derselben Postgres-Datenbank.</p>
         <div class="wirkung">
           <dl>
             <dt>Ändert</dt><dd>Der Takt kommt von außen (GitHub Actions alle 30 Minuten), die Fälligkeit entscheidet <code>mkt_jobs.naechster_lauf</code>. <strong>Grund:</strong> Der Shop läuft auf Render-Free und startet ständig neu — ein Loop im Shop-Prozess liefe praktisch nie durch. Genau das war am 2.&nbsp;August schon einmal nachgewiesen worden.</dd>
@@ -875,7 +875,15 @@
           <div class="mark">1</div>
           <div class="body">
             <h4>Trockenlauf abschalten — oder bewusst anlassen <span class="who who-you">Du</span></h4>
-            <p>Der Marketing-Automat baut und plant, veröffentlicht aber nichts. Vor dem Umlegen: die Warteschlange im Dashboard durchsehen und <strong>mindestens ein fertiges Video ganz anschauen</strong>. Das Bildmaterial ist der schwächste Punkt der Kette — genau deshalb der Schnitt-Zweig mit echtem Rohmaterial.</p>
+            <p><strong>Am 7.&nbsp;September nachgemessen: Der Schalter ist gar nicht das Hindernis.</strong> Umgelegt würde heute nichts veröffentlicht, sondern dreimal ein Fehler protokolliert — es fehlt der Weg zum Posten.</p>
+            <div class="wirkung">
+              <dl>
+                <dt>Läuft</dt><dd>Die Video-Produktion. Am 7.&nbsp;September zur Probe gebaut: 19,7&nbsp;s, 1080×1920, H.264+AAC, echte Produktbilder, deutsche Untertitel eingebrannt. Der Punkt „erst ein Video ansehen" ist damit einlösbar.</dd>
+                <dt>Fehlt</dt><dd>Zugangsdaten für die TikTok-Schnittstelle, <em>oder</em> der Browser-Weg — für den sind weder <code>selenium</code> installiert noch ein <code>chromedriver</code> vorhanden (der Pfad zeigt auf ein Verzeichnis, das es nicht mehr gibt).</dd>
+                <dt>Ausserdem</dt><dd>Die drei Beiträge in der Warteschlange zeigen auf Videodateien in einem längst aufgeräumten Sitzungsordner.</dd>
+                <dt>Grenze</dt><dd><code>publish_due</code> ist bewusst <code>requires_local</code> — der Upload braucht einen echten Browser und läuft nie in der Cloud. „Vollautomatisch" heißt hier zwangsläufig: ein Rechner, auf dem <code>run-local.js</code> dauerhaft läuft.</dd>
+              </dl>
+            </div>
           </div>
         </div>
         <div class="todo verworfen">
@@ -892,15 +900,15 @@
         <div class="todo">
           <div class="mark">2</div>
           <div class="body">
-            <h4>Einkaufspreise je Produkt-ID <span class="who who-you">Du</span></h4>
-            <p>Sie stehen bisher nur namensbasiert in <code>excel/Maios Produkte.csv</code>, nicht je Produkt-ID. Solange sie fehlen, gilt im Marketing „bewerben, aber im Nachweis als <strong>ungeprüft</strong> vermerken". Auf „sperren" stellen, wenn dir das zu locker ist — oder Einkauf und Versand je ID eintragen, dann wird echt gerechnet.</p>
+            <h4>Einkaufspreise je Produkt-ID <span class="who who-me">Erledigt</span></h4>
+            <p>Am 7.&nbsp;September eingetragen: <strong>27 von 40 Produkten</strong> stehen mit Einkauf und Versand in <code>matching.einkaufspreise</code>. Der Automat rechnet damit echte Margen — <strong>35 bis 46 %</strong>, keines unter der 20-%-Grenze, keine einzige Preisabweichung zwischen CSV und Shop.<br><br><strong>Zugeordnet wurde über den Link, nicht über den Namen.</strong> Die Namensspalte der CSV trägt Spitznamen und stimmt stellenweise nicht: Zeile 37 heißt „LED Water in Crown", verlinkt aber ein Solarlicht. Über Namen und Preis zu gehen hätte hier still danebengegriffen. Die 13 Produkte ohne Beleg bleiben leer statt geraten.</p>
           </div>
         </div>
         <div class="todo">
           <div class="mark">3</div>
           <div class="body">
             <h4>CJ-Versandkosten nachschlagen <span class="who who-you">Du</span></h4>
-            <p>Für drei der vier im Juni korrigierten Produkte ist der CJ-Versand geschätzt, nicht bestätigt — nur beim Wasserspender stehen die 8&nbsp;€ belegt in der Tabelle. In der CJ-App unter „Logistics → Freight Calculate" nachschlagen, dann stimmt die Margenrechnung wirklich.</p>
+            <p>Bestätigt ist <strong>nur beim Wasserspender</strong> (8&nbsp;€); alle anderen Versandwerte in der Tabelle sind Schätzungen. Seit dem 7.&nbsp;September rechnet der Automat mit ihnen — deshalb ist dieser Punkt <strong>von „mittel" auf „kritisch" hochgestuft</strong>.<br><br><strong>Nachgemessen, wie dünn das Eis ist:</strong> Beim Versand aus der Tabelle liegt kein Produkt unter der 20-%-Grenze. Bei anderthalbfachem Versand sind es zwei — bei <strong>doppeltem alle 27</strong>, die schlechteste Marge fällt auf 3&nbsp;%. Der Versand ist bei diesen Preisen ein so großer Kostenanteil, dass die ausgewiesenen 35–46 % vollständig an den Schätzungen hängen. In der CJ-App unter „Logistics → Freight Calculate" nachschlagen.</p>
           </div>
         </div>
         <div class="todo">
@@ -950,13 +958,13 @@
     <div class="pruef-banner">
       <h3>✅ Drei Monate, ein Muster</h3>
       <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen — und dieser Bericht selbst stand zehn Tage lang öffentlich im Shop, ohne dass irgendetwas darauf hingewiesen hätte.<br><br>
-      Deshalb sind die 605 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+      Deshalb sind die 608 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
     </div>
   </div>
 
   <footer>
     Interner Fortschrittsbericht · Zeitraum 7. Juni – 7. September 2026 · Stand 07.09.2026.<br>
-    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (325 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> (131 Prüfungen), ausgezählte Python-Prüfungen (149) sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (325 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> (131 Prüfungen), <code>py -m pytest Marketing/tests</code> (152 Prüfungen) sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
     Wird nach jedem abgeschlossenen Punkt fortgeschrieben. <strong>Nicht öffentlich:</strong> seit dem 7.&nbsp;September blockt die Datei-Freigabe interne HTML-Dokumente im Wurzelverzeichnis — diese Seite ist unter <code>maiosshop.com</code> nicht abrufbar.<br>
     Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
   </footer>
