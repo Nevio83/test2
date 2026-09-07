@@ -37,6 +37,29 @@ from . import assets, common, quality_gate
 from .tts import base as tts
 
 
+def _fehlertext(fehler: BaseException, *, grenze: int = 300) -> str:
+    """Kuerzt eine Fehlermeldung so, dass die URSACHE erhalten bleibt.
+
+    Warum das eine eigene Funktion braucht: ffmpeg schreibt vor dem
+    eigentlichen Fehler mehrere Zeilen Geplauder (libass-Version, Shaper,
+    Font-Provider). `common.lauf()` reicht deshalb bewusst die LETZTEN sechs
+    Zeilen durch — "die entscheidenden Zeilen ganz unten", so steht es dort.
+
+    Vorher stand hier `str(fehler)[:300]`, also die ERSTEN 300 Zeichen davon.
+    Damit blieb genau das Geplauder uebrig und die Ursache wurde abgeschnitten:
+    Vier verworfene Videos in `mkt_videos` tragen eine Begruendung, in der kein
+    Grund steht — sie endet mitten in "Using font provider di…". Ein
+    Pruefergebnis ohne Befund sieht aus wie eine Diagnose und ist keine.
+
+    Deshalb von HINTEN kuerzen. Das fuehrende Auslassungszeichen macht
+    sichtbar, dass vorne etwas fehlt.
+    """
+    text = str(fehler).strip()
+    if len(text) <= grenze:
+        return text
+    return "…" + text[-(grenze - 1):]
+
+
 def _pausen_finden(tonspur: Path, *, mindestpause: float = 0.28) -> list[float]:
     """Zeitpunkte, an denen gerade nicht gesprochen wird.
 
@@ -380,7 +403,7 @@ def job_render_stil_a() -> dict[str, Any]:
             print(f"[stil_a] ❌ {produkt.name}: {fehler}")
             if video_id:
                 quality_gate.haltefest(
-                    video_id, quality_gate.Pruefergebnis(False, [str(fehler)[:300]])
+                    video_id, quality_gate.Pruefergebnis(False, [_fehlertext(fehler)])
                 )
 
     return {"gerendert": gerendert, "verworfen": verworfen}
