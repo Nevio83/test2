@@ -861,12 +861,21 @@ einzige Stelle, die sie noch festhält.
 Alle 13 Etappen sind gebaut und geprüft. Was jetzt ansteht, ist **keine Bauarbeit mehr,
 sondern eine Entscheidung von dir**:
 
-1. **Committen und ausrollen?** Aus Runde 10 ist **nichts committet und nichts gepusht** —
-   der Shop läuft unverändert weiter. 24 neue Pfade warten (siehe `git status`).
-2. **Zweite Trendquelle freischalten** (Punkt 3 der Abnahme). Am schnellsten: ein
-   kostenloser Reddit-Zugang. Ohne sie läuft der Automat nur auf den eigenen Shop-Daten —
-   das funktioniert, nutzt aber nur die Hälfte der Idee.
-3. **Erst danach** den Trockenlauf abschalten. Vorher die Warteschlange im Dashboard
+1. ~~**Committen und ausrollen?**~~ — ✅ **erledigt am 07.09.**: Runde 10 liegt über PR #2
+   auf `main`, die Nacharbeit am Bot als `9c5fd91`. Prüflauf grün, Deploy durch.
+   Der Marketing-Workflow läuft seitdem im 30-Minuten-Takt — im Trockenlauf.
+2. ~~**Zweite Trendquelle freischalten**~~ (Punkt 3 der Abnahme) — 🚫 **am 07.09. gestrichen**
+   (Entscheidung Nevio). Bleibt hier durchgestrichen stehen, damit der Punkt nicht beim
+   nächsten Durchgang neu vorgeschlagen wird.
+   **Folge:** Der Automat läuft dauerhaft auf den eigenen Shop-Daten (`shop_signals`) —
+   Aufrufe, Suchbegriffe, Warenkorb- und Kaufverhalten. Das ist eine vollwertige Quelle,
+   keine Notlösung: Sie misst die echte Nachfrage im eigenen Sortiment. Was wegfällt, ist
+   das Aufgreifen von Themen, **bevor** sie sich im Shop zeigen.
+   **Nichts ausbauen:** `trends/reddit.py`, `youtube_trending.py` und
+   `exploding_topics.py` bleiben liegen und überspringen sich ohne Zugangsdaten von
+   selbst (protokolliert, kein Fehlerfall). Nachrüsten heißt später: Schlüssel setzen,
+   sonst nichts.
+3. **Als Nächstes:** den Trockenlauf abschalten. Vorher die Warteschlange im Dashboard
    durchsehen und **mindestens ein fertiges Video ganz anschauen** — das Bildmaterial ist
    der schwächste Punkt der Kette (siehe unten).
 
