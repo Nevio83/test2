@@ -3,9 +3,13 @@
 Alles, was an Code zu tun ist: offene Bugs/Sicherheit, Aufräumen, Ausbau, Git-Workflow.
 Architektur & Setup stehen in `CLAUDE.md`, Design in `CLAUDE-DESIGN.md`.
 
-Stand: 2026-06-29 · Live: **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet
+Stand: 2026-09-07 · Live: **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet
 auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (nur `main`,
 **öffentlich**) · DB: Neon-Postgres · Hosting: Render (Free).
+
+> **Kein Auto-Deploy mehr.** Seit dem 03.08. rollt Render nicht mehr von selbst aus
+> (`autoDeploy: false`); der Prüflauf ist die Sperre. Ein Push allein reicht nicht — ist der
+> Lauf rot, bleibt der alte Stand live.
 
 **Prioritäten:** 🔴 kritisch · 🟠 hoch · 🟡 mittel · 🟢 niedrig/optional.
 

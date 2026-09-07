@@ -10,12 +10,38 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 
 ---
 
-## 0. Aktueller Stand (2026-06-24)
+## 0. Aktueller Stand (2026-09-07)
 
 - **Live:** **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet auf Apex) +
   Fallback `https://maios-shop.onrender.com`. Free-Plan (schläft nach 15 Min → erster Aufruf
   ~50 s, aber per Keep-Alive-Cron gemildert — siehe unten). Repo `Nevio83/test2`, nur Branch
-  `main`, Auto-Deploy bei Push.
+  `main`.
+- **🔴 Kein Auto-Deploy mehr.** `render.yaml` hat seit dem 03.08. `autoDeploy: false`. Ausgerollt
+  wird **nur über den Prüflauf** (`.github/workflows/pruefung.yml`): Lint → Tests → Prüfung auf
+  Ereignisbehandler mit eingesetzten Werten → **Startprüfung** (Server hochfahren, `/health`
+  abfragen, beenden) → erst dann der Deploy-Hook. Ist ein Schritt rot, bleibt der alte Stand live.
+  Von Hand: Render-Dashboard → „Manual Deploy". **608 automatische Prüfungen** (325 Shop via
+  `npm test`, 152 Marketing via `py -m pytest Marketing/tests`, 131 Bot via
+  `node bot/tiktok-video-sync.test.js`).
+- **Sicherheitsschicht** (alles seit Ende Juli, Details in §3): Datei-Freigabe
+  (`static-guard.js`), Content-Security-Policy ohne `'unsafe-inline'` für Skripte
+  (`csp-policy.js` + `csp-inline.js`), HSTS (`hsts-policy.js`), CSRF-Herkunftsprüfung,
+  Rate-Limiting, Brute-Force-Schutz am Admin-Login, Audit-Log, Absturzschutz.
+- **Marketing-Automat** (`Marketing/`, seit 17.08. auf `main`): Trend → Produkt → Briefing →
+  Rechtsprüfung → Video → Warteschlange → Veröffentlichung → Kennzahlen → Umsatzzuordnung →
+  Lernen. Zustand in **17 `mkt_*`-Tabellen** derselben Neon-Datenbank, Takt von außen
+  (`.github/workflows/marketing.yml`, alle 30 Min). **Der Trockenlauf ist der Standard** und
+  lässt sich nur von Hand abschalten (`MARKETING_DRY_RUN`) — es geht nichts nach draußen.
+  Drei unabhängige Notaus: ENV `MARKETING_ENABLED=false`, Datei `Marketing/STOP`, Kennzeichen in
+  `mkt_jobs`. Was einen Browser oder eine Grafikkarte braucht (`requires_local`), läuft nur über
+  `npm run marketing:local` auf dem eigenen PC — **der TikTok-Upload gehört dazu.**
+- **TikTok-Rohmaterial-Bot** (`bot/`, seit 27.08.): sucht fremdes TikTok-Material zu den eigenen
+  Produkten, prüft jede Adresse gegen alle 40 und lädt nur über der Trefferschwelle. Alles bleibt
+  auf `rechte_geprueft: false` — das ist Recherche, kein Sendematerial.
+- **Margen im Marketing** (seit 07.09.): `matching.einkaufspreise` in
+  `Marketing/config/marketing.config.json` hat **27 von 40 Produkten** mit Einkauf und Versand,
+  der Automat rechnet damit echte Margen (35–46 %). ⚠️ Der **Versand ist größtenteils geschätzt**
+  — bei doppeltem Versand fiele *jedes* Produkt unter die Mindestmarge. Siehe `CLAUDE-CODE.md` §2.
 - **Datenbank:** **Neon-Postgres** (dauerhaft, kostenlos) via `DATABASE_URL`. SQLite ist Geschichte.
 - **Hosting:** Netlify ist komplett raus (Domain auf Render, Repo entkoppelt, `netlify/`-Ordner
   **gelöscht**). **Render = einzige Quelle der Wahrheit.**
@@ -69,8 +95,10 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   Fehlschlag). Resend-Konto kann bei Neuanlage kurz „suspended"/in Review sein (Reaktivierungsformular).
 - **Stripe-Webhook:** zeigt auf `https://maiosshop.com/stripe-webhook` (Events
   `checkout.session.completed` + `payment_intent.succeeded`).
-- **Admin-Dashboard:** `…/a29715347575/orders.html` (+ `produkt-analyse.html`, `markt-insights.html`),
-  Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
+- **Admin-Dashboard:** `…/a29715347575/orders.html` (+ `produkt-analyse.html`,
+  `markt-insights.html`, `newsletter.html`, `retouren.html`, `audit-log.html` und
+  **`marketing.html`** — die einzige Stelle, an der ein Mensch sieht, was der Automat tut, und
+  der einzige Ort, an dem er ihn anhalten kann). Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
 - **Wo anfangen:** offene Aufgaben stehen in `CLAUDE-CODE.md`, Design-Themen in
   `CLAUDE-DESIGN.md`. Großes Repo → erst `/graphify .` (§10).
 
@@ -107,7 +135,24 @@ node test-cj-api.js          # CJ-Verbindung direkt testen
 node get-cj-token.js         # CJ Access-Token holen/erneuern
 node setup-stripe-cj-split.js          # Stripe-Connect-Subaccount für CJ-Split einrichten
 node setup-stripe-connect-simple.js    # Vereinfachtes Stripe-Connect-Setup
+
+# ── Marketing-Automat (Python-Kette, Zustand in Postgres) ──────────────
+npm run marketing:status     # Zustand einmal anzeigen (Trockenlauf, Notaus, Budget, Fälligkeit)
+npm run marketing:once       # genau ein Durchgang
+npm run marketing:local      # Dauerläufer für alles mit Browser/GPU (5-Min-Takt)
+py -m pytest Marketing/tests # 152 Prüfungen der Marketing-Kette
+py -m pipelines.orchestrator.run_loop --job render_style_a --once   # aus Marketing/ heraus
+
+# ── TikTok-Rohmaterial (Recherche, lädt nur über der Trefferschwelle) ──
+npm run tiktok:status        # Bestand und Grenzen anzeigen
+npm run tiktok:probe         # Trockenlauf: sucht und bewertet, lädt NICHTS
+npm run tiktok:laden -- --max 2   # erst wenn die Prüfliste plausibel aussieht
+node bot/tiktok-video-sync.test.js  # 131 Prüfungen des Bots
 ```
+
+> ⚠️ **Der Marketing-Code braucht `py`/`python3`, nicht `python`.** Auf diesem Rechner zeigt
+> `python` auf eine Installation ohne `psycopg` — die Kette meldet dann „Keine Datenbank" und
+> überspringt jeden Ablauf, ohne zu scheitern. `run-local.js` probiert deshalb `py` zuerst.
 
 **Kein Build-Step.** HTML/CSS/JS werden statisch ausgeliefert. Kein Bundler, kein Transpiler
 in Produktion (Vite ist zwar in devDependencies, wird aber nicht im Flow benutzt).
@@ -133,6 +178,12 @@ lautlos wirkt** — jeweils mit einem Test für den real aufgetretenen Fehler:
 | `kasse-fehlermeldung.test.js` | was der Kunde sieht, wenn die Kasse scheitert | ein Meldungsfenster mit rohem JSON öffnete sich im teuersten Moment des Shops |
 | `sprungmarken.test.js` | interne Links auf Sprungmarken | fünf Links zeigten auf eine Sprungmarke, die es seit dem Startseiten-Umbau nicht mehr gibt |
 | `startseite-stile.test.js` | Klammer-Balance des Stilblocks der Startseite | eine fehlende `}` löscht lautlos alle Regeln danach — keine Fehlermeldung, keine Konsolenausgabe |
+| `styles-css-gueltig.test.js` | Syntax der 219 KB großen `styles.css` | beim Ausmessen kamen **zwei echte, unbemerkte Fehler in der Live-Datei** zutage: eine Regel ohne schließende Klammer und ein nie geschlossener Kommentar |
+| `formular-beschriftung.test.js` | Beschriftung der Eingabefelder | wer nicht sieht, hört an einem unbeschrifteten Feld nur „Eingabefeld" — optisch fehlt nichts. Ein `placeholder` zählt bewusst **nicht** als Beschriftung |
+| `konsolen-laerm.test.js` | was die Browser-Konsole auf Kundenseiten preisgibt | eine Produktseite schrieb ~30 Meldungen inkl. vollständiger Produktdaten und interner Dateipfade; 47 davon zusätzlich durch einen Kodierungsfehler zerschossen |
+| `geraete-abdeckung.test.js` | Ehrlichkeit der Geräte-Kachel im Dashboard | ohne Einwilligung fehlt das Gerät — die Kachel zeigte nur die *bekannten* Besuche und sah wie eine vollständige Verteilung aus (an einem Tag fehlten 56 von 175) |
+| `marketing-betrieb.test.js` | Workflow, lokaler Läufer, npm-Skripte des Automaten | ein Workflow, der einen Ablauf nie zuteilt, sieht aus wie „gerade nichts fällig" — **und ein versehentlich abgeschalteter Trockenlauf sieht aus wie Normalbetrieb, bis der erste Beitrag öffentlich steht** |
+| `marketing-dashboard.test.js` | die Admin-Seite des Automaten | ein Feld, das nie gefüllt wird, steht dauerhaft auf „Lädt…" und wirkt wie „nichts zu zeigen" — keine Fehlermeldung, kein Protokolleintrag |
 
 Faustregel beim Ergänzen: **ein Test, der nur grün werden kann, ist wertlos.** Zu jedem
 behobenen Fehler gehört eine Gegenprobe, die das alte Verhalten nachbildet und belegt, dass
@@ -177,7 +228,7 @@ der Test es rot gemeldet hätte (Beispiele in `job-scheduler.test.js` und `cj-st
 | **Zwischenspeicherung** (in `server.js`, bei `express.static`) | Vorher ging für **jede** Datei `no-store` raus („for development", lief aber im Betrieb mit) — jeder Seitenaufruf lud alles neu. Jetzt drei Stufen: **Bilder/Video/Schriften** `public, max-age=86400`; die Seiten aus `NICHT_INDEXIEREN` (Warenkorb, Merkzettel, Bestellbestätigung, Sendungsverfolgung, Auskunftsformular) behalten `no-store`; **alles Übrige** `no-cache` + **ETag** → 304 statt der ganzen Datei, und ein Deploy wirkt trotzdem sofort, weil sich das ETag ändert. Messung Produktseite: erster Aufruf 678 → 237 KB Bilder, zweiter Aufruf 17 KB gesamt. |
 | **Absturzschutz** (in `server.js`) | `process.on('unhandledRejection'/'uncaughtException')` + zentrale Express-Fehlerbehandlung (4-Parameter, **muss nach allen Routen stehen**) + `asyncSafe()`-Hülle für async-Routen ohne eigenes try/catch. Vorher gab es **null** Handler: ein unbehandelter Fehler beendete den Prozess (live nachgewiesen am entfernten `/api/create-payment-intent`). Verhalten: protokollieren, einmalig warnen (15-Min-Sperre), weiterlaufen — bei **5 Ausnahmen in 60 s** aber `process.exit(1)` für einen sauberen Neustart durch Render. Warnmails laufen über `sendOpsAlert()`, denselben Weg wie der 5xx-Zähler. |
 | **CSRF-Schutz** (in `server.js`) | `requireSameOrigin` vor `requireAdminAuth` auf `/a29715347575` + `/api/cj`. Prüft bei **POST/PUT/PATCH/DELETE** die Herkunft (Origin, sonst Referer) gegen `req.headers.host` — port-/domainunabhängig, keine Liste zu pflegen. Nötig, weil **Basic Auth kein SameSite kennt**: der Browser hängt gespeicherte Zugangsdaten auch an fremd ausgelöste Anfragen. Fehlen Origin *und* Referer → durchlassen (curl/Skripte, kein CSRF-Weg). Lesende Anfragen bleiben unberührt. **Kein Frontend-Eingriff nötig** — alle Admin-Aufrufe sind same-origin `fetch`. |
-| `static-guard.js` | **Datei-Freigabe vor `express.static`.** Ohne sie liefert `express.static(__dirname)` das *gesamte* Projekt aus (am 27.07. live nachgewiesen: `server.js`, `voucher-validator.js` = alle Gutscheincodes, `excel/`-Lieferantenliste, `receipts/`-PDFs, interne Docs). Prinzip **Allowlist**: erlaubte Verzeichnisse + Endungen; `.js`/`.css` nur, wenn eine HTML-Seite sie einbindet (beim Start abgeleitet, 2. Durchgang für selbstladende CSS wie `cookie-consent.css`). **Wichtig:** blockt nur, wenn die Datei wirklich existiert — sonst `next()`, sonst wären die 89 nach `express.static` registrierten API-Routen tot. |
+| `static-guard.js` | **Datei-Freigabe vor `express.static`.** Ohne sie liefert `express.static(__dirname)` das *gesamte* Projekt aus (am 27.07. live nachgewiesen: `server.js`, `voucher-validator.js` = alle Gutscheincodes, `excel/`-Lieferantenliste, `receipts/`-PDFs, interne Docs). Prinzip **Allowlist**: erlaubte Verzeichnisse + Endungen; `.js`/`.css` nur, wenn eine HTML-Seite sie einbindet (beim Start abgeleitet, 2. Durchgang für selbstladende CSS wie `cookie-consent.css`). **Wichtig:** blockt nur, wenn die Datei wirklich existiert — sonst `next()`, sonst wären die 89 nach `express.static` registrierten API-Routen tot. **Seit 07.09. zusätzlich `PUBLIC_ROOT_HTML`:** `.html` stand pauschal auf der Endungsliste und gab damit *jede* HTML-Datei im Wurzelverzeichnis frei — die internen Fortschrittsberichte antworteten live mit 200, ohne `noindex`, bei `Allow: /`. Jetzt sind dort nur die sieben Kundenseiten frei; `produkte/` und `infos/` bleiben unberührt, neue Produkt-/Infoseiten brauchen also keinen Eintrag. Eine Prüfung liest das Wurzelverzeichnis zur Laufzeit aus und meldet künftige interne Dokumente von selbst. |
 | `csp-policy.js` | **Content-Security-Policy** — Liste der im Browser erlaubten Quellen (Stripe, Fonts/CDN, Tracker, Nominatim-Adresssuche, IP-Geo-Dienste). Jede Quelle ist durch eine Code-Fundstelle belegt. Standard: **Beobachtungsmodus** (`Content-Security-Policy-Report-Only`), scharf per `CSP_ENFORCE=true`. Verstöße gehen an `POST /api/csp-report` (Ringpuffer im Speicher) und sind unter `/a29715347575/api/csp-reports` einsehbar. **`script-src` kommt ohne `'unsafe-inline'` aus** (siehe `csp-inline.js`) → blockt nachgeladenen Fremdcode, Datenabfluss **und eingeschleusten Inline-Code**. Bei der Gestaltung trennt die Richtlinie: **`style-src-elem` ohne `'unsafe-inline'`** (Hashes für alle `<style>`-Blöcke, auch die zur Laufzeit eingehängten) → ein eingeschleuster `<style>`-Block kann die Seite nicht mehr umgestalten. **`style-src-attr` behält `'unsafe-inline'`** (~1500 `style=`-Attribute, bewusst). `style-src` bleibt als Rückfall für Browser ohne `-elem`/`-attr`-Unterstützung. Notausstieg: `CSP_ALLOW_INLINE_SCRIPTS=true` stellt das alte Verhalten her (gilt für Skripte **und** Stile), ohne Deploy. |
 | `hsts-policy.js` | **`Strict-Transport-Security`** — sagt dem Browser, die Seite künftig **nur** verschlüsselt aufzurufen. Der Shop leitet `http://` zwar schon per 301 um, aber diese Umleitung geht selbst unverschlüsselt über die Leitung und ist im offenen WLAN abfangbar. **Wird nur bei verschlüsselt eingegangenen Anfragen gesetzt** (`x-forwarded-proto`, weil Render die Verschlüsselung selbst beendet) — lokal fällt sie damit von selbst weg, sonst würde der eigene Browser `http://localhost` festnageln. **Standard bewusst 1 Tag, nicht 1 Jahr:** Die Kopfzeile lässt sich nicht zurückrufen; fällt HTTPS später aus, ist der Shop für wiederkehrende Besucher genau so lange tot. Erhöhen ohne Deploy über `HSTS_MAX_AGE` (>1 Jahr wird gekappt, Unsinn fällt auf den Standard, `0` schaltet ab). `includeSubDomains` nur per `HSTS_INCLUDE_SUBDOMAINS=true`; **`preload` gibt es bewusst gar nicht** (Rückweg dauert Monate). Tests: `test/hsts-policy.test.js`. |
 | `csp-inline.js` | Berechnet **beim Start** je Seite die SHA-256-Hashes des erlaubten Inline-Codes (`<script>`-Blöcke, `onclick=`-Behandler in HTML **und** in JS-Vorlagen). Dadurch braucht `script-src` kein `'unsafe-inline'` mehr, **ohne** dass eine HTML-Datei umgebaut werden muss — die Liste pflegt sich selbst, wie bei `static-guard.js`. Zwei Fallen, die live nachgewiesen wurden: **(1)** Der HTML-Parser normalisiert `\r\n` → `\n`; ohne Normalisierung sind CRLF-Seiten (aktuell `gutscheine.html`, `infos/agb.html`) **still ohne Funktion** — kein Konsolenfehler. **(2)** Behandler mit eingesetzten Werten (`onclick="x(${id})"`) haben bei jedem Aufruf einen anderen Hash und sind grundsätzlich nicht hashbar; alle 25 solchen Stellen wurden auf `data-`Attribute umgestellt (`onclick="x(this.dataset.artikel)"`). Neue melden sich beim Start. |
@@ -207,7 +258,8 @@ der Test es rot gemeldet hätte (Beispiele in `job-scheduler.test.js` und `cj-st
 | `site.webmanifest` + `images/icon-*.png` | PWA-Manifest („zum Startbildschirm hinzufügen") + Favicons. Icons per `sharp` aus `images/logo.jpg` (1024²) erzeugt: 32/192/512 + `logo.png`. **Favicon-Verweise root-relativ**, nicht absolut — über die Render-Ersatzadresse wäre `https://maiosshop.com/...` eine fremde Herkunft und würde von der CSP geblockt. Alle 61 Kundenseiten binden Favicon + Manifest ein. |
 | `.github/workflows/keep-alive.yml` | GitHub-Actions-Workflow, hält Render-Free warm (jeder Lauf pingt ~13 Min alle 60 s `GET /health`). Best-effort — echte Garantie via externem Pinger/Paid. |
 | `.github/workflows/pruefung.yml` | **Prüflauf bei jedem Push auf `main`** (und bei PRs): `npm ci` → Lint → Tests → Prüfung auf Ereignisbehandler mit eingesetzten Werten (die blockiert die CSP, siehe `csp-inline.js`) → **Startprüfung** (Server hochfahren, `/health` abfragen, beenden). Die Startprüfung ist der wertvollste Schritt: Lint und Tests sehen nicht, ob der Server überhaupt hochkommt. Läuft bewusst **ohne Zugangsdaten** — der Shop muss auch ohne starten. **Der Prüflauf ist die Deploy-Sperre:** `render.yaml` hat `autoDeploy: false`, Render rollt also **nicht** mehr von selbst aus. Das Ausrollen löst der letzte Workflow-Schritt über den Deploy-Hook aus (GitHub-Secret `RENDER_DEPLOY_HOOK`) — und nur, wenn alle Schritte grün sind. Ist der Lauf rot, bleibt der alte Stand live. Ohne Secret wäre der Schritt ein No-Op (Lauf bleibt grün), dann würde aber gar nicht mehr ausgerollt — Secret und `autoDeploy: false` gehören zusammen. **Von Hand ausrollen:** Render-Dashboard → „Manual Deploy". |
-| `Marketing/` | Python-Pipelines (`pipelines/*.py`), eigene `products.json`, chromedriver, Daten/Renders. |
+| `Marketing/` | **Der Marketing-Automat**, 10.442 Zeilen Python in 57 Dateien + 152 Prüfungen. `pipelines/` gliedert die Kette (`trends/`, `matcher.py`, `creative/`, `video/`, `publish/`, `analytics/`, `learning/`, `orchestrator/`), `config/marketing.config.json` hält Grenzen, Notaus, Budget und die **Einkaufspreise je Produkt-ID**, `run-local.js` ist der Dauerläufer für alles mit Browser/GPU, `api.js` bedient das Admin-Dashboard. Die frühere **eigene `products.json` ist weg** — sie hatte 17 statt 40 Produkte und 11 abweichende Preise, bei einem Produkt 17 € zu niedrig; gelesen wird jetzt die Wurzel-Liste (`pipelines/products.py`). |
+| `bot/` | **TikTok-Rohmaterial als Recherche.** `tiktok-video-sync.js` (3.022 Zeilen) sucht fremdes Material zu den eigenen Produkten und lädt nur über der Trefferschwelle; `tiktok-video-sync.test.js` ist mit 3.042 Zeilen **länger als das Programm** (131 Prüfungen). `tiktok-quellen.json` hält Stichworte und Grenzen je Produkt, `TIKTOK-VIDEO-SYNC.md` ist das Handbuch (976 Zeilen). Wichtigster Fund: **yt-dlp kann bei TikTok gar nicht suchen** — der Hashtag-Extractor ist vom Projekt selbst als `CURRENTLY BROKEN` markiert; die Adressen kommen über eine Suchmaschine. Jeder Eintrag startet auf `rechte_geprueft: false`. |
 | `excel/` | Produktlisten (CSV/XLSX, getrackt). **Achtung:** Hier lagen versehentlich Secrets (privater Key + Stripe-Code); Secret-Muster (`*.key`/`*.pem`/`*_private_key*`/`stripe_backup_code.txt`) sind gitignored — siehe `CLAUDE-CODE.md` §1. |
 | `.env`, `Marketing/.env` | Secrets, **gitignored & nicht getrackt**. `.env.example` listet alle Schlüssel; Prod-Werte ins Render-Dashboard. |
 | `*.md` | Betriebs-SOPs (CJ, Retouren, Versand, Kassenbon, Exchange) + die drei Kern-Docs (§11). |
@@ -257,8 +309,14 @@ den Warenkorb gegen `products.json`, bevor Stripe-Beträge gebildet werden.
 ## 5. Datenbank
 
 **PostgreSQL** via `database.js` (`pg`-Pool, Verbindung über `DATABASE_URL`). Tabellen:
-`orders` (inkl. Spalte `device`), `order_items`, `receipts`, `order_tracking`, `page_views`,
-`user_consent_events`, `search_events`, `newsletter_subscribers` (+ Indizes, + Sequence
+`orders` (inkl. Spalten `device` und **`utm_campaign`** — ohne die geht die Herkunft an der Kasse
+verloren und der Automat kann keine Bestellung ihrem Beitrag zuordnen), `order_items`,
+`receipts`, `order_tracking`, `page_views`, `user_consent_events`, `search_events`,
+`newsletter_subscribers`, dazu die **17 `mkt_*`-Tabellen des Marketing-Automaten** (rein additiv
+in derselben `SCHEMA`-Liste: `mkt_trends`, `mkt_trend_scores`, `mkt_matches`, `mkt_briefs`,
+`mkt_videos`, `mkt_posts`, `mkt_metrics`, `mkt_attribution`, `mkt_jobs`, `mkt_job_events`,
+`mkt_arms`, `mkt_rewards`, `mkt_experiments`, `mkt_assets`, `mkt_cost_ledger`,
+`mkt_audit_log`, `mkt_config_overrides`) (+ Indizes, + Sequence
 `receipt_seq`), werden beim Start
 automatisch angelegt (`CREATE TABLE IF NOT EXISTS`; Spalten via `ALTER TABLE … ADD COLUMN IF NOT
 EXISTS`). Empfohlen: **Neon** (kostenlos & dauerhaft). Lokal dieselbe `DATABASE_URL` in `.env`.
@@ -288,8 +346,8 @@ und Analytics-IDs.
 
 **Live auf Render** (Free-Plan): ein Node-Web-Service (`render.yaml`) bedient Frontend +
 komplette API aus `server.js`. URL: **https://maiosshop.com** (Fallback
-`https://maios-shop.onrender.com`). **Auto-Deploy** bei Push auf `main`. Node-Version via
-`NODE_VERSION`/`.nvmrc` (**20.19.0**).
+`https://maios-shop.onrender.com`). **Kein Auto-Deploy** — `autoDeploy: false`, ausgerollt wird
+nur über den grünen Prüflauf (§0 und §3). Node-Version via `NODE_VERSION`/`.nvmrc` (**20.19.0**).
 
 - **Datenbank:** Neon-Postgres über `DATABASE_URL` (im Render-Dashboard gesetzt).
 - **Env-Vars:** alle Secrets im **Render-Dashboard → Environment** (Stripe, Resend, CJ,
