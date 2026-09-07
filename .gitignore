@@ -136,3 +136,9 @@ receipts/*.pdf
 # wird von Render auch nicht ausgerollt. Neu bauen laesst sie sich jederzeit
 # aus products.json.
 infos/nummernprodukte.html
+
+# Die PDF-Fassung des Fortschrittsberichts. Aus der HTML-Datei daneben
+# jederzeit neu zu erzeugen (headless Chrome, --print-to-pdf) und mit rund
+# 1 MB die groesste Binaerdatei, die das Repo sonst mitschleppen wuerde.
+# Die HTML-Fassung ist die Quelle und bleibt versioniert.
+Fortschrittsbericht*.pdf
