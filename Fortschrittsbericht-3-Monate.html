@@ -292,12 +292,12 @@
   <div class="report-header">
     <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
     <h1 class="title">Maios Shop — Juni bis September 2026</h1>
-    <p class="subtitle">Zeitraum <strong>7. Juni – 2. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 602 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und führt ihn bis heute weiter.</p>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 7. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 605 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
-      <span style="color:var(--green);font-weight:600;">✓ 159 Commits an 36 Arbeitstagen</span>
-      <span><strong>602</strong> automatische Prüfungen (322 Shop + 149 Marketing + 131 Bot)</span>
-      <span>Stand <strong>02.09.2026</strong></span>
+      <span style="color:var(--green);font-weight:600;">✓ 164 Commits an 37 Arbeitstagen</span>
+      <span><strong>605</strong> automatische Prüfungen (325 Shop + 149 Marketing + 131 Bot)</span>
+      <span>Stand <strong>07.09.2026</strong></span>
     </div>
   </div>
 
@@ -311,24 +311,24 @@
 
     <div class="stats">
       <div class="stat acc-blue">
-        <div class="num">159</div>
+        <div class="num">164</div>
         <div class="lbl">Commits</div>
-        <p class="sub">an 36 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
+        <p class="sub">an 37 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
       </div>
       <div class="stat acc-green">
-        <div class="num">602</div>
+        <div class="num">605</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: 322 im Shop, 149 im Marketing, 131 im TikTok-Bot — alle grün.</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: 325 im Shop, 149 im Marketing, 131 im TikTok-Bot — alle grün.</p>
       </div>
       <div class="stat acc-orange">
-        <div class="num">523</div>
+        <div class="num">525</div>
         <div class="lbl">Geänderte Dateien</div>
-        <p class="sub">+84.592 Zeilen hinzugefügt, −96.525 entfernt. Unterm Strich <strong>11.933 Zeilen weniger</strong> — es wurde mehr aufgeräumt als gebaut.</p>
+        <p class="sub">+85.924 Zeilen hinzugefügt, −96.525 entfernt. Unterm Strich <strong>10.601 Zeilen weniger</strong> — es wurde mehr aufgeräumt als gebaut.</p>
       </div>
       <div class="stat acc-red">
-        <div class="num">4</div>
+        <div class="num">5</div>
         <div class="lbl">Vorfälle mit echtem Schaden</div>
-        <p class="sub">Privater Schlüssel im öffentlichen Repo, abrufbarer Quellcode, tote Kasse, Absturz per leerer Anfrage. Alle vier gefunden und behoben.</p>
+        <p class="sub">Privater Schlüssel im öffentlichen Repo, abrufbarer Quellcode, tote Kasse, Absturz per leerer Anfrage, öffentlich abrufbare interne Berichte. Alle fünf gefunden und behoben.</p>
       </div>
     </div>
 
@@ -338,7 +338,7 @@
         <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
       </thead>
       <tbody>
-        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">602</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">605</td><td class="gut">neu aufgebaut</td></tr>
         <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
         <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
         <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
@@ -528,10 +528,22 @@
         <div class="tl-date">28. Aug – 2. Sep</div>
         <div class="tl-body">
           <h3>Aus 23 Rohclips wurde ein fertiger Werbeclip <span class="tl-tag tag-neu">Neu</span></h3>
-          <p>Fünf Schnittfassungen für den Wasserspender, die letzte vom 2.&nbsp;September: 19,5 Sekunden, 1080×1920, H.264 + AAC, mit Musikbett und eingebrannter Bildunterschrift. Parallel wurde der Bot so umgebaut, dass er die Bildunterschrift <em>vor</em> dem Abruf auswertet und damit 77 % der Kandidaten klärt, ohne TikTok überhaupt anzufassen. <strong>Diese Arbeit ist noch nicht committet</strong> — sie liegt im Arbeitsverzeichnis.</p>
+          <p>Fünf Schnittfassungen für den Wasserspender, die letzte vom 2.&nbsp;September: 19,5 Sekunden, 1080×1920, H.264 + AAC, mit Musikbett und eingebrannter Bildunterschrift. Parallel wurde der Bot so umgebaut, dass er die Bildunterschrift <em>vor</em> dem Abruf auswertet und damit 77 % der Kandidaten klärt, ohne TikTok überhaupt anzufassen.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">7. Sep</div>
+        <div class="tl-body">
+          <h3>Ausgerollt — und dabei die eigenen Berichte im Shop gefunden <span class="tl-tag tag-security">Sicherheit</span></h3>
+          <p>Die Bot-Arbeit vom 1./2.&nbsp;September ist committet (<code>9c5fd91</code>) und über <code>main</code> ausgerollt, Prüflauf grün in 21&nbsp;Sekunden.<br><br><strong>Beim Nachmessen am Live-Shop:</strong> Die beiden Fortschrittsberichte antworteten unter <code>maiosshop.com</code> mit 200 — ohne <code>noindex</code>, bei <code>Allow: /</code> in der <code>robots.txt</code>. Darin stehen alle früher gefundenen Sicherheitslücken im Klartext, im älteren Bericht zusätzlich der Pfad des Admin-Bereichs. Ursache: <code>.html</code> stand pauschal in der Endungs-Freigabe der Datei-Freigabe — gedacht für die Kundenseiten, gab damit aber <em>jede</em> HTML-Datei im Wurzelverzeichnis frei. Behoben mit einer Liste der sieben echten Kundenseiten; <code>produkte/</code> und <code>infos/</code> bleiben unberührt. Drei neue Prüfungen, eine davon liest das Wurzelverzeichnis zur Laufzeit aus und meldet künftige interne Dokumente von selbst.</p>
         </div>
       </div>
     </div>
+
+    <blockquote class="merke">
+      <p><strong>Ab hier wird dieser Bericht mitgeführt.</strong> Nach jedem abgeschlossenen Punkt: Erledigtes abhaken, Verworfenes durchstreichen statt löschen, Kennzahlen neu messen statt fortschreiben. Ein Hinweis meldet sich, sobald seit der letzten Aktualisierung des Berichts weitere Commits dazugekommen sind — und verstummt, sobald der Bericht mitcommittet ist.</p>
+    </blockquote>
   </div>
 
 
@@ -781,6 +793,14 @@
       </div>
 
       <div class="impact-card">
+        <div class="ico">🔴</div>
+        <div class="body">
+          <h3>Die internen Berichte waren im Shop öffentlich abrufbar</h3>
+          <p>Beide Fortschrittsberichte antworteten unter <code>maiosshop.com</code> mit 200 — ohne <code>noindex</code>, bei <code>Allow: /</code> in der <code>robots.txt</code>. Der ältere war seit dem 27.&nbsp;August so erreichbar. <strong>7. September.</strong> Die Datei-Freigabe arbeitete nach dem richtigen Prinzip, hatte aber <code>.html</code> pauschal auf der Endungsliste — dieselbe Lücke wie im Juli, nur eine Ebene höher: nicht mehr „alles ist frei", sondern „eine ganze Dateiart ist frei". Behoben mit einer Liste der sieben Kundenseiten im Wurzelverzeichnis.</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
         <div class="ico">🟠</div>
         <div class="body">
           <h3>Ein privater Schlüssel lag im öffentlichen Repository</h3>
@@ -929,14 +949,15 @@
 
     <div class="pruef-banner">
       <h3>✅ Drei Monate, ein Muster</h3>
-      <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen.<br><br>
-      Deshalb sind die 602 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+      <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen — und dieser Bericht selbst stand zehn Tage lang öffentlich im Shop, ohne dass irgendetwas darauf hingewiesen hätte.<br><br>
+      Deshalb sind die 605 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
     </div>
   </div>
 
   <footer>
-    Interner Fortschrittsbericht · Zeitraum 7. Juni – 2. September 2026 · Stand 02.09.2026.<br>
-    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (322 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> (131 Prüfungen), ausgezählte Python-Prüfungen (149) sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Interner Fortschrittsbericht · Zeitraum 7. Juni – 7. September 2026 · Stand 07.09.2026.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (325 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> (131 Prüfungen), ausgezählte Python-Prüfungen (149) sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Wird nach jedem abgeschlossenen Punkt fortgeschrieben. <strong>Nicht öffentlich:</strong> seit dem 7.&nbsp;September blockt die Datei-Freigabe interne HTML-Dokumente im Wurzelverzeichnis — diese Seite ist unter <code>maiosshop.com</code> nicht abrufbar.<br>
     Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
   </footer>
 
