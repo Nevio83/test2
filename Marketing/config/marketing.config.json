@@ -1,84 +1,259 @@
 {
   "_hinweis": "Alle Stellschrauben des Marketing-Automaten. Der Code hat KEINE hartkodierten Gewichte, Budgets oder Zeitplaene — sie stehen alle hier. Das Lernmodul darf einen Teil davon selbst anpassen (siehe 'lernen.darf_aendern'); alles andere ist ihm verboten und wird von guardrails.py durchgesetzt.",
-
   "notaus": {
     "_hinweis": "Drei unabhaengige Wege, alles anzuhalten. Es reicht EINER.",
     "aktiviert": true,
     "stop_datei": "STOP"
   },
-
   "trockenlauf": {
     "_hinweis": "Standard ist true. Es wird alles gebaut und geplant, aber NICHTS veroeffentlicht. Auf false stellt nur ein Mensch — niemals der Code.",
     "standard": true
   },
-
   "budget": {
     "_hinweis": "Obergrenzen in Euro. Vor jedem kostenpflichtigen Aufruf wird mkt_cost_ledger summiert. Bei Ueberschreitung wird auf den kostenlosen Pfad umgeschaltet (lokales TTS, lokales Rendering, Vorlagen-Briefings) — NICHT abgebrochen.",
-    "tag_euro": 3.0,
-    "monat_euro": 40.0
+    "tag_euro": 3,
+    "monat_euro": 40
   },
-
   "jobs": {
     "_hinweis": "Abstaende in Sekunden. requires_local = braucht Browser oder GPU, laeuft also nur auf dem eigenen PC / Worker.",
-    "trends_ingest":    { "abstand_sek": 1800,   "requires_local": false },
-    "shop_signals":     { "abstand_sek": 3600,   "requires_local": false },
-    "match_and_brief":  { "abstand_sek": 3600,   "requires_local": false },
-    "render_style_a":   { "abstand_sek": 1800,   "requires_local": false },
-    "render_style_b":   { "abstand_sek": 3600,   "requires_local": true  },
-    "publish_due":      { "abstand_sek": 900,    "requires_local": true  },
-    "metrics_collect":  { "abstand_sek": 3600,   "requires_local": false },
-    "learning_update":  { "abstand_sek": 21600,  "requires_local": false },
-    "weekly_report":    { "abstand_sek": 604800, "requires_local": false },
-    "cleanup_assets":   { "abstand_sek": 86400,  "requires_local": false },
-    "budget_rollover":  { "abstand_sek": 86400,  "requires_local": false }
+    "trends_ingest": {
+      "abstand_sek": 1800,
+      "requires_local": false
+    },
+    "shop_signals": {
+      "abstand_sek": 3600,
+      "requires_local": false
+    },
+    "match_and_brief": {
+      "abstand_sek": 3600,
+      "requires_local": false
+    },
+    "render_style_a": {
+      "abstand_sek": 1800,
+      "requires_local": false
+    },
+    "render_style_b": {
+      "abstand_sek": 3600,
+      "requires_local": true
+    },
+    "publish_due": {
+      "abstand_sek": 900,
+      "requires_local": true
+    },
+    "metrics_collect": {
+      "abstand_sek": 3600,
+      "requires_local": false
+    },
+    "learning_update": {
+      "abstand_sek": 21600,
+      "requires_local": false
+    },
+    "weekly_report": {
+      "abstand_sek": 604800,
+      "requires_local": false
+    },
+    "cleanup_assets": {
+      "abstand_sek": 86400,
+      "requires_local": false
+    },
+    "budget_rollover": {
+      "abstand_sek": 86400,
+      "requires_local": false
+    }
   },
-
   "trend_score": {
     "_hinweis": "score = w1*velocity + w2*volumen_norm + w3*passung_sortiment + w4*shop_signal + w5*saisonalitaet - w6*saettigung - w7*alter_stunden. Startwerte begruendet: Velocity und Shop-Signal stehen oben, weil ein steigender Trend mehr wert ist als ein grosser (bei grossen ist der Wettbewerb schon da), und weil die eigenen Shop-Daten der einzige Vorteil sind, den kein fremdes Trend-Tool hat. Saettigung zieht ab, weil ein Thema mit 10.000 Videos fuer einen kleinen Shop verloren ist.",
-    "w1_velocity": 0.30,
+    "w1_velocity": 0.3,
     "w2_volumen": 0.15,
-    "w3_passung": 0.20,
+    "w3_passung": 0.2,
     "w4_shop_signal": 0.25,
-    "w5_saisonalitaet": 0.10,
-    "w6_saettigung": 0.20,
+    "w5_saisonalitaet": 0.1,
+    "w6_saettigung": 0.2,
     "w7_alter": 0.05,
     "max_alter_stunden": 72,
     "sprache_bevorzugt": "de"
   },
-
   "matching": {
     "_hinweis": "mindest_marge_prozent nach der Formel aus CLAUDE-CODE.md Paragraph 2: VK >= (EK + Versand) * 1,20. WICHTIG: Die Einkaufspreise stehen nur namensbasiert in excel/Maios Produkte.csv, nicht per Produkt-ID. Wo der EK unbekannt ist, entscheidet 'unbekannte_marge': 'sperren' = Produkt wird nicht beworben, 'erlauben_mit_hinweis' = beworben, aber im Audit-Log als ungeprueft vermerkt. Steht auf 'erlauben_mit_hinweis', weil CLAUDE-CODE.md die Marge shopweit bereits geprueft hat (alle CJ-Produkte >= 23 %). Trage EK/Versand unten ein, dann wird echt gerechnet.",
     "mindest_marge_prozent": 20,
     "unbekannte_marge": "erlauben_mit_hinweis",
     "einkaufspreise": {
-      "_hinweis": "EK und Versand in Euro je Produkt-ID, am 07.09.2026 aus excel/Maios Produkte.csv uebernommen. Massgeblich war der LINK der CSV-Zeile, nicht ihre Namensspalte: die traegt Spitznamen und stimmt stellenweise nicht — Zeile 37 heisst LED Water in Crown, verlinkt aber ein Solarlicht. Bei jedem Eintrag steht die Herkunft: kennung = die Kennung hinter -p- deckt sich mit der SKU, link = der beschreibende Teil des Links benennt das Produkt, zahlen = Link widerspricht, aber Name und Verkaufspreis passen. Jeder Eintrag wurde gegen den Verkaufspreis im Shop gegengeprueft; bei Abweichung nicht uebernommen. Die 13 fehlenden Produkte bleiben leer statt geraten — eine unbekannte Marge ist ein Ergebnis, eine falsche Marge ist ein Fehler.",
-      "10": { "ek": 20.50, "versand": 8.00, "quelle": "excel/Maios Produkte.csv Zeile 1 (kennung)" },
-      "11": { "ek": 24.98, "versand": 5.00, "quelle": "excel/Maios Produkte.csv Zeile 2 (link)" },
-      "12": { "ek": 7.92, "versand": 3.00, "quelle": "excel/Maios Produkte.csv Zeile 3 (link)" },
-      "17": { "ek": 4.47, "versand": 2.50, "quelle": "excel/Maios Produkte.csv Zeile 21 (kennung)" },
-      "18": { "ek": 8.60, "versand": 3.00, "quelle": "excel/Maios Produkte.csv Zeile 22 (link)" },
-      "19": { "ek": 13.39, "versand": 3.50, "quelle": "excel/Maios Produkte.csv Zeile 34 (link)" },
-      "21": { "ek": 10.50, "versand": 3.50, "quelle": "excel/Maios Produkte.csv Zeile 37 (zahlen)" },
-      "22": { "ek": 8.43, "versand": 3.00, "quelle": "excel/Maios Produkte.csv Zeile 46 (link)" },
-      "26": { "ek": 6.41, "versand": 2.50, "quelle": "excel/Maios Produkte.csv Zeile 50 (kennung)" },
-      "27": { "ek": 15.38, "versand": 4.00, "quelle": "excel/Maios Produkte.csv Zeile 51 (link)" },
-      "32": { "ek": 9.92, "versand": 3.50, "quelle": "excel/Maios Produkte.csv Zeile 35 (kennung)" },
-      "33": { "ek": 4.70, "versand": 2.50, "quelle": "excel/Maios Produkte.csv Zeile 52 (kennung)" },
-      "34": { "ek": 10.11, "versand": 3.50, "quelle": "excel/Maios Produkte.csv Zeile 53 (link)" },
-      "35": { "ek": 14.97, "versand": 5.00, "quelle": "excel/Maios Produkte.csv Zeile 55 (link)" },
-      "36": { "ek": 8.42, "versand": 3.00, "quelle": "excel/Maios Produkte.csv Zeile 57 (link)" },
-      "37": { "ek": 47.12, "versand": 8.00, "quelle": "excel/Maios Produkte.csv Zeile 58 (link)" },
-      "38": { "ek": 7.79, "versand": 3.00, "quelle": "excel/Maios Produkte.csv Zeile 59 (link)" },
-      "39": { "ek": 23.09, "versand": 4.00, "quelle": "excel/Maios Produkte.csv Zeile 62 (link)" },
-      "40": { "ek": 11.33, "versand": 3.50, "quelle": "excel/Maios Produkte.csv Zeile 18 (link)" },
-      "41": { "ek": 11.33, "versand": 3.50, "quelle": "excel/Maios Produkte.csv Zeile 17 (link)" },
-      "43": { "ek": 19.78, "versand": 4.00, "quelle": "excel/Maios Produkte.csv Zeile 23 (link)" },
-      "44": { "ek": 59.30, "versand": 10.00, "quelle": "excel/Maios Produkte.csv Zeile 31 (link)" },
-      "45": { "ek": 20.59, "versand": 5.00, "quelle": "excel/Maios Produkte.csv Zeile 33 (link)" },
-      "46": { "ek": 15.25, "versand": 5.00, "quelle": "excel/Maios Produkte.csv Zeile 47 (link)" },
-      "47": { "ek": 14.45, "versand": 4.00, "quelle": "excel/Maios Produkte.csv Zeile 4 (link)" },
-      "48": { "ek": 14.45, "versand": 4.00, "quelle": "excel/Maios Produkte.csv Zeile 4 (link)" },
-      "50": { "ek": 9.69, "versand": 3.00, "quelle": "excel/Maios Produkte.csv Zeile 39 (link)" }
+      "10": {
+        "ek": 20.5,
+        "versand": 9.71,
+        "quelle": "excel/Maios Produkte.csv Zeile 1 (kennung)",
+        "versand_geschaetzt": 8,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1621426087651717120 (459 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "11": {
+        "ek": 24.98,
+        "versand": 15.38,
+        "quelle": "excel/Maios Produkte.csv Zeile 2 (link)",
+        "versand_geschaetzt": 5,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1392009096881901568 (660 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "12": {
+        "ek": 7.92,
+        "versand": 5.73,
+        "quelle": "excel/Maios Produkte.csv Zeile 3 (link)",
+        "versand_geschaetzt": 3,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (CJPacket Ordinary E, 7-15 Tage), Variante 1633393678628696064 (198 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "17": {
+        "ek": 4.47,
+        "versand": 2.5,
+        "quelle": "excel/Maios Produkte.csv Zeile 21 (kennung)"
+      },
+      "18": {
+        "ek": 8.6,
+        "versand": 3,
+        "quelle": "excel/Maios Produkte.csv Zeile 22 (link)"
+      },
+      "19": {
+        "ek": 13.39,
+        "versand": 3.5,
+        "quelle": "excel/Maios Produkte.csv Zeile 34 (link)"
+      },
+      "21": {
+        "ek": 10.5,
+        "versand": 5.8,
+        "quelle": "excel/Maios Produkte.csv Zeile 37 (zahlen)",
+        "versand_geschaetzt": 3.5,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1363045795821129728 (140 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "22": {
+        "ek": 8.43,
+        "versand": 5.8,
+        "quelle": "excel/Maios Produkte.csv Zeile 46 (link)",
+        "versand_geschaetzt": 3,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1363045795821129728 (140 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "26": {
+        "ek": 6.41,
+        "versand": 5.39,
+        "quelle": "excel/Maios Produkte.csv Zeile 50 (kennung)",
+        "versand_geschaetzt": 2.5,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (CJPacket Ordinary E, 7-15 Tage), Variante 1711943102094651392 (158 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "27": {
+        "ek": 15.38,
+        "versand": 8.86,
+        "quelle": "excel/Maios Produkte.csv Zeile 51 (link)",
+        "versand_geschaetzt": 4,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 14 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1602125961246552064 (390 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "32": {
+        "ek": 9.92,
+        "versand": 6.79,
+        "quelle": "excel/Maios Produkte.csv Zeile 35 (kennung)",
+        "versand_geschaetzt": 3.5,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 14 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1373821406403497984 (220 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "33": {
+        "ek": 4.7,
+        "versand": 2.5,
+        "quelle": "excel/Maios Produkte.csv Zeile 52 (kennung)"
+      },
+      "34": {
+        "ek": 10.11,
+        "versand": 3.5,
+        "quelle": "excel/Maios Produkte.csv Zeile 53 (link)"
+      },
+      "35": {
+        "ek": 14.97,
+        "versand": 7.43,
+        "quelle": "excel/Maios Produkte.csv Zeile 55 (link)",
+        "versand_geschaetzt": 5,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1720366333893816320 (273 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "36": {
+        "ek": 8.42,
+        "versand": 3,
+        "quelle": "excel/Maios Produkte.csv Zeile 57 (link)"
+      },
+      "37": {
+        "ek": 47.12,
+        "versand": 30.53,
+        "quelle": "excel/Maios Produkte.csv Zeile 58 (link)",
+        "versand_geschaetzt": 8,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (YunExpress Sensitive, 8-15 Tage), Variante 1490985480559398912 (1700 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "38": {
+        "ek": 7.79,
+        "versand": 4.7,
+        "quelle": "excel/Maios Produkte.csv Zeile 59 (link)",
+        "versand_geschaetzt": 3,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (CJPacket Ordinary E, 7-15 Tage), Variante 1359775415635415040 (75 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "39": {
+        "ek": 23.09,
+        "versand": 7.62,
+        "quelle": "excel/Maios Produkte.csv Zeile 62 (link)",
+        "versand_geschaetzt": 4,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1792088342134267904 (288 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "40": {
+        "ek": 11.33,
+        "versand": 7.46,
+        "quelle": "excel/Maios Produkte.csv Zeile 18 (link)",
+        "versand_geschaetzt": 3.5,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 14 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1642512124960313344 (275 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "41": {
+        "ek": 11.33,
+        "versand": 9.2,
+        "quelle": "excel/Maios Produkte.csv Zeile 17 (link)",
+        "versand_geschaetzt": 3.5,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (YunExpress Ordinary, 6-8 Tage), Variante 1715574082198048768 (575 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "43": {
+        "ek": 19.78,
+        "versand": 7.62,
+        "quelle": "excel/Maios Produkte.csv Zeile 23 (link)",
+        "versand_geschaetzt": 4,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1465145114186878976 (288 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "44": {
+        "ek": 59.3,
+        "versand": 14.77,
+        "quelle": "excel/Maios Produkte.csv Zeile 31 (link)",
+        "versand_geschaetzt": 10,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 14 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1684089881007497216 (872 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "45": {
+        "ek": 20.59,
+        "versand": 14.86,
+        "quelle": "excel/Maios Produkte.csv Zeile 33 (link)",
+        "versand_geschaetzt": 5,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1665166365977743360 (880 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "46": {
+        "ek": 15.25,
+        "versand": 5,
+        "quelle": "excel/Maios Produkte.csv Zeile 47 (link)"
+      },
+      "47": {
+        "ek": 14.45,
+        "versand": 10.12,
+        "quelle": "excel/Maios Produkte.csv Zeile 4 (link)",
+        "versand_geschaetzt": 4,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (YunExpress Ordinary, 6-8 Tage), Variante 1610884907591544832 (686 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "48": {
+        "ek": 14.45,
+        "versand": 10.12,
+        "quelle": "excel/Maios Produkte.csv Zeile 4 (link)",
+        "versand_geschaetzt": 4,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (YunExpress Ordinary, 6-8 Tage), Variante 1610884907591544832 (686 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "50": {
+        "ek": 9.69,
+        "versand": 7.75,
+        "quelle": "excel/Maios Produkte.csv Zeile 39 (link)",
+        "versand_geschaetzt": 3,
+        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (YunExpress Ordinary, 6-8 Tage), Variante 1555129918697254912 (400 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+      },
+      "_hinweis": "EK und Versand in Euro je Produkt-ID, am 07.09.2026 aus excel/Maios Produkte.csv uebernommen. Massgeblich war der LINK der CSV-Zeile, nicht ihre Namensspalte: die traegt Spitznamen und stimmt stellenweise nicht — Zeile 37 heisst LED Water in Crown, verlinkt aber ein Solarlicht. Bei jedem Eintrag steht die Herkunft: kennung = die Kennung hinter -p- deckt sich mit der SKU, link = der beschreibende Teil des Links benennt das Produkt, zahlen = Link widerspricht, aber Name und Verkaufspreis passen. Jeder Eintrag wurde gegen den Verkaufspreis im Shop gegengeprueft; bei Abweichung nicht uebernommen. VERSAND: Bei 20 Produkten steht seit dem 07.09. der echte CJ-Frachtpreis (Feld versand_quelle); die frueher geschaetzte Zahl bleibt als versand_geschaetzt daneben stehen. Genommen wurde jeweils die GUENSTIGSTE Option — die Realitaet kann also nur schlechter sein. CJ weist keine Waehrung aus; die Zahl ist roh uebernommen. Bei den uebrigen steht weiter die Schaetzung. Die 13 fehlenden Produkte bleiben leer statt geraten — eine unbekannte Marge ist ein Ergebnis, eine falsche Marge ist ein Fehler."
     },
     "max_posts_pro_produkt_pro_woche": 2,
     "min_passungs_score": 0.15,
@@ -86,35 +261,45 @@
     "_hinweis_cooldown": "Wie lange ein THEMA (keyword_norm) nach einem Briefing gesperrt ist. Ohne diese Sperre bekommt dasselbe Stichwort bei jedem Lauf ein neues Briefing, weil jede Messung eine neue trend_id hat — gemessen: 10 Briefings fuer 7 Themen. 7 Tage passt zu max_posts_pro_produkt_pro_woche, das ebenfalls wochenweise begrenzt.",
     "thema_cooldown_tage": 7
   },
-
   "llm": {
     "_hinweis": "Sprachmodell fuer die Briefings. Anthropic hat Vorrang, wenn beide Schluessel gesetzt sind. Fehlt beides ODER ist das Budget erschoepft, werden Briefings aus Vorlagen gebaut — der Ablauf bricht NICHT ab.",
     "modell_anthropic": "claude-sonnet-5",
     "modell_openai": "gpt-4o-mini",
     "_hinweis_preise": "Cent je Million Token. ACHTUNG: Schaetzwerte — gegen die aktuelle Preisliste des Anbieters pruefen. Die Token-ZAHLEN in mkt_cost_ledger stammen aus der echten Antwort und stimmen unabhaengig davon; nur der Eurobetrag haengt an diesen Werten.",
     "preise": {
-      "anthropic": { "cent_pro_mio_ein": 300, "cent_pro_mio_aus": 1500 },
-      "openai":    { "cent_pro_mio_ein": 15,  "cent_pro_mio_aus": 60 }
+      "anthropic": {
+        "cent_pro_mio_ein": 300,
+        "cent_pro_mio_aus": 1500
+      },
+      "openai": {
+        "cent_pro_mio_ein": 15,
+        "cent_pro_mio_aus": 60
+      }
     }
   },
-
   "veroeffentlichung": {
     "_hinweis": "Slots sind Startwerte; ab genug Daten lernt der Bandit die echten Zeiten. Mindestabstand verhindert, dass zwei Videos derselben Plattform aufeinander liegen.",
-    "plattformen": ["tiktok"],
-    "slots": ["07:30", "12:30", "17:30", "20:30"],
+    "plattformen": [
+      "tiktok"
+    ],
+    "slots": [
+      "07:30",
+      "12:30",
+      "17:30",
+      "20:30"
+    ],
     "zeitzone": "Europe/Berlin",
     "max_posts_pro_tag": 3,
     "min_abstand_stunden": 3,
     "utm_medium": "organic"
   },
-
   "video": {
     "_hinweis": "Harte Vorgaben fuer beide Stile. quality_gate.py weist alles ab, was hier nicht passt — ein 0-Byte-MP4 darf nie in die Warteschlange (genau das ist bis Runde 10 passiert).",
     "breite": 1080,
     "hoehe": 1920,
     "min_dauer_sek": 8,
     "max_dauer_sek": 60,
-    "ziel_lufs": -14.0,
+    "ziel_lufs": -14,
     "min_dateigroesse_byte": 20480,
     "_hinweis_schnitt": "1,2 bis 2,2 Sekunden je Einstellung. Vorher 1,5-3,0 — das ist die Schnittlaenge eines YouTube-Vorspanns, nicht die eines TikToks. Auf TikTok entscheidet die Bildbewegung darueber, ob jemand weiterwischt; ein Schnitt alle drei Sekunden wirkt dort wie Stillstand.",
     "schnitt_min_sek": 1.2,
@@ -125,9 +310,11 @@
     "hook_overlay_sek": 2.5,
     "_hinweis_stock_clips": "Wie viele lizenzierte Stockclips als Zwischenschnitt dazukommen, wenn es KEIN eigenes Produktvideo gibt. Sie zeigen nie das Produkt, nur Stimmung — deshalb bewusst hoechstens zwei, damit das Produkt die Mehrheit der Einstellungen behaelt. 0 schaltet sie ab. Braucht PEXELS_API_KEY; ohne Schluessel passiert nichts.",
     "stock_clips_max": 2,
-    "stil_mix": { "A": 0.7, "B": 0.3 }
+    "stil_mix": {
+      "A": 0.7,
+      "B": 0.3
+    }
   },
-
   "lernen": {
     "_hinweis": "Kontextueller Bandit mit Thompson Sampling. exploration_min ist eine harte Untergrenze: ohne sie erstarrt das System auf einem lokalen Optimum und probiert nie wieder etwas Neues. reward-Gewichte: Geld schlaegt Eitelkeitszahlen, deshalb 0,40 auf den Deckungsbeitrag.",
     "exploration_min": 0.15,
@@ -137,11 +324,17 @@
     "reward_gewichte": {
       "hook_rate": 0.15,
       "watch_ratio": 0.15,
-      "engagement": 0.10,
-      "ctr_link": 0.20,
-      "deckungsbeitrag": 0.40
+      "engagement": 0.1,
+      "ctr_link": 0.2,
+      "deckungsbeitrag": 0.4
     },
-    "messfenster_stunden": [1, 6, 24, 72, 168],
+    "messfenster_stunden": [
+      1,
+      6,
+      24,
+      72,
+      168
+    ],
     "vorlaeufig_ab_stunden": 6,
     "final_ab_stunden": 72,
     "darf_aendern": [
@@ -156,14 +349,16 @@
       "video.stil_mix"
     ]
   },
-
   "wiederholung": {
     "_hinweis": "Exponentielles Zurueckhalten nach Fehlern. Nach 3 Fehlversuchen pausiert der Job und es geht eine Warnmail raus.",
-    "backoff_minuten": [1, 4, 16],
+    "backoff_minuten": [
+      1,
+      4,
+      16
+    ],
     "max_fehlversuche": 3,
     "heartbeat_timeout_minuten": 30
   },
-
   "rate_limits": {
     "_hinweis": "Token-Bucket je Anbieter: Anfragen pro Minute.",
     "google_trends": 6,
@@ -174,7 +369,6 @@
     "elevenlabs": 10,
     "runway": 5
   },
-
   "aufraeumen": {
     "_hinweis": "Renderings und Zwischenstaende, die aelter sind, werden geloescht. Veroeffentlichte Videos bleiben laenger.",
     "renders_tage": 7,

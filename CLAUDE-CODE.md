@@ -75,25 +75,60 @@ auf Apex) + Fallback `https://maios-shop.onrender.com` · Repo `Nevio83/test2` (
 
 Alle übrigen CJ-Produkte liegen bei ≥ 23 % Gewinn inkl. geschätztem Versand.
 
-⚠️ **TODO (🔴 — hochgestuft am 07.09.2026):** CJ-Versandkosten je Produkt in der CJ-App unter
-„Logistics → Freight Calculate" nachschlagen und `excel/Maios Produkte.csv` aktualisieren.
-Bestätigt ist bis heute **nur ID 10** (Wasserspender, 8 €); alle übrigen Versandwerte in der
-CSV sind Schätzungen.
+### 🔴 CJ-Versandkosten nachgeschlagen (07.09.2026) — die Margen brechen weg
 
-**Warum das jetzt kritisch ist statt „nice to have":** Seit dem 07.09. rechnet der
-Marketing-Automat mit diesen Zahlen (`matching.einkaufspreise`, 27 von 40 Produkten). Eine
-Belastbarkeitsprobe über alle 27 zeigt, wie dünn das Eis ist:
+Nicht in der CJ-App abgetippt, sondern über die API abgefragt: `queryProductVariant` →
+`freightCalculate` (CN → DE, Menge 1), **20 von 27 Produkten** erfolgreich.
 
-| Versand | Produkte unter der 20-%-Mindestmarge | schlechteste Marge |
-|---|---|---|
-| wie in der CSV | **0** von 27 | 35,2 % (Thermische Massage) |
-| ×1,5 | **2** von 27 | 18,2 % (Aromatherapy Humidifier) |
-| ×2 | **27** von 27 | 3,0 % |
-| ×3 | **27** von 27 | −18,1 % |
+**Ergebnis: Der echte Versand liegt bei ausnahmslos allen 20 über der Schätzung — im Schnitt
+beim 2,18-fachen.**
 
-Der Versand ist bei diesen Preisen ein so großer Kostenanteil, dass eine Verdopplung **jedes**
-Produkt unter die Mindestmarge drückt. Die heute ausgewiesenen 35–46 % sind also nur so gut
-wie die Schätzungen — und werden vom Automaten trotzdem als *geprüfte* Marge geführt.
+| ID | Produkt | geschätzt | CJ real | Faktor |
+|---|---|---|---|---|
+| 37 | Professioneller 5 in 1 Haar Trockner | 8,00 | **30,53** | ×3,8 |
+| 11 | 350ml Elektrischer Mixer Entsafter | 5,00 | **15,38** | ×3,1 |
+| 45 | Klimaanlage mit Display | 5,00 | **14,86** | ×3,0 |
+| 41 | 2 in 1 Öl Sprayer Flasche | 3,50 | **9,20** | ×2,6 |
+| 50 | Krystall Ball Nachtlampe | 3,00 | **7,75** | ×2,6 |
+| 47/48 | Tumbler Becher (+ Winter) | 4,00 | **10,12** | ×2,5 |
+| 10 | Elektrischer Wasserspender | 8,00 *(galt als bestätigt)* | **9,71** | ×1,2 |
+
+**Folge — mit den echten Zahlen fallen 14 von 20 unter die Mindestmarge, zwei ins Minus:**
+
+| ID | Produkt | VK | Kosten | Marge vorher | **jetzt** |
+|---|---|---|---|---|---|
+| 37 | Haar Trockner | 74,99 | 77,65 | 36,0 % | **−3,4 %** |
+| 45 | Klimaanlage | 34,99 | 35,45 | 36,7 % | **−1,3 %** |
+| 11 | Mixer | 40,99 | 40,36 | 36,7 % | **1,6 %** |
+| 47/48 | Tumbler | 24,99 | 24,57 | 35,4 % | **1,7 %** |
+| 41 | Öl Sprayer | 20,99 | — | 41,5 % | **2,2 %** |
+
+Der Marketing-Automat **sperrt diese 14 Produkte jetzt von selbst** (`marge_ok` → False). Das
+ist die Guardrail, die tut, wofür sie da ist — aber es heißt auch: Die Preise im Shop tragen
+den Versand nicht.
+
+⚠️ **Drei Vorbehalte, damit die Zahlen nicht besser aussehen als sie sind:**
+
+1. **Genommen wurde die günstigste von je ~12 Optionen.** Die Realität kann nur schlechter sein.
+2. **CJ weist keine Währung aus.** Die Zahl ist roh übernommen (also als € gelesen). Als USD
+   gelesen wären es ~8 % weniger — an der Aussage ändert das nichts: dann sind es
+   14 von 20 unter der Grenze und **eines** im Minus statt zwei.
+3. **7 Produkte konnten nicht abgefragt werden** (ID 17, 18, 19, 33, 36: keine CJ-Nummer im
+   CSV-Link; ID 34 und 46: siehe unten). Bei denen steht weiter die Schätzung — und die ist
+   nach allem, was die 20 anderen zeigen, zu niedrig.
+
+⚠️ **Nebenbefund (🔴): Zwei verkaufte Produkte gibt es bei CJ nicht mehr.**
+`queryProductVariant` meldet für ID **46** (Nordic Crystal Lamp) und ID **34** (Gesichtssauna)
+„Product has been removed from shelves". Beide stehen im Shop weiter zum Verkauf.
+
+⚠️ **Nebenbefund (🟠): Der Shop bestellt mit einer Versandart, die CJ nicht anbietet.**
+`getShippingMethod()` in `server.js:2089` gibt für Europa `"CJ Packet Registered"` zurück. In
+den Frachtantworten für **alle 20** abgefragten Produkte kommt dieser Name **kein einziges Mal**
+vor — angeboten werden „CJPacket Sensitive", „CJPacket Ordinary Express", „YunExpress …" usw.
+Was CJ bei einer Bestellung mit unbekanntem `logisticName` tut, ist ungeprüft.
+
+**Was jetzt zu entscheiden ist (nicht von mir):** Preise anheben, günstigere Versandart
+festlegen, Sortiment ausdünnen — oder die Mindestmarge bewusst senken.
 
 ⚠️ **HTML-Produktseiten müssen ebenfalls angepasst werden!** Die 4 geänderten Produkte haben den
 Preis an 5 Stellen in der jeweiligen `produkte/<slug>.html` (price-tag, eingebettetes JSON,

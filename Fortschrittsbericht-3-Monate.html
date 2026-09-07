@@ -326,9 +326,9 @@
         <p class="sub">+85.924 Zeilen hinzugefügt, −96.525 entfernt. Unterm Strich <strong>10.601 Zeilen weniger</strong> — es wurde mehr aufgeräumt als gebaut.</p>
       </div>
       <div class="stat acc-red">
-        <div class="num">5</div>
+        <div class="num">6</div>
         <div class="lbl">Vorfälle mit echtem Schaden</div>
-        <p class="sub">Privater Schlüssel im öffentlichen Repo, abrufbarer Quellcode, tote Kasse, Absturz per leerer Anfrage, öffentlich abrufbare interne Berichte. Alle fünf gefunden und behoben.</p>
+        <p class="sub">Privater Schlüssel im öffentlichen Repo, abrufbarer Quellcode, tote Kasse, Absturz per leerer Anfrage, öffentlich abrufbare interne Berichte — und zuletzt: <strong>die Preise tragen den Versand nicht</strong>. Fünf behoben, der sechste braucht eine Entscheidung.</p>
       </div>
     </div>
 
@@ -795,6 +795,14 @@
       <div class="impact-card">
         <div class="ico">🔴</div>
         <div class="body">
+          <h3>Die Preise tragen den Versand nicht</h3>
+          <p>Die Margenrechnung des Shops stützte sich auf <strong>geschätzte</strong> CJ-Versandkosten — bestätigt war seit Juni genau einer von 40 Werten. Am <strong>7. September</strong> über die CJ-Schnittstelle abgefragt: Bei <strong>allen 20</strong> prüfbaren Produkten liegt der echte Versand darüber, im Schnitt beim <strong>2,18-fachen</strong>. Damit fallen <strong>14 von 20 unter die Mindestmarge und zwei ins Minus</strong> — der Haartrockner bei 74,99 € kostet im Einkauf plus Versand 77,65 €.<br><br>Nichts daran war sichtbar: Der Shop verkauft, die Bestellung geht raus, der Beleg stimmt. Erst die Frage nach einer einzelnen Zahl hat es aufgedeckt.</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🔴</div>
+        <div class="body">
           <h3>Die internen Berichte waren im Shop öffentlich abrufbar</h3>
           <p>Beide Fortschrittsberichte antworteten unter <code>maiosshop.com</code> mit 200 — ohne <code>noindex</code>, bei <code>Allow: /</code> in der <code>robots.txt</code>. Der ältere war seit dem 27.&nbsp;August so erreichbar. <strong>7. September.</strong> Die Datei-Freigabe arbeitete nach dem richtigen Prinzip, hatte aber <code>.html</code> pauschal auf der Endungsliste — dieselbe Lücke wie im Juli, nur eine Ebene höher: nicht mehr „alles ist frei", sondern „eine ganze Dateiart ist frei". Behoben mit einer Liste der sieben Kundenseiten im Wurzelverzeichnis.</p>
         </div>
@@ -901,14 +909,23 @@
           <div class="mark" style="background:var(--green);border-color:var(--green);color:var(--card);">✓</div>
           <div class="body">
             <h4>Einkaufspreise je Produkt-ID <span class="who who-me">Erledigt</span></h4>
-            <p>Am 7.&nbsp;September eingetragen: <strong>27 von 40 Produkten</strong> stehen mit Einkauf und Versand in <code>matching.einkaufspreise</code>. Der Automat rechnet damit echte Margen — <strong>35 bis 46 %</strong>, keines unter der 20-%-Grenze, keine einzige Preisabweichung zwischen CSV und Shop.<br><br><strong>Zugeordnet wurde über den Link, nicht über den Namen.</strong> Die Namensspalte der CSV trägt Spitznamen und stimmt stellenweise nicht: Zeile 37 heißt „LED Water in Crown", verlinkt aber ein Solarlicht. Über Namen und Preis zu gehen hätte hier still danebengegriffen. Die 13 Produkte ohne Beleg bleiben leer statt geraten.</p>
+            <p>Am 7.&nbsp;September eingetragen: <strong>27 von 40 Produkten</strong> stehen mit Einkauf und Versand in <code>matching.einkaufspreise</code>. Mit den Schätzwerten aus der CSV ergab das 35–46 % Marge — <strong>bis der echte CJ-Versand dazukam</strong> (siehe Punkt darunter). Keine einzige Preisabweichung zwischen CSV und Shop.<br><br><strong>Zugeordnet wurde über den Link, nicht über den Namen.</strong> Die Namensspalte der CSV trägt Spitznamen und stimmt stellenweise nicht: Zeile 37 heißt „LED Water in Crown", verlinkt aber ein Solarlicht. Über Namen und Preis zu gehen hätte hier still danebengegriffen. Die 13 Produkte ohne Beleg bleiben leer statt geraten.</p>
           </div>
         </div>
         <div class="todo">
-          <div class="mark">2</div>
+          <div class="mark" style="background:var(--green);border-color:var(--green);color:var(--card);">✓</div>
           <div class="body">
-            <h4>CJ-Versandkosten nachschlagen <span class="who who-you">Du</span></h4>
-            <p>Bestätigt ist <strong>nur beim Wasserspender</strong> (8&nbsp;€); alle anderen Versandwerte in der Tabelle sind Schätzungen. Seit dem 7.&nbsp;September rechnet der Automat mit ihnen — deshalb ist dieser Punkt <strong>von „mittel" auf „kritisch" hochgestuft</strong>.<br><br><strong>Nachgemessen, wie dünn das Eis ist:</strong> Beim Versand aus der Tabelle liegt kein Produkt unter der 20-%-Grenze. Bei anderthalbfachem Versand sind es zwei — bei <strong>doppeltem alle 27</strong>, die schlechteste Marge fällt auf 3&nbsp;%. Der Versand ist bei diesen Preisen ein so großer Kostenanteil, dass die ausgewiesenen 35–46 % vollständig an den Schätzungen hängen. In der CJ-App unter „Logistics → Freight Calculate" nachschlagen.</p>
+            <h4>CJ-Versandkosten nachschlagen <span class="who who-me">Erledigt</span></h4>
+            <p>Am 7.&nbsp;September nicht abgetippt, sondern <strong>über die CJ-Schnittstelle abgefragt</strong> (<code>freightCalculate</code>, CN→DE): 20 der 27 Produkte. <strong>Bei ausnahmslos allen 20 liegt der echte Versand über der Schätzung — im Schnitt beim 2,18-fachen</strong>, beim Haartrockner beim 3,8-fachen (8,00&nbsp;→&nbsp;30,53).</p>
+            <div class="wirkung">
+              <dl>
+                <dt>Folge</dt><dd><strong>14 von 20 Produkten fallen unter die 20-%-Mindestmarge, zwei ins Minus</strong> — Haartrockner −3,4 %, Klimaanlage −1,3 %. Der Automat sperrt sie seitdem von selbst. Die Guardrail tut, wofür sie da ist; die Preise im Shop tragen den Versand nicht.</dd>
+                <dt>Vorbehalt</dt><dd>Genommen wurde die <em>günstigste</em> von je rund zwölf Optionen — schlechter kann es also nur werden. CJ weist keine Währung aus; als US-Dollar gelesen wären es ~8 % weniger, an der Aussage ändert das nichts.</dd>
+                <dt>Fund</dt><dd>Zwei verkaufte Produkte gibt es bei CJ <strong>nicht mehr</strong> („removed from shelves"): Nordic Crystal Lamp und Gesichtssauna. Beide stehen im Shop weiter zum Verkauf.</dd>
+                <dt>Fund</dt><dd>Der Shop bestellt mit <code>CJ Packet Registered</code> — dieser Name kommt in den Frachtantworten <strong>aller 20</strong> Produkte kein einziges Mal vor.</dd>
+                <dt>Offen</dt><dd>Preise anheben, günstigere Versandart festlegen, Sortiment ausdünnen oder die Mindestmarge bewusst senken — das ist eine Entscheidung, keine Bauarbeit.</dd>
+              </dl>
+            </div>
           </div>
         </div>
         <div class="todo verworfen">
