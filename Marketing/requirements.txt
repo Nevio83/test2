@@ -43,5 +43,15 @@ pytest==9.1.1
 # diffusers==0.35.1
 # transformers==4.56.1
 
-# ── Veroeffentlichung (optional) ─────────────────────────────────────
-# selenium==4.34.2         # nur fuer den TikTok-Rueckfallweg ohne API
+# ── Veroeffentlichung ────────────────────────────────────────────────
+# Seit dem 08.09. der gewaehlte Weg zum Veroeffentlichen (Entscheidung
+# Nevio: Browser statt offizieller Schnittstelle), deshalb nicht mehr
+# auskommentiert. publish/tiktok.py faellt ohne selenium auf "kein Weg zum
+# Posten" zurueck — sichtbar im Protokoll, aber es geht eben nichts raus.
+#
+# KEIN chromedriver noetig: publish/tiktok.py ruft webdriver.Chrome() ohne
+# Service auf, damit holt der Selenium Manager (ab 4.6) den zur
+# installierten Chrome-Version passenden Treiber selbst. Die Variable
+# TIKTOK_CHROMEDRIVER in .env liest nur noch der alte, nicht mehr
+# aufgerufene pipelines/tiktok_uploader.py.
+selenium==4.48.0
