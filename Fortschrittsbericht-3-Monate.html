@@ -292,12 +292,12 @@
   <div class="report-header">
     <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
     <h1 class="title">Maios Shop — Juni bis September 2026</h1>
-    <p class="subtitle">Zeitraum <strong>7. Juni – 7. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 608 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 22. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 743 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
-      <span style="color:var(--green);font-weight:600;">✓ 164 Commits an 37 Arbeitstagen</span>
-      <span><strong>608</strong> automatische Prüfungen (325 Shop + 152 Marketing + 131 Bot)</span>
-      <span>Stand <strong>07.09.2026</strong></span>
+      <span style="color:var(--green);font-weight:600;">✓ 175 Commits an 39 Arbeitstagen</span>
+      <span><strong>743</strong> automatische Prüfungen (494 Shop + 249 Bot) · Marketing-Prüfungen derzeit rot</span>
+      <span>Stand <strong>22.09.2026</strong></span>
     </div>
   </div>
 
@@ -311,19 +311,19 @@
 
     <div class="stats">
       <div class="stat acc-blue">
-        <div class="num">164</div>
+        <div class="num">175</div>
         <div class="lbl">Commits</div>
-        <p class="sub">an 37 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
+        <p class="sub">an 39 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
       </div>
       <div class="stat acc-green">
-        <div class="num">608</div>
+        <div class="num">743</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: 325 im Shop, 152 im Marketing, 131 im TikTok-Bot — alle grün.</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>494 im Shop</strong> und <strong>249 im Bot</strong>, alle grün. Die Marketing-Prüfungen laufen gerade ins Leere — die Datenbank ist am Kontingent (siehe unten).</p>
       </div>
       <div class="stat acc-orange">
-        <div class="num">525</div>
+        <div class="num">537</div>
         <div class="lbl">Geänderte Dateien</div>
-        <p class="sub">+85.924 Zeilen hinzugefügt, −96.525 entfernt. Unterm Strich <strong>10.601 Zeilen weniger</strong> — es wurde mehr aufgeräumt als gebaut.</p>
+        <p class="sub">+99.797 Zeilen hinzugefügt, −96.492 entfernt. Unterm Strich <strong>3.305 Zeilen mehr</strong> — der Aufräum-Vorsprung ist im September vom Marketing-Ausbau eingeholt worden.</p>
       </div>
       <div class="stat acc-red">
         <div class="num">6</div>
@@ -338,7 +338,7 @@
         <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
       </thead>
       <tbody>
-        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">608</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">743</td><td class="gut">neu aufgebaut</td></tr>
         <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
         <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
         <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
@@ -537,6 +537,14 @@
         <div class="tl-body">
           <h3>Ausgerollt — und dabei die eigenen Berichte im Shop gefunden <span class="tl-tag tag-security">Sicherheit</span></h3>
           <p>Die Bot-Arbeit vom 1./2.&nbsp;September ist committet (<code>9c5fd91</code>) und über <code>main</code> ausgerollt, Prüflauf grün in 21&nbsp;Sekunden.<br><br><strong>Beim Nachmessen am Live-Shop:</strong> Die beiden Fortschrittsberichte antworteten unter <code>maiosshop.com</code> mit 200 — ohne <code>noindex</code>, bei <code>Allow: /</code> in der <code>robots.txt</code>. Darin stehen alle früher gefundenen Sicherheitslücken im Klartext, im älteren Bericht zusätzlich der Pfad des Admin-Bereichs. Ursache: <code>.html</code> stand pauschal in der Endungs-Freigabe der Datei-Freigabe — gedacht für die Kundenseiten, gab damit aber <em>jede</em> HTML-Datei im Wurzelverzeichnis frei. Behoben mit einer Liste der sieben echten Kundenseiten; <code>produkte/</code> und <code>infos/</code> bleiben unberührt. Drei neue Prüfungen, eine davon liest das Wurzelverzeichnis zur Laufzeit aus und meldet künftige interne Dokumente von selbst.<br><br>Am selben Tag: die <strong>Einkaufspreise je Produkt-ID</strong> eingetragen (siehe unten) die Diagnose verworfener Videos repariert (die Begründung wurde von der falschen Seite gekürzt und enthielt nie die Ursache) und die drei Kern-Dokumente auf den aktuellen Stand gebracht — <code>CLAUDE.md</code> stand noch auf dem 24.&nbsp;Juni und behauptete an zwei Stellen <em>Auto-Deploy bei jedem Push</em>, was seit dem 3.&nbsp;August nicht mehr stimmt.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">22. Sep</div>
+        <div class="tl-body">
+          <h3>Die Datenbank ist am Kontingent — und es fiel niemandem auf <span class="tl-tag tag-security">Ausfall</span></h3>
+          <p>Auf die Frage „geht das Admin-Panel?" kam heraus: Alle sieben Seiten laden, aber <strong>13 von 14 Endpunkten antworten mit 500</strong>. Der einzige, der läuft, ist der einzige, der die Datenbank nicht anfasst. Neon verweigert jede Verbindung — <code>exceeded the quota</code>, Fehlercode 53000.<br><br><strong>Warum es niemand gemerkt hat:</strong> <code>/health</code> gibt ein statisches <code>ok</code> zurück und prüft die Datenbank gar nicht — Render und der Keep-Alive fragen es jede Minute und bekommen immer „alles gut". Der Mail-Alarm hängt an der Fehlerrate, nicht am Zustand: Er feuert erst ab mehreren 5xx in 15 Minuten. Wenig Besucher, niemand im Panel → kein Alarm.<br><br><strong>Zweiter Fund:</strong> Der Marketing-Workflow meldet seit dem 17.&nbsp;August durchgehend „success" — und hat in dieser Zeit <em>nichts</em> getan. Im Repository ist ein einziges Secret hinterlegt, der Workflow erwartet 16. Jeder Lauf überspringt alle elf Abläufe und endet grün.</p>
         </div>
       </div>
     </div>
@@ -795,6 +803,14 @@
       <div class="impact-card">
         <div class="ico">🔴</div>
         <div class="body">
+          <h3>Bezahlt — und die Bestellung war weg</h3>
+          <p>Die Bestellung wird <strong>nicht vom Stripe-Webhook</strong> gespeichert, sondern von <code>/api/receipt/create</code> — und den ruft der <em>Browser des Kunden</em> auf, nachdem Stripe zurückgeleitet hat. Anders als beim Webhook, den Stripe tagelang wiederholt, gibt es dafür keinen zweiten Versuch.<br><br>Als am <strong>22. September</strong> die Datenbank am Kontingent war, lief die Route in ihren Fehlerzweig, schrieb eine Logzeile und warf Warenkorb, Kundenadresse und Zahlungsbezug weg: <strong>Geld kassiert, Bestellung nirgends.</strong> Der Kunde las dabei in Rot „Fehler beim Erstellen des Kassenbons“ — wer das nach einer erfolgreichen Zahlung liest, kauft im Zweifel ein zweites Mal.<br><br>Behoben: Die vollständigen Daten gehen jetzt per Mail an den Betrieb, und der Kunde liest „Zahlung eingegangen — Beleg folgt“ samt der ausdrücklichen Bitte, nicht erneut zu bestellen. Gegen die tatsächlich kaputte Datenbank geprüft, nicht gegen einen Nachbau.</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🔴</div>
+        <div class="body">
           <h3>Die Preise tragen den Versand nicht</h3>
           <p>Die Margenrechnung des Shops stützte sich auf <strong>geschätzte</strong> CJ-Versandkosten — bestätigt war seit Juni genau einer von 40 Werten. Am <strong>7. September</strong> über die CJ-Schnittstelle abgefragt: Bei <strong>allen 20</strong> prüfbaren Produkten liegt der echte Versand darüber, im Schnitt beim <strong>2,18-fachen</strong>. Damit fallen <strong>14 von 20 unter die Mindestmarge und zwei ins Minus</strong> — der Haartrockner bei 74,99 € kostet im Einkauf plus Versand 77,65 €.<br><br>Nichts daran war sichtbar: Der Shop verkauft, die Bestellung geht raus, der Beleg stimmt. Erst die Frage nach einer einzelnen Zahl hat es aufgedeckt.</p>
         </div>
@@ -877,6 +893,13 @@
           <div class="body">
             <h4>Bot-Arbeit committen <span class="who who-me">Erledigt</span></h4>
             <p>Am 7.&nbsp;September committet (<code>9c5fd91</code>) und über <code>main</code> ausgerollt: Vorprüfung aus dem Seitentext, Likes-Sortierung, Prüfungen und Handbuch. Der Prüflauf war grün, der Deploy ist durch.</p>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark" style="background:var(--red);border-color:var(--red);color:var(--card);">!</div>
+          <div class="body">
+            <h4>Neon-Kontingent freimachen <span class="who who-you">Du</span></h4>
+            <p><strong>Der Shop nimmt derzeit Geld an, ohne Bestellungen speichern zu können.</strong> Die Datenbank verweigert seit dem 22.&nbsp;September jede Verbindung. Unter <code>console.neon.tech</code> steht im Projekt <code>ep-spring-forest-as48y2f0</code>, welche Grenze gerissen ist — Speicher oder Compute-Stunden. Beim kostenlosen Tarif setzt sich das monatlich zurück, sonst braucht es einen größeren Plan.<br><br>Solange das steht, sind Bestellungen, Belege, Tracking, das Admin-Panel und der Marketing-Automat tot. Der Notausgang von heute verhindert nur, dass dabei <em>Geld ohne Gegenwert</em> kassiert wird — er ersetzt die Datenbank nicht.<br><br><strong>Bitte im Stripe-Dashboard nachsehen</strong>, ob seit dem Ausfall Zahlungen ohne zugehörige Bestellung eingegangen sind.</p>
           </div>
         </div>
         <div class="todo">
@@ -975,13 +998,13 @@
     <div class="pruef-banner">
       <h3>✅ Drei Monate, ein Muster</h3>
       <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen — und dieser Bericht selbst stand zehn Tage lang öffentlich im Shop, ohne dass irgendetwas darauf hingewiesen hätte.<br><br>
-      Deshalb sind die 608 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+      Deshalb sind die 743 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
     </div>
   </div>
 
   <footer>
-    Interner Fortschrittsbericht · Zeitraum 7. Juni – 7. September 2026 · Stand 07.09.2026.<br>
-    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (325 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> (131 Prüfungen), <code>py -m pytest Marketing/tests</code> (152 Prüfungen) sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Interner Fortschrittsbericht · Zeitraum 7. Juni – 22. September 2026 · Stand 22.09.2026.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (494 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (249 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
     Wird nach jedem abgeschlossenen Punkt fortgeschrieben. <strong>Nicht öffentlich:</strong> seit dem 7.&nbsp;September blockt die Datei-Freigabe interne HTML-Dokumente im Wurzelverzeichnis — diese Seite ist unter <code>maiosshop.com</code> nicht abrufbar.<br>
     Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
   </footer>
