@@ -62,6 +62,12 @@ function ffmpegNachbau({ schreibt = true } = {}) {
       aufrufe.push(argumente);
       if (!schreibt) return;
       const ziel = argumente[argumente.length - 1];
+      // "-" ist bei ffmpeg die STANDARDAUSGABE, keine Datei. Ohne diese
+      // Zeile legt der Nachbau eine echte Datei namens "-" im Projektordner
+      // an — am 22.09. ist sie so bis in einen Commit gelangt. Ein Nachbau,
+      // der sich anders verhaelt als das echte Werkzeug, erzeugt Fehler
+      // statt sie zu finden.
+      if (ziel === '-') return;
       fs.mkdirSync(path.dirname(ziel), { recursive: true });
       fs.writeFileSync(ziel, 'JPEGDATEN');
     },
@@ -301,6 +307,8 @@ test('ein Blatt je Produkt, nicht eines fuer alle', () => {
       };
     }
     const ziel = argumente[argumente.length - 1];
+    // Siehe oben: "-" ist die Standardausgabe, keine Datei.
+    if (ziel === '-') return { status: 0, stdout: '' };
     fs.mkdirSync(path.dirname(ziel), { recursive: true });
     fs.writeFileSync(ziel, 'JPEGDATEN');
     return { status: 0, stdout: '' };
@@ -483,6 +491,8 @@ test('--schnittliste schreibt den Entwurf und ueberschreibt ihn nie ungefragt', 
       };
     }
     const ziel = argumente[argumente.length - 1];
+    // Siehe oben: "-" ist die Standardausgabe, keine Datei.
+    if (ziel === '-') return { status: 0, stdout: '' };
     fs.mkdirSync(path.dirname(ziel), { recursive: true });
     fs.writeFileSync(ziel, 'JPEGDATEN');
     return { status: 0, stdout: '' };
