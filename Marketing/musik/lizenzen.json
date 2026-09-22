@@ -1,0 +1,71 @@
+{
+  "_hinweis": "Lizenznachweis je Musikstueck. Was hier nicht mit Lizenz steht, kommt nicht ins Video — dieselbe Regel wie fuer Bildmaterial im Materialkatalog (mkt_assets). Diese Datei ist versioniert, die Musikdateien selbst nicht: Der Beleg muss auch dann noch da sein, wenn die mp3 neu geladen wurde.",
+  "_felder": {
+    "quelle": "woher das Stueck stammt",
+    "lizenz": "unter welcher Lizenz es genutzt wird. null = Herkunft ungeklaert, Stueck ist gesperrt",
+    "gewerblich_erlaubt": "ob die Lizenz Werbung abdeckt. Der kommerzielle Katalog einer Plattform ist kleiner als der private",
+    "nachweis": "wo der Beleg liegt (Datei, Adresse oder Rechnungsnummer)",
+    "erfasst_am": "wann eingetragen"
+  },
+  "stuecke": {
+    "upbeat_house_124bpm.mp3": {
+      "quelle": "selbst erzeugt (scripts/musik.py, Skill tiktok-editor)",
+      "lizenz": "eigen",
+      "gewerblich_erlaubt": true,
+      "nachweis": "Marketing/musik/LIESMICH.md",
+      "erfasst_am": "2026-09-18"
+    },
+    "bright_pop_128bpm.mp3": {
+      "quelle": "selbst erzeugt (scripts/musik.py, Skill tiktok-editor)",
+      "lizenz": "eigen",
+      "gewerblich_erlaubt": true,
+      "nachweis": "Marketing/musik/LIESMICH.md",
+      "erfasst_am": "2026-09-18"
+    },
+    "clean_minimal_112bpm.mp3": {
+      "quelle": "selbst erzeugt (scripts/musik.py, Skill tiktok-editor)",
+      "lizenz": "eigen",
+      "gewerblich_erlaubt": true,
+      "nachweis": "Marketing/musik/LIESMICH.md",
+      "erfasst_am": "2026-09-18"
+    },
+    "lofi_chill_88bpm.mp3": {
+      "quelle": "selbst erzeugt (scripts/musik.py, Skill tiktok-editor)",
+      "lizenz": "eigen",
+      "gewerblich_erlaubt": true,
+      "nachweis": "Marketing/musik/LIESMICH.md",
+      "erfasst_am": "2026-09-18"
+    },
+    "cinematic_soft_96bpm.mp3": {
+      "quelle": "selbst erzeugt (scripts/musik.py, Skill tiktok-editor)",
+      "lizenz": "eigen",
+      "gewerblich_erlaubt": true,
+      "nachweis": "Marketing/musik/LIESMICH.md",
+      "erfasst_am": "2026-09-18"
+    },
+    "bett_hell.mp3": {
+      "quelle": "unbekannt",
+      "lizenz": null,
+      "gewerblich_erlaubt": false,
+      "nachweis": null,
+      "erfasst_am": "2026-09-18",
+      "notiz": "Herkunft nicht dokumentiert. Vor der Verwendung klaeren (woher geladen, unter welcher Lizenz) oder Datei loeschen. Bis dahin gesperrt — 'jemand hat sie bewusst hingelegt' ist kein Beleg."
+    },
+    "bett_puls.mp3": {
+      "quelle": "unbekannt",
+      "lizenz": null,
+      "gewerblich_erlaubt": false,
+      "nachweis": null,
+      "erfasst_am": "2026-09-18",
+      "notiz": "Herkunft nicht dokumentiert. Siehe bett_hell.mp3."
+    },
+    "bett_warm.mp3": {
+      "quelle": "unbekannt",
+      "lizenz": null,
+      "gewerblich_erlaubt": false,
+      "nachweis": null,
+      "erfasst_am": "2026-09-18",
+      "notiz": "Herkunft nicht dokumentiert. Siehe bett_hell.mp3."
+    }
+  }
+}

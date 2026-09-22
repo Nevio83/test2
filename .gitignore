@@ -33,8 +33,17 @@ Marketing/data/*.db
 Marketing/data/
 # Musikstuecke selbst bleiben lokal — auch CC0-Dateien blaehen das Repo auf
 # und sind jederzeit neu ladbar. Die Anleitung daneben gehoert dazu.
+#
+# Der LIZENZNACHWEIS muss dagegen versioniert sein, und zwar gerade WEIL die
+# Dateien es nicht sind: Eine mp3 ist jederzeit neu geladen, der Beleg, unter
+# welcher Lizenz sie liegt, ist es nicht. Ohne lizenzen.json im Repo gilt
+# jedes Stueck als ungeklaert (assets.musik_ohne_nachweis) — das ist die
+# richtige Richtung fuer einen Fehler, aber auf einem frisch geklonten Rechner
+# waere sonst kein einziges Video mehr zu rendern.
 Marketing/musik/*
 !Marketing/musik/README.md
+!Marketing/musik/LIESMICH.md
+!Marketing/musik/lizenzen.json
 # Notaus-Datei: existiert nur lokal, wenn jemand das System angehalten hat.
 Marketing/STOP
 
@@ -59,6 +68,12 @@ Marketing/data/tiktok-quellen/
 # Umbenennen nicht vergessen.
 Marketing/videos/rohmaterial/
 Marketing/videos/geschnitten/
+# Die Anleitung fuer den Ordner mit eigenem Material gehoert ins Repo — sie
+# sagt, warum dieser eine Ordner ohne Datenbank durch die Lizenzsperre kommt
+# und was deshalb NICHT hinein darf. Die Videos darin bleiben lokal.
+!Marketing/videos/rohmaterial/eigenes/
+Marketing/videos/rohmaterial/eigenes/*
+!Marketing/videos/rohmaterial/eigenes/LIESMICH.md
 # Der Herkunftsnachweis, der zu den Dateien gehoert.
 Marketing/videos/index.json
 #
@@ -94,6 +109,12 @@ graphify-out/
 
 # ── Generierte Artefakte ─────────────────────────────────────
 receipts/*.pdf
+
+# Notausgang fuer bezahlte Bestellungen (server.js, retteBezahlteBestellung).
+# Diese Dateien enthalten Name, Anschrift, E-Mail und Warenkorb echter Kunden.
+# Das Repo ist OEFFENTLICH — sie duerfen es unter keinen Umstaenden erreichen.
+# Die Regel oben deckte nur *.pdf ab, hier entsteht aber JSON.
+receipts/notfall/
 
 # Bildvarianten in Anzeigegroesse (Name-320.webp, Name-640.jpg, …).
 # Entstehen automatisch beim ersten Abruf (Route in server.js) und sind

@@ -455,6 +455,42 @@ const SCHEMA = [
     erstellt_am TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE INDEX IF NOT EXISTS idx_mkt_videos_pruef ON mkt_videos(pruefergebnis, erstellt_am DESC)`,
+  // Stil C (Schnittliste) entsteht NICHT aus einem Briefing, sondern aus einer
+  // von Hand gebauten Schnittliste. Deshalb zwei Aenderungen:
+  //
+  // 1. brief_id darf leer sein. Vorher war die Spalte NOT NULL — ein
+  //    handgeschnittenes Video konnte damit gar nicht eingetragen werden, und
+  //    genau deshalb lief der erste fertige Clip dieses Projekts an mkt_videos
+  //    vorbei: ohne Ausgangspruefung, ohne Lernen, ohne Umsatzzuordnung.
+  // 2. Die Schnittliste wird am Video vermerkt. Sie ist die Fassung: Wer
+  //    wissen will, warum ein Video so aussieht, liest die Liste — das Video
+  //    selbst beantwortet das nicht.
+  `ALTER TABLE mkt_videos ALTER COLUMN brief_id DROP NOT NULL`,
+  `ALTER TABLE mkt_videos ADD COLUMN IF NOT EXISTS schnittliste TEXT`,
+  // Bei Stil A/B haengt das Produkt am Briefing (mkt_briefs -> mkt_matches).
+  // Stil C hat kein Briefing, also muss das Produkt direkt am Video stehen —
+  // sonst laesst sich der Beitrag keinem Produkt zuordnen, und ohne Produkt
+  // gibt es weder Preis noch Shop-Adresse in der Caption.
+  `ALTER TABLE mkt_videos ADD COLUMN IF NOT EXISTS produkt_id INTEGER`,
+  // Pruefsumme des LISTENINHALTS, nicht des Dateinamens.
+  //
+  // Erkannt wurde bisher am Namen: Wer eine Fassung korrigierte — zwei
+  // Segmente getauscht, ein Text geaendert — musste die Datei umbenennen,
+  // sonst wurde sie als "schon gerendert" uebersprungen. Danach hiessen zwei
+  // Dateien unterschiedlich, die dieselbe Fassung meinen.
+  //
+  // Zeilen aus der Zeit davor haben hier NULL und gelten weiter als fertig,
+  // damit der Umstellungstag nicht alles neu rendert.
+  `ALTER TABLE mkt_videos ADD COLUMN IF NOT EXISTS schnittliste_hash TEXT`,
+  // Der Renderbericht: welche Rohclips, welche Musik, welcher Hook, ob der
+  // Originalton entfernt wurde, die gemessene Laenge.
+  //
+  // Er stand bisher nur im Protokoll eines Laufs. Genau das ist aber die
+  // Angabe, die das Lernmodul braucht — features.py kann bis heute nicht
+  // sagen, welches Material in einem Video steckt, weil es nirgends
+  // gespeichert war. Und fuer den Rueckrufweg (ein Creator zieht seine
+  // Erlaubnis zurueck) ist es die einzige Spur vom Beitrag zum Rohclip.
+  `ALTER TABLE mkt_videos ADD COLUMN IF NOT EXISTS bericht JSONB`,
 
   // idempotenz_schluessel ist der Schutz gegen Doppel-Posts: Hash aus
   // (video_id, plattform, geplanter Slot). UNIQUE erzwingt, dass ein
@@ -477,6 +513,25 @@ const SCHEMA = [
     UNIQUE (idempotenz_schluessel)
   )`,
   `CREATE INDEX IF NOT EXISTS idx_mkt_posts_faellig ON mkt_posts(status, geplant_fuer)`,
+  // ── Freigabe je Beitrag ────────────────────────────────────────────
+  //
+  // Bis hierher kannte das System nur zwei Stellungen: Trockenlauf an (nichts
+  // geht raus) oder Trockenlauf aus (ALLES geht raus, ohne dass ein Mensch
+  // den einzelnen Beitrag gesehen hat). Deshalb blieb der Schalter an — zu
+  // Recht, denn ein System, das ungeprueft sendet, ist genau der Fehlertyp,
+  // den dieses Projekt ueberall abgebaut hat. Nur lernt eine Kette, die nie
+  // etwas veroeffentlicht, auch nichts.
+  //
+  // Die Spalte ist die Stellung dazwischen: DIESER eine Beitrag darf raus.
+  //
+  // Vorgabe 'offen' — ein Beitrag ist nie von selbst freigegeben. Wer die
+  // Spalte neu anlegt, gibt damit auch nichts rueckwirkend frei.
+  // Werte: 'offen' | 'frei' | 'abgelehnt'
+  `ALTER TABLE mkt_posts ADD COLUMN IF NOT EXISTS freigabe TEXT NOT NULL DEFAULT 'offen'`,
+  `ALTER TABLE mkt_posts ADD COLUMN IF NOT EXISTS freigabe_am TIMESTAMPTZ`,
+  `ALTER TABLE mkt_posts ADD COLUMN IF NOT EXISTS freigabe_von TEXT`,
+  `ALTER TABLE mkt_posts ADD COLUMN IF NOT EXISTS freigabe_notiz TEXT`,
+  `CREATE INDEX IF NOT EXISTS idx_mkt_posts_freigabe ON mkt_posts(freigabe, geplant_fuer)`,
   // Ein Video darf je Plattform nur EINEN lebenden Beitrag haben.
   //
   // Der Fingerabdruck allein genuegt dafuer nicht: Er enthaelt den geplanten

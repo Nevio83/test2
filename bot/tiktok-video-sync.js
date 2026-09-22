@@ -26,15 +26,25 @@
  *     Das hebt keine Sperre auf, es erzeugt nur weitere Fehlversuche.
  *
  * RECHTE
- * Jeder Eintrag im Index startet mit `rechte_geprueft: false`. Das Material ist
- * internes Referenzmaterial. Ohne manuelle Rechtepruefung wandert es weder in
- * den Shop noch in eine Veroeffentlichung. Details: TIKTOK-VIDEO-SYNC.md.
+ * Jeder Clip traegt eine Rechteakte: Art der Erlaubnis, Datum, Rechteinhaber,
+ * Kontakt, Beleg und Umfang (eigene Beitraege und/oder bezahlte Anzeigen).
+ * Solange etwas davon fehlt, bleibt die Sperre zu — dieselbe Linie wie beim
+ * Materialkatalog des Automaten ("ein Asset ohne Lizenzeintrag kommt nicht ins
+ * Video. Punkt."). Ein blosses `rechte_geprueft: true` aus dem Altbestand gilt
+ * als "geprueft, Art unbekannt" und reicht NICHT: Ein Wahrheitswert kann keine
+ * Einwilligung belegen. Details: TIKTOK-VIDEO-SYNC.md.
  *
  * Aufruf:
  *     npm run tiktok:status              zeigt Vorbedingungen, laedt nichts
  *     npm run tiktok:probe               sucht + bewertet, laedt NICHTS
  *     npm run tiktok:laden -- --max 2    laedt hoechstens 2 Videos
  *     npm run tiktok                  gefuehrt: Produktnummer, Anzahl, fertig
+ *
+ *     node tiktok-video-sync.js --anfragen --absender "Name" --produkt 10 \
+ *       --zwecke organisch anzeige --dauer "12 Monate" \
+ *       --gegenleistung "das Geraet geschenkt"
+ *                                     Anfragetexte an Creator — verschickt
+ *                                     wird NICHTS, der Text geht ins Protokoll
  */
 
 'use strict';
@@ -72,6 +82,34 @@ const STANDARD = {
   max_anfragen: 60,
   max_dateigroesse: '40M',
   pause_zwischen_anfragen_sek: 3,
+  // Obergrenze der Pause. Ein FESTER Abstand ist selbst ein Muster: 3,00 s
+  // zwischen jedem Abruf sieht fuer die Gegenseite genau nach dem aus, was es
+  // ist. Gewuerfelt wird zwischen den beiden Werten.
+  pause_hoechstens_sek: 12,
+  // Wie lange ein erschoepfter Suchbegriff hinten ansteht, in Tagen.
+  // 0 schaltet die Sortierung ab — dann gehen die Begriffe wie frueher der
+  // Reihe nach raus.
+  begriff_ruhe_tage: 21,
+  // Zielzahl brauchbarer Clips je Produkt. Steuert, welches Produkt als
+  // naechstes drankommt — nicht, wieviel ein einzelner Lauf laedt.
+  ziel_clips_je_produkt: 15,
+  // Ein Treffer muss UNTERSCHEIDEN: Mindestens ein Begriff, den hoechstens so
+  // viele Produkte fuehren. 0 = aus.
+  //
+  // Gemessen an den gesammelten Untertiteln: Bei allen sechs angenommenen
+  // Videos steht der unterscheidendste Treffer bei EINEM oder ZWEI Produkten.
+  // Bei fremden Geraeten, die nur "usb/rechargeable/mini/portable" treffen,
+  // bei sechs bis achtzehn. Der Abstand ist gross genug fuer eine Grenze.
+  hoechstens_produkte_je_begriff: 2,
+  // Hoechstalter eines Videos in Tagen. 0 = aus.
+  //
+  // BEWUSST AUS als Vorgabe. Die Reihenfolge nach Wachstum (Likes je Tag)
+  // holt den Nutzen schon fast ganz, und zwar ohne Risiko. Eine Altersgrenze
+  // wirft dagegen Material WEG, und wie alt das Material zu den vierzig
+  // Produkten ueberhaupt ist, weiss hier niemand — der Index ist leer.
+  // Erst messen (das Alter steht ab jetzt bei jedem Fund im Protokoll), dann
+  // bewusst enger ziehen. 540 (18 Monate) ist ein brauchbarer Startwert.
+  hoechstalter_tage: 0,
   wiederholungen: 2,
   suche_praefix: null,
   // Bei einer Sperre der GANZEN LEITUNG (429, CAPTCHA, Anmeldezwang) aufhoeren?
@@ -82,6 +120,22 @@ const STANDARD = {
   // Sperre erfahrungsgemaess. Wer Sperren vermeiden will, dreht stattdessen
   // pause_zwischen_anfragen_sek hoch und senkt max_anfragen.
   bei_sperre_abbrechen: false,
+  // ── Technische Mindestanforderungen (Huerde 8) ─────────────────────
+  // Die sieben Text-Huerden pruefen, ob es das RICHTIGE PRODUKT ist. Keine
+  // prueft, ob der Clip technisch ueberhaupt zu gebrauchen ist. Ein Video mit
+  // perfektem Untertitel kann 480p sein, drei Sekunden kurz oder Querformat —
+  // und ist damit fuer einen 1080x1920-Schnitt wertlos.
+  //
+  // Die Werte entsprechen denen, gegen die der Marketing-Automat am ENDE
+  // prueft (video.min_dauer_sek / video.hoehe in marketing.config.json). Was
+  // dort durchfaellt, braucht hier gar nicht erst geladen zu werden.
+  //
+  // 0 schaltet die jeweilige Pruefung ab.
+  min_hoehe: 720,
+  min_dauer_sek: 5,
+  // Querformat wird NICHT abgelehnt, nur vermerkt: Es taugt als Einblendung,
+  // bloss nie als Vollbild. Ablehnen hiesse brauchbares Material wegwerfen.
+  quer_ablehnen: false,
 };
 
 // ── Ablageort ────────────────────────────────────────────────────────
@@ -360,10 +414,119 @@ function produktBegriffe(produkt, zusatz = []) {
 }
 
 /** Alles, was an einem Kandidaten Text ist — Titel, Beschreibung, Hashtags. */
+// ── Hashtags: Reichweite ist kein Inhalt ─────────────────────────────
+//
+// Eine TikTok-Unterschrift besteht meist aus zwei Teilen: ein kurzer Satz und
+// danach zwanzig Hashtags, von denen die Haelfte nichts mit dem Video zu tun
+// hat. Bis hierher wurden beide gleich behandelt — normalisiere() macht aus
+// "#fyp" schlicht "fyp", und danach ist ein Reichweiten-Tag von einem
+// Produktwort nicht mehr zu unterscheiden.
+//
+// WAS HIER ENTFERNT WIRD UND WAS NICHT
+// Nur Tags, die REINE Reichweite meinen: #fyp, #viral, #trending. Sie stehen
+// unter jedem zweiten Video und sagen ueber den Inhalt genau nichts.
+//
+// Fachliche Tags bleiben — und zwar bewusst. "#waterdispenser" ist oft das
+// EINZIGE Produktwort einer Unterschrift; gemessen an den gesammelten
+// Untertiteln faellt ein angenommenes Video weg, wenn man Hashtags pauschal
+// abwertet ("The one thing you need on your nightstand💧#waterdispenser").
+// Der Fehler steckt nicht in den Hashtags, sondern in den inhaltsleeren.
+//
+// Auch "#tiktokmademebuyit" bleibt: Es benennt keine Reichweite, sondern eine
+// Produktvorfuehrung — genau das, wonach hier gesucht wird.
+const REICHWEITEN_TAGS = [
+  'fyp', 'fyp1', 'fypage', 'fypp', 'foryou', 'foryoupage', 'foryourpage',
+  'forupage', 'foru', 'fy', 'fyi',
+  'viral', 'viralvideo', 'viraltiktok', 'viralvideos', 'goviral', 'viralpost',
+  'trending', 'trendingnow', 'trend', 'trends',
+  'xyzbca', 'xyz', 'parati', 'paratii', 'paratiii',
+  'fuerdich', 'fuerdichseite', 'dich', 'neuerkanal',
+  'explore', 'explorepage', 'tiktokviral', 'tiktokdeutschland',
+  'duet', 'stitch', 'capcut', 'followme', 'follow', 'likes', 'likeforlike',
+];
+
+/**
+ * Trennt eine Unterschrift in Fliesstext und Hashtags.
+ *
+ * Gearbeitet wird auf dem ROHTEXT, nicht auf dem normalisierten: normalisiere()
+ * wirft das Rautenzeichen weg, und danach ist die Trennung nicht mehr moeglich.
+ *
+ * Hashtags stehen nicht nur am Ende. "The one thing you need on your
+ * nightstand💧#waterdispenser #bedroom" hat einen Tag mitten im Satz — deshalb
+ * wird je Wort getrennt und nicht an der ersten Raute abgeschnitten.
+ */
+function trenneUnterschrift(text) {
+  const roh = String(text == null ? '' : text);
+  const hashtags = [];
+  // Ein Tag endet am naechsten Leerzeichen, an der naechsten Raute oder am
+  // Satzzeichen. Emojis und Zeilenumbrueche trennen ebenfalls.
+  const ohneTags = roh.replace(/#([\p{L}\p{N}_]+)/gu, (_, wort) => {
+    hashtags.push(String(wort));
+    return ' ';
+  });
+  return { fliesstext: ohneTags.replace(/\s+/g, ' ').trim(), hashtags };
+}
+
+/** Hashtags ohne die, die nur Reichweite meinen. */
+function inhaltsTags(hashtags, reichweite = REICHWEITEN_TAGS) {
+  const raus = new Set([].concat(reichweite || []).map((w) => normalisiere(w)).filter(Boolean));
+  return [].concat(hashtags || []).filter((tag) => {
+    const sauber = normalisiere(tag);
+    if (!sauber) return false;
+    // Zusammengeschriebene Ketten wie "fypviral" faengt das absichtlich NICHT:
+    // Wer "#wasserspenderfyp" schreibt, meint trotzdem den Wasserspender.
+    return !raus.has(sauber);
+  });
+}
+
+/**
+ * Wieviel FLIESSTEXT hat eine Unterschrift?
+ *
+ * Die Vorpruefung urteilt erst ab 25 Zeichen — und das war bisher die Laenge
+ * des GANZEN Textes. Eine Unterschrift aus zwanzig Hashtags hat leicht 200
+ * Zeichen und trotzdem keinen Satz; sie wurde beurteilt, als staende dort
+ * etwas. Umgekehrt heisst wenig Fliesstext ab jetzt: nicht urteilen, normal
+ * abrufen. Das ist die richtige Richtung — abgelehnt wird nur auf positiven
+ * Beweis.
+ */
+function fliesstextLaenge(text) {
+  return trenneUnterschrift(text).fliesstext.length;
+}
+
 function videoText(video) {
-  const teile = [video.title, video.fulltitle, video.description];
+  const teile = [];
+  // Fliesstext und Inhaltstags getrennt einsammeln, damit die
+  // Reichweiten-Tags gar nicht erst in den Bewertungstext geraten.
+  for (const feld of [video.title, video.fulltitle, video.description]) {
+    if (!feld) continue;
+    const { fliesstext, hashtags } = trenneUnterschrift(feld);
+    if (fliesstext) teile.push(fliesstext);
+    const inhalt = inhaltsTags(hashtags);
+    if (inhalt.length) teile.push(inhalt.join(' '));
+  }
   for (const liste of [video.tags, video.hashtags, video.categories]) {
-    if (Array.isArray(liste)) teile.push(liste.join(' '));
+    if (Array.isArray(liste)) {
+      const inhalt = inhaltsTags(liste);
+      if (inhalt.length) teile.push(inhalt.join(' '));
+    }
+  }
+  return normalisiere(teile.filter(Boolean).join(' '));
+}
+
+/**
+ * Derselbe Text, aber NUR der Fliesstext — ohne jeden Hashtag.
+ *
+ * Gebraucht fuer die Frage "steht das Produktwort im Satz oder nur in der
+ * Tag-Wolke?". Ein Treffer im Satz ist das staerkere Signal; als Ausschluss
+ * taugt die Unterscheidung nicht (siehe REICHWEITEN_TAGS), als Entscheidung
+ * bei Gleichstand schon.
+ */
+function videoFliesstext(video) {
+  const teile = [];
+  for (const feld of [video.title, video.fulltitle, video.description]) {
+    if (!feld) continue;
+    const { fliesstext } = trenneUnterschrift(feld);
+    if (fliesstext) teile.push(fliesstext);
   }
   return normalisiere(teile.filter(Boolean).join(' '));
 }
@@ -469,6 +632,572 @@ function speichereIndex(ordner, index) {
  * Geprueft wird zwangslaeufig NACH dem Laden: Vorher gibt es keine Pruefsumme.
  * Die Datei wird dann wieder entfernt.
  */
+// ── Bildfingerabdruck: derselbe Clip, neu kodiert ────────────────────
+//
+// WAS DIE PRUEFSUMME NICHT FAENGT
+//
+// Der Index erkennt Dubletten heute an drei Stellen: gleiche Quell-Adresse,
+// gleiche Video-ID (dasselbe Video unter mehreren Adressen) und gleiche
+// SHA-256-Summe (dieselbe Datei unter einem anderen Konto). Alle drei
+// scheitern am haeufigsten Fall auf TikTok: Ein Repost wird NEU KODIERT —
+// andere Aufloesung, andere Bitrate, manchmal ein Rand. Das Bild ist
+// dasselbe, die Pruefsumme eine voellig andere.
+//
+// WIE ES HIER GELOEST IST
+// Aus dem Clip werden vier winzige Graustufenbilder gezogen (9x8 Pixel) und
+// je Bild ein dHash gerechnet: Vergleiche jedes Pixel mit seinem rechten
+// Nachbarn, ein Bit je Vergleich, 64 Bit je Bild. Das ueberlebt Skalierung,
+// Bitrate und maessige Helligkeitsaenderungen — und braucht keine einzige
+// zusaetzliche Bibliothek. ffmpeg liefert die Rohbytes direkt.
+//
+// AN ECHTEM MATERIAL GEMESSEN, nicht geschaetzt: Ein neu kodierter Clip
+// (720p statt 1080p, halbe Bitrate) liegt bei 0 bis 4 Bit Abstand, zwei
+// verschiedene Clips desselben Produkts bei ueber 20. Die Zahlen stehen im
+// Handbuch.
+
+// Ab wieviel Bit Unterschied zwei Bilder als verschieden gelten.
+// 64 Bit je Bild; 10 ist etwa ein Sechstel.
+// AN ECHTEM MATERIAL GEMESSEN, an fuenf Clips desselben Produkts und drei
+// nachgebauten Reposts:
+//
+//     Repost 720p, halbe Bitrate      0 bis 1 Bit
+//     Repost 576p, leicht aufgehellt  0 bis 1 Bit
+//     Repost mit schwarzem Rand       5 bis 9 Bit
+//     verschiedene Clips (10 Paare)   19 bis 40 Bit
+//
+// Das Fenster fuer die Schwelle ist also 10 bis 18. 12 liegt in der Mitte —
+// Abstand nach beiden Seiten, statt knapp neben dem schwierigsten Fall.
+const BILD_ABSTAND_MAX = 12;
+
+// Wieviele der vier Bilder uebereinstimmen muessen. Zwei von vier: Ein
+// einzelnes gleiches Bild kann Zufall sein (zwei Clips mit weissem
+// Hintergrund), vier zu verlangen scheitert an einem eingeblendeten Text.
+const BILDER_GLEICH_NOETIG = 2;
+
+// Wo die Bilder gezogen werden. Wie beim Kontaktbogen NICHT bei 0 %: Das
+// erste Bild eines TikToks ist oft schwarz oder ein Titeleinblender, und
+// zwei schwarze Anfaenge sind kein Beleg fuer dasselbe Video.
+const BILD_MARKEN = [0.10, 0.35, 0.60, 0.85];
+
+/**
+ * dHash eines 9x8-Graustufenbildes: 64 Bit als 16 Hexzeichen.
+ *
+ * Neun Spalten fuer acht Vergleiche je Zeile — deshalb 9x8 und nicht 8x8.
+ */
+function dHash(bytes) {
+  if (!bytes || bytes.length < 72) return null;
+  let bits = '';
+  for (let zeile = 0; zeile < 8; zeile++) {
+    for (let spalte = 0; spalte < 8; spalte++) {
+      const links = bytes[zeile * 9 + spalte];
+      const rechts = bytes[zeile * 9 + spalte + 1];
+      bits += links > rechts ? '1' : '0';
+    }
+  }
+  let hex = '';
+  for (let i = 0; i < 64; i += 4) hex += parseInt(bits.slice(i, i + 4), 2).toString(16);
+  return hex;
+}
+
+/** Wieviele Bits unterscheiden zwei dHashes? 64 = maximal verschieden. */
+function bitAbstand(a, b) {
+  if (!a || !b || a.length !== b.length) return 64;
+  let abstand = 0;
+  for (let i = 0; i < a.length; i++) {
+    let x = parseInt(a[i], 16) ^ parseInt(b[i], 16);
+    while (x) { abstand += x & 1; x >>= 1; }
+  }
+  return abstand;
+}
+
+/**
+ * Vier Bildfingerabdruecke eines Videos. [] wenn ffmpeg nicht kann.
+ *
+ * Ein leeres Ergebnis ist ein Befund und kein Fehler: Dann greift weiterhin
+ * die Pruefsumme, und es wird nichts abgelehnt, was nicht belegt ist.
+ */
+// ── Schwarze Balken: was von der Datei wirklich Bild ist ─────────────
+//
+// Viel Material auf TikTok ist bereits umformatiert: ein Querformat-Video mit
+// schwarzen Balken oben und unten, oder ein Hochformat mit verwaschenem
+// Hintergrund. Die DATEI misst dann 1080x1920 und besteht die technische
+// Huerde — der echte Bildinhalt ist aber viel kleiner.
+//
+// Wer so einen Clip ungeprueft in einen 1080x1920-Schnitt legt, bekommt
+// Balken im Balken. Das sieht billig aus und ist der erste Eindruck.
+//
+// GEMESSEN an einem nachgebauten Letterbox-Clip: cropdetect meldet
+// "crop=1080:1620:0:150" — 300 Zeilen Rand, also 15,6 % der Hoehe. Bei einem
+// echten Clip ohne Balken: "crop=1080:1920:0:0".
+
+// Ab wieviel Prozent Randanteil gilt ein Clip als umformatiert. 5 % ist
+// genug Spielraum fuer eine dunkle Szene am Bildrand und eng genug, um
+// echte Balken zu fassen.
+const RAND_ANTEIL_MELDEN = 0.05;
+
+/**
+ * Welcher Bildausschnitt ist wirklich Bild? null, wenn nicht messbar.
+ *
+ * Gemessen wird ZWEI SEKUNDEN aus der Mitte, nicht der ganze Clip: Eine
+ * Blende am Anfang macht jedes Video kurz schwarz, und cropdetect wuerde
+ * daraus einen Rand von hundert Prozent lesen.
+ */
+function randErkennung(ffmpeg, videoPfad, dauer, { lauf = null } = {}) {
+  if (!ffmpeg) return null;
+  const starte = lauf || ((werkzeug, argumente) => spawnSync(werkzeug, argumente, {
+    encoding: 'utf8', maxBuffer: 8 * 1024 * 1024,
+  }));
+  const mitte = dauer > 4 ? dauer * 0.4 : 0;
+  const ergebnis = starte(ffmpeg, [
+    '-loglevel', 'info',
+    '-ss', mitte.toFixed(2),
+    '-t', '2',
+    '-i', videoPfad,
+    '-vf', 'cropdetect=24:2:0',
+    '-f', 'null', '-',
+  ]);
+  if (!ergebnis) return null;
+  const text = `${ergebnis.stderr || ''}${ergebnis.stdout || ''}`;
+  // Die LETZTE Meldung nehmen: cropdetect tastet sich ueber die Sekunden
+  // heran, und der letzte Wert ist der ueber das ganze Fenster gemittelte.
+  const treffer = [...String(text).matchAll(/crop=(\d+):(\d+):(-?\d+):(-?\d+)/g)];
+  if (!treffer.length) return null;
+  const [, breite, hoehe, x, y] = treffer[treffer.length - 1];
+  return { breite: Number(breite), hoehe: Number(hoehe), x: Number(x), y: Number(y) };
+}
+
+/**
+ * Wieviel der Flaeche ist Rand? 0 = kein Rand, 0.5 = die Haelfte.
+ *
+ * Gibt null zurueck, wenn eine der Angaben fehlt — "nicht messbar" ist etwas
+ * anderes als "kein Rand", und die Unterscheidung entscheidet hier darueber,
+ * ob abgelehnt wird.
+ */
+function randAnteil(datei, ausschnitt) {
+  const bV = Number(datei && datei.breite);
+  const hV = Number(datei && datei.hoehe);
+  if (!bV || !hV || !ausschnitt || !ausschnitt.breite || !ausschnitt.hoehe) return null;
+  const flaecheGanz = bV * hV;
+  const flaecheBild = ausschnitt.breite * ausschnitt.hoehe;
+  if (!flaecheGanz || flaecheBild > flaecheGanz) return 0;
+  return Math.round((1 - flaecheBild / flaecheGanz) * 1000) / 1000;
+}
+
+/**
+ * Taugt der ECHTE Bildinhalt noch? Gibt den Grund zurueck, sonst null.
+ *
+ * Huerde 8 misst die Datei. Diese Pruefung misst, was davon Bild ist — die
+ * Ausgangspruefung des Automaten lehnt am Ende genau das ab, und vorne fragte
+ * es bisher niemand.
+ */
+function randUntauglich(ausschnitt, standard = STANDARD) {
+  if (!ausschnitt) return null;              // nicht messbar ist kein Urteil
+  const minHoehe = Number(standard.min_hoehe) || 0;
+  if (minHoehe && ausschnitt.hoehe && ausschnitt.hoehe < minHoehe) {
+    return `echter Bildinhalt nur ${ausschnitt.hoehe} Pixel hoch`;
+  }
+  return null;
+}
+
+/**
+ * ffmpeg finden — oder ehrlich sagen, dass es fehlt.
+ *
+ * Gleiche Linie wie findeYtdlp() und findeWerkzeug() im Kontaktbogen. Ohne
+ * ffmpeg faellt nur der Bildfingerabdruck aus; der Lauf geht weiter, und die
+ * Pruefsumme greift wie bisher. Ein fehlendes Werkzeug darf nicht heissen,
+ * dass nichts mehr geladen wird.
+ */
+function findeFfmpeg(env = process.env) {
+  const ausEnv = String(env.FFMPEG_PFAD || env.FFMPEG || '').trim();
+  const kandidaten = ausEnv
+    ? [ausEnv]
+    : (process.platform === 'win32' ? ['ffmpeg.exe', 'ffmpeg'] : ['ffmpeg']);
+  for (const kandidat of kandidaten) {
+    const lauf = spawnSync(kandidat, ['-version'], { encoding: 'utf8' });
+    if (lauf.status === 0) return kandidat;
+  }
+  return null;
+}
+
+// ── Werkzeugversionen (Punkt 72) ─────────────────────────────────────
+//
+// Die ganze Kette haengt an zwei fremden Programmen. yt-dlp aendert sich fast
+// woechentlich, weil sich die Plattformen aendern — die Lehre aus dem
+// CURRENTLY-BROKEN-Marker am Hashtag-Extractor ist genau die: Faehigkeiten
+// verschwinden, ohne dass jemand es sagt. Umgekehrt ist ein zu altes yt-dlp der
+// haeufigste Grund fuer ploetzlich scheiternde Abrufe.
+//
+// Wenn ein Lauf scheitert, soll die erste Frage — hat sich das Werkzeug
+// geaendert? — in einer Zeile beantwortet sein statt in einer Stunde Suche.
+
+/** Die erste Zeile einer Versionsausgabe, gekuerzt. Leer heisst: nicht da. */
+function ersteZeile(text, hoechstens = 120) {
+  return String(text || '').split(/\r?\n/)[0].trim().slice(0, hoechstens);
+}
+
+/**
+ * Version von ffmpeg. null, wenn es nicht da ist.
+ *
+ * `ffmpeg -version` schreibt "ffmpeg version 6.1.1-..." in die erste Zeile.
+ * Herausgeloest wird nur die Versionsnummer — der Rest ist Bauinformation und
+ * macht jeden Vergleich zwischen zwei Laeufen unleserlich.
+ */
+function ffmpegVersion(ffmpeg, starte = null) {
+  if (!ffmpeg) return null;
+  const ruf = starte || ((w, a) => spawnSync(w, a, { encoding: 'utf8' }));
+  try {
+    const ergebnis = ruf(ffmpeg, ['-version']);
+    if (!ergebnis || ergebnis.status !== 0) return null;
+    const zeile = ersteZeile(ergebnis.stdout);
+    const treffer = zeile.match(/ffmpeg version (\S+)/i);
+    return treffer ? treffer[1] : (zeile || null);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Was dieser Lauf an Werkzeug vorgefunden hat — in einer Zeile.
+ *
+ * Bewusst OHNE eigene Aufrufe, wo es geht: Die yt-dlp-Version faellt bei
+ * findeYtdlp() ohnehin ab, die Faehigkeiten stehen nach tiktokFaehigkeiten()
+ * fest. Ein zusaetzlicher Abruf nur fuer das Protokoll waere ein Abruf zu viel.
+ */
+function werkzeugStand({ ytdlpVersion = null, ffmpeg = null, faehigkeiten = null,
+                         starte = null } = {}) {
+  const stand = {
+    yt_dlp: ytdlpVersion ? ersteZeile(ytdlpVersion, 40) : null,
+    ffmpeg: ffmpegVersion(ffmpeg, starte),
+    node: process.version,
+  };
+  if (faehigkeiten) {
+    // Die Faehigkeiten gehoeren dazu: Eine neue yt-dlp-Version kann dieselbe
+    // Nummer behalten und trotzdem einen Extractor verloren haben.
+    stand.hashtag = !!faehigkeiten.kannHashtag;
+    stand.suche = !!faehigkeiten.kannSuche;
+    stand.extractors = [].concat(faehigkeiten.namen || []).length;
+  }
+  return stand;
+}
+
+/** Eine Zeile fuers Protokoll. Fehlendes wird benannt, nicht verschwiegen. */
+function werkzeugZeile(stand) {
+  const teile = [
+    `yt-dlp ${stand.yt_dlp || '?'}`,
+    `ffmpeg ${stand.ffmpeg || 'fehlt'}`,
+    `node ${stand.node}`,
+  ];
+  if (stand.hashtag !== undefined) {
+    teile.push(`Hashtag ${stand.hashtag ? 'ja' : 'nein'}`);
+    teile.push(`Suche ${stand.suche ? 'ja' : 'nein'}`);
+  }
+  return teile.join(' · ');
+}
+
+/**
+ * Hat sich seit dem letzten Lauf etwas am Werkzeug geaendert?
+ *
+ * Gibt die Unterschiede als lesbare Zeilen zurueck, leer heisst gleich. Nur
+ * Felder, die in BEIDEN Staenden stehen — ein neu hinzugekommenes Feld ist
+ * keine Aenderung am Werkzeug, sondern eine an diesem Programm.
+ */
+function werkzeugUnterschied(vorher, jetzt) {
+  if (!vorher || !jetzt) return [];
+  const namen = { yt_dlp: 'yt-dlp', ffmpeg: 'ffmpeg', node: 'Node',
+                  hashtag: 'Hashtag-Extractor', suche: 'Such-Extractor',
+                  extractors: 'TikTok-Extractors' };
+  const zeilen = [];
+  for (const [feld, name] of Object.entries(namen)) {
+    if (!(feld in vorher) || !(feld in jetzt)) continue;
+    if (vorher[feld] === jetzt[feld]) continue;
+    const alt = vorher[feld] === null ? 'fehlt' : String(vorher[feld]);
+    const neu = jetzt[feld] === null ? 'fehlt' : String(jetzt[feld]);
+    zeilen.push(`${name}: ${alt} → ${neu}`);
+  }
+  return zeilen;
+}
+
+function bildFingerabdruck(ffmpeg, videoPfad, dauer, { lauf = null } = {}) {
+  if (!ffmpeg) return [];
+  const starte = lauf || ((werkzeug, argumente) => spawnSync(werkzeug, argumente, {
+    maxBuffer: 4 * 1024 * 1024, encoding: 'buffer',
+  }));
+  const abdruecke = [];
+  for (const marke of BILD_MARKEN) {
+    const zeitpunkt = dauer > 0 ? (dauer * marke) : 1;
+    const ergebnis = starte(ffmpeg, [
+      '-loglevel', 'error',
+      '-ss', zeitpunkt.toFixed(2),
+      '-i', videoPfad,
+      '-frames:v', '1',
+      // Auf 9x8 zusammenstauchen und entfaerben: Was uebrig bleibt, ist die
+      // grobe Helligkeitsverteilung — genau das, was eine Neukodierung
+      // unveraendert laesst.
+      '-vf', 'scale=9:8,format=gray',
+      '-f', 'rawvideo', '-',
+    ]);
+    if (!ergebnis || ergebnis.status !== 0 || !ergebnis.stdout) continue;
+    const abdruck = dHash(ergebnis.stdout);
+    if (abdruck) abdruecke.push(abdruck);
+  }
+  return abdruecke;
+}
+
+/**
+ * Ist das derselbe Clip, nur neu kodiert?
+ *
+ * Verglichen wird Bild gegen Bild an derselben Stelle. Der Reihe nach, nicht
+ * jeder gegen jeden: Zwei Clips, die dieselbe Szene an verschiedenen Stellen
+ * zeigen, sind NICHT dasselbe Video — und ein Vergleich aller gegen alle
+ * wuerde sie dazu erklaeren.
+ */
+function gleichesBild(a, b, { abstand = BILD_ABSTAND_MAX, noetig = BILDER_GLEICH_NOETIG } = {}) {
+  const eins = [].concat(a || []);
+  const zwei = [].concat(b || []);
+  if (eins.length < noetig || zwei.length < noetig) return false;
+  let gleich = 0;
+  for (let i = 0; i < Math.min(eins.length, zwei.length); i++) {
+    if (bitAbstand(eins[i], zwei[i]) <= abstand) gleich++;
+  }
+  return gleich >= noetig;
+}
+
+/**
+ * Schon als Bild im Index? Findet auch neu kodierte Reposts.
+ *
+ * Nebenbei die Antwort auf eine Frage, die Punkt 63 braucht: Liegt derselbe
+ * Clip unter vier Konten, ist der mit dem fruehesten Datum der wahrscheinliche
+ * Urheber.
+ */
+function schonAlsBildDa(index, abdruecke, opt = {}) {
+  if (!abdruecke || abdruecke.length < BILDER_GLEICH_NOETIG) return null;
+  return (index.eintraege || []).find(
+    (e) => gleichesBild(e.bild_abdruck, abdruecke, opt)) || null;
+}
+
+// ── Wo fehlt Material? (Punkt 12) ────────────────────────────────────
+//
+// "Genug Material" war bisher ein Gefuehl. Nachgezaehlt am 18.09.: Von 41
+// angelegten Produktordnern sind DREI gefuellt — 25 Clips beim Wasserspender,
+// fuenf beim Mixer, einer bei der Massagepistole. 38 sind leer.
+//
+// Der Bot arbeitet aber gleichmaessig ueber alles. Er legt dort nach, wo schon
+// 25 Clips liegen, mit derselben Wahrscheinlichkeit wie dort, wo nichts ist.
+
+/**
+ * Wieviele brauchbare Clips liegen je Produkt — und wieviele fehlen?
+ *
+ * Gezaehlt werden Eintraege im Index, nicht Dateien im Ordner: Ein Eintrag
+ * ohne Datei ist kein Vorrat, eine Datei ohne Eintrag ist keine Herkunft.
+ */
+function bestandJeProdukt(index, produkte, { ziel = 15 } = {}) {
+  const gezaehlt = new Map();
+  for (const e of (index.eintraege || [])) {
+    const id = Number(e.produkt_id);
+    if (!Number.isFinite(id)) continue;
+    gezaehlt.set(id, (gezaehlt.get(id) || 0) + 1);
+  }
+  return [].concat(produkte || []).map((p) => {
+    const vorhanden = gezaehlt.get(Number(p.id)) || 0;
+    return {
+      id: Number(p.id),
+      name: p.name,
+      vorhanden,
+      ziel,
+      luecke: Math.max(ziel - vorhanden, 0),
+    };
+  });
+}
+
+/**
+ * Produkte in der Reihenfolge, in der sie Material brauchen.
+ *
+ * Groesste Luecke zuerst; bei Gleichstand die kleinere Nummer, damit zwei
+ * Laeufe dieselbe Reihenfolge ergeben und man nicht raet, warum sich etwas
+ * geaendert hat.
+ *
+ * @param {boolean} [opt.alle]  volle Produkte nicht weglassen, sondern ans
+ *   Ende stellen. Fuer den Ladelauf ueber ALLE Produkte: Dort soll nichts
+ *   stillschweigend verschwinden, nur weil gerade genug da ist — ein
+ *   Trockenlauf haette sonst ploetzlich Luecken im Bericht.
+ */
+function produkteNachLuecke(index, produkte, opt = {}) {
+  const sortiert = bestandJeProdukt(index, produkte, opt)
+    .sort((a, b) => b.luecke - a.luecke || a.id - b.id);
+  return opt.alle ? sortiert : sortiert.filter((p) => p.luecke > 0);
+}
+
+// ── Gute Creator wiederfinden (Punkt 02) ─────────────────────────────
+//
+// Jeder Eintrag traegt seit jeher den Creator. Die Spalte wurde bisher nur
+// mitgeschrieben, nie gelesen — dabei ist sie das staerkste Signal im ganzen
+// Index: Wer einmal einen brauchbaren Clip zum Wasserspender gemacht hat,
+// macht mit hoher Wahrscheinlichkeit weitere.
+//
+// WAS HIER NICHT GEZAEHLT WIRD
+// Ablehnungen. Sie fallen, bevor etwas geladen ist — da gibt es nur den
+// Untertitel aus dem Seitentext, keinen Creator. "Ab drei Ablehnungen fliegt
+// er raus" waere also eine Regel ohne Daten. Gezaehlt wird, was belegt ist:
+// angenommene Clips.
+
+/** Profil-Adresse aus einer Video-Adresse. null, wenn keine drinsteht. */
+function creatorProfil(quelleUrl, creator) {
+  const ausUrl = String(quelleUrl || '').match(/https?:\/\/(?:www\.)?tiktok\.com\/(@[\w.-]+)/i);
+  if (ausUrl) return `https://www.tiktok.com/${ausUrl[1]}`;
+  const name = String(creator || '').trim().replace(/^@+/, '');
+  return name ? `https://www.tiktok.com/@${name}` : null;
+}
+
+/**
+ * Wie oft hat welcher Creator brauchbares Material geliefert?
+ *
+ * @param {number} [nurProdukt]  nur dieses Produkt zaehlen. Ohne Angabe alle —
+ *   wer beim Wasserspender liefert, liefert nicht zwangslaeufig beim Mixer.
+ */
+function creatorBilanz(index, { nurProdukt = null } = {}) {
+  const bilanz = new Map();
+  for (const e of (index.eintraege || [])) {
+    if (nurProdukt != null && Number(e.produkt_id) !== Number(nurProdukt)) continue;
+    const name = String(e.creator || '').trim();
+    if (!name) continue;
+    if (!bilanz.has(name)) {
+      bilanz.set(name, { creator: name, angenommen: 0, profil: null, produkte: new Set() });
+    }
+    const eintrag = bilanz.get(name);
+    eintrag.angenommen += 1;
+    eintrag.produkte.add(Number(e.produkt_id));
+    if (!eintrag.profil) eintrag.profil = creatorProfil(e.quelle_url, name);
+  }
+  return [...bilanz.values()]
+    .map((e) => ({ ...e, produkte: [...e.produkte].sort((a, b) => a - b) }))
+    .sort((a, b) => b.angenommen - a.angenommen || a.creator.localeCompare(b.creator));
+}
+
+/**
+ * Creator, die es wert sind, gezielt wieder besucht zu werden.
+ *
+ * Ab zwei angenommenen Clips. Einer kann Zufall sein — ein Video, das durch
+ * die Kette kam, weil der Untertitel zufaellig passte. Zwei ist ein Muster.
+ */
+function creatorQuellen(index, { nurProdukt = null, abMindestens = 2, hoechstens = 8 } = {}) {
+  return creatorBilanz(index, { nurProdukt })
+    .filter((e) => e.angenommen >= abMindestens && e.profil)
+    .slice(0, hoechstens)
+    .map((e) => ({ art: 'creator', url: e.profil, creator: e.creator,
+                   angenommen: e.angenommen }));
+}
+
+// ── Erschoepfte Suchbegriffe (Punkt 01) ──────────────────────────────
+//
+// tiktok-quellen.json haelt 984 Suchbegriffe ueber alle 40 Produkte. Die
+// gehen einer nach dem anderen raus, und das Budget liegt bei 60 Abrufen —
+// die REIHENFOLGE entscheidet also, welche ueberhaupt drankommen. Bisher war
+// das immer dieselbe: von vorne.
+//
+// Gemessen: Der zweite Lauf mit identischem Aufruf brachte 0 Downloads. Das
+// ist korrektes Verhalten des Index — die Themenseite war abgegrast. Es heisst
+// aber, dass die QUELLE erschoepft ist, nicht der Markt. Wer denselben Begriff
+// beim naechsten Lauf wieder an die erste Stelle setzt, verbrennt das Budget
+// an einer Seite, die er schon kennt.
+//
+// AUSSORTIERT WIRD NICHTS. Ein erschoepfter Begriff wandert nach hinten und
+// kommt nach der Ruhezeit wieder vor — eine Themenseite fuellt sich nach.
+
+/** Bilanz aller Begriffe eines Produkts aus dem Index. */
+function begriffsBilanz(index, produktId) {
+  const alle = (index && index.begriffe) || {};
+  return { ...(alle[String(produktId)] || {}) };
+}
+
+/**
+ * Suchbegriffe in die Reihenfolge bringen, in der sie noch etwas bringen.
+ *
+ * ZWEI TEILE. Erstens eine Ruhezeit fuer Begriffe, die leer ausgegangen sind —
+ * und zwar eine, die mit jedem Leerlauf laenger wird: einmal leer heisst
+ * "ruheTage" Pause, dreimal leer hintereinander heisst dreimal so lang.
+ * Zweitens, unter den wachen Begriffen, ein schlichtes Reihum: wer am
+ * laengsten nicht dran war, kommt zuerst.
+ *
+ *   1. wach vor ruhend
+ *   2. nie benutzte zuerst — sie sind der unerschlossene Teil
+ *   3. dann die, die am laengsten nicht benutzt wurden
+ *   4. dann die mit den wenigsten Leerlaeufen hintereinander
+ *   5. bei Gleichstand die urspruengliche Reihenfolge
+ *
+ * WARUM STUFE 3 AM LETZTEN GEBRAUCH HAENGT UND NICHT AM LETZTEN FUND
+ * Erst stand da "aeltester Fund zuerst". Damit landete ein Begriff, der noch
+ * NIE etwas geliefert hat, ganz vorne: Er hat kein Funddatum, das zaehlt als
+ * Jahr 0, und Jahr 0 ist aelter als alles. Ausgerechnet der aussichtsloseste
+ * Begriff haette das Budget bekommen. Der zweite Versuch — "wenigste
+ * Leerlaeufe zuerst" als feste Stufe davor — kippte in den anderen Graben:
+ * Ein Begriff mit fuenf Leerlaeufen waere nie wieder drangekommen, solange
+ * irgendein anderer noch bei null steht. Das ist Aussortieren durch die
+ * Hintertuer, und genau das soll hier nicht passieren.
+ *
+ * Der letzte Gebrauch loest beides: Er ist immer gesetzt, sobald ein Begriff
+ * einmal draussen war, und er waechst bei jedem, der wartet. Das Bremsen
+ * uebernimmt allein die Ruhezeit — befristet, mit Obergrenze.
+ *
+ * @param {number} [hoechstensRuhe]  Vielfaches, ab dem die Ruhezeit nicht
+ *   weiter waechst. Ohne Deckel waere ein Begriff nach genug Leerlaeufen
+ *   faktisch ausgemustert — bei 21 Tagen und zwanzig Leerlaeufen ueber ein
+ *   Jahr Pause.
+ */
+function begriffeSortiert(begriffe, bilanz, {
+  ruheTage = 21, hoechstensRuhe = 6, jetzt = new Date(),
+} = {}) {
+  const liste = [].concat(begriffe || []);
+  const stand = bilanz || {};
+
+  return liste
+    .map((begriff, platz) => {
+      const b = stand[begriff] || {};
+      const leerFolge = Number(b.leer_in_folge) || 0;
+      const leerSeit = b.leer_seit ? new Date(b.leer_seit).getTime() : null;
+      // Je Leerlauf eine Runde laenger, gedeckelt.
+      const ruheMs = Math.max(0, ruheTage) * 86400000
+        * Math.min(Math.max(leerFolge, 1), Math.max(1, hoechstensRuhe));
+      const ruht = leerSeit != null && !Number.isNaN(leerSeit)
+        && (jetzt.getTime() - leerSeit) < ruheMs;
+      const nieBenutzt = !b.zuletzt_benutzt;
+      const benutzt = b.zuletzt_benutzt ? new Date(b.zuletzt_benutzt).getTime() : 0;
+      return { begriff, platz, ruht, nieBenutzt, benutzt, leerFolge };
+    })
+    .sort((a, b) => {
+      if (a.ruht !== b.ruht) return a.ruht ? 1 : -1;
+      if (a.nieBenutzt !== b.nieBenutzt) return a.nieBenutzt ? -1 : 1;
+      if (a.benutzt !== b.benutzt) return a.benutzt - b.benutzt;
+      if (a.leerFolge !== b.leerFolge) return a.leerFolge - b.leerFolge;
+      return a.platz - b.platz;
+    })
+    .map((e) => e.begriff);
+}
+
+/**
+ * Was ein Begriff gebracht hat, im Index festhalten.
+ *
+ * @param {number} neu  wieviele NEUE Adressen er geliefert hat. 0 heisst
+ *   erschoepft — der Begriff ruht dann eine Weile.
+ */
+function vermerkeBegriff(index, produktId, begriff, neu, jetzt = new Date()) {
+  if (!index.begriffe) index.begriffe = {};
+  const schluessel = String(produktId);
+  if (!index.begriffe[schluessel]) index.begriffe[schluessel] = {};
+  const stand = index.begriffe[schluessel][begriff] || {};
+  const zeit = jetzt.toISOString();
+  stand.zuletzt_benutzt = zeit;
+  if (neu > 0) {
+    stand.zuletzt_neu = zeit;
+    stand.leer_seit = null;
+    stand.leer_in_folge = 0;
+  } else {
+    stand.leer_seit = stand.leer_seit || zeit;
+    stand.leer_in_folge = (stand.leer_in_folge || 0) + 1;
+  }
+  index.begriffe[schluessel][begriff] = stand;
+  return stand;
+}
+
 function schonAlsDateiDa(index, pruefsumme) {
   if (!pruefsumme) return null;
   return (index.eintraege || []).find((e) => e.sha256 === pruefsumme) || null;
@@ -517,6 +1246,753 @@ function dateiOrte(eintrag, videoOrdner, datenOrdner) {
   if (videoOrdner) orte.push(path.join(videoOrdner, eintrag.datei));
   if (datenOrdner) orte.push(path.join(datenOrdner, eintrag.datei));
   return orte;
+}
+
+// ── Die Messlatte waechst mit (Punkt 20) ─────────────────────────────
+//
+// Die Pruefkette wurde nicht an ausgedachten Beispielen entwickelt, sondern an
+// 80 echten Untertiteln aus den eigenen Protokollen: vorher 22 angenommen,
+// davon 4 falsch — nachher 18 angenommen, 0 falsch, ohne dass ein richtiger
+// Treffer verlorenging.
+//
+// NUR EINES FEHLTE: Die Sammlung waechst nicht von selbst. Bei 492 Suchbegriffen
+// und 403 Kernwoertern, die weiterwachsen, bleibt die Messlatte sonst bei 80
+// Untertiteln aus dem August stehen — und jede weitere Verschaerfung ist dann
+// Hoffnung statt Messung.
+//
+// GESAMMELT WIRD DAS URTEIL, NICHT DER TEST.
+// Aus dieser Datei wird kein Test erzeugt. Sie ist Material: Wer die Wortlisten
+// aendert, laesst sie gegenlaufen und sieht, welche Urteile sich verschoben
+// haben. Ein Test, der sich seine eigene Erwartung schreibt, kann nur gruen
+// werden — und ein Test, der nur gruen werden kann, ist wertlos (CLAUDE.md §2).
+
+const URTEILE_DATEI = 'urteile.json';
+const URTEILE_HOECHSTENS = 2000;
+
+function urteilePfad(ordner) { return path.join(ordner, URTEILE_DATEI); }
+
+/**
+ * Ein gefaelltes Urteil zur Sammlung legen.
+ *
+ * Erkannt wird ein bereits gesammelter Fall an der Video-ID, nicht am Text:
+ * Derselbe Clip taucht unter mehreren Adressen auf, und zwei Eintraege mit
+ * demselben Untertitel wuerden die Statistik verdoppeln.
+ *
+ * @param {string} urteil  'angenommen' oder der Ablehnungsgrund
+ */
+function sammleUrteil(sammlung, { video_id, titel, produkt_id, urteil, wert = null,
+                                  jetzt = new Date() } = {}) {
+  const liste = (sammlung && sammlung.urteile) || [];
+  const text = String(titel || '').trim();
+  if (!text) return sammlung || { version: 1, urteile: [] };
+  const id = video_id != null ? String(video_id) : null;
+  const schonDa = liste.find((u) => (id && String(u.video_id) === id)
+    || (!id && u.titel === text && Number(u.produkt_id) === Number(produkt_id)));
+  if (schonDa) {
+    // Das Urteil kann sich geaendert haben — die Wortlisten wachsen ja. Genau
+    // diese Aenderung ist das Interessante, also wird sie festgehalten.
+    if (schonDa.urteil !== urteil) {
+      schonDa.vorher = schonDa.urteil;
+      schonDa.urteil = urteil;
+      schonDa.geaendert_am = jetzt.toISOString();
+    }
+    return sammlung;
+  }
+  liste.push({
+    video_id: id, titel: text.slice(0, 200), produkt_id: Number(produkt_id) || null,
+    urteil, wert, gesehen_am: jetzt.toISOString(),
+  });
+  return {
+    version: 1,
+    // Die aeltesten fallen heraus, wenn es zu viele werden. Die Datei liegt
+    // neben dem Index und wird bei jedem Lauf geschrieben.
+    urteile: liste.slice(-URTEILE_HOECHSTENS),
+  };
+}
+
+/** Die Sammlung lesen. Fehlt sie, ist sie leer — das ist kein Fehler. */
+function ladeUrteile(ordner) {
+  try {
+    const gelesen = JSON.parse(fs.readFileSync(urteilePfad(ordner), 'utf8'));
+    return (gelesen && Array.isArray(gelesen.urteile)) ? gelesen : { version: 1, urteile: [] };
+  } catch {
+    return { version: 1, urteile: [] };
+  }
+}
+
+function speichereUrteile(ordner, sammlung) {
+  try {
+    fs.writeFileSync(urteilePfad(ordner), `${JSON.stringify(sammlung, null, 2)}\n`, 'utf8');
+    return urteilePfad(ordner);
+  } catch {
+    return null;    // nicht schreibbar ist kein Grund, den Lauf zu faerben
+  }
+}
+
+/** Was die Sammlung ueber die Pruefkette sagt. */
+function urteilsBilanz(sammlung) {
+  const liste = (sammlung && sammlung.urteile) || [];
+  const gruende = new Map();
+  let angenommen = 0;
+  let gekippt = 0;
+  for (const u of liste) {
+    if (u.urteil === 'angenommen') angenommen++;
+    else gruende.set(u.urteil, (gruende.get(u.urteil) || 0) + 1);
+    if (u.vorher) gekippt++;
+  }
+  return {
+    gesamt: liste.length,
+    angenommen,
+    abgelehnt: liste.length - angenommen,
+    // Faelle, deren Urteil sich seit dem ersten Mal geaendert hat. DAS ist der
+    // Wert der Sammlung: Wer die Wortlisten verschaerft, sieht hier sofort,
+    // wie viele frueher angenommene Clips jetzt durchfallen.
+    gekippt,
+    gruende: [...gruende.entries()].map(([grund, anzahl]) => ({ grund, anzahl }))
+      .sort((a, b) => b.anzahl - a.anzahl),
+  };
+}
+
+// ── Rechteakte je Clip (Punkt 63) ────────────────────────────────────
+//
+// DER VERGLEICH MACHT DIE LUECKE SICHTBAR. Der Materialkatalog des Automaten
+// setzt die Regel hart durch: "Ein Asset ohne Lizenzeintrag kommt nicht ins
+// Video. Punkt." Der Bot dagegen hatte ein einzelnes `rechte_geprueft: false`,
+// das "nur von Hand" umgestellt wird. Was, wann, durch wen und in welchem
+// Umfang geprueft wurde, stand nirgends.
+//
+// EIN WAHRHEITSWERT KANN KEINE EINWILLIGUNG BELEGEN.
+// Heute war es verkehrt herum: Ein Pexels-Bild brauchte einen Lizenzeintrag,
+// ein fremder TikTok-Clip nur ein Haekchen — und zwar genau das Material mit
+// dem hoechsten Risiko. Ein Video laesst sich auf TikTok nicht nachtraeglich
+// kurz zurueckholen.
+//
+// WAS HIER NICHT ENTSCHIEDEN WIRD
+// Ob eine Erlaubnis rechtlich traegt. Das ist keine Frage, die ein Programm
+// beantwortet. Festgehalten wird, WAS vorliegt und was fehlt — und solange
+// etwas fehlt, bleibt die Sperre zu.
+
+/** Wie die Erlaubnis zustande kam. */
+const RECHTE_ARTEN = {
+  eigen: 'eigenes Material — keine fremden Rechte betroffen',
+  einwilligung: 'Creator hat ausdruecklich zugestimmt',
+  lizenz: 'kostenpflichtige oder freie Lizenz mit Nachweis',
+  keine: 'keine Erlaubnis — nur internes Referenzmaterial',
+};
+
+/** Wofuer die Erlaubnis gilt. Beides getrennt, weil es rechtlich getrennt ist. */
+const RECHTE_ZWECKE = ['organisch', 'anzeige'];
+
+/**
+ * Die Rechtelage eines Eintrags, in einheitlicher Form.
+ *
+ * Liest BEIDE Schreibweisen: die neue Akte und das alte `rechte_geprueft`.
+ * Ein altes `true` wird dabei NICHT zu "einwilligung" aufgewertet — es wird zu
+ * "geprueft, Art unbekannt". Aus einem Haekchen nachtraeglich eine Einwilligung
+ * zu machen waere genau die Behauptung, die dieser Punkt abstellen soll.
+ */
+function rechteAkte(eintrag) {
+  const akte = (eintrag && eintrag.rechte) || null;
+  if (akte && akte.art) {
+    return {
+      art: akte.art,
+      datum: akte.datum || null,
+      inhaber: akte.inhaber || (eintrag && eintrag.creator) || null,
+      kontakt: akte.kontakt || (eintrag && eintrag.quelle_url) || null,
+      beleg: akte.beleg || null,
+      zwecke: [].concat(akte.zwecke || []).filter((z) => RECHTE_ZWECKE.includes(z)),
+      bis: akte.bis || null,
+      widerrufen_am: akte.widerrufen_am || null,
+      quelle: 'akte',
+    };
+  }
+  // Altbestand: nur der Wahrheitswert.
+  const haken = !!(eintrag && eintrag.rechte_geprueft);
+  return {
+    art: haken ? 'unbekannt' : 'keine',
+    datum: null,
+    inhaber: (eintrag && eintrag.creator) || null,
+    kontakt: (eintrag && eintrag.quelle_url) || null,
+    beleg: null,
+    zwecke: [],
+    bis: null,
+    widerrufen_am: null,
+    quelle: 'altbestand',
+  };
+}
+
+/**
+ * Was der Akte noch fehlt, damit sie etwas belegt.
+ *
+ * @returns {string[]} leer heisst vollstaendig.
+ */
+function rechteLuecken(eintrag) {
+  const a = rechteAkte(eintrag);
+  if (a.art === 'eigen') return [];            // eigenes Material braucht nichts
+  if (a.art === 'keine') return ['keine Erlaubnis eingeholt'];
+  const fehlt = [];
+  if (a.art === 'unbekannt') fehlt.push('Art der Erlaubnis (nur ein altes Haekchen)');
+  if (!a.datum) fehlt.push('Datum der Erlaubnis');
+  if (!a.inhaber) fehlt.push('Rechteinhaber');
+  if (!a.kontakt) fehlt.push('Kontakt zum Rechteinhaber');
+  if (!a.beleg) fehlt.push('Beleg (Screenshot, Mail, Lizenzdatei)');
+  if (!a.zwecke.length) fehlt.push('Umfang (organisch und/oder Anzeige)');
+  return fehlt;
+}
+
+/**
+ * Darf dieser Clip fuer DIESEN Zweck veroeffentlicht werden?
+ *
+ * DIE SPERRE IST ZU, SOLANGE ETWAS FEHLT — dieselbe Linie wie beim
+ * Materialkatalog. Und sie ist je Zweck getrennt: Eine Einwilligung fuer einen
+ * organischen Beitrag deckt keine bezahlte Anzeige. Das ist kein Formalismus,
+ * sondern der haeufigste Punkt, an dem eine Zusage endet.
+ *
+ * @returns {{ok:boolean, grund?:string}}
+ */
+function darfVeroeffentlicht(eintrag, { zweck = 'organisch', jetzt = new Date() } = {}) {
+  if (!RECHTE_ZWECKE.includes(zweck)) {
+    return { ok: false, grund: `unbekannter Zweck "${zweck}" (erlaubt: ${RECHTE_ZWECKE.join(', ')})` };
+  }
+  const a = rechteAkte(eintrag);
+  if (a.widerrufen_am) {
+    return { ok: false, grund: `widerrufen am ${String(a.widerrufen_am).slice(0, 10)}` };
+  }
+  if (a.art === 'eigen') return { ok: true };
+  const luecken = rechteLuecken(eintrag);
+  if (luecken.length) return { ok: false, grund: luecken.join('; ') };
+  if (!a.zwecke.includes(zweck)) {
+    return { ok: false, grund: `Erlaubnis deckt ${a.zwecke.join(' und ')}, nicht "${zweck}"` };
+  }
+  if (a.bis) {
+    const ende = Date.parse(a.bis);
+    if (Number.isFinite(ende) && ende < jetzt.getTime()) {
+      return { ok: false, grund: `Erlaubnis lief am ${String(a.bis).slice(0, 10)} aus` };
+    }
+  }
+  return { ok: true };
+}
+
+/**
+ * Eine Rechteakte eintragen.
+ *
+ * Wie setzeZustand(): kein Wurf, sondern eine Antwort — ein Tippfehler soll
+ * keinen Lauf beenden.
+ */
+function setzeRechte(eintrag, { art, datum = null, inhaber = null, kontakt = null,
+                                beleg = null, zwecke = [], bis = null,
+                                jetzt = new Date() } = {}) {
+  if (!eintrag) return { ok: false, grund: 'kein Eintrag' };
+  if (!RECHTE_ARTEN[art]) {
+    return { ok: false, grund: `unbekannte Art "${art}" (erlaubt: ${Object.keys(RECHTE_ARTEN).join(', ')})` };
+  }
+  const saubereZwecke = [].concat(zwecke || []).filter((z) => RECHTE_ZWECKE.includes(z));
+  const unbekannt = [].concat(zwecke || []).filter((z) => !RECHTE_ZWECKE.includes(z));
+  if (unbekannt.length) {
+    return { ok: false, grund: `unbekannter Zweck: ${unbekannt.join(', ')}` };
+  }
+  eintrag.rechte = {
+    art,
+    datum: datum || jetzt.toISOString(),
+    inhaber: inhaber || eintrag.creator || null,
+    kontakt: kontakt || eintrag.quelle_url || null,
+    beleg,
+    zwecke: saubereZwecke,
+    bis,
+    widerrufen_am: null,
+  };
+  // Der alte Wahrheitswert bleibt — Marketing-Abfragen lesen ihn noch. Er ist
+  // ab jetzt ABGELEITET und nicht mehr die Wahrheit selbst.
+  eintrag.rechte_geprueft = darfVeroeffentlicht(eintrag, { zweck: 'organisch', jetzt }).ok;
+  return { ok: true };
+}
+
+/** Eine Erlaubnis zurueckziehen. Der Eintrag bleibt — der Widerruf gehoert zur Akte. */
+function widerrufeRechte(eintrag, { jetzt = new Date() } = {}) {
+  if (!eintrag || !eintrag.rechte) return { ok: false, grund: 'keine Akte vorhanden' };
+  eintrag.rechte.widerrufen_am = jetzt.toISOString();
+  eintrag.rechte_geprueft = false;
+  return { ok: true };
+}
+
+/** Wie steht es um die Rechte im ganzen Index? */
+function rechteBilanz(index, { zweck = 'organisch', jetzt = new Date() } = {}) {
+  const zaehler = { frei: 0, gesperrt: 0, widerrufen: 0 };
+  const nachArt = new Map();
+  const luecken = new Map();
+  for (const e of (index.eintraege || [])) {
+    const a = rechteAkte(e);
+    nachArt.set(a.art, (nachArt.get(a.art) || 0) + 1);
+    if (a.widerrufen_am) { zaehler.widerrufen++; continue; }
+    const urteil = darfVeroeffentlicht(e, { zweck, jetzt });
+    if (urteil.ok) { zaehler.frei++; continue; }
+    zaehler.gesperrt++;
+    for (const l of rechteLuecken(e)) luecken.set(l, (luecken.get(l) || 0) + 1);
+  }
+  return {
+    ...zaehler,
+    zweck,
+    nachArt: [...nachArt.entries()].map(([art, anzahl]) => ({ art, anzahl }))
+      .sort((a, b) => b.anzahl - a.anzahl),
+    luecken: [...luecken.entries()].map(([was, anzahl]) => ({ was, anzahl }))
+      .sort((a, b) => b.anzahl - a.anzahl),
+  };
+}
+
+// ── Anfragen an Creator (Punkt 64) ───────────────────────────────────
+//
+// Eine Einwilligung ist der einzige saubere Weg: Ein fremder Clip in einem
+// gewerblichen Werbeclip ist keine Grauzone. Ohne Vorlage wird jede Anfrage neu
+// formuliert, mal vollstaendig, mal nicht — und dann fehlt genau die Zeile zum
+// Umfang, also der Punkt, an dem eine Zusage spaeter endet.
+//
+// WAS DIE VORLAGE LEISTET UND WAS NICHT
+// Sie stellt die Frage vollstaendig. Sie verschickt nichts, und sie behauptet
+// nichts: Alles, was drinsteht, kommt aus dem Index (Creator, Adresse,
+// Untertitel) oder aus den uebergebenen Angaben. Fehlt eine Angabe, steht eine
+// Luecke da — kein erfundener Firmenname.
+
+/** Was in einer Anfrage nicht fehlen darf. */
+const ANFRAGE_FELDER = ['absender', 'produkt'];
+
+/**
+ * Anfragetext fuer EINEN Clip, deutsch oder englisch.
+ *
+ * @param {object} eintrag  Indexeintrag — liefert Creator, Adresse, Untertitel.
+ * @param {object} opt.absender      wer fragt (Name, Shop)
+ * @param {string} opt.produkt       wofuer der Clip gebraucht wird
+ * @param {string[]} opt.zwecke      'organisch' und/oder 'anzeige'
+ * @param {string} [opt.dauer]       wie lange, im Klartext ("12 Monate")
+ * @param {string} [opt.gegenleistung] Produkt, Gutschein, Verguetung
+ * @param {string} [opt.nennung]     wie genannt wird ("@handle im Video")
+ * @returns {{ok:boolean, text?:string, an?:string, fehlt?:string[]}}
+ */
+function creatorAnfrage(eintrag, opt = {}) {
+  // Mehrere Clips desselben Menschen gehoeren in EINE Nachricht — und muessen
+  // dann auch alle darin stehen. Eine Anfrage, die "dein Video X" sagt und
+  // spaeter zehn verwendet, ist keine Einwilligung fuer die zehn.
+  const weitere = [].concat(opt.weitereAdressen || []).filter(Boolean);
+  const fehlt = ANFRAGE_FELDER.filter((f) => !String(opt[f] || '').trim());
+  const zwecke = [].concat(opt.zwecke || []).filter((z) => RECHTE_ZWECKE.includes(z));
+  if (!zwecke.length) fehlt.push('zwecke');
+  if (fehlt.length) return { ok: false, fehlt };
+
+  const sprache = opt.sprache === 'en' ? 'en' : 'de';
+  const handle = String((eintrag && eintrag.creator) || '').replace(/^@+/, '');
+  const adresse = (eintrag && eintrag.quelle_url) || null;
+  const titel = String((eintrag && eintrag.titel) || '').trim().slice(0, 80);
+  const profil = creatorProfil(adresse, handle);
+
+  // Der Clip muss eindeutig benannt sein. "dein Video" reicht nicht — ein
+  // Creator hat hunderte, und eine Zusage zu "einem davon" belegt nichts.
+  const clip = adresse || (titel ? `"${titel}"` : null);
+  if (!clip) return { ok: false, fehlt: ['clip nicht eindeutig benennbar (weder Adresse noch Titel)'] };
+  const alleAdressen = [adresse, ...weitere].filter(Boolean)
+    .filter((u, i, liste) => liste.indexOf(u) === i);
+  const mehrere = alleAdressen.length > 1;
+
+  const dauer = String(opt.dauer || '').trim();
+  const gegenleistung = String(opt.gegenleistung || '').trim();
+  const nennung = String(opt.nennung || '').trim();
+
+  if (sprache === 'de') {
+    const zweckText = zwecke.includes('anzeige') && zwecke.includes('organisch')
+      ? 'in eigenen Beitraegen UND in bezahlten Anzeigen'
+      : zwecke.includes('anzeige') ? 'in bezahlten Anzeigen' : 'in eigenen Beitraegen';
+    const zeilen = [
+      handle ? `Hallo @${handle},` : 'Hallo,',
+      '',
+      // BEWUSST NICHT "ich verkaufe <Produktname>": Der Name kommt im Nominativ
+      // aus products.json ("Elektrischer Wasserspender"), und "verkaufe"
+      // verlangt den Akkusativ. Ein Doppelpunkt umgeht die Beugung, statt sie
+      // falsch zu raten.
+      `ich bin ${opt.absender} und verkaufe in meinem Shop: ${opt.produkt}.`,
+      '',
+      ...(mehrere
+        ? [`Von dir haben mir ${alleAdressen.length} Videos gefallen, und ich wuerde gern`,
+           `fragen, ob ich Ausschnitte daraus verwenden darf — ${zweckText}.`,
+           '',
+           'Konkret geht es um diese:',
+           ...alleAdressen.map((u) => `· ${u}`)]
+        : [`Dein Video ${clip} passt sehr gut dazu, und ich wuerde gern fragen, ob ich`,
+           `einen Ausschnitt daraus verwenden darf — ${zweckText}.`]),
+      '',
+      'Damit du weisst, worauf du dich einlaesst:',
+      `· Wofuer:        ${zweckText}`,
+      `· Wie lange:     ${dauer || '(bitte eintragen)'}`,
+      `· Nennung:       ${nennung || 'gern so, wie du es moechtest — sag mir einfach wie'}`,
+      `· Gegenleistung: ${gegenleistung || '(bitte eintragen)'}`,
+      '',
+      'Wenn dir etwas davon nicht passt, sag es gern — daran soll es nicht',
+      'scheitern. Und wenn du spaeter deine Meinung aenderst, nehme ich es',
+      'selbstverstaendlich wieder raus.',
+      '',
+      'Ein kurzes "ja, in Ordnung" von dir reicht mir als Nachweis.',
+      '',
+      'Viele Gruesse',
+      String(opt.absender),
+    ];
+    return { ok: true, an: profil, text: zeilen.join('\n') };
+  }
+
+  const zweckText = zwecke.includes('anzeige') && zwecke.includes('organisch')
+    ? 'in my own posts AND in paid ads'
+    : zwecke.includes('anzeige') ? 'in paid ads' : 'in my own posts';
+  const zeilen = [
+    handle ? `Hi @${handle},` : 'Hi,',
+    '',
+    `I'm ${opt.absender} and I sell ${opt.produkt}.`,
+    '',
+    ...(mehrere
+      ? [`I really liked ${alleAdressen.length} of your videos and would like to ask`,
+         `whether I may use short sections of them — ${zweckText}.`,
+         '',
+         'These are the ones:',
+         ...alleAdressen.map((u) => `· ${u}`)]
+      : [`Your video ${clip} fits really well, and I'd like to ask whether I may use`,
+         `a short section of it — ${zweckText}.`]),
+    '',
+    'So you know exactly what you would be agreeing to:',
+    `· Where:         ${zweckText}`,
+    `· How long:      ${dauer || '(please fill in)'}`,
+    `· Credit:        ${nennung || "however you prefer — just tell me how"}`,
+    `· In return:     ${gegenleistung || '(please fill in)'}`,
+    '',
+    "If any of that doesn't work for you, just say so. And if you change your",
+    'mind later, I will take it down, no questions asked.',
+    '',
+    'A short "yes, that\'s fine" is all I need as a record.',
+    '',
+    'Thanks,',
+    String(opt.absender),
+  ];
+  return { ok: true, an: profil, text: zeilen.join('\n') };
+}
+
+/**
+ * Anfragen fuer alle Clips, deren Rechte noch offen sind.
+ *
+ * EIN CREATOR, EINE ANFRAGE. Wer fuenf Clips desselben Menschen geladen hat,
+ * schreibt ihn nicht fuenfmal an — das ist der schnellste Weg zu einer
+ * Absage. Die Clips stehen dann gesammelt in einer Nachricht.
+ *
+ * Zuerst die Creator mit den meisten Clips: Dort lohnt eine dauerhafte
+ * Absprache am ehesten (siehe Punkt 02).
+ */
+function offeneAnfragen(index, opt = {}) {
+  const jeCreator = new Map();
+  for (const e of (index.eintraege || [])) {
+    if (opt.nurProdukt != null && Number(e.produkt_id) !== Number(opt.nurProdukt)) continue;
+    const a = rechteAkte(e);
+    if (a.art === 'eigen') continue;                 // nichts zu fragen
+    if (a.art === 'einwilligung' || a.art === 'lizenz') continue;   // schon da
+    const handle = String(e.creator || '').trim();
+    if (!handle) continue;                           // ohne Creator kein Adressat
+    if (!jeCreator.has(handle)) jeCreator.set(handle, []);
+    jeCreator.get(handle).push(e);
+  }
+  return [...jeCreator.entries()]
+    .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+    .map(([creator, eintraege]) => {
+      const anfrage = creatorAnfrage(eintraege[0], {
+        ...opt,
+        weitereAdressen: eintraege.slice(1).map((e) => e.quelle_url).filter(Boolean),
+      });
+      const profil = creatorProfil(eintraege[0].quelle_url, creator);
+      // Die Adresse gewinnt gegen den Namen — sie ist das, was TikTok selbst
+      // ausliefert. Gehen beide auseinander, ist das ein Hinweis und keine
+      // Nebensache: Dann fuehrt die Anfrage womoeglich zum falschen Konto.
+      const ausName = creatorProfil('', creator);
+      return {
+        creator,
+        clips: eintraege.length,
+        adressen: eintraege.map((e) => e.quelle_url).filter(Boolean),
+        profil,
+        handleWeichtAb: !!(profil && ausName && profil !== ausName),
+        ...anfrage,
+      };
+    });
+}
+
+// ── Fremde Werbung erkennen (Punkt 24) ───────────────────────────────
+//
+// Ein Teil des gefundenen Materials ist die Werbung eines Mitbewerbers: fremder
+// Rabattcode, fremder Shop, Kennzeichnungspflicht-Hinweis. Als Anschauung
+// brauchbar, im eigenen Clip ein Eigentor — und rechtlich der klarste Fall von
+// allen.
+//
+// WAS HIER NICHT PASSIERT: ABLEHNEN.
+// Der Clip wird MARKIERT, nicht verworfen. Zwei Gruende. Erstens ist die
+// laufende Mitbewerber-Beobachtung ein Nebenprodukt, das sonst niemand macht.
+// Zweitens ist die Erkennung Textarbeit und damit unscharf: "Werbung" steht
+// auch unter Videos, die nur erklaeren, dass sie keine sind. Eine Markierung
+// darf danebenliegen, eine Ablehnung soll es nicht.
+//
+// GEPRUEFT WIRD NUR DER TEXT. Sichtbare Shop-Namen im Bild braeuchten
+// Texterkennung (Punkt 30) und sind hier ausdruecklich nicht abgedeckt.
+
+const WERBE_SIGNALE = [
+  // Kennzeichnung — in beiden Sprachen die verlaesslichsten Woerter.
+  { muster: /\b(werbung|anzeige|gesponsert|sponsored|paid partnership)\b/i, art: 'kennzeichnung' },
+  // Nur MIT Raute: "ad" als blosses Wort ist zu duenn — es steckt in "Gadget",
+  // und als Abkuerzung steht es in jeder zweiten englischen Unterschrift.
+  { muster: /#(ad|werbung|anzeige|sponsored|paidpartnership)\b/i, art: 'kennzeichnung' },
+  // Rabatt und Code — "code XY20", "10% off", "rabattcode".
+  { muster: /\b(rabattcode|gutscheincode|discount code|promo ?code|coupon)\b/i, art: 'rabatt' },
+  // WAS EINEN CODE VON EINEM WORT UNTERSCHEIDET: eine Ziffer oder durchgehende
+  // Grossschreibung. Ein blosses /i ueber "code \w+" traefe "no code needed"
+  // und "I code for a living"; nur Grossschreibung zu verlangen verpasst das
+  // haeufige "code save20" in einer kleingeschriebenen Unterschrift.
+  { muster: /\b[Cc][Oo][Dd][Ee]\s+(?=[A-Za-z0-9]{3,12}\b)[A-Za-z0-9]*\d[A-Za-z0-9]*\b/, art: 'rabatt' },
+  { muster: /\b[Cc][Oo][Dd][Ee]\s+[A-Z]{3,12}\b/, art: 'rabatt' },
+  { muster: /\b\d{1,2}\s?% ?(off|rabatt)\b/i, art: 'rabatt' },
+  // Kaufaufforderung mit Weg — der Link in der Bio ist das haeufigste Signal.
+  { muster: /\b(link in (der )?bio|linkinbio|link in my bio|shop now|jetzt shoppen|jetzt kaufen)\b/i, art: 'kaufweg' },
+  { muster: /\b(tiktok ?shop|amazon\.[a-z]{2,3}|temu|shopee|aliexpress)\b/i, art: 'fremder shop' },
+];
+
+/**
+ * Der Text eines Videos, UNVERAENDERT — mit Gross-/Kleinschreibung und Rauten.
+ *
+ * videoText() taugt hier nicht: Es macht aus "#ad" ein blosses "ad" und
+ * schreibt alles klein. Beides braucht diese Pruefung aber. Ohne die Raute ist
+ * "ad" ein Allerweltswort (es steckt in jedem "Gadget"), und ohne
+ * Grossschreibung ist "Code SAVE20" von "code save20" nicht zu trennen — und
+ * damit von jedem Satz, in dem das Wort "code" vorkommt.
+ */
+function rohText(video) {
+  if (!video) return '';
+  const teile = [video.title, video.fulltitle, video.description];
+  for (const liste of [video.tags, video.hashtags, video.categories]) {
+    if (Array.isArray(liste)) teile.push(liste.join(' '));
+  }
+  return teile.filter(Boolean).join(' ');
+}
+
+/**
+ * Sieht dieser Clip nach fremder Werbung aus?
+ *
+ * @returns {{werbung:boolean, arten:string[], treffer:string[]}}
+ */
+function werbeVerdacht(video) {
+  const text = rohText(video);
+  const arten = new Set();
+  const treffer = [];
+  for (const { muster, art } of WERBE_SIGNALE) {
+    const gefunden = text.match(muster);
+    if (!gefunden) continue;
+    arten.add(art);
+    treffer.push(gefunden[0].trim().slice(0, 40));
+  }
+  return { werbung: arten.size > 0, arten: [...arten], treffer };
+}
+
+/**
+ * Ein Verdacht, der das Markieren wert ist.
+ *
+ * EINE Fundstelle reicht nicht immer: "shop" und "code" rutschen leicht in eine
+ * gewoehnliche Unterschrift. Eine Kennzeichnung dagegen ist fuer sich schon
+ * eindeutig — sie steht dort, weil jemand rechtlich dazu verpflichtet ist.
+ */
+function istFremdeWerbung(video) {
+  const v = werbeVerdacht(video);
+  if (!v.werbung) return null;
+  if (v.arten.includes('kennzeichnung')) return v;
+  return v.arten.length >= 2 ? v : null;
+}
+
+// ── Drei Zustaende je Clip (Punkt 22) ────────────────────────────────
+//
+// Bisher kannte der Index zwei Lagen: Eintrag da (Datei liegt) oder in
+// "frueher_geladen" (weggeworfen). Was dazwischen liegt, stand in einer Datei
+// neben dem Projekt — "Clips mit dem schwarzen Modell nicht mit den weissen
+// mischen". Beim naechsten Produkt faengt man damit wieder bei null an.
+//
+// WARUM DIE GRUENDE EINE FESTE LISTE SIND UND KEIN FREITEXT
+// Nach zwanzig Produkten soll die Gruende-Liste beschreiben, was gutes
+// Rohmaterial ausmacht. Freitext laesst sich nicht zaehlen: "zu dunkel",
+// "duster" und "schlecht belichtet" waeren drei Gruende statt einem. Ein
+// eigener Satz darf trotzdem dazu — als Notiz neben dem Grund, nicht an seiner
+// Stelle.
+
+const ZUSTAENDE = ['vorrat', 'verwendet', 'verworfen'];
+
+const VERWURF_GRUENDE = {
+  falsches_modell: 'falsches Modell oder falsche Farbvariante',
+  zu_dunkel: 'zu dunkel oder zu unscharf',
+  fremdes_wasserzeichen: 'fremdes Wasserzeichen im Bild',
+  person_im_bild: 'Person im Bild',
+  ton_unbrauchbar: 'Ton unbrauchbar',
+  doppelgaenger: 'Doppelgaenger zu vorhandenem Material',
+  fremde_werbung: 'Werbung eines Mitbewerbers',
+  technisch: 'technisch unbrauchbar (Aufloesung, Dauer, Format)',
+};
+
+/**
+ * Zustand eines Eintrags setzen.
+ *
+ * @returns {{ok:boolean, grund?:string}} — bei ok:false steht in grund, warum
+ *   nicht. Bewusst kein Wurf: Ein Tippfehler in einem Grund soll den Lauf nicht
+ *   abbrechen, sondern gemeldet werden.
+ */
+function setzeZustand(eintrag, zustand, { grund = null, notiz = null,
+                                          jetzt = new Date() } = {}) {
+  if (!eintrag) return { ok: false, grund: 'kein Eintrag' };
+  if (!ZUSTAENDE.includes(zustand)) {
+    return { ok: false, grund: `unbekannter Zustand "${zustand}" (erlaubt: ${ZUSTAENDE.join(', ')})` };
+  }
+  // PFLICHTFELD NUR BEIM VERWERFEN. Bei "verwendet" oder "vorrat" gibt es
+  // nichts zu begruenden — ein Pflichtfeld dort erzeugt nur Fuellwoerter.
+  if (zustand === 'verworfen') {
+    if (!grund) {
+      return { ok: false, grund: `"verworfen" braucht einen Grund (${Object.keys(VERWURF_GRUENDE).join(', ')})` };
+    }
+    if (!VERWURF_GRUENDE[grund]) {
+      return { ok: false, grund: `unbekannter Grund "${grund}" (erlaubt: ${Object.keys(VERWURF_GRUENDE).join(', ')})` };
+    }
+  }
+  eintrag.zustand = zustand;
+  eintrag.zustand_seit = jetzt.toISOString();
+  if (zustand === 'verworfen') {
+    eintrag.verwurf_grund = grund;
+  } else {
+    delete eintrag.verwurf_grund;
+  }
+  if (notiz) eintrag.notiz = String(notiz).slice(0, 500);
+  return { ok: true };
+}
+
+/**
+ * Der Zustand eines Eintrags — auch fuer alte Eintraege, die keinen haben.
+ *
+ * Ein Eintrag ohne Feld gilt als "vorrat": Er wurde geladen und noch nicht
+ * beurteilt. Das ist die ehrliche Lesart — "verwendet" waere geraten, und
+ * "verworfen" waere eine Behauptung ueber Material, das niemand angesehen hat.
+ */
+function zustandVon(eintrag) {
+  const roh = String((eintrag && eintrag.zustand) || '').trim();
+  return ZUSTAENDE.includes(roh) ? roh : 'vorrat';
+}
+
+/** Wieviele Clips liegen in welchem Zustand, und woran scheitern sie? */
+function zustandsBilanz(index, { nurProdukt = null } = {}) {
+  const zaehler = { vorrat: 0, verwendet: 0, verworfen: 0 };
+  const gruende = new Map();
+  for (const eintrag of (index.eintraege || [])) {
+    if (nurProdukt != null && Number(eintrag.produkt_id) !== Number(nurProdukt)) continue;
+    const z = zustandVon(eintrag);
+    zaehler[z]++;
+    if (z === 'verworfen' && eintrag.verwurf_grund) {
+      gruende.set(eintrag.verwurf_grund, (gruende.get(eintrag.verwurf_grund) || 0) + 1);
+    }
+  }
+  return {
+    ...zaehler,
+    gruende: [...gruende.entries()]
+      .map(([schluessel, anzahl]) => ({ schluessel, anzahl,
+                                        text: VERWURF_GRUENDE[schluessel] || schluessel }))
+      .sort((a, b) => b.anzahl - a.anzahl || a.schluessel.localeCompare(b.schluessel)),
+  };
+}
+
+// ── Platz und Alter des Materials (Punkt 70) ─────────────────────────
+//
+// Rohvideos sind gross. 23 Clips fuer ein Produkt sind unkritisch; 23 Clips fuer
+// 40 Produkte sind es nicht mehr — und eine volle Platte meldet sich beim
+// Rendern mit einem abgebrochenen Auftrag, nicht mit einer klaren Fehlermeldung.
+//
+// GEZAEHLT WIRD, WAS WIRKLICH DA IST. Nicht die Zahl der Indexeintraege: Ein
+// Eintrag ohne Datei belegt keinen Platz, und eine Datei ohne Eintrag wuerde
+// beim Aufraeumen sonst uebersehen. Gesucht wird ueber dieselbe Funktion, die
+// auch das Aufraeumen benutzt — zwei Wege zur selben Datei sind zwei Wege, sich
+// zu widersprechen.
+
+/**
+ * Wieviel Platz belegt das Rohmaterial, und wie alt ist das aelteste Stueck?
+ *
+ * @returns {{dateien:number, fehlend:number, bytes:number, aeltestes:string|null,
+ *            aeltesteTage:number|null, jeProdukt:Array}}
+ */
+function platzbedarf(index, videoOrdner, datenOrdner, { jetzt = new Date() } = {}) {
+  const jeProdukt = new Map();
+  let bytes = 0;
+  let dateien = 0;
+  let fehlend = 0;
+  let aeltestesMs = null;
+
+  for (const eintrag of (index.eintraege || [])) {
+    const ort = dateiOrte(eintrag, videoOrdner, datenOrdner).find((o) => {
+      try { return fs.statSync(o).isFile(); } catch { return false; }
+    });
+    if (!ort) { fehlend++; continue; }
+    let stat;
+    try { stat = fs.statSync(ort); } catch { fehlend++; continue; }
+    dateien++;
+    bytes += stat.size;
+    // Das Datum des EINTRAGS, nicht der Datei: Eine Datei, die beim Umkopieren
+    // einen neuen Zeitstempel bekam, ist deshalb nicht neueres Material.
+    //
+    // BEIDE SCHREIBWEISEN. Der Index fuehrt das Feld als "zeitstempel"; nur die
+    // Liste "frueher_geladen" nennt es "zeitpunkt". Wer nur eine davon liest,
+    // bekommt fuer jeden Eintrag das Dateidatum und damit ein Alter, das beim
+    // naechsten Umkopieren auf null springt.
+    const rohZeit = eintrag.zeitstempel || eintrag.zeitpunkt;
+    const zeit = rohZeit ? Date.parse(rohZeit) : stat.mtimeMs;
+    if (Number.isFinite(zeit) && (aeltestesMs === null || zeit < aeltestesMs)) aeltestesMs = zeit;
+    const id = Number(eintrag.produkt_id);
+    const stand = jeProdukt.get(id) || { id, dateien: 0, bytes: 0 };
+    stand.dateien++;
+    stand.bytes += stat.size;
+    jeProdukt.set(id, stand);
+  }
+
+  return {
+    dateien, fehlend, bytes,
+    aeltestes: aeltestesMs === null ? null : new Date(aeltestesMs).toISOString(),
+    aeltesteTage: aeltestesMs === null ? null
+      : Math.floor((jetzt.getTime() - aeltestesMs) / 86400000),
+    jeProdukt: [...jeProdukt.values()].sort((a, b) => b.bytes - a.bytes),
+  };
+}
+
+/** Bytes als Zeile, die ein Mensch liest. */
+function lesbareGroesse(bytes) {
+  const n = Number(bytes) || 0;
+  if (n < 1024) return `${n} B`;
+  const einheiten = ['KB', 'MB', 'GB', 'TB'];
+  let wert = n / 1024;
+  let i = 0;
+  while (wert >= 1024 && i < einheiten.length - 1) { wert /= 1024; i++; }
+  return `${wert < 10 ? wert.toFixed(1) : Math.round(wert)} ${einheiten[i]}`;
+}
+
+/**
+ * Welche Dateien duerfen nach der Aufbewahrungsregel weg?
+ *
+ * NUR VERWORFENES. Was verwendet wurde oder im Vorrat liegt, bleibt — die
+ * Aufbewahrungsfrist ist eine Platzregel, keine Bewertung. Und geloescht wird
+ * hier gar nichts: Diese Funktion nennt nur die Kandidaten. Loeschen ist ein
+ * eigener, bewusster Schritt, denn der Indexeintrag mit Pruefsumme muss bleiben
+ * — sonst laedt der naechste Lauf genau das wieder, was eben weggeworfen wurde.
+ */
+function ablaufkandidaten(index, videoOrdner, datenOrdner,
+                          { tage = 90, jetzt = new Date() } = {}) {
+  const grenze = jetzt.getTime() - Math.max(0, tage) * 86400000;
+  const dran = [];
+  for (const eintrag of (index.eintraege || [])) {
+    if (String(eintrag.zustand || '') !== 'verworfen') continue;
+    const rohZeit = eintrag.zeitstempel || eintrag.zeitpunkt;
+    const zeit = rohZeit ? Date.parse(rohZeit) : NaN;
+    if (!Number.isFinite(zeit) || zeit > grenze) continue;
+    const ort = dateiOrte(eintrag, videoOrdner, datenOrdner).find((o) => {
+      try { return fs.statSync(o).isFile(); } catch { return false; }
+    });
+    if (!ort) continue;                       // Datei schon weg, Eintrag bleibt
+    dran.push({ datei: eintrag.datei, ort, produkt_id: eintrag.produkt_id,
+                zeitstempel: rohZeit,
+                tage: Math.floor((jetzt.getTime() - zeit) / 86400000) });
+  }
+  return dran;
 }
 
 /**
@@ -612,12 +2088,34 @@ const SPERRE = /captcha|too many requests|rate.?limit|http error 429|verify to c
  * TikTok-Suchextractor mitbringt UND ein Suchpraefix konfiguriert ist. Ohne
  * beides waere die Such-URL geraten.
  */
-function quellenFuer(produkt, eintrag, faehigkeiten, standard) {
+function quellenFuer(produkt, eintrag, faehigkeiten, standard, { index = null } = {}) {
   const quellen = [];
   const uebersprungen = [];
+  const schonDa = new Set();
 
   for (const url of (eintrag.videos || [])) quellen.push({ art: 'video', url });
-  for (const url of (eintrag.creators || [])) quellen.push({ art: 'creator', url });
+  for (const url of (eintrag.creators || [])) {
+    quellen.push({ art: 'creator', url });
+    schonDa.add(String(url).replace(/\/+$/, ''));
+  }
+
+  // CREATOR, DIE SCHON GELIEFERT HABEN — vor allem anderen.
+  //
+  // Die Spalte "creator" wird seit Tag eins mitgeschrieben und war bis zum
+  // 18.09. nie gelesen worden. Dabei ist sie das staerkste Signal im Index:
+  // Wer zweimal brauchbares Material zu diesem Produkt gemacht hat, macht mit
+  // hoher Wahrscheinlichkeit mehr davon. Ein Profil abzufragen ist ausserdem
+  // billiger als eine Suchanfrage — und liefert nur Videos EINES Menschen,
+  // was fuer die Rechtefrage (Gruppe G) den Unterschied macht: Einer, den man
+  // zweimal angeschrieben hat, ist ungleich einfacher als vierzig Einzelfaelle.
+  if (index) {
+    for (const quelle of creatorQuellen(index, { nurProdukt: produkt.id })) {
+      const sauber = String(quelle.url).replace(/\/+$/, '');
+      if (schonDa.has(sauber)) continue;     // steht schon von Hand drin
+      schonDa.add(sauber);
+      quellen.push(quelle);
+    }
+  }
 
   const hashtags = eintrag.hashtags || [];
   if (hashtags.length) {
@@ -684,6 +2182,15 @@ async function holeKandidaten(ytdlp, quelle, standard) {
         uploader: roh.uploader || roh.uploader_id || roh.channel || '',
         tags: roh.tags,
         categories: roh.categories,
+        // PUNKT 14: Masse mitnehmen, wenn sie dabeistehen.
+        //
+        // Mit --flat-playlist liefert yt-dlp nicht immer alles: Die Dauer steht
+        // meist da, Breite und Hoehe oft nicht. Genommen wird, was da ist — die
+        // Pruefung weiter unten urteilt ausdruecklich nur ueber vorhandene
+        // Angaben. Eine fehlende Hoehe ist keine Aussage ueber die Hoehe.
+        dauer: Number(roh.duration) || null,
+        breite: Number(roh.width) || null,
+        hoehe: Number(roh.height) || null,
       });
     } catch { /* keine JSON-Zeile — yt-dlp mischt Hinweise dazwischen */ }
   }
@@ -734,6 +2241,13 @@ async function holeEinzelMeta(ytdlp, url) {
       uploader: roh.uploader || roh.uploader_id || '',
       tags: roh.tags,
       dauer: roh.duration,
+      // Masse fuer Huerde 8. yt-dlp liefert sie im selben --dump-json-Aufruf,
+      // der ohnehin laeuft — die Pruefung kostet also KEINEN zusaetzlichen
+      // Abruf. Genau deshalb steht sie vor dem Laden und nicht danach.
+      // Fehlt die Angabe (kommt vor), wird nicht geraten, sondern durchgelassen:
+      // Ablehnen auf Verdacht wuerde gutes Material kosten.
+      breite: Number(roh.width) || null,
+      hoehe: Number(roh.height) || null,
       // Der Ton entscheidet, ob jemand spricht — siehe istMusik().
       track: roh.track || '',
       artist: roh.artist || '',
@@ -1042,19 +2556,57 @@ async function lauf(opt) {
   }
   melde(`ℹ️  TikTok-Extractors dieser yt-dlp-Version: ${faehigkeiten.namen.join(', ') || '(keine)'}`);
   melde(`   Hashtag-Seiten: ${faehigkeiten.kannHashtag ? 'ja' : 'nein'} · Stichwortsuche: ${faehigkeiten.kannSuche ? 'ja' : 'nein'}`);
+
+  // PUNKT 72: Werkzeugstand festhalten und Aenderungen melden.
+  //
+  // Hier sind die Faehigkeiten echt gemessen — tiktokFaehigkeiten() lief gerade.
+  // Eine neue yt-dlp-Version kann dieselbe Nummer behalten und trotzdem einen
+  // Extractor verloren haben; deshalb gehoeren beide in denselben Vergleich.
+  const werkzeuge = werkzeugStand({
+    ytdlpVersion: opt.ytdlpVersion || null,
+    ffmpeg: opt.ffmpeg !== undefined ? opt.ffmpeg : findeFfmpeg(opt.env || process.env),
+    faehigkeiten,
+  });
+  melde(`🔧 ${werkzeugZeile(werkzeuge)}`);
+  for (const zeile of werkzeugUnterschied(index.werkzeuge, werkzeuge)) {
+    melde(`   ⚠️  seit dem letzten Lauf geaendert — ${zeile}`);
+  }
+  index.werkzeuge = werkzeuge;
   melde(laden
     ? `▶ Ladelauf — hoechstens ${maxDownloads} Videos, Schwelle ${schwelle}.`
     : `▶ Trockenlauf — es wird gesucht und bewertet, aber NICHTS geladen (Schwelle ${schwelle}).`);
 
   let gesperrt = false;
 
-  for (const produkt of opt.produkte) {
+  // PUNKT 12: Das Produkt mit der groessten Luecke zuerst.
+  //
+  // Der Ladelauf hoert auf, sobald max_downloads erreicht ist. Bisher lief er
+  // die Produktliste von vorne durch — also bekam Produkt 10 in jedem Lauf das
+  // ganze Budget, und die Produkte weiter hinten nie etwas. Gemessen am 18.09.:
+  // 3 von 41 Produktordnern gefuellt.
+  //
+  // Weggelassen wird nichts: Volle Produkte rutschen ans Ende, nicht aus der
+  // Liste. Sonst faende ein Trockenlauf ploetzlich weniger, als er soll.
+  const zielVorrat = Number(standard.ziel_clips_je_produkt) || STANDARD.ziel_clips_je_produkt;
+  const nachId = new Map([].concat(opt.produkte || []).map((p) => [Number(p.id), p]));
+  const reihenfolge = produkteNachLuecke(index, opt.produkte, { ziel: zielVorrat, alle: true })
+    .map((p) => nachId.get(p.id))
+    .filter(Boolean);
+  if (reihenfolge.length > 1 && reihenfolge[0] !== opt.produkte[0]) {
+    melde(`📋 Reihenfolge nach Bedarf — zuerst ${reihenfolge[0].id} ${reihenfolge[0].name}`
+      + ` (Ziel ${zielVorrat} Clips je Produkt).`);
+  }
+
+  for (const produkt of reihenfolge) {
     if (gesperrt) break;
     if (laden && ergebnis.geladen.length >= maxDownloads) break;
 
     const eintrag = konfigZuProdukt(opt.konfig, produkt.id);
     const begriffe = produktBegriffe(produkt, eintrag.stichworte || []);
-    const { quellen, uebersprungen } = quellenFuer(produkt, eintrag, faehigkeiten, standard);
+    // Der Index liegt hier ohnehin schon vor — daraus kommen die Profile der
+    // Creator, die zu diesem Produkt bereits geliefert haben.
+    const { quellen, uebersprungen } = quellenFuer(produkt, eintrag, faehigkeiten, standard,
+      { index });
 
     for (const u of uebersprungen) {
       ergebnis.uebersprungen.push({ produkt_id: produkt.id, ...u });
@@ -1128,6 +2680,29 @@ async function lauf(opt) {
             ? `Trefferwert ${kandidat.wert} unter Schwelle ${schwelle}`
             : `nur ein Begriff getroffen (${getroffeneBegriffe(begriffe, kandidat).join(', ')}) — zu wenig fuer eine Zuordnung`,
         });
+        continue;
+      }
+
+      // PUNKT 14: Technisch unbrauchbar? Dann gar nicht erst laden.
+      //
+      // Der gefuehrte Ablauf prueft das seit jeher als Huerde 8; der Sammellauf
+      // ueber alle Produkte tat es nicht. Ein Clip mit perfektem Untertitel kann
+      // drei Sekunden kurz sein — fuer einen 1080x1920-Schnitt wertlos, und die
+      // Ausgangspruefung des Automaten lehnt ihn am Ende ohnehin ab.
+      //
+      // Geprueft wird VOR dem Download, mit den Angaben, die schon da sind.
+      // Das spart einen echten Abruf, und das zaehlt doppelt, seit bekannt ist,
+      // dass nach rund 50 Abrufen die Sperre kommt.
+      const untauglich = technischUntauglich(kandidat, standard);
+      if (untauglich) {
+        ergebnis.pruefliste.push({
+          produkt_id: produkt.id, produkt_name: produkt.name,
+          video_id: kandidat.id, quelle_url: kandidat.url,
+          creator: kandidat.uploader, titel: kandidat.title,
+          trefferwert: kandidat.wert,
+          grund: `technisch unbrauchbar: ${untauglich}`,
+        });
+        melde(`📐 technisch unbrauchbar (${untauglich}): ${String(kandidat.title).slice(0, 40)}`);
         continue;
       }
 
@@ -1317,6 +2892,87 @@ function fundeAusText(text) {
     });
   }
   return funde;
+}
+
+// ── Alter eines Videos ───────────────────────────────────────────────
+//
+// Eine TikTok-Video-ID ist eine 64-Bit-Zahl, und die oberen 32 Bit sind der
+// Unix-Zeitstempel der Veroeffentlichung. Das Datum steht also SCHON IN DER
+// ADRESSE — es kostet keinen Abruf, keine Metadaten, kein yt-dlp.
+//
+// Das ist der entscheidende Unterschied zum naheliegenden Weg ueber
+// --dump-json: Der braeuchte einen Abruf je Kandidat, und genau die sind das
+// knappe Gut (nach rund 50 macht TikTok dicht). So laesst sich schon beim
+// SORTIEREN entscheiden, welche 60 von 200 Adressen ueberhaupt geprueft
+// werden.
+
+// Vor diesem Datum kann es keine TikTok-Video-ID geben (TikTok ausserhalb
+// Chinas ab 2017; musical.ly-Uebernahme 2018). Was davor liegt, ist keine
+// alte Adresse, sondern eine falsch gelesene.
+const TIKTOK_FRUEHESTENS = Date.UTC(2016, 0, 1) / 1000;
+
+/**
+ * Veroeffentlichungsdatum aus der Video-ID. null, wenn unplausibel.
+ *
+ * BigInt, nicht Number: Eine 19-stellige ID liegt weit ueber
+ * Number.MAX_SAFE_INTEGER, und ">> 32" auf einem Number waere schlicht
+ * falsch — JavaScript rechnet Bitoperationen auf 32 Bit. Genau die Sorte
+ * Fehler, die stillschweigend plausible Zahlen liefert.
+ */
+function datumAusVideoId(videoId) {
+  const roh = String(videoId == null ? '' : videoId).trim();
+  if (!/^\d{15,25}$/.test(roh)) return null;
+  let sekunden;
+  try {
+    sekunden = Number(BigInt(roh) >> 32n);
+  } catch {
+    return null;
+  }
+  if (!Number.isFinite(sekunden) || sekunden < TIKTOK_FRUEHESTENS) return null;
+  // Ein Datum in der Zukunft ist ebenfalls ein Lesefehler, kein Fund.
+  const jetztSek = Math.floor(Date.now() / 1000) + 86400;
+  if (sekunden > jetztSek) return null;
+  return new Date(sekunden * 1000);
+}
+
+/** Video-ID aus einer TikTok-Adresse. */
+function videoIdAusUrl(url) {
+  const treffer = String(url || '').match(/\/video\/(\d{15,25})/);
+  return treffer ? treffer[1] : null;
+}
+
+/** Alter in Tagen, mindestens 1 — oder null, wenn kein Datum lesbar ist. */
+function alterInTagen(url, jetzt = new Date()) {
+  const datum = datumAusVideoId(videoIdAusUrl(url));
+  if (!datum) return null;
+  const tage = (jetzt.getTime() - datum.getTime()) / 86400000;
+  return Math.max(1, Math.round(tage * 10) / 10);
+}
+
+/**
+ * Beliebtheit als RATE statt als Menge.
+ *
+ * 800.000 Likes aus 2023 sehen aus wie der beste Fund des Laufs und wirken im
+ * Schnitt von 2026 alt: anderer Schnittrhythmus, andere Textgestaltung, oft
+ * ein sichtbar veraltetes Produktmodell.
+ *
+ * NACHGERECHNET, WEIL DER SATZ SO NICHT STIMMT: "Ein frischer Clip mit 20.000
+ * Likes gewinnt gegen einen alten mit 800.000" gilt NICHT allgemein. 800.000
+ * Likes auf 1042 Tage sind 767 am Tag; 20.000 Likes auf 30 Tage sind 666 —
+ * der alte gewinnt weiter, und zu Recht, denn 800.000 sind wirklich viel.
+ * Erst ab rund 2000 am Tag (20.000 in zehn Tagen) dreht es sich. Die Rate
+ * bevorzugt also nicht das Neue, sondern das SCHNELL WACHSENDE. Das ist das
+ * richtige Signal, nur ein anderes als "neu schlaegt alt".
+ *
+ * Ohne lesbares Datum bleibt die rohe Zahl. Geraten wird nicht; ein Video
+ * ohne Datum soll weder bevorzugt noch bestraft werden.
+ */
+function beliebtheitsRate(fund, jetzt = new Date()) {
+  const likes = fund && fund.likes;
+  if (likes == null || !Number.isFinite(Number(likes))) return null;
+  const tage = alterInTagen(fund.url, jetzt);
+  if (tage == null) return Number(likes);
+  return Math.round((Number(likes) / tage) * 100) / 100;
 }
 
 /** Nur die Adressen — fuer Aufrufer, die die Unterschrift nicht brauchen. */
@@ -1690,16 +3346,300 @@ function hatKernwort(video, kernwoerter) {
  * Wert — sonst schlaegt ein Zufallstreffer in einer Zwei-Wort-Gruppe die
  * saubere Zuordnung aus dem Produktnamen.
  */
-function bewerte(gruppen, video) {
-  let bestes = { wert: 0, haelt: false, treffer: [], gruppe: [] };
+/**
+ * Huerde 8: Taugt der Clip technisch — Hoehe, Dauer, Seitenverhaeltnis?
+ *
+ * WARUM ES DIESE HUERDE GIBT
+ * Die sieben Huerden davor pruefen alle dasselbe: Geht es um das richtige
+ * Produkt? Das ist gruendlich geprueft (Kernwort, Merkmale, Ausschlussliste,
+ * Verneinung, Sprache) — aber es beantwortet nicht die zweite Frage: Kann man
+ * mit dem Clip ueberhaupt arbeiten? Ein 480p-Querformat-Video mit perfektem
+ * Untertitel besteht alle sieben und ist fuer einen 1080x1920-Schnitt trotzdem
+ * wertlos. Bisher fiel das erst beim Sichten auf — nach dem Abruf.
+ *
+ * WARUM VOR DEM LADEN
+ * Die Masse stehen im --dump-json, das ohnehin laeuft. Die Pruefung kostet
+ * keinen einzigen zusaetzlichen Abruf und spart jeden, den sie ablehnt. Das
+ * zaehlt doppelt, seit bekannt ist: nach rund 50 Abrufen ohne Pause antwortet
+ * TikTok nicht mehr.
+ *
+ * WARUM SIE IM ZWEIFEL DURCHLAESST
+ * Fehlt eine Angabe, wird NICHT abgelehnt. Gleiche Linie wie bei der
+ * Vorpruefung aus dem Seitentext: abgelehnt wird nur auf positiven Beweis.
+ * Ein Abruf zu viel ist billiger als ein gutes Video, das nie angesehen wurde.
+ *
+ * Gibt null zurueck, wenn nichts dagegen spricht — sonst den Grund im Klartext.
+ */
+function technischUntauglich(video, standard = STANDARD) {
+  if (!video) return null;
+
+  const minHoehe = Number(standard.min_hoehe) || 0;
+  const minDauer = Number(standard.min_dauer_sek) || 0;
+
+  const hoehe = Number(video.hoehe) || 0;
+  const breite = Number(video.breite) || 0;
+  const dauer = Number(video.dauer) || 0;
+
+  // Nur pruefen, wo eine Angabe da ist. Eine fehlende Hoehe ist keine
+  // Aussage ueber die Hoehe.
+  if (minHoehe && hoehe && hoehe < minHoehe) {
+    return `nur ${hoehe}p (mindestens ${minHoehe}p)`;
+  }
+  if (minDauer && dauer && dauer < minDauer) {
+    return `nur ${dauer.toFixed(1)} s (mindestens ${minDauer} s)`;
+  }
+  if (standard.quer_ablehnen && breite && hoehe && (breite / hoehe) > 1.05) {
+    return `Querformat ${breite}x${hoehe}`;
+  }
+  return null;
+}
+
+/**
+ * Hoch, quer oder quadratisch — als Vermerk fuer den Nachweis.
+ *
+ * Querformat wird nicht abgelehnt (siehe oben), aber es gehoert in den
+ * Nachweis: Beim Schneiden entscheidet es, ob der Clip Vollbild werden kann
+ * oder nur Einblendung.
+ */
+function formatVermerk(breite, hoehe) {
+  const b = Number(breite) || 0;
+  const h = Number(hoehe) || 0;
+  if (!b || !h) return null;
+  const verhaeltnis = b / h;
+  if (verhaeltnis < 0.95) return 'hoch';
+  if (verhaeltnis > 1.05) return 'quer';
+  return 'quadratisch';
+}
+
+/**
+ * Fuehrt Buch darueber, WARUM abgelehnt wurde — nicht nur DASS.
+ *
+ * WOZU
+ * Bei 338 Untertiteln fielen 168 (50 %) vorab durch. Die Entscheidung war
+ * binaer: durch oder nicht. Der Grund stand im Protokoll eines Laufs und war
+ * danach weg. Welche Regel wie oft greift, welche nie greift und welche
+ * Begriffe staendig knapp danebenliegen — all das liess sich nur von Hand
+ * herauslesen, und im Bericht standen "Standgeraet", "Osmose-Anlage",
+ * "Thermosbecher" als handverlesene Beispiele. Das sollte die Maschine selbst
+ * sagen.
+ *
+ * WAS ES NICHT TUT
+ * Es urteilt nicht und aendert keine Regel. Eine Regel, die nie greift, wird
+ * hier gemeldet und NICHT automatisch entfernt: Vielleicht ist sie richtig und
+ * das Material war nur brav. Das ist eine Entscheidung fuer einen Menschen mit
+ * den Zahlen in der Hand.
+ */
+function ablehnungsbuch() {
+  const eintraege = [];
+  return {
+    eintraege,
+    /**
+     * @param {string} regel     welche Huerde gegriffen hat
+     * @param {string} ausloeser das konkrete Wort/der Wert — "" wenn es keinen gibt
+     */
+    vermerke(regel, ausloeser = '') {
+      eintraege.push({ regel: String(regel), ausloeser: String(ausloeser || '').slice(0, 60) });
+    },
+    /** Je Regel: wie oft, und die haeufigsten Ausloeser. */
+    auswertung(hoechstens = 5) {
+      const jeRegel = new Map();
+      for (const e of eintraege) {
+        if (!jeRegel.has(e.regel)) jeRegel.set(e.regel, { regel: e.regel, anzahl: 0, ausloeser: new Map() });
+        const eintrag = jeRegel.get(e.regel);
+        eintrag.anzahl += 1;
+        if (e.ausloeser) {
+          eintrag.ausloeser.set(e.ausloeser, (eintrag.ausloeser.get(e.ausloeser) || 0) + 1);
+        }
+      }
+      return [...jeRegel.values()]
+        .map((r) => ({
+          regel: r.regel,
+          anzahl: r.anzahl,
+          ausloeser: [...r.ausloeser.entries()]
+            .sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])))
+            .slice(0, hoechstens)
+            .map(([wort, anzahl]) => ({ wort, anzahl })),
+        }))
+        // Haeufigste zuerst; bei Gleichstand alphabetisch, damit zwei Laeufe
+        // mit denselben Zahlen dieselbe Reihenfolge ergeben.
+        .sort((a, b) => b.anzahl - a.anzahl || a.regel.localeCompare(b.regel));
+    },
+  };
+}
+
+/**
+ * Haengt die Auswertung eines Laufs an eine kleine Statistikdatei an.
+ *
+ * Die letzten LAEUFE_IM_BUCH Laeufe bleiben stehen. Nach zehn Laeufen ist das
+ * eine Kurve statt eines Bauchgefuehls — dieselbe Ueberlegung wie bei den
+ * Sperren in Punkt 09.
+ */
+const LAEUFE_IM_BUCH = 20;
+
+function schreibeAblehnungen(datenOrdnerPfad, auswertung, { geprueft = 0, geladen = 0,
+  produkt = null, jetzt = null, vorfaelle = null } = {}) {
+  // jetzt kommt an verschiedenen Stellen dieses Programms als Date, als
+  // ISO-Zeichenkette ODER als Funktion, die eine liefert. Hier wird alles
+  // drei angenommen, statt einen der drei Faelle zum Absturz zu bringen —
+  // gefunden hat das der vorhandene Testlauf, nicht das Nachdenken.
+  const roh = typeof jetzt === 'function' ? jetzt() : jetzt;
+  let zeitpunkt;
+  if (roh instanceof Date) zeitpunkt = roh.toISOString();
+  else if (typeof roh === 'string' && roh) zeitpunkt = roh;
+  else zeitpunkt = new Date().toISOString();
+  const pfad = path.join(datenOrdnerPfad, 'ablehnungen.json');
+  let bisher = [];
+  try {
+    const gelesen = JSON.parse(fs.readFileSync(pfad, 'utf8'));
+    if (Array.isArray(gelesen)) bisher = gelesen;
+    else if (gelesen && Array.isArray(gelesen.laeufe)) bisher = gelesen.laeufe;
+  } catch { /* erste Zeile, oder kaputt — dann eben neu */ }
+
+  bisher.push({
+    zeitpunkt,
+    produkt,
+    geprueft,
+    geladen,
+    abgelehnt: auswertung.reduce((s, r) => s + r.anzahl, 0),
+    // Punkt 09: Sperren und Fehler je Lauf. Nach zehn Laeufen ist das eine
+    // Kurve — man merkt, dass eine Quelle tot ist, bevor man drei Laeufe
+    // lang nichts bekommt.
+    ...(vorfaelle ? { vorfaelle } : {}),
+    regeln: auswertung,
+  });
+
+  const inhalt = {
+    _hinweis: 'Welche Vorfilter-Regel wie oft gegriffen hat, je Lauf. Eine Regel, '
+      + 'die nie auftaucht, greift nie — pruefen, ob sie noch gebraucht wird. Ein '
+      + 'Ausloeser, der staendig oben steht, gehoert in die Feinjustierung. Nichts '
+      + 'hier aendert automatisch eine Regel.',
+    laeufe: bisher.slice(-LAEUFE_IM_BUCH),
+  };
+  try {
+    fs.writeFileSync(pfad, `${JSON.stringify(inhalt, null, 2)}\n`, 'utf8');
+    return pfad;
+  } catch {
+    return null;   // nicht schreibbar ist kein Grund, den Lauf zu faerben
+  }
+}
+
+/**
+ * Wie lange bis zum naechsten Abruf — gewuerfelt, nicht fest.
+ *
+ * Die Pause selbst ist alt und ihre Geschichte teuer: Sie stand in der
+ * Konfiguration, wurde aber als --sleep-requests weitergereicht, und das
+ * bremst nur INNERHALB eines yt-dlp-Aufrufs. Da jeder Abruf ein eigener
+ * Prozess mit genau einer Adresse ist, lag zwischen zwei Abrufen nichts.
+ *
+ * Was blieb, ist die Gleichmaessigkeit. Ein Abstand von exakt 3,00 Sekunden
+ * ist selbst ein Muster — er sieht fuer die Gegenseite genau nach dem aus,
+ * was er ist. Eine Spanne kostet im Schnitt mehr Zeit und faellt weniger auf;
+ * gemessen ist der Preis eines abgebrochenen Laufs hoeher: Der kostet nicht
+ * die Abrufe, er kostet den Nachschub der Woche.
+ *
+ * @param {function} wuerfel  austauschbar, damit der Testlauf nicht wuerfelt
+ */
+function pauseSpanne(standard, wuerfel = Math.random) {
+  const min = Math.max(0, Number(standard.pause_zwischen_anfragen_sek) || 0);
+  const maxRoh = Number(standard.pause_hoechstens_sek);
+  // Fehlt die Obergrenze oder liegt sie unter der Untergrenze, bleibt es beim
+  // festen Wert. Eine kaputte Einstellung darf die Pause nicht abschalten.
+  const max = Number.isFinite(maxRoh) && maxRoh > min ? maxRoh : min;
+  if (min <= 0) return 0;
+  return Math.round((min + wuerfel() * (max - min)) * 1000);
+}
+
+// ── Wie unterscheidend ist ein Begriff? ──────────────────────────────
+//
+// GEMESSEN AN DER EIGENEN KONFIGURATION, nicht geschaetzt. Ueber die 40
+// Produkte hinweg fuehren:
+//
+//     "usb"           18 Produkte
+//     "akku"          15
+//     "rechargeable"  13
+//     "light"         12
+//     "portable"      10
+//
+// 42 Begriffe stehen bei fuenf oder mehr Produkten. bewerte() zaehlt aber nur
+// TREFFER durch GRUPPENGROESSE — ein Video mit "Mini USB rechargeable LED
+// light for bedroom" kommt damit auf Wert 0,5 und haelt, ohne ein einziges
+// Wort zu enthalten, das dieses Geraet von zwoelf anderen unterscheidet.
+// Nachgemessen; die Zahlen stehen im Handbuch.
+//
+// Was die drei Fremdgeraete bisher aufgehalten hat, war ALLEIN die
+// Kernwort-Huerde. Und 34 Kernwoerter stehen bei zwei oder drei Produkten
+// ("diffuser" bei 27, 33 und 42) — dort haelt auch sie nicht.
+//
+// Deshalb: Ein Treffer, den ein Dutzend Produkte teilen, ist kein Beleg.
+// Mindestens EIN Treffer muss von einem Begriff kommen, den hoechstens
+// hoechstensProdukte Produkte fuehren.
+
+/**
+ * Wie viele Produkte fuehren welchen Begriff?
+ *
+ * Einmal je Lauf berechnet und durchgereicht — nicht je Kandidat, das waeren
+ * 40 Produkte mal 900 Begriffe fuer jede einzelne Adresse.
+ */
+function begriffsHaeufigkeit(konfig, produkte) {
+  const zaehler = new Map();
+  for (const produkt of [].concat(produkte || [])) {
+    const eintrag = konfigZuProdukt(konfig, produkt.id);
+    const gesehen = new Set();
+    for (const gruppe of begriffsGruppen(produkt, eintrag)) {
+      for (const begriff of gruppe) gesehen.add(begriff);
+    }
+    for (const begriff of gesehen) zaehler.set(begriff, (zaehler.get(begriff) || 0) + 1);
+  }
+  return zaehler;
+}
+
+/**
+ * @param {Map} [haeufigkeit]   aus begriffsHaeufigkeit(). Fehlt sie, bleibt
+ *                              alles wie vorher — die Pruefung ist dann aus.
+ * @param {number} [hoechstensProdukte]  0 schaltet sie ebenfalls ab.
+ */
+function bewerte(gruppen, video, { haeufigkeit = null, hoechstensProdukte = 2 } = {}) {
+  let bestes = { wert: 0, haelt: false, treffer: [], gruppe: [],
+                 im_fliesstext: 0, unterscheidend: [] };
+  // Einmal berechnen, nicht je Gruppe: Wieviel von der Unterschrift ist Satz?
+  const satz = videoFliesstext(video);
+  const satzTokens = satz.split(' ').filter(Boolean);
+
   for (const gruppe of gruppen) {
     const treffer = getroffeneBegriffe(gruppe, video);
     const wert = gruppe.length
       ? Math.round((treffer.length / gruppe.length) * 1000) / 1000
       : 0;
-    const haelt = gruppe.length <= 1 ? treffer.length === 1 : treffer.length >= 2;
-    if ((haelt && !bestes.haelt) || (haelt === bestes.haelt && wert > bestes.wert)) {
-      bestes = { wert, haelt, treffer, gruppe };
+    let haelt = gruppe.length <= 1 ? treffer.length === 1 : treffer.length >= 2;
+    // Mindestens ein Treffer muss UNTERSCHEIDEN. Ohne Haeufigkeitstabelle
+    // bleibt es beim alten Verhalten — die Pruefung ist dann schlicht aus.
+    const unterscheidend = haeufigkeit && hoechstensProdukte > 0
+      ? treffer.filter((b) => (haeufigkeit.get(b) || 1) <= hoechstensProdukte)
+      : treffer;
+    if (haelt && haeufigkeit && hoechstensProdukte > 0 && !unterscheidend.length) {
+      haelt = false;
+    }
+    // Wieviele Treffer stehen im SATZ und nicht bloss in der Tag-Wolke?
+    const imFliesstext = satz
+      ? treffer.filter((b) => (b.length >= 5 ? satz.includes(b) : satzTokens.includes(b))).length
+      : 0;
+
+    // ENTSCHEIDUNG BEI GLEICHSTAND, NICHT ABWERTUNG.
+    //
+    // Der naheliegende Weg waere gewesen, Hashtag-Treffer geringer zu
+    // gewichten. Gemessen an den gesammelten Untertiteln faellt dabei
+    // angenommenes Material durch: "The one thing you need on your
+    // nightstand💧#waterdispenser" hat sein einziges Produktwort im Tag.
+    // Also bleibt der Wert, wie er ist — und wo zwei Gruppen gleichauf
+    // liegen, gewinnt die, die im Satz steht.
+    const besser = haelt !== bestes.haelt
+      ? haelt
+      : (wert !== bestes.wert
+        ? wert > bestes.wert
+        : imFliesstext > bestes.im_fliesstext);
+    if (besser) {
+      bestes = { wert, haelt, treffer, gruppe, im_fliesstext: imFliesstext,
+                 unterscheidend };
     }
   }
   return bestes;
@@ -1905,6 +3845,131 @@ function legeProduktOrdnerAn(basis, produkte) {
 /** Liegt dieser Pfad im Rohmaterial-Zweig — also unter einer Ordner-Regel? */
 function imRohmaterial(pfad) {
   return String(pfad || '').split(/[\\/]/).includes(ROHMATERIAL);
+}
+
+// ── Fremdmaterial bleibt im Fremdmaterial-Ordner (Punkt 65) ──────────
+//
+// Die .gitignore macht die Regel seit dem 18.09. am ORDNER fest statt am
+// Dateinamen — vorher fiel sie beim Umbenennen auseinander, und fremde Videos
+// standen prompt als neu im git status. In einem oeffentlichen Repo.
+//
+// Was noch fehlte, ist die Gegenprobe: eine Pruefung, die ROT MELDET, wenn ein
+// Indexeintrag auf eine Datei ausserhalb der erlaubten Orte zeigt. Die
+// .gitignore schuetzt den Ort; diese Pruefung schuetzt davor, dass etwas an
+// einem ganz anderen Ort landet, den die .gitignore nie gesehen hat.
+
+/** Orte, an denen fremdes Rohmaterial liegen darf — relativ zur Wurzel. */
+const ERLAUBTE_ABLAGEN = [
+  `Marketing/videos/${ROHMATERIAL}`,
+  `Marketing/videos/${GESCHNITTEN}`,
+];
+
+/**
+ * Liegt dieser Eintrag an einem erlaubten Ort?
+ *
+ * Geprueft wird die Ablage-Angabe des Eintrags, nicht die Datei: Eine Datei,
+ * die schon weg ist, kann nicht mehr am falschen Ort liegen — der EINTRAG sagt
+ * aber weiterhin, wohin sie gehoerte, und genau der wandert ins Repo.
+ */
+function ablageErlaubt(eintrag) {
+  const roh = String((eintrag && eintrag.ablage) || '').replace(/\\/g, '/').replace(/\/+$/, '');
+  if (!roh) return false;                    // ohne Angabe ist nichts belegt
+  return ERLAUBTE_ABLAGEN.some((ort) => roh === ort || roh.startsWith(`${ort}/`));
+}
+
+/**
+ * Eintraege, deren Ablage ausserhalb der erlaubten Orte liegt.
+ *
+ * EIGENES MATERIAL IST AUSGENOMMEN — aber nur, wo es hingehoert: unter
+ * rohmaterial/eigenes/. Dieser eine Ordner ist im Repo, sein Inhalt nicht.
+ */
+function fremdmaterialAmFalschenOrt(index) {
+  return (index.eintraege || [])
+    .filter((e) => !ablageErlaubt(e))
+    .map((e) => ({
+      datei: e.datei || '(ohne Dateinamen)',
+      produkt_id: e.produkt_id,
+      ablage: e.ablage || '(ohne Ablage-Angabe)',
+      quelle_url: e.quelle_url || null,
+    }));
+}
+
+// ── Was der Dateiname ueber die Herkunft sagt (Punkt 71) ─────────────
+//
+// Solange die Herkunft nur im Index steht, kann eine Datei AUSSERHALB des Index
+// nicht mehr zugeordnet werden — und genau solche Dateien landen im falschen
+// Ordner.
+//
+// WAS BEIM MESSEN HERAUSKAM, UND ZWAR UNERFREULICH
+// Der Bot tauft geladenes Fremdmaterial auf `NN_<slug>_<dauer>s_stil-b.mp4`.
+// Das ist exakt die Form, die auch die EIGENEN Renderings tragen — "stil-b"
+// heisst dort "KI-erzeugt". Am Dateinamen ist fremdes Material also nicht mehr
+// von eigenem zu unterscheiden. Das alte Fremdschema konnte das: Nach dem
+// letzten Unterstrich standen die Ziffern der TikTok-ID, und genau daran
+// erkennt die .gitignore den Altbestand bis heute.
+//
+// WARUM HIER TROTZDEM NICHTS UMBENANNT WIRD
+// Jeder Indexeintrag zeigt auf seinen Dateinamen; ein Umtaufen im Hintergrund
+// bricht sie alle auf einmal. Der Index ist das Wertvolle — die Dateien sind
+// nachladbar, die Beurteilung nicht. Gemeldet wird deshalb, nicht gehandelt.
+// Die Ordnerregel aus Punkt 65 bleibt die eigentliche Absicherung; der Name
+// ist der zweite Guertel, und dieser Guertel sitzt derzeit locker.
+
+/** Das Schema, das fremdes Material trug, bevor auf "stil-b" umgestellt wurde. */
+const HERKUNFT_MUSTER = /_(\d{10,25})\.(mp4|mov|webm|mkv)$/i;
+
+/** Das Schema der eigenen Renderings — und, seit der Umstellung, auch der fremden. */
+const RENDER_MUSTER = /^(\d{2})_(.+?)_(\d+)s_stil-([abc])\.(mp4|mov|webm|mkv)$/i;
+
+/**
+ * Was ein Dateiname ueber seine Herkunft verraet.
+ *
+ * @returns {{schema:string, produkt_id:number|null, video_id:string|null,
+ *            sagtHerkunft:boolean}}
+ */
+function herkunftAusName(name) {
+  const roh = String(name || '');
+  const mitId = roh.match(HERKUNFT_MUSTER);
+  if (mitId) {
+    const nummer = roh.match(/^(\d{2})_/);
+    return {
+      schema: 'mit-video-id',
+      produkt_id: nummer ? Number(nummer[1]) : null,
+      video_id: mitId[1],
+      sagtHerkunft: true,
+    };
+  }
+  const render = roh.match(RENDER_MUSTER);
+  if (render) {
+    return {
+      schema: `stil-${render[4].toLowerCase()}`,
+      produkt_id: Number(render[1]),
+      video_id: null,
+      // Ausdruecklich false: Diese Form tragen eigene Renderings UND geladenes
+      // Fremdmaterial. Sie sagt, zu welchem Produkt es gehoert — nicht, woher.
+      sagtHerkunft: false,
+    };
+  }
+  return { schema: 'unbekannt', produkt_id: null, video_id: null, sagtHerkunft: false };
+}
+
+/**
+ * Eintraege, deren Dateiname die Herkunft nicht mit sich traegt.
+ *
+ * GEMELDET, NICHT UMBENANNT — siehe oben. Der Vorschlag steht daneben, damit
+ * ein Umzug spaeter kein Ratespiel ist.
+ */
+function ohneHerkunftImNamen(index) {
+  return (index.eintraege || [])
+    .filter((e) => e.datei && !herkunftAusName(e.datei).sagtHerkunft)
+    .map((e) => ({
+      datei: e.datei,
+      produkt_id: e.produkt_id,
+      schema: herkunftAusName(e.datei).schema,
+      vorschlag: e.video_id
+        ? String(e.datei).replace(/\.([^.]+)$/, `_${e.video_id}.$1`)
+        : null,
+    }));
 }
 
 /**
@@ -2117,6 +4182,12 @@ async function holeUndSortiereEin(opt) {
         ? 'lizenzierter Musiktitel (kein "original sound") -> keine Sprache'
         : 'eigene Tonspur ("original sound") -> es wird vermutlich gesprochen',
       zeitstempel: opt.jetzt(),
+      // PUNKT 22: Jeder frisch geladene Clip liegt im Vorrat — beurteilt ist er
+      // damit noch nicht. "verwendet" waere geraten, "verworfen" eine
+      // Behauptung ueber Material, das niemand angesehen hat.
+      zustand: 'vorrat',
+      // PUNKT 24: Nur gesetzt, wenn die Textpruefung angeschlagen hat.
+      ...(kandidat.fremde_werbung ? { fremde_werbung: kandidat.fremde_werbung } : {}),
       datei: name,
       // Wo die Datei liegt, relativ zum Sammelordner — sonst laesst sich ein
       // Eintrag spaeter nicht mehr seiner Datei zuordnen.
@@ -2212,6 +4283,19 @@ async function interaktiv(opt) {
   // Bewusst aus BEIDEN Sprachen, unabhaengig von der gewaehlten Suchsprache:
   // Ein englisch beschriftetes Video kann auch bei deutscher Suche auftauchen.
   const gruppen = begriffsGruppen(produkt, eintrag);
+  // EINMAL je Lauf, nicht je Kandidat: 40 Produkte mal rund 900 Begriffe.
+  // Braucht die Produktliste — ohne sie bleibt die Pruefung schlicht aus.
+  // Fuer den Bildfingerabdruck. Fehlt ffmpeg, bleibt es bei der Pruefsumme —
+  // gemeldet wird es einmal, nicht bei jedem Video.
+  const ffmpegPfad = opt.ffmpeg !== undefined ? opt.ffmpeg : findeFfmpeg(opt.env || process.env);
+  if (!ffmpegPfad) {
+    melde('ℹ️  ffmpeg nicht gefunden — neu kodierte Doppelgaenger werden nicht erkannt.');
+    melde('   (Die Pruefsumme faengt weiterhin bitgleiche Dateien.)');
+  }
+  const haeufigkeit = Array.isArray(opt.produkte) && opt.produkte.length
+    ? begriffsHaeufigkeit(opt.konfig, opt.produkte)
+    : null;
+  const hoechstensProdukte = Math.max(0, Number(standard.hoechstens_produkte_je_begriff) || 0);
   // Zweites Merkmal fuer die Sprache des Untertitels, aus dem zweisprachigen
   // Wortschatz des Produkts. Greift nur, wenn die Funktionswoerter schweigen.
   const hinweise = sprachHinweise(eintrag);
@@ -2229,7 +4313,9 @@ async function interaktiv(opt) {
   // Mehrere Suchbegriffe sind erlaubt und meist noetig: Eine einzelne Anfrage
   // liefert oft nur eine Handvoll Adressen, und davon faellt der groesste Teil
   // durch den Musikfilter. Gemessen: ein Begriff -> 6 Adressen -> 0 brauchbar.
-  const begriffe = begriffeFuer(eintrag, produkt, sprache);
+  // Veraenderlich, weil die Reihenfolge gleich nach dem Laden des Index
+  // noch einmal angefasst wird — siehe Punkt 01 weiter unten.
+  let begriffe = begriffeFuer(eintrag, produkt, sprache);
 
   // Adressen kommen HAEPPCHENWEISE, nicht alle auf einmal.
   //
@@ -2277,15 +4363,25 @@ async function interaktiv(opt) {
         .filter((u) => !gesehen.has(u))
         .map((url) => {
           const f = nachUrl.get(url) || {};
-          return { url, meta: null, unterschrift: f.unterschrift || '', likes: f.likes == null ? null : f.likes };
+          const likes = f.likes == null ? null : f.likes;
+          const eintrag = { url, meta: null, unterschrift: f.unterschrift || '', likes };
+          // Datum und Rate kosten NICHTS: Beides steckt in der Video-ID,
+          // die ohnehin in der Adresse steht. Kein Abruf, keine Metadaten.
+          eintrag.alter_tage = alterInTagen(url, new Date());
+          eintrag.rate = beliebtheitsRate(eintrag, new Date());
+          return eintrag;
         })
-        // NACH BELIEBTHEIT, nicht nach Fundreihenfolge. Die Adressen aus dem
-        // Seitentext stehen dort, wie sie zufaellig auf der Seite vorkommen.
-        // Seit eine Anfrage ueber 200 liefert und das Budget bei 60 bis 300
-        // Abrufen liegt, entscheidet die Reihenfolge, WELCHE geprueft werden —
-        // und ein Video mit 3374 Likes ist eher brauchbar als eines mit 12.
-        // Ohne Angabe hinten anstellen, aber nicht aussortieren.
-        .sort((a, x) => (x.likes == null ? -1 : x.likes) - (a.likes == null ? -1 : a.likes));
+        // NACH WACHSTUM, nicht nach Fundreihenfolge und nicht nach roher
+        // Beliebtheit. Die Adressen aus dem Seitentext stehen dort, wie sie
+        // zufaellig auf der Seite vorkommen. Seit eine Anfrage ueber 200
+        // liefert und das Budget bei 60 bis 300 Abrufen liegt, entscheidet
+        // die Reihenfolge, WELCHE geprueft werden.
+        //
+        // Gemessen wird jetzt Likes JE TAG statt roher Likes: Ein Clip mit
+        // 800.000 Likes aus 2023 stand sonst vor jedem frischen Fund,
+        // obwohl er im Schnitt von 2026 alt aussieht. Ohne Angabe hinten
+        // anstellen, aber nicht aussortieren.
+        .sort((a, x) => (x.rate == null ? -1 : x.rate) - (a.rate == null ? -1 : a.rate));
       // EIN BEGRIFF DARF NICHT DAS GANZE BUDGET FRESSEN.
       //
       // Seit die Adressen aus dem Seitentext kommen, liefert eine einzige
@@ -2299,14 +4395,33 @@ async function interaktiv(opt) {
       // Standard 20) — vorne stehen ohnehin die von der Suchmaschine sortierten.
       // Der Rest wandert in die Reserve und kommt dran, wenn alle Begriffe
       // durch sind und immer noch etwas fehlt.
+      // PUNKT 01: Was dieser Begriff gebracht hat, wandert in den Index.
+      //
+      // Gezaehlt wird, was WIRKLICH neu ist — also weder in diesem Lauf schon
+      // gesehen noch aus einem frueheren Lauf bekannt. "20 Adressen" klingt
+      // nach Ertrag; sind es dieselben 20 wie letzte Woche, ist der Begriff
+      // erschoepft und gehoert beim naechsten Mal nach hinten.
+      //
+      // Der Vermerk wird hier nur gesetzt; geschrieben wird der Index wie
+      // bisher am Ende des Laufs. Ein Absturz mittendrin verliert damit
+      // hoechstens die Bilanz eines Laufs, nie einen Eintrag.
+      const wirklichNeu = neu.filter((k) => !schonImIndex(index, { url: k.url })).length;
+      // Die Uhr des Laufs, nicht new Date(): Sonst haengt die Ruhezeit an der
+      // echten Systemzeit und laesst sich nicht pruefen.
+      vermerkeBegriff(index, produkt.id, begriff, wirklichNeu, new Date(jetzt()));
+
       const kontingent = Math.max(1, Number(standard.max_kandidaten_je_quelle) || 20);
       const jetztNehmen = neu.slice(0, kontingent);
       const spaeter = neu.slice(kontingent);
       if (spaeter.length) reserve.push(...spaeter);
       const mitText = neu.filter((k) => k.unterschrift).length;
       melde(`🔎 "${begriff}": ${suche.adressen.length} Adresse(n), ${neu.length} neu `
-        + `(${mitText} mit Unterschrift) — ${jetztNehmen.length} jetzt`
+        + `(${mitText} mit Unterschrift, ${wirklichNeu} noch nie geladen) — ${jetztNehmen.length} jetzt`
         + `${spaeter.length ? `, ${spaeter.length} in Reserve` : ''}.`);
+      if (!wirklichNeu && neu.length) {
+        melde(`   Nichts Neues — "${begriff}" ruht die naechsten `
+          + `${Number(standard.begriff_ruhe_tage) || 21} Tage.`);
+      }
       if (jetztNehmen.length) {
         warteschlange.push(...jetztNehmen);
         return true;
@@ -2361,6 +4476,29 @@ async function interaktiv(opt) {
   melde('');
 
   const index = ladeIndex(datenZiel);
+
+  // PUNKT 01: Die Suchbegriffe in die Reihenfolge bringen, in der sie noch
+  // etwas bringen.
+  //
+  // Das Abrufbudget liegt bei 60 bis 300 Abrufen, die Begriffsliste bei bis zu
+  // 48 Eintraegen je Produkt. Der Lauf kommt also nie bis zum letzten Begriff —
+  // die Reihenfolge entscheidet, welche ueberhaupt drankommen. Bisher war sie
+  // in jedem Lauf dieselbe: von vorne. Damit ging das Budget Lauf fuer Lauf an
+  // dieselben Themenseiten, die beim letzten Mal schon abgegrast wurden.
+  //
+  // Jetzt zuerst die nie benutzten, dann die mit dem aeltesten Fund, ganz
+  // hinten die, die zuletzt leer ausgingen. AUSSORTIERT WIRD NICHTS: Eine
+  // Themenseite fuellt sich nach, deshalb ruht ein erschoepfter Begriff nur.
+  const begriffeVorher = begriffe.slice();
+  begriffe = begriffeSortiert(begriffe, begriffsBilanz(index, produkt.id), {
+    ruheTage: Number(standard.begriff_ruhe_tage) || 21,
+    jetzt: new Date(jetzt()),
+  });
+  if (begriffe.length && begriffe[0] !== begriffeVorher[0]) {
+    melde(`🔀 Suchbegriffe umsortiert — zuerst "${begriffe[0]}"`
+      + ` (statt "${begriffeVorher[0]}", zuletzt ohne neue Adressen).`);
+  }
+
   // Auch die Namen, die schon einmal vergeben waren — siehe naechsteNummer().
   const schonVergeben = [].concat(index.eintraege || [], index.frueher_geladen || [])
     .filter((e) => Number(e.produkt_id) === Number(produkt.id))
@@ -2370,6 +4508,34 @@ async function interaktiv(opt) {
   const slug = slugFuerDateiname(produkt, videoZiel);
   let geladen = 0;
   let geprueft = 0;
+  // Warum abgelehnt wurde, nicht nur dass. Ausgewertet am Ende des Laufs.
+  const buch = ablehnungsbuch();
+
+  // PUNKT 20: Jedes Urteil der TEXTKETTE wandert in eine wachsende Sammlung.
+  //
+  // Die Pruefkette wurde an 80 echten Untertiteln aus den eigenen Protokollen
+  // entwickelt. Die Sammlung wuchs aber nicht mit — bei 492 Suchbegriffen und
+  // 403 Kernwoertern, die weiterwachsen, bliebe die Messlatte im August stehen,
+  // und jede weitere Verschaerfung waere Hoffnung statt Messung.
+  //
+  // NUR DIE TEXTKETTE. Was nach dem Laden entschieden wird (Doppelgaenger, Ton,
+  // schwarze Balken), ist kein Urteil ueber einen Untertitel und hat in dieser
+  // Sammlung nichts zu suchen.
+  let urteile = ladeUrteile(datenZiel);
+  const merkeUrteil = (video, urteil, wert = null) => {
+    try {
+      urteile = sammleUrteil(urteile, {
+        video_id: video && video.id,
+        titel: video && (video.title || video.fulltitle),
+        produkt_id: produkt.id, urteil, wert, jetzt: new Date(jetzt()),
+      });
+    } catch { /* die Sammlung ist Beiwerk, kein Grund zum Abbruch */ }
+  };
+  // Punkt 09: Sperren und Fehler ZAEHLEN, nicht nur vermerken. Ein einzelner
+  // Vermerk liegt im Protokoll eines Laufs; ob Sperren zunehmen, ob eine
+  // Quelle systematisch sperrt, ob sich nach einem TikTok-Update etwas
+  // geaendert hat — das sieht man erst ueber mehrere Laeufe.
+  const vorfaelle = { sperren: 0, fehler: 0, regionssperren: 0 };
   // Wenn TikTok dichtmacht, scheitert nicht EIN Video, sondern jedes.
   // Gemessen: Nach rund 50 Abrufen an einem Tag beantwortete TikTok auch eine
   // Adresse nicht mehr, die eine Stunde vorher noch funktioniert hatte —
@@ -2416,7 +4582,8 @@ async function interaktiv(opt) {
   // Umso wichtiger, seit die Suche statt rund zwei nun ueber hundert Adressen
   // je Anfrage liefert: Ohne Bremse waere daraus ein Dauerfeuer geworden.
   const warte = opt.warte || ((ms) => new Promise((fertig) => { setTimeout(fertig, ms); }));
-  const pauseMs = Math.max(0, Number(standard.pause_zwischen_anfragen_sek) || 0) * 1000;
+  const wuerfel = opt.wuerfel || Math.random;
+  const pausenSpanne = () => pauseSpanne(standard, wuerfel);
 
   let grundFuersEnde = 'Ziel erreicht';
   while (geladen < anzahl) {
@@ -2475,15 +4642,36 @@ async function interaktiv(opt) {
       // Seitentext kann abgeschnitten oder ganz leer sein; bei duennem Text
       // wird deshalb gar nicht geurteilt, sondern normal abgerufen. Lieber ein
       // Abruf zu viel als ein gutes Video, das nie angesehen wurde.
+      // ALTERSGRENZE — vor dem Abruf, weil das Datum nichts kostet: Es
+      // steckt in der Video-ID, die in der Adresse steht. Standardmaessig
+      // aus (hoechstalter_tage: 0); wer sie einschaltet, sieht im
+      // Ablehnungsbuch, wieviel sie wegnimmt.
+      const grenzeTage = Math.max(0, Number(standard.hoechstalter_tage) || 0);
+      const alter = kandidat.alter_tage != null ? kandidat.alter_tage : alterInTagen(url);
+      if (grenzeTage && alter != null && alter > grenzeTage) {
+        buch.vermerke('zu alt', `${Math.round(alter)} Tage`);
+        melde(`📅 zu alt (${Math.round(alter)} Tage, Grenze ${grenzeTage}): ${url}`);
+        continue;
+      }
+
+      // GEMESSEN WIRD DER FLIESSTEXT, NICHT DIE GESAMTLAENGE.
+      //
+      // Eine Unterschrift aus zwanzig Hashtags hat leicht 200 Zeichen und
+      // trotzdem keinen Satz. Sie wurde bisher beurteilt, als staende dort
+      // etwas — und ein Urteil aus einer Tag-Wolke ist geraten. Wenig
+      // Fliesstext heisst ab jetzt: nicht urteilen, normal abrufen. Das ist
+      // die richtige Richtung, abgelehnt wird nur auf positiven Beweis.
       const vortext = String(kandidat.unterschrift || '');
-      if (vortext.length >= 25) {
+      if (fliesstextLaenge(vortext) >= 25) {
         const vorVideo = { title: vortext };
         const verbotenVorab = ausschlussTreffer(vorVideo, ausschluss);
         if (verbotenVorab) {
+          buch.vermerke('vorab: ausschlussliste', verbotenVorab);
           melde(`⏭  vorab aussortiert ("${verbotenVorab}"): ${vortext.slice(0, 44)}`);
           continue;
         }
         if (!hatKernwort(vorVideo, kernwoerter)) {
+          buch.vermerke('vorab: kein Produktwort');
           melde(`⏭  vorab aussortiert (kein Produktwort): ${vortext.slice(0, 44)}`);
           continue;
         }
@@ -2492,7 +4680,8 @@ async function interaktiv(opt) {
       // Vor jedem Abruf ausser dem ersten. Nach einem zurueckgestellten
       // Kandidaten, der gar nicht abgerufen wurde, waere die Pause sinnlos —
       // deshalb steht sie hier drin und nicht am Schleifenanfang.
-      if (geprueft > 0 && pauseMs) await warte(pauseMs);
+      const pause = pausenSpanne();
+      if (geprueft > 0 && pause) await warte(pause);
       geprueft++;
     }
 
@@ -2500,11 +4689,16 @@ async function interaktiv(opt) {
     // zweite Runde ein zweiter Satz Anfragen an TikTok fuer dieselben Videos.
     const meta = kandidat.meta || await holeEinzelMeta(opt.ytdlp, url);
     if (meta.gesperrt) {
+      vorfaelle.sperren++;
       melde(`❌ TikTok blockt: ${meta.meldung}`);
       if (standard.bei_sperre_abbrechen !== false) break;
       continue;
     }
     if (meta.fehler) {
+      vorfaelle.fehler++;
+      if (/region|country|not available in your/i.test(String(meta.fehler))) {
+        vorfaelle.regionssperren++;
+      }
       melde(`⚠️  ${url}: ${meta.fehler}`);
       fehlerFolge++;
       if (fehlerFolge >= FEHLER_HINTEREINANDER) {
@@ -2559,6 +4753,8 @@ async function interaktiv(opt) {
     );
     if (textSprache !== sprache) {
       const gefunden = textSprache || 'nicht erkennbar (nur Hashtags)';
+      buch.vermerke('sprache', gefunden);
+      merkeUrteil(meta.video, `sprache: ${gefunden}`);
       melde(`🌐 andere Sprache (${gefunden}): ${String(meta.video.title).slice(0, 40)}`);
       continue;
     }
@@ -2567,12 +4763,16 @@ async function interaktiv(opt) {
     // "automatischer Wasserspender" volle Punktzahl und ist trotzdem falsch.
     const verboten = ausschlussTreffer(meta.video, ausschluss);
     if (verboten) {
+      buch.vermerke('ausschlussliste', verboten);
+      merkeUrteil(meta.video, `ausgeschlossen: ${verboten}`);
       melde(`⛔ ausgeschlossen ("${verboten}"): ${String(meta.video.title).slice(0, 45)}`);
       continue;
     }
 
     // Ohne ein Wort, das das Produkt benennt, zaehlt keine Bewertung.
     if (!hatKernwort(meta.video, kernwoerter)) {
+      buch.vermerke('kernwort fehlt');
+      merkeUrteil(meta.video, 'kein Kernwort');
       melde(`↩︎  kein Produktwort im Text: ${String(meta.video.title).slice(0, 45)}`);
       continue;
     }
@@ -2583,11 +4783,27 @@ async function interaktiv(opt) {
     // in den Ordner. So kam bei Produkt 10 (Wasserspender) ein Video einer
     // Moebelmanufaktur an: Der Suchbegriff enthielt "Schreibtisch", und das
     // trifft eben auch Tischlerei.
-    const bewertung = bewerte(gruppen, meta.video);
+    const bewertung = bewerte(gruppen, meta.video, { haeufigkeit, hoechstensProdukte });
     if (bewertung.wert < schwelle || !bewertung.haelt) {
       const getroffen = bewertung.treffer.length ? bewertung.treffer.join(', ') : 'nichts';
-      melde(`↩︎  passt nicht zum Produkt (${bewertung.wert}, trifft: ${getroffen}): `
-        + `${String(meta.video.title).slice(0, 45)}`);
+      // ZWEI verschiedene Gruende, zwei verschiedene Zeilen im Buch. "Wert zu
+      // klein" heisst: zu wenig getroffen. "Nur Allerweltsbegriffe" heisst:
+      // genug getroffen, aber nichts davon unterscheidet dieses Geraet von
+      // einem Dutzend anderen. Das eine justiert man an der Schwelle, das
+      // andere an den Wortlisten — und wer beides zusammenzaehlt, sieht
+      // keins von beidem.
+      if (bewertung.wert >= schwelle && !bewertung.unterscheidend.length
+          && bewertung.treffer.length) {
+        buch.vermerke('nur Allerweltsbegriffe', bewertung.treffer.slice(0, 2).join('+'));
+        merkeUrteil(meta.video, 'nur Allerweltsbegriffe', bewertung.wert);
+        melde(`🫧 nur Allerweltsbegriffe (${getroffen} — jeder bei mehr als `
+          + `${hoechstensProdukte} Produkten): ${String(meta.video.title).slice(0, 40)}`);
+      } else {
+        buch.vermerke('trefferwert zu klein', `Wert ${bewertung.wert}`);
+        merkeUrteil(meta.video, 'trefferwert zu klein', bewertung.wert);
+        melde(`↩︎  passt nicht zum Produkt (${bewertung.wert}, trifft: ${getroffen}): `
+          + `${String(meta.video.title).slice(0, 45)}`);
+      }
       continue;
     }
     // LETZTE PRUEFUNG VOR DEM LADEN — und die einzige, die fragt, ob es
@@ -2596,12 +4812,51 @@ async function interaktiv(opt) {
     // Buero-Standgeraet, einem Kuehlschrankspender und einer Filterkanne.
     const merkmalTreffer = getroffeneMerkmale(meta.video, merkmale);
     if (merkmale.length && !merkmalTreffer.length) {
+      buch.vermerke('kein Merkmal');
+      merkeUrteil(meta.video, 'kein Merkmal', bewertung.wert);
       melde(`🔬 kein Merkmal dieses Geraets (Flasche/Akku/Pumpe/Tisch): `
         + `${String(meta.video.title).slice(0, 42)}`);
       continue;
     }
+    // HUERDE 8 — die einzige, die nicht nach dem Produkt fragt, sondern nach
+    // der Brauchbarkeit. Sie steht bewusst ganz am Ende der Vorpruefung: Die
+    // Textpruefungen sind billiger, und was inhaltlich nicht passt, muss gar
+    // nicht erst vermessen werden.
+    const untauglich = technischUntauglich(meta.video, standard);
+    if (untauglich) {
+      buch.vermerke('technisch unbrauchbar', untauglich);
+      merkeUrteil(meta.video, `technisch: ${untauglich}`);
+      melde(`📐 technisch unbrauchbar (${untauglich}): `
+        + `${String(meta.video.title).slice(0, 40)}`);
+      continue;
+    }
+
+    // PUNKT 24: Fremde Werbung MARKIEREN, nicht ablehnen.
+    //
+    // Der Clip bleibt brauchbar — als Anschauung, und der Ordner ist nebenbei
+    // die laufende Mitbewerber-Beobachtung, die sonst niemand macht. Im eigenen
+    // Werbeclip hat ein fremder Rabattcode aber nichts verloren, und das soll
+    // beim Sichten ins Auge springen statt beim Rendern aufzufallen.
+    //
+    // Abgelehnt wird hier bewusst nicht: Die Erkennung ist Textarbeit und damit
+    // unscharf. Eine Markierung darf danebenliegen, eine Ablehnung soll es
+    // nicht. Gemessen an 15 echten Untertiteln aus dem Herkunftsnachweis:
+    // 0 Fehlalarme, nicht einmal ein Einzelsignal unterhalb der Schwelle.
+    const werbung = istFremdeWerbung(meta.video);
+    if (werbung) {
+      meta.video.fremde_werbung = { arten: werbung.arten, treffer: werbung.treffer };
+      melde(`📣 sieht nach fremder Werbung aus (${werbung.arten.join(', ')}: `
+        + `${werbung.treffer.slice(0, 2).join(', ')}) — wird markiert, nicht verworfen.`);
+    }
+
+    // Die Textkette ist durch — das ist das Urteil "angenommen".
+    merkeUrteil(meta.video, 'angenommen', bewertung.wert);
+
     meta.video.wert = bewertung.wert;      // wandert in den Nachweis
     meta.video.merkmale = merkmalTreffer;  // desgleichen — belegt die Zuordnung
+    // Masse in den Nachweis: Damit laesst sich spaeter beantworten, warum ein
+    // Clip im Schnitt nur Einblendung wurde — ohne die Datei zu oeffnen.
+    meta.video.format = formatVermerk(meta.video.breite, meta.video.hoehe);
 
     const ergebnis = await holeUndSortiereEin({
       ytdlp: opt.ytdlp, kandidat: meta.video, produkt, slug, nummer,
@@ -2638,9 +4893,71 @@ async function interaktiv(opt) {
     const dublette = schonAlsDateiDa(index, ergebnis.eintrag.sha256);
     if (dublette) {
       try { fs.unlinkSync(abgelegt); } catch { /* dann bleibt sie eben liegen */ }
+      buch.vermerke('doppelgaenger', 'gleiche Pruefsumme');
       melde(`👯 identisch mit ${dublette.datei} (gleiche Pruefsumme, anderes Konto): `
         + `${String(meta.video.title).slice(0, 40)}`);
       continue;
+    }
+
+    // DERSELBE CLIP, NEU KODIERT.
+    //
+    // Die Pruefsumme oben faengt nur die bitgleiche Datei. Der haeufigere
+    // Fall auf TikTok ist der Repost: andere Aufloesung, andere Bitrate,
+    // manchmal ein schwarzer Rand — dasselbe Bild, voellig andere Summe.
+    //
+    // Geprueft wird NACH dem Laden, weil das Bild vorher nicht zu haben ist.
+    // Der Abruf ist damit nicht gespart; gespart ist der Platz, die
+    // Sichtungszeit und ein Clip, der im Schnitt zweimal dasselbe zeigt.
+    // Beim NAECHSTEN Lauf ist auch der Abruf gespart: Die Adresse wandert
+    // nach frueher_geladen.
+    const abdruecke = ffmpegPfad
+      ? bildFingerabdruck(ffmpegPfad, abgelegt, ergebnis.eintrag.dauer_sek)
+      : [];
+    const bildDublette = schonAlsBildDa(index, abdruecke);
+    if (bildDublette) {
+      try { fs.unlinkSync(abgelegt); } catch { /* dann bleibt sie eben liegen */ }
+      buch.vermerke('doppelgaenger', 'gleiches Bild, neu kodiert');
+      // Damit derselbe Repost nicht bei jedem Lauf erneut abgerufen wird.
+      index.frueher_geladen = [].concat(index.frueher_geladen || [], [{
+        quelle_url: url,
+        video_id: meta.video.id,
+        grund: `Bild identisch mit ${bildDublette.datei}`,
+        zeitpunkt: jetzt(),
+      }]);
+      speichereIndex(datenZiel, index);
+      melde(`👯 gleiches Bild wie ${bildDublette.datei} (neu kodiert, anderes Konto): `
+        + `${String(meta.video.title).slice(0, 38)}`);
+      continue;
+    }
+    if (abdruecke.length) ergebnis.eintrag.bild_abdruck = abdruecke;
+
+    // SCHWARZE BALKEN — was von der Datei wirklich Bild ist.
+    //
+    // Huerde 8 hat die DATEI gemessen und fuer gut befunden. Ein
+    // umformatiertes Querformat-Video misst aber 1080x1920 und hat nur
+    // 1080x1620 Bild. Im Schnitt gibt das Balken im Balken.
+    const ausschnitt = ffmpegPfad
+      ? randErkennung(ffmpegPfad, abgelegt, ergebnis.eintrag.dauer_sek)
+      : null;
+    const randGrund = randUntauglich(ausschnitt, standard);
+    if (randGrund) {
+      try { fs.unlinkSync(abgelegt); } catch { /* dann bleibt sie eben liegen */ }
+      buch.vermerke('schwarze Balken', `${ausschnitt.breite}x${ausschnitt.hoehe}`);
+      melde(`🖼  ${randGrund} (Datei ${meta.video.breite}x${meta.video.hoehe}): `
+        + `${String(meta.video.title).slice(0, 38)}`);
+      continue;
+    }
+    if (ausschnitt) {
+      const anteil = randAnteil(meta.video, ausschnitt);
+      // Nur vermerken, wenn es etwas zu vermerken gibt: Ein Feld
+      // "zuschnitt: crop=1080:1920:0:0" bei jedem zweiten Eintrag ist Rauschen.
+      if (anteil !== null && anteil >= RAND_ANTEIL_MELDEN) {
+        ergebnis.eintrag.zuschnitt =
+          `crop=${ausschnitt.breite}:${ausschnitt.hoehe}:${ausschnitt.x}:${ausschnitt.y}`;
+        ergebnis.eintrag.rand_anteil = anteil;
+        melde(`🖼  ${Math.round(anteil * 100)} % Rand — Zuschnitt vermerkt: `
+          + `${ergebnis.eintrag.zuschnitt}`);
+      }
     }
 
     // Abgehoert wird JEDES Video, nicht nur bei "keine Sprache". Vorher lief
@@ -2652,6 +4969,7 @@ async function interaktiv(opt) {
     if (nurMusik && geredet === true) {
       // Wieder wegraeumen: Der Nutzer wollte ausdruecklich kein Gerede.
       try { fs.unlinkSync(abgelegt); } catch { /* dann bleibt sie eben liegen */ }
+      buch.vermerke('gerede im Ton');
       melde(`🗣  verworfen nach Tonpruefung (${messung.woerter} Woerter, `
         + `Redeanteil ${messung.redeanteil}): ${String(meta.video.title).slice(0, 40)}`);
       continue;
@@ -2664,6 +4982,7 @@ async function interaktiv(opt) {
       // kaeme durch, obwohl niemand hineingehoert hat.
       if (nurMusik && !istMusik(meta.video)) {
         try { fs.unlinkSync(abgelegt); } catch { /* dann bleibt sie eben liegen */ }
+        buch.vermerke('nicht abhoerbar', messung && messung.grund);
         melde(`🗣  verworfen: nicht abhoerbar (${messung && messung.grund}), und die `
           + `Tonspur ist eine eigene Aufnahme: ${String(meta.video.title).slice(0, 35)}`);
         continue;
@@ -2678,6 +4997,7 @@ async function interaktiv(opt) {
       const erkannt = messung.sprache
         ? `${messung.sprache}, Sicherheit ${messung.sprache_sicherheit}`
         : 'nicht erkennbar';
+      buch.vermerke('Ansage in anderer Sprache', messung.sprache || 'nicht erkennbar');
       melde(`🗣  Ansage in anderer Sprache (${erkannt}): `
         + `${String(meta.video.title).slice(0, 40)}`);
       continue;
@@ -2703,9 +5023,134 @@ async function interaktiv(opt) {
     melde(`✅ ${ergebnis.eintrag.datei}  ← ${ergebnis.eintrag.creator}  (${ergebnis.eintrag.ton})`);
   }
 
+  // PUNKT 72: Den Werkzeugstand dieses Laufs im Index festhalten.
+  //
+  // Nur EIN Stand, nicht eine Liste: Gebraucht wird die Frage "hat sich seit
+  // dem letzten Mal etwas geaendert?", und die beantwortet der letzte Stand.
+  // Eine wachsende Historie im Index waere Ballast in einer Datei, die bei
+  // jedem Download neu geschrieben wird.
+  //
+  // OHNE FAEHIGKEITEN. Der gefuehrte Ablauf ruft --list-extractors gar nicht
+  // auf — er sucht ueber eine Suchmaschine statt ueber einen Extractor. Die
+  // Felder hier zu fuellen hiesse, sie zu erfinden; der Zustandsbericht fragt
+  // sie ohnehin frisch ab.
+  try {
+    index.werkzeuge = werkzeugStand({
+      ytdlpVersion: opt.ytdlpVersion || null,
+      ffmpeg: ffmpegPfad,
+    });
+  } catch { /* der Werkzeugstand ist Beiwerk, kein Grund zum Abbruch */ }
+
+  // PUNKT 21: Den Kontaktbogen gleich mitbauen.
+  //
+  // Der Bogen gibt es seit dem 18.09., aber nur als eigenen Befehl — und ein
+  // Befehl, den man nach jedem Lauf von Hand tippen muss, wird nach dem
+  // dritten Mal nicht mehr getippt. Dabei ist die Sichtung der teuerste
+  // Handgriff der ganzen Kette: 23 Clips einzeln oeffnen war ein Nachmittag.
+  //
+  // LAZY REQUIRE, mit Absicht. kontaktbogen.js verlangt diese Datei hier
+  // ("const sync = require('./tiktok-video-sync.js')"). Ein Require oben am
+  // Dateianfang waere ein Ring: Beim Laden von kontaktbogen.js waeren die
+  // Exporte hier noch leer, und sync.ladeIndex waere undefined.
+  //
+  // Gebaut wird NUR, wenn dieser Lauf etwas geladen hat. Ein Lauf ohne Fund
+  // hat nichts Neues zu zeigen, und der alte Bogen liegt ja noch da.
+  let bogenPfad = null;
+  if (geladen > 0 && opt.bogen !== false) {
+    try {
+      const bogen = require('./kontaktbogen.js');
+      const ffprobePfad = opt.ffprobe !== undefined ? opt.ffprobe : bogen.findeWerkzeug('ffprobe');
+      if (ffmpegPfad && ffprobePfad) {
+        const ergebnis = bogen.baueBoegen({
+          ffmpeg: ffmpegPfad, ffprobe: ffprobePfad,
+          ordner: datenZiel, videoOrdner: sammelOrdner,
+          nurProdukt: produkt.id,
+          ausgabe: () => {},          // die Meldungen kommen unten, gebuendelt
+        });
+        bogenPfad = (ergebnis.boegen || [])[0] || null;
+      } else {
+        melde('ℹ️  Kontaktbogen uebersprungen — ffmpeg/ffprobe nicht gefunden.');
+      }
+    } catch (fehler) {
+      // Ein fehlgeschlagener Bogen ist kein fehlgeschlagener Lauf. Die Videos
+      // liegen da, der Index steht — das Blatt ist eine Lesehilfe.
+      melde(`ℹ️  Kontaktbogen nicht gebaut: ${fehler.message}`);
+    }
+  }
+
+  // PUNKT 20: Die Urteilssammlung festschreiben.
+  const urteilsDatei = speichereUrteile(datenZiel, urteile);
+
+  // PUNKT 01: Die Begriffs-Bilanz festschreiben — auch wenn nichts geladen wurde.
+  //
+  // Der Index wird sonst nur beim erfolgreichen Download geschrieben. Genau der
+  // Lauf, der nichts findet, ist aber der, dessen Ergebnis hier zaehlt: Er
+  // belegt, dass die gefragten Begriffe abgegrast sind. Ohne dieses Speichern
+  // faengt der naechste Lauf wieder bei Begriff 1 an — die ganze Umsortierung
+  // waere wirkungslos gewesen. Aufgefallen ist das erst im Durchlauf, nicht im
+  // Einzeltest der Sortierfunktion.
+  try {
+    speichereIndex(datenZiel, index);
+  } catch (fehler) {
+    melde(`⚠️  Begriffs-Bilanz nicht gespeichert: ${fehler.code || fehler.message}`);
+  }
+
   melde('');
   melde(`— ${geladen} von ${anzahl} gewuenschten Videos geladen, ${geprueft} Adresse(n) geprueft, `
     + `${naechsterBegriff} von ${begriffe.length} Suchbegriffen gebraucht.`);
+
+  // ── Warum die anderen nicht durchkamen ─────────────────────────────
+  //
+  // Bei 168 Ablehnungen aus 338 Untertiteln ist der GRUND die eigentliche
+  // Information. Bisher stand er verstreut im Protokoll eines Laufs und war
+  // danach weg; im Bericht standen handverlesene Beispiele. Jetzt sagt es
+  // die Maschine selbst — und die Datei daneben macht aus zehn Laeufen eine
+  // Kurve statt eines Bauchgefuehls.
+  // DIESE BEIDEN MELDUNGEN STEHEN AUSSERHALB DES ABLEHNUNGSBLOCKS.
+  //
+  // Erst standen sie darin — und damit hinter "if (auswertung.length)". Ein
+  // Lauf, in dem NICHTS abgelehnt wurde, zeigte den Kontaktbogen also nie an,
+  // obwohl er gebaut war und im Ordner lag. Gefunden hat das der Durchlauf mit
+  // echtem ffmpeg, nicht das Lesen.
+  if (bogenPfad) {
+    melde('');
+    melde(`👁  Kontaktbogen: ${bogenPfad}`);
+    melde('   Im Browser oeffnen — vier Standbilder je Clip, im Vergleich statt');
+    melde('   nacheinander. Man sieht sofort, welche drei Clips dasselbe zeigen.');
+  }
+  if (urteilsDatei) {
+    const bilanz = urteilsBilanz(urteile);
+    melde('');
+    melde(`🧾 Urteile: ${urteilsDatei}`);
+    melde(`   ${bilanz.gesamt} gesammelt (${bilanz.angenommen} angenommen, `
+      + `${bilanz.abgelehnt} abgelehnt)`
+      + (bilanz.gekippt ? `, ${bilanz.gekippt} haben ihr Urteil geaendert` : ''));
+  }
+
+  const auswertung = buch.auswertung();
+  if (auswertung.length) {
+    const abgelehnt = auswertung.reduce((s, r) => s + r.anzahl, 0);
+    melde('');
+    if (vorfaelle.sperren || vorfaelle.fehler) {
+      melde(`   Vorfaelle: ${vorfaelle.sperren} Sperre(n), ${vorfaelle.fehler} Fehler`
+        + `${vorfaelle.regionssperren ? `, davon ${vorfaelle.regionssperren} Regionssperre(n)` : ''}.`);
+    }
+    melde(`   Abgelehnt: ${abgelehnt} — welche Regel wie oft gegriffen hat:`);
+    for (const regel of auswertung) {
+      const oben = regel.ausloeser.length
+        ? `  (${regel.ausloeser.map((a) => `${a.wort}×${a.anzahl}`).join(', ')})`
+        : '';
+      melde(`     ${String(regel.anzahl).padStart(3)}  ${regel.regel}${oben}`);
+    }
+    const geschrieben = schreibeAblehnungen(datenZiel, auswertung, {
+      geprueft, geladen, produkt: produkt && produkt.id, jetzt, vorfaelle,
+    });
+    if (geschrieben) {
+      melde(`   Verlauf:  ${geschrieben}`);
+      melde('   Eine Regel, die dort nie auftaucht, greift nie. Ein Ausloeser, der');
+      melde('   staendig oben steht, gehoert in die Feinjustierung.');
+    }
+  }
   if (geladen) {
     melde(`   Ablage:  ${videoZiel}`);
     melde(`   Nachweis: ${indexPfad(datenZiel)}  (alle mit rechte_geprueft: false)`);
@@ -2736,7 +5181,9 @@ function zahl(roh, standard, untergrenze, obergrenze) {
 function leseArgumente(argv) {
   const opt = { status: false, laden: false, max: null, schwelle: null, hilfe: false,
                 fund: null, schreiben: false, interaktiv: false, aufraeumen: false,
-                ordner: false };
+                ordner: false, anfragen: false, absender: null, sprache: 'de',
+                zwecke: null, dauer: null, gegenleistung: null, nennung: null,
+                produktNr: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--status') opt.status = true;
@@ -2752,6 +5199,21 @@ function leseArgumente(argv) {
     }
     else if (a === '--max') opt.max = zahl(argv[++i], STANDARD.max_downloads, 0, 100);
     else if (a === '--schwelle') opt.schwelle = zahl(argv[++i], STANDARD.schwelle, 0, 1);
+    // PUNKT 64: Anfragetexte ausgeben. Verschickt wird NICHTS — der Text geht
+    // ins Protokoll, und abgeschickt wird er von Hand. Eine Nachricht, die ein
+    // Programm ungelesen an einen fremden Menschen schickt, ist genau das, was
+    // eine Anfrage unglaubwuerdig macht.
+    else if (a === '--anfragen') opt.anfragen = true;
+    else if (a === '--absender') opt.absender = argv[++i] || null;
+    else if (a === '--produkt') opt.produktNr = argv[++i] || null;
+    else if (a === '--dauer') opt.dauer = argv[++i] || null;
+    else if (a === '--gegenleistung') opt.gegenleistung = argv[++i] || null;
+    else if (a === '--nennung') opt.nennung = argv[++i] || null;
+    else if (a === '--sprache') opt.sprache = String(argv[++i] || 'de').startsWith('en') ? 'en' : 'de';
+    else if (a === '--zwecke') {
+      opt.zwecke = [];
+      while (argv[i + 1] && !argv[i + 1].startsWith('--')) opt.zwecke.push(argv[++i]);
+    }
     else if (a === '--help' || a === '-h') opt.hilfe = true;
   }
   return opt;
@@ -2773,6 +5235,92 @@ const FEHLT_HINWEIS = [
   '   Fester Pfad moeglich ueber YTDLP_PATH=<pfad zur yt-dlp.exe>',
 ];
 
+/**
+ * Anfragetexte fuer alle Clips, deren Rechte noch offen sind.
+ *
+ * VERSCHICKT WIRD NICHTS. Der Text geht ins Protokoll; abgeschickt wird er von
+ * Hand. Eine Nachricht, die ein Programm ungelesen an einen fremden Menschen
+ * schickt, ist genau das, was eine Anfrage unglaubwuerdig macht — und die
+ * Antwortquote haengt daran, dass sie nicht nach Vorlage klingt.
+ */
+function anfragenAusgeben(opt) {
+  const ordner = datenOrdner();
+  let index;
+  try {
+    index = ladeIndex(ordner);
+  } catch (fehler) {
+    console.error(`❌ Index nicht lesbar: ${fehler.message}`);
+    return 1;
+  }
+
+  const absender = String(opt.absender || '').trim();
+  if (!absender) {
+    console.error('❌ --absender fehlt. Wer fragt, muss in der Nachricht stehen.');
+    console.error('   Beispiel:');
+    console.error('     node tiktok-video-sync.js --anfragen --absender "Nevio (Maios)" \\');
+    console.error('       --produkt 10 --zwecke organisch anzeige --dauer "12 Monate" \\');
+    console.error('       --gegenleistung "das Geraet geschenkt"');
+    return 1;
+  }
+
+  // Der Produktname kommt aus products.json, nicht aus der Kommandozeile:
+  // Was in der Nachricht steht, soll dasselbe sein, was im Shop steht.
+  let produktName = null;
+  let produktNr = null;
+  if (opt.produktNr != null) {
+    produktNr = Number(opt.produktNr);
+    try {
+      const alle = JSON.parse(fs.readFileSync(path.join(WURZEL, 'products.json'), 'utf8'));
+      const gefunden = alle.find((p) => Number(p.id) === produktNr);
+      if (!gefunden) {
+        console.error(`❌ Kein Produkt mit der Nummer ${produktNr}.`);
+        return 1;
+      }
+      produktName = gefunden.name;
+    } catch (fehler) {
+      console.error(`❌ products.json nicht lesbar: ${fehler.message}`);
+      return 1;
+    }
+  }
+
+  const zwecke = [].concat(opt.zwecke || ['organisch']);
+  const anfragen = offeneAnfragen(index, {
+    absender, produkt: produktName || '<Produkt>', zwecke,
+    dauer: opt.dauer, gegenleistung: opt.gegenleistung, nennung: opt.nennung,
+    sprache: opt.sprache, nurProdukt: produktNr,
+  });
+
+  if (!anfragen.length) {
+    console.log('Keine offenen Anfragen — zu allen Clips liegt bereits eine Erlaubnis vor');
+    console.log('oder es fehlt der Creator-Name als Adressat.');
+    return 0;
+  }
+
+  console.log(`── ${anfragen.length} Anfrage(n), ${anfragen.reduce((n, a) => n + a.clips, 0)} Clip(s) ──`);
+  console.log('');
+  console.log('Verschickt wird nichts. Lies jede Nachricht, bevor du sie abschickst —');
+  console.log('eine Anfrage, die nach Vorlage klingt, bekommt keine Antwort.');
+  for (const a of anfragen) {
+    console.log('');
+    console.log('─'.repeat(64));
+    console.log(`AN:     ${a.profil || '(kein Profil ermittelbar)'}`
+      + (a.handleWeichtAb ? '   ⚠️  Adresse und Name weichen ab' : ''));
+    console.log(`CLIPS:  ${a.clips}`);
+    for (const url of a.adressen.slice(0, 10)) console.log(`        ${url}`);
+    console.log('');
+    if (!a.ok) {
+      console.log(`⚠️  Kein Text — es fehlt: ${a.fehlt.join(', ')}`);
+      continue;
+    }
+    console.log(a.text);
+  }
+  console.log('');
+  console.log('─'.repeat(64));
+  console.log('Die Antwort gehoert in die Rechteakte (Punkt 63): Art, Datum, Beleg,');
+  console.log('Umfang. Ohne die vier Angaben bleibt die Sperre zu.');
+  return 0;
+}
+
 async function status() {
   const ordner = datenOrdner();
   console.log('── TikTok-Rohmaterial: Zustand ──────────────────────────────');
@@ -2786,12 +5334,165 @@ async function status() {
     const index = ladeIndex(ordner);
     const ungeprueft = index.eintraege.filter((e) => !e.rechte_geprueft).length;
     console.log(`Index:          ${index.eintraege.length} Eintraege, davon ${ungeprueft} ohne Rechtepruefung`);
+
+    // PUNKT 63: Die Rechtelage, getrennt nach Zweck.
+    //
+    // Der Materialkatalog des Automaten sperrt hart: "Ein Asset ohne
+    // Lizenzeintrag kommt nicht ins Video. Punkt." Fuer fremde TikTok-Clips —
+    // das Material mit dem HOECHSTEN Risiko — galt bis zum 20.09. nur ein
+    // Haekchen. Ein Wahrheitswert kann keine Einwilligung belegen.
+    if (index.eintraege.length) {
+      const organisch = rechteBilanz(index, { zweck: 'organisch' });
+      const anzeige = rechteBilanz(index, { zweck: 'anzeige' });
+      console.log('');
+      console.log(`Rechte:         ${organisch.frei} frei fuer eigene Beitraege · `
+        + `${anzeige.frei} frei fuer Anzeigen · ${organisch.gesperrt} gesperrt`
+        + (organisch.widerrufen ? ` · ${organisch.widerrufen} widerrufen` : ''));
+      for (const a of organisch.nachArt) {
+        console.log(`                  ${String(a.anzahl).padStart(3)}×  ${RECHTE_ARTEN[a.art] || a.art}`);
+      }
+      if (organisch.luecken.length) {
+        console.log('                Was am haeufigsten fehlt:');
+        for (const l of organisch.luecken.slice(0, 4)) {
+          console.log(`                  ${String(l.anzahl).padStart(3)}×  ${l.was}`);
+        }
+      }
+
+      // PUNKT 64: Wen man fragen muesste — ein Creator, eine Anfrage.
+      const anfragen = offeneAnfragen(index, {
+        absender: '<dein Name>', produkt: '<Produkt>', zwecke: ['organisch'],
+      });
+      if (anfragen.length) {
+        const clips = anfragen.reduce((n, a) => n + a.clips, 0);
+        console.log('');
+        console.log(`Offene Anfragen: ${anfragen.length} Creator, ${clips} Clip(s)`);
+        for (const a of anfragen.slice(0, 5)) {
+          console.log(`                  ${String(a.clips).padStart(2)}×  ${a.creator}  ${a.profil || ''}`
+            + (a.handleWeichtAb ? '   ⚠️  Adresse und Name weichen ab' : ''));
+        }
+        console.log('                Ein Creator, EINE Anfrage — wer fuenf Clips desselben');
+        console.log('                Menschen hat, schreibt ihn nicht fuenfmal an.');
+      }
+    }
     const verwaist = verwaisteEintraege(index, videoOrdnerAus(), ordner);
     if (verwaist.length) {
       console.log(`                ⚠️  ${verwaist.length} davon ohne Datei — aufraeumen: npm run tiktok:aufraeumen`);
     }
     const frueher = (index.frueher_geladen || []).length;
     if (frueher) console.log(`                ${frueher} frueher geladen und wieder entfernt (werden nicht neu geholt)`);
+
+    // PUNKT 22: In welchem Zustand liegt das Material?
+    const zustaende = zustandsBilanz(index);
+    if (index.eintraege.length) {
+      console.log(`                ${zustaende.vorrat} im Vorrat · ${zustaende.verwendet} verwendet `
+        + `· ${zustaende.verworfen} verworfen`);
+      for (const g of zustaende.gruende.slice(0, 5)) {
+        console.log(`                  ${String(g.anzahl).padStart(3)}×  ${g.text}`);
+      }
+    }
+
+    // PUNKT 65: Zeigt ein Eintrag aus den erlaubten Ordnern heraus?
+    //
+    // Die .gitignore schuetzt den ORT. Diese Pruefung schuetzt davor, dass
+    // etwas an einem ganz anderen Ort landet, den die .gitignore nie gesehen
+    // hat — in einem oeffentlichen Repo ist das fremdes Material auf GitHub.
+    const verirrt = fremdmaterialAmFalschenOrt(index);
+    if (verirrt.length) {
+      console.log('');
+      console.log(`Ablage:         ❌ ${verirrt.length} Eintrag/Eintraege ausserhalb der erlaubten Ordner`);
+      console.log(`                erlaubt: ${ERLAUBTE_ABLAGEN.join(', ')}`);
+      for (const v of verirrt.slice(0, 5)) {
+        console.log(`                  ${v.ablage}/${v.datei}`);
+      }
+    }
+
+    // PUNKT 71: Sagt der Dateiname, woher die Datei kommt?
+    const namenlos = ohneHerkunftImNamen(index);
+    if (namenlos.length) {
+      console.log('');
+      console.log(`Herkunft im Namen: ⚠️  ${namenlos.length} von ${index.eintraege.length} Dateien`);
+      console.log('                tragen ihre Herkunft NICHT im Namen. Geladenes Fremdmaterial');
+      console.log('                heisst "..._stil-b.mp4" — dieselbe Form wie die eigenen');
+      console.log('                Renderings. Am Namen allein ist fremd von eigen nicht mehr');
+      console.log('                zu unterscheiden; der Ordner ist derzeit der einzige Schutz.');
+      console.log('                Umbenannt wird hier NICHTS: Jeder Indexeintrag zeigt auf');
+      console.log('                seinen Dateinamen. Das ist ein eigener, bewusster Schritt.');
+    }
+
+    // PUNKT 20: Wie gross ist die Messlatte inzwischen?
+    const urteile = urteilsBilanz(ladeUrteile(ordner));
+    if (urteile.gesamt) {
+      console.log('');
+      console.log(`Urteilssammlung: ${urteile.gesamt} echte Untertitel `
+        + `(${urteile.angenommen} angenommen, ${urteile.abgelehnt} abgelehnt)`);
+      if (urteile.gekippt) {
+        console.log(`                ${urteile.gekippt} haben seit dem ersten Mal ihr Urteil `
+          + 'geaendert — die Wortlisten wirken.');
+      }
+      for (const g of urteile.gruende.slice(0, 3)) {
+        console.log(`                  ${String(g.anzahl).padStart(3)}×  ${g.grund}`);
+      }
+    }
+
+    // PUNKT 70: Was liegt da eigentlich auf der Platte?
+    //
+    // Eine volle Platte meldet sich beim Rendern mit einem abgebrochenen
+    // Auftrag, nicht mit einer klaren Fehlermeldung. 23 Clips fuer ein Produkt
+    // sind unkritisch, 23 fuer 40 Produkte nicht mehr.
+    const platz = platzbedarf(index, videoOrdnerAus(), ordner);
+    console.log('');
+    console.log(`Platzbedarf:    ${lesbareGroesse(platz.bytes)} in ${platz.dateien} Datei(en)`);
+    if (platz.dateien) {
+      console.log(`                Schnitt ${lesbareGroesse(platz.bytes / platz.dateien)} je Clip`);
+    }
+    if (platz.aeltesteTage != null) {
+      console.log(`                aeltestes Material: ${platz.aeltesteTage} Tage `
+        + `(${String(platz.aeltestes).slice(0, 10)})`);
+    }
+    const abgelaufen = ablaufkandidaten(index, videoOrdnerAus(), ordner, { tage: 90 });
+    if (abgelaufen.length) {
+      console.log(`                ${abgelaufen.length} verworfene Datei(en) aelter als 90 Tage `
+        + `(${lesbareGroesse(abgelaufen.reduce((sum, a) => {
+          try { return sum + fs.statSync(a.ort).size; } catch { return sum; }
+        }, 0))})`);
+      console.log('                Der Indexeintrag bleibt in jedem Fall — sonst wird neu geladen,');
+      console.log('                was eben weggeworfen wurde. Loeschen ist ein eigener Schritt.');
+    }
+
+    // WO FEHLT MATERIAL? Die Frage, die der Zustandsbericht bisher nicht
+    // beantwortet hat — und die darueber entscheidet, was der naechste Lauf
+    // tun sollte. Gezaehlt am 18.09.: 3 von 41 Produktordnern gefuellt.
+    try {
+      const konfig = ladeKonfig();
+      const produkte = JSON.parse(fs.readFileSync(path.join(WURZEL, 'products.json'), 'utf8'));
+      const ziel = Number((konfig.standard || {}).ziel_clips_je_produkt)
+        || STANDARD.ziel_clips_je_produkt;
+      const bestand = bestandJeProdukt(index, produkte, { ziel });
+      const leer = bestand.filter((p) => p.vorhanden === 0).length;
+      const voll = bestand.filter((p) => p.luecke === 0).length;
+      console.log('');
+      console.log(`Vorrat:         Ziel ${ziel} Clips je Produkt`);
+      console.log(`                ${voll} von ${bestand.length} Produkten voll, ${leer} ohne einen einzigen Clip`);
+      const dran = produkteNachLuecke(index, produkte, { ziel }).slice(0, 5);
+      if (dran.length) {
+        console.log('                Als naechstes dran (groesste Luecke zuerst):');
+        for (const p of dran) {
+          console.log(`                  ${String(p.id).padStart(3)}  ${String(p.vorhanden).padStart(2)}/${p.ziel}  ${p.name}`);
+        }
+        console.log(`                → npm run tiktok -- --produkt ${dran[0].id}`);
+      }
+      const gute = creatorBilanz(index).filter((c) => c.angenommen >= 2);
+      if (gute.length) {
+        console.log('');
+        console.log(`Gute Creator:   ${gute.length} mit zwei oder mehr brauchbaren Clips —`);
+        console.log('                ihre Profile werden ab jetzt bei jedem Lauf mit abgefragt.');
+        for (const c of gute.slice(0, 5)) {
+          console.log(`                  ${String(c.angenommen).padStart(2)}×  ${c.creator}  (Produkt ${c.produkte.join(', ')})`);
+        }
+      }
+    } catch (fehler) {
+      console.log(`Vorrat:         ⚠️  ${fehler.message}`);
+    }
   } catch (fehler) {
     console.log(`Index:          ⚠️  ${fehler.message}`);
   }
@@ -2829,6 +5530,33 @@ async function status() {
   console.log(`Extractors:     ${faehigkeiten.namen.join(', ') || '(keiner mit "tiktok" im Namen)'}`);
   console.log(`Hashtag-Seiten: ${faehigkeiten.kannHashtag ? 'ja' : 'nein — ' + faehigkeiten.hashtagGrund}`);
   console.log(`Stichwortsuche: ${faehigkeiten.kannSuche ? 'ja' : 'nein — ' + faehigkeiten.sucheGrund}`);
+
+  // PUNKT 72: Werkzeugstand — und was sich seit dem letzten Lauf geaendert hat.
+  //
+  // yt-dlp aendert sich fast woechentlich, weil sich die Plattformen aendern.
+  // Die Lehre aus dem CURRENTLY-BROKEN-Marker am Hashtag-Extractor ist genau
+  // die: Faehigkeiten verschwinden, ohne dass jemand es sagt. Wenn ein Lauf
+  // scheitert, soll die Frage "hat sich das Werkzeug geaendert?" in einer Zeile
+  // beantwortet sein statt in einer Stunde Suche.
+  const stand = werkzeugStand({
+    ytdlpVersion: gefunden.version,
+    ffmpeg: findeFfmpeg(process.env),
+    faehigkeiten,
+  });
+  console.log('');
+  console.log(`Werkzeuge:      ${werkzeugZeile(stand)}`);
+  try {
+    const index = ladeIndex(ordner);
+    const unterschiede = werkzeugUnterschied(index.werkzeuge, stand);
+    if (unterschiede.length) {
+      console.log('                ⚠️  seit dem letzten Lauf geaendert:');
+      for (const zeile of unterschiede) console.log(`                    ${zeile}`);
+      console.log('                Nach einem Werkzeugwechsel ein Gegenlauf mit einem Clip,');
+      console.log('                der vorher ging:  npm run tiktok -- --fund <adresse>');
+    } else if (index.werkzeuge) {
+      console.log('                unveraendert seit dem letzten Lauf');
+    }
+  } catch { /* kein Index, kein Vergleich — das ist kein Fehler */ }
   if (!faehigkeiten.kannHashtag && !faehigkeiten.kannSuche) {
     console.log('');
     console.log('→ Nutzbar sind damit nur fest hinterlegte Video- und Creator-URLs.');
@@ -2903,6 +5631,9 @@ async function main(argv) {
     return 0;
   }
   if (opt.status) return status();
+
+  // PUNKT 64: Die Anfragetexte ausgeben — ein Creator, eine Nachricht.
+  if (opt.anfragen) return anfragenAusgeben(opt);
   if (opt.ordner) {
     const basis = videoOrdnerAus();
     const alle = JSON.parse(fs.readFileSync(path.join(WURZEL, 'products.json'), 'utf8'));
@@ -2942,6 +5673,9 @@ async function main(argv) {
       produkte, konfig, standard,
       datenOrdner: datenOrdner(),
       stopDatei: STOP_DATEI,
+      // Punkt 72: faellt bei findeYtdlp() ohnehin ab — ein eigener Aufruf nur
+      // fuers Protokoll waere ein Abruf zu viel.
+      ytdlpVersion: gefunden.version,
     });
   }
 
@@ -2981,6 +5715,7 @@ async function main(argv) {
     produkte,
     konfig,
     standard,
+    ytdlpVersion: gefunden.version,
     ordner: datenOrdner(),
     stopDatei: STOP_DATEI,
     laden: opt.laden,
@@ -3011,10 +5746,31 @@ module.exports = {
   leseArgumente, ausUmgebung, indexPfad, pruefListePfad, STANDARD,
   sucheAdressen, istMusik, pruefeSprache, wirdGeredet, begriffeFuer, begriffsGruppen, bewerte,
   impersonationVerfuegbar,
+  ablehnungsbuch, schreibeAblehnungen, LAEUFE_IM_BUCH, pauseSpanne,
+  datumAusVideoId, videoIdAusUrl, alterInTagen, beliebtheitsRate,
+  TIKTOK_FRUEHESTENS,
+  trenneUnterschrift, inhaltsTags, fliesstextLaenge, videoFliesstext, REICHWEITEN_TAGS,
+  begriffsHaeufigkeit,
+  bestandJeProdukt, produkteNachLuecke, creatorProfil, creatorBilanz, creatorQuellen,
+  begriffsBilanz, begriffeSortiert, vermerkeBegriff,
+  dHash, bitAbstand, bildFingerabdruck, gleichesBild, schonAlsBildDa, findeFfmpeg,
+  randErkennung, randAnteil, randUntauglich, RAND_ANTEIL_MELDEN,
+  BILD_ABSTAND_MAX, BILDER_GLEICH_NOETIG, BILD_MARKEN,
   ausschlussTreffer, spracheDesTextes, hatKernwort, sprachHinweise, textAusPuffern,
   stehtImText, VERNEINUNG,
   adressenAusText, fundeAusText,
   hatMerkmal, getroffeneMerkmale,
+  technischUntauglich, formatVermerk,
+  ERLAUBTE_ABLAGEN, ablageErlaubt, fremdmaterialAmFalschenOrt,
+  HERKUNFT_MUSTER, RENDER_MUSTER, herkunftAusName, ohneHerkunftImNamen,
+  ersteZeile, ffmpegVersion, werkzeugStand, werkzeugZeile, werkzeugUnterschied,
+  rohText, werbeVerdacht, istFremdeWerbung, WERBE_SIGNALE,
+  ZUSTAENDE, VERWURF_GRUENDE, setzeZustand, zustandVon, zustandsBilanz,
+  RECHTE_ARTEN, RECHTE_ZWECKE, rechteAkte, rechteLuecken, darfVeroeffentlicht,
+  setzeRechte, widerrufeRechte, rechteBilanz,
+  ANFRAGE_FELDER, creatorAnfrage, offeneAnfragen,
+  URTEILE_DATEI, urteilePfad, sammleUrteil, ladeUrteile, speichereUrteile, urteilsBilanz,
+  platzbedarf, lesbareGroesse, ablaufkandidaten,
   naechsteNummer, slugFuerDateiname, schuetzeDatei,
   produktOrdner, imRohmaterial, brauchtEinzelschutz, ROHMATERIAL, GESCHNITTEN,
   legeProduktOrdnerAn,

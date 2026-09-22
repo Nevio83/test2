@@ -370,10 +370,99 @@ app.use((req, res, next) => {
 // Ein Weg fuer alle Betriebs-Warnungen. Frueher stand der Mailversand direkt im
 // Fehlerzaehler; jetzt nutzen ihn auch die Absturz-Handler unten, damit es nicht
 // zwei Stellen mit je eigenem Postfach und eigener Sperre gibt.
+// Liefert true, wenn die Mail wirklich raus ist.
+//
+// Frueher gab diese Funktion im Fehlerfall `undefined` zurueck und im
+// Erfolgsfall irgendetwas Wahres — wer sie abfragte, konnte beides nicht
+// unterscheiden. Beim Notausgang unten fiel das auf: Er meldete "Mail: ja",
+// obwohl ohne RESEND_API_KEY gar keine rausgehen konnte. Eine Rettung, die
+// faelschlich Erfolg meldet, ist schlimmer als gar keine — man verlaesst sich
+// darauf.
 function sendOpsAlert(subject, html) {
   const to = process.env.ERROR_ALERT_EMAIL || process.env.RECEIPT_ARCHIVE_EMAIL || 'maioscorporation@gmail.com';
   return emailService.sendEmail({ to, subject, html })
-    .catch((e) => console.warn('⚠️ Betriebs-Warnmail fehlgeschlagen:', e.message));
+    .then((ergebnis) => {
+      // resend-service.js wertet das { data, error }-Resultat aus und liefert
+      // ein Objekt mit success. Fehlt das Feld, gilt der Versand als geglueckt,
+      // solange kein Fehler geworfen wurde.
+      if (ergebnis && typeof ergebnis === 'object' && 'success' in ergebnis) {
+        if (!ergebnis.success) console.warn('⚠️ Betriebs-Warnmail abgelehnt:', ergebnis.error || '(ohne Grund)');
+        return Boolean(ergebnis.success);
+      }
+      return true;
+    })
+    .catch((e) => {
+      console.warn('⚠️ Betriebs-Warnmail fehlgeschlagen:', e.message);
+      return false;
+    });
+}
+
+// ── Notausgang fuer bezahlte Bestellungen ────────────────────────────
+//
+// WARUM ES DAS BRAUCHT
+// Die Bestellung wird NICHT vom Stripe-Webhook gespeichert, sondern von
+// `/api/receipt/create` — und den ruft der Browser des Kunden auf, nachdem
+// Stripe zurueckgeleitet hat (checkout-receipt.js). Anders als beim Webhook
+// gibt es dafuer keinen zweiten Versuch: Scheitert der Aufruf, ist das Geld
+// kassiert und die Bestellung existiert nirgends.
+//
+// Genau das ist am 22.09. eingetreten: Die Neon-Datenbank war am Kontingent
+// und verweigerte jede Verbindung. Die Route protokollierte den Fehler und
+// warf die Nutzdaten weg — also Warenkorb, Kundenadresse und Zahlungsbezug
+// einer bezahlten Bestellung.
+//
+// Diese Funktion faengt genau das ab. Sie ist bewusst schlicht: Sie schickt
+// die vollstaendigen Daten per Mail an den Betrieb. Eine Datei allein reicht
+// nicht — Renders Dateisystem ist fluechtig, dieselbe Ueberlegung wie beim
+// GoBD-Belegarchiv.
+//
+// SIE DARF NIEMALS WERFEN. Sie laeuft innerhalb eines catch; eine Ausnahme
+// hier wuerde den urspruenglichen Fehler ersetzen und die Rettung waere genau
+// dann kaputt, wenn sie gebraucht wird.
+async function retteBezahlteBestellung(nutzdaten, urspruenglicherFehler) {
+  const zeit = new Date().toISOString();
+  let perMail = false;
+  let alsDatei = null;
+
+  try {
+    const roh = JSON.stringify(nutzdaten ?? null, null, 2);
+
+    // 1. Datei — hilft lokal und auf einem eigenen Server sofort weiter.
+    try {
+      const ordner = path.join(__dirname, 'receipts', 'notfall');
+      fs.mkdirSync(ordner, { recursive: true });
+      alsDatei = path.join(ordner, `bezahlt-${zeit.replace(/[:.]/g, '-')}.json`);
+      fs.writeFileSync(alsDatei, roh, 'utf8');
+    } catch (e) {
+      console.warn('⚠️ Notfall-Datei nicht schreibbar:', e.message);
+      alsDatei = null;
+    }
+
+    // 2. Mail — der dauerhafte Weg, weil Renders Dateisystem fluechtig ist.
+    const email = nutzdaten?.customer?.email || '(unbekannt)';
+    const flucht = (s) => String(s).replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+    const versandt = await sendOpsAlert(
+      `🛟 BEZAHLT, aber nicht gespeichert — ${email}`,
+      `<h2>Eine bezahlte Bestellung konnte nicht gespeichert werden</h2>` +
+      `<p>Das Geld ist bei Stripe eingegangen, die Bestellung steht aber <b>nicht</b> in der Datenbank. ` +
+      `Bitte von Hand anlegen und den Kunden benachrichtigen.</p>` +
+      `<p><b>Zeit:</b> ${zeit}<br><b>Kunde:</b> ${flucht(email)}<br>` +
+      `<b>Ursache:</b> ${flucht(urspruenglicherFehler?.message || urspruenglicherFehler)}</p>` +
+      `<p><b>Vollstaendige Bestelldaten:</b></p>` +
+      `<pre style="white-space:pre-wrap;font-size:12px;background:#f4f4f4;padding:10px;border-radius:6px">${flucht(roh)}</pre>`
+    );
+    // NICHT blind auf true setzen: sendOpsAlert meldet jetzt, ob die Mail
+    // wirklich raus ist. Beim ersten Testlauf stand hier `perMail = true`, und
+    // die Rettung meldete "Mail: ja", obwohl ohne RESEND_API_KEY keine
+    // rausgehen konnte.
+    perMail = Boolean(versandt);
+  } catch (e) {
+    // Auch hier nicht werfen — nur laut sein.
+    console.error('💥 Rettung der bezahlten Bestellung fehlgeschlagen:', e.message);
+  }
+
+  console.error(`🛟 Bezahlte Bestellung gerettet — Mail: ${perMail ? 'ja' : 'NEIN'}, Datei: ${alsDatei || 'nein'}`);
+  return { perMail, alsDatei };
 }
 
 // ── Absturzschutz ────────────────────────────────────────────────────
@@ -2423,8 +2512,26 @@ app.post('/api/receipt/create', async (req, res) => {
     
   } catch (error) {
     console.error('Kassenbon-Erstellung Fehler:', error);
+
+    // An dieser Stelle ist bereits BEZAHLT worden — der Browser ruft diese
+    // Route erst nach der Rueckleitung von Stripe auf. Die Nutzdaten duerfen
+    // deshalb nicht verlorengehen, nur weil die Datenbank gerade nicht kann.
+    const rettung = await retteBezahlteBestellung(req.body, error);
+
+    // 500 bleibt bewusst stehen: Es IST ein Serverfehler, und der
+    // Fehlerzaehler oben soll ihn sehen und Alarm schlagen.
+    //
+    // Der Text daneben ist aber neu und wichtiger, als er aussieht. Vorher
+    // stand hier nur "Fehler bei der Kassenbon-Erstellung", und der Kunde las
+    // auf der Erfolgsseite "Fehler beim Erstellen des Kassenbons" — nach einer
+    // erfolgreichen Zahlung. Wer das liest, kauft im Zweifel ein zweites Mal.
     res.status(500).json({
-      error: 'Fehler bei der Kassenbon-Erstellung'
+      error: 'Fehler bei der Kassenbon-Erstellung',
+      zahlungSicher: true,
+      gerettet: rettung.perMail,
+      kundenhinweis: 'Deine Zahlung ist eingegangen und die Bestellung ist gesichert. '
+        + 'Nur die Beleg-Erstellung hat gerade nicht geklappt. '
+        + 'Wir melden uns per E-Mail — bitte NICHT noch einmal bestellen.'
     });
   }
 });
@@ -3566,6 +3673,9 @@ marketingRoute('lernstand', () => marketingApi.lernstand());
 marketingRoute('kosten', () => marketingApi.kosten());
 marketingRoute('protokoll', (req) => marketingApi.protokoll(marketingLimit(req, 40, 200)));
 marketingRoute('overrides', () => marketingApi.overrides());
+// Beitraege, die auf eine Freigabe warten. Das Arbeitsblatt fuer den Menschen:
+// Ohne diese Liste bliebe nur der Alles-oder-Nichts-Trockenlauf.
+marketingRoute('freigaben', (req) => marketingApi.offeneFreigaben(marketingLimit(req, 25, 100)));
 
 // Einzelnen Ablauf an-/abschalten. Setzt nur das Flag in der Datenbank —
 // der naechste Takt des Automaten liest es und haelt an.
@@ -3580,6 +3690,36 @@ app.post('/a29715347575/api/marketing/schalte', async (req, res) => {
   } catch (error) {
     console.error('Marketing-Schalter-Fehler:', error.message);
     res.status(500).json({ error: 'Schalter nicht verfuegbar' });
+  }
+});
+
+// EINEN Beitrag freigeben oder ablehnen.
+//
+// Bewusst keine Sammelfreigabe: Die waere derselbe Alles-oder-Nichts-Schalter,
+// den diese Etappe gerade abschafft — nur mit mehr Klicks. Wer freigibt, wird
+// im Audit-Log mitgeschrieben; ein Beitrag auf TikTok laesst sich nicht
+// zurueckholen, und dann zaehlt, wer ihn durchgewunken hat.
+app.post('/a29715347575/api/marketing/freigabe', async (req, res) => {
+  try {
+    const { post_id: postId, frei, notiz } = req.body || {};
+    const nummer = Number(postId);
+    if (!Number.isInteger(nummer) || nummer <= 0) {
+      return res.status(400).json({ error: 'post_id fehlt oder ist keine Zahl' });
+    }
+    if (typeof frei !== 'boolean' && frei !== 'true' && frei !== 'false') {
+      // Kein Standardwert. Eine vergessene Angabe darf nicht als Freigabe
+      // durchgehen — das ist genau die Richtung, in die ein Fehler hier nicht
+      // fallen darf.
+      return res.status(400).json({ error: 'frei muss true oder false sein' });
+    }
+    const ergebnis = await marketingApi.freigeben(nummer, frei === true || frei === 'true', {
+      von: req.auth && req.auth.user ? req.auth.user : 'admin',
+      notiz: typeof notiz === 'string' ? notiz : null,
+    });
+    res.status(ergebnis.ok ? 200 : 400).json(ergebnis);
+  } catch (error) {
+    console.error('Marketing-Freigabe-Fehler:', error.message);
+    res.status(500).json({ error: 'Freigabe nicht verfuegbar' });
   }
 });
 

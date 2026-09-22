@@ -105,6 +105,102 @@ def test_quality_gate_gegenprobe(werkstatt):
     assert ergebnis.info.hat_ton is True
 
 
+# ── Lautheit: "Tonspur vorhanden" ist die schwaechste Pruefung ────────
+#
+# Eine vollstaendig STILLE Tonspur ist eine Tonspur. Bis zum 18.09. kam ein
+# Video, bei dem die Musik nicht durchgereicht wurde, damit anstandslos durch
+# die Ausgangspruefung — dieselbe Klasse Fehler wie das 0-Byte-MP4, nur eine
+# Etage tiefer. Und mkt_videos.loudness_lufs gab es seit Runde 10, gefuellt
+# wurde die Spalte nie.
+
+def _video_mit_stiller_tonspur(ziel: Path, dauer: float = 15.0) -> Path:
+    """Video mit einer Tonspur, auf der NICHTS ist."""
+    common.lauf([
+        "-f", "lavfi", "-i", f"testsrc=size=1080x1920:rate=30:duration={dauer}",
+        "-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo:d={dauer}",
+        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac",
+        "-t", f"{dauer}", "-shortest", str(ziel),
+    ])
+    return ziel
+
+
+@hat_ffmpeg
+def test_quality_gate_weist_leere_tonspur_ab(werkstatt):
+    """Die Spur ist da, es ist nur nichts drauf."""
+    still = _video_mit_stiller_tonspur(werkstatt / "leise.mp4")
+
+    # Gegenbeweis vorweg: Die alte Pruefung sah hier nichts Verdaechtiges.
+    info = common.medien_info(still)
+    assert info is not None and info.hat_ton is True, \
+        "die Datei muss eine Tonspur HABEN — sonst prueft der Test das Falsche"
+
+    ergebnis = quality_gate.pruefe(still)
+    assert ergebnis.bestanden is False
+    assert any("still" in g for g in ergebnis.gruende), ergebnis.gruende
+
+
+@hat_ffmpeg
+def test_quality_gate_misst_und_vermerkt_die_lautheit(werkstatt):
+    """Drei Renderer normieren auf -14 LUFS — nachgesehen hat nie jemand."""
+    gut = _testvideo(werkstatt / "mit-ton.mp4", dauer=15.0)
+    ergebnis = quality_gate.pruefe(gut)
+    assert ergebnis.lufs is not None, "die Lautheit muss gemessen werden"
+    assert -70.0 < ergebnis.lufs < 0.0, f"unplausibler Wert: {ergebnis.lufs}"
+
+
+@hat_ffmpeg
+def test_sehr_leise_tonspur_gilt_als_leer(werkstatt):
+    """Ein Ton, den niemand hoert, ist praktisch kein Ton."""
+    leise = werkstatt / "zu-leise.mp4"
+    common.lauf([
+        "-f", "lavfi", "-i", "testsrc=size=1080x1920:rate=30:duration=15",
+        "-f", "lavfi", "-i", "sine=frequency=300:duration=15",
+        "-af", "volume=-40dB",
+        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac",
+        "-t", "15", "-shortest", str(leise),
+    ])
+    ergebnis = quality_gate.pruefe(leise)
+    assert ergebnis.bestanden is False
+    assert any("still" in g for g in ergebnis.gruende), ergebnis.gruende
+
+
+@hat_ffmpeg
+def test_abweichung_vom_zielwert_ist_kein_ausschlussgrund(werkstatt):
+    """GEGENPROBE ZUR STRENGE — und der Grund, warum sie so aussieht.
+
+    Der erste Entwurf dieser Pruefung wies alles ab, was mehr als 6 LU unter
+    -14 LUFS lag. Er liess prompt die vorhandene Gegenprobe der Kette
+    durchfallen: Das Testvideo liegt bei -21,9 LUFS. Gemessen, nicht vermutet.
+
+    Eine Sperre, die eingefuehrte Faelle abweist, wird nach zwei Tagen
+    abgeschaltet — und dann prueft gar nichts mehr. Also wird die Abweichung
+    gemessen und vermerkt, und die Grenze erst dann enger gezogen, wenn die
+    Zahlen zeigen, dass die Renderer danebenliegen.
+    """
+    daneben = _testvideo(werkstatt / "daneben.mp4", dauer=15.0)
+    ergebnis = quality_gate.pruefe(daneben)
+    assert ergebnis.bestanden is True, ergebnis.gruende
+    assert ergebnis.lufs is not None
+    assert abs(ergebnis.lufs - (-14.0)) > 6.0, (
+        "dieser Test setzt voraus, dass das Testvideo deutlich neben dem "
+        f"Zielwert liegt — es liegt bei {ergebnis.lufs:.1f} LUFS"
+    )
+
+
+@hat_ffmpeg
+def test_lautheit_echter_stille_ist_kein_none(werkstatt):
+    """ffmpeg meldet bei echter Stille "-inf".
+
+    Ohne Sonderbehandlung waere daraus None geworden — "nicht messbar" —,
+    und "nicht messbar" haette die Pruefung durchgelassen. Der schlechteste
+    Fall darf nicht wie ein fehlendes Messgeraet aussehen.
+    """
+    still = _video_mit_stiller_tonspur(werkstatt / "inf.mp4", dauer=6.0)
+    wert = common.lautheit(still)
+    assert wert is not None
+    assert wert < -60.0, f"echte Stille muss sehr klein sein, war {wert}"
+
+
 # ══════════════════════════════════════════════════════════════════════
 # 2. ffmpeg-Grundlagen
 # ══════════════════════════════════════════════════════════════════════
@@ -404,3 +500,117 @@ def test_stimme_liefert_echten_ton_keine_leere_datei(werkstatt):
     ausgabe = stimme.sprich("Dies ist eine Sprachprobe fuer den Test.", ziel)
     assert ziel.exists() and ziel.stat().st_size > 1000, "Tonspur ist leer"
     assert ausgabe.dauer > 0.5, f"Tonspur ist nur {ausgabe.dauer}s lang"
+
+
+# ── Helligkeit und schwarzer Anfang (Punkte 43 und 52) ───────────────
+#
+# Weisser Text auf hellem Wasser ist unlesbar, und das passiert bei fremdem
+# Material staendig, weil niemand den Hintergrund selbst gedreht hat. Auffallen
+# tut es erst am Handy in der Sonne — also nach dem Veroeffentlichen.
+# Kontrast ist messbar, nicht Geschmack.
+
+def _farbvideo(ziel: Path, farbe: str, *, dauer: float = 2.0,
+               groesse: str = "320x568") -> Path:
+    ziel.parent.mkdir(parents=True, exist_ok=True)
+    common.lauf([
+        "-f", "lavfi", "-i", f"color=c={farbe}:s={groesse}:d={dauer},format=yuv420p",
+        "-c:v", "libx264", str(ziel),
+    ])
+    return ziel
+
+
+@hat_ffmpeg
+def test_helligkeit_wird_gemessen_und_schwarz_ist_nicht_null(tmp_path):
+    """Die Grenze fuer "schwarz" ist gemessen — der erste Entwurf war falsch.
+
+    Er stand bei 12,0, in der Annahme, Schwarz sei 0. yuv420p bildet Helligkeit
+    aber auf die TV-Range 16..235 ab: Reines Schwarz misst 16. Eine Grenze bei
+    12 haette NIE ausgeloest — die Pruefung waere eingebaut gewesen und haette
+    nichts geprueft.
+    """
+    schwarz = _farbvideo(tmp_path / "schwarz.mp4", "black")
+    weiss = _farbvideo(tmp_path / "weiss.mp4", "white")
+
+    y_schwarz = common.helligkeit(schwarz)
+    y_weiss = common.helligkeit(weiss)
+
+    assert y_schwarz == pytest.approx(16.0, abs=1.0), "reines Schwarz misst 16, nicht 0"
+    assert y_weiss == pytest.approx(235.0, abs=1.0), "reines Weiss misst 235, nicht 255"
+
+    # GEGENPROBE: Genau deshalb liegt die Grenze ueber 16. Mit dem ersten
+    # Entwurf (12,0) waere reines Schwarz durchgegangen.
+    assert common.SCHWARZ_GRENZE_YAVG > y_schwarz
+    assert 12.0 < y_schwarz, "die alte Grenze lag UNTER dem Messwert von Schwarz"
+
+
+@hat_ffmpeg
+def test_ein_schwarzer_anfang_wird_erkannt(tmp_path):
+    schwarz = _farbvideo(tmp_path / "schwarz.mp4", "black")
+    weiss = _farbvideo(tmp_path / "weiss.mp4", "white")
+
+    assert common.erstes_bild_schwarz(schwarz) is True
+    assert common.erstes_bild_schwarz(weiss) is False
+
+    # GEGENPROBE: Gemessen werden die ersten 0,3 Sekunden, nicht das ganze
+    # Video. Ein Clip, der schwarz ANFAENGT und dann hell wird, muss auffallen
+    # — genau das ist der Fall beim Verketten mit Fade.
+    gemischt = tmp_path / "schwarzstart.mp4"
+    common.lauf([
+        "-i", str(schwarz), "-i", str(weiss),
+        "-filter_complex",
+        "[0:v]trim=0:0.4,setpts=PTS-STARTPTS[a];"
+        "[1:v]trim=0:1.6,setpts=PTS-STARTPTS[b];[a][b]concat=n=2:v=1",
+        "-c:v", "libx264", "-pix_fmt", "yuv420p", str(gemischt),
+    ])
+    assert common.erstes_bild_schwarz(gemischt) is True
+    assert common.helligkeit(gemischt) > common.SCHWARZ_GRENZE_YAVG, \
+        "ueber das ganze Video gemittelt waere er hell — deshalb zaehlt der Anfang"
+
+
+@hat_ffmpeg
+def test_der_untertitelbereich_wird_getrennt_gemessen(tmp_path):
+    """Gemessen wird der Bereich UNTER dem Textkasten, nicht das ganze Bild."""
+    bereich = common.untertitel_bereich(1080, 1920)
+    breite, hoehe, x, y = bereich
+    assert x == common.SAFE_SEITE
+    assert y + hoehe <= 1920 - common.SAFE_UNTEN + 1, \
+        "der Bereich muss oberhalb der TikTok-Bedienelemente liegen"
+
+    weiss = _farbvideo(tmp_path / "weiss.mp4", "white", groesse="1080x1920")
+    hell = common.helligkeit(weiss, ausschnitt=bereich)
+    assert hell > common.HELL_GRENZE_YAVG
+
+    # GEGENPROBE: Ein dunkles Video mit demselben Ausschnitt liegt darunter —
+    # die Messung haengt am Bild, nicht am Ausschnitt.
+    dunkel = _farbvideo(tmp_path / "dunkel.mp4", "0x202020", groesse="1080x1920")
+    assert common.helligkeit(dunkel, ausschnitt=bereich) < common.HELL_GRENZE_YAVG
+
+
+@hat_ffmpeg
+def test_der_bereich_kommt_aus_denselben_werten_wie_der_ass_stil(tmp_path):
+    """Zwei Zahlenreihen fuer dasselbe waeren die Fehlerklasse "zweite Liste"."""
+    _, _, x, _ = common.untertitel_bereich(1080, 1920)
+    assert x == common.SAFE_SEITE
+
+    # GEGENPROBE: Wird SAFE_SEITE geaendert, wandert der Messbereich mit.
+    # Ohne diese Kopplung wuerde die Pruefung nach einer Stilaenderung an der
+    # falschen Stelle messen und weiter gruen melden.
+    alt = common.SAFE_SEITE
+    try:
+        common.SAFE_SEITE = 200
+        _, _, x2, _ = common.untertitel_bereich(1080, 1920)
+        assert x2 == 200
+    finally:
+        common.SAFE_SEITE = alt
+
+
+def test_nicht_messbare_dateien_geben_none(tmp_path):
+    kaputt = tmp_path / "kaputt.mp4"
+    kaputt.write_bytes(b"kein video")
+    assert common.helligkeit(kaputt) is None
+    assert common.erstes_bild_schwarz(kaputt) is None
+
+    # GEGENPROBE: "nicht messbar" ist NICHT dasselbe wie "schwarz". Ein None,
+    # das als True gelesen wird, meldet bei jeder unlesbaren Datei einen
+    # schwarzen Anfang — und nach der dritten Fehlmeldung liest niemand mehr.
+    assert common.erstes_bild_schwarz(kaputt) is not True

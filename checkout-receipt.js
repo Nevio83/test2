@@ -231,7 +231,26 @@ class CheckoutReceipt {
       this.updateProgress(60, 'E-Mails werden versendet...');
 
       if (!response.ok) {
-        throw new Error('Fehler bei der Kassenbon-Erstellung');
+        // WICHTIG: Hier ist bereits BEZAHLT. Diese Seite wird erst nach der
+        // Rueckleitung von Stripe aufgerufen.
+        //
+        // Vorher stand hier nur ein allgemeiner Fehler, und der Kunde las
+        // "Fehler beim Erstellen des Kassenbons" — was nach einer
+        // fehlgeschlagenen Bestellung klingt. Wer das nach einer erfolgreichen
+        // Zahlung liest, kauft im Zweifel ein zweites Mal. Der Server schickt
+        // deshalb einen eigenen Text mit; er hat die Bestelldaten in dem Fall
+        // per Mail gesichert.
+        let hinweis = 'Deine Zahlung ist eingegangen. Nur der Beleg konnte gerade nicht '
+          + 'erstellt werden — wir melden uns per E-Mail. Bitte NICHT noch einmal bestellen.';
+        try {
+          const daten = await response.json();
+          if (daten && daten.kundenhinweis) hinweis = daten.kundenhinweis;
+        } catch (_) {
+          // Keine oder kaputte JSON-Antwort: der Standardtext oben gilt und ist
+          // der sicherere von beiden.
+        }
+        this.showZahlungSicher(hinweis);
+        return null;
       }
 
       const result = await response.json();
@@ -342,7 +361,7 @@ class CheckoutReceipt {
 
   showError(message) {
     const statusDiv = document.getElementById('receipt-status');
-    
+
     if (statusDiv) {
       statusDiv.style.background = '#f8d7da';
       statusDiv.style.borderColor = '#dc3545';
@@ -350,6 +369,28 @@ class CheckoutReceipt {
       statusDiv.querySelector('h3').innerHTML = '<i class="bi bi-exclamation-triangle"></i> Fehler beim Erstellen des Kassenbons';
       statusDiv.querySelector('.receipt-message').textContent = message;
       statusDiv.querySelector('.progress-bar').style.background = '#dc3545';
+    }
+  }
+
+  /**
+   * Der Beleg klappte nicht, die ZAHLUNG aber schon.
+   *
+   * Bewusst nicht rot: Rot heisst fuer den Kunden "fehlgeschlagen, nochmal
+   * versuchen" — und ein zweiter Versuch waere hier eine zweite Zahlung.
+   * Deshalb ein Warnton und eine Ueberschrift, die mit dem Geld anfaengt und
+   * nicht mit dem Beleg.
+   */
+  showZahlungSicher(message) {
+    const statusDiv = document.getElementById('receipt-status');
+
+    if (statusDiv) {
+      statusDiv.style.background = '#fff3cd';
+      statusDiv.style.borderColor = '#ffc107';
+      statusDiv.querySelector('h3').style.color = '#8a6d3b';
+      statusDiv.querySelector('h3').innerHTML = '<i class="bi bi-check-circle"></i> Zahlung eingegangen — Beleg folgt';
+      statusDiv.querySelector('.receipt-message').textContent = message;
+      statusDiv.querySelector('.progress-bar').style.background = '#ffc107';
+      statusDiv.querySelector('.progress-bar').style.width = '100%';
     }
   }
 }

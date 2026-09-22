@@ -83,6 +83,7 @@
         ['trockenlauf', 'im Trockenlauf', d.trockenlauf, ''],
         ['gepostet', 'veröffentlicht', d.gepostet, '']
       ];
+      sendezustand.privacy = d.tiktok_privacy || null;
       setze('ueberblick', kacheln.map(function (k) {
         return '<div class="kpi"><div class="kpi-val ' + k[3] + '">' + schuetze(k[2]) +
                '</div><div class="kpi-lab">' + schuetze(k[1]) + '</div></div>';
@@ -162,6 +163,199 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ an: an })
     }).then(function () { ladeJobs(); ladeUeberblick(); });
+  }
+
+  // ── Freigabe je Beitrag ────────────────────────────────────────────
+  //
+  // Die einzige Stelle im Dashboard, an der ein Mensch etwas entscheidet
+  // statt nur nachzusehen. Bis hierher kannte die Kette zwei Stellungen:
+  // Trockenlauf an (nichts geht raus) oder Trockenlauf aus (ALLES geht raus,
+  // ohne dass jemand den einzelnen Beitrag gesehen hat). Deshalb blieb der
+  // Schalter an — zu Recht. Diese Liste ist die Stellung dazwischen.
+  //
+  // Bewusst KEINE Sammelfreigabe: Die waere derselbe Alles-oder-Nichts-
+  // Schalter, nur mit mehr Klicks. Die Abfrage dahinter (api.js) hat aus
+  // demselben Grund keine.
+
+  // Merkt sich, was in die Notizfelder getippt wurde. Ohne das waere jede
+  // halb geschriebene Begruendung nach der Minutenaktualisierung weg —
+  // und wer seine Notiz zweimal verliert, schreibt beim dritten Mal "ok".
+  var notizen = {};
+
+  // Der echte TIKTOK_PRIVACY-Wert aus dem Ueberblick. Bis dahin steht das,
+  // was im Zweifel gilt: die Vorgabe.
+  var sendezustand = { privacy: null };
+
+  // Den Shop-Link aus der Bildunterschrift ziehen, damit man ihn anklicken
+  // kann, statt ihn abzutippen. Er steht dort ohnehin: baue_caption() setzt
+  // ihn mit der Kampagnenkennung hinein. Nur http/https, nichts anderes.
+  function linkAus(text) {
+    var treffer = String(text || '').match(/https?:\/\/[^\s]+/);
+    return treffer ? treffer[0] : null;
+  }
+
+  function hashtagsAls(wert) {
+    if (!wert) return [];
+    if (Array.isArray(wert)) return wert;
+    try {
+      var d = JSON.parse(wert);
+      return Array.isArray(d) ? d : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // SELF_ONLY heisst: nur fuer das eigene Konto sichtbar. Das steht so
+  // nirgends in der Oberflaeche, und "privat" ist das Wort, das jemand
+  // erwartet, der gerade freigibt.
+  function zustandKlartext() {
+    var wert = sendezustand.privacy;
+    if (!wert || wert === 'SELF_ONLY') return 'privat — nur für dein eigenes Konto sichtbar';
+    if (wert === 'PUBLIC_TO_EVERYONE') return 'öffentlich';
+    if (wert === 'MUTUAL_FOLLOW_FRIENDS') return 'nur für Freunde';
+    if (wert === 'FOLLOWER_OF_CREATOR') return 'nur für Follower';
+    return wert;
+  }
+
+  function ladeFreigaben() {
+    return hole('freigaben?limit=25').then(function (zeilen) {
+      var zahl = document.getElementById('freigaben-zahl');
+      if (zahl) {
+        zahl.textContent = zeilen.length
+          ? '— ' + zeilen.length + (zeilen.length === 1 ? ' Beitrag wartet' : ' Beiträge warten')
+          : '';
+      }
+      if (!zeilen.length) {
+        return setze('freigaben', leer('Nichts wartet auf eine Freigabe. ' +
+          'Entweder ist alles entschieden, oder es liegt noch kein geprüftes Video in der Warteschlange.'));
+      }
+
+      setze('freigaben',
+        // Zwei Sperren, die man beim Freigeben im Kopf haben muss und die
+        // sonst nirgends stehen. Beide sind richtig als Vorgabe — nur ist
+        // "freigegeben und trotzdem nicht sichtbar" ein verlorener Tag.
+        '<div class="hinweis">Eine Freigabe hebt den <strong>Trockenlauf</strong> nicht auf: ' +
+        'steht der noch, wird der Beitrag vorgemerkt und trotzdem nicht gesendet.<br>' +
+        'Geht raus als: <strong>' + schuetze(zustandKlartext()) + '</strong> ' +
+        '<span class="begruendung">(<span class="mono">TIKTOK_PRIVACY' +
+        (sendezustand.privacy ? '=' + schuetze(sendezustand.privacy) : ' nicht gesetzt') +
+        '</span>)</span></div>' +
+        zeilen.map(function (z) {
+          var link = linkAus(z.caption);
+          var tags = hashtagsAls(z.hashtags);
+          var felder = [
+            '<span class="feld"><b>Sendeplatz</b> ' +
+              schuetze(zeitpunkt(z.geplant_fuer)) +
+              (z.slot ? ' (' + schuetze(z.slot) + ')' : '') + '</span>',
+            '<span class="feld"><b>Stil</b> ' + schuetze(z.stil || '–') +
+              (z.schnittliste ? ' <span class="mono">' + schuetze(z.schnittliste) + '</span>' : '') + '</span>',
+            '<span class="feld"><b>Länge</b> ' +
+              (z.dauer_sek ? Number(z.dauer_sek).toFixed(1) + ' s' : '–') + '</span>',
+            '<span class="feld"><b>Produkt</b> ' + schuetze(z.produkt_id != null ? z.produkt_id : '–') + '</span>',
+            '<span class="feld"><b>Video</b> #' + schuetze(z.video_id) + '</span>'
+          ].join(' ');
+
+          // Die Bildunterschrift im WORTLAUT, nicht gekuerzt. Sie ist das,
+          // was der Zuschauer liest — eine auf 60 Zeichen abgeschnittene
+          // Vorschau davon kann man nicht freigeben.
+          var caption = String(z.caption || '').trim();
+
+          return '<div class="freigabe" data-karte="' + schuetze(z.post_id) + '">' +
+            '<div class="kopf">' +
+              '<span class="titel">' + schuetze(z.plattform) + '</span>' +
+              '<span class="zustand z-laeuft">' + schuetze(z.status) + '</span>' +
+              '<span class="feld ms-auto mono">Beitrag #' + schuetze(z.post_id) + '</span>' +
+            '</div>' +
+            '<div class="mb-1">' + felder + '</div>' +
+            (caption
+              ? '<div class="caption-text">' + schuetze(caption) + '</div>'
+              : '<div class="hinweis">Diese Bildunterschrift ist leer. Bei Stil C ist das der ' +
+                'Normalfall — Hook, Aufruf und Hashtags kommen aus dem Briefing, und eine ' +
+                'Schnittliste hat keins. So sollte der Beitrag nicht raus.</div>') +
+            '<div class="mb-2">' +
+              (tags.length
+                ? '<span class="feld"><b>Hashtags</b> ' + schuetze(tags.join(' ')) + '</span>'
+                : '<span class="feld text-danger"><b>Keine Hashtags</b> — auf TikTok heißt das kaum Reichweite.</span>') +
+            '</div>' +
+            (link
+              ? '<div class="mb-2"><span class="feld"><b>Zielverweis</b></span> ' +
+                '<a href="' + schuetze(link) + '" target="_blank" rel="noopener noreferrer" ' +
+                'class="mono">' + schuetze(link) + '</a></div>'
+              : '<div class="mb-2"><span class="feld text-danger"><b>Kein Link in der Bildunterschrift</b> — ' +
+                'ohne ihn lässt sich keine Bestellung diesem Beitrag zuordnen.</span></div>') +
+            '<div class="mb-2 feld"><b>Datei</b> <span class="mono">' +
+              schuetze(z.pfad || '–') + '</span></div>' +
+            '<div class="tat">' +
+              '<textarea class="form-control form-control-sm" style="flex:1;min-width:220px" ' +
+                'data-notiz="' + schuetze(z.post_id) + '" rows="1" ' +
+                'placeholder="Notiz — bei Ablehnung Pflicht, sonst freiwillig">' +
+                schuetze(notizen[z.post_id] || '') + '</textarea>' +
+              '<button class="btn btn-sm btn-success" data-frei="' + schuetze(z.post_id) + '">' +
+                '<i class="bi bi-send"></i> freigeben</button>' +
+              '<button class="btn btn-sm btn-outline-danger" data-ablehnen="' + schuetze(z.post_id) + '">' +
+                'ablehnen</button>' +
+            '</div>' +
+          '</div>';
+        }).join(''));
+
+      Array.prototype.forEach.call(
+        document.querySelectorAll('#freigaben textarea[data-notiz]'), function (t) {
+          t.addEventListener('input', function () {
+            notizen[t.getAttribute('data-notiz')] = t.value;
+          });
+        });
+      Array.prototype.forEach.call(
+        document.querySelectorAll('#freigaben button[data-frei]'), function (b) {
+          b.addEventListener('click', function () { entscheide(b.getAttribute('data-frei'), true); });
+        });
+      Array.prototype.forEach.call(
+        document.querySelectorAll('#freigaben button[data-ablehnen]'), function (b) {
+          b.addEventListener('click', function () { entscheide(b.getAttribute('data-ablehnen'), false); });
+        });
+    });
+  }
+
+  function entscheide(postId, frei) {
+    var notiz = (notizen[postId] || '').trim();
+
+    // Eine Ablehnung ohne Grund ist in drei Wochen wertlos — dann steht in
+    // der Tabelle "abgelehnt" und niemand weiss mehr, warum. Bei der
+    // Freigabe ist die Notiz freiwillig: Ein Pflichtfeld erzeugt dort "ok".
+    if (!frei && !notiz) {
+      window.alert('Bitte einen Grund eintragen. Eine Ablehnung ohne Begründung ' +
+        'sagt später niemandem mehr etwas.');
+      return;
+    }
+    if (frei && !window.confirm(
+        'Beitrag #' + postId + ' freigeben?\n\n' +
+        'Damit darf dieser eine Beitrag gesendet werden, sobald der Trockenlauf aus ist. ' +
+        'Ein veröffentlichter Beitrag lässt sich nicht kurz zurückholen.')) {
+      return;
+    }
+
+    fetch(BASIS + 'freigabe', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ post_id: Number(postId), frei: frei, notiz: notiz || null })
+    }).then(function (r) {
+      return r.json().catch(function () { return { ok: false, grund: 'Antwort unlesbar (' + r.status + ')' }; });
+    }).then(function (d) {
+      // Die Antwort zeigen statt still neu zu laden: Wenn der Beitrag
+      // inzwischen gepostet wurde, lehnt der Server ab — und dann soll das
+      // dastehen, nicht bloss die Karte verschwinden.
+      if (!d || d.ok !== true) {
+        window.alert('Nicht gespeichert: ' + ((d && (d.grund || d.error)) || 'unbekannter Fehler'));
+      } else {
+        delete notizen[postId];
+      }
+      ladeFreigaben();
+      ladeWarteschlange();
+      ladeUeberblick();
+      ladeProtokoll();
+    }).catch(function (e) {
+      console.error(e);
+      window.alert('Freigabe nicht gesendet: ' + e.message);
+    });
   }
 
   // ── Listen ─────────────────────────────────────────────────────────
@@ -310,7 +504,16 @@
   // ── Start ──────────────────────────────────────────────────────────
 
   function alles() {
-    [ladeUeberblick, ladeJobs, ladeTrends, ladeWarteschlange, ladeErgebnisse,
+    // Der Ueberblick zuerst, die Freigabeliste danach: Dort steht, ob ein
+    // gesendeter Beitrag oeffentlich oder privat landet, und der Wert kommt
+    // aus dem Ueberblick. Parallel gestartet zeigte die Liste beim ersten
+    // Aufbau die Vorgabe statt des echten Zustands — eine Minute lang, bis
+    // zur naechsten Aktualisierung.
+    ladeUeberblick()
+      .then(ladeFreigaben)
+      .catch(function (e) { console.error(e); ladeFreigaben().catch(function () {}); });
+
+    [ladeJobs, ladeTrends, ladeWarteschlange, ladeErgebnisse,
      ladeVerworfen, ladeLernstand, ladeKosten, ladeOverrides, ladeProtokoll]
       .forEach(function (f) {
         f().catch(function (e) { console.error(e); });

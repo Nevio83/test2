@@ -1,0 +1,34 @@
+{
+  "_hinweis": "BEISPIEL — die Dateinamen sind erfunden. Echte Namen liefert 'npm run tiktok:bogen'. Der fuehrende Unterstrich im Dateinamen sorgt dafuer, dass diese Liste nicht gerendert wird.",
+  "produkt_id": 10,
+  "musik": null,
+  "hook": "Nie wieder Flaschen schleppen",
+  "cta": "Jetzt im Shop. Werbung.",
+  "hashtags": [
+    "wasserspender",
+    "kueche",
+    "gadget",
+    "haushalt",
+    "homeoffice"
+  ],
+  "segmente": [
+    {
+      "quelle": "10_7300000000000000001.mp4",
+      "von": 1.2,
+      "bis": 3.0,
+      "text": "Nie wieder Flaschen schleppen"
+    },
+    {
+      "quelle": "10_7300000000000000002.mp4",
+      "von": 0.0,
+      "bis": 2.4,
+      "zuschnitt": "crop=1080:1350:0:200"
+    },
+    {
+      "quelle": "10_7300000000000000003.mp4",
+      "von": 5.5,
+      "bis": 8.0,
+      "text": "Akku hält wochenlang"
+    }
+  ]
+}

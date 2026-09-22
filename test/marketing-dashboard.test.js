@@ -125,15 +125,60 @@ test('die Marketing-Routen stehen hinter Anmeldung und Herkunftsprüfung', () =>
   assert.deepEqual(oeffentlich, [], `ohne Admin-Schutz erreichbar: ${oeffentlich.join(', ')}`);
 });
 
-test('die Seite schreibt nur über die zwei Schalter', () => {
+test('die Seite schreibt nur über die erlaubten Schalter', () => {
   // Ein Dashboard, das Prozesse startet oder Daten ändert, ist die
-  // gefährlichere Bauart. Erlaubt sind genau zwei schreibende Aufrufe:
-  // ein Job an/aus und der Sammelschalter.
+  // gefährlichere Bauart. Erlaubt ist deshalb eine ABGESCHLOSSENE Liste:
+  //
+  //   UPDATE mkt_jobs            ein Job an/aus + Sammelschalter
+  //   UPDATE mkt_posts           die Freigabe EINES Beitrags
+  //   INSERT INTO mkt_audit_log  jede dieser Entscheidungen wird mitgeschrieben
+  //
+  // mkt_posts kam mit der Freigabe je Beitrag dazu. Das ist eine bewusste
+  // Erweiterung der Regel, keine Aufweichung: Ohne sie gaebe es nur den
+  // Alles-oder-Nichts-Trockenlauf — und der bleibt dann fuer immer an, weil
+  // "alles raus, ungesehen" niemand verantworten will.
+  //
+  // Die Liste ist absichtlich eng. Wer hier eine Tabelle ergaenzt, soll den
+  // Test anfassen muessen und sich dabei fragen, ob das Dashboard das
+  // wirklich schreiben darf.
   const schreibend = [...API.matchAll(/(INSERT INTO|UPDATE|DELETE FROM) (\w+)/g)]
     .map((m) => `${m[1]} ${m[2]}`);
-  const erlaubt = new Set(['UPDATE mkt_jobs', 'INSERT INTO mkt_audit_log']);
+  const erlaubt = new Set([
+    'UPDATE mkt_jobs',
+    'UPDATE mkt_posts',
+    'INSERT INTO mkt_audit_log',
+  ]);
   const unerwartet = schreibend.filter((s) => !erlaubt.has(s));
   assert.deepEqual(unerwartet, [], `unerwartet schreibender Zugriff: ${unerwartet.join(', ')}`);
+
+  // Nichts wird GELOESCHT. Ein Dashboard, das Beitraege oder Laeufe entfernt,
+  // vernichtet genau die Spur, die man im Zweifel braucht.
+  const loeschend = schreibend.filter((s) => s.startsWith('DELETE'));
+  assert.deepEqual(loeschend, [], `das Dashboard darf nichts loeschen: ${loeschend.join(', ')}`);
+});
+
+test('die Freigabe fasst nur die Freigabe-Spalten und den Status an', () => {
+  // Die Sorge bei einem UPDATE mkt_posts ist nicht der Zugriff an sich,
+  // sondern WAS er anfassen koennte: Ein Dashboard, das caption,
+  // geplant_fuer oder den Fingerabdruck aendern kann, hebelt den
+  // Doppelpost-Schutz aus — und zwar unbemerkt, denn der Beitrag sieht
+  // danach immer noch aus wie ein Beitrag.
+  const stelle = API.indexOf('UPDATE mkt_posts');
+  assert.ok(stelle > -1, 'kein UPDATE mkt_posts gefunden');
+  const anweisung = API.slice(stelle, API.indexOf('RETURNING', stelle));
+
+  const verboten = ['caption', 'hashtags', 'geplant_fuer', 'idempotenz_schluessel',
+    'video_id', 'plattform', 'externe_post_id', 'gepostet_am'];
+  for (const spalte of verboten) {
+    assert.ok(
+      !new RegExp(`\\b${spalte}\\s*=`).test(anweisung),
+      `die Freigabe darf '${spalte}' nicht veraendern — das waere ein anderer Beitrag`
+    );
+  }
+
+  // Und sie fasst nichts an, was schon draussen ist.
+  assert.ok(/status NOT IN \('gepostet'\)/.test(anweisung),
+    'ein bereits geposteter Beitrag darf nicht mehr freigegeben werden');
 });
 
 test('ohne Datenbank liefert die Übersicht eine leere Antwort statt zu werfen', async () => {

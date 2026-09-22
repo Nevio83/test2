@@ -27,13 +27,32 @@ const {
   belastbar, getroffeneBegriffe,
   sucheAdressen, istMusik, pruefeSprache, wirdGeredet, begriffeFuer,
   begriffsGruppen, bewerte, ausschlussTreffer, spracheDesTextes, hatKernwort,
+  ablehnungsbuch, schreibeAblehnungen, LAEUFE_IM_BUCH, pauseSpanne,
+  trenneUnterschrift, inhaltsTags, fliesstextLaenge, begriffsHaeufigkeit,
+  REICHWEITEN_TAGS,
+  dHash, bitAbstand, bildFingerabdruck, gleichesBild, schonAlsBildDa, findeFfmpeg,
+  BILD_ABSTAND_MAX, randErkennung, randAnteil, randUntauglich,
+  datumAusVideoId, alterInTagen, beliebtheitsRate,
   naechsteNummer, slugFuerDateiname, schuetzeDatei,
   interaktiv, frageStelle, TIKTOK_VIDEO_MUSTER,
   verwaisteEintraege, raeumeIndexAuf, aufraeumen, schonImIndex, schonAlsDateiDa,
   sprachHinweise, textAusPuffern, videoText, ladeKonfig,
   hatMerkmal, getroffeneMerkmale, adressenAusText, fundeAusText, zerlege, impersonationVerfuegbar,
+  technischUntauglich, formatVermerk,
   produktOrdner, imRohmaterial, brauchtEinzelschutz, legeProduktOrdnerAn,
   gesprocheneSprache, sprachePasst, SPRACHE_SICHER, indexPfad,
+  bestandJeProdukt, produkteNachLuecke, creatorProfil, creatorBilanz, creatorQuellen,
+  begriffsBilanz, begriffeSortiert, vermerkeBegriff,
+  ersteZeile, ffmpegVersion, werkzeugStand, werkzeugZeile, werkzeugUnterschied,
+  rohText, werbeVerdacht, istFremdeWerbung,
+  ZUSTAENDE, VERWURF_GRUENDE, setzeZustand, zustandVon, zustandsBilanz,
+  platzbedarf, lesbareGroesse, ablaufkandidaten,
+  ERLAUBTE_ABLAGEN, ablageErlaubt, fremdmaterialAmFalschenOrt,
+  herkunftAusName, ohneHerkunftImNamen,
+  RECHTE_ARTEN, RECHTE_ZWECKE, rechteAkte, rechteLuecken, darfVeroeffentlicht,
+  setzeRechte, widerrufeRechte, rechteBilanz,
+  creatorAnfrage, offeneAnfragen,
+  sammleUrteil, ladeUrteile, speichereUrteile, urteilsBilanz, urteilePfad,
 } = require('./tiktok-video-sync');
 const { PassThrough } = require('stream');
 
@@ -2240,7 +2259,10 @@ test('zwischen zwei Abrufen wird gewartet', async () => {
     wurzel: path.dirname(videos),
     produkte: [PRODUKT],
     konfig: { produkte: { 10: { videos: [eins.webpage_url, zwei.webpage_url] } } },
-    standard: { ...STANDARD, pause_zwischen_anfragen_sek: 3 },
+    standard: { ...STANDARD, pause_zwischen_anfragen_sek: 3, pause_hoechstens_sek: 12 },
+    // Nicht wuerfeln im Testlauf: Sonst prueft der Test den Zufallsgenerator
+    // mit. 0.5 heisst Mitte der Spanne — 7,5 s.
+    wuerfel: () => 0.5,
     datenOrdner: daten, videoOrdner: videos, gitignore: path.join(daten, '.gitignore'),
     stopDatei: path.join(daten, 'kein-STOP'), env: {},
     frage: async () => antworten.shift(),
@@ -2249,7 +2271,7 @@ test('zwischen zwei Abrufen wird gewartet', async () => {
   });
 
   assert.equal(protokoll.angaben.length, 2, 'beide Adressen wurden abgerufen');
-  assert.deepEqual(pausen, [3000], 'genau einmal gewartet: vor dem zweiten Abruf, nicht vor dem ersten');
+  assert.deepEqual(pausen, [7500], 'genau einmal gewartet: vor dem zweiten Abruf, nicht vor dem ersten');
 
   // GEGENPROBE: Vorher gab es hier gar keine Pause. Weitergereicht wurde
   // "--sleep-requests", und das bremst nur INNERHALB eines yt-dlp-Aufrufs —
@@ -3039,4 +3061,2071 @@ test('vorab aussortiert wird nur auf positiven Beweis', () => {
   // Abruf zu viel.
   const duenn = 'Wasser 💧';
   assert.ok(duenn.length < 25, 'so kurz wird gar nicht erst geurteilt');
+});
+
+// ── Huerde 8: technische Mindestanforderungen ────────────────────────
+
+test('lehnt zu niedrige Aufloesung ab', () => {
+  const grund = technischUntauglich({ hoehe: 480, breite: 640, dauer: 20 }, STANDARD);
+  assert.ok(grund, 'ein 480p-Video muss abgelehnt werden');
+  assert.match(grund, /480p/);
+});
+
+test('lehnt zu kurze Clips ab', () => {
+  const grund = technischUntauglich({ hoehe: 1920, breite: 1080, dauer: 3 }, STANDARD);
+  assert.ok(grund);
+  assert.match(grund, /3\.0 s/);
+});
+
+test('laesst brauchbares Material durch', () => {
+  assert.strictEqual(
+    technischUntauglich({ hoehe: 1920, breite: 1080, dauer: 19.5 }, STANDARD),
+    null,
+  );
+});
+
+test('Querformat wird durchgelassen, aber vermerkt', () => {
+  // Es taugt als Einblendung — ablehnen hiesse brauchbares Material wegwerfen.
+  assert.strictEqual(
+    technischUntauglich({ hoehe: 1080, breite: 1920, dauer: 20 }, STANDARD),
+    null,
+  );
+  assert.strictEqual(formatVermerk(1920, 1080), 'quer');
+  assert.strictEqual(formatVermerk(1080, 1920), 'hoch');
+  assert.strictEqual(formatVermerk(1080, 1080), 'quadratisch');
+
+  // Wer es doch ablehnen will, stellt es um.
+  const streng = { ...STANDARD, quer_ablehnen: true };
+  assert.ok(technischUntauglich({ hoehe: 1080, breite: 1920, dauer: 20 }, streng));
+});
+
+test('fehlende Angaben fuehren NICHT zur Ablehnung', () => {
+  // Abgelehnt wird nur auf positiven Beweis — dieselbe Regel wie bei der
+  // Vorpruefung aus dem Seitentext. Ein Abruf zu viel ist billiger als ein
+  // gutes Video, das nie angesehen wurde.
+  assert.strictEqual(technischUntauglich({ dauer: 20 }, STANDARD), null);
+  assert.strictEqual(technischUntauglich({ hoehe: 1920, breite: 1080 }, STANDARD), null);
+  assert.strictEqual(technischUntauglich({}, STANDARD), null);
+  assert.strictEqual(technischUntauglich(null, STANDARD), null);
+  assert.strictEqual(formatVermerk(null, null), null);
+});
+
+test('Gegenprobe: ohne Huerde 8 kaeme das 480p-Video durch alle sieben Textpruefungen', () => {
+  // Genau der Fall, fuer den die Huerde gebaut ist: Der Untertitel ist
+  // einwandfrei, das Produkt stimmt, alle Textpruefungen sind zufrieden —
+  // und der Clip ist fuer 1080x1920 trotzdem wertlos.
+  const video = {
+    id: '7300000000000000009',
+    title: 'Elektrischer Wasserspender am Schreibtisch im Test',
+    description: 'automatischer wasserspender mit akku fuer die gallone',
+    hoehe: 480, breite: 640, dauer: 3,
+  };
+  // Textseite: einwandfrei.
+  assert.ok(hatKernwort(video, ['wasserspender']));
+  assert.strictEqual(ausschlussTreffer(video, ['katzenbrunnen']), null);
+  assert.ok(getroffeneMerkmale(video, [['akku'], ['gallone']]).length);
+  // Und trotzdem unbrauchbar — das sieht nur Huerde 8.
+  assert.ok(technischUntauglich(video, STANDARD));
+});
+
+test('0 schaltet die jeweilige Pruefung ab', () => {
+  const aus = { ...STANDARD, min_hoehe: 0, min_dauer_sek: 0 };
+  assert.strictEqual(technischUntauglich({ hoehe: 144, breite: 176, dauer: 1 }, aus), null);
+});
+
+test('die Grenzen entsprechen denen der Ausgangspruefung des Automaten', () => {
+  // Was der Marketing-Automat am Ende ablehnt (video.min_dauer_sek = 8 als
+  // Vorgabe dort, hier 5 fuer Rohmaterial), braucht hier nicht geladen zu
+  // werden. Die Zahlen duerfen auseinandergehen, die Richtung nicht.
+  assert.ok(STANDARD.min_dauer_sek > 0);
+  assert.ok(STANDARD.min_hoehe >= 720, 'unter 720p ist fuer 1080x1920 nichts zu holen');
+});
+
+// ── Ablehnungsgruende (Punkt 13) ─────────────────────────────────────
+//
+// Bei 338 Untertiteln fielen 168 (50 %) vorab durch. Die Entscheidung war
+// binaer — durch oder nicht. Der GRUND ist aber die eigentliche Information:
+// "Standgeraet", "Osmose-Anlage", "Thermosbecher" standen im Bericht als
+// HANDVERLESENE Beispiele. Das sollte die Maschine selbst sagen koennen.
+
+test('das Buch zaehlt je Regel und nennt die haeufigsten Ausloeser', () => {
+  const buch = ablehnungsbuch();
+  buch.vermerke('ausschlussliste', 'standgeraet');
+  buch.vermerke('ausschlussliste', 'standgeraet');
+  buch.vermerke('ausschlussliste', 'osmose');
+  buch.vermerke('sprache', 'en');
+
+  const [erste, zweite] = buch.auswertung();
+  assert.strictEqual(erste.regel, 'ausschlussliste');
+  assert.strictEqual(erste.anzahl, 3, 'haeufigste Regel zuerst');
+  assert.deepStrictEqual(erste.ausloeser[0], { wort: 'standgeraet', anzahl: 2 });
+  assert.strictEqual(zweite.regel, 'sprache');
+});
+
+test('zwei Laeufe mit denselben Zahlen ergeben dieselbe Reihenfolge', () => {
+  // Ohne festen Zweitschluessel waere die Ausgabe bei Gleichstand von der
+  // Einfuegereihenfolge abhaengig — dann sieht ein Vergleich zweier Laeufe
+  // nach einer Veraenderung aus, wo keine ist.
+  const a = ablehnungsbuch();
+  a.vermerke('zebra'); a.vermerke('alpha');
+  const b = ablehnungsbuch();
+  b.vermerke('alpha'); b.vermerke('zebra');
+  assert.deepStrictEqual(a.auswertung().map((r) => r.regel),
+    b.auswertung().map((r) => r.regel));
+  assert.deepStrictEqual(a.auswertung().map((r) => r.regel), ['alpha', 'zebra']);
+});
+
+test('eine Regel ohne Ausloeser ist kein Sonderfall', () => {
+  // "kein Produktwort im Text" hat kein ausloesendes Wort — es fehlt ja
+  // gerade eines. Die Zeile muss trotzdem gezaehlt werden.
+  const buch = ablehnungsbuch();
+  buch.vermerke('kernwort fehlt');
+  buch.vermerke('kernwort fehlt');
+  const [regel] = buch.auswertung();
+  assert.strictEqual(regel.anzahl, 2);
+  assert.deepStrictEqual(regel.ausloeser, []);
+});
+
+test('ein leeres Buch ergibt eine leere Auswertung, keinen Fehler', () => {
+  assert.deepStrictEqual(ablehnungsbuch().auswertung(), []);
+});
+
+test('der Verlauf haelt die letzten Laeufe, nicht alle', () => {
+  // Ohne Grenze waechst die Datei mit jedem Lauf. Nach zehn Laeufen ist es
+  // eine Kurve; nach tausend ist es Muell, den niemand mehr oeffnet.
+  const ordner = fs.mkdtempSync(path.join(os.tmpdir(), 'ablehnung-'));
+  const buch = ablehnungsbuch();
+  buch.vermerke('sprache', 'en');
+
+  for (let i = 0; i < LAEUFE_IM_BUCH + 5; i++) {
+    schreibeAblehnungen(ordner, buch.auswertung(), {
+      geprueft: 10, geladen: 1, produkt: 10, jetzt: new Date(2026, 8, 1 + i),
+    });
+  }
+  const gelesen = JSON.parse(fs.readFileSync(path.join(ordner, 'ablehnungen.json'), 'utf8'));
+  assert.strictEqual(gelesen.laeufe.length, LAEUFE_IM_BUCH);
+  // Die JUENGSTEN muessen bleiben, nicht die aeltesten.
+  const letzter = new Date(gelesen.laeufe[gelesen.laeufe.length - 1].zeitpunkt);
+  assert.strictEqual(letzter.getDate(), new Date(2026, 8, LAEUFE_IM_BUCH + 5).getDate());
+});
+
+test('der Verlauf haelt fest, wieviel geprueft und wieviel abgelehnt wurde', () => {
+  const ordner = fs.mkdtempSync(path.join(os.tmpdir(), 'ablehnung-'));
+  const buch = ablehnungsbuch();
+  buch.vermerke('sprache', 'en');
+  buch.vermerke('ausschlussliste', 'osmose');
+  schreibeAblehnungen(ordner, buch.auswertung(), { geprueft: 20, geladen: 2, produkt: 10 });
+
+  const [lauf] = JSON.parse(fs.readFileSync(path.join(ordner, 'ablehnungen.json'), 'utf8')).laeufe;
+  assert.strictEqual(lauf.geprueft, 20);
+  assert.strictEqual(lauf.geladen, 2);
+  assert.strictEqual(lauf.abgelehnt, 2);
+  assert.strictEqual(lauf.produkt, 10);
+});
+
+test('eine kaputte Verlaufsdatei kostet den Lauf nicht', () => {
+  // Der Bot laedt Videos. Ein Tippfehler in einer Statistikdatei darf ihn
+  // nicht anhalten — die Statistik ist die Nebensache, nicht der Zweck.
+  const ordner = fs.mkdtempSync(path.join(os.tmpdir(), 'ablehnung-'));
+  fs.writeFileSync(path.join(ordner, 'ablehnungen.json'), '{"laeufe": ', 'utf8');
+  const buch = ablehnungsbuch();
+  buch.vermerke('sprache', 'en');
+
+  const pfad = schreibeAblehnungen(ordner, buch.auswertung(), { geprueft: 1, geladen: 0 });
+  assert.ok(pfad, 'trotz kaputter Datei muss geschrieben werden');
+  const gelesen = JSON.parse(fs.readFileSync(pfad, 'utf8'));
+  assert.strictEqual(gelesen.laeufe.length, 1);
+});
+
+test('ein nicht beschreibbarer Ordner faerbt den Lauf nicht', () => {
+  const buch = ablehnungsbuch();
+  buch.vermerke('sprache', 'en');
+  assert.strictEqual(
+    schreibeAblehnungen(path.join(os.tmpdir(), 'gibt-es-nicht', 'auch-nicht'),
+      buch.auswertung(), {}),
+    null,
+  );
+});
+
+test('der Zeitpunkt wird als Date, als Text und als Funktion angenommen', () => {
+  // Im Programm kommt "jetzt" in allen drei Formen vor — an einer Stelle als
+  // Funktion, die eine ISO-Zeichenkette liefert. Der erste Entwurf nahm ein
+  // Date an und warf dort "jetzt.toISOString is not a function"; gefunden hat
+  // das der vorhandene Testlauf, nicht das Nachdenken.
+  const buch = ablehnungsbuch();
+  buch.vermerke('sprache', 'en');
+
+  for (const form of [
+    new Date('2026-09-18T10:00:00Z'),
+    '2026-09-18T10:00:00.000Z',
+    () => '2026-09-18T10:00:00.000Z',
+    null,
+  ]) {
+    const ordner = fs.mkdtempSync(path.join(os.tmpdir(), 'ablehnung-'));
+    const pfad = schreibeAblehnungen(ordner, buch.auswertung(), { jetzt: form });
+    assert.ok(pfad, `Form ${typeof form} hat den Lauf gekostet`);
+    const [lauf] = JSON.parse(fs.readFileSync(pfad, 'utf8')).laeufe;
+    assert.ok(!Number.isNaN(new Date(lauf.zeitpunkt).getTime()),
+      `unbrauchbarer Zeitpunkt: ${lauf.zeitpunkt}`);
+  }
+});
+
+// ── Alter und Wachstum (Punkte 05 und 18) ────────────────────────────
+//
+// Das Datum steht SCHON IN DER ADRESSE: Eine TikTok-Video-ID ist eine
+// 64-Bit-Zahl, die oberen 32 Bit sind der Unix-Zeitstempel. Es kostet also
+// keinen Abruf — und genau die sind das knappe Gut.
+
+test('das Datum kommt aus der Video-ID, ohne einen einzigen Abruf', () => {
+  const datum = datumAusVideoId('7300000000000000001');
+  assert.ok(datum instanceof Date);
+  assert.strictEqual(datum.toISOString().slice(0, 7), '2023-11');
+});
+
+test('eine 19-stellige ID wird als BigInt gelesen, nicht als Number', () => {
+  // 7300000000000000001 liegt weit ueber Number.MAX_SAFE_INTEGER, und ">> 32"
+  // rechnet JavaScript auf 32 Bit — auf einem Number waere das Ergebnis
+  // schlicht falsch, und zwar auf eine Art, die plausible Zahlen liefert.
+  const alsNumber = Number('7300000000000000001') >> 32;   // das Falsche
+  const alsBigInt = Number(BigInt('7300000000000000001') >> 32n);
+  assert.notStrictEqual(alsNumber, alsBigInt);
+  assert.strictEqual(
+    Math.floor(datumAusVideoId('7300000000000000001').getTime() / 1000),
+    alsBigInt,
+  );
+});
+
+test('unplausible IDs ergeben kein Datum, sondern null', () => {
+  // Vor 2016 gab es TikTok ausserhalb Chinas nicht. Was davor liegt, ist
+  // keine alte Adresse, sondern eine falsch gelesene — und ein falsches
+  // Datum waere schlimmer als gar keins: Es sortiert still mit.
+  assert.strictEqual(datumAusVideoId('1000000000000000000'), null);
+  assert.strictEqual(datumAusVideoId('123'), null);
+  assert.strictEqual(datumAusVideoId('abc'), null);
+  assert.strictEqual(datumAusVideoId(null), null);
+  assert.strictEqual(datumAusVideoId('99999999999999999999999'), null);
+});
+
+test('das Alter kommt aus der Adresse', () => {
+  const jetzt = new Date('2026-09-18T12:00:00Z');
+  const tage = alterInTagen('https://www.tiktok.com/@a/video/7300000000000000001', jetzt);
+  assert.ok(tage > 1000 && tage < 1100, `unplausibel: ${tage}`);
+  assert.strictEqual(alterInTagen('https://example.com/kein-video', jetzt), null);
+});
+
+test('sortiert wird nach Wachstum, nicht nach roher Beliebtheit', () => {
+  const jetzt = new Date('2026-09-18T12:00:00Z');
+  const alt = { url: 'https://www.tiktok.com/@a/video/7300000000000000001', likes: 800000 };
+  // 7684060705770700800 = 11.09.2026, also eine Woche vor "jetzt".
+  const schnell = { url: 'https://www.tiktok.com/@a/video/7684060705770700800', likes: 20000 };
+
+  const rateAlt = beliebtheitsRate(alt, jetzt);
+  const rateSchnell = beliebtheitsRate(schnell, jetzt);
+  assert.ok(rateAlt < 800000, 'die rohe Zahl darf nicht durchgereicht werden');
+  assert.ok(rateSchnell > rateAlt,
+    `der schnell wachsende Clip muss vorne stehen (${rateSchnell} vs ${rateAlt})`);
+});
+
+test('der Satz aus dem Arbeitspapier stimmt so NICHT — nachgerechnet', () => {
+  // "Ein frischer Clip mit 20.000 Likes gewinnt gegen einen alten mit
+  // 800.000" gilt nicht allgemein: 800.000 auf 1042 Tage sind 767 am Tag,
+  // 20.000 auf 30 Tage sind 666. Der alte gewinnt weiter, und zu Recht.
+  // Die Rate bevorzugt das SCHNELL WACHSENDE, nicht das Neue. Dieser Test
+  // haelt die Korrektur fest, damit sie nicht wieder verlorengeht.
+  const jetzt = new Date('2026-09-18T12:00:00Z');
+  const alt = { url: 'https://www.tiktok.com/@a/video/7300000000000000001', likes: 800000 };
+  // 7675525746760089600 = 19.08.2026, also einen Monat vor "jetzt".
+  const neuLangsam = { url: 'https://www.tiktok.com/@a/video/7675525746760089600', likes: 20000 };
+  assert.ok(alterInTagen(neuLangsam.url, jetzt) < 60, 'der zweite muss frisch sein');
+  assert.ok(beliebtheitsRate(alt, jetzt) > beliebtheitsRate(neuLangsam, jetzt),
+    'ein frischer Clip gewinnt NICHT automatisch');
+});
+
+test('ohne Datum bleibt die rohe Zahl — geraten wird nicht', () => {
+  const jetzt = new Date('2026-09-18T12:00:00Z');
+  assert.strictEqual(beliebtheitsRate({ url: 'https://example.com/x', likes: 5000 }, jetzt), 5000);
+  assert.strictEqual(beliebtheitsRate({ url: 'https://example.com/x', likes: null }, jetzt), null);
+});
+
+// ── Gewuerfelte Pause (Punkt 08) ─────────────────────────────────────
+
+test('die Pause liegt in der Spanne, nicht auf einem festen Wert', () => {
+  const st = { pause_zwischen_anfragen_sek: 3, pause_hoechstens_sek: 12 };
+  assert.strictEqual(pauseSpanne(st, () => 0), 3000);
+  assert.strictEqual(pauseSpanne(st, () => 1), 12000);
+  assert.strictEqual(pauseSpanne(st, () => 0.5), 7500);
+});
+
+test('eine kaputte Obergrenze schaltet die Pause nicht ab', () => {
+  // Die Richtung, in die dieser Fehler fallen muss: Ohne brauchbare
+  // Obergrenze gilt der feste Wert — nicht "dann eben keine Pause".
+  assert.strictEqual(pauseSpanne({ pause_zwischen_anfragen_sek: 3 }, () => 0.5), 3000);
+  assert.strictEqual(
+    pauseSpanne({ pause_zwischen_anfragen_sek: 3, pause_hoechstens_sek: 1 }, () => 0.5), 3000);
+  assert.strictEqual(
+    pauseSpanne({ pause_zwischen_anfragen_sek: 3, pause_hoechstens_sek: 'viel' }, () => 0.5), 3000);
+});
+
+test('eine ausgeschaltete Pause bleibt ausgeschaltet', () => {
+  assert.strictEqual(
+    pauseSpanne({ pause_zwischen_anfragen_sek: 0, pause_hoechstens_sek: 12 }, () => 0.5), 0);
+});
+
+// ── Sperren und Fehler zaehlen (Punkt 09) ────────────────────────────
+
+test('der Verlauf haelt Sperren und Fehler je Lauf fest', () => {
+  // Ein einzelner Vermerk liegt im Protokoll EINES Laufs. Ob Sperren
+  // zunehmen, ob eine Quelle systematisch sperrt, ob sich nach einem
+  // TikTok-Update etwas geaendert hat: erst ueber mehrere Laeufe sichtbar.
+  const ordner = fs.mkdtempSync(path.join(os.tmpdir(), 'ablehnung-'));
+  const buch = ablehnungsbuch();
+  buch.vermerke('sprache', 'en');
+  schreibeAblehnungen(ordner, buch.auswertung(), {
+    geprueft: 20, geladen: 1,
+    vorfaelle: { sperren: 2, fehler: 5, regionssperren: 1 },
+  });
+
+  const [lauf] = JSON.parse(fs.readFileSync(path.join(ordner, 'ablehnungen.json'), 'utf8')).laeufe;
+  assert.strictEqual(lauf.vorfaelle.sperren, 2);
+  assert.strictEqual(lauf.vorfaelle.fehler, 5);
+  assert.strictEqual(lauf.vorfaelle.regionssperren, 1);
+});
+
+// ── Hashtags: Reichweite ist kein Inhalt (Punkt 16) ──────────────────
+
+test('Hashtags werden vom Fliesstext getrennt — auch mitten im Satz', () => {
+  const { fliesstext, hashtags } = trenneUnterschrift(
+    'The one thing you need on your nightstand💧#waterdispenser #bedroom #fyp');
+  assert.strictEqual(fliesstext, 'The one thing you need on your nightstand💧');
+  assert.deepStrictEqual(hashtags, ['waterdispenser', 'bedroom', 'fyp']);
+});
+
+test('Reichweiten-Tags fallen weg, fachliche Tags bleiben', () => {
+  // Das ist die entscheidende Unterscheidung. "#waterdispenser" ist bei
+  // vielen Untertiteln das EINZIGE Produktwort — wer Hashtags pauschal
+  // abwertet, wirft angenommenes Material weg.
+  assert.deepStrictEqual(
+    inhaltsTags(['waterdispenser', 'fyp', 'viral', 'bedroom', 'foryoupage']),
+    ['waterdispenser', 'bedroom']);
+});
+
+test('#tiktokmademebuyit bleibt — es benennt keine Reichweite', () => {
+  // Es sagt "Produktvorfuehrung", und genau danach wird hier gesucht.
+  assert.deepStrictEqual(inhaltsTags(['tiktokmademebuyit', 'fyp']), ['tiktokmademebuyit']);
+});
+
+test('die Vorpruefung misst Fliesstext, nicht Gesamtlaenge', () => {
+  // Eine Wolke aus zwanzig Hashtags hat leicht 200 Zeichen und trotzdem
+  // keinen Satz. Sie wurde bisher beurteilt, als staende dort etwas.
+  const wolke = '#fyp #viral #foryou #trending #xyzbca #parati #explorepage #capcut';
+  assert.ok(wolke.length > 25, 'der Testfall muss lang genug sein');
+  assert.ok(fliesstextLaenge(wolke) < 25, 'aber ohne Satz — also nicht beurteilen');
+
+  const echt = 'Staying hydrated with my new desktop water dispenser #fyp';
+  assert.ok(fliesstextLaenge(echt) >= 25, 'ein echter Satz wird weiter beurteilt');
+});
+
+test('kein einziger Reichweiten-Tag ist zugleich ein Produktbegriff', () => {
+  // Nachgemessen an der echten Konfiguration. Waere einer dabei, wuerde das
+  // Entfernen ein Produkt blind machen — und der Test faellt genau dann.
+  const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
+  const haeufigkeit = begriffsHaeufigkeit(ladeKonfig(), produkte);
+  const kollision = REICHWEITEN_TAGS.filter((t) => haeufigkeit.has(normalisiere(t)));
+  assert.deepStrictEqual(kollision, []);
+});
+
+// ── Ein Treffer muss unterscheiden (Punkt 15/16) ─────────────────────
+//
+// GEMESSEN AN DER EIGENEN KONFIGURATION: "usb" fuehren 18 der 40 Produkte,
+// "akku" 15, "rechargeable" 13, "light" 12. 42 Begriffe stehen bei fuenf oder
+// mehr Produkten. bewerte() zaehlte aber nur Treffer durch Gruppengroesse.
+
+test('Allerweltsbegriffe allein tragen keine Zuordnung mehr', () => {
+  const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
+  const konfig = ladeKonfig();
+  const haeufigkeit = begriffsHaeufigkeit(konfig, produkte);
+  const p10 = produkte.find((p) => Number(p.id) === 10);
+  const gruppen = begriffsGruppen(p10, konfigZuProdukt(konfig, 10));
+
+  const fremd = { title: 'Mini USB rechargeable LED light for bedroom, portable and cute' };
+  const ohne = bewerte(gruppen, fremd);
+  const mit = bewerte(gruppen, fremd, { haeufigkeit, hoechstensProdukte: 2 });
+
+  assert.strictEqual(ohne.haelt, true, 'vorher hielt dieser Text — das ist der Punkt');
+  assert.ok(ohne.wert >= 0.5, `und lag ueber der Schwelle (${ohne.wert})`);
+  assert.strictEqual(mit.haelt, false, 'nachher nicht mehr');
+  assert.deepStrictEqual(mit.unterscheidend, [], 'kein Treffer unterscheidet');
+});
+
+test('GEGENPROBE: die echten angenommenen Untertitel bleiben angenommen', () => {
+  // Der wichtigere Test von beiden. Eine Verschaerfung, die richtiges
+  // Material wegwirft, ist keine Verbesserung — und genau daran ist heute
+  // schon ein anderer Entwurf gescheitert (Lautheitsgrenze).
+  const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
+  const konfig = ladeKonfig();
+  const haeufigkeit = begriffsHaeufigkeit(konfig, produkte);
+  const p10 = produkte.find((p) => Number(p.id) === 10);
+  const gruppen = begriffsGruppen(p10, konfigZuProdukt(konfig, 10));
+
+  const echt = [
+    'Staying hydrated with my new desktop water dispenser 💧office must have',
+    'No More Heavy Water Bottles! USB Rechargeable Automatic Water Pump.',
+    'The one thing you need on your nightstand💧#waterdispenser #bedroomwaterdispenser',
+    'Automatic wireless water dispenser pump | Electric water pump with auto stop',
+    'Mini water dispenser cooler for your office or desk 🫶🏻 just add water',
+    'This $18 water dispenser that goes on top of a 5 gallon jug was a great buy',
+  ];
+  const verloren = echt.filter((t) =>
+    !bewerte(gruppen, { title: t }, { haeufigkeit, hoechstensProdukte: 2 }).haelt);
+  assert.deepStrictEqual(verloren, [],
+    'die Verschaerfung darf kein richtiges Video kosten');
+});
+
+test('ohne Haeufigkeitstabelle bleibt alles wie vorher', () => {
+  // Die Pruefung haengt an Daten, die nicht immer da sind (ein Aufruf ohne
+  // Produktliste). Fehlt sie, darf sie NICHT stillschweigend alles ablehnen.
+  const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
+  const konfig = ladeKonfig();
+  const p10 = produkte.find((p) => Number(p.id) === 10);
+  const gruppen = begriffsGruppen(p10, konfigZuProdukt(konfig, 10));
+  const fremd = { title: 'Mini USB rechargeable LED light for bedroom, portable and cute' };
+
+  assert.strictEqual(bewerte(gruppen, fremd).haelt, true);
+  assert.strictEqual(bewerte(gruppen, fremd, { haeufigkeit: null }).haelt, true);
+  assert.strictEqual(
+    bewerte(gruppen, fremd, { haeufigkeit: begriffsHaeufigkeit(konfig, produkte),
+      hoechstensProdukte: 0 }).haelt, true, '0 schaltet die Pruefung ab');
+});
+
+test('die Haeufigkeitstabelle zaehlt Produkte, nicht Vorkommen', () => {
+  const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
+  const haeufigkeit = begriffsHaeufigkeit(ladeKonfig(), produkte);
+  assert.ok(haeufigkeit.get('usb') > 10, `"usb" sollte bei vielen stehen, ist ${haeufigkeit.get('usb')}`);
+  assert.ok(haeufigkeit.get('usb') <= produkte.length, 'nie mehr als Produkte');
+});
+
+// ── Bildfingerabdruck: derselbe Clip, neu kodiert (Punkt 04) ─────────
+//
+// Der Index erkannte Dubletten an Quell-Adresse, Video-ID und SHA-256. Alle
+// drei scheitern am haeufigsten Fall auf TikTok: Ein Repost wird NEU KODIERT.
+// Das Bild ist dasselbe, die Pruefsumme eine voellig andere.
+
+const ffmpegDa = findeFfmpeg();
+const brauchtFfmpeg = { skip: ffmpegDa ? false : 'kein ffmpeg' };
+
+function ffmpegLauf(argumente) {
+  return require('child_process').spawnSync(ffmpegDa, ['-loglevel', 'error', ...argumente],
+    { encoding: 'buffer', maxBuffer: 32 * 1024 * 1024 });
+}
+
+test('dHash rechnet 64 Bit aus einem 9x8-Bild', () => {
+  // Links immer heller als rechts -> lauter Einsen.
+  const hell = Buffer.alloc(72);
+  for (let z = 0; z < 8; z++) for (let s = 0; s < 9; s++) hell[z * 9 + s] = 200 - s * 10;
+  assert.strictEqual(dHash(hell), 'ffffffffffffffff');
+
+  // Umgekehrt -> lauter Nullen.
+  const dunkel = Buffer.alloc(72);
+  for (let z = 0; z < 8; z++) for (let s = 0; s < 9; s++) dunkel[z * 9 + s] = 10 + s * 10;
+  assert.strictEqual(dHash(dunkel), '0000000000000000');
+
+  assert.strictEqual(bitAbstand('ffffffffffffffff', '0000000000000000'), 64);
+  assert.strictEqual(bitAbstand('ffffffffffffffff', 'ffffffffffffffff'), 0);
+});
+
+test('zu wenig Bytes ergeben keinen Abdruck, sondern null', () => {
+  // Ein halbes Bild ist kein Bild. Ein Abdruck aus Muell waere schlimmer als
+  // keiner: Er wuerde still mit anderen verglichen.
+  assert.strictEqual(dHash(Buffer.alloc(40)), null);
+  assert.strictEqual(dHash(null), null);
+  assert.strictEqual(bitAbstand(null, 'ffffffffffffffff'), 64);
+});
+
+test('ein neu kodierter Repost wird erkannt', brauchtFfmpeg, () => {
+  const ordner = tempOrdner();
+  const original = path.join(ordner, 'original.mp4');
+  const repost = path.join(ordner, 'repost.mp4');
+
+  // Ein Video mit BEWEGUNG und Struktur — ein Standbild waere kein Beleg.
+  ffmpegLauf(['-f', 'lavfi', '-i', 'testsrc=s=1080x1920:r=30', '-t', '8',
+    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-y', original]);
+  // Der Repost: halbe Aufloesung, andere Bitrate — so sieht ein echter aus.
+  ffmpegLauf(['-i', original, '-vf', 'scale=540:-2', '-c:v', 'libx264',
+    '-b:v', '400k', '-y', repost]);
+
+  const a = bildFingerabdruck(ffmpegDa, original, 8);
+  const b = bildFingerabdruck(ffmpegDa, repost, 8);
+  assert.ok(a.length >= 2 && b.length >= 2, 'beide brauchen Abdruecke');
+  const abstaende = a.map((x, i) => bitAbstand(x, b[i]));
+  assert.ok(Math.max(...abstaende) <= BILD_ABSTAND_MAX,
+    `Repost zu weit weg: ${abstaende.join(',')}`);
+  assert.strictEqual(gleichesBild(a, b), true);
+});
+
+test('GEGENPROBE: zwei verschiedene Clips sind keine Doppelgaenger', brauchtFfmpeg, () => {
+  // Ohne diese Haelfte waere der Test oben wertlos — er wuerde auch gruen,
+  // wenn gleichesBild() einfach immer true saegte.
+  const ordner = tempOrdner();
+  const eins = path.join(ordner, 'eins.mp4');
+  const zwei = path.join(ordner, 'zwei.mp4');
+  ffmpegLauf(['-f', 'lavfi', '-i', 'testsrc=s=1080x1920:r=30', '-t', '8',
+    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-y', eins]);
+  ffmpegLauf(['-f', 'lavfi', '-i', 'smptebars=s=1080x1920:r=30', '-t', '8',
+    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-y', zwei]);
+
+  const a = bildFingerabdruck(ffmpegDa, eins, 8);
+  const b = bildFingerabdruck(ffmpegDa, zwei, 8);
+  assert.strictEqual(gleichesBild(a, b), false);
+});
+
+test('die Bilder werden der Reihe nach verglichen, nicht jeder gegen jeden', () => {
+  // Zwei Clips, die dieselbe Szene an VERSCHIEDENEN Stellen zeigen, sind
+  // nicht dasselbe Video. Ein Vergleich aller gegen alle wuerde sie dazu
+  // erklaeren — und genau so verschwaende man brauchbares Material.
+  const a = ['ffffffffffffffff', '0000000000000000', 'aaaaaaaaaaaaaaaa', '5555555555555555'];
+  const verschoben = ['0000000000000000', 'aaaaaaaaaaaaaaaa', '5555555555555555', 'ffffffffffffffff'];
+  assert.strictEqual(gleichesBild(a, verschoben), false);
+  assert.strictEqual(gleichesBild(a, a), true);
+});
+
+test('ein einzelnes gleiches Bild genuegt nicht', () => {
+  // Zwei Clips mit weissem Hintergrund am selben Zeitpunkt sind kein Beleg.
+  const a = ['ffffffffffffffff', '0000000000000000', 'aaaaaaaaaaaaaaaa', '5555555555555555'];
+  const b = ['ffffffffffffffff', 'ffffffffffffffff', '0f0f0f0f0f0f0f0f', '3333333333333333'];
+  assert.strictEqual(gleichesBild(a, b), false, 'eins von vier reicht nicht');
+  assert.strictEqual(gleichesBild(a, [a[0], a[1], 'ffff000011112222', '0000111122223333']), true,
+    'zwei von vier reichen');
+});
+
+test('ohne Abdruck wird nichts abgelehnt', () => {
+  // Faellt ffmpeg aus, ist das ein Befund und kein Urteil. Sonst waere ein
+  // fehlendes Werkzeug ein stiller Filter.
+  const index = { eintraege: [{ datei: 'a.mp4', bild_abdruck: ['ffffffffffffffff', 'ffffffffffffffff'] }] };
+  assert.strictEqual(schonAlsBildDa(index, []), null);
+  assert.strictEqual(schonAlsBildDa(index, null), null);
+  assert.strictEqual(schonAlsBildDa(index, ['ffffffffffffffff']), null, 'ein Bild ist zu wenig');
+  assert.strictEqual(schonAlsBildDa({ eintraege: [{ datei: 'b.mp4' }] },
+    ['ffffffffffffffff', 'ffffffffffffffff']), null, 'Eintraege ohne Abdruck stoeren nicht');
+});
+
+test('schonAlsBildDa findet den Eintrag, zu dem das Bild passt', () => {
+  const index = { eintraege: [
+    { datei: 'anderes.mp4', bild_abdruck: ['0000000000000000', '0000000000000000', '0000000000000000', '0000000000000000'] },
+    { datei: 'treffer.mp4', bild_abdruck: ['ffffffffffffffff', 'ffffffffffffffff', 'aaaaaaaaaaaaaaaa', '5555555555555555'] },
+  ] };
+  const gefunden = schonAlsBildDa(index,
+    ['ffffffffffffffff', 'ffffffffffffffff', 'aaaaaaaaaaaaaaaa', '5555555555555555']);
+  assert.ok(gefunden);
+  assert.strictEqual(gefunden.datei, 'treffer.mp4');
+});
+
+test('findeFfmpeg meldet ehrlich, statt einen Pfad zu raten', () => {
+  assert.strictEqual(findeFfmpeg({ FFMPEG_PFAD: '/gibt/es/nicht/ffmpeg' }), null);
+});
+
+// ── Schwarze Balken (Punkt 25) ───────────────────────────────────────
+//
+// Huerde 8 misst die DATEI. Ein umformatiertes Querformat-Video misst
+// 1080x1920 und hat nur 1080x1620 Bild — im Schnitt gibt das Balken im
+// Balken, und das ist der erste Eindruck des Clips.
+
+test('ein Letterbox-Clip wird als solcher erkannt', brauchtFfmpeg, () => {
+  const ordner = tempOrdner();
+  const ohne = path.join(ordner, 'ohne.mp4');
+  const mit = path.join(ordner, 'mit.mp4');
+  ffmpegLauf(['-f', 'lavfi', '-i', 'testsrc=s=1080x1920:r=30', '-t', '8',
+    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-y', ohne]);
+  ffmpegLauf(['-i', ohne, '-vf', 'scale=1080:1620,pad=1080:1920:0:150:black',
+    '-c:v', 'libx264', '-y', mit]);
+
+  const sauber = randErkennung(ffmpegDa, ohne, 8);
+  const balken = randErkennung(ffmpegDa, mit, 8);
+  assert.ok(sauber && balken, 'beide muessen messbar sein');
+  assert.strictEqual(sauber.hoehe, 1920, 'ohne Balken ist das ganze Bild Bild');
+  assert.ok(balken.hoehe < 1800, `mit Balken erwartet < 1800, war ${balken.hoehe}`);
+  assert.strictEqual(balken.y, 150, 'der Versatz sagt, wo das Bild anfaengt');
+
+  const datei = { breite: 1080, hoehe: 1920 };
+  assert.strictEqual(randAnteil(datei, sauber), 0);
+  assert.ok(randAnteil(datei, balken) > 0.1, 'rund ein Sechstel ist Rand');
+});
+
+test('gemessen wird aus der Mitte, nicht am Anfang', brauchtFfmpeg, () => {
+  // Eine Blende am Anfang macht jedes Video kurz schwarz — cropdetect wuerde
+  // daraus einen Rand von hundert Prozent lesen und den Clip wegwerfen.
+  const ordner = tempOrdner();
+  const datei = path.join(ordner, 'blende.mp4');
+  ffmpegLauf(['-f', 'lavfi', '-i', 'testsrc=s=1080x1920:r=30', '-t', '10',
+    '-vf', 'fade=t=in:st=0:d=3', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-y', datei]);
+
+  const gemessen = randErkennung(ffmpegDa, datei, 10);
+  assert.ok(gemessen, 'messbar');
+  assert.strictEqual(gemessen.hoehe, 1920,
+    'die Blende am Anfang darf das Urteil nicht bestimmen');
+});
+
+test('nicht messbar ist etwas anderes als kein Rand', () => {
+  // Faellt ffmpeg aus, darf nichts abgelehnt werden. Ein Werkzeug, das
+  // fehlt, ist kein stiller Filter.
+  assert.strictEqual(randErkennung(null, 'x.mp4', 10), null);
+  assert.strictEqual(randUntauglich(null, { min_hoehe: 720 }), null);
+  assert.strictEqual(randAnteil({ breite: 1080, hoehe: 1920 }, null), null);
+  assert.strictEqual(randAnteil(null, { breite: 1080, hoehe: 1620 }), null);
+});
+
+test('der echte Bildinhalt entscheidet, nicht die Dateigroesse', () => {
+  // Der Kern des Punktes: Die Datei besteht Huerde 8, das Bild nicht.
+  const ausschnitt = { breite: 1080, hoehe: 640, x: 0, y: 640 };
+  assert.match(randUntauglich(ausschnitt, { min_hoehe: 720 }), /640 Pixel/);
+  // GEGENPROBE: dieselbe Datei, ohne Balken.
+  assert.strictEqual(randUntauglich({ breite: 1080, hoehe: 1920, x: 0, y: 0 },
+    { min_hoehe: 720 }), null);
+});
+
+test('ein unsinniger Ausschnitt wird nicht zu negativem Rand verrechnet', () => {
+  // cropdetect kann bei komischem Material mehr melden als die Datei hat.
+  assert.strictEqual(randAnteil({ breite: 1080, hoehe: 1920 },
+    { breite: 2000, hoehe: 3000 }), 0);
+});
+
+// ── Vorrats-Zielwert: wo fehlt Material? (Punkt 12) ──────────────────
+//
+// Der Zustandsbericht sagte bisher "128 Eintraege" und liess offen, ob die
+// auf vierzig Produkte verteilt sind oder alle auf einem liegen. Gemessen am
+// 18.09.: 3 von 41 Produktordnern gefuellt. Genau das soll sichtbar werden.
+
+const VORRAT_PRODUKTE = [
+  { id: 10, name: 'Wasserspender' },
+  { id: 11, name: 'Mixer' },
+  { id: 12, name: 'Leuchte' },
+];
+
+function vorratIndex(paare) {
+  return { version: 1, eintraege: paare.map(([id, n]) => ({ produkt_id: id, datei: n })) };
+}
+
+test('der Bestand wird je Produkt gezaehlt, nicht im Ganzen', () => {
+  const index = vorratIndex([[10, 'a'], [10, 'b'], [10, 'c'], [11, 'd']]);
+  const bestand = bestandJeProdukt(index, VORRAT_PRODUKTE, { ziel: 15 });
+
+  assert.deepEqual(bestand.map((p) => [p.id, p.vorhanden, p.luecke]),
+    [[10, 3, 12], [11, 1, 14], [12, 0, 15]]);
+
+  // GEGENPROBE: Die Gesamtzahl allein haette hier 4 gesagt und damit alle drei
+  // Produkte gleich aussehen lassen — obwohl eines gar nichts hat.
+  const gesamt = index.eintraege.length;
+  assert.equal(gesamt, 4);
+  assert.notEqual(bestand[2].vorhanden, gesamt,
+    'aus der Gesamtzahl laesst sich die Luecke eines einzelnen Produkts nicht ablesen');
+});
+
+test('gezaehlt werden Eintraege, nicht fremde Nummern', () => {
+  // Ein Eintrag ohne brauchbare Produktnummer darf keinem Produkt gutgeschrieben
+  // werden — sonst sieht ein leeres Produkt voll aus.
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10 }, { produkt_id: null }, { produkt_id: 'abc' }, { produkt_id: 99 },
+  ] };
+  const bestand = bestandJeProdukt(index, VORRAT_PRODUKTE, { ziel: 5 });
+  assert.deepEqual(bestand.map((p) => p.vorhanden), [1, 0, 0]);
+
+  // GEGENPROBE: Haette die Zaehlung die drei nicht zuordenbaren Eintraege
+  // irgendwo untergebracht, waere die Summe hoeher als die Zahl der Produkte
+  // mit Material.
+  assert.equal(bestand.reduce((s, p) => s + p.vorhanden, 0), 1);
+});
+
+test('die groesste Luecke kommt zuerst dran, volle Produkte gar nicht', () => {
+  const index = vorratIndex([[10, 'a'], [10, 'b'], [10, 'c'], [11, 'd'], [11, 'e']]);
+  const dran = produkteNachLuecke(index, VORRAT_PRODUKTE, { ziel: 3 });
+
+  // 12 fehlt alles (3), 11 fehlt eines (1), 10 ist voll und faellt raus.
+  assert.deepEqual(dran.map((p) => p.id), [12, 11]);
+
+  // GEGENPROBE: Ohne Sortierung nach Luecke stuende 10 vorne — es steht in der
+  // Produktliste zuerst. Der Lauf haette also ausgerechnet das Produkt
+  // nachgefuellt, das schon voll ist.
+  assert.equal(VORRAT_PRODUKTE[0].id, 10);
+  assert.equal(dran.some((p) => p.id === 10), false);
+});
+
+test('bei gleicher Luecke entscheidet die Nummer — zwei Laeufe, eine Reihenfolge', () => {
+  const index = vorratIndex([]);
+  const a = produkteNachLuecke(index, VORRAT_PRODUKTE, { ziel: 4 }).map((p) => p.id);
+  const b = produkteNachLuecke(index, [...VORRAT_PRODUKTE].reverse(), { ziel: 4 }).map((p) => p.id);
+  assert.deepEqual(a, [10, 11, 12]);
+  assert.deepEqual(b, a, 'die Eingabereihenfolge darf das Ergebnis nicht drehen');
+
+  // GEGENPROBE: Ohne den Gleichstand-Vergleich haette die zweite Liste
+  // [12, 11, 10] ergeben — und niemand haette erklaeren koennen, warum der
+  // Bericht heute ein anderes Produkt vorschlaegt als gestern.
+  assert.deepEqual([...VORRAT_PRODUKTE].reverse().map((p) => p.id), [12, 11, 10]);
+});
+
+// ── Gute Creator wiederfinden (Punkt 02) ─────────────────────────────
+
+test('die Profil-Adresse kommt aus der Video-Adresse, nicht aus dem Namen', () => {
+  assert.equal(creatorProfil('https://www.tiktok.com/@buerokram/video/7123', 'Anders Geschrieben'),
+    'https://www.tiktok.com/@buerokram');
+  // Ohne Adresse: aus dem Namen, mit genau einem @.
+  assert.equal(creatorProfil('', '@buerokram'), 'https://www.tiktok.com/@buerokram');
+  assert.equal(creatorProfil(null, 'buerokram'), 'https://www.tiktok.com/@buerokram');
+
+  // GEGENPROBE: Ohne beides gibt es keine Adresse — geraten wird nicht.
+  assert.equal(creatorProfil('', ''), null);
+  assert.equal(creatorProfil('https://example.com/irgendwas', ''), null);
+});
+
+test('gezaehlt wird je Produkt, nicht ueber alle hinweg', () => {
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, creator: 'buerokram', quelle_url: 'https://www.tiktok.com/@buerokram/video/1' },
+    { produkt_id: 10, creator: 'buerokram', quelle_url: 'https://www.tiktok.com/@buerokram/video/2' },
+    { produkt_id: 11, creator: 'kuechenzeug', quelle_url: 'https://www.tiktok.com/@kuechenzeug/video/3' },
+  ] };
+
+  const nur10 = creatorQuellen(index, { nurProdukt: 10 });
+  assert.deepEqual(nur10.map((q) => q.url), ['https://www.tiktok.com/@buerokram']);
+
+  // GEGENPROBE: Ueber alle Produkte gezaehlt haette kuechenzeug hier
+  // mitgezaehlt — wer beim Wasserspender liefert, liefert nicht
+  // zwangslaeufig beim Mixer.
+  const alle = creatorBilanz(index).map((c) => c.creator);
+  assert.deepEqual(alle.sort(), ['buerokram', 'kuechenzeug']);
+  assert.equal(nur10.some((q) => q.creator === 'kuechenzeug'), false);
+});
+
+test('ein einzelner Clip macht noch keinen guten Creator', () => {
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, creator: 'einmalig', quelle_url: 'https://www.tiktok.com/@einmalig/video/1' },
+    { produkt_id: 10, creator: 'zweimal', quelle_url: 'https://www.tiktok.com/@zweimal/video/2' },
+    { produkt_id: 10, creator: 'zweimal', quelle_url: 'https://www.tiktok.com/@zweimal/video/3' },
+  ] };
+  const quellen = creatorQuellen(index, { nurProdukt: 10 });
+  assert.deepEqual(quellen.map((q) => q.creator), ['zweimal']);
+
+  // GEGENPROBE: Bei Schwelle 1 kaeme der Einmalige mit — und mit ihm jedes
+  // Profil, das nur zufaellig einmal durch die Kette gekommen ist. Bei 128
+  // Eintraegen waeren das dutzende Profilabfragen je Lauf.
+  const weich = creatorQuellen(index, { nurProdukt: 10, abMindestens: 1 });
+  assert.equal(weich.length, 2);
+});
+
+test('Creator ohne Namen zaehlen nicht mit', () => {
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, creator: '', quelle_url: 'https://www.tiktok.com/@wer/video/1' },
+    { produkt_id: 10, creator: '   ', quelle_url: 'https://www.tiktok.com/@wer/video/2' },
+  ] };
+  assert.deepEqual(creatorBilanz(index), []);
+
+  // GEGENPROBE: Wuerden leere Namen als ein Creator "" zusammengefasst,
+  // staende hier ein Eintrag mit zwei angenommenen Clips — und der Lauf
+  // fragte eine Adresse ab, die es nicht gibt.
+  assert.equal(index.eintraege.length, 2);
+});
+
+test('die Bestenliste steht oben, und die Zahl stimmt', () => {
+  const index = { version: 1, eintraege: [
+    ...Array.from({ length: 2 }, (_, i) => ({ produkt_id: 10, creator: 'zwei', quelle_url: `https://www.tiktok.com/@zwei/video/${i}` })),
+    ...Array.from({ length: 5 }, (_, i) => ({ produkt_id: 10, creator: 'fuenf', quelle_url: `https://www.tiktok.com/@fuenf/video/${i}` })),
+    ...Array.from({ length: 3 }, (_, i) => ({ produkt_id: 10, creator: 'drei', quelle_url: `https://www.tiktok.com/@drei/video/${i}` })),
+  ] };
+  const bilanz = creatorBilanz(index, { nurProdukt: 10 });
+  assert.deepEqual(bilanz.map((c) => [c.creator, c.angenommen]),
+    [['fuenf', 5], ['drei', 3], ['zwei', 2]]);
+
+  // GEGENPROBE: Die Obergrenze greift, sonst wandern bei vielen Creatorn
+  // beliebig viele Profilabfragen in einen Lauf.
+  assert.equal(creatorQuellen(index, { nurProdukt: 10, hoechstens: 2 }).length, 2);
+});
+
+test('von Hand eingetragene Creator werden nicht doppelt abgefragt', () => {
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, creator: 'buerokram', quelle_url: 'https://www.tiktok.com/@buerokram/video/1' },
+    { produkt_id: 10, creator: 'buerokram', quelle_url: 'https://www.tiktok.com/@buerokram/video/2' },
+  ] };
+  const eintrag = { creators: ['https://www.tiktok.com/@buerokram/'], videos: [], hashtags: [] };
+  const faehigkeiten = { kannHashtag: false, kannSuche: false };
+  const { quellen } = quellenFuer({ id: 10, name: 'Wasserspender' }, eintrag,
+    faehigkeiten, STANDARD, { index });
+  const profile = quellen.filter((q) => q.art === 'creator').map((q) => q.url);
+  assert.equal(profile.length, 1, 'derselbe Creator darf nur einmal abgefragt werden');
+
+  // GEGENPROBE: Ohne den Abgleich stuende die Adresse zweimal drin — einmal
+  // mit, einmal ohne Schraegstrich am Ende.
+  assert.equal(String(eintrag.creators[0]).replace(/\/+$/, ''), 'https://www.tiktok.com/@buerokram');
+});
+
+test('ohne Index bleibt die Quellenliste, wie sie war', () => {
+  const eintrag = { creators: [], videos: ['https://www.tiktok.com/@x/video/1'], hashtags: [] };
+  const faehigkeiten = { kannHashtag: false, kannSuche: false };
+  const ohne = quellenFuer({ id: 10, name: 'W' }, eintrag, faehigkeiten, STANDARD, {});
+  assert.deepEqual(ohne.quellen.map((q) => q.art), ['video']);
+
+  // GEGENPROBE: Mit Index kaeme ein Creator dazu — die Funktion tut also
+  // etwas, sie schweigt nur ohne Daten.
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, creator: 'a', quelle_url: 'https://www.tiktok.com/@a/video/1' },
+    { produkt_id: 10, creator: 'a', quelle_url: 'https://www.tiktok.com/@a/video/2' },
+  ] };
+  const mit = quellenFuer({ id: 10, name: 'W' }, eintrag, faehigkeiten, STANDARD, { index });
+  assert.deepEqual(mit.quellen.map((q) => q.art), ['video', 'creator']);
+});
+
+// ── Erschoepfte Suchbegriffe (Punkt 01) ──────────────────────────────
+
+const T0 = new Date('2026-09-18T12:00:00Z');
+const tageVor = (n) => new Date(T0.getTime() - n * 86400000).toISOString();
+
+test('nie benutzte Begriffe stehen vor benutzten, danach gilt reihum', () => {
+  const begriffe = ['alt', 'neu', 'auch alt'];
+  const bilanz = {
+    alt: { zuletzt_benutzt: tageVor(1), zuletzt_neu: tageVor(1), leer_in_folge: 0 },
+    'auch alt': { zuletzt_benutzt: tageVor(2), zuletzt_neu: tageVor(2), leer_in_folge: 0 },
+  };
+  assert.deepEqual(begriffeSortiert(begriffe, bilanz, { jetzt: T0 }),
+    ['neu', 'auch alt', 'alt']);
+
+  // GEGENPROBE: Ohne Bilanz bleibt die Liste, wie sie ist — die Umsortierung
+  // kommt aus den Daten, nicht aus einer festen Vorliebe fuer kurze Woerter.
+  assert.deepEqual(begriffeSortiert(begriffe, {}, { jetzt: T0 }), begriffe);
+});
+
+test('was zuletzt leer ausging, wandert nach hinten — aber nur auf Zeit', () => {
+  const begriffe = ['erschoepft', 'ergiebig'];
+  const frisch = {
+    erschoepft: { zuletzt_benutzt: tageVor(1), zuletzt_neu: tageVor(60),
+                  leer_seit: tageVor(1), leer_in_folge: 2 },
+    ergiebig: { zuletzt_benutzt: tageVor(30), zuletzt_neu: tageVor(30), leer_in_folge: 0 },
+  };
+  assert.deepEqual(begriffeSortiert(begriffe, frisch, { ruheTage: 21, jetzt: T0 }),
+    ['ergiebig', 'erschoepft']);
+
+  // GEGENPROBE: Derselbe Begriff, nur ist der Leerlauf laenger her als die
+  // Ruhezeit — dann steht er wieder vorne. Eine Themenseite fuellt sich nach;
+  // ausgemustert wird hier nichts, es wird nur befristet gebremst.
+  const abgelaufen = {
+    erschoepft: { zuletzt_benutzt: tageVor(90), zuletzt_neu: tageVor(150),
+                  leer_seit: tageVor(90), leer_in_folge: 2 },
+    ergiebig: { zuletzt_benutzt: tageVor(30), zuletzt_neu: tageVor(30), leer_in_folge: 0 },
+  };
+  assert.deepEqual(begriffeSortiert(begriffe, abgelaufen, { ruheTage: 21, jetzt: T0 }),
+    ['erschoepft', 'ergiebig']);
+});
+
+test('die Ruhezeit waechst mit den Leerlaeufen — und hat einen Deckel', () => {
+  const begriffe = ['einmal leer', 'dreimal leer'];
+  // Beide gingen vor 30 Tagen zuletzt leer aus. Bei 21 Ruhetagen ist der eine
+  // wieder wach (1 × 21 = 21 < 30), der andere noch nicht (3 × 21 = 63 > 30).
+  const bilanz = {
+    'einmal leer': { zuletzt_benutzt: tageVor(30), leer_seit: tageVor(30), leer_in_folge: 1 },
+    'dreimal leer': { zuletzt_benutzt: tageVor(30), leer_seit: tageVor(30), leer_in_folge: 3 },
+  };
+  assert.deepEqual(begriffeSortiert(begriffe, bilanz, { ruheTage: 21, jetzt: T0 }),
+    ['einmal leer', 'dreimal leer']);
+
+  // GEGENPROBE 1: Ohne Staffelung waeren beide gleich lang gebremst und
+  // stuenden nach der Ursprungsreihenfolge da — der zwanzigmal leere Begriff
+  // bekaeme genauso oft das Budget wie der einmal leere.
+  const ohneStaffel = begriffeSortiert(begriffe, {
+    'einmal leer': { zuletzt_benutzt: tageVor(30), leer_seit: tageVor(30), leer_in_folge: 1 },
+    'dreimal leer': { zuletzt_benutzt: tageVor(30), leer_seit: tageVor(30), leer_in_folge: 1 },
+  }, { ruheTage: 21, jetzt: T0 });
+  assert.deepEqual(ohneStaffel, begriffe);
+
+  // GEGENPROBE 2: Der Deckel greift. Zwanzig Leerlaeufe waeren ohne ihn
+  // 420 Tage Pause — faktisch ausgemustert. Mit Deckel 6 sind es 126, und nach
+  // 200 Tagen ist der Begriff wieder da.
+  const zwanzig = { 'lang leer': { zuletzt_benutzt: tageVor(200),
+    leer_seit: tageVor(200), leer_in_folge: 20 } };
+  assert.deepEqual(begriffeSortiert(['lang leer', 'x'], zwanzig,
+    { ruheTage: 21, hoechstensRuhe: 6, jetzt: T0 }), ['x', 'lang leer'],
+    'nie benutzte stehen weiter vorn');
+  assert.deepEqual(begriffeSortiert(['lang leer'], zwanzig,
+    { ruheTage: 21, hoechstensRuhe: 6, jetzt: T0 }), ['lang leer']);
+  assert.deepEqual(begriffeSortiert(['lang leer'], zwanzig,
+    { ruheTage: 21, hoechstensRuhe: 60, jetzt: T0 }), ['lang leer']);
+  // Der Unterschied wird an der Einstufung sichtbar, nicht an einer Einerliste:
+  const mitDeckel = begriffeSortiert(['lang leer', 'frisch leer'], {
+    ...zwanzig,
+    'frisch leer': { zuletzt_benutzt: tageVor(199), leer_seit: tageVor(199), leer_in_folge: 1 },
+  }, { ruheTage: 21, hoechstensRuhe: 6, jetzt: T0 });
+  assert.deepEqual(mitDeckel, ['lang leer', 'frisch leer'],
+    'beide wach — dann entscheidet, wer laenger nicht dran war');
+  const ohneDeckel = begriffeSortiert(['lang leer', 'frisch leer'], {
+    ...zwanzig,
+    'frisch leer': { zuletzt_benutzt: tageVor(199), leer_seit: tageVor(199), leer_in_folge: 1 },
+  }, { ruheTage: 21, hoechstensRuhe: 60, jetzt: T0 });
+  assert.deepEqual(ohneDeckel, ['frisch leer', 'lang leer'],
+    'ohne Deckel ruht er nach 200 Tagen immer noch');
+});
+
+test('ein Begriff, der NIE etwas brachte, draengelt sich nicht vor', () => {
+  // Das war der Fehler in der ersten Fassung: "aeltester Fund zuerst" allein
+  // zaehlte ein fehlendes Funddatum als Jahr 0 — und Jahr 0 ist aelter als
+  // alles. Ausgerechnet der aussichtsloseste Begriff bekam das Budget.
+  const begriffe = ['nie was', 'lange her'];
+  const bilanz = {
+    'nie was': { zuletzt_benutzt: tageVor(40), leer_seit: tageVor(40), leer_in_folge: 5 },
+    'lange her': { zuletzt_benutzt: tageVor(10), zuletzt_neu: tageVor(10), leer_in_folge: 0 },
+  };
+  assert.deepEqual(begriffeSortiert(begriffe, bilanz, { ruheTage: 21, jetzt: T0 }),
+    ['lange her', 'nie was']);
+
+  // GEGENPROBE: Nach reinem Funddatum stuende "nie was" (Zeitwert 0) vorne.
+  const nurNachDatum = [...begriffe].sort((a, b) =>
+    (bilanz[a].zuletzt_neu ? new Date(bilanz[a].zuletzt_neu).getTime() : 0)
+    - (bilanz[b].zuletzt_neu ? new Date(bilanz[b].zuletzt_neu).getTime() : 0));
+  assert.deepEqual(nurNachDatum, ['nie was', 'lange her']);
+
+  // ZWEITE GEGENPROBE: Er ist nicht ausgemustert, nur gebremst. Fuenf
+  // Leerlaeufe heissen 5 × 21 = 105 Tage Ruhe; danach zaehlt wieder, wer
+  // laenger nicht dran war — und das ist er (190 Tage gegen 160).
+  const spaeter = new Date(T0.getTime() + 150 * 86400000);
+  assert.deepEqual(begriffeSortiert(begriffe, bilanz, { ruheTage: 21, jetzt: spaeter }),
+    ['nie was', 'lange her']);
+});
+
+test('gleicher Stand, gleiche Reihenfolge — in beiden Laeufen', () => {
+  const begriffe = ['a', 'b', 'c', 'd'];
+  const bilanz = { b: { zuletzt_benutzt: tageVor(5), zuletzt_neu: tageVor(5), leer_in_folge: 0 } };
+  const erst = begriffeSortiert(begriffe, bilanz, { jetzt: T0 });
+  const nochmal = begriffeSortiert(begriffe, bilanz, { jetzt: T0 });
+  assert.deepEqual(erst, nochmal);
+  assert.deepEqual(erst, ['a', 'c', 'd', 'b'], 'Gleichstand behaelt die Ursprungsreihenfolge');
+
+  // GEGENPROBE: Die Liste wird wirklich angefasst — 'b' ist gewandert.
+  assert.notDeepEqual(erst, begriffe);
+});
+
+test('ein Fund loescht die Ruhe, ein Leerlauf zaehlt hoch', () => {
+  const index = { version: 1, eintraege: [] };
+  vermerkeBegriff(index, 10, 'wasserspender', 0, new Date('2026-09-18T10:00:00Z'));
+  vermerkeBegriff(index, 10, 'wasserspender', 0, new Date('2026-09-19T10:00:00Z'));
+  let stand = index.begriffe['10'].wasserspender;
+  assert.equal(stand.leer_in_folge, 2);
+  assert.equal(stand.leer_seit, '2026-09-18T10:00:00.000Z',
+    'der erste Leerlauf zaehlt, nicht der letzte — sonst beginnt die Ruhezeit immer neu');
+
+  vermerkeBegriff(index, 10, 'wasserspender', 3, new Date('2026-09-20T10:00:00Z'));
+  stand = index.begriffe['10'].wasserspender;
+  assert.equal(stand.leer_in_folge, 0);
+  assert.equal(stand.leer_seit, null);
+  assert.equal(stand.zuletzt_neu, '2026-09-20T10:00:00.000Z');
+
+  // GEGENPROBE: Wuerde "leer_seit" bei jedem Leerlauf neu gesetzt, liefe die
+  // Ruhezeit nie ab — ein Begriff, der bei jedem Lauf kurz mitgeprueft wird,
+  // waere fuer immer hinten.
+  assert.notEqual(stand.leer_seit, '2026-09-19T10:00:00.000Z');
+});
+
+test('die Bilanz gehoert dem Produkt, nicht dem Index', () => {
+  const index = { version: 1, eintraege: [] };
+  vermerkeBegriff(index, 10, 'akku', 0, T0);
+  vermerkeBegriff(index, 11, 'akku', 4, T0);
+
+  assert.equal(begriffsBilanz(index, 10).akku.leer_in_folge, 1);
+  assert.equal(begriffsBilanz(index, 11).akku.leer_in_folge, 0);
+
+  // GEGENPROBE: Ohne Trennung nach Produkt haette der leere Lauf bei Produkt 10
+  // denselben Begriff auch bei Produkt 11 nach hinten geschoben — obwohl er
+  // dort gerade vier Adressen geliefert hat.
+  assert.deepEqual(begriffeSortiert(['akku', 'usb'], begriffsBilanz(index, 11),
+    { ruheTage: 21, jetzt: T0 }), ['usb', 'akku']);
+  assert.deepEqual(begriffeSortiert(['akku', 'usb'], begriffsBilanz(index, 10),
+    { ruheTage: 21, jetzt: T0 }), ['usb', 'akku']);
+  assert.equal(begriffsBilanz(index, 12).akku, undefined);
+});
+
+test('die Bilanz ist eine Kopie — wer sie liest, aendert den Index nicht', () => {
+  const index = { version: 1, eintraege: [] };
+  vermerkeBegriff(index, 10, 'akku', 0, T0);
+  const bilanz = begriffsBilanz(index, 10);
+  delete bilanz.akku;
+  assert.ok(index.begriffe['10'].akku, 'der Index haelt den Eintrag weiter');
+
+  // GEGENPROBE: Ohne Kopie waere er jetzt weg.
+  assert.equal(bilanz.akku, undefined);
+});
+
+// ── Der Ladelauf bedient zuerst, wo am meisten fehlt (Punkt 12) ──────
+//
+// Der Lauf hoert auf, sobald max_downloads erreicht ist. Bisher lief er die
+// Produktliste von vorne durch — das Budget ging in jedem Lauf an dasselbe
+// Produkt. Dieser Test prueft nicht die Sortierfunktion (das tun die oben),
+// sondern was der Lauf tatsaechlich anfasst.
+
+test('der Ladelauf nimmt das Produkt mit der groessten Luecke zuerst', async () => {
+  const ordner = tempOrdner();
+  const zweitesProdukt = { id: 11, name: 'Elektrischer Wasserspender fuer Schreibtisch B',
+    slug: 'wasserspender-b' };
+
+  // Produkt 10 hat schon drei Clips, Produkt 11 keinen. In der Liste steht 10
+  // aber vorne — genau der Fall, der bisher schieflief.
+  speichereIndex(ordner, { version: 1, eintraege: [
+    { produkt_id: 10, datei: 'a.mp4', quelle_url: 'https://www.tiktok.com/@x/video/1' },
+    { produkt_id: 10, datei: 'b.mp4', quelle_url: 'https://www.tiktok.com/@x/video/2' },
+    { produkt_id: 10, datei: 'c.mp4', quelle_url: 'https://www.tiktok.com/@x/video/3' },
+  ] });
+
+  const bau = nachbauYtdlp();
+  const gemeldet = [];
+  const ergebnis = await baueLauf(bau.ytdlp, ordner, {
+    laden: true, max: 1,
+    produkte: [PRODUKT, zweitesProdukt],
+    konfig: { standard: { ...STANDARD }, produkte: { 10: { hashtags: ['wasserspender'] },
+                                                     11: { hashtags: ['wasserspender'] } } },
+    standard: { ...STANDARD, ziel_clips_je_produkt: 15 },
+    melde: (z) => gemeldet.push(String(z)),
+  });
+
+  assert.equal(ergebnis.geladen.length, 1, 'das Budget laesst genau einen Download zu');
+  assert.equal(ergebnis.geladen[0].produkt_id, 11,
+    'der eine Download muss an das Produkt ohne Material gehen');
+  assert.ok(gemeldet.some((z) => z.includes('Reihenfolge nach Bedarf')),
+    'die Umsortierung wird gemeldet, nicht heimlich gemacht');
+
+  // GEGENPROBE: Dieselbe Ausgangslage, aber beide Produkte gleich leer. Dann
+  // gibt es nichts umzusortieren, und es bleibt bei der Listenreihenfolge —
+  // der Lauf bevorzugt also nicht einfach die hoehere Nummer.
+  const ordner2 = tempOrdner();
+  const bau2 = nachbauYtdlp();
+  const gemeldet2 = [];
+  const ergebnis2 = await baueLauf(bau2.ytdlp, ordner2, {
+    laden: true, max: 1,
+    produkte: [PRODUKT, zweitesProdukt],
+    konfig: { standard: { ...STANDARD }, produkte: { 10: { hashtags: ['wasserspender'] },
+                                                     11: { hashtags: ['wasserspender'] } } },
+    standard: { ...STANDARD, ziel_clips_je_produkt: 15 },
+    melde: (z) => gemeldet2.push(String(z)),
+  });
+  assert.equal(ergebnis2.geladen[0].produkt_id, 10);
+  assert.equal(gemeldet2.some((z) => z.includes('Reihenfolge nach Bedarf')), false);
+});
+
+test('volle Produkte fallen aus dem Lauf nicht heraus', () => {
+  const index = vorratIndex([[10, 'a'], [10, 'b'], [10, 'c']]);
+  const knapp = produkteNachLuecke(index, VORRAT_PRODUKTE, { ziel: 3 });
+  const alle = produkteNachLuecke(index, VORRAT_PRODUKTE, { ziel: 3, alle: true });
+
+  assert.deepEqual(knapp.map((p) => p.id), [11, 12], 'die Kurzliste zeigt nur Bedarf');
+  assert.deepEqual(alle.map((p) => p.id), [11, 12, 10], 'der Lauf sieht alle, das volle zuletzt');
+
+  // GEGENPROBE: Wuerde der Lauf die Kurzliste nehmen, faende ein Trockenlauf
+  // ueber alle Produkte eines davon nie wieder — und niemand saehe, dass es
+  // fehlt, weil es ja "voll" ist.
+  assert.equal(knapp.length + 1, alle.length);
+});
+
+
+// ── Zwei Laeufe, zwei Suchbegriffe (Punkt 01) ────────────────────────
+//
+// Die Sortierfunktion ist oben einzeln geprueft. Hier geht es um das, was
+// zaehlt: dass der ZWEITE Lauf nicht wieder beim selben Begriff anfaengt.
+//
+// Der Fall, der in der Praxis auftrat, steht im Protokoll vom 18.09.:
+// "0 von 3 geladen, 60 Adressen geprueft, 1 von 24 Suchbegriffen gebraucht".
+// Der Lauf kommt nie bis zum Ende der Begriffsliste — er hoert auf, sobald
+// seine Zahl steht. Ohne Gedaechtnis faengt der naechste wieder bei Begriff 1
+// an, und die Begriffe 2 bis 24 kommen nie dran.
+
+/** Ein Lauf ueber die Suche, mit Begriffsliste und eigener Such-Antwort. */
+function suchLauf({ daten, videos, begriffe, holen, ytdlp, anzahl = '1', jetzt }) {
+  const antworten = ['10', anzahl, '1', '1'];
+  return interaktiv({
+    ytdlp, holen,
+    wurzel: path.dirname(videos),
+    produkte: [PRODUKT],
+    konfig: { produkte: { 10: { suchbegriff: { de: begriffe, en: [] } } } },
+    standard: { ...STANDARD, begriff_ruhe_tage: 21 },
+    datenOrdner: daten, videoOrdner: videos, gitignore: path.join(daten, '.gitignore'),
+    stopDatei: path.join(daten, 'kein-STOP'), env: { TAVILY_API_KEY: 't' },
+    pruefeSprache: () => STILL_GEMESSEN,
+    frage: async () => antworten.shift(),
+    jetzt: () => jetzt,
+    melde: still, warte: async () => {}, impersonation: nachahmungDa,
+  });
+}
+
+test('was Lauf 1 gebraucht hat, kommt in Lauf 2 nicht noch einmal zuerst', async () => {
+  const daten = tempOrdner();
+  const videos = tempOrdner();
+  const BEGRIFFE = ['erster begriff', 'zweiter begriff', 'dritter begriff'];
+  const gefragt = [];
+
+  // Jeder Begriff liefert ein eigenes, brauchbares Video. Der Lauf will nur
+  // eines — er hoert also nach dem ERSTEN gefragten Begriff auf.
+  const videoZuBegriff = new Map(BEGRIFFE.map((b, i) => [b, lizenzierterTon(i + 1)]));
+  const holen = async (adresse, einstellungen) => {
+    const begriff = JSON.parse(einstellungen.body).query;
+    gefragt.push(begriff);
+    return { ok: true, json: async () => ({ results: [
+      { url: videoZuBegriff.get(begriff).webpage_url, raw_content: '' },
+    ] }) };
+  };
+  const protokoll = { angaben: [], downloads: [] };
+  const ytdlp = ytdlpFuer([...videoZuBegriff.values()], protokoll);
+
+  await suchLauf({ daten, videos, begriffe: BEGRIFFE, holen, ytdlp,
+    jetzt: '2026-09-18T12:00:00.000Z' });
+  assert.deepEqual(gefragt, ['erster begriff'],
+    'ohne Vorgeschichte gilt die Listenreihenfolge — und einer reicht');
+  assert.equal(geladeneVideos(videos).length, 1);
+
+  gefragt.length = 0;
+  await suchLauf({ daten, videos, begriffe: BEGRIFFE, holen, ytdlp,
+    jetzt: '2026-09-19T12:00:00.000Z' });
+  assert.deepEqual(gefragt, ['zweiter begriff'],
+    'Lauf 2 nimmt den naechsten noch nie benutzten Begriff');
+
+  gefragt.length = 0;
+  await suchLauf({ daten, videos, begriffe: BEGRIFFE, holen, ytdlp,
+    jetzt: '2026-09-20T12:00:00.000Z' });
+  assert.deepEqual(gefragt, ['dritter begriff']);
+  assert.equal(geladeneVideos(videos).length, 3,
+    'drei Laeufe, drei Begriffe, drei verschiedene Videos');
+
+  // GEGENPROBE: Derselbe zweite Lauf, aber in einem frischen Datenordner —
+  // also ohne die Bilanz aus Lauf 1. Dann faengt er wieder bei Begriff 1 an
+  // und laedt dasselbe Video noch einmal. Genau so war es vorher.
+  const daten2 = tempOrdner();
+  const videos2 = tempOrdner();
+  gefragt.length = 0;
+  await suchLauf({ daten: daten2, videos: videos2, begriffe: BEGRIFFE, holen, ytdlp,
+    jetzt: '2026-09-19T12:00:00.000Z' });
+  assert.deepEqual(gefragt, ['erster begriff'],
+    'ohne Bilanz wiederholt sich Lauf 1 — der Unterschied kommt aus den Daten');
+});
+
+test('ein Begriff ohne neue Adressen wird vermerkt, auch wenn der Lauf leer ausgeht', async () => {
+  const daten = tempOrdner();
+  const videos = tempOrdner();
+
+  // Die Suche liefert nur eine Adresse, die schon im Index steht. Der Lauf
+  // laedt also nichts — und schrieb den Index frueher gar nicht. Damit war die
+  // Bilanz genau in dem Fall weg, fuer den sie da ist.
+  const bekannt = 'https://www.tiktok.com/@alt/video/7300000000000000009';
+  speichereIndex(daten, { version: 1, eintraege: [
+    { produkt_id: 10, datei: 'alt.mp4', quelle_url: bekannt },
+  ] });
+  const holen = async () => ({ ok: true, json: async () => ({
+    results: [{ url: bekannt, raw_content: '' }] }) });
+  const ytdlp = async (argumente) => {
+    if (argumente.includes('--list-extractors')) return { code: 0, stdout: 'tiktok', stderr: '' };
+    return { code: 1, stdout: '', stderr: 'ERROR: [TikTok] 1: Video not available' };
+  };
+
+  await suchLauf({ daten, videos, begriffe: ['abgegrast', 'noch frisch'], holen, ytdlp,
+    jetzt: '2026-09-18T12:00:00.000Z' });
+
+  const bilanz = begriffsBilanz(ladeIndex(daten), 10);
+  assert.equal(bilanz.abgegrast.leer_in_folge, 1);
+  assert.equal(bilanz.abgegrast.leer_seit, '2026-09-18T12:00:00.000Z');
+  assert.equal(bilanz.abgegrast.zuletzt_neu, undefined,
+    'es kam nichts Neues — also darf kein Funddatum stehen');
+  assert.equal(ladeIndex(daten).eintraege.length, 1,
+    'der bestehende Eintrag bleibt unangetastet');
+
+  // GEGENPROBE: Der Index wurde wirklich wegen der Bilanz geschrieben und
+  // nicht, weil zufaellig etwas geladen wurde.
+  assert.equal(geladeneVideos(videos).length, 0);
+
+  // Beide Begriffe wurden gefragt, beide gingen leer aus, beide sind vermerkt.
+  // Der Lauf arbeitet die Liste naemlich weiter ab, solange nichts kommt.
+  assert.equal(bilanz['noch frisch'].leer_in_folge, 1);
+
+  // WAS DAS HEISST, wenn WIRKLICH alles abgegrast ist: Dann gibt es nichts
+  // Besseres, und die Reihenfolge bleibt, wie sie war. Das ist kein Mangel —
+  // umsortieren waere hier nur Bewegung ohne Nutzen.
+  assert.deepEqual(
+    begriffeSortiert(['abgegrast', 'noch frisch'], bilanz,
+      { ruheTage: 21, jetzt: new Date('2026-09-19T12:00:00.000Z') }),
+    ['abgegrast', 'noch frisch']);
+
+  // GEGENPROBE: Sobald EIN Begriff etwas bringt, greift die Umsortierung.
+  const gemischt = { ...bilanz,
+    'noch frisch': { zuletzt_benutzt: '2026-09-18T12:00:00.000Z',
+      zuletzt_neu: '2026-09-18T12:00:00.000Z', leer_in_folge: 0, leer_seit: null } };
+  assert.deepEqual(
+    begriffeSortiert(['abgegrast', 'noch frisch'], gemischt,
+      { ruheTage: 21, jetzt: new Date('2026-09-19T12:00:00.000Z') }),
+    ['noch frisch', 'abgegrast']);
+});
+
+// ── Technisch unbrauchbar vor dem Laden (Punkt 14) ───────────────────
+//
+// Der gefuehrte Ablauf prueft das seit jeher als Huerde 8. Der Sammellauf ueber
+// alle Produkte tat es nicht — dort ging ein Drei-Sekunden-Clip mit perfektem
+// Untertitel als Download raus, und die Ausgangspruefung des Automaten lehnte
+// ihn am Ende ab. Der Abruf war da schon verbraucht.
+
+test('ein zu kurzer Clip wird im Sammellauf gar nicht erst geladen', async () => {
+  const ordner = tempOrdner();
+  const kurz = { ...TREFFER, duration: 2 };
+  const bau = nachbauYtdlp({ kandidaten: [kurz] });
+
+  const ergebnis = await baueLauf(bau.ytdlp, ordner, {
+    laden: true, standard: { ...STANDARD, min_dauer_sek: 5 },
+  });
+
+  assert.equal(bau.downloads().length, 0, 'fuer 2 Sekunden darf kein Abruf rausgehen');
+  assert.equal(ergebnis.geladen.length, 0);
+  assert.match(ergebnis.pruefliste[0].grund, /technisch unbrauchbar/);
+
+  // GEGENPROBE: Derselbe Clip, nur lang genug — dann laedt derselbe Lauf.
+  const ordner2 = tempOrdner();
+  const bau2 = nachbauYtdlp({ kandidaten: [{ ...TREFFER, duration: 20 }] });
+  const ergebnis2 = await baueLauf(bau2.ytdlp, ordner2, {
+    laden: true, standard: { ...STANDARD, min_dauer_sek: 5 },
+  });
+  assert.equal(ergebnis2.geladen.length, 1, 'die Huerde darf nicht alles aussperren');
+});
+
+test('eine fehlende Angabe ist keine Aussage', async () => {
+  const ordner = tempOrdner();
+  // Mit --flat-playlist liefert yt-dlp oft keine Hoehe. Ein Clip ohne Angabe
+  // darf deshalb nicht als "zu klein" gelten — sonst faellt bei jeder Quelle,
+  // die keine Masse mitschickt, alles durch.
+  const ohneMasse = { ...TREFFER };
+  delete ohneMasse.height;
+  delete ohneMasse.duration;
+  const bau = nachbauYtdlp({ kandidaten: [ohneMasse] });
+  const ergebnis = await baueLauf(bau.ytdlp, ordner, {
+    laden: true, standard: { ...STANDARD, min_hoehe: 720, min_dauer_sek: 5 },
+  });
+  assert.equal(ergebnis.geladen.length, 1, 'ohne Angabe wird geladen, nicht abgelehnt');
+
+  // GEGENPROBE: MIT Angabe, und zwar einer schlechten, greift die Huerde.
+  const ordner2 = tempOrdner();
+  const bau2 = nachbauYtdlp({ kandidaten: [{ ...TREFFER, height: 480 }] });
+  const ergebnis2 = await baueLauf(bau2.ytdlp, ordner2, {
+    laden: true, standard: { ...STANDARD, min_hoehe: 720 },
+  });
+  assert.equal(ergebnis2.geladen.length, 0);
+  assert.match(ergebnis2.pruefliste[0].grund, /nur 480p/);
+});
+
+// ── Fremde Werbung erkennen (Punkt 24) ───────────────────────────────
+
+test('fremde Werbung wird an zwei Signalen oder einer Kennzeichnung erkannt', () => {
+  // Kennzeichnung allein genuegt: Sie steht da, weil jemand rechtlich dazu
+  // verpflichtet ist.
+  assert.ok(istFremdeWerbung({ title: 'Wasserspender Test #werbung' }));
+  assert.ok(istFremdeWerbung({ title: 'my desk setup #ad' }));
+  // Zwei schwaechere Signale zusammen ebenso.
+  assert.ok(istFremdeWerbung({ title: '20% off with promo code WATER - shop now' }));
+
+  // GEGENPROBE: EIN schwaches Signal allein reicht nicht. "shop now" rutscht
+  // in jede zweite Unterschrift; daraus einen Mitbewerber zu machen, waere
+  // geraten.
+  assert.equal(istFremdeWerbung({ title: 'water dispenser, shop now' }), null);
+  assert.equal(werbeVerdacht({ title: 'water dispenser, shop now' }).werbung, true,
+    'das Signal wird sehr wohl gesehen — es traegt nur allein kein Urteil');
+});
+
+test('an echten Untertiteln: kein einziger Fehlalarm', () => {
+  // Dieselben echten Texte wie oben in der Pruefkette. Ausgedachte Beispiele
+  // bestaetigen nur die Regel, die man gerade geschrieben hat.
+  const echt = [
+    'Staying hydrated with my new desktop water dispenser 💧office must have',
+    'No More Heavy Water Bottles! USB Rechargeable Automatic Water Pump.',
+    'The one thing you need on your nightstand💧#waterdispenser #bedroomwaterdispenser',
+    'Automatic wireless water dispenser pump | Electric water pump with auto stop',
+    'Mini water dispenser cooler for your office or desk 🫶🏻 just add water',
+    'This $18 water dispenser that goes on top of a 5 gallon jug was a great buy',
+    'Genius DIY Water Dispenser – No Electricity Needed',
+    'Bedside carafe and cup set for my nightstand ✨ #marshallsfinds #nightstand',
+    'Your water dispenser may fail because of your kettle limescale',
+  ];
+  const markiert = echt.filter((t) => istFremdeWerbung({ title: t }));
+  assert.deepEqual(markiert, [], 'kein echter Untertitel darf als Werbung gelten');
+
+  // GEGENPROBE: Derselbe echte Text, um einen Rabattcode ergaenzt, wird erkannt.
+  // Ohne diese Zeile wuerde der Test auch dann gruen, wenn die Pruefung nie
+  // anschlaegt.
+  assert.ok(istFremdeWerbung({ title: `${echt[0]} — Code DESK15, link in bio` }));
+});
+
+test('der Rohtext behaelt Rauten und Grossschreibung', () => {
+  // videoText() taugt hier nicht: Es macht aus "#ad" ein blosses "ad" und
+  // schreibt alles klein. Damit waere "Code SAVE20" von jedem Satz mit dem
+  // Wort "code" nicht mehr zu trennen.
+  const video = { title: 'Best! Code SAVE20 #ad' };
+  assert.match(rohText(video), /#ad/);
+  assert.match(rohText(video), /SAVE20/);
+
+  // GEGENPROBE: Genau das fehlt im normalisierten Text.
+  assert.equal(/#ad/.test(videoText(video)), false);
+  assert.equal(/SAVE20/.test(videoText(video)), false);
+});
+
+test('"ad" ohne Raute loest nichts aus', () => {
+  // "ad" steckt in "Gadget" und steht als Abkuerzung in jeder zweiten
+  // englischen Unterschrift. Nur mit Raute ist es eine Kennzeichnung.
+  assert.equal(istFremdeWerbung({ title: 'This gadget changed my desk setup' }), null);
+  assert.equal(werbeVerdacht({ title: 'ad hoc water test' }).werbung, false);
+
+  // GEGENPROBE: Mit Raute wird daraus eine Kennzeichnung.
+  assert.ok(istFremdeWerbung({ title: 'This gadget changed my desk setup #ad' }));
+});
+
+// ── Drei Zustaende je Clip (Punkt 22) ────────────────────────────────
+
+test('ein Eintrag ohne Zustand liegt im Vorrat, nicht irgendwo', () => {
+  assert.equal(zustandVon({}), 'vorrat');
+  assert.equal(zustandVon({ zustand: 'verwendet' }), 'verwendet');
+  // Ein Feld mit Unsinn darin gilt ebenfalls als Vorrat — geraten wird nicht.
+  assert.equal(zustandVon({ zustand: 'vielleicht' }), 'vorrat');
+
+  // GEGENPROBE: "verwendet" als Vorgabe waere eine Behauptung ueber Material,
+  // das niemand angesehen hat — und die Bilanz saehe fertig aus, obwohl nichts
+  // beurteilt ist.
+  assert.notEqual(zustandVon({}), 'verwendet');
+});
+
+test('verworfen braucht einen Grund aus der Liste', () => {
+  const eintrag = { datei: 'a.mp4' };
+  assert.equal(setzeZustand(eintrag, 'verworfen').ok, false, 'ohne Grund geht es nicht');
+  assert.equal(setzeZustand(eintrag, 'verworfen', { grund: 'gefaellt mir nicht' }).ok, false,
+    'Freitext geht nicht — sonst laesst sich die Gruende-Liste nicht zaehlen');
+  assert.equal(eintrag.zustand, undefined, 'ein abgelehnter Versuch aendert nichts');
+
+  const ok = setzeZustand(eintrag, 'verworfen', {
+    grund: 'falsches_modell', notiz: 'schwarzes Modell, wir zeigen das weisse',
+    jetzt: new Date('2026-09-20T12:00:00Z'),
+  });
+  assert.equal(ok.ok, true);
+  assert.equal(eintrag.zustand, 'verworfen');
+  assert.equal(eintrag.verwurf_grund, 'falsches_modell');
+  assert.equal(eintrag.notiz, 'schwarzes Modell, wir zeigen das weisse');
+  assert.equal(eintrag.zustand_seit, '2026-09-20T12:00:00.000Z');
+
+  // GEGENPROBE: Bei "vorrat" und "verwendet" gibt es nichts zu begruenden —
+  // ein Pflichtfeld dort erzeugt nur Fuellwoerter.
+  assert.equal(setzeZustand(eintrag, 'verwendet').ok, true);
+  assert.equal(eintrag.verwurf_grund, undefined,
+    'der alte Grund muss weg, sonst steht er unter einem verwendeten Clip');
+});
+
+test('ein unbekannter Zustand bricht den Lauf nicht ab', () => {
+  const eintrag = { datei: 'a.mp4', zustand: 'vorrat' };
+  const antwort = setzeZustand(eintrag, 'archiviert');
+  assert.equal(antwort.ok, false);
+  assert.match(antwort.grund, /erlaubt: vorrat, verwendet, verworfen/);
+  assert.equal(eintrag.zustand, 'vorrat', 'der bestehende Zustand bleibt');
+
+  // GEGENPROBE: Ein Wurf statt einer Antwort haette hier den ganzen Lauf
+  // beendet — wegen eines Tippfehlers in einem Grund.
+  assert.doesNotThrow(() => setzeZustand(eintrag, 'archiviert'));
+});
+
+test('die Bilanz zaehlt Zustaende und sortiert die Gruende', () => {
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10 },
+    { produkt_id: 10, zustand: 'verwendet' },
+    { produkt_id: 10, zustand: 'verworfen', verwurf_grund: 'falsches_modell' },
+    { produkt_id: 10, zustand: 'verworfen', verwurf_grund: 'falsches_modell' },
+    { produkt_id: 10, zustand: 'verworfen', verwurf_grund: 'zu_dunkel' },
+    { produkt_id: 11, zustand: 'verworfen', verwurf_grund: 'doppelgaenger' },
+  ] };
+  const alle = zustandsBilanz(index);
+  assert.deepEqual([alle.vorrat, alle.verwendet, alle.verworfen], [1, 1, 4]);
+  assert.deepEqual(alle.gruende.map((g) => [g.schluessel, g.anzahl]),
+    [['falsches_modell', 2], ['doppelgaenger', 1], ['zu_dunkel', 1]]);
+  assert.equal(alle.gruende[0].text, VERWURF_GRUENDE.falsches_modell,
+    'der Klartext kommt aus der Liste, nicht aus dem Eintrag');
+
+  // GEGENPROBE: Je Produkt gezaehlt faellt der Doppelgaenger von Produkt 11 weg.
+  const nur10 = zustandsBilanz(index, { nurProdukt: 10 });
+  assert.equal(nur10.verworfen, 3);
+  assert.equal(nur10.gruende.some((g) => g.schluessel === 'doppelgaenger'), false);
+});
+
+// ── Platz und Alter (Punkt 70) ───────────────────────────────────────
+
+test('gezaehlt wird, was wirklich auf der Platte liegt', () => {
+  const ordner = tempOrdner();
+  fs.writeFileSync(path.join(ordner, 'da.mp4'), Buffer.alloc(3000));
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, datei: 'da.mp4', zeitstempel: '2026-06-01T12:00:00.000Z' },
+    { produkt_id: 10, datei: 'weg.mp4', zeitstempel: '2026-01-01T12:00:00.000Z' },
+  ] };
+  const p = platzbedarf(index, ordner, ordner, { jetzt: new Date('2026-09-20T12:00:00Z') });
+
+  assert.equal(p.dateien, 1);
+  assert.equal(p.fehlend, 1, 'ein Eintrag ohne Datei belegt keinen Platz');
+  assert.equal(p.bytes, 3000);
+  assert.equal(p.aeltestes, '2026-06-01T12:00:00.000Z',
+    'das Alter kommt vom vorhandenen Eintrag, nicht vom verschwundenen');
+  assert.equal(p.aeltesteTage, 111);
+
+  // GEGENPROBE: Nach der Zahl der Indexeintraege gerechnet waeren es zwei
+  // Dateien — und der Bericht behauptete Platzbedarf, den es nicht gibt.
+  assert.equal(index.eintraege.length, 2);
+  assert.notEqual(p.dateien, index.eintraege.length);
+});
+
+test('das Alter kommt aus dem Eintrag, nicht vom Dateidatum', () => {
+  const ordner = tempOrdner();
+  const datei = path.join(ordner, 'a.mp4');
+  fs.writeFileSync(datei, Buffer.alloc(10));
+  // Die Datei ist eben erst entstanden, der Eintrag ist alt — genau der Fall
+  // nach einem Umkopieren.
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, datei: 'a.mp4', zeitstempel: '2026-03-20T12:00:00.000Z' },
+  ] };
+  const p = platzbedarf(index, ordner, ordner, { jetzt: new Date('2026-09-20T12:00:00Z') });
+  assert.equal(p.aeltesteTage, 184);
+
+  // GEGENPROBE: Nach dem Dateidatum waere das Material null Tage alt — und der
+  // Bestand saehe nach jedem Umkopieren wieder frisch aus.
+  const nachDatei = Math.floor(
+    (new Date('2026-09-20T12:00:00Z').getTime() - fs.statSync(datei).mtimeMs) / 86400000);
+  assert.notEqual(nachDatei, p.aeltesteTage);
+});
+
+test('nur Verworfenes laeuft ab, und geloescht wird hier nichts', () => {
+  const ordner = tempOrdner();
+  for (const n of ['alt.mp4', 'jung.mp4', 'benutzt.mp4']) {
+    fs.writeFileSync(path.join(ordner, n), Buffer.alloc(10));
+  }
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, datei: 'alt.mp4', zustand: 'verworfen',
+      verwurf_grund: 'zu_dunkel', zeitstempel: '2026-01-01T12:00:00.000Z' },
+    { produkt_id: 10, datei: 'jung.mp4', zustand: 'verworfen',
+      verwurf_grund: 'zu_dunkel', zeitstempel: '2026-09-01T12:00:00.000Z' },
+    { produkt_id: 10, datei: 'benutzt.mp4', zustand: 'verwendet',
+      zeitstempel: '2026-01-01T12:00:00.000Z' },
+  ] };
+  const dran = ablaufkandidaten(index, ordner, ordner,
+    { tage: 90, jetzt: new Date('2026-09-20T12:00:00Z') });
+
+  assert.deepEqual(dran.map((d) => d.datei), ['alt.mp4']);
+  assert.equal(fs.existsSync(path.join(ordner, 'alt.mp4')), true,
+    'diese Funktion nennt Kandidaten — sie loescht nicht');
+
+  // GEGENPROBE: Ein gleich alter, aber VERWENDETER Clip bleibt draussen. Die
+  // Frist ist eine Platzregel, keine Bewertung.
+  assert.equal(dran.some((d) => d.datei === 'benutzt.mp4'), false);
+  assert.equal(index.eintraege[2].zeitstempel, index.eintraege[0].zeitstempel,
+    'beide sind gleich alt — allein der Zustand entscheidet');
+});
+
+test('Groessen werden lesbar, nicht in Bytes', () => {
+  assert.equal(lesbareGroesse(512), '512 B');
+  assert.equal(lesbareGroesse(2048), '2.0 KB');
+  assert.equal(lesbareGroesse(5 * 1024 * 1024), '5.0 MB');
+  assert.equal(lesbareGroesse(3 * 1024 * 1024 * 1024), '3.0 GB');
+  assert.equal(lesbareGroesse(0), '0 B');
+
+  // GEGENPROBE: Ab zweistellig ohne Nachkommastelle — "23.4 GB" liest sich
+  // schlechter als "23 GB", und die Stelle sagt bei der Groesse nichts mehr.
+  assert.equal(lesbareGroesse(23 * 1024 * 1024 * 1024), '23 GB');
+});
+
+// ── Werkzeugversionen (Punkt 72) ─────────────────────────────────────
+
+test('der Werkzeugstand sammelt, was da ist, und benennt was fehlt', () => {
+  const stand = werkzeugStand({
+    ytdlpVersion: '2026.09.01',
+    ffmpeg: '/usr/bin/ffmpeg',
+    starte: () => ({ status: 0, stdout: 'ffmpeg version 6.1.1-3ubuntu5 Copyright (c)' }),
+    faehigkeiten: { kannHashtag: false, kannSuche: true, namen: ['tiktok', 'tiktok:user'] },
+  });
+  assert.equal(stand.yt_dlp, '2026.09.01');
+  assert.equal(stand.ffmpeg, '6.1.1-3ubuntu5', 'nur die Nummer, nicht die Bauzeile');
+  assert.equal(stand.hashtag, false);
+  assert.equal(stand.extractors, 2);
+  assert.match(werkzeugZeile(stand), /yt-dlp 2026\.09\.01 · ffmpeg 6\.1\.1/);
+
+  // GEGENPROBE: Ohne ffmpeg steht "fehlt" da, nicht nichts. Ein fehlendes
+  // Werkzeug, das im Protokoll fehlt, ist genau der Fall, den dieser Punkt
+  // verhindern soll.
+  const ohne = werkzeugStand({ ytdlpVersion: '2026.09.01', ffmpeg: null });
+  assert.equal(ohne.ffmpeg, null);
+  assert.match(werkzeugZeile(ohne), /ffmpeg fehlt/);
+});
+
+test('eine Aenderung am Werkzeug wird in einer Zeile gemeldet', () => {
+  const vorher = { yt_dlp: '2026.08.01', ffmpeg: '6.1.1', node: 'v22.0.0',
+                   hashtag: true, suche: true, extractors: 3 };
+  const jetzt = { yt_dlp: '2026.09.15', ffmpeg: '6.1.1', node: 'v22.0.0',
+                  hashtag: false, suche: true, extractors: 2 };
+  const zeilen = werkzeugUnterschied(vorher, jetzt);
+  assert.deepEqual(zeilen, [
+    'yt-dlp: 2026.08.01 → 2026.09.15',
+    'Hashtag-Extractor: true → false',
+    'TikTok-Extractors: 3 → 2',
+  ]);
+
+  // GEGENPROBE: Gleicher Stand, keine Meldung — sonst stuende bei jedem Lauf
+  // eine Warnung, und nach der dritten liest sie niemand mehr.
+  assert.deepEqual(werkzeugUnterschied(vorher, vorher), []);
+  // Und ohne Vorgeschichte gibt es nichts zu vergleichen, keine Falschmeldung.
+  assert.deepEqual(werkzeugUnterschied(undefined, jetzt), []);
+});
+
+test('ein neu hinzugekommenes Feld ist keine Aenderung am Werkzeug', () => {
+  // Der alte Stand kannte die Faehigkeiten noch nicht. Das ist eine Aenderung
+  // an DIESEM Programm, nicht an yt-dlp — sonst meldet der erste Lauf nach
+  // einem Update lauter Werkzeugwechsel, die keine sind.
+  const alt = { yt_dlp: '2026.09.01', ffmpeg: '6.1.1', node: 'v22.0.0' };
+  const neu = { ...alt, hashtag: false, suche: true, extractors: 2 };
+  assert.deepEqual(werkzeugUnterschied(alt, neu), []);
+
+  // GEGENPROBE: Ein Feld, das BEIDE haben, wird sehr wohl verglichen.
+  assert.deepEqual(werkzeugUnterschied(alt, { ...neu, ffmpeg: '7.0' }),
+    ['ffmpeg: 6.1.1 → 7.0']);
+});
+
+test('ffmpeg, das nicht antwortet, gilt als nicht da', () => {
+  assert.equal(ffmpegVersion(null), null);
+  assert.equal(ffmpegVersion('/usr/bin/ffmpeg', () => ({ status: 1, stdout: '' })), null);
+  assert.equal(ffmpegVersion('/usr/bin/ffmpeg', () => { throw new Error('ENOENT'); }), null);
+
+  // GEGENPROBE: Antwortet es, kommt die Nummer heraus.
+  assert.equal(
+    ffmpegVersion('/usr/bin/ffmpeg', () => ({ status: 0, stdout: 'ffmpeg version 7.0.2 blah' })),
+    '7.0.2');
+});
+
+test('ein Rabattcode ist an der Ziffer oder an Grossschreibung zu erkennen', () => {
+  // Beides zaehlt als EIN Signal — zusammen mit einem zweiten traegt es.
+  for (const t of ['Code DESK15, link in bio', 'code save20 link in bio',
+                   'CODE WATER10 - shop now', 'use code WATER at checkout, shop now']) {
+    assert.ok(istFremdeWerbung({ title: t }), `haette treffen muessen: ${t}`);
+  }
+
+  // GEGENPROBE: Das blosse Wort "code" traegt nichts. Genau daran waeren zwei
+  // frueheren Fassungen gescheitert — einmal zu streng (nur Grossbuchstaben,
+  // damit fiel "code save20" durch), einmal zu weich (/i ueber alles, damit
+  // traf "no code needed").
+  for (const t of ['water dispenser review, no code needed',
+                   'I code for a living and this dispenser helps',
+                   'code the water level yourself']) {
+    assert.equal(werbeVerdacht({ title: t }).arten.includes('rabatt'), false,
+      `haette nicht treffen duerfen: ${t}`);
+  }
+});
+
+// ── Fremdmaterial bleibt, wo es hingehoert (Punkt 65) ────────────────
+
+test('ein Eintrag ausserhalb der erlaubten Ordner wird rot gemeldet', () => {
+  const index = { version: 1, eintraege: [
+    { datei: 'a.mp4', ablage: 'Marketing/videos/rohmaterial/10_x' },
+    { datei: 'b.mp4', ablage: 'Marketing/videos/geschnitten' },
+    { datei: 'c.mp4', ablage: 'Marketing/videos' },
+    { datei: 'd.mp4', ablage: 'images' },
+    { datei: 'e.mp4' },
+  ] };
+  const verirrt = fremdmaterialAmFalschenOrt(index);
+  assert.deepEqual(verirrt.map((v) => v.datei), ['c.mp4', 'd.mp4', 'e.mp4']);
+
+  // "Marketing/videos" allein reicht NICHT: Dort liegen die eigenen
+  // Renderings, und die sind versioniert. Fremdes Material dort ist genau der
+  // Fall, der schon einmal im oeffentlichen Repo stand.
+  assert.equal(ablageErlaubt({ ablage: 'Marketing/videos' }), false);
+  assert.equal(ablageErlaubt({ ablage: 'Marketing/videos/rohmaterial' }), true);
+  assert.equal(ablageErlaubt({ ablage: 'Marketing/videos/rohmaterial/10_wasserspender' }), true);
+
+  // GEGENPROBE: Ohne die Pruefung saehe der Index in allen fuenf Faellen gleich
+  // gesund aus — alle fuenf haben eine Datei und einen Eintrag.
+  assert.equal(index.eintraege.length, 5);
+  assert.equal(verirrt.length < index.eintraege.length, true,
+    'die Pruefung darf nicht alles melden, sonst meldet sie nichts');
+});
+
+test('ein aehnlich aussehender Ordner zaehlt nicht als erlaubt', () => {
+  // Praefix-Vergleich ohne Trennzeichen haette "rohmaterial-alt" mit
+  // durchgehen lassen — ein Ordner, den die .gitignore nicht kennt.
+  assert.equal(ablageErlaubt({ ablage: 'Marketing/videos/rohmaterial-alt' }), false);
+  assert.equal(ablageErlaubt({ ablage: 'Marketing/videos/rohmaterialx/10' }), false);
+
+  // GEGENPROBE: Mit Trennzeichen ist es derselbe Ordner und damit erlaubt.
+  assert.equal(ablageErlaubt({ ablage: 'Marketing/videos/rohmaterial/alt' }), true);
+  // Und Windows-Schraegstriche duerfen den Vergleich nicht kippen.
+  assert.equal(ablageErlaubt({ ablage: 'Marketing\\videos\\rohmaterial\\10_x' }), true);
+});
+
+// ── Herkunft im Dateinamen (Punkt 71) ────────────────────────────────
+
+test('geladenes Fremdmaterial ist am Namen nicht von eigenem zu unterscheiden', () => {
+  // DAS IST DER BEFUND, nicht die Loesung: Der Bot tauft Fremdmaterial auf
+  // "_stil-b" um — dieselbe Form, die die eigenen KI-Renderings tragen.
+  const fremd = herkunftAusName('01_elektrischer-wasserspender_14s_stil-b.mp4');
+  const eigen = herkunftAusName('01_nordic-crystal-lamp_20s_stil-a.mp4');
+  assert.equal(fremd.sagtHerkunft, false);
+  assert.equal(eigen.sagtHerkunft, false);
+  assert.equal(fremd.produkt_id, 1, 'das Produkt sagt der Name sehr wohl');
+
+  // GEGENPROBE: Das alte Fremdschema konnte es — an den Ziffern der TikTok-ID.
+  // Genau daran erkennt die .gitignore den Altbestand bis heute.
+  const alt = herkunftAusName('wasserspender_7300000000000000001.mp4');
+  assert.equal(alt.sagtHerkunft, true);
+  assert.equal(alt.video_id, '7300000000000000001');
+});
+
+test('die Meldung nennt einen Vorschlag, benennt aber nichts um', () => {
+  const index = { version: 1, eintraege: [
+    { datei: '01_wasserspender_14s_stil-b.mp4', produkt_id: 10, video_id: '7300000000000000001' },
+    { datei: 'wasserspender_7300000000000000002.mp4', produkt_id: 10, video_id: '7300000000000000002' },
+  ] };
+  const offen = ohneHerkunftImNamen(index);
+  assert.deepEqual(offen.map((o) => o.datei), ['01_wasserspender_14s_stil-b.mp4']);
+  assert.equal(offen[0].vorschlag, '01_wasserspender_14s_stil-b_7300000000000000001.mp4');
+
+  // GEGENPROBE: Der Eintrag ist unveraendert. Ein Umtaufen im Hintergrund
+  // braeche jeden Indexeintrag, der auf den alten Namen zeigt — und der Index
+  // ist das Wertvolle, die Dateien sind nachladbar.
+  assert.equal(index.eintraege[0].datei, '01_wasserspender_14s_stil-b.mp4');
+});
+
+test('ohne Video-ID gibt es keinen Vorschlag, statt einen zu raten', () => {
+  const index = { version: 1, eintraege: [{ datei: 'irgendwas.mp4', produkt_id: 10 }] };
+  const offen = ohneHerkunftImNamen(index);
+  assert.equal(offen[0].schema, 'unbekannt');
+  assert.equal(offen[0].vorschlag, null);
+
+  // GEGENPROBE: Mit ID steht ein Vorschlag da.
+  index.eintraege[0].video_id = '7300000000000000003';
+  assert.equal(ohneHerkunftImNamen(index)[0].vorschlag,
+    'irgendwas_7300000000000000003.mp4');
+});
+
+// ── Rechteakte je Clip (Punkt 63) ────────────────────────────────────
+//
+// Der Materialkatalog des Automaten sperrt hart: "Ein Asset ohne Lizenzeintrag
+// kommt nicht ins Video. Punkt." Fuer fremde TikTok-Clips galt nur ein
+// Haekchen — und zwar fuer das Material mit dem hoechsten Risiko.
+
+test('ein altes Haekchen wird nicht zur Einwilligung aufgewertet', () => {
+  const alt = { creator: 'buerokram', quelle_url: 'https://www.tiktok.com/@buerokram/video/1',
+                rechte_geprueft: true };
+  const akte = rechteAkte(alt);
+  assert.equal(akte.art, 'unbekannt', 'geprueft ja — aber wodurch, steht nirgends');
+  assert.equal(akte.quelle, 'altbestand');
+
+  // UND DIE SPERRE BLEIBT ZU. Aus einem Wahrheitswert nachtraeglich eine
+  // Einwilligung zu machen waere genau die Behauptung, die dieser Punkt
+  // abstellen soll.
+  const urteil = darfVeroeffentlicht(alt, { zweck: 'organisch' });
+  assert.equal(urteil.ok, false);
+  assert.match(urteil.grund, /Art der Erlaubnis/);
+
+  // GEGENPROBE: Mit vollstaendiger Akte geht dieselbe Pruefung durch.
+  const voll = { ...alt };
+  assert.equal(setzeRechte(voll, {
+    art: 'einwilligung', datum: '2026-09-01T10:00:00Z', beleg: 'screenshot-dm.png',
+    zwecke: ['organisch'],
+  }).ok, true);
+  assert.equal(darfVeroeffentlicht(voll, { zweck: 'organisch' }).ok, true);
+});
+
+test('eine Erlaubnis fuer Beitraege deckt keine Anzeige', () => {
+  const e = { creator: 'x', quelle_url: 'https://www.tiktok.com/@x/video/1' };
+  setzeRechte(e, { art: 'einwilligung', datum: '2026-09-01T10:00:00Z',
+                   beleg: 'mail.eml', zwecke: ['organisch'] });
+
+  assert.equal(darfVeroeffentlicht(e, { zweck: 'organisch' }).ok, true);
+  const anzeige = darfVeroeffentlicht(e, { zweck: 'anzeige' });
+  assert.equal(anzeige.ok, false, 'das ist der haeufigste Punkt, an dem eine Zusage endet');
+  assert.match(anzeige.grund, /deckt organisch, nicht "anzeige"/);
+
+  // GEGENPROBE: Mit beiden Zwecken geht beides.
+  setzeRechte(e, { art: 'einwilligung', datum: '2026-09-01T10:00:00Z',
+                   beleg: 'mail.eml', zwecke: ['organisch', 'anzeige'] });
+  assert.equal(darfVeroeffentlicht(e, { zweck: 'anzeige' }).ok, true);
+});
+
+test('eigenes Material braucht keine Akte, fremdes schon', () => {
+  const eigen = { datei: 'a.mp4' };
+  setzeRechte(eigen, { art: 'eigen' });
+  assert.deepEqual(rechteLuecken(eigen), []);
+  assert.equal(darfVeroeffentlicht(eigen, { zweck: 'anzeige' }).ok, true,
+    'am eigenen Material haengen keine fremden Rechte');
+
+  // GEGENPROBE: Derselbe Eintrag als fremdes Material ist gesperrt — und zwar
+  // mit Liste dessen, was fehlt, statt mit einem blossen Nein.
+  const fremd = { datei: 'a.mp4' };
+  setzeRechte(fremd, { art: 'einwilligung' });
+  const luecken = rechteLuecken(fremd);
+  assert.ok(luecken.includes('Beleg (Screenshot, Mail, Lizenzdatei)'));
+  assert.ok(luecken.includes('Umfang (organisch und/oder Anzeige)'));
+  assert.equal(darfVeroeffentlicht(fremd).ok, false);
+});
+
+test('eine abgelaufene oder widerrufene Erlaubnis sperrt wieder', () => {
+  const e = { creator: 'x', quelle_url: 'https://www.tiktok.com/@x/video/1' };
+  setzeRechte(e, { art: 'einwilligung', datum: '2026-01-01T10:00:00Z',
+                   beleg: 'dm.png', zwecke: ['organisch'], bis: '2026-06-30T00:00:00Z' });
+
+  assert.equal(darfVeroeffentlicht(e, { jetzt: new Date('2026-05-01T00:00:00Z') }).ok, true);
+  const spaet = darfVeroeffentlicht(e, { jetzt: new Date('2026-09-20T00:00:00Z') });
+  assert.equal(spaet.ok, false);
+  assert.match(spaet.grund, /lief am 2026-06-30 aus/);
+
+  // Widerruf: Der Eintrag bleibt, der Widerruf gehoert zur Akte. Ein geloeschter
+  // Eintrag waere das Gegenteil eines Nachweises.
+  const w = { creator: 'y', quelle_url: 'https://www.tiktok.com/@y/video/2' };
+  setzeRechte(w, { art: 'einwilligung', datum: '2026-09-01T10:00:00Z',
+                   beleg: 'dm.png', zwecke: ['organisch'] });
+  assert.equal(darfVeroeffentlicht(w).ok, true);
+  widerrufeRechte(w, { jetzt: new Date('2026-09-15T10:00:00Z') });
+  assert.match(darfVeroeffentlicht(w).grund, /widerrufen am 2026-09-15/);
+  assert.equal(w.rechte.art, 'einwilligung', 'die Akte bleibt lesbar');
+  assert.equal(w.rechte_geprueft, false, 'der alte Wahrheitswert zieht mit');
+});
+
+test('ein unbekannter Zweck wird abgelehnt statt stillschweigend erlaubt', () => {
+  const e = { datei: 'a.mp4' };
+  setzeRechte(e, { art: 'einwilligung', datum: '2026-09-01T10:00:00Z',
+                   beleg: 'x', zwecke: ['organisch'] });
+  const urteil = darfVeroeffentlicht(e, { zweck: 'fernsehen' });
+  assert.equal(urteil.ok, false);
+  assert.match(urteil.grund, /unbekannter Zweck/);
+
+  // GEGENPROBE: Auch beim Setzen wird ein unbekannter Zweck nicht still
+  // geschluckt — sonst stuende eine Erlaubnis in der Akte, die niemand erteilt hat.
+  const antwort = setzeRechte({ datei: 'b.mp4' }, {
+    art: 'einwilligung', zwecke: ['organisch', 'fernsehen'] });
+  assert.equal(antwort.ok, false);
+  assert.match(antwort.grund, /unbekannter Zweck: fernsehen/);
+});
+
+test('die Bilanz zaehlt je Zweck getrennt', () => {
+  const index = { version: 1, eintraege: [{}, {}, {}] };
+  setzeRechte(index.eintraege[0], { art: 'eigen' });
+  setzeRechte(index.eintraege[1], { art: 'einwilligung', datum: '2026-09-01T10:00:00Z',
+    inhaber: 'a', kontakt: 'u', beleg: 'x', zwecke: ['organisch'] });
+  // Der dritte bleibt ohne Akte.
+
+  const organisch = rechteBilanz(index, { zweck: 'organisch' });
+  const anzeige = rechteBilanz(index, { zweck: 'anzeige' });
+  assert.equal(organisch.frei, 2);
+  assert.equal(anzeige.frei, 1, 'nur das eigene Material darf in eine Anzeige');
+
+  // GEGENPROBE: Eine Bilanz ohne Zwecktrennung haette beidemal 2 gemeldet —
+  // und genau dieser eine Clip waere in einer bezahlten Anzeige gelandet.
+  assert.notEqual(organisch.frei, anzeige.frei);
+  assert.ok(organisch.luecken.some((l) => /keine Erlaubnis/.test(l.was)));
+});
+
+// ── Anfragen an Creator (Punkt 64) ───────────────────────────────────
+
+const ANFRAGE_CLIP = {
+  creator: 'buerokram',
+  quelle_url: 'https://www.tiktok.com/@buerokram/video/7300000000000000001',
+  titel: 'Staying hydrated with my new desktop water dispenser',
+};
+
+test('die Anfrage nennt Umfang, Dauer und Gegenleistung', () => {
+  const a = creatorAnfrage(ANFRAGE_CLIP, {
+    absender: 'Nevio (Maios)', produkt: 'einen Wasserspender',
+    zwecke: ['organisch', 'anzeige'], dauer: '12 Monate',
+    gegenleistung: 'das Geraet geschenkt', nennung: '@buerokram im Video',
+  });
+  assert.equal(a.ok, true);
+  assert.equal(a.an, 'https://www.tiktok.com/@buerokram');
+  assert.match(a.text, /in eigenen Beitraegen UND in bezahlten Anzeigen/);
+  assert.match(a.text, /12 Monate/);
+  assert.match(a.text, /das Geraet geschenkt/);
+  // Der Clip muss EINDEUTIG benannt sein — ein Creator hat hunderte Videos,
+  // und eine Zusage zu "einem davon" belegt nichts.
+  assert.match(a.text, /video\/7300000000000000001/);
+
+  // GEGENPROBE: Ohne Zweck entsteht keine Anfrage. Genau die Zeile zum Umfang
+  // ist die, die ohne Vorlage fehlt — sie darf nicht optional sein.
+  const ohne = creatorAnfrage(ANFRAGE_CLIP, { absender: 'Nevio', produkt: 'x' });
+  assert.equal(ohne.ok, false);
+  assert.deepEqual(ohne.fehlt, ['zwecke']);
+});
+
+test('ohne eindeutigen Clip gibt es keine Anfrage', () => {
+  const ohneAlles = { creator: 'buerokram' };
+  const a = creatorAnfrage(ohneAlles, {
+    absender: 'N', produkt: 'x', zwecke: ['organisch'] });
+  assert.equal(a.ok, false);
+  assert.match(a.fehlt[0], /nicht eindeutig/);
+
+  // GEGENPROBE: Mit Titel allein reicht es — nicht ideal, aber benennbar.
+  const mitTitel = creatorAnfrage({ creator: 'b', titel: 'Mein Wasserspender' }, {
+    absender: 'N', produkt: 'x', zwecke: ['organisch'] });
+  assert.equal(mitTitel.ok, true);
+  assert.match(mitTitel.text, /"Mein Wasserspender"/);
+});
+
+test('die englische Vorlage sagt dasselbe', () => {
+  const de = creatorAnfrage(ANFRAGE_CLIP, { absender: 'N', produkt: 'a dispenser',
+    zwecke: ['anzeige'], sprache: 'de' });
+  const en = creatorAnfrage(ANFRAGE_CLIP, { absender: 'N', produkt: 'a dispenser',
+    zwecke: ['anzeige'], sprache: 'en' });
+  assert.match(de.text, /in bezahlten Anzeigen/);
+  assert.match(en.text, /in paid ads/);
+  // Beide enthalten den Rueckzieher — er ist kein Beiwerk, sondern der Grund,
+  // warum jemand ueberhaupt zusagt.
+  assert.match(de.text, /wieder raus/);
+  assert.match(en.text, /take it down/);
+
+  // GEGENPROBE: Eine unbekannte Sprache faellt auf Deutsch zurueck, statt eine
+  // halb uebersetzte Mischung zu erzeugen.
+  const fr = creatorAnfrage(ANFRAGE_CLIP, { absender: 'N', produkt: 'x',
+    zwecke: ['organisch'], sprache: 'fr' });
+  assert.match(fr.text, /Viele Gruesse/);
+});
+
+test('ein Creator, eine Anfrage — auch bei fuenf Clips', () => {
+  const index = { version: 1, eintraege: [
+    { creator: 'vielfilmer', quelle_url: 'https://www.tiktok.com/@vielfilmer/video/1', titel: 'a' },
+    { creator: 'vielfilmer', quelle_url: 'https://www.tiktok.com/@vielfilmer/video/2', titel: 'b' },
+    { creator: 'vielfilmer', quelle_url: 'https://www.tiktok.com/@vielfilmer/video/3', titel: 'c' },
+    { creator: 'einzeln', quelle_url: 'https://www.tiktok.com/@einzeln/video/4', titel: 'd' },
+  ] };
+  const offen = offeneAnfragen(index, { absender: 'N', produkt: 'x', zwecke: ['organisch'] });
+  assert.equal(offen.length, 2, 'zwei Creator, zwei Anfragen — nicht vier');
+  assert.equal(offen[0].creator, 'vielfilmer', 'die meisten Clips zuerst');
+  assert.equal(offen[0].clips, 3);
+  assert.equal(offen[0].adressen.length, 3, 'alle Adressen bleiben beisammen');
+
+  // GEGENPROBE: Wer schon eine Einwilligung hat, wird nicht noch einmal gefragt.
+  setzeRechte(index.eintraege[3], { art: 'einwilligung', datum: '2026-09-01T10:00:00Z',
+    beleg: 'x', zwecke: ['organisch'] });
+  const danach = offeneAnfragen(index, { absender: 'N', produkt: 'x', zwecke: ['organisch'] });
+  assert.deepEqual(danach.map((o) => o.creator), ['vielfilmer']);
+});
+
+test('ohne Creator gibt es keinen Adressaten', () => {
+  const index = { version: 1, eintraege: [
+    { quelle_url: 'https://www.tiktok.com/@x/video/1', titel: 'a' },
+    { creator: '   ', quelle_url: 'https://www.tiktok.com/@y/video/2', titel: 'b' },
+  ] };
+  assert.deepEqual(offeneAnfragen(index, { absender: 'N', produkt: 'x', zwecke: ['organisch'] }), []);
+
+  // GEGENPROBE: Mit Creator entsteht sehr wohl eine Anfrage — die Funktion
+  // schweigt nur mangels Adressat, nicht mangels Arbeit.
+  index.eintraege[0].creator = 'jemand';
+  assert.equal(offeneAnfragen(index, { absender: 'N', produkt: 'x', zwecke: ['organisch'] }).length, 1);
+});
+
+// ── Die Messlatte waechst mit (Punkt 20) ─────────────────────────────
+
+test('dasselbe Video wird nicht zweimal gesammelt', () => {
+  let s = { version: 1, urteile: [] };
+  s = sammleUrteil(s, { video_id: '7300000000000000001', titel: 'Wasserspender Test',
+    produkt_id: 10, urteil: 'angenommen', wert: 1 });
+  s = sammleUrteil(s, { video_id: '7300000000000000001', titel: 'Wasserspender Test',
+    produkt_id: 10, urteil: 'angenommen', wert: 1 });
+  assert.equal(s.urteile.length, 1);
+
+  // Erkannt wird an der VIDEO-ID, nicht am Text: Derselbe Clip taucht unter
+  // mehreren Adressen auf, und zwei Eintraege mit gleichem Untertitel wuerden
+  // die Statistik verdoppeln.
+  s = sammleUrteil(s, { video_id: '7300000000000000002', titel: 'Wasserspender Test',
+    produkt_id: 10, urteil: 'angenommen' });
+  assert.equal(s.urteile.length, 2, 'andere ID, anderer Fall');
+
+  // GEGENPROBE: Ohne Titel wird gar nichts gesammelt — ein leerer Untertitel
+  // ist kein Pruefmaterial.
+  const vorher = s.urteile.length;
+  s = sammleUrteil(s, { video_id: '7300000000000000003', titel: '   ', produkt_id: 10,
+    urteil: 'angenommen' });
+  assert.equal(s.urteile.length, vorher);
+});
+
+test('ein gekipptes Urteil wird festgehalten, nicht ueberschrieben', () => {
+  // DAS ist der Wert der Sammlung: Wer die Wortlisten verschaerft, sieht
+  // sofort, wie viele frueher angenommene Clips jetzt durchfallen.
+  let s = { version: 1, urteile: [] };
+  s = sammleUrteil(s, { video_id: '1', titel: 'Genius DIY Water Dispenser',
+    produkt_id: 10, urteil: 'angenommen',
+    jetzt: new Date('2026-08-01T10:00:00Z') });
+  s = sammleUrteil(s, { video_id: '1', titel: 'Genius DIY Water Dispenser',
+    produkt_id: 10, urteil: 'kein Merkmal',
+    jetzt: new Date('2026-09-20T10:00:00Z') });
+
+  assert.equal(s.urteile.length, 1);
+  assert.equal(s.urteile[0].urteil, 'kein Merkmal');
+  assert.equal(s.urteile[0].vorher, 'angenommen');
+  assert.equal(s.urteile[0].geaendert_am, '2026-09-20T10:00:00.000Z');
+  assert.equal(urteilsBilanz(s).gekippt, 1);
+
+  // GEGENPROBE: Ein gleichbleibendes Urteil hinterlaesst keine Aenderung —
+  // sonst saehe jeder Lauf nach einer Verschiebung aus.
+  s = sammleUrteil(s, { video_id: '1', titel: 'Genius DIY Water Dispenser',
+    produkt_id: 10, urteil: 'kein Merkmal' });
+  assert.equal(urteilsBilanz(s).gekippt, 1);
+});
+
+test('die Sammlung ueberlebt den Lauf und bleibt begrenzt', () => {
+  const ordner = tempOrdner();
+  assert.deepEqual(ladeUrteile(ordner).urteile, [], 'fehlt sie, ist sie leer — kein Fehler');
+
+  let s = { version: 1, urteile: [] };
+  for (let i = 0; i < 5; i++) {
+    s = sammleUrteil(s, { video_id: String(i), titel: `Clip ${i}`, produkt_id: 10,
+      urteil: i % 2 ? 'angenommen' : 'kein Kernwort' });
+  }
+  assert.ok(speichereUrteile(ordner, s));
+  const gelesen = ladeUrteile(ordner);
+  assert.equal(gelesen.urteile.length, 5);
+
+  const bilanz = urteilsBilanz(gelesen);
+  assert.equal(bilanz.angenommen, 2);
+  assert.equal(bilanz.abgelehnt, 3);
+  assert.equal(bilanz.gruende[0].grund, 'kein Kernwort');
+
+  // GEGENPROBE: Eine kaputte Datei gilt als leer, statt den Lauf zu beenden.
+  // Die Sammlung ist Beiwerk — der Index ist das Wertvolle.
+  fs.writeFileSync(urteilePfad(ordner), '{kein json');
+  assert.deepEqual(ladeUrteile(ordner).urteile, []);
+});
+
+test('weichen Adresse und Creator-Name ab, wird das gemeldet', () => {
+  // Die Adresse gewinnt — sie ist das, was TikTok selbst ausliefert. Gehen
+  // beide auseinander, fuehrt die Anfrage womoeglich zum falschen Konto, und
+  // das soll auffallen statt still zu bleiben.
+  const index = { version: 1, eintraege: [
+    { creator: 'buerokram', quelle_url: 'https://www.tiktok.com/@anderer/video/1', titel: 'a' },
+  ] };
+  const offen = offeneAnfragen(index, { absender: 'N', produkt: 'x', zwecke: ['organisch'] });
+  assert.equal(offen[0].profil, 'https://www.tiktok.com/@anderer');
+  assert.equal(offen[0].handleWeichtAb, true);
+
+  // GEGENPROBE: Stimmen beide ueberein, gibt es keine Warnung — sonst stuende
+  // sie bei jedem Eintrag und niemand liest sie mehr.
+  index.eintraege[0].quelle_url = 'https://www.tiktok.com/@buerokram/video/1';
+  assert.equal(offeneAnfragen(index, { absender: 'N', produkt: 'x', zwecke: ['organisch'] })[0]
+    .handleWeichtAb, false);
+});
+
+test('bei mehreren Clips stehen alle in der Nachricht', () => {
+  // Eine Anfrage, die "dein Video X" sagt und spaeter zehn verwendet, ist
+  // keine Einwilligung fuer die zehn. Das ist kein Formfehler, sondern der
+  // Unterschied zwischen Nachweis und Behauptung.
+  const index = { version: 1, eintraege: [
+    { creator: 'vielfilmer', quelle_url: 'https://www.tiktok.com/@vielfilmer/video/1', titel: 'a' },
+    { creator: 'vielfilmer', quelle_url: 'https://www.tiktok.com/@vielfilmer/video/2', titel: 'b' },
+    { creator: 'vielfilmer', quelle_url: 'https://www.tiktok.com/@vielfilmer/video/3', titel: 'c' },
+  ] };
+  const [a] = offeneAnfragen(index, { absender: 'N', produkt: 'x', zwecke: ['organisch'] });
+  for (const u of ['video/1', 'video/2', 'video/3']) {
+    assert.ok(a.text.includes(u), `${u} fehlt in der Nachricht`);
+  }
+  assert.match(a.text, /3 Videos gefallen/);
+
+  // GEGENPROBE: Bei EINEM Clip bleibt es beim einfachen Satz — eine
+  // Aufzaehlung mit einem Punkt liest sich wie ein Formular.
+  const einer = creatorAnfrage(index.eintraege[0], {
+    absender: 'N', produkt: 'x', zwecke: ['organisch'] });
+  assert.match(einer.text, /Dein Video https/);
+  assert.equal(/Konkret geht es um diese/.test(einer.text), false);
+});
+
+test('der Produktname wird nicht gebeugt, sondern umgangen', () => {
+  // products.json liefert den Nominativ ("Elektrischer Wasserspender"), und
+  // "ich verkaufe" verlangt den Akkusativ. Ein Doppelpunkt umgeht die Beugung,
+  // statt sie falsch zu raten.
+  const a = creatorAnfrage(ANFRAGE_CLIP, {
+    absender: 'N', produkt: 'Elektrischer Wasserspender für Schreibtisch',
+    zwecke: ['organisch'] });
+  assert.match(a.text, /verkaufe in meinem Shop: Elektrischer Wasserspender/);
+
+  // GEGENPROBE: Die alte Form hätte "verkaufe Elektrischer Wasserspender"
+  // ergeben — grammatisch falsch und sofort als Maschine erkennbar.
+  assert.equal(/verkaufe Elektrischer/.test(a.text), false);
+});
+
+// ── Kontaktbogen je Lauf (Punkt 21) ──────────────────────────────────
+//
+// Den Bogen gibt es seit dem 18.09. als eigenen Befehl. Ein Befehl, den man
+// nach jedem Lauf von Hand tippen muss, wird nach dem dritten Mal nicht mehr
+// getippt — dabei ist die Sichtung der teuerste Handgriff der ganzen Kette.
+
+test('nach einem Lauf mit Fund wird der Bogen gebaut und gemeldet', async () => {
+  const daten = tempOrdner();
+  const videos = tempOrdner();
+  const gut = lizenzierterTon(3);
+  const protokoll = { angaben: [], downloads: [] };
+  const gemeldet = [];
+  let gebaut = null;
+
+  const antworten = ['10', '1', '1', '1'];
+  await interaktiv({
+    ytdlp: ytdlpFuer([gut], protokoll),
+    pruefeSprache: () => STILL_GEMESSEN,
+    wurzel: path.dirname(videos),
+    produkte: [PRODUKT],
+    konfig: { produkte: { 10: { videos: [gut.webpage_url] } } },
+    standard: { ...STANDARD },
+    datenOrdner: daten, videoOrdner: videos, gitignore: path.join(daten, '.gitignore'),
+    stopDatei: path.join(daten, 'kein-STOP'), env: {},
+    // Der Bogen wird ueber dieselben Werkzeugpfade gebaut wie alles andere.
+    // Hier wird ffmpeg absichtlich abgeschaltet: Der Test soll die VERDRAHTUNG
+    // pruefen, nicht ffmpeg. Dass echte Standbilder entstehen, ist im
+    // Durchlauf mit echtem ffmpeg belegt.
+    ffmpeg: null,
+    frage: async () => antworten.shift(),
+    jetzt: () => '2026-09-20T12:00:00.000Z',
+    melde: (z) => gemeldet.push(String(z)),
+    warte: async () => {}, impersonation: nachahmungDa,
+  });
+
+  assert.equal(geladeneVideos(videos).length, 1);
+  assert.ok(gemeldet.some((z) => /Kontaktbogen uebersprungen/.test(z)),
+    'ohne ffmpeg wird gesagt, warum kein Bogen entsteht — statt zu schweigen');
+  assert.equal(gebaut, null);
+
+  // GEGENPROBE: Die Meldung haengt NICHT am Ablehnungsblock.
+  //
+  // Erst stand sie darin, hinter "if (auswertung.length)". Ein Lauf ohne eine
+  // einzige Ablehnung zeigte den Bogen damit nie an, obwohl er im Ordner lag.
+  // Dieser Lauf hat nichts abgelehnt — und meldet trotzdem.
+  assert.equal(gemeldet.some((z) => /Abgelehnt:/.test(z)), false,
+    'dieser Lauf hat nichts abgelehnt');
+  assert.ok(gemeldet.some((z) => /Urteile:/.test(z)),
+    'die Urteilsmeldung kommt trotzdem — sie haengt nicht am Ablehnungsblock');
+});
+
+test('ohne Fund wird kein Bogen gebaut', async () => {
+  const daten = tempOrdner();
+  const videos = tempOrdner();
+  const gemeldet = [];
+  const ytdlp = async (argumente) => {
+    if (argumente.includes('--list-extractors')) return { code: 0, stdout: 'tiktok', stderr: '' };
+    return { code: 1, stdout: '', stderr: 'ERROR: [TikTok] 1: Video not available' };
+  };
+
+  const antworten = ['10', '1', '1', '1'];
+  await interaktiv({
+    ytdlp,
+    wurzel: path.dirname(videos),
+    produkte: [PRODUKT],
+    konfig: { produkte: { 10: { videos: ['https://www.tiktok.com/@w/video/7440000000000000009'] } } },
+    standard: { ...STANDARD },
+    datenOrdner: daten, videoOrdner: videos, gitignore: path.join(daten, '.gitignore'),
+    stopDatei: path.join(daten, 'kein-STOP'), env: {},
+    frage: async () => antworten.shift(),
+    jetzt: () => '2026-09-20T12:00:00.000Z',
+    melde: (z) => gemeldet.push(String(z)),
+    warte: async () => {}, impersonation: nachahmungDa,
+  });
+
+  assert.equal(geladeneVideos(videos).length, 0);
+  assert.equal(gemeldet.some((z) => /Kontaktbogen/.test(z)), false,
+    'ein Lauf ohne Fund hat nichts Neues zu zeigen — der alte Bogen liegt ja noch da');
+});
+
+test('kontaktbogen und tiktok-video-sync laden sich gegenseitig ohne Ring', () => {
+  // kontaktbogen.js verlangt tiktok-video-sync.js. Ein Require oben am
+  // Dateianfang waere ein Ring: Beim Laden von kontaktbogen.js waeren die
+  // Exporte hier noch leer, und sync.ladeIndex waere undefined. Deshalb steht
+  // das Require im Lauf drin, nicht oben — und deshalb steht hier ein Test.
+  const bogen = require('./kontaktbogen.js');
+  assert.equal(typeof bogen.baueBoegen, 'function');
+  assert.equal(typeof bogen.findeWerkzeug, 'function');
+
+  // GEGENPROBE: Auch andersherum geladen sind beide Seiten vollstaendig.
+  delete require.cache[require.resolve('./kontaktbogen.js')];
+  delete require.cache[require.resolve('./tiktok-video-sync.js')];
+  const bogen2 = require('./kontaktbogen.js');
+  const sync2 = require('./tiktok-video-sync.js');
+  assert.equal(typeof bogen2.baueBoegen, 'function');
+  assert.equal(typeof sync2.ladeIndex, 'function');
 });

@@ -280,6 +280,18 @@ def rendere(
     # weiter; es gibt keinen Fehler und keine Stille.
     musik = common.musik_waehlen(int(brief.get("saat", produkt.id)))
     if musik is not None:
+        # Lizenznachweis auch fuer Musik (musik/lizenzen.json, siehe assets.py).
+        # Anders als bei Stil C ist das Bett hier OPTIONAL — deshalb wird ein
+        # Stueck ohne Nachweis weggelassen statt der Lauf abgebrochen. Das
+        # Video entsteht trotzdem, nur trockener. Ein Abbruch waere hier die
+        # falsche Haerte: Er wuerde ein rechtlich einwandfreies Video
+        # verhindern, weil das SCHMUCKWERK nicht belegt ist.
+        if not assets.hat_lizenz(musik):
+            grund = assets.musik_ohne_nachweis(musik) or "kein Lizenzeintrag"
+            print(f"[stil_a] Musik weggelassen — {musik.name}: {grund}")
+            bericht["musik_abgelehnt"] = f"{musik.name}: {grund}"
+            musik = None
+    if musik is not None:
         bericht["musik"] = musik.name
         common.lauf([
             "-i", str(stumm), "-i", str(tonspur), "-stream_loop", "-1", "-i", str(musik),

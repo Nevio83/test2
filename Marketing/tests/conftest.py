@@ -34,6 +34,46 @@ braucht_db = pytest.mark.skipif(
 )
 
 
+def _spalte_fehlt(tabelle: str, spalte: str) -> bool:
+    """Gibt es diese Spalte in der verbundenen Datenbank?
+
+    WOZU DAS NOETIG IST
+    Das Schema wird von `database.js` beim SERVERSTART angelegt — es gibt kein
+    Migrationssystem (CLAUDE.md Paragraph 5). Wer eine neue Spalte ergaenzt und
+    danach nur die Tests startet, hat sie in der Datenbank noch nicht.
+
+    Der Unterschied ist wichtig: Eine fehlende Spalte ist KEIN Fehler im Code,
+    sondern eine Datenbank, die noch nicht nachgezogen ist. Ein roter Test
+    behauptet an dieser Stelle etwas Falsches — er sieht aus, als waere die
+    Freigabe kaputt, dabei fehlt nur ein `npm start`.
+
+    Deshalb wird uebersprungen statt rot gemeldet, und der Grund sagt genau,
+    was zu tun ist.
+    """
+    if not db.verfuegbar():
+        return True
+    try:
+        zeile = db.eine_zeile(
+            """SELECT 1 AS da FROM information_schema.columns
+                WHERE table_name = %s AND column_name = %s""",
+            (tabelle, spalte),
+        )
+        return zeile is None
+    except Exception:
+        # Im Zweifel ueberspringen. Ein Test, der an der PRUEFUNG scheitert,
+        # sagt nichts ueber das, was er eigentlich pruefen wollte.
+        return True
+
+
+# Die Freigabe je Beitrag braucht mkt_posts.freigabe. Fehlt die Spalte, laeuft
+# die Datenbank noch auf dem Stand von vor der Aenderung.
+braucht_freigabe_spalte = pytest.mark.skipif(
+    _spalte_fehlt("mkt_posts", "freigabe"),
+    reason="Spalte mkt_posts.freigabe fehlt — einmal `npm start` laufen lassen, "
+           "das legt sie an (Schema kommt aus database.js, kein Migrationssystem)",
+)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def _verbindung_schliessen():
     """Am Ende des Testlaufs die Datenbankverbindung sauber schliessen.

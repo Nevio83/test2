@@ -36,6 +36,26 @@
         .hinweis { background: #fffbeb; border-left: 4px solid #d97706; padding: 0.9rem 1.1rem; border-radius: 6px; margin-bottom: 1rem; }
         .leer { color: #9ca3af; font-size: 0.88rem; padding: 0.5rem 0; }
         .begruendung { font-size: 0.78rem; color: #6b7280; }
+
+        /* Freigabe je Beitrag. Bewusst Karten statt Tabellenzeilen: Eine
+           Bildunterschrift ist Fliesstext, und in einer Tabellenzelle liest
+           sie niemand zu Ende. Genau das ist hier aber die Aufgabe. */
+        .freigabe { border: 1px solid #e5e7eb; border-left: 4px solid #0f766e;
+                    border-radius: 8px; padding: 1rem 1.1rem; margin-bottom: 1rem; }
+        .freigabe .kopf { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem;
+                          align-items: baseline; margin-bottom: 0.6rem; }
+        .freigabe .titel { font-weight: 700; }
+        .caption-text { background: #f8f9fa; border-radius: 6px; padding: 0.6rem 0.8rem;
+                        font-size: 0.86rem; white-space: pre-wrap; word-break: break-word;
+                        margin-bottom: 0.6rem; }
+        .feld { font-size: 0.8rem; color: #6b7280; }
+        .feld b { color: #374151; font-weight: 600; }
+        .freigabe .tat { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: flex-start; }
+        .freigabe textarea { font-size: 0.84rem; min-height: 38px; }
+        /* Dateipfade und der UTM-Link sind lange Zeichenketten ohne
+           Trennstelle. Ohne diese Zeile schob sich die ganze Seite auf dem
+           Handy waagerecht auf — gemessen, nicht vermutet. */
+        .freigabe .mono, .freigabe a { overflow-wrap: anywhere; }
     </style>
 </head>
 <body>
@@ -55,6 +75,18 @@
         <h5>Überblick</h5>
         <div class="sub">Stand der gesamten Kette, von den Trends bis zur Veröffentlichung.</div>
         <div class="kpi-row" id="ueberblick"><div class="leer">Lädt…</div></div>
+    </div>
+
+    <!-- Freigabe je Beitrag -->
+    <div class="panel">
+        <h5><i class="bi bi-check2-square"></i> Freigabe <span id="freigaben-zahl" class="fw-normal text-muted"></span></h5>
+        <div class="sub">
+            Jeder Beitrag einzeln. Es gibt bewusst kein „alle freigeben“ — das wäre
+            derselbe Alles-oder-Nichts-Schalter wie der Trockenlauf, nur mit mehr Klicks
+            und dem Gefühl, etwas geprüft zu haben. Wer freigibt, steht danach im
+            Nachweis-Protokoll; ein Beitrag auf TikTok lässt sich nicht zurückholen.
+        </div>
+        <div id="freigaben"><div class="leer">Lädt…</div></div>
     </div>
 
     <!-- Notaus -->

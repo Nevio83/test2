@@ -23,6 +23,7 @@ liefert, ist genau die Sorte Fehler, die dieses Projekt schon zu oft hatte.
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import time
 from dataclasses import dataclass
@@ -30,12 +31,29 @@ from pathlib import Path
 from typing import Any
 
 from .. import db, products
-from ..env_loader import REPO_ROOT
+from ..env_loader import MARKETING_DIR, REPO_ROOT
 from ..orchestrator import guardrails
 from ..products import Produkt
 
 PRODUKTBILDER = REPO_ROOT / "produkt bilder"
 PRODUKTVIDEOS = REPO_ROOT / "produkt videos"
+
+# Selbst gefilmtes Rohmaterial fuer Kurzvideos. Ein eigener Ordner, damit
+# "eigen" eine PRUEFBARE Eigenschaft ist und keine Behauptung: Was hier liegt,
+# hat jemand selbst aufgenommen, und damit ist die Rechtefrage erledigt.
+#
+# Marketing/videos/geschnitten/ gehoert ABSICHTLICH NICHT dazu, obwohl dort
+# "eigene" Schnitte liegen. Ein Schnitt erbt die Rechte seiner Quellen: Die
+# sieben fertigen Wasserspender-Clips sind aus 23 fremden TikTok-Videos
+# entstanden. Wer diesen Ordner als eigen einstuft, waescht fremdes Material
+# weiss — genau die Abkuerzung, gegen die der ganze Materialkatalog gebaut ist.
+EIGENES_ROHMATERIAL = MARKETING_DIR / "videos" / "rohmaterial" / "eigenes"
+
+# Musik hat einen eigenen Nachweis NEBEN der Datenbank — siehe
+# musik_ohne_nachweis() weiter unten.
+MUSIK = MARKETING_DIR / "musik"
+MUSIK_REGISTER = MUSIK / "lizenzen.json"
+MUSIK_ENDUNGEN = (".mp3", ".m4a", ".wav", ".ogg", ".opus")
 
 # Bildvarianten, die der Shop zur Laufzeit erzeugt (-160/-320/…). Die sind
 # fuer Vorschaubilder gedacht und viel zu klein fuer 1080x1920.
@@ -90,12 +108,127 @@ def registriere(asset: Asset) -> bool:
     return True
 
 
+# ── Musik: Nachweis neben der Datenbank ──────────────────────────────
+#
+# WARUM MUSIK EINEN EIGENEN WEG BEKOMMT
+#
+# Bis hierher galt fuer Musik gar keine Sperre. Ein fremder Videoclip brach
+# das Rendern ab, ein Musikstueck erzeugte nur einen Vermerk im Bericht — und
+# das bei der haeufigsten Ursache einer Urheberrechtsmeldung auf TikTok. Die
+# haertere Regel galt fuer das kleinere Risiko.
+#
+# Die naheliegende Loesung waere gewesen, Musik einfach durch mkt_assets zu
+# schicken wie Bildmaterial. Das geht hier nicht: Marketing/musik/ ist in
+# .gitignore, die Dateien sind auf jedem Rechner neu geladen, und ohne
+# DATABASE_URL — also bei jedem lokalen Lauf — waere damit JEDES Stueck
+# gesperrt. Ein Schutz, der die Kette lokal stilllegt, wird abgeschaltet.
+#
+# Deshalb liegt der Beleg als versionierte Datei NEBEN der Musik:
+# musik/lizenzen.json ueberlebt das Neuladen der mp3, laeuft ohne Datenbank
+# und ist im Streitfall das, was man vorzeigt. Ist eine Datenbank da, wird der
+# Eintrag zusaetzlich nach mkt_assets gespiegelt — dann steht Musik im selben
+# Katalog wie alles andere.
+_musikregister_zwischenspeicher: dict[str, Any] | None = None
+
+
+def _ist_musik(pfad: Path) -> bool:
+    if pfad.suffix.lower() not in MUSIK_ENDUNGEN:
+        return False
+    try:
+        pfad.resolve().relative_to(MUSIK.resolve())
+        return True
+    except (ValueError, OSError):
+        return False
+
+
+def musikregister(*, neu_lesen: bool = False) -> dict[str, Any]:
+    """Der Inhalt von musik/lizenzen.json, einmal gelesen.
+
+    Eine fehlende oder kaputte Datei ist KEIN stiller Sonderfall: Sie fuehrt
+    zu einem leeren Register, und damit ist jedes Stueck gesperrt. Andersherum
+    waere der Fehler teuer — eine unlesbare Datei duerfte nie bedeuten
+    "dann eben alles erlaubt".
+    """
+    global _musikregister_zwischenspeicher
+    if _musikregister_zwischenspeicher is not None and not neu_lesen:
+        return _musikregister_zwischenspeicher
+    eintraege: dict[str, Any] = {}
+    if MUSIK_REGISTER.exists():
+        try:
+            roh = json.loads(MUSIK_REGISTER.read_text(encoding="utf-8"))
+            gefunden = roh.get("stuecke") if isinstance(roh, dict) else None
+            if isinstance(gefunden, dict):
+                eintraege = gefunden
+            else:
+                print(f"[assets] {MUSIK_REGISTER.name}: Feld 'stuecke' fehlt — "
+                      f"alle Musikstuecke gelten als ungeklaert.")
+        except json.JSONDecodeError as fehler:
+            print(f"[assets] {MUSIK_REGISTER.name} ist kein gueltiges JSON ({fehler}) — "
+                  f"alle Musikstuecke gelten als ungeklaert.")
+    _musikregister_zwischenspeicher = eintraege
+    return eintraege
+
+
+def musik_ohne_nachweis(pfad: Path) -> str | None:
+    """Warum dieses Stueck NICHT verwendet werden darf — oder None.
+
+    Ein Grund statt eines Wahrheitswerts, weil die drei Faelle verschieden
+    zu behandeln sind: gar kein Eintrag (nachtragen), Eintrag ohne Lizenz
+    (Herkunft klaeren) und Lizenz ohne gewerbliche Nutzung (anderes Stueck).
+    """
+    eintrag = musikregister().get(pfad.name)
+    if eintrag is None:
+        if db.verfuegbar():
+            zeile = db.eine_zeile(
+                "SELECT lizenz FROM mkt_assets WHERE pfad = %s", (str(pfad),)
+            )
+            if zeile and zeile["lizenz"]:
+                return None
+        return (f"kein Eintrag in {MUSIK_REGISTER.name} — Herkunft und Lizenz "
+                f"dort nachtragen")
+    if not eintrag.get("lizenz"):
+        notiz = str(eintrag.get("notiz") or "").strip()
+        return "Herkunft ungeklaert" + (f" ({notiz})" if notiz else "")
+    if not eintrag.get("gewerblich_erlaubt"):
+        return (f"Lizenz '{eintrag.get('lizenz')}' deckt keine gewerbliche Nutzung — "
+                f"ein Werbeclip ist gewerblich")
+    _musik_in_katalog(pfad, eintrag)
+    return None
+
+
+def _musik_in_katalog(pfad: Path, eintrag: dict[str, Any]) -> None:
+    """Den Registereintrag nach mkt_assets spiegeln, falls eine DB da ist.
+
+    Nebenwirkung mit Absicht: Ein Stueck, das tatsaechlich verwendet wird,
+    steht danach im selben Katalog wie Bildmaterial — ohne dass jemand daran
+    denken muss. Ohne Datenbank passiert nichts, und das Register allein
+    genuegt.
+    """
+    if not db.verfuegbar() or not pfad.exists():
+        return
+    registriere(Asset(
+        pfad=pfad, typ="musik",
+        quelle=str(eintrag.get("quelle") or "unbekannt"),
+        lizenz=str(eintrag.get("lizenz")),
+        lizenz_url=(str(eintrag["nachweis"]) if eintrag.get("nachweis") else None),
+    ))
+
+
 def hat_lizenz(pfad: Path) -> bool:
     """Liegt fuer diese Datei ein Lizenzeintrag vor?"""
+    if _ist_musik(pfad):
+        # Musik hat ihren eigenen Nachweis, der auch ohne Datenbank traegt.
+        return musik_ohne_nachweis(pfad) is None
+    if _ist_eigenes(pfad):
+        # Eigenes Material gilt an eigenen Orten — mit und ohne Datenbank
+        # gleich. Steht eine bereit, wandert der Eintrag gleich mit hinein.
+        _eigenes_in_katalog(pfad)
+        return True
     if not db.verfuegbar():
-        # Ohne Datenbank kann die Lizenz nicht belegt werden. Dann gilt nur
-        # eigenes Material als sicher — alles andere bleibt draussen.
-        return _ist_eigenes(pfad)
+        # Ohne Datenbank laesst sich fuer fremdes Material keine Lizenz
+        # belegen. Dann bleibt es draussen — das ist die richtige Richtung
+        # fuer diesen Fehler.
+        return False
     zeile = db.eine_zeile(
         "SELECT lizenz FROM mkt_assets WHERE pfad = %s", (str(pfad),)
     )
@@ -103,16 +236,37 @@ def hat_lizenz(pfad: Path) -> bool:
 
 
 def _ist_eigenes(pfad: Path) -> bool:
-    try:
-        pfad.resolve().relative_to(PRODUKTBILDER.resolve())
-        return True
-    except (ValueError, OSError):
-        pass
-    try:
-        pfad.resolve().relative_to(PRODUKTVIDEOS.resolve())
-        return True
-    except (ValueError, OSError):
-        return False
+    """Liegt die Datei an einem Ort, an dem nur eigenes Material liegt?
+
+    Die Liste ist kurz und soll es bleiben. Jeder Ordner, der hier
+    dazukommt, ist ein Ordner, in dem fremdes Material unbemerkt als eigenes
+    durchginge — deshalb steht hier nur, wo ausschliesslich selbst
+    Aufgenommenes liegt, und nicht, wo "meistens" eigenes liegt.
+    """
+    for ort in (PRODUKTBILDER, PRODUKTVIDEOS, EIGENES_ROHMATERIAL):
+        try:
+            pfad.resolve().relative_to(ort.resolve())
+            return True
+        except (ValueError, OSError):
+            continue
+    return False
+
+
+def _eigenes_in_katalog(pfad: Path) -> None:
+    """Eigenes Material nachtragen, sobald es verwendet wird.
+
+    Ohne diesen Schritt haengt die Antwort auf "darf das ins Video" davon ab,
+    ob gerade eine Datenbank erreichbar ist: ohne DATABASE_URL galt eigenes
+    Material als frei, mit DATABASE_URL fiel es durch, weil es nicht in
+    mkt_assets stand. Derselbe Clip, zwei Antworten — und die strengere kam
+    ausgerechnet dort, wo produktiv gerendert wird.
+    """
+    if not db.verfuegbar() or not pfad.exists():
+        return
+    typ = "video" if pfad.suffix.lower() in (".mp4", ".mov", ".webm", ".mkv") else "bild"
+    registriere(Asset(
+        pfad=pfad, typ=typ, quelle="eigen", lizenz="eigenes Material",
+    ))
 
 
 # ── Eigenes Material finden ──────────────────────────────────────────

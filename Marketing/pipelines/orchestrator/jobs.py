@@ -53,6 +53,8 @@ KATALOG: tuple[Job, ...] = (
         "Stil A rendern: geschnittene Clips mit echter Stimme"),
     Job("render_style_b",  "pipelines.video.style_b_aigen:job_render_stil_b",
         "Stil B rendern: KI-generierte Einstellungen (GPU/Anbieter)"),
+    Job("render_style_c",  "pipelines.video.style_c_schnittliste:job_render_stil_c",
+        "Stil C rendern: Handschnitt aus einer Schnittliste"),
     Job("publish_due",     "pipelines.publish.base:job_faellige_veroeffentlichen",
         "Faellige Videos veroeffentlichen (im Trockenlauf nur vormerken)"),
     Job("metrics_collect", "pipelines.analytics.collectors:job_metriken_sammeln",

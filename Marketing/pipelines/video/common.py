@@ -629,6 +629,159 @@ def loudnorm_filter() -> str:
     return f"loudnorm=I={ziel}:TP=-1.5:LRA=11"
 
 
+def lautheit(pfad: Path) -> float | None:
+    """Integrierte Lautheit einer fertigen Datei in LUFS — oder None.
+
+    WARUM GEMESSEN WIRD, WAS ANGEBLICH GESETZT IST
+
+    Drei Renderer normieren sorgfaeltig auf -14 LUFS, und niemand hat je
+    nachgesehen, ob am Ende wirklich -14 herauskommt. Die Spalte dafuer gibt
+    es seit Runde 10 (mkt_videos.loudness_lufs) — sie wurde nie gefuellt.
+
+    Dabei ist "Tonspur vorhanden" die schwaechste Pruefung, die man ueber Ton
+    anstellen kann: Eine vollstaendig STILLE Tonspur ist eine Tonspur. Ein
+    Video, bei dem die Musik nicht durchgereicht wurde, kommt damit durch die
+    Ausgangspruefung — dieselbe Klasse Fehler wie das 0-Byte-MP4, nur eine
+    Etage tiefer.
+
+    ffmpeg meldet bei echter Stille "-inf"; dann wird -99.0 zurueckgegeben,
+    damit die Zahl vergleichbar bleibt und nicht als "nicht messbar" gilt.
+    """
+    try:
+        ausgabe = lauf(["-i", str(pfad), "-af", "ebur128", "-f", "null", "-"],
+                       zeitlimit=180)
+    except (RuntimeError, OSError) as fehler:
+        print(f"[common] Lautheit nicht messbar ({fehler})")
+        return None
+
+    # Die Zusammenfassung steht am Ende: "  I:         -14.2 LUFS"
+    gefunden = None
+    for zeile in ausgabe.splitlines():
+        text = zeile.strip()
+        if text.startswith("I:") and "LUFS" in text:
+            wert = text.split("I:")[1].replace("LUFS", "").strip()
+            if wert in ("-inf", "-inf.0"):
+                gefunden = -99.0
+            else:
+                try:
+                    gefunden = float(wert)
+                except ValueError:
+                    continue
+    return gefunden
+
+
+def helligkeit(pfad: Path, *, ab: float = 0.0, dauer: float | None = None,
+               ausschnitt: tuple[int, int, int, int] | None = None) -> float | None:
+    """Mittlere Helligkeit 0..255 — fuer einen Ausschnitt und einen Zeitraum.
+
+    WOFUER DAS GEBRAUCHT WIRD (Punkt 43)
+
+    Weisser Text auf hellem Wasser ist unlesbar, und das passiert bei fremdem
+    Material staendig, weil niemand den Hintergrund selbst gedreht hat.
+    Auffallen tut es erst am Handy in der Sonne — also nach dem
+    Veroeffentlichen.
+
+    Kontrast ist messbar, nicht Geschmack: Dieselbe Ueberlegung wie bei der
+    Barrierefreiheit im Shop.
+
+    @param ausschnitt  (breite, hoehe, x, y) — der Bereich UNTER dem Textkasten,
+        nicht das ganze Bild. Ein dunkles Video mit hellem Untertitelbereich
+        waere sonst "dunkel genug", und der Text bliebe trotzdem unlesbar.
+    """
+    filter_kette = []
+    if ausschnitt:
+        breite, hoehe, x, y = ausschnitt
+        filter_kette.append(f"crop={breite}:{hoehe}:{x}:{y}")
+    filter_kette.append("signalstats,metadata=print:key=lavfi.signalstats.YAVG")
+
+    argumente = ["-ss", f"{max(0.0, ab):.2f}"]
+    if dauer:
+        argumente += ["-t", f"{dauer:.2f}"]
+    argumente += ["-i", str(pfad), "-vf", ",".join(filter_kette),
+                  "-f", "null", "-"]
+    try:
+        ausgabe = lauf(argumente, zeitlimit=180)
+    except (RuntimeError, OSError) as fehler:
+        print(f"[common] Helligkeit nicht messbar ({fehler})")
+        return None
+
+    werte = []
+    for zeile in ausgabe.splitlines():
+        if "YAVG" in zeile and "=" in zeile:
+            try:
+                werte.append(float(zeile.rsplit("=", 1)[1].strip()))
+            except ValueError:
+                continue
+    if not werte:
+        return None
+    return sum(werte) / len(werte)
+
+
+# Ab wann gilt der Untertitelbereich als zu hell fuer weissen Text?
+#
+# GEMESSEN, NICHT GERATEN: Der ASS-Stil "Standard" schreibt weissen Text mit
+# schwarzer Kontur (Outline 4) UND halbtransparentem Kasten (&H80000000).
+# Reiner weisser Text ohne Hinterlegung braeuchte eine strenge Grenze; mit
+# Kontur und Kasten traegt er auch auf hellem Grund. Deshalb ist die Grenze
+# hoch angesetzt — sie soll den Fall "fast weisser Hintergrund" fangen, nicht
+# jedes helle Bild.
+#
+# An Testbildern gemessen (yuv420p, TV-Range 16..235):
+#
+#     reines Weiss                 YAVG = 235,0   -> ueber der Grenze
+#     ffmpeg-Testbild (bunt)       YAVG = 123,7   -> darunter
+#
+# 200 liegt deutlich ueber jedem normalen Videobild und faengt den Fall, um den
+# es geht: heller Hintergrund unter weissem Text.
+HELL_GRENZE_YAVG = 200.0
+
+# Ein schwarzes erstes Bild ist der haeufigste stille Fehler beim Verketten:
+# Der erste Clip beginnt mit einem Fade, und die ersten Frames sind leer.
+# Auf TikTok heisst das: Die entscheidende erste halbe Sekunde ist schwarz.
+#
+# DIE GRENZE IST GEMESSEN, UND DER ERSTE ENTWURF WAR FALSCH.
+# Er stand bei 12,0 — in der Annahme, Schwarz sei 0. Gemessen an einem
+# ffmpeg-Testbild in yuv420p:
+#
+#     reines Schwarz   YAVG = 16,0
+#     0x101010         YAVG = 30,0
+#     0x202020         YAVG = 43,0
+#
+# Der Grund ist die TV-Range: yuv420p bildet Helligkeit auf 16..235 ab, 16 IST
+# Schwarz. Eine Grenze bei 12 haette also NIE ausgeloest — die Pruefung waere
+# eingebaut gewesen und haette nichts geprueft. Genau die Sorte Pruefung, die
+# schlimmer ist als keine, weil sie Sicherheit vortaeuscht.
+#
+# 24 liegt zwischen reinem Schwarz (16) und dem ersten sichtbaren Grau (30).
+SCHWARZ_GRENZE_YAVG = 24.0
+
+
+def erstes_bild_schwarz(pfad: Path) -> bool | None:
+    """Faengt das Video mit einem schwarzen Bild an? None heisst: nicht messbar.
+
+    Gemessen werden die ersten 0,3 Sekunden, nicht ein einzelner Frame: Ein
+    einzelnes schwarzes Frame ist normal (Keyframe, Fade-Anfang), eine
+    schwarze Drittelsekunde nicht.
+    """
+    wert = helligkeit(pfad, ab=0.0, dauer=0.3)
+    if wert is None:
+        return None
+    return wert < SCHWARZ_GRENZE_YAVG
+
+
+def untertitel_bereich(breite: int = 1080, hoehe: int = 1920) -> tuple[int, int, int, int]:
+    """Der Bildbereich, in dem der Untertitel liegt — (breite, hoehe, x, y).
+
+    Leitet sich aus denselben SAFE_*-Werten ab, mit denen der ASS-Stil gesetzt
+    wird. Zwei getrennte Zahlenreihen fuer dasselbe waeren wieder die
+    Fehlerklasse "zweite Liste, die niemand pflegt".
+    """
+    kasten_hoehe = 260
+    y = max(0, hoehe - SAFE_UNTEN - kasten_hoehe)
+    x = SAFE_SEITE
+    return (max(1, breite - 2 * SAFE_SEITE), min(kasten_hoehe, hoehe - y), x, y)
+
+
 def musik_unter_stimme() -> str:
     """Musik automatisch leiser machen, sobald gesprochen wird.
 

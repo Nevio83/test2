@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-from conftest import braucht_db
+from conftest import braucht_db, braucht_freigabe_spalte
 from pipelines import db
 from pipelines.orchestrator import guardrails
 from pipelines.publish import base, slots
@@ -201,6 +201,7 @@ def test_dry_run(monkeypatch, test_video):
 
 
 @braucht_db
+@braucht_freigabe_spalte
 def test_dry_run_gegenprobe(monkeypatch, test_video):
     """GEGENPROBE: OHNE Trockenlauf wird die Plattform wirklich angesprochen.
 
@@ -215,11 +216,17 @@ def test_dry_run_gegenprobe(monkeypatch, test_video):
         zeit = datetime.now(timezone.utc) + timedelta(days=5)
         zeile = db.eine_zeile(
             """INSERT INTO mkt_posts (video_id, plattform, caption, hashtags,
-                                      geplant_fuer, slot, status, idempotenz_schluessel)
-               VALUES (%s, 'tiktok', %s, '[]', %s, 'T', 'geplant', %s) RETURNING id""",
+                                      geplant_fuer, slot, status, freigabe,
+                                      idempotenz_schluessel)
+               VALUES (%s, 'tiktok', %s, '[]', %s, 'T', 'geplant', 'frei', %s)
+               RETURNING id""",
             (test_video, marke, zeit, base.idempotenz_schluessel(test_video, "tiktok", zeit)),
         )
+        # Seit es die Freigabe je Beitrag gibt, braucht auch dieser Test eine —
+        # sonst prueft er nicht mehr den Trockenlauf, sondern die neue Sperre,
+        # und waere aus dem falschen Grund gruen.
         beitrag = _beitrag(post_id=int(zeile["id"]), video_id=test_video)
+        beitrag = base.Beitrag(**{**beitrag.__dict__, "freigabe": "frei"})
         gesendet = base.sende(beitrag, plattform)
         assert gesendet is True, "ausserhalb des Trockenlaufs muss gesendet werden"
         assert len(plattform.aufrufe) == 1
@@ -392,3 +399,274 @@ def test_shop_link_traegt_die_kennung():
     assert "utm_source=tiktok" in caption
     assert produkt.slug in caption, "der Link muss auf die Produktseite zeigen"
     assert "Werbung" in caption, "Werbekennzeichnung fehlt"
+
+
+# ── Text fuer Stil C (Schnittliste) ──────────────────────────────────
+#
+# Bis zum 18.09. hatte ein handgeschnittenes Video keinen Text: Hook, Aufruf
+# und Hashtags kommen aus dem Briefing, und eine Schnittliste hat keins.
+# Heraus kam eine Leerzeile, "Link im Profil. Werbung.", die Adresse — und
+# NULL Hashtags. Auf TikTok heisst das kaum Reichweite.
+
+def _schnittliste(tmp_path, monkeypatch, inhalt: dict, name="fassung.json"):
+    from pipelines.video import style_c_schnittliste as schnitt
+    ordner = tmp_path / "schnittlisten"
+    ordner.mkdir(exist_ok=True)
+    (ordner / name).write_text(json.dumps(inhalt, ensure_ascii=False), encoding="utf-8")
+    monkeypatch.setattr(schnitt, "SCHNITTLISTEN", ordner)
+    return name
+
+
+def test_stil_c_holt_den_text_aus_der_schnittliste(tmp_path, monkeypatch):
+    """Die Liste ist die Fassung — also steht der Text auch dort."""
+    from pipelines import products
+
+    produkt = products.alle()[0]
+    name = _schnittliste(tmp_path, monkeypatch, {
+        "produkt_id": produkt.id,
+        "hook": "Nie wieder Flaschen schleppen",
+        "cta": "Jetzt im Shop. Werbung.",
+        "hashtags": ["wasserspender", "#kueche"],
+        "segmente": [{"quelle": "egal.mp4"}],
+    })
+    zeile = {"stil": "C", "schnittliste": name,
+             "hook_varianten": None, "cta": None, "hashtags": None}
+
+    caption, hashtags = base.baue_caption(zeile, produkt, "mkt_78")
+
+    assert caption.startswith("Nie wieder Flaschen schleppen")
+    assert "Jetzt im Shop. Werbung." in caption
+    # Mit und ohne Raute geschrieben — beides muss als Hashtag ankommen.
+    assert hashtags == ["#wasserspender", "#kueche"]
+    assert "#wasserspender" in caption
+    assert "utm_campaign=mkt_78" in caption
+
+
+def test_gegenprobe_ohne_schnittliste_bleibt_der_beitrag_textlos(tmp_path, monkeypatch):
+    """GEGENPROBE: Das ist der Zustand, den diese Etappe abgeschafft hat.
+
+    Ohne die Nachladung kommt genau das heraus, was bis zum 18.09. unter
+    jedem Stil-C-Beitrag stand. Der Test haelt fest, wie schlecht das war —
+    und schlaegt an, falls die Nachladung je wieder ausfaellt.
+    """
+    from pipelines import products
+
+    produkt = products.alle()[0]
+    zeile = {"stil": "C", "schnittliste": None,
+             "hook_varianten": None, "cta": None, "hashtags": None}
+
+    caption, hashtags = base.baue_caption(zeile, produkt, "mkt_78")
+
+    assert hashtags == [], "ohne Liste gibt es nichts nachzuladen"
+    assert caption.startswith("Link im Profil. Werbung.")
+
+
+def test_schnittliste_sticht_das_briefing(tmp_path, monkeypatch):
+    """Der spezifischere Ort gewinnt.
+
+    Praktisch kann ein Video nie beides haben — Stil A/B hat ein Briefing,
+    Stil C eine Liste. Die Regel muss trotzdem eindeutig sein, sonst
+    entscheidet die Reihenfolge im Quelltext.
+    """
+    from pipelines import products
+
+    produkt = products.alle()[0]
+    name = _schnittliste(tmp_path, monkeypatch, {
+        "produkt_id": produkt.id,
+        "hook": "aus der Liste",
+        "hashtags": ["liste"],
+        "segmente": [{"quelle": "egal.mp4"}],
+    })
+    zeile = {"stil": "C", "schnittliste": name,
+             "hook_varianten": [{"text": "aus dem Briefing"}],
+             "cta": "Briefing-Aufruf.", "hashtags": ["#briefing"]}
+
+    caption, hashtags = base.baue_caption(zeile, produkt, "mkt_78")
+
+    assert caption.startswith("aus der Liste")
+    assert hashtags == ["#liste"]
+    # Der Aufruf steht nicht in der Liste — dann gilt der aus dem Briefing.
+    assert "Briefing-Aufruf." in caption
+
+
+def test_verschwundene_schnittliste_bricht_das_posten_nicht_ab(tmp_path, monkeypatch):
+    """Zwischen Rendern und Posten liegen Stunden.
+
+    Wird die Liste in der Zwischenzeit umbenannt oder geloescht, darf der
+    Beitrag nicht scheitern — er bekommt dann den alten, duerftigen Text und
+    faellt in der Freigabeliste auf. Ein Absturz waere hier die schlechtere
+    Antwort: Er wuerde den Beitrag lautlos aus der Warteschlange nehmen.
+    """
+    from pipelines import products
+    from pipelines.video import style_c_schnittliste as schnitt
+
+    produkt = products.alle()[0]
+    ordner = tmp_path / "leer"
+    ordner.mkdir()
+    monkeypatch.setattr(schnitt, "SCHNITTLISTEN", ordner)
+    zeile = {"stil": "C", "schnittliste": "weg.json",
+             "hook_varianten": None, "cta": None, "hashtags": None}
+
+    caption, hashtags = base.baue_caption(zeile, produkt, "mkt_78")
+    assert hashtags == []
+    assert "utm_campaign=mkt_78" in caption
+
+
+def test_kaputte_schnittliste_bricht_das_posten_nicht_ab(tmp_path, monkeypatch):
+    """Dasselbe fuer eine Datei, die kein gueltiges JSON mehr ist."""
+    from pipelines import products
+    from pipelines.video import style_c_schnittliste as schnitt
+
+    produkt = products.alle()[0]
+    ordner = tmp_path / "kaputt"
+    ordner.mkdir()
+    (ordner / "halb.json").write_text('{"hook": ', encoding="utf-8")
+    monkeypatch.setattr(schnitt, "SCHNITTLISTEN", ordner)
+    zeile = {"stil": "C", "schnittliste": "halb.json",
+             "hook_varianten": None, "cta": None, "hashtags": None}
+
+    caption, hashtags = base.baue_caption(zeile, produkt, "mkt_78")
+    assert hashtags == []
+    assert "Werbung" in caption, "die Werbekennzeichnung faellt nie weg"
+
+
+# ── Freigabe je Beitrag ──────────────────────────────────────────────
+#
+# DER PFLICHTTEST IST test_ohne_freigabe_geht_nichts_raus.
+#
+# Warum: Bis hierher kannte das System zwei Stellungen — Trockenlauf an (nichts
+# geht raus) oder aus (ALLES geht raus, auch was niemand angesehen hat).
+# Deshalb blieb der Schalter an, und die Kette hat nie etwas gelernt. Die
+# Freigabe ist die Stellung dazwischen. Sie ist nur dann eine Kontrolle, wenn
+# sie den Trockenlauf NICHT ersetzt, sondern zu ihm dazukommt.
+
+def test_freigabe_fehlt_erkennt_die_drei_zustaende():
+    """'offen' und 'abgelehnt' sperren, nur 'frei' laesst durch."""
+    offen = _beitrag()
+    assert base.freigabe_fehlt(offen) is not None
+
+    abgelehnt = base.Beitrag(**{**offen.__dict__, "freigabe": "abgelehnt"})
+    assert base.freigabe_fehlt(abgelehnt) == "abgelehnt"
+
+    frei = base.Beitrag(**{**offen.__dict__, "freigabe": "frei"})
+    assert base.freigabe_fehlt(frei) is None
+
+
+def test_vorgabe_ist_nicht_freigegeben():
+    """Ein Beitrag ist NIE von selbst freigegeben.
+
+    Die Richtung, in die ein vergessener Wert faellt, ist hier die ganze
+    Sicherheit: Ein Standardwert 'frei' wuerde die Kontrolle abschaffen,
+    ohne dass es jemandem auffaellt.
+    """
+    assert base.Beitrag.__dataclass_fields__["freigabe"].default == "offen"
+    assert base.freigabe_fehlt(_beitrag()) is not None
+
+
+@braucht_db
+def test_ohne_freigabe_geht_nichts_raus(monkeypatch, test_video):
+    """DER PFLICHTTEST: Trockenlauf AUS, Freigabe fehlt — trotzdem nichts."""
+    monkeypatch.setenv("MARKETING_DRY_RUN", "false")
+    plattform = MitschriftPlattform()
+
+    marke = "__test_freigabe_fehlt"
+    try:
+        zeit = datetime.now(timezone.utc) + timedelta(days=6)
+        zeile = db.eine_zeile(
+            """INSERT INTO mkt_posts (video_id, plattform, caption, hashtags,
+                                      geplant_fuer, slot, status, idempotenz_schluessel)
+               VALUES (%s, 'tiktok', %s, '[]', %s, 'T', 'geplant', %s) RETURNING id""",
+            (test_video, marke, zeit, base.idempotenz_schluessel(test_video, "tiktok", zeit)),
+        )
+        beitrag = _beitrag(post_id=int(zeile["id"]), video_id=test_video)
+        # freigabe bleibt auf der Vorgabe 'offen'
+
+        gesendet = base.sende(beitrag, plattform)
+        assert gesendet is False, "ohne Freigabe darf nichts gesendet werden"
+        assert plattform.aufrufe == [], "die Plattform wurde ohne Freigabe angesprochen"
+
+        stand = db.eine_zeile("SELECT status FROM mkt_posts WHERE id = %s", (beitrag.post_id,))
+        assert stand["status"] == "wartet_freigabe"
+    finally:
+        db.ausfuehren("DELETE FROM mkt_posts WHERE caption = %s", (marke,))
+
+
+@braucht_db
+@braucht_freigabe_spalte
+def test_freigabe_ersetzt_den_trockenlauf_nicht(monkeypatch, test_video):
+    """Beides muss erfuellt sein — sonst waere die Freigabe eine getarnte
+    Abschaffung des Trockenlaufs."""
+    monkeypatch.setenv("MARKETING_DRY_RUN", "true")
+    plattform = MitschriftPlattform()
+
+    marke = "__test_freigabe_und_trocken"
+    try:
+        zeit = datetime.now(timezone.utc) + timedelta(days=7)
+        zeile = db.eine_zeile(
+            """INSERT INTO mkt_posts (video_id, plattform, caption, hashtags,
+                                      geplant_fuer, slot, status, freigabe,
+                                      idempotenz_schluessel)
+               VALUES (%s, 'tiktok', %s, '[]', %s, 'T', 'geplant', 'frei', %s)
+               RETURNING id""",
+            (test_video, marke, zeit, base.idempotenz_schluessel(test_video, "tiktok", zeit)),
+        )
+        beitrag = _beitrag(post_id=int(zeile["id"]), video_id=test_video)
+        beitrag = base.Beitrag(**{**beitrag.__dict__, "freigabe": "frei"})
+
+        gesendet = base.sende(beitrag, plattform)
+        assert gesendet is False, "freigegeben heisst nicht, dass der Trockenlauf faellt"
+        assert plattform.aufrufe == []
+        stand = db.eine_zeile("SELECT status FROM mkt_posts WHERE id = %s", (beitrag.post_id,))
+        assert stand["status"] == "dry_run"
+    finally:
+        db.ausfuehren("DELETE FROM mkt_posts WHERE caption = %s", (marke,))
+
+
+@braucht_db
+@braucht_freigabe_spalte
+def test_freigabe_gegenprobe_mit_freigabe_geht_es_raus(monkeypatch, test_video):
+    """GEGENPROBE: Trockenlauf aus UND freigegeben -> die Plattform wird
+    wirklich angesprochen.
+
+    Ohne diesen Test koennten die drei oben auch gruen sein, wenn generell
+    nie gepostet wuerde — dann waere die Sperre kein Nachweis, sondern ein
+    Zufall.
+    """
+    monkeypatch.setenv("MARKETING_DRY_RUN", "false")
+    plattform = MitschriftPlattform()
+
+    marke = "__test_freigabe_echt"
+    try:
+        zeit = datetime.now(timezone.utc) + timedelta(days=8)
+        zeile = db.eine_zeile(
+            """INSERT INTO mkt_posts (video_id, plattform, caption, hashtags,
+                                      geplant_fuer, slot, status, freigabe,
+                                      idempotenz_schluessel)
+               VALUES (%s, 'tiktok', %s, '[]', %s, 'T', 'geplant', 'frei', %s)
+               RETURNING id""",
+            (test_video, marke, zeit, base.idempotenz_schluessel(test_video, "tiktok", zeit)),
+        )
+        beitrag = _beitrag(post_id=int(zeile["id"]), video_id=test_video)
+        beitrag = base.Beitrag(**{**beitrag.__dict__, "freigabe": "frei"})
+
+        gesendet = base.sende(beitrag, plattform)
+        assert gesendet is True, "freigegeben und kein Trockenlauf -> muss senden"
+        assert len(plattform.aufrufe) == 1
+    finally:
+        db.ausfuehren("DELETE FROM mkt_posts WHERE caption = %s", (marke,))
+
+
+def test_abschalten_der_freigabe_ist_moeglich_aber_ausdruecklich(monkeypatch):
+    """Abschaltbar — aber nur von Hand in der Konfiguration.
+
+    Wichtig ist die Richtung der Vorgabe: Fehlt der Schluessel, gilt
+    'Freigabe noetig'. Eine geloeschte Zeile darf die Kontrolle nicht
+    stillschweigend aufheben.
+    """
+    offen = _beitrag()
+    assert base.freigabe_fehlt(offen) is not None
+
+    monkeypatch.setattr(base.guardrails, "wert",
+                        lambda pfad, standard=None: False
+                        if pfad == "publish.freigabe_noetig" else standard)
+    assert base.freigabe_fehlt(offen) is None

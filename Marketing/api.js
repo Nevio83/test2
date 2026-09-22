@@ -83,14 +83,21 @@ async function trends(limit = 20) {
 /** Warteschlange: fertige Videos und geplante Beitraege. */
 async function warteschlange(limit = 25) {
   return frag(
+    // LEFT JOIN wegen Stil C (Schnittliste, kein Briefing). Mit INNER JOIN
+    // waeren handgeschnittene Beitraege im Dashboard unsichtbar gewesen — und
+    // ausgerechnet die brauchen den Blick eines Menschen am dringendsten.
     `SELECT p.id AS post_id, p.plattform, p.status, p.geplant_fuer, p.slot,
             p.gepostet_am, p.externe_post_id,
+            p.freigabe, p.freigabe_am, p.freigabe_von, p.freigabe_notiz,
+            p.caption,
             v.id AS video_id, v.stil, v.dauer_sek, v.pruefergebnis, v.pfad,
-            b.compliance_status, m.produkt_id
+            v.schnittliste,
+            b.compliance_status,
+            COALESCE(m.produkt_id, v.produkt_id) AS produkt_id
        FROM mkt_posts p
        JOIN mkt_videos v ON v.id = p.video_id
-       JOIN mkt_briefs b ON b.id = v.brief_id
-       JOIN mkt_matches m ON m.id = b.match_id
+       LEFT JOIN mkt_briefs b ON b.id = v.brief_id
+       LEFT JOIN mkt_matches m ON m.id = b.match_id
       ORDER BY p.geplant_fuer DESC
       LIMIT $1`,
     [Math.min(limit, 100)]
@@ -199,7 +206,21 @@ async function ueberblick() {
        (SELECT COUNT(*) FROM mkt_posts WHERE status = 'geplant')::int             AS geplant,
        (SELECT COUNT(*) FROM mkt_jobs WHERE fehler_zaehler > 0)::int              AS jobs_mit_fehler`
   );
-  return { datenbank: true, ...z };
+  return {
+    datenbank: true,
+    ...z,
+    // DIE VIERTE SPERRE, DIE NIRGENDS STAND.
+    //
+    // Gezaehlt wurden bisher drei Notaus, die sperrende Rechtspruefung und
+    // der Trockenlauf. pipelines/publish/tiktok.py setzt aber zusaetzlich
+    // privacy_level aus TIKTOK_PRIVACY, Vorgabe SELF_ONLY: Ohne gesetzte
+    // Variable landet auch ein freigegebener, gesendeter Beitrag PRIVAT.
+    //
+    // Als Vorgabe ist das goldrichtig. Als Ueberraschung am Tag, an dem der
+    // Trockenlauf ausgeht, ist es eine verlorene Woche — deshalb steht der
+    // Wert jetzt dort, wo jemand freigibt.
+    tiktok_privacy: process.env.TIKTOK_PRIVACY || 'SELF_ONLY',
+  };
 }
 
 /**
@@ -238,7 +259,73 @@ async function schalte_alle(an) {
   return { ok: true, betroffen: r.rowCount };
 }
 
+/**
+ * Beitraege, die auf eine Freigabe warten — das Arbeitsblatt fuer den Menschen.
+ *
+ * Bewusst eine eigene Abfrage statt eines Filters auf warteschlange():
+ * Freigeben ist eine Taetigkeit mit eigener Frage ("darf das raus?"), nicht
+ * ein Blick auf eine Liste. Wer 40 Zeilen durchsieht, uebersieht die drei,
+ * auf die es ankommt.
+ */
+async function offeneFreigaben(limit = 25) {
+  return frag(
+    `SELECT p.id AS post_id, p.plattform, p.geplant_fuer, p.slot, p.caption,
+            p.hashtags, p.status,
+            v.id AS video_id, v.stil, v.dauer_sek, v.pfad, v.schnittliste,
+            COALESCE(m.produkt_id, v.produkt_id) AS produkt_id
+       FROM mkt_posts p
+       JOIN mkt_videos v ON v.id = p.video_id
+       LEFT JOIN mkt_briefs b ON b.id = v.brief_id
+       LEFT JOIN mkt_matches m ON m.id = b.match_id
+      WHERE p.freigabe = 'offen'
+        AND p.status IN ('geplant', 'wartet_freigabe')
+      ORDER BY p.geplant_fuer
+      LIMIT $1`,
+    [Math.min(limit, 100)]
+  );
+}
+
+/**
+ * Einen EINZELNEN Beitrag freigeben oder ablehnen.
+ *
+ * Bewusst ohne Sammelfunktion. Eine Freigabe fuer alle waere derselbe
+ * Alles-oder-Nichts-Schalter, den diese Etappe gerade abschafft — nur mit
+ * mehr Klicks und dem Gefuehl, etwas geprueft zu haben.
+ *
+ * Wer freigibt, wird mitgeschrieben: Ein Beitrag, der auf TikTok steht, laesst
+ * sich nicht zurueckholen, und dann zaehlt, wer ihn durchgewunken hat.
+ */
+async function freigeben(postId, frei, { von = 'admin', notiz = null } = {}) {
+  if (!hatDatenbank) return { ok: false, grund: 'keine Datenbank' };
+
+  const neu = frei ? 'frei' : 'abgelehnt';
+  const r = await db.query(
+    `UPDATE mkt_posts
+        SET freigabe = $2, freigabe_am = now(), freigabe_von = $3, freigabe_notiz = $4,
+            -- Ein freigegebener Beitrag geht zurueck in die normale Schlange.
+            -- Ein abgelehnter bleibt liegen, statt still zu verschwinden.
+            status = CASE WHEN $2 = 'frei' AND status = 'wartet_freigabe'
+                          THEN 'geplant' ELSE status END
+      WHERE id = $1
+        -- Was schon draussen ist, laesst sich nicht mehr freigeben.
+        AND status NOT IN ('gepostet')
+      RETURNING id, plattform, freigabe, status`,
+    [postId, neu, String(von).slice(0, 80), notiz ? String(notiz).slice(0, 500) : null]
+  );
+  if (!r.rows.length) return { ok: false, grund: 'Beitrag unbekannt oder bereits gepostet' };
+
+  await db.query(
+    `INSERT INTO mkt_audit_log (job, entscheidung, begruendung, nachher)
+     VALUES ('publish_due', $1, $2, $3)`,
+    [frei ? 'beitrag_freigegeben' : 'beitrag_abgelehnt',
+     `Freigabe im Admin-Dashboard durch ${von}`,
+     JSON.stringify({ post_id: postId, freigabe: neu, notiz })]
+  );
+  return { ok: true, ...r.rows[0] };
+}
+
 module.exports = {
   jobs, laeufe, trends, warteschlange, verworfen, ergebnisse,
-  lernstand, kosten, protokoll, overrides, ueberblick, schalte, schalte_alle
+  lernstand, kosten, protokoll, overrides, ueberblick, schalte, schalte_alle,
+  offeneFreigaben, freigeben
 };

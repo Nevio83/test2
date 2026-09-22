@@ -36,6 +36,10 @@
       "abstand_sek": 3600,
       "requires_local": true
     },
+    "render_style_c": {
+      "abstand_sek": 1800,
+      "requires_local": false
+    },
     "publish_due": {
       "abstand_sek": 900,
       "requires_local": true
@@ -300,6 +304,12 @@
     "min_dauer_sek": 8,
     "max_dauer_sek": 60,
     "ziel_lufs": -14,
+    "_tempo": "Punkt 34: Hinweis-Grenzen fuer das Schnitttempo. KEINE Sperre — ein langsamer Clip kann richtig sein, eine Produktvorfuehrung braucht Zeit. Gemeldet wird beim Rendern von Stil C, gerechnet aus der Schnittliste.",
+    "tempo_mittel_warnung_sek": 2.5,
+    "tempo_segment_warnung_sek": 4.0,
+    "_hinweis_lautheit": "Die Ausgangspruefung MISST die Lautheit des fertigen Videos, statt nur zu pruefen, ob eine Tonspur da ist — eine vollstaendig stille Tonspur ist eine Tonspur. ABGEWIESEN wird nur, was unter stille_grenze_lufs liegt. Eine Abweichung vom Zielwert ueber lufs_hinweis_ab wird nur ins Protokoll geschrieben: Der erste Entwurf wies alles unter -20 LUFS ab und liess prompt die eigene Gegenprobe durchfallen (das Testvideo liegt bei -21,9). Eine Sperre, die eingefuehrte Faelle abweist, wird abgeschaltet — dann prueft gar nichts mehr. Erst messen, dann bewusst enger ziehen.",
+    "stille_grenze_lufs": -45,
+    "lufs_hinweis_ab": 6,
     "min_dateigroesse_byte": 20480,
     "_hinweis_schnitt": "1,2 bis 2,2 Sekunden je Einstellung. Vorher 1,5-3,0 — das ist die Schnittlaenge eines YouTube-Vorspanns, nicht die eines TikToks. Auf TikTok entscheidet die Bildbewegung darueber, ob jemand weiterwischt; ein Schnitt alle drei Sekunden wirkt dort wie Stillstand.",
     "schnitt_min_sek": 1.2,
@@ -373,5 +383,9 @@
     "_hinweis": "Renderings und Zwischenstaende, die aelter sind, werden geloescht. Veroeffentlichte Videos bleiben laenger.",
     "renders_tage": 7,
     "unveroeffentlicht_tage": 3
+  },
+  "publish": {
+    "_hinweis_freigabe": "Jeder Beitrag braucht eine Freigabe von Hand, zusaetzlich zum Trockenlauf. Beide muessen erfuellt sein: Der Trockenlauf sagt 'das System darf senden', die Freigabe sagt 'dieser Beitrag darf raus'. Auf false zu stellen heisst, dass veroeffentlicht wird, was niemand angesehen hat.",
+    "freigabe_noetig": true
   }
 }
