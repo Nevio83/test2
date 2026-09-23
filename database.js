@@ -1956,7 +1956,30 @@ const dbOperations = {
         RETURNING runs`,
       [job, intervalSeconds]
     );
-    return r.rows[0] ? { uebernommen: true, runs: r.rows[0].runs } : { uebernommen: false };
+    if (r.rows[0]) return { uebernommen: true, runs: r.rows[0].runs };
+
+    // Nicht faellig: gleich mitliefern, WANN es so weit ist. Der Planer
+    // (job-scheduler.js) schweigt bis dahin, statt alle fuenf Minuten erneut zu
+    // fragen. Genau dieses Nachfragen hielt die Neon-Rechenleistung rund um die
+    // Uhr wach — Neon legt sie erst nach einigen Minuten Ruhe schlafen, und ein
+    // Takt von fuenf Minuten liess nie Ruhe aufkommen. Am 22.09. war damit das
+    // monatliche Rechenkontingent aufgebraucht und die Datenbank nahm keine
+    // Verbindung mehr an.
+    //
+    // Scheitert nur diese Zusatzabfrage, ist das kein Grund, den ganzen Aufruf
+    // scheitern zu lassen: Belegt wurde ja nichts. Dann gibt es eben keine
+    // Restzeit, und der Planer faellt auf einen festen Abstand zurueck.
+    try {
+      const rest = await pool.query(
+        `SELECT GREATEST(0, CEIL(EXTRACT(EPOCH FROM
+                  ((last_run_at + make_interval(secs => $2)) - CURRENT_TIMESTAMP))))::int AS rest
+           FROM job_runs WHERE job = $1`,
+        [job, intervalSeconds]
+      );
+      return { uebernommen: false, restSek: rest.rows[0] ? rest.rows[0].rest : null };
+    } catch (e) {
+      return { uebernommen: false, restSek: null };
+    }
   },
 
   // Fehlschlag festhalten, damit im Dashboard sichtbar ist, WARUM nichts

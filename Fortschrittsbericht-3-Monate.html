@@ -292,12 +292,12 @@
   <div class="report-header">
     <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
     <h1 class="title">Maios Shop — Juni bis September 2026</h1>
-    <p class="subtitle">Zeitraum <strong>7. Juni – 22. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 743 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 23. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 748 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
       <span style="color:var(--green);font-weight:600;">✓ 175 Commits an 39 Arbeitstagen</span>
-      <span><strong>743</strong> automatische Prüfungen (494 Shop + 249 Bot) · Marketing-Prüfungen derzeit rot</span>
-      <span>Stand <strong>22.09.2026</strong></span>
+      <span><strong>748</strong> automatische Prüfungen (499 Shop + 249 Bot) · Marketing-Prüfungen derzeit rot</span>
+      <span>Stand <strong>23.09.2026</strong></span>
     </div>
   </div>
 
@@ -316,9 +316,9 @@
         <p class="sub">an 39 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
       </div>
       <div class="stat acc-green">
-        <div class="num">743</div>
+        <div class="num">748</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>494 im Shop</strong> und <strong>249 im Bot</strong>, alle grün. Die Marketing-Prüfungen laufen gerade ins Leere — die Datenbank ist am Kontingent (siehe unten).</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>499 im Shop</strong> und <strong>249 im Bot</strong>, alle grün. Die Marketing-Prüfungen laufen gerade ins Leere — die Datenbank ist am Kontingent (siehe unten).</p>
       </div>
       <div class="stat acc-orange">
         <div class="num">537</div>
@@ -338,7 +338,7 @@
         <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
       </thead>
       <tbody>
-        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">743</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">748</td><td class="gut">neu aufgebaut</td></tr>
         <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
         <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
         <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
@@ -544,7 +544,7 @@
         <div class="tl-date">22. Sep</div>
         <div class="tl-body">
           <h3>Die Datenbank ist am Kontingent — und es fiel niemandem auf <span class="tl-tag tag-security">Ausfall</span></h3>
-          <p>Auf die Frage „geht das Admin-Panel?" kam heraus: Alle sieben Seiten laden, aber <strong>13 von 14 Endpunkten antworten mit 500</strong>. Der einzige, der läuft, ist der einzige, der die Datenbank nicht anfasst. Neon verweigert jede Verbindung — <code>exceeded the quota</code>, Fehlercode 53000.<br><br><strong>Warum es niemand gemerkt hat:</strong> <code>/health</code> gibt ein statisches <code>ok</code> zurück und prüft die Datenbank gar nicht — Render und der Keep-Alive fragen es jede Minute und bekommen immer „alles gut". Der Mail-Alarm hängt an der Fehlerrate, nicht am Zustand: Er feuert erst ab mehreren 5xx in 15 Minuten. Wenig Besucher, niemand im Panel → kein Alarm.<br><br><strong>Zweiter Fund:</strong> Der Marketing-Workflow meldet seit dem 17.&nbsp;August durchgehend „success" — und hat in dieser Zeit <em>nichts</em> getan. Im Repository ist ein einziges Secret hinterlegt, der Workflow erwartet 16. Jeder Lauf überspringt alle elf Abläufe und endet grün.</p>
+          <p>Auf die Frage „geht das Admin-Panel?" kam heraus: Alle sieben Seiten laden, aber <strong>13 von 14 Endpunkten antworten mit 500</strong>. Der einzige, der läuft, ist der einzige, der die Datenbank nicht anfasst. Neon verweigert jede Verbindung — <code>exceeded the quota</code>, Fehlercode 53000.<br><br><strong>Warum es niemand gemerkt hat:</strong> <code>/health</code> gibt ein statisches <code>ok</code> zurück und prüft die Datenbank gar nicht — Render und der Keep-Alive fragen es jede Minute und bekommen immer „alles gut". Der Mail-Alarm hängt an der Fehlerrate, nicht am Zustand: Er feuert erst ab mehreren 5xx in 15 Minuten. Wenig Besucher, niemand im Panel → kein Alarm.<br><br><strong>Zweiter Fund:</strong> Der Marketing-Workflow meldet seit dem 17.&nbsp;August durchgehend „success" — und hat in dieser Zeit <em>nichts</em> getan. Im Repository ist ein einziges Secret hinterlegt, der Workflow erwartet 16. Jeder Lauf überspringt alle elf Abläufe und endet grün.<br><br><strong>Am 23.&nbsp;September die Ursache gefunden:</strong> Nicht der Speicher war voll, sondern die monatliche Rechenzeit aufgebraucht — und zwar durch unseren eigenen Planer. Er fragte alle fünf Minuten für jeden Ablauf die Datenbank, zwei Abfragen je Ablauf, rund um die Uhr. Neon legt die Rechenleistung erst nach einigen Minuten Ruhe schlafen; dieser Takt ließ nie Ruhe aufkommen, und der Keep-Alive hielt den Server dazu dauerhaft wach. Behoben: Der Planer merkt sich jetzt, wann ein Ablauf fällig ist, und fragt nur dann. Fünf neue Prüfungen zählen die Abfragen — ohne den Merkzettel werden alle fünf rot.</p>
         </div>
       </div>
     </div>
@@ -899,7 +899,7 @@
           <div class="mark" style="background:var(--red);border-color:var(--red);color:var(--card);">!</div>
           <div class="body">
             <h4>Neon-Kontingent freimachen <span class="who who-you">Du</span></h4>
-            <p><strong>Der Shop nimmt derzeit Geld an, ohne Bestellungen speichern zu können.</strong> Die Datenbank verweigert seit dem 22.&nbsp;September jede Verbindung. Unter <code>console.neon.tech</code> steht im Projekt <code>ep-spring-forest-as48y2f0</code>, welche Grenze gerissen ist — Speicher oder Compute-Stunden. Beim kostenlosen Tarif setzt sich das monatlich zurück, sonst braucht es einen größeren Plan.<br><br>Solange das steht, sind Bestellungen, Belege, Tracking, das Admin-Panel und der Marketing-Automat tot. Der Notausgang von heute verhindert nur, dass dabei <em>Geld ohne Gegenwert</em> kassiert wird — er ersetzt die Datenbank nicht.<br><br><strong>Bitte im Stripe-Dashboard nachsehen</strong>, ob seit dem Ausfall Zahlungen ohne zugehörige Bestellung eingegangen sind.</p>
+            <p><strong>Der Shop nimmt derzeit Geld an, ohne Bestellungen speichern zu können.</strong> Die Datenbank verweigert seit dem 22.&nbsp;September jede Verbindung. Laut Neon-Konsole ist die <strong>monatliche Rechenzeit</strong> aufgebraucht, nicht der Speicher (Projekt <code>maios</code>, <code>icy-rice-50632176</code>).<br><br><strong>Die Ursache war unser eigener Code — und ist am 23.&nbsp;September behoben:</strong> Der Planer für die zeitgesteuerten Abläufe fragte alle fünf Minuten für jeden Ablauf die Datenbank. Neon legt die Rechenleistung erst nach einigen Minuten Ruhe schlafen, und der Keep-Alive hielt den Server zugleich dauerhaft wach — die Datenbank lief also rund um die Uhr. Jetzt merkt sich der Planer, wann ein Ablauf fällig ist, und fragt nur dann: gemessen an einem Tag mit zwei Abläufen <strong>576 Abfragen vorher, höchstens 4 jetzt</strong>.<br><br>Wieder erreichbar wird die Datenbank trotzdem erst mit dem monatlichen Zurücksetzen oder einem größeren Plan — unter „Review usage“ steht, wann. Ohne die Behebung wäre das Kontingent auch nächsten Monat wieder leergelaufen, und ein bezahlter Plan hätte Rechenzeit rund um die Uhr berechnet.<br><br>Solange das steht, sind Bestellungen, Belege, Tracking, das Admin-Panel und der Marketing-Automat tot. Der Notausgang von heute verhindert nur, dass dabei <em>Geld ohne Gegenwert</em> kassiert wird — er ersetzt die Datenbank nicht.<br><br><strong>Bitte im Stripe-Dashboard nachsehen</strong>, ob seit dem Ausfall Zahlungen ohne zugehörige Bestellung eingegangen sind.</p>
           </div>
         </div>
         <div class="todo">
@@ -998,13 +998,13 @@
     <div class="pruef-banner">
       <h3>✅ Drei Monate, ein Muster</h3>
       <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen — und dieser Bericht selbst stand zehn Tage lang öffentlich im Shop, ohne dass irgendetwas darauf hingewiesen hätte.<br><br>
-      Deshalb sind die 743 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+      Deshalb sind die 748 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
     </div>
   </div>
 
   <footer>
-    Interner Fortschrittsbericht · Zeitraum 7. Juni – 22. September 2026 · Stand 22.09.2026.<br>
-    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (494 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (249 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Interner Fortschrittsbericht · Zeitraum 7. Juni – 23. September 2026 · Stand 23.09.2026.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (499 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (249 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
     Wird nach jedem abgeschlossenen Punkt fortgeschrieben. <strong>Nicht öffentlich:</strong> seit dem 7.&nbsp;September blockt die Datei-Freigabe interne HTML-Dokumente im Wurzelverzeichnis — diese Seite ist unter <code>maiosshop.com</code> nicht abrufbar.<br>
     Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
   </footer>

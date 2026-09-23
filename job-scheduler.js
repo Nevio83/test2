@@ -31,19 +31,56 @@
  * Ob ein Ablauf faellig ist UND das Belegen des Laufs passieren in EINER
  * Datenbank-Anweisung (siehe dbOperations.claimJobRun). Zwei Instanzen oder
  * zwei Ticks koennen denselben Lauf daher nicht doppelt starten.
+ *
+ * DIE DATENBANK SCHLAFEN LASSEN (seit 23.09.)
+ * Frueher fragte JEDER Takt fuer JEDEN Ablauf die Datenbank — zwei Abfragen
+ * je Ablauf, alle fuenf Minuten, rund um die Uhr. Neon legt die
+ * Rechenleistung erst nach einigen Minuten Ruhe schlafen; ein Fuenf-Minuten-
+ * Takt liess nie Ruhe aufkommen. Der Keep-Alive haelt den Render-Prozess
+ * zugleich dauerhaft wach, also lief die Datenbank durchgehend. Am 22.09. war
+ * das monatliche Rechenkontingent aufgebraucht, und Neon verweigerte jede
+ * Verbindung — Bestellungen, Belege, Admin-Panel, alles stand.
+ *
+ * Jetzt merkt sich der Planer, WANN ein Ablauf das naechste Mal faellig ist
+ * (claimJobRun liefert die Restzeit gleich mit), und fragt die Datenbank bis
+ * dahin gar nicht. Der Takt selbst bleibt — er kostet nur noch einen Blick in
+ * den Speicher. Bei Tages- und Wochenlaeufen sind das wenige Abfragen am Tag
+ * statt hunderte.
+ *
+ * Die Festigkeit gegen Neustarts bleibt erhalten: Der Merkzettel lebt nur im
+ * Prozess. Nach einem Neustart ist er leer, der erste Takt fragt also einmal
+ * je Ablauf nach — und die Wahrheit steht weiterhin in job_runs.
  */
 
 const TAKT_MS = 5 * 60 * 1000;
+
+// Nach einem Datenbankfehler so lange nicht erneut fragen. Eine tote oder
+// ueberlastete Datenbank alle fuenf Minuten erneut anzuklopfen, hilft ihr
+// nicht und fuellt nur das Protokoll.
+const FEHLER_PAUSE_MS = 15 * 60 * 1000;
+
+// Liefert die Datenbank keine Restzeit (aeltere Fassung, Zusatzabfrage
+// gescheitert), wird nach spaetestens dieser Zeit erneut gefragt. Bewusst
+// nicht der volle Abstand: Ein Wochenlauf koennte sonst nach einem Neustart
+// fast eine Woche zu spaet kommen. Eine Stunde ist weit laenger als Neons
+// Ruhefenster, die Datenbank kann also dazwischen schlafen.
+const RUECKFALL_NACHFRAGE_MS = 60 * 60 * 1000;
 
 /**
  * @param {object} deps
  * @param {object} deps.dbOperations  Datenbank-Zugriff (claimJobRun, markJobError)
  * @param {boolean} deps.hatDatenbank  false -> Zeitpunkte nur im Speicher
  * @param {function} [deps.melde]      Protokoll-Ausgabe (fuer Tests ersetzbar)
+ * @param {function} [deps.jetzt]      Uhr in ms (fuer Tests ersetzbar). Muss
+ *   dieselbe sein, gegen die auch die Faelligkeit gerechnet wird — sonst
+ *   laeuft der Merkzettel auf einer anderen Zeit als die Datenbank.
  */
-function createScheduler({ dbOperations, hatDatenbank, melde = console.log, taktMs = TAKT_MS }) {
+function createScheduler({
+  dbOperations, hatDatenbank, melde = console.log, taktMs = TAKT_MS, jetzt = () => Date.now()
+}) {
   const ablaeufe = [];
   const imSpeicher = new Map();   // Rueckfall ohne Datenbank
+  const faelligAb = new Map();    // name -> ms; bis dahin wird die DB NICHT gefragt
   let timer = null;
   let laeuftGerade = false;
 
@@ -67,12 +104,30 @@ function createScheduler({ dbOperations, hatDatenbank, melde = console.log, takt
       imSpeicher.set(ablauf.name, Date.now());
       return true;
     }
+    // Laut Merkzettel noch nicht faellig -> die Datenbank gar nicht erst
+    // fragen. Das ist der ganze Punkt: Nur so kann Neon zwischen zwei
+    // Laeufen schlafen.
+    const bis = faelligAb.get(ablauf.name);
+    if (bis !== undefined && jetzt() < bis) return false;
+
     try {
       const r = await dbOperations.claimJobRun(ablauf.name, ablauf.abstandSek);
-      return r.uebernommen;
+      if (r && r.uebernommen) {
+        faelligAb.set(ablauf.name, jetzt() + ablauf.abstandSek * 1000);
+        return true;
+      }
+      // Nicht faellig. Mit Restzeit genau bis dahin schweigen, ohne Restzeit
+      // hoechstens eine Stunde (siehe RUECKFALL_NACHFRAGE_MS).
+      const rest = r && Number.isFinite(r.restSek) ? r.restSek * 1000 : null;
+      faelligAb.set(ablauf.name, jetzt() + (rest !== null
+        ? Math.max(0, rest)
+        : Math.min(ablauf.abstandSek * 1000, RUECKFALL_NACHFRAGE_MS)));
+      return false;
     } catch (e) {
       // Datenbank kurz weg? Dann diesen Takt auslassen statt blind zu starten —
-      // ohne Beleg wuesste niemand, ob der Lauf schon einmal lief.
+      // ohne Beleg wuesste niemand, ob der Lauf schon einmal lief. Und eine
+      // Weile Ruhe geben, statt sie alle fuenf Minuten erneut anzuklopfen.
+      faelligAb.set(ablauf.name, jetzt() + FEHLER_PAUSE_MS);
       melde(`⚠️ Ablauf "${ablauf.name}": Faelligkeit nicht pruefbar — ${e.message}`);
       return false;
     }
@@ -128,4 +183,4 @@ function createScheduler({ dbOperations, hatDatenbank, melde = console.log, takt
   return { registriere, start, stop, tick, anzahl: () => ablaeufe.length };
 }
 
-module.exports = { createScheduler, TAKT_MS };
+module.exports = { createScheduler, TAKT_MS, FEHLER_PAUSE_MS, RUECKFALL_NACHFRAGE_MS };
