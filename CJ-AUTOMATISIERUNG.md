@@ -1,343 +1,99 @@
-# 🏭 CJ DROPSHIPPING AUTOMATISIERUNG
+# CJ Dropshipping — automatische Bestellung
 
-## ❌ AKTUELLES PROBLEM
+Stand: 23.09.2026. Code: `cj-bestellung.js` (Aufbau und Prüfung), Aufruf im Stripe-Webhook
+in `server.js`, Prüfungen in `test/cj-bestellung.test.js`.
 
-**Was passiert jetzt:**
-1. ✅ Kunde zahlt mit Stripe
-2. ✅ Bestellnummer wird erstellt (z.B. ORD-1762634003739-FK0Z8ZR15)
-3. ✅ Bestellung wird in Datenbank gespeichert
-4. ✅ Kunde erhält E-Mail mit Bestellbestätigung
-5. ✅ Du erhältst Admin-Benachrichtigung
-6. ❌ **ABER:** Bestellung wird NICHT an CJ Dropshipping gesendet!
-
-**Das bedeutet:**
-- 💰 Du bekommst das Geld von Stripe
-- 📦 **ABER:** Produkte werden NICHT automatisch versendet
-- 👨‍💼 **DU musst manuell:**
-  1. Bestellung in CJ Dashboard eingeben
-  2. Produkte auswählen
-  3. Versandadresse eingeben
-  4. Bezahlen (von deinem CJ-Guthaben)
-  5. Tracking-Nummer kopieren
-  6. Kunde informieren
-
-**→ VIEL ARBEIT FÜR JEDE BESTELLUNG!** 😰
+> Diese Datei beschrieb bis zum 23.09. einen **Plan** mit Beispielcode. Genau dieser
+> Beispielcode war eingebaut und konnte nie funktionieren (SKU statt Varianten-Nummer,
+> verschachtelte Adresse, Versand „aus Deutschland", Notbetrieb erfand Erfolge). Aufgefallen
+> ist es bei der ersten echten Bestellung. Die Einzelheiten stehen im Kopf von
+> `cj-bestellung.js` und in Commit `3cdd4c5`.
 
 ---
 
-## ✅ LÖSUNG: VOLLAUTOMATISCHE CJ-INTEGRATION
-
-### **Was wir automatisieren können:**
+## Ablauf
 
 ```
-Kunde zahlt
-    ↓
-Stripe Webhook
-    ↓
-System erstellt Bestellnummer
-    ↓
-System speichert in Datenbank
-    ↓
-🤖 AUTOMATISCH: System sendet an CJ Dropshipping
-    ↓
-CJ versendet Produkte
-    ↓
-CJ sendet Tracking-Nummer zurück
-    ↓
-System speichert Tracking-Nummer
-    ↓
-Kunde erhält Tracking-Info per E-Mail
-    ↓
-✅ FERTIG - DU MUSST NICHTS TUN!
+Kunde zahlt (Stripe Checkout)
+  → Webhook checkout.session.completed
+  → Bestellung in Postgres, Beleg, Mails
+  → cj-bestellung.bereiteVor()
+       jede Position: SKU → Varianten-Nummer (vid) bei CJ nachschlagen
+       Lieferadresse vollständig?  IOSS passt?  (sonst: Warnmail, KEINE Bestellung)
+       günstigster Versandweg, den CJ für genau diese Varianten anbietet
+       Kosten schätzen (CJ-Preis + Versand, in USD) und mit dem Wallet vergleichen
+  → cj-bestellung.bestelle()  →  createOrderV2
+       Bestellnummer MAIOS-<Stripe-Zahlung> — ein wiederholter Webhook bestellt nicht doppelt
 ```
+
+**Lieber gar nicht bestellen als das Falsche.** Fehlt etwas, geht keine halbe Bestellung an CJ,
+sondern eine Mail mit allem, was man zum Nachbestellen von Hand braucht.
 
 ---
 
-## 🔧 WAS IMPLEMENTIERT WERDEN MUSS
+## Bezahlung bei CJ
 
-### **1. CJ-Bestellung automatisch erstellen**
+CJ wird **aus dem CJ-Wallet** bezahlt. **Stripe kann CJ nicht bezahlen** — es gibt keine
+Verbindung zwischen beiden. Stripe zahlt nur auf das eigene Bankkonto aus; das Wallet wird
+in CJ aufgeladen, per **PayPal, Payoneer, Überweisung** (ab 2.000 USD) oder Gutschein.
 
-**Code-Ergänzung in `server.js` (nach Zeile 372):**
+| Wallet | was der Automat tut | was du bekommst |
+|---|---|---|
+| deckt die Bestellung **mit 30 % Puffer** | bestellt **und lässt abbuchen** (payType 2), fragt danach bei CJ nach, ob wirklich bezahlt ist | nichts — oder „💰 CJ-Wallet fast leer", wenn danach weniger als `CJ_WALLET_WARNUNG` (Standard 30 USD) übrig ist |
+| reicht nicht / unbekannt — **oder CJ hat trotz Auftrag nicht abgebucht** | bestellt, **bezahlt nicht** (payType 3) | „📦 CJ-Bestellung angelegt — bitte in CJ BEZAHLEN" |
+| Bestellung scheitert | bestellt nicht | „⚠️ CJ-Bestellung fehlgeschlagen — BEZAHLT, bitte von Hand bestellen" mit Adresse und Positionen |
 
-```javascript
-// Nach erfolgreicher Stripe-Zahlung
-if (event.type === 'checkout.session.completed') {
-  // ... bestehender Code ...
-  
-  // ✅ NEU: Automatisch CJ-Bestellung erstellen
-  try {
-    console.log('🏭 Sende Bestellung an CJ Dropshipping...');
-    
-    // Erstelle CJ-Bestellung
-    const cjOrderData = {
-      orderNumber: orderData.order_id, // Deine Bestellnummer
-      shippingAddress: {
-        name: orderData.customer_name,
-        email: orderData.customer_email,
-        phone: orderData.customer_phone || '',
-        address: JSON.parse(orderData.shipping_address),
-      },
-      products: orderData.items.map(item => ({
-        vid: item.product_sku, // CJ Produkt-ID
-        quantity: item.quantity,
-        variantId: item.color || null
-      })),
-      shippingMethod: 'Standard', // oder 'Express'
-      fromCountryCode: 'DE' // Versand aus Deutschland
-    };
-    
-    // Sende an CJ
-    const cjOrder = await cjAPI.createOrderV2(cjOrderData);
-    
-    console.log('✅ CJ-Bestellung erstellt:', cjOrder.orderId);
-    
-    // Speichere CJ-Bestellnummer in Datenbank
-    await dbOperations.updateOrderStatus(orderData.order_id, 'processing');
-    await dbOperations.addTracking({
-      order_id: orderData.order_id,
-      status: 'order_placed',
-      description: 'Bestellung an CJ Dropshipping gesendet',
-      tracking_number: cjOrder.orderId,
-      carrier: 'CJ Dropshipping'
-    });
-    
-  } catch (cjError) {
-    console.error('❌ CJ-Bestellung fehlgeschlagen:', cjError);
-    
-    // Sende dir eine Warnung
-    await emailService.sendEmail({
-      to: 'maioscorporation@gmail.com',
-      subject: `⚠️ CJ-Bestellung fehlgeschlagen: ${orderData.order_id}`,
-      html: `
-        <h2>CJ-Bestellung konnte nicht automatisch erstellt werden</h2>
-        <p><strong>Bestellnummer:</strong> ${orderData.order_id}</p>
-        <p><strong>Fehler:</strong> ${cjError.message}</p>
-        <p><strong>Aktion erforderlich:</strong> Bitte manuell in CJ Dashboard erstellen</p>
-      `
-    });
-  }
-}
-```
+**Warum 30 % Puffer:** Bei CJs IOSS berechnet CJ die Einfuhrumsatzsteuer zusätzlich (Deutschland
+19 %, EU bis 27 %). Die kennt der Automat vorab nicht. Ohne Puffer würde er bei knappem Wallet
+eine Zahlung versuchen, die nicht gedeckt ist.
 
-### **2. Tracking-Nummer automatisch abrufen**
+**Der Versandpreis ist `totalPostageFee`, nicht `logisticPrice`.** CJs Frachtabfrage liefert beide.
+Bei der ersten echten Bestellung (23.09., Mond-Lampe) stand `logisticPrice` auf 7,72 $, berechnet
+hat CJ 11,22 $ — genau `totalPostageFee`. Die ganze Bestellung kostete 13,26 $
+(1,71 Ware + 11,22 Versand + 0,32 Steuer + 0,01 Gebühr).
 
-**Neuer Cron-Job (läuft alle 30 Minuten):**
+**Warum nicht „erst anlegen, dann bezahlen"?** CJs separater Bezahlaufruf (`payBalanceV2`) verlangt
+eine `shipmentOrderId`, die eine einzelne Bestellung nicht hat. Andere Shops, die es so gebaut haben,
+hatten Bestellungen, die angelegt und nie bezahlt wurden. payType 2 bucht in einem Schritt ab.
 
-```javascript
-// Prüfe alle Bestellungen mit Status "processing"
-setInterval(async () => {
-  try {
-    const processingOrders = await dbOperations.getOrdersByStatus('processing');
-    
-    for (const order of processingOrders) {
-      // Hole Tracking-Info von CJ
-      const tracking = await cjAPI.getOrderDetail(order.cj_order_id);
-      
-      if (tracking.trackingNumber) {
-        // Speichere Tracking-Nummer
-        await dbOperations.addTracking({
-          order_id: order.order_id,
-          status: 'shipped',
-          description: 'Paket versendet',
-          tracking_number: tracking.trackingNumber,
-          carrier: tracking.carrier
-        });
-        
-        // Sende E-Mail an Kunde
-        await emailService.sendEmail({
-          to: order.customer_email,
-          subject: `📦 Deine Bestellung ${order.order_id} wurde versendet!`,
-          html: `
-            <h2>Dein Paket ist unterwegs! 🚚</h2>
-            <p><strong>Bestellnummer:</strong> ${order.order_id}</p>
-            <p><strong>Tracking-Nummer:</strong> ${tracking.trackingNumber}</p>
-            <p><strong>Versanddienstleister:</strong> ${tracking.carrier}</p>
-            <p><a href="https://track.cjdropshipping.com/${tracking.trackingNumber}">Sendung verfolgen</a></p>
-          `
-        });
-        
-        console.log(`✅ Tracking-Info gesendet für ${order.order_id}`);
-      }
-    }
-  } catch (error) {
-    console.error('❌ Tracking-Update fehlgeschlagen:', error);
-  }
-}, 30 * 60 * 1000); // Alle 30 Minuten
-```
+**Früher gab es einen „Stripe-Split an CJ"** (`setup-stripe-cj-split.js`, `CJ_STRIPE_ACCOUNT_ID`).
+Der legte ein verbundenes Konto im **eigenen** Stripe-Konto an — CJ hat kein Stripe-Konto, das
+Geld wäre nie bei CJ angekommen. Am 23.09. entfernt. Im Stripe-Dashboard unter *Connect* liegen
+davon noch zehn nie fertig eingerichtete Konten; sie tun nichts und können gelöscht werden.
 
 ---
 
-## 📊 VORTEILE DER AUTOMATISIERUNG
+## IOSS (Einfuhrumsatzsteuer)
 
-| Ohne Automatisierung | Mit Automatisierung |
-|----------------------|---------------------|
-| ❌ Manuell CJ-Bestellung erstellen | ✅ Automatisch erstellt |
-| ❌ Versandadresse abtippen | ✅ Automatisch übernommen |
-| ❌ Produkte suchen | ✅ Automatisch ausgewählt |
-| ❌ Tracking-Nummer kopieren | ✅ Automatisch gespeichert |
-| ❌ Kunde manuell informieren | ✅ Automatische E-Mail |
-| ⏱️ 10-15 Minuten pro Bestellung | ⏱️ 0 Minuten - läuft automatisch |
-| 😰 Fehleranfällig | ✅ Zuverlässig |
+Ware aus China an Privatkunden in der EU ist einfuhrumsatzsteuerpflichtig. CJ lehnt eine
+Bestellung ohne Angabe ab („Please enter a IOSS number").
 
----
+| `CJ_IOSS_TYPE` | Bedeutung |
+|---|---|
+| `3` (**Standard**) | **CJs IOSS** — CJ führt die Steuer ab und berechnet sie dir. Nur bis 150 € Warenwert. |
+| `2` | **eigene IOSS-Nummer** in `CJ_IOSS_NUMBER` — beantragt beim BZSt („Mein BOP"), monatliche Meldung |
+| `1` | kein IOSS — die **Kundin** zahlt Steuer und Gebühr an der Haustür |
 
-## 💰 KOSTEN & ABLAUF
+**Über 150 € Warenwert bestellt der Automat nicht** — dort gilt IOSS nicht, das soll ein Mensch
+entscheiden. Ein Tippfehler in `CJ_IOSS_TYPE` wird gemeldet, nicht geraten.
 
-### **Wie funktioniert die Bezahlung?**
-
-1. **Kunde zahlt dir:** €28.99 (Stripe)
-2. **Du zahlst CJ:** ~€15-20 (CJ-Guthaben)
-3. **Dein Gewinn:** €8-13 pro Bestellung
-
-**CJ-Guthaben:**
-- Du lädst dein CJ-Konto mit Guthaben auf (z.B. €500)
-- Bei jeder Bestellung wird automatisch abgebucht
-- Du erhältst Warnung wenn Guthaben niedrig ist
-
-### **Was passiert wenn CJ-Guthaben leer ist?**
-
-```javascript
-// System prüft Guthaben
-const balance = await cjAPI.getBalance();
-
-if (balance.amount < 50) {
-  // Warnung an dich
-  await emailService.sendEmail({
-    to: 'maioscorporation@gmail.com',
-    subject: '⚠️ CJ-Guthaben niedrig!',
-    html: `
-      <h2>Bitte CJ-Konto aufladen</h2>
-      <p>Aktuelles Guthaben: €${balance.amount}</p>
-      <p>Empfohlen: Mindestens €100 aufladen</p>
-    `
-  });
-}
-```
+Alle drei Werte lassen sich im Render-Dashboard ändern, ohne neu auszurollen.
 
 ---
 
-## 🔍 WAS PASSIERT BEI PROBLEMEN?
+## Wenn eine Mail kommt
 
-### **Szenario 1: CJ-API nicht erreichbar**
-
-```
-Kunde zahlt → Bestellung in DB gespeichert → CJ-API Fehler
-    ↓
-System sendet dir E-Mail: "CJ-Bestellung fehlgeschlagen"
-    ↓
-Du erstellst Bestellung manuell in CJ Dashboard
-    ↓
-Fertig
-```
-
-### **Szenario 2: Produkt nicht auf Lager**
-
-```
-CJ meldet: "Produkt nicht verfügbar"
-    ↓
-System sendet dir E-Mail mit Warnung
-    ↓
-Du kontaktierst Kunde und bietest Alternativen
-```
-
-### **Szenario 3: Falsche Adresse**
-
-```
-CJ meldet: "Ungültige Adresse"
-    ↓
-System sendet dir E-Mail
-    ↓
-Du kontaktierst Kunde für korrekte Adresse
-    ↓
-Bestellung wird manuell korrigiert
-```
+- **„bitte in CJ BEZAHLEN"** → CJ → *Orders* → Bestellung bezahlen. Oder das Wallet aufladen;
+  dann laufen die nächsten von selbst.
+- **„fehlgeschlagen — bitte von Hand bestellen"** → der Grund steht in der Mail. Häufig: Produkt bei
+  CJ aus dem Sortiment (SKU nicht mehr zu finden), Adresse unvollständig, Warenwert über 150 €.
+- **„CJ-Wallet fast leer"** → aufladen, bevor die nächste Bestellung kommt.
 
 ---
 
-## 🎯 EMPFEHLUNG
+## Noch nicht automatisch
 
-### **Option 1: Vollautomatisch (Empfohlen)** ✅
-
-**Vorteile:**
-- ✅ Keine manuelle Arbeit
-- ✅ Schneller Versand
-- ✅ Weniger Fehler
-- ✅ Skalierbar (100+ Bestellungen/Tag möglich)
-
-**Nachteile:**
-- ⚠️ Erfordert CJ-Guthaben
-- ⚠️ Bei Problemen musst du eingreifen
-
-### **Option 2: Halbautomatisch**
-
-**Vorteile:**
-- ✅ Du behältst Kontrolle
-- ✅ Kannst Bestellungen prüfen
-
-**Nachteile:**
-- ❌ Viel manuelle Arbeit
-- ❌ Langsamer
-- ❌ Nicht skalierbar
-
-### **Option 3: Benachrichtigung + Manuell**
-
-**Vorteile:**
-- ✅ Volle Kontrolle
-- ✅ Keine Automatisierung nötig
-
-**Nachteile:**
-- ❌ Sehr viel Arbeit
-- ❌ Fehleranfällig
-- ❌ Nicht für viele Bestellungen geeignet
-
----
-
-## 🚀 NÄCHSTE SCHRITTE
-
-### **Soll ich die Automatisierung implementieren?**
-
-**Wenn JA:**
-1. Ich erweitere `server.js` mit CJ-Integration
-2. Ich erstelle Cron-Job für Tracking-Updates
-3. Ich implementiere Fehlerbehandlung
-4. Ich teste mit Test-Bestellung
-
-**Wenn NEIN:**
-- System bleibt wie es ist
-- Du erhältst E-Mail-Benachrichtigung bei Bestellung
-- Du erstellst CJ-Bestellung manuell
-
----
-
-## 📝 ZUSAMMENFASSUNG
-
-**Aktuell:**
-- ✅ Kunde zahlt → Du bekommst Geld
-- ❌ Du musst manuell CJ-Bestellung erstellen
-- ❌ Du musst Tracking-Nummer manuell senden
-
-**Mit Automatisierung:**
-- ✅ Kunde zahlt → Alles läuft automatisch
-- ✅ CJ-Bestellung wird erstellt
-- ✅ Tracking-Nummer wird automatisch gesendet
-- ✅ Du musst NICHTS tun (außer bei Problemen)
-
-**Meine Empfehlung:** ✅ Vollautomatisch
-
-**Warum?**
-- Spart Zeit
-- Weniger Fehler
-- Skalierbar
-- Professioneller
-
----
-
-## 🤔 DEINE ENTSCHEIDUNG
-
-**Was möchtest du?**
-
-1. **Vollautomatisch** - Ich implementiere alles
-2. **Halbautomatisch** - Du prüfst Bestellungen vor CJ-Versand
-3. **Manuell** - Du machst alles selbst
-
-**Sag mir Bescheid!** 🚀
+- **Sendungsnummer zurückholen.** Die CJ-Bestellnummer wird vermerkt, die Sendungsnummer von CJ
+  (kommt erst nach dem Versand) noch nicht abgefragt.
+- **Lieferbarkeit vor dem Kauf** prüft `cj-stock-sync.js` bereits; nimmt CJ ein Produkt aus dem
+  Sortiment, scheitert die Bestellung mit Warnmail.

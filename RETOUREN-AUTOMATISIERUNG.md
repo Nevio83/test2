@@ -101,5 +101,5 @@ der Admin per E-Mail informiert, die CJ-Retoure manuell anzulegen.
 
 ---
 
-**Verwandt:** Payment-Split (Stripe → CJ Sub-Account) und CJ-Auto-Bestellung →
+**Verwandt:** CJ-Auto-Bestellung, Bezahlung aus dem CJ-Wallet und IOSS →
 `CJ-AUTOMATISIERUNG.md`. Versandlogik → `VERSANDMETHODEN.md`.

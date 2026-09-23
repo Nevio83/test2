@@ -1275,46 +1275,15 @@ app.post('/api/create-checkout-session', async (req, res) => {
       }
     };
     
-    // 🚀 AUTOMATISCHE CJ-ZAHLUNG: Füge Payment Intent mit Transfer hinzu
-    if (process.env.CJ_STRIPE_ACCOUNT_ID && split.cjCost > 0) {
-      // Berechne maximalen Transfer-Betrag (nie mehr als Gesamtbetrag)
-      const cartTotalInCents = Math.round(split.total * 100);
-      const maxTransferAmount = Math.min(
-        Math.round(split.cjCost * 100),  // CJ-Kosten in Cents
-        cartTotalInCents - 1             // Gesamtbetrag - 1 Cent (für Stripe-Gebühr)
-      );
-
-      console.log('💳 Aktiviere automatischen Transfer an CJ Sub-Account');
-      console.log(`   Ursprünglicher CJ-Betrag: €${split.cjCost.toFixed(2)}`);
-      console.log(`   Angepasster Transfer-Betrag: €${(maxTransferAmount/100).toFixed(2)} (${maxTransferAmount} cents)`);
-      
-      // Nur Transfer hinzufügen wenn positiver Betrag
-      if (maxTransferAmount > 0) {
-        // Existierende payment_intent_data Objekt erweitern statt überschreiben
-        sessionConfig.payment_intent_data = {
-          ...sessionConfig.payment_intent_data,
-          application_fee_amount: 0, // Keine Platform-Gebühr
-          transfer_data: {
-            amount: maxTransferAmount,
-            destination: process.env.CJ_STRIPE_ACCOUNT_ID
-          },
-          metadata: {
-            cj_cost: split.cjCost.toFixed(2),
-            your_profit: split.yourProfit.toFixed(2),
-            profit_percentage: split.profitPercentage,
-            adjusted_transfer: (maxTransferAmount/100).toFixed(2)
-          }
-        };
-        
-        console.log('✅ Automatischer Transfer konfiguriert!');
-        console.log(`   Destination: ${process.env.CJ_STRIPE_ACCOUNT_ID}`);
-      } else {
-        console.log('⚠️ Kein Transfer möglich - Gewinn zu gering');
-      }
-    } else if (!process.env.CJ_STRIPE_ACCOUNT_ID) {
-      console.log('⚠️  CJ Sub-Account nicht konfiguriert - Transfer übersprungen');
-      console.log('💡 Führe aus: node setup-stripe-cj-split.js');
-    }
+    // Hier stand bis zum 23.09. ein "automatischer Transfer an CJ": Stripe
+    // sollte die CJ-Kosten an ein verbundenes Konto (CJ_STRIPE_ACCOUNT_ID)
+    // ueberweisen, und damit sei die CJ-Bestellung bezahlt. Das konnte nie
+    // stimmen. setup-stripe-cj-split.js legte dieses Konto im EIGENEN
+    // Stripe-Konto an ("CJ Dropshipping Payments") — CJ hat kein Stripe-Konto,
+    // das Geld waere nie bei CJ angekommen, sondern auf einem zweiten eigenen
+    // Konto liegen geblieben, das weder Zahlungen noch Auszahlungen durfte.
+    // CJ wird ueber das CJ-Wallet bezahlt (cj-bestellung.js, payType 2);
+    // aufgeladen wird es per PayPal, Payoneer oder Ueberweisung.
     
     // Füge Kundendaten hinzu wenn vorhanden
     if (customerInfo && customerInfo.email) {
@@ -1603,18 +1572,10 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         console.log(`🏭 CJ-Kosten: €${split.cjCost.toFixed(2)}`);
         console.log(`✅ Dein Gewinn: €${split.yourProfit.toFixed(2)} (${split.profitPercentage}%)`);
         
-        // Prüfe ob CJ Sub-Account existiert
-        if (process.env.CJ_STRIPE_ACCOUNT_ID) {
-          console.log('💳 CJ Sub-Account gefunden - Automatische Zahlung aktiv');
-          
-          // Hinweis: Transfer wird automatisch durch Stripe Split gemacht
-          // (wird in cart.js beim Checkout konfiguriert)
-          console.log('✅ Zahlung wird automatisch aufgeteilt');
-          
-        } else {
-          console.log('⚠️  CJ Sub-Account nicht konfiguriert');
-          console.log('💡 Führe aus: node setup-stripe-cj-split.js');
-        }
+        // Hier stand "CJ Sub-Account gefunden - Automatische Zahlung aktiv"
+        // und "Zahlung wird automatisch aufgeteilt" — beides war nie wahr
+        // (siehe Kommentar in der Kasse). Ob CJ bezahlt ist, meldet jetzt
+        // der Block unten: aus dem Wallet bezahlt oder "bitte in CJ BEZAHLEN".
         
         // Erstelle CJ-Bestellung (wenn API verfügbar)
         //
@@ -1635,14 +1596,60 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
               name: orderData.shipping_name || orderData.customer_name,
               email: orderData.customer_email,
               telefon: orderData.customer_phone,
+              // Fuer die 150-€-Grenze der IOSS. Nur bei EUR-Bestellungen
+              // bekannt; Bestellungen in anderer Waehrung gehen fast immer
+              // ausserhalb der EU, wo IOSS ohnehin nicht greift.
+              warenwertEur: orderData.currency === 'EUR' ? orderData.subtotal : undefined,
               positionen: orderData.items.map((i) => ({
                 sku: i.product_sku,
                 quantity: i.quantity,
                 bezeichnung: i.product_name,
               })),
+            }, {
+              // Entscheidung vom 23.09.: CJs IOSS (3). Aenderbar ohne Deploy.
+              iossType: process.env.CJ_IOSS_TYPE || 3,
+              iossNumber: process.env.CJ_IOSS_NUMBER || '',
+              // Nur wenn das Wallet die Bestellung deckt, wird abgebucht.
+              guthaben: await cjBestellung.walletGuthaben(cjAPI),
             });
             cjErgebnis = await cjBestellung.bestelle(cjAPI, vorbereitet.nutzlast);
-            console.log(`✅ CJ-Bestellung angelegt: ${cjErgebnis.cjBestellnummer} (Versand: ${vorbereitet.versand.logisticName})`);
+            // Ob wirklich abgebucht wurde, sagt nur CJ selbst — payType 2 ist
+            // ein Auftrag, keine Bestaetigung (die Steuer kennt man vorher
+            // nicht auf den Cent).
+            const bezahlt = vorbereitet.payType === 2
+              ? await cjBestellung.istBezahlt(cjAPI, cjErgebnis.cjBestellnummer)
+              : false;
+            console.log(`✅ CJ-Bestellung angelegt: ${cjErgebnis.cjBestellnummer} (Versand: ${vorbereitet.versand.logisticName}, ${bezahlt === true ? 'aus dem Wallet bezahlt' : bezahlt === false ? 'NICHT bezahlt' : 'Bezahlung unklar'})`);
+
+            // Angelegt, aber nicht bezahlt: CJ verschickt erst nach Bezahlung.
+            // Ohne diesen Hinweis laege die Bestellung still im CJ-Konto.
+            if (bezahlt !== true) {
+              const warum = vorbereitet.payType !== 2
+                ? `Das CJ-Wallet deckte die Bestellung nicht (geschaetzt ${Number(vorbereitet.kosten).toFixed(2)} USD zzgl. Einfuhrumsatzsteuer).`
+                : bezahlt === false
+                  ? 'Der Automat hat aus dem Wallet bezahlen lassen, CJ hat aber NICHT abgebucht (Guthaben am Ende doch zu knapp?).'
+                  : 'Ob CJ abgebucht hat, liess sich nicht pruefen — bitte in CJ nachsehen.';
+              sendOpsAlert(
+                `📦 CJ-Bestellung angelegt — bitte in CJ BEZAHLEN (${cjErgebnis.cjBestellnummer})`,
+                `<h2>Bestellung bei CJ angelegt, aber noch nicht bezahlt</h2>` +
+                `<p>${warum} CJ verschickt erst, wenn sie bezahlt ist.</p>` +
+                `<p><b>CJ-Bestellung:</b> ${cjErgebnis.cjBestellnummer}<br><b>Kunde:</b> ${String(orderData.customer_email).replace(/[<>&]/g, '')}</p>` +
+                `<p>Bitte in CJ unter „Orders" bezahlen — oder das Wallet aufladen (PayPal, Payoneer), ` +
+                `dann laufen kuenftige Bestellungen von selbst durch.</p>`
+              );
+            } else {
+              // Nach dem Abbuchen: Reicht das Wallet noch fuer die naechsten?
+              const rest = await cjBestellung.walletGuthaben(cjAPI);
+              const grenze = Number(process.env.CJ_WALLET_WARNUNG || 30);
+              if (Number.isFinite(rest) && rest < grenze) {
+                sendOpsAlert(
+                  `💰 CJ-Wallet fast leer — noch ${rest.toFixed(2)} USD`,
+                  `<p>Im CJ-Wallet sind noch <b>${rest.toFixed(2)} USD</b> (Warngrenze ${grenze} USD). ` +
+                  `Reicht es fuer eine Bestellung nicht mehr, wird sie nur noch angelegt und muss von Hand bezahlt werden.</p>` +
+                  `<p>Aufladen in CJ per PayPal oder Payoneer.</p>`
+                );
+              }
+            }
           } catch (cjError) {
             console.error('❌ CJ-Bestellung fehlgeschlagen:', cjError.message);
             // Die Mail enthaelt alles, was man zum Nachbestellen von Hand

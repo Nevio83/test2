@@ -83,7 +83,86 @@ async function vidFuerSku(api, sku) {
   if (ausDemNotbetrieb(r)) throw new Error(`CJ nicht erreichbar beim Nachschlagen von ${sku}`);
   const varianten = (r && r.data && Array.isArray(r.data.variants)) ? r.data.variants : [];
   const v = varianten.find((x) => x && x.variantSku === sku);
-  return v ? { vid: String(v.vid), bezeichnung: v.variantKey || v.variantNameEn || '' } : null;
+  if (!v) return null;
+  // Der Einkaufspreis bei CJ — gebraucht, um zu entscheiden, ob das Wallet
+  // die Bestellung deckt. Fehlt er, bleibt er null, und es wird NICHT
+  // automatisch bezahlt (siehe zahlweise()).
+  const preis = Number(v.variantSellPrice);
+  return {
+    vid: String(v.vid),
+    bezeichnung: v.variantKey || v.variantNameEn || '',
+    preis: Number.isFinite(preis) && preis > 0 ? preis : null,
+  };
+}
+
+// ── IOSS und Bezahlung ─────────────────────────────────────────────────
+//
+// Seit dem 23.09.: CJ lehnte die erste echte Bestellung ab mit "Please enter
+// a IOSS number". Ware aus China an Privatkunden in der EU unterliegt der
+// Einfuhrumsatzsteuer, und CJ will wissen, wer sie zahlt (API-Doku,
+// createOrderV2):
+//   1 = kein IOSS — die KUNDIN zahlt Steuer plus Gebuehr an der Haustuer
+//   2 = eigene IOSS-Nummer (iossNumber noetig)
+//   3 = CJs IOSS — CJ legt aus und berechnet es uns; nur bis 150 € Warenwert
+// Entscheidung Nevio vom 23.09.: CJs IOSS (3). Einstellbar ueber CJ_IOSS_TYPE.
+//
+// Bezahlung (payType): 2 = aus dem CJ-Wallet abbuchen, 3 = nur anlegen.
+// CJ kann NICHT auf Stripe zugreifen — das Wallet wird per PayPal, Payoneer
+// oder Ueberweisung aufgeladen. Deshalb wird nur dann automatisch bezahlt,
+// wenn das Wallet die Bestellung sicher deckt; sonst angelegt und gemeldet.
+
+const IOSS_GRENZE_EUR = 150;
+
+// Bei CJs IOSS berechnet CJ die Einfuhrumsatzsteuer zusaetzlich zu Ware und
+// Versand (in der EU bis 27 %, Deutschland 19 %). Die kennt diese Rechnung
+// nicht vorab — also muss das Wallet 30 % mehr decken, bevor abgebucht wird.
+const WALLET_PUFFER = 1.3;
+
+/** Welche IOSS-Angabe geht mit? Wirft, wenn sie fuer diese Bestellung nicht passt. */
+function iossAngabe({ iossType, iossNumber }, warenwertEur) {
+  const typ = Number(iossType);
+  if (![1, 2, 3].includes(typ)) {
+    throw new Error(`keine gueltige IOSS-Einstellung (CJ_IOSS_TYPE=${iossType}) — erlaubt sind 1, 2, 3`);
+  }
+  // Ueber 150 € Warenwert gilt IOSS gesetzlich nicht. CJs IOSS verweigert
+  // dann ohnehin, und "kein IOSS" hiesse: die Kundin zahlt an der Haustuer.
+  // Beides soll ein Mensch entscheiden, nicht der Automat.
+  if (typ !== 1 && Number(warenwertEur) > IOSS_GRENZE_EUR) {
+    throw new Error(`Warenwert ${Number(warenwertEur).toFixed(2)} € liegt ueber ${IOSS_GRENZE_EUR} € — IOSS gilt nicht, bitte von Hand verzollen`);
+  }
+  if (typ === 2 && !iossNumber) {
+    throw new Error('eigene IOSS gewaehlt (CJ_IOSS_TYPE=2), aber keine Nummer hinterlegt (CJ_IOSS_NUMBER)');
+  }
+  return typ === 2 ? { iossType: 2, iossNumber: String(iossNumber) } : { iossType: typ };
+}
+
+/**
+ * Aus dem Wallet bezahlen (2) oder nur anlegen (3)?
+ *
+ * Automatisch bezahlt wird NUR, wenn das Guthaben bekannt ist und die
+ * geschaetzten Kosten samt Puffer fuer die Steuer deckt. Ein unbekanntes
+ * Guthaben (Notbetrieb) oder ein unbekannter Preis fuehrt zu "nur anlegen" —
+ * lieber eine Bestellung von Hand bezahlen als eine, die an einem leeren
+ * Wallet haengen bleibt. Beide Werte sind in CJs Waehrung (USD).
+ */
+function zahlweise(guthaben, kosten) {
+  if (!Number.isFinite(guthaben) || !Number.isFinite(kosten) || kosten <= 0) return 3;
+  return guthaben >= kosten * WALLET_PUFFER ? 2 : 3;
+}
+
+/**
+ * Was der Versandweg WIRKLICH kostet.
+ *
+ * freightCalculate liefert zwei Preise, und der naheliegende ist der falsche:
+ * `logisticPrice` war fuer die Mond-Lampe 7,72 $, berechnet hat CJ bei der
+ * echten Bestellung am 23.09. aber 11,22 $ — genau `totalPostageFee`. Also
+ * zaehlt totalPostageFee; logisticPrice nur, wenn CJ den Gesamtpreis nicht
+ * mitschickt.
+ */
+function versandPreis(o) {
+  const gesamt = Number(o && o.totalPostageFee);
+  if (Number.isFinite(gesamt) && gesamt > 0) return gesamt;
+  return Number(o && o.logisticPrice);
 }
 
 /** Guenstigster Versandweg, den CJ fuer genau diese Varianten anbietet. */
@@ -98,13 +177,15 @@ async function guenstigsterVersand(api, positionen, zielLand) {
   if (ausDemNotbetrieb(r)) throw new Error('CJ nicht erreichbar bei der Versandabfrage');
   const optionen = (r && Array.isArray(r.data)) ? r.data.filter((o) => o && o.logisticName) : [];
   if (!optionen.length) return null;
-  return optionen.slice().sort((a, b) => Number(a.logisticPrice) - Number(b.logisticPrice))[0];
+  return optionen.slice().sort((a, b) => versandPreis(a) - versandPreis(b))[0];
 }
 
 /** Die Nutzlast in dem flachen Format, das CJs createOrderV2 erwartet. */
-function baueNutzlast({ bestellnummer, adresse, name, email, telefon, positionen, logisticName }) {
+function baueNutzlast({ bestellnummer, adresse, name, email, telefon, positionen, logisticName, ioss, payType }) {
   const land = String(adresse.country || '').toUpperCase();
   return {
+    ...(ioss || {}),
+    ...(payType ? { payType } : {}),
     orderNumber: bestellnummer,
     shippingCountryCode: land,
     shippingCountry: LAENDERNAMEN[land] || land,
@@ -129,11 +210,18 @@ function baueNutzlast({ bestellnummer, adresse, name, email, telefon, positionen
  *
  * @param {object} api  CJ-Client (makeRequest, freightCalculate)
  * @param {object} b    { zahlungsId, bestellId, adresse, name, email, telefon,
- *                        positionen: [{ sku, quantity, bezeichnung }] }
- * @returns {Promise<{nutzlast, versand, positionen}>}
+ *                        warenwertEur, positionen: [{ sku, quantity, bezeichnung }] }
+ * @param {object} [e]  { iossType, iossNumber, guthaben } — aus der Umgebung
+ * @returns {Promise<{nutzlast, versand, positionen, kosten, payType}>}
  * @throws  mit einer Meldung, die sagt, WAS fehlt
  */
-async function bereiteVor(api, b) {
+async function bereiteVor(api, b, e = {}) {
+  // IOSS zuerst: Passt sie nicht (ueber 150 €, keine Nummer), braucht es
+  // gar keine Anfrage an CJ.
+  const ioss = iossAngabe(
+    { iossType: e.iossType === undefined ? 3 : e.iossType, iossNumber: e.iossNumber },
+    b.warenwertEur
+  );
   const fehlt = [];
   const a = b.adresse || {};
   if (!a.line1) fehlt.push('Strasse');
@@ -154,11 +242,18 @@ async function bereiteVor(api, b) {
     const v = await vidFuerSku(api, p.sku);
     if (!v) throw new Error(`SKU ${p.sku} ("${was}") ist bei CJ nicht (mehr) zu finden`);
     const menge = Math.max(1, parseInt(p.quantity, 10) || 1);
-    aufgeloest.push({ sku: p.sku, vid: v.vid, quantity: menge, bezeichnung: v.bezeichnung || was });
+    aufgeloest.push({ sku: p.sku, vid: v.vid, quantity: menge, bezeichnung: v.bezeichnung || was, preis: v.preis });
   }
 
   const versand = await guenstigsterVersand(api, aufgeloest, String(a.country).toUpperCase());
   if (!versand) throw new Error(`CJ bietet keinen Versand nach ${a.country} fuer diese Varianten an`);
+
+  // Geschaetzte Kosten in CJs Waehrung (USD): Ware + Versand, ohne Steuer.
+  // Fehlt ein Preis, ist die Summe unbekannt — dann wird nicht automatisch
+  // bezahlt.
+  const warePreise = aufgeloest.map((p) => (p.preis === null ? NaN : p.preis * p.quantity));
+  const kosten = warePreise.reduce((s, x) => s + x, 0) + versandPreis(versand);
+  const payType = zahlweise(Number(e.guthaben), kosten);
 
   const nutzlast = baueNutzlast({
     bestellnummer: bestellnummerFuer(b.zahlungsId, b.bestellId),
@@ -168,8 +263,25 @@ async function bereiteVor(api, b) {
     telefon: b.telefon,
     positionen: aufgeloest,
     logisticName: versand.logisticName,
+    ioss,
+    payType,
   });
-  return { nutzlast, versand, positionen: aufgeloest };
+  return { nutzlast, versand, positionen: aufgeloest, kosten, payType };
+}
+
+/**
+ * Guthaben im CJ-Wallet, oder NaN, wenn es nicht sicher bekannt ist.
+ * NaN fuehrt in zahlweise() zu "nur anlegen" — nie blind abbuchen.
+ */
+async function walletGuthaben(api) {
+  try {
+    const r = await api.getBalance();
+    if (ausDemNotbetrieb(r)) return NaN;
+    const betrag = Number(r && r.data && r.data.amount);
+    return Number.isFinite(betrag) ? betrag : NaN;
+  } catch (_) {
+    return NaN;
+  }
 }
 
 /**
@@ -195,8 +307,32 @@ async function bestelle(api, nutzlast) {
   return { cjBestellnummer: String(nummer), antwort: r };
 }
 
+/**
+ * Hat CJ die Bestellung wirklich bezahlt? true / false / null (unbekannt).
+ *
+ * Nicht aus payType ableiten: payType 2 heisst nur "bitte aus dem Wallet
+ * abbuchen". Reicht das Guthaben am Ende doch nicht (die Steuer kennt man
+ * vorher nicht genau), bleibt die Bestellung unbezahlt liegen — und CJ
+ * verschickt nichts. Deshalb wird bei CJ nachgefragt. Die echte, unbezahlte
+ * Bestellung vom 23.09. stand dort auf orderStatus CREATED, paymentDate null.
+ */
+const UNBEZAHLT = new Set(['CREATED', 'IN_CART', 'UNPAID']);
+async function istBezahlt(api, cjBestellnummer) {
+  try {
+    const r = await api.getOrderDetail(encodeURIComponent(cjBestellnummer));
+    if (ausDemNotbetrieb(r) || !r.data) return null;
+    if (r.data.paymentDate) return true;
+    const status = String(r.data.orderStatus || '').toUpperCase();
+    if (!status) return null;
+    return !UNBEZAHLT.has(status);
+  } catch (_) {
+    return null;
+  }
+}
+
 module.exports = {
-  HERKUNFT, LAENDERNAMEN,
-  ausDemNotbetrieb, bestellnummerFuer, vidFuerSku, guenstigsterVersand,
-  baueNutzlast, bereiteVor, bestelle,
+  HERKUNFT, LAENDERNAMEN, IOSS_GRENZE_EUR, WALLET_PUFFER,
+  ausDemNotbetrieb, bestellnummerFuer, vidFuerSku, versandPreis, guenstigsterVersand,
+  iossAngabe, zahlweise, walletGuthaben,
+  baueNutzlast, bereiteVor, bestelle, istBezahlt,
 };

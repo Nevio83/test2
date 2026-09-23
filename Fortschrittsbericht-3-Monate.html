@@ -292,11 +292,11 @@
   <div class="report-header">
     <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
     <h1 class="title">Maios Shop — Juni bis September 2026</h1>
-    <p class="subtitle">Zeitraum <strong>7. Juni – 23. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 748 automatischen Prüfungen und einem Marketing-Automaten geworden. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 23. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 788 automatischen Prüfungen und einem Marketing-Automaten geworden — und seit dem 23.&nbsp;September landet eine bezahlte Bestellung automatisch beim Lieferanten. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
-      <span style="color:var(--green);font-weight:600;">✓ 175 Commits an 39 Arbeitstagen</span>
-      <span><strong>748</strong> automatische Prüfungen (499 Shop + 249 Bot) · Marketing-Prüfungen derzeit rot</span>
+      <span style="color:var(--green);font-weight:600;">✓ 178 Commits an 39 Arbeitstagen</span>
+      <span><strong>788</strong> automatische Prüfungen (539 Shop + 249 Bot) · Marketing-Prüfungen derzeit rot</span>
       <span>Stand <strong>23.09.2026</strong></span>
     </div>
   </div>
@@ -311,14 +311,14 @@
 
     <div class="stats">
       <div class="stat acc-blue">
-        <div class="num">175</div>
+        <div class="num">178</div>
         <div class="lbl">Commits</div>
         <p class="sub">an 39 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
       </div>
       <div class="stat acc-green">
-        <div class="num">748</div>
+        <div class="num">788</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>499 im Shop</strong> und <strong>249 im Bot</strong>, alle grün. Die Marketing-Prüfungen laufen gerade ins Leere — die Datenbank ist am Kontingent (siehe unten).</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>539 im Shop</strong> und <strong>249 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Die Marketing-Prüfungen laufen gerade ins Leere — die Datenbank ist am Kontingent (siehe unten).</p>
       </div>
       <div class="stat acc-orange">
         <div class="num">537</div>
@@ -326,9 +326,9 @@
         <p class="sub">+99.797 Zeilen hinzugefügt, −96.492 entfernt. Unterm Strich <strong>3.305 Zeilen mehr</strong> — der Aufräum-Vorsprung ist im September vom Marketing-Ausbau eingeholt worden.</p>
       </div>
       <div class="stat acc-red">
-        <div class="num">6</div>
+        <div class="num">7</div>
         <div class="lbl">Vorfälle mit echtem Schaden</div>
-        <p class="sub">Privater Schlüssel im öffentlichen Repo, abrufbarer Quellcode, tote Kasse, Absturz per leerer Anfrage, öffentlich abrufbare interne Berichte — und zuletzt: <strong>die Preise tragen den Versand nicht</strong>. Fünf behoben, der sechste braucht eine Entscheidung.</p>
+        <p class="sub">Privater Schlüssel im öffentlichen Repo, abrufbarer Quellcode, tote Kasse, Absturz per leerer Anfrage, öffentlich abrufbare interne Berichte — Preise, die den Versand nicht tragen — und zuletzt <strong>die erste echte Bestellung, die nie beim Lieferanten ankam</strong>. Sechs behoben, die Preise brauchen eine Entscheidung.</p>
       </div>
     </div>
 
@@ -338,7 +338,7 @@
         <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
       </thead>
       <tbody>
-        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">748</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">788</td><td class="gut">neu aufgebaut</td></tr>
         <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
         <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
         <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
@@ -600,7 +600,7 @@
           <div class="card-title"><span class="ico">💳</span> Geld &amp; Bestellung</div>
           <span class="badge badge-done">Live</span>
         </div>
-        <p class="desc">Serverseitige Preis- und Mengenprüfung, serverseitige Gutscheinprüfung, Klarna, Abgleich „bezahlt, aber keine Bestellung" mit Stripe, CJ-Bestands- und Preis-Abgleich, Versand-Markierung mit Kundenmail, Bewertungs-Anfrage nach dem Kauf.</p>
+        <p class="desc">Serverseitige Preis- und Mengenprüfung, serverseitige Gutscheinprüfung, Klarna, Abgleich „bezahlt, aber keine Bestellung" mit Stripe, CJ-Bestands- und Preis-Abgleich, Versand-Markierung mit Kundenmail, Bewertungs-Anfrage nach dem Kauf. <strong>Seit 23.&nbsp;September gehen bezahlte Bestellungen automatisch an CJ</strong> — mit der gewählten Farbe, dem günstigsten Versand, CJs IOSS und Bezahlung aus dem CJ-Wallet, sobald es aufgeladen ist.</p>
         <div class="wirkung">
           <dl>
             <dt>Ändert</dt><dd>Kein Betrag kommt mehr aus dem Browser. Preis, Menge und Rabatt werden gegen <code>products.json</code> und die Codeliste geprüft, bevor Stripe etwas sieht.</dd>
@@ -803,6 +803,17 @@
       <div class="impact-card">
         <div class="ico">🔴</div>
         <div class="body">
+          <h3>Die erste echte Bestellung kam beim Lieferanten nie an</h3>
+          <p>Am <strong>22. September um 22:03</strong> kaufte die erste Kundin: eine Krystall-Ball-Nachtlampe, Farbe „Mond“, 17,99&nbsp;€. Stripe kassierte, der Beleg ging raus — bei CJ kam <strong>nichts</strong> an. Die automatische Bestellung konnte nie funktionieren; die Kette war an <strong>sieben Stellen</strong> gebrochen, von der verlorenen Farbwahl über die falsche Produktnummer bis zur Adresse im falschen Format. Aufgefallen ist es erst jetzt, weil es vorher keine echte Bestellung gab.<br><br>
+          <strong>Der gefährlichste Fund:</strong> Lehnte CJ ab, <em>erfand der Notbetrieb eine erfolgreiche Bestellung</em> (<code>MOCK_…</code>). Der Shop hätte jede gescheiterte Bestellung für erledigt gehalten — ohne Fehler, ohne Warnmail.<br><br>
+          <strong>Dazu:</strong> Die Kundin bekam vier Minuten nach der Zahlung eine <strong>zweite Zahlungsaufforderung</strong> mit Bezahlknopf, weil die Beleg-Rechnung nie als bezahlt markiert wurde. Und der alte „Stripe-Split an CJ“ hätte die CJ-Kosten auf ein zweites <em>eigenes</em> Stripe-Konto geschoben — CJ hat gar kein Stripe-Konto. Zehn solcher Konten lagen angelegt herum, keines durfte zahlen oder auszahlen.<br><br>
+          Behoben am <strong>23. September</strong>, jeweils mit Gegenprobe. Die Bestellung der Kundin ist bei CJ angelegt (<code>SD2609231310040661600</code>) und wartet auf Bezahlung. Der erste echte Durchlauf hat zwei weitere Fehler gezeigt, die kein Nachbau gefunden hätte: CJ verlangt eine Angabe zur Einfuhrumsatzsteuer (IOSS) — und berechnet für den Versand nicht den Preis, den die Frachtabfrage zuerst nennt (7,72&nbsp;$), sondern den Gesamtpreis daneben (<strong>11,22&nbsp;$</strong>).</p>
+        </div>
+      </div>
+
+      <div class="impact-card">
+        <div class="ico">🔴</div>
+        <div class="body">
           <h3>Bezahlt — und die Bestellung war weg</h3>
           <p>Die Bestellung wird <strong>nicht vom Stripe-Webhook</strong> gespeichert, sondern von <code>/api/receipt/create</code> — und den ruft der <em>Browser des Kunden</em> auf, nachdem Stripe zurückgeleitet hat. Anders als beim Webhook, den Stripe tagelang wiederholt, gibt es dafür keinen zweiten Versuch.<br><br>Als am <strong>22. September</strong> die Datenbank am Kontingent war, lief die Route in ihren Fehlerzweig, schrieb eine Logzeile und warf Warenkorb, Kundenadresse und Zahlungsbezug weg: <strong>Geld kassiert, Bestellung nirgends.</strong> Der Kunde las dabei in Rot „Fehler beim Erstellen des Kassenbons“ — wer das nach einer erfolgreichen Zahlung liest, kauft im Zweifel ein zweites Mal.<br><br>Behoben: Die vollständigen Daten gehen jetzt per Mail an den Betrieb, und der Kunde liest „Zahlung eingegangen — Beleg folgt“ samt der ausdrücklichen Bitte, nicht erneut zu bestellen. Gegen die tatsächlich kaputte Datenbank geprüft, nicht gegen einen Nachbau.</p>
         </div>
@@ -903,6 +914,21 @@
           </div>
         </div>
         <div class="todo">
+          <div class="mark" style="background:var(--red);border-color:var(--red);color:var(--card);">!</div>
+          <div class="body">
+            <h4>CJ-Wallet aufladen — und die erste Bestellung bezahlen <span class="who who-you">Du</span></h4>
+            <p><strong>Die Bestellung der ersten Kundin liegt bei CJ, ist aber nicht bezahlt</strong> (<code>SD2609231310040661600</code>, 13,26&nbsp;$: 1,71 Ware + 11,22 Versand + 0,33 Steuer und Gebühr). CJ verschickt erst nach Bezahlung. Das Wallet steht auf 0.</p>
+            <div class="wirkung">
+              <dl>
+                <dt>Jetzt</dt><dd>In CJ unter <em>Orders</em> bezahlen, oder das Wallet aufladen und dort bezahlen.</dd>
+                <dt>Warum nicht Stripe</dt><dd>Stripe und CJ haben keine Verbindung. Stripe zahlt nur auf dein Bankkonto aus; das CJ-Wallet nimmt PayPal, Payoneer, Überweisung (ab 2.000&nbsp;$) oder Gutscheine. Einen Weg, der das Kundengeld selbsttätig ins Wallet schiebt, gibt es nicht — auch der alte „Stripe-Split“ konnte das nie.</dd>
+                <dt>Danach</dt><dd><strong>Jede weitere Bestellung läuft von selbst durch:</strong> Deckt das Wallet sie mit 30&nbsp;% Puffer für die Steuer, bucht der Shop direkt bei CJ ab und prüft danach bei CJ nach, ob es geklappt hat. Wird es knapp, kommt eine Warnmail; reicht es nicht, wird die Bestellung angelegt und du bekommst „bitte in CJ BEZAHLEN“.</dd>
+                <dt>IOSS</dt><dd>Entschieden: CJs IOSS. CJ führt die Einfuhrumsatzsteuer ab und berechnet sie mit. Über 150&nbsp;€ Warenwert bestellt der Shop nicht selbst — dort gilt IOSS nicht.</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <div class="todo">
           <div class="mark">1</div>
           <div class="body">
             <h4>Trockenlauf abschalten — oder bewusst anlassen <span class="who who-you">Du</span></h4>
@@ -943,9 +969,10 @@
             <div class="wirkung">
               <dl>
                 <dt>Folge</dt><dd><strong>14 von 20 Produkten fallen unter die 20-%-Mindestmarge, zwei ins Minus</strong> — Haartrockner −3,4 %, Klimaanlage −1,3 %. Der Automat sperrt sie seitdem von selbst. Die Guardrail tut, wofür sie da ist; die Preise im Shop tragen den Versand nicht.</dd>
-                <dt>Vorbehalt</dt><dd>Genommen wurde die <em>günstigste</em> von je rund zwölf Optionen — schlechter kann es also nur werden. CJ weist keine Währung aus; als US-Dollar gelesen wären es ~8 % weniger, an der Aussage ändert das nichts.</dd>
+                <dt>Vorbehalt</dt><dd>Genommen wurde die <em>günstigste</em> von je rund zwölf Optionen — schlechter kann es also nur werden. Die Währung ist laut CJ-Doku <strong>US-Dollar</strong>; in Euro sind es damit ~8 % weniger, an der Aussage ändert das nichts.</dd>
+                <dt>Fund 23.09.</dt><dd><strong>Die Zahlen sind noch zu niedrig.</strong> Abgefragt wurde <code>logisticPrice</code>. Berechnet hat CJ bei der ersten echten Bestellung aber <code>totalPostageFee</code> — bei der Mond-Lampe <strong>11,22 statt 7,72&nbsp;$</strong>, fast die Hälfte mehr. Der Bestell-Automat rechnet seitdem mit dem richtigen Feld; die Margen im Marketing sind noch nicht neu abgefragt.</dd>
                 <dt>Fund</dt><dd>Zwei verkaufte Produkte gibt es bei CJ <strong>nicht mehr</strong> („removed from shelves"): Nordic Crystal Lamp und Gesichtssauna. Beide stehen im Shop weiter zum Verkauf.</dd>
-                <dt>Fund</dt><dd>Der Shop bestellt mit <code>CJ Packet Registered</code> — dieser Name kommt in den Frachtantworten <strong>aller 20</strong> Produkte kein einziges Mal vor.</dd>
+                <dt>Fund</dt><dd>Der Shop bestellt mit <code>CJ Packet Registered</code> — dieser Name kommt in den Frachtantworten <strong>aller 20</strong> Produkte kein einziges Mal vor. <em>Seit 23.09. erledigt:</em> Der Bestell-Automat nimmt nur noch einen Versandweg, den CJ für genau diese Bestellung anbietet.</dd>
                 <dt>Offen</dt><dd>Preise anheben, günstigere Versandart festlegen, Sortiment ausdünnen oder die Mindestmarge bewusst senken — das ist eine Entscheidung, keine Bauarbeit.</dd>
               </dl>
             </div>
@@ -998,13 +1025,13 @@
     <div class="pruef-banner">
       <h3>✅ Drei Monate, ein Muster</h3>
       <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen — und dieser Bericht selbst stand zehn Tage lang öffentlich im Shop, ohne dass irgendetwas darauf hingewiesen hätte.<br><br>
-      Deshalb sind die 748 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+      Deshalb sind die 788 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
     </div>
   </div>
 
   <footer>
     Interner Fortschrittsbericht · Zeitraum 7. Juni – 23. September 2026 · Stand 23.09.2026.<br>
-    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (499 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (249 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (539 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (249 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
     Wird nach jedem abgeschlossenen Punkt fortgeschrieben. <strong>Nicht öffentlich:</strong> seit dem 7.&nbsp;September blockt die Datei-Freigabe interne HTML-Dokumente im Wurzelverzeichnis — diese Seite ist unter <code>maiosshop.com</code> nicht abrufbar.<br>
     Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
   </footer>

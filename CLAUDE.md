@@ -133,8 +133,6 @@ npm run test-cj-api          # CJ Dropshipping API-Integration testen
 node test-retouren-email.js  # Retouren-/Refund-Mail-Flow testen
 node test-cj-api.js          # CJ-Verbindung direkt testen
 node get-cj-token.js         # CJ Access-Token holen/erneuern
-node setup-stripe-cj-split.js          # Stripe-Connect-Subaccount für CJ-Split einrichten
-node setup-stripe-connect-simple.js    # Vereinfachtes Stripe-Connect-Setup
 
 # ── Marketing-Automat (Python-Kette, Zustand in Postgres) ──────────────
 npm run marketing:status     # Zustand einmal anzeigen (Trockenlauf, Notaus, Budget, Fälligkeit)
@@ -210,7 +208,8 @@ der Test es rot gemeldet hätte (Beispiele in `job-scheduler.test.js` und `cj-st
 | `receipt-generator.js` | **Rechnung** (PDFKit-PDF + HTML), Kleinunternehmer §19 UStG ohne USt-Ausweis, echte Firmendaten aus ENV. |
 | `resend-service.js` | Transaktions-Mails (Bestellbestätigung, Admin-Benachrichtigung, **GoBD-Beleg-Archiv** mit PDF-Anhang) via Resend. |
 | `geolocation-tracker.js` | Standort-/Analytics-Tracking (Backend-Helfer für Dashboard). |
-| `get-cj-token.js`, `test-*.js`, `setup-stripe-*.js` | Einmal-/Hilfsskripte. |
+| `cj-bestellung.js` | **Baut aus einer bezahlten Bestellung die Bestellung bei CJ** (seit 23.09.). SKU → Varianten-Nummer bei CJ nachschlagen, günstigster Versandweg, flache Adressfelder, IOSS (`CJ_IOSS_TYPE`, Standard 3 = CJs IOSS, über 150 € keine Automatik), Bestellnummer `MAIOS-<Stripe-Zahlung>` gegen Doppelbestellungen. **Bezahlt wird aus dem CJ-Wallet** (payType 2) nur, wenn es die Kosten mit 30 % Steuerpuffer deckt — sonst nur angelegt + Mail „bitte in CJ BEZAHLEN". **Stripe kann CJ nicht bezahlen**; der frühere „Stripe-Split an CJ" (`setup-stripe-cj-split.js`, `CJ_STRIPE_ACCOUNT_ID`) schickte Geld auf ein zweites *eigenes* Stripe-Konto und ist entfernt. Handbuch: `CJ-AUTOMATISIERUNG.md`. Tests: `test/cj-bestellung.test.js`. |
+| `get-cj-token.js`, `test-*.js` | Einmal-/Hilfsskripte. |
 
 ### Frontend (statisch)
 | Datei | Zweck |
@@ -329,9 +328,9 @@ in `database.js` hängen (laufen bei jedem Start). (Frühere SQLite-Dateien `*.d
 ## 6. Umgebungsvariablen
 
 Alle Secrets in `.env` (Backend) und `Marketing/.env` (Marketing). Kategorien:
-Stripe (`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`,
-optional `CJ_STRIPE_ACCOUNT_ID`), CJ (`CJ_API_KEY`, `CJ_ACCESS_TOKEN`, `CJ_EMAIL`,
-`CJ_PASSWORD`, Warehouses), Resend (`RESEND_API_KEY`, `RESEND_FROM_EMAIL`),
+Stripe (`STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`),
+CJ (`CJ_API_KEY`, `CJ_ACCESS_TOKEN`, `CJ_EMAIL`, `CJ_PASSWORD`, Warehouses,
+`CJ_IOSS_TYPE`/`CJ_IOSS_NUMBER`, `CJ_WALLET_WARNUNG`), Resend (`RESEND_API_KEY`, `RESEND_FROM_EMAIL`),
 `EXCHANGE_RATE_API_KEY`, **`DATABASE_URL`** (Neon-Postgres), `ADMIN_USER`/`ADMIN_PASSWORD`
 (Admin-Login), sowie `SESSION_SECRET`/`JWT_SECRET`/`ENCRYPTION_KEY`, Versand-/Shop-Defaults
 und Analytics-IDs.

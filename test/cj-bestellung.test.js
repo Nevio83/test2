@@ -42,7 +42,7 @@ const ADRESSE = {
 };
 
 /** CJ-Nachbau mit den echten Antwortformen. */
-function nachbauCj({ varianten = { [MOND_SKU]: MOND_VID }, versand, bestellung, notbetrieb = {} } = {}) {
+function nachbauCj({ varianten = { [MOND_SKU]: MOND_VID }, preis = 1.71, versand, bestellung, notbetrieb = {} } = {}) {
   const aufrufe = { query: 0, fracht: 0, bestellung: 0, letzteNutzlast: null };
   return {
     aufrufe,
@@ -51,16 +51,18 @@ function nachbauCj({ varianten = { [MOND_SKU]: MOND_VID }, versand, bestellung, 
       if (notbetrieb.query) return { success: true, data: [], source: 'fallback' };
       const sku = new URL('http://x' + pfad).searchParams.get('variantSku');
       const vid = varianten[sku];
+      // variantSellPrice 1.71 ist der echte Einkaufspreis vom 23.09. — in USD.
       return { code: 200, result: true, message: 'Success',
-        data: { pid: '1555129918592397312', variants: vid ? [{ vid, variantSku: sku, variantKey: 'Solid Wood Lamp Holder-Moon 6CM' }] : [] } };
+        data: { pid: '1555129918592397312', variants: vid ? [{ vid, variantSku: sku, variantKey: 'Solid Wood Lamp Holder-Moon 6CM', variantSellPrice: preis }] : [] } };
     },
     async freightCalculate() {
       aufrufe.fracht++;
       if (notbetrieb.fracht) return { success: true, data: { cost: 0, currency: 'EUR' }, source: 'fallback' };
+      // Echte Werte vom 23.09.: logisticPrice ist NICHT, was CJ berechnet —
+      // die Bestellung kostete 11,22 $ Versand, also totalPostageFee.
       return { code: 200, result: true, data: versand || [
-        { logisticName: 'CJPacket Sensitive', logisticPrice: 9.71 },
-        { logisticName: 'YunExpress Ordinary', logisticPrice: 7.75 },
-        { logisticName: 'CJPacket Postal', logisticPrice: 14.08 },
+        { logisticName: 'YunExpress Sensitive', logisticPrice: 9.14, totalPostageFee: 12.64, logisticAging: '8-15' },
+        { logisticName: 'YunExpress Ordinary', logisticPrice: 7.72, totalPostageFee: 11.22, logisticAging: '6-8' },
       ] };
     },
     async createOrderV2(nutzlast) {
@@ -245,4 +247,153 @@ test('GEGENPROBE: der alte Nutzlast-Bau haette genau diese Pruefungen verfehlt',
   assert.equal(alt.fromCountryCode, 'DE', 'alt: falsches Versandland');
   assert.equal(typeof alt.shippingAddress, 'object', 'alt: verschachtelte Adresse');
   assert.equal(alt.logisticName, undefined, 'alt: kein Versandweg, den CJ kennt');
+});
+
+// ── IOSS und Bezahlung aus dem Wallet (seit 23.09.) ─────────────────────
+//
+// Der erste echte Bestellversuch am 23.09. kam bei CJ an und wurde
+// abgelehnt: "Please enter a IOSS number". Angelegt wurde nichts.
+// Entscheidung Nevio: CJs IOSS (Typ 3). Dazu: aus dem CJ-Wallet bezahlen —
+// aber nur, wenn es die Bestellung samt Steuer sicher deckt.
+
+const mitWarenwert = (eur) => ({ ...bestellungMond(), warenwertEur: eur });
+
+test('ohne Einstellung geht CJs IOSS (Typ 3) mit, ohne eigene Nummer', async () => {
+  const { nutzlast } = await cj.bereiteVor(nachbauCj(), mitWarenwert(17.99));
+  assert.equal(nutzlast.iossType, 3);
+  assert.equal(nutzlast.iossNumber, undefined);
+});
+
+test('ueber 150 € Warenwert wird NICHT automatisch bestellt — dort gilt IOSS nicht', async () => {
+  const api = nachbauCj();
+  await assert.rejects(cj.bereiteVor(api, mitWarenwert(150.01), { iossType: 3 }), /ueber 150/);
+  assert.equal(api.aufrufe.query, 0, 'es darf gar nicht erst bei CJ nachgefragt werden');
+});
+
+test('genau 150 € geht noch durch', async () => {
+  const { nutzlast } = await cj.bereiteVor(nachbauCj(), mitWarenwert(150), { iossType: 3 });
+  assert.equal(nutzlast.iossType, 3);
+});
+
+test('"kein IOSS" (Typ 1) gilt auch ueber 150 € — die Kundin zahlt dann selbst', async () => {
+  const { nutzlast } = await cj.bereiteVor(nachbauCj(), mitWarenwert(200), { iossType: 1 });
+  assert.equal(nutzlast.iossType, 1);
+});
+
+test('eigene IOSS ohne Nummer wird abgelehnt statt leer verschickt', async () => {
+  await assert.rejects(cj.bereiteVor(nachbauCj(), mitWarenwert(17.99), { iossType: 2 }), /keine Nummer/);
+});
+
+test('eigene IOSS mit Nummer geht mit der Nummer raus', async () => {
+  const { nutzlast } = await cj.bereiteVor(nachbauCj(), mitWarenwert(17.99), { iossType: '2', iossNumber: 'IM2760000001' });
+  assert.equal(nutzlast.iossType, 2);
+  assert.equal(nutzlast.iossNumber, 'IM2760000001');
+});
+
+test('ein Tippfehler in CJ_IOSS_TYPE wird gemeldet, nicht geraten', async () => {
+  await assert.rejects(cj.bereiteVor(nachbauCj(), mitWarenwert(17.99), { iossType: 'drei' }), /keine gueltige IOSS-Einstellung/);
+});
+
+test('aus dem Wallet bezahlt (2) wird nur mit Puffer fuer die Steuer', () => {
+  // Geschaetzt 12,93 $ (1,71 Ware + 11,22 Versand), ohne Einfuhrumsatzsteuer.
+  assert.equal(cj.zahlweise(16.81, 12.93), 2, '12,93 × 1,3 = 16,81 reicht');
+  assert.equal(cj.zahlweise(16.80, 12.93), 3, 'einen Cent darunter nicht mehr');
+});
+
+test('der Versandpreis ist totalPostageFee, nicht logisticPrice', () => {
+  assert.equal(cj.versandPreis({ logisticPrice: 7.72, totalPostageFee: 11.22 }), 11.22);
+  assert.equal(cj.versandPreis({ logisticPrice: 7.72 }), 7.72, 'fehlt der Gesamtpreis, bleibt der Einzelpreis');
+  assert.equal(cj.versandPreis({ logisticPrice: 7.72, totalPostageFee: null }), 7.72);
+});
+
+test('der guenstigste Versand wird nach dem GESAMTPREIS gewaehlt', async () => {
+  // A wirkt nach logisticPrice billiger, kostet aber insgesamt mehr.
+  const versand = [
+    { logisticName: 'A', logisticPrice: 7.00, totalPostageFee: 15.00 },
+    { logisticName: 'B', logisticPrice: 9.00, totalPostageFee: 12.00 },
+  ];
+  const { versand: gewaehlt } = await cj.bereiteVor(nachbauCj({ versand }), mitWarenwert(17.99));
+  assert.equal(gewaehlt.logisticName, 'B');
+  // Gegenprobe: so wurde bis zum 23.09. sortiert — das haette A genommen.
+  const alt = versand.slice().sort((a, b) => a.logisticPrice - b.logisticPrice)[0];
+  assert.equal(alt.logisticName, 'A', 'Gegenprobe wertlos');
+});
+
+test('istBezahlt liest den echten Stand bei CJ', async () => {
+  const mit = (data) => ({ getOrderDetail: async () => ({ code: 200, result: true, data }) });
+  // So stand die angelegte, unbezahlte Bestellung am 23.09. bei CJ.
+  assert.equal(await cj.istBezahlt(mit({ orderStatus: 'CREATED', paymentDate: null }), 'SD1'), false);
+  assert.equal(await cj.istBezahlt(mit({ orderStatus: 'UNPAID', paymentDate: null }), 'SD1'), false);
+  assert.equal(await cj.istBezahlt(mit({ orderStatus: 'UNSHIPPED', paymentDate: null }), 'SD1'), true);
+  assert.equal(await cj.istBezahlt(mit({ orderStatus: 'CREATED', paymentDate: '2026-09-23 14:00:00' }), 'SD1'), true);
+});
+
+test('istBezahlt raet nicht: Notbetrieb, Fehler oder leere Antwort sind "unbekannt"', async () => {
+  assert.equal(await cj.istBezahlt({ getOrderDetail: async () => ({ success: true, data: { orderStatus: 'SHIPPED' }, source: 'fallback' }) }, 'SD1'), null);
+  assert.equal(await cj.istBezahlt({ getOrderDetail: async () => { throw new Error('Netz weg'); } }, 'SD1'), null);
+  assert.equal(await cj.istBezahlt({ getOrderDetail: async () => ({ code: 200, data: {} }) }, 'SD1'), null);
+});
+
+test('ist Guthaben oder Preis unbekannt, wird NIE blind abgebucht', () => {
+  assert.equal(cj.zahlweise(NaN, 9.46), 3, 'unbekanntes Guthaben');
+  assert.equal(cj.zahlweise(500, NaN), 3, 'unbekannter Preis');
+  assert.equal(cj.zahlweise(500, 0), 3, 'Kosten 0 sind ein Fehler, keine Gratisbestellung');
+});
+
+test('ein Wallet aus dem Notbetrieb gilt als unbekannt — weder leer noch voll', async () => {
+  assert.ok(Number.isNaN(await cj.walletGuthaben({ getBalance: async () => ({ success: true, data: { amount: 999 }, source: 'fallback' }) })));
+  assert.ok(Number.isNaN(await cj.walletGuthaben({ getBalance: async () => { throw new Error('Netz weg'); } })));
+});
+
+test('das echte Wallet-Format von CJ wird gelesen', async () => {
+  // So antwortete CJ am 23.09. live (Guthaben 0).
+  const echt = { code: 200, result: true, message: 'Success', data: { amount: 0, noWithdrawalAmount: 0, freezeAmount: 0 } };
+  assert.equal(await cj.walletGuthaben({ getBalance: async () => echt }), 0);
+});
+
+test('bereiteVor waehlt die Zahlweise nach Wallet und CJ-Preisen', async () => {
+  const voll = await cj.bereiteVor(nachbauCj(), mitWarenwert(17.99), { guthaben: 100 });
+  assert.ok(Math.abs(voll.kosten - 12.93) < 1e-9, `Kosten ${voll.kosten}`);
+  assert.equal(voll.payType, 2);
+  assert.equal(voll.nutzlast.payType, 2);
+  const leer = await cj.bereiteVor(nachbauCj(), mitWarenwert(17.99), { guthaben: 0 });
+  assert.equal(leer.nutzlast.payType, 3, 'leeres Wallet: nur anlegen');
+  const ohnePreis = await cj.bereiteVor(nachbauCj({ preis: null }), mitWarenwert(17.99), { guthaben: 100 });
+  assert.equal(ohnePreis.nutzlast.payType, 3, 'ohne CJ-Preis: nur anlegen');
+});
+
+test('der Webhook fragt das Wallet ab und meldet "nur angelegt" und "Wallet knapp"', () => {
+  assert.match(server, /guthaben: await cjBestellung\.walletGuthaben\(cjAPI\)/);
+  assert.match(server, /cjBestellung\.istBezahlt\(cjAPI, cjErgebnis\.cjBestellnummer\)/,
+    'ob bezahlt wurde, muss bei CJ nachgefragt werden, nicht aus payType geschlossen');
+  assert.match(server, /if \(bezahlt !== true\)/, 'auch "unbekannt" muss den Hinweis ausloesen');
+  assert.match(server, /bitte in CJ BEZAHLEN/, 'ohne Hinweis laege eine unbezahlte Bestellung still bei CJ');
+  assert.match(server, /CJ-Wallet fast leer/);
+});
+
+test('die Kasse ueberweist nichts an ein "CJ-Konto" bei Stripe — CJ hat keins', () => {
+  // setup-stripe-cj-split.js legte das Zielkonto im EIGENEN Stripe-Konto an.
+  // Der Transfer haette Geld dorthin geschoben, nie zu CJ. Am 23.09. waren
+  // zehn solcher Konten angelegt, keines durfte zahlen oder auszahlen.
+  const nurCode = server.split('\n').filter((z) => !/^\s*\/\//.test(z)).join('\n');
+  assert.ok(!/transfer_data/.test(nurCode), 'kein Transfer an ein verbundenes Konto');
+  assert.ok(!/CJ_STRIPE_ACCOUNT_ID/.test(nurCode));
+  assert.ok(!/Automatische Zahlung aktiv/.test(nurCode), 'der Webhook darf keine Zahlung an CJ behaupten');
+  assert.ok(!fs.existsSync(path.join(WURZEL, 'setup-stripe-cj-split.js')));
+});
+
+test('GEGENPROBE: die alte Nutzlast haette CJ genau so abgelehnt wie am 23.09.', () => {
+  // Ohne ioss baut baueNutzlast die Nutzlast wie bis zum 23.09. — ohne
+  // iossType. Genau damit kam "Please enter a IOSS number" zurueck.
+  const alt = cj.baueNutzlast({
+    bestellnummer: 'MAIOS-x', adresse: ADRESSE, name: 'Emrah Cardak',
+    positionen: [{ vid: MOND_VID, quantity: 1 }], logisticName: 'YunExpress Ordinary',
+  });
+  assert.equal(alt.iossType, undefined, 'Gegenprobe wertlos: alt haette schon IOSS gehabt');
+  // Und ein Vergleich ohne Puffer haette mit 13 $ Guthaben bezahlen lassen —
+  // CJ hat fuer genau diese Bestellung am 23.09. aber 13,26 $ berechnet
+  // (12,93 plus 0,32 Einfuhrumsatzsteuer plus 0,01 Gebuehr).
+  const ohnePuffer = (g, k) => (g >= k ? 2 : 3);
+  assert.equal(ohnePuffer(13.00, 12.93), 2, 'Gegenprobe wertlos: ohne Puffer waere nicht bezahlt worden');
+  assert.equal(cj.zahlweise(13.00, 12.93), 3);
 });
