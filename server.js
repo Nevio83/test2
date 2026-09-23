@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const cjBestellung = require('./cj-bestellung');
 const fs = require('fs');
 const compression = require('compression');
 
@@ -1033,6 +1034,52 @@ async function createOrGetCoupon(percent, code) {
 // 2. Aktiviere PayPal unter "Payment methods"
 // 3. Verbinde dein PayPal-Konto mit Stripe
 
+/**
+ * Was der Webhook spaeter braucht, um bei CJ die RICHTIGE Variante zu bestellen.
+ *
+ * Bis zum 23.09. bekam Stripe je Position nur den Namen. Der Webhook las zwar
+ * `item.price.metadata.sku` und `.color` — beides war aber nie gesetzt, also
+ * immer leer. Die erste echte Bestellung (Krystall Ball Nachtlampe, "Mond")
+ * kam deshalb ohne Produkt, ohne Farbe und ohne SKU beim Webhook an.
+ *
+ * Die Werte stammen aus validateCart, also aus dem Katalog — nicht aus dem
+ * Browser. Stripe verlangt Zeichenketten; leere Felder werden weggelassen.
+ */
+function cjMetadaten(item) {
+  const m = {};
+  if (item && item.id !== undefined && item.id !== null) m.product_id = String(item.id);
+  if (item && item.farbe) m.farbe = String(item.farbe).slice(0, 200);
+  if (item && item.sku) m.sku = String(item.sku).slice(0, 200);
+  return m;
+}
+
+/**
+ * Lieferadresse aus einer Checkout-Session.
+ *
+ * Stripe legt die Lieferadresse inzwischen unter
+ * `collected_information.shipping_details` ab. Der Webhook suchte sie nur
+ * unter `shipping_details` — bei der ersten echten Bestellung war das leer,
+ * CJ haette also nicht einmal eine Adresse bekommen. Beide Orte werden
+ * geprueft, der neue zuerst; zuletzt die Rechnungsadresse, die bei
+ * `billing_address_collection: 'required'` immer da ist.
+ */
+function lieferadresseAusSession(s) {
+  return (s && s.collected_information && s.collected_information.shipping_details
+      && s.collected_information.shipping_details.address)
+    || (s && s.shipping_details && s.shipping_details.address)
+    || (s && s.customer_details && s.customer_details.address)
+    || {};
+}
+
+/** Name fuer die Lieferung — kann vom Namen des Zahlenden abweichen. */
+function lieferNameAusSession(s) {
+  return (s && s.collected_information && s.collected_information.shipping_details
+      && s.collected_information.shipping_details.name)
+    || (s && s.shipping_details && s.shipping_details.name)
+    || (s && s.customer_details && s.customer_details.name)
+    || null;
+}
+
 app.post('/api/create-checkout-session', async (req, res) => {
   if (!stripe) {
     return res.status(503).json({ error: 'Payment system not configured. Please set up Stripe API key.' });
@@ -1145,7 +1192,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
         return {
           price_data: {
             currency: currency.toLowerCase(),
-            product_data: { name: item.name },
+            product_data: { name: item.name, metadata: cjMetadaten(item) },
             unit_amount: amountInCents,
           },
           quantity: item.quantity,
@@ -1157,7 +1204,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
         return {
           price_data: {
             currency: 'eur',
-            product_data: { name: item.name },
+            product_data: { name: item.name, metadata: cjMetadaten(item) },
             unit_amount: amountInCents,
           },
           quantity: item.quantity,
@@ -1363,8 +1410,12 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
       const session = event.data.object;
       
       // Hole vollständige Session-Daten mit Line Items
+      // 'line_items.data.price.product' statt nur 'line_items': Produkt, Farbe
+      // und SKU haengen seit dem 23.09. am Stripe-PRODUKT (product_data.metadata
+      // in der Kasse). Ohne diese Erweiterung kaeme nur die Produkt-ID an, nicht
+      // das Objekt mit den Metadaten.
       const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
-        expand: ['line_items', 'customer']
+        expand: ['line_items.data.price.product', 'customer']
       });
       
       // Erstelle Bestelldaten aus Stripe Session
@@ -1374,7 +1425,8 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         customer_email: fullSession.customer_details.email,
         customer_name: fullSession.customer_details.name,
         customer_phone: fullSession.customer_details.phone || null,
-        shipping_address: JSON.stringify(fullSession.shipping_details?.address || {}),
+        shipping_address: JSON.stringify(lieferadresseAusSession(fullSession)),
+        shipping_name: lieferNameAusSession(fullSession),
         billing_address: JSON.stringify(fullSession.customer_details?.address || {}),
         payment_method: 'card',
         payment_status: 'paid',
@@ -1387,16 +1439,24 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         payment_intent_id: session.payment_intent || null,
         device: fullSession.metadata?.device || null,
         utm_campaign: fullSession.metadata?.utm_campaign || null,
-        items: fullSession.line_items.data.map(item => ({
-          product_id: item.price.product,
-          product_name: item.description,
-          product_sku: item.price.metadata?.sku || null,
-          product_image: null,
-          color: item.price.metadata?.color || null,
-          quantity: item.quantity,
-          unit_price: item.price.unit_amount / 100,
-          total_price: item.amount_total / 100
-        })),
+        items: fullSession.line_items.data.map((item) => {
+          // Bis zum 23.09. stand hier `item.price.product` als product_id — das
+          // ist die STRIPE-Produktnummer (prod_...), nicht die des Shops. Und
+          // SKU und Farbe kamen aus `item.price.metadata`, die nie jemand
+          // gesetzt hat. Jetzt aus den Metadaten, die die Kasse mitgibt.
+          const produkt = item.price && typeof item.price.product === 'object' ? item.price.product : null;
+          const m = (produkt && produkt.metadata) || {};
+          return {
+            product_id: m.product_id ? Number(m.product_id) : null,
+            product_name: item.description,
+            product_sku: m.sku || null,
+            product_image: null,
+            color: m.farbe || null,
+            quantity: item.quantity,
+            unit_price: item.price.unit_amount / 100,
+            total_price: item.amount_total / 100
+          };
+        }),
         created_at: new Date(session.created * 1000).toISOString()
       };
       
@@ -1467,12 +1527,47 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         
         // 5. Invoice finalisieren
         const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
-        
-        // 6. E-Mail senden (funktioniert nur im Live-Modus)
+
+        // 5b. ALS BEZAHLT MARKIEREN — bevor sie rausgeht.
+        //
+        // Diese Rechnung ist nur ein BELEG: Bezahlt wurde schon in der Kasse.
+        // Bis zum 23.09. wurde sie aber mit `send_invoice` und Faelligkeit
+        // "heute" angelegt, abgeschlossen und verschickt, ohne je als bezahlt
+        // markiert zu werden. Der Fusstext "Diese Rechnung wurde bereits
+        // bezahlt" und `metadata.paid = 'true'` liest Stripe nicht. Fuer
+        // Stripe war das eine OFFENE Forderung — mit Bezahlknopf fuer Karte,
+        // Klarna, PayPal und Revolut. Die erste echte Kundin bekam damit vier
+        // Minuten nach ihrer Zahlung eine zweite Zahlungsaufforderung.
+        //
+        // `paid_out_of_band` sagt Stripe: das Geld ist auf anderem Weg
+        // gekommen. Die Rechnung steht dann als "bezahlt" da, ohne Bezahlknopf.
+        let alsBezahltMarkiert = false;
         try {
-          await stripe.invoices.sendInvoice(finalizedInvoice.id);
-        } catch (emailError) {
-          console.log('⚠️ E-Mail-Versand übersprungen (Testmodus)');
+          await stripe.invoices.pay(finalizedInvoice.id, { paid_out_of_band: true });
+          alsBezahltMarkiert = true;
+        } catch (payError) {
+          console.error('❌ Beleg-Rechnung konnte nicht als bezahlt markiert werden:', payError.message);
+          // Dann darf sie auf keinen Fall offen stehen bleiben — sonst kann die
+          // Kundin sie ein zweites Mal bezahlen. Ungueltig machen.
+          try { await stripe.invoices.voidInvoice(finalizedInvoice.id); } catch (_) { /* weiter unten gemeldet */ }
+          sendOpsAlert(
+            `⚠️ Beleg-Rechnung nicht als bezahlt markiert — ${orderData.customer_email}`,
+            `<p>Die Beleg-Rechnung ${finalizedInvoice.number || finalizedInvoice.id} fuer eine BEZAHLTE Bestellung ` +
+            `liess sich nicht als bezahlt markieren und wurde deshalb nicht verschickt, sondern ungueltig gemacht.</p>` +
+            `<p><b>Fehler:</b> ${String(payError.message).replace(/[<>&]/g, '')}</p>` +
+            `<p>Bitte im Stripe-Dashboard pruefen, dass keine offene Rechnung bei der Kundin liegt.</p>`
+          );
+        }
+
+        // 6. E-Mail senden — NUR, wenn die Rechnung als bezahlt gilt.
+        // Eine offene Rechnung zu verschicken hiesse, die Kundin ein zweites Mal
+        // zur Kasse zu bitten.
+        if (alsBezahltMarkiert) {
+          try {
+            await stripe.invoices.sendInvoice(finalizedInvoice.id);
+          } catch (emailError) {
+            console.log('⚠️ E-Mail-Versand übersprungen (Testmodus)');
+          }
         }
         
         console.log(`✅ Stripe Invoice erstellt: ${finalizedInvoice.number}`);
@@ -1522,57 +1617,67 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         }
         
         // Erstelle CJ-Bestellung (wenn API verfügbar)
+        //
+        // Seit dem 23.09. ueber cj-bestellung.js. Der alte Block konnte nie
+        // funktionieren — SKU statt Varianten-Nummer, verschachtelte statt
+        // flacher Adresse, Versand "aus Deutschland" — und meldete trotzdem
+        // Erfolg, weil der Notbetrieb eine Bestellung erfand. Details im Kopf
+        // von cj-bestellung.js.
         if (cjAPI && orderData.items.length > 0) {
           console.log('📦 Erstelle CJ-Bestellung...');
-          
-          const cjOrderData = {
-            orderNumber: orderData.order_id,
-            shippingAddress: {
-              name: orderData.customer_name,
-              email: orderData.customer_email,
-              phone: orderData.customer_phone || '',
-              ...JSON.parse(orderData.shipping_address)
-            },
-            products: orderData.items.map(item => ({
-              vid: item.product_sku || `PROD-${item.product_id}`,
-              quantity: item.quantity,
-              variantId: item.color || null
-            })),
-            shippingMethod: 'Standard',
-            fromCountryCode: 'DE'
-          };
-          
+          let cjErgebnis = null;
+          let vorbereitet = null;
           try {
-            const cjOrder = await cjAPI.createOrderV2(cjOrderData);
-            console.log(`✅ CJ-Bestellung erstellt: ${cjOrder.orderId}`);
-            
-            // Speichere CJ-Bestellnummer
-            await dbOperations.addTracking({
-              order_id: orderData.order_id,
-              status: 'order_placed',
-              description: 'Bestellung an CJ Dropshipping gesendet',
-              tracking_number: cjOrder.orderId,
-              carrier: 'CJ Dropshipping'
+            vorbereitet = await cjBestellung.bereiteVor(cjAPI, {
+              zahlungsId: session.payment_intent,
+              bestellId: orderData.order_id,
+              adresse: JSON.parse(orderData.shipping_address || '{}'),
+              name: orderData.shipping_name || orderData.customer_name,
+              email: orderData.customer_email,
+              telefon: orderData.customer_phone,
+              positionen: orderData.items.map((i) => ({
+                sku: i.product_sku,
+                quantity: i.quantity,
+                bezeichnung: i.product_name,
+              })),
             });
-            
+            cjErgebnis = await cjBestellung.bestelle(cjAPI, vorbereitet.nutzlast);
+            console.log(`✅ CJ-Bestellung angelegt: ${cjErgebnis.cjBestellnummer} (Versand: ${vorbereitet.versand.logisticName})`);
           } catch (cjError) {
             console.error('❌ CJ-Bestellung fehlgeschlagen:', cjError.message);
-            
-            // Sende Admin-Warnung
-            await emailService.sendEmail({
-              to: 'maioscorporation@gmail.com',
-              subject: `⚠️ CJ-Bestellung fehlgeschlagen: ${orderData.order_id}`,
-              html: `
-                <h2>CJ-Bestellung konnte nicht automatisch erstellt werden</h2>
-                <p><strong>Bestellnummer:</strong> ${orderData.order_id}</p>
-                <p><strong>Kunde:</strong> ${orderData.customer_name}</p>
-                <p><strong>Betrag:</strong> €${orderData.total_amount.toFixed(2)}</p>
-                <p><strong>Fehler:</strong> ${cjError.message}</p>
-                <p><strong>Aktion erforderlich:</strong> Bitte manuell in CJ Dashboard erstellen</p>
-                <hr>
-                <p>Geld ist in deinem Stripe-Konto verfügbar.</p>
-              `
-            });
+            // Die Mail enthaelt alles, was man zum Nachbestellen von Hand
+            // braucht. Vorher stand darin nur die Bestellnummer — und die
+            // Adresse haette man erst in Stripe suchen muessen.
+            const f = (x) => String(x == null ? '' : x).replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+            const adr = (() => { try { return JSON.parse(orderData.shipping_address || '{}'); } catch (_) { return {}; } })();
+            const zeilen = orderData.items.map((i) =>
+              `<li>${f(i.quantity)} × ${f(i.product_name)} — SKU <code>${f(i.product_sku || 'FEHLT')}</code>${i.color ? ' — Farbe ' + f(i.color) : ''}</li>`
+            ).join('');
+            sendOpsAlert(
+              `⚠️ CJ-Bestellung fehlgeschlagen — BEZAHLT, bitte von Hand bestellen (${orderData.customer_email})`,
+              `<h2>Bezahlte Bestellung konnte nicht bei CJ angelegt werden</h2>` +
+              `<p><b>Grund:</b> ${f(cjError.message)}</p>` +
+              `<p><b>Stripe-Zahlung:</b> ${f(session.payment_intent)}<br><b>Betrag:</b> ${f(orderData.total_amount)} ${f(orderData.currency)}</p>` +
+              `<p><b>Liefern an:</b><br>${f(orderData.shipping_name || orderData.customer_name)}<br>${f(adr.line1)}${adr.line2 ? '<br>' + f(adr.line2) : ''}<br>${f(adr.postal_code)} ${f(adr.city)}<br>${f(adr.country)}<br>Tel. ${f(orderData.customer_phone || '-')}<br>${f(orderData.customer_email)}</p>` +
+              `<p><b>Positionen:</b></p><ul>${zeilen}</ul>`
+            );
+          }
+          // Getrennt vom Bestellen: Ein Datenbankfehler hier darf NICHT als
+          // "CJ-Bestellung fehlgeschlagen" gemeldet werden. Im alten Block
+          // stand beides im selben try — ein toter Datenbankzugriff haette
+          // eine erfolgreiche Bestellung als gescheitert gemeldet.
+          if (cjErgebnis) {
+            try {
+              await dbOperations.addTracking({
+                order_id: orderData.order_id,
+                status: 'order_placed',
+                description: 'Bestellung an CJ Dropshipping gesendet',
+                tracking_number: cjErgebnis.cjBestellnummer,
+                carrier: 'CJ Dropshipping'
+              });
+            } catch (e) {
+              console.warn('⚠️ CJ-Bestellung angelegt, aber nicht in der Datenbank vermerkt:', e.message);
+            }
           }
         } else {
           console.log('⚠️  CJ API nicht verfügbar - Bestellung muss manuell erstellt werden');

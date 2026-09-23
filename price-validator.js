@@ -75,12 +75,57 @@ function validateCart(cart, catalog = DEFAULT_CATALOG) {
   if (!Array.isArray(cart) || cart.length === 0) {
     throw new Error('Warenkorb ist leer oder ungültig');
   }
-  return cart.map(item => ({
-    id: item.id,
-    name: typeof item.name === 'string' ? item.name : `Produkt ${item.id}`,
-    price: resolveUnitPriceEUR(item, catalog),
-    quantity: sanitizeQuantity(item.quantity)
-  }));
+  return cart.map(item => {
+    const product = catalog.find(p => Number(p.id) === Number(item.id));
+    const farbe = resolveFarbe(item, product);
+    return {
+      id: item.id,
+      name: typeof item.name === 'string' ? item.name : `Produkt ${item.id}`,
+      price: resolveUnitPriceEUR(item, catalog),
+      quantity: sanitizeQuantity(item.quantity),
+      farbe,
+      sku: resolveVariantenSku(product, farbe),
+    };
+  });
+}
+
+/**
+ * Die gewählte Farbe — aber nur, wenn es sie bei diesem Produkt wirklich gibt.
+ *
+ * WARUM DAS JETZT HIER STEHT
+ * Bis zum 23.09. gab validateCart nur id, name, price und quantity zurück. Die
+ * Farbe, die der Warenkorb als `selectedColor` mitschickt, fiel hier heraus —
+ * und damit wusste am Ende niemand mehr, WELCHE Variante bestellt war. Die
+ * erste echte Bestellung (Krystall Ball Nachtlampe, Farbe "Mond") kam so ohne
+ * Farbe bei Stripe an, und die Bestellung bei CJ scheiterte.
+ *
+ * Der Name wird gegen die Farbliste des Produkts geprüft, statt ihn blind zu
+ * übernehmen. Eine unbekannte Farbe wird zu null — lieber keine Farbe als eine
+ * erfundene, die CJ dann nicht findet.
+ */
+function resolveFarbe(item, product) {
+  const gewuenscht = item && typeof item.selectedColor === 'string' ? item.selectedColor.trim() : '';
+  if (!gewuenscht || !product || !Array.isArray(product.colors)) return null;
+  const treffer = product.colors.find(c => c && typeof c.name === 'string'
+    && c.name.trim().toLowerCase() === gewuenscht.toLowerCase());
+  return treffer ? treffer.name : null;
+}
+
+/**
+ * Die SKU der Variante, die tatsächlich verschickt werden muss.
+ *
+ * Kommt BEWUSST aus dem Katalog, nicht vom Browser. Der Warenkorb schickt zwar
+ * eine `selectedColorSku` mit, aber wer die manipuliert, könnte CJ ein anderes
+ * — womöglich teureres — Produkt verschicken lassen. Aus products.json kann
+ * nur eine SKU kommen, die zu diesem Produkt gehört.
+ */
+function resolveVariantenSku(product, farbe) {
+  if (!product) return null;
+  if (farbe && Array.isArray(product.colors)) {
+    const c = product.colors.find(x => x && x.name === farbe);
+    if (c && typeof c.sku === 'string' && c.sku && c.sku !== 'default') return c.sku;
+  }
+  return typeof product.sku === 'string' && product.sku ? product.sku : null;
 }
 
 module.exports = {
@@ -88,5 +133,7 @@ module.exports = {
   buildAllowedPrices,
   resolveUnitPriceEUR,
   sanitizeQuantity,
-  validateCart
+  validateCart,
+  resolveFarbe,
+  resolveVariantenSku
 };

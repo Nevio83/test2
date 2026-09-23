@@ -207,7 +207,25 @@ class CJDropshippingAPI {
     } else if (endpoint.includes('/product/list')) {
       return this.fallbackSystem.queryProducts(data);
     } else if (endpoint.includes('/order/createOrderV2')) {
-      return this.fallbackSystem.createOrder(data);
+      // KEIN Notbetrieb beim Bestellen.
+      //
+      // Hier stand bis zum 23.09. `this.fallbackSystem.createOrder(data)` — und
+      // das lieferte bei JEDER Ablehnung durch CJ eine ERFUNDENE, erfolgreiche
+      // Bestellung zurueck ({ success: true, orderId: 'MOCK_...' }). Ein Shop,
+      // der Geld kassiert, hat damit im Fehlerfall die Bestellung beim
+      // Lieferanten simuliert. Die erste echte Kundin hat bezahlt, bei CJ lag
+      // nichts, und im Protokoll stand "CJ-Bestellung erstellt".
+      //
+      // Einen Notbetrieb fuer das ANZEIGEN von Produkten kann man vertreten.
+      // Fuer das BESTELLEN nie: Eine Bestellung, die es nicht gibt, darf nicht
+      // wie eine aussehen.
+      return {
+        success: false,
+        result: false,
+        source: 'fallback',
+        message: 'CJ nicht erreichbar oder Bestellung abgelehnt — es wurde KEINE Bestellung angelegt'
+          + (this.lastError && this.lastError.message ? ` (${this.lastError.message})` : ''),
+      };
     } else if (endpoint.includes('/logistic/freightCalculate')) {
       return this.fallbackSystem.calculateShipping(data);
     } else {
