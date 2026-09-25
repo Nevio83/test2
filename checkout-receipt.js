@@ -130,7 +130,6 @@ class CheckoutReceipt {
       const customerData = {
         name: formData.get('name') || formData.get('firstname') + ' ' + formData.get('lastname'),
         email: formData.get('email'),
-        phone: formData.get('phone') || formData.get('tel'),
         billingAddress: {
           street: formData.get('address') || formData.get('street'),
           city: formData.get('city'),
@@ -286,9 +285,7 @@ class CheckoutReceipt {
       name: document.querySelector('[name="name"]')?.value || 
             (document.querySelector('[name="firstname"]')?.value + ' ' + 
              document.querySelector('[name="lastname"]')?.value) || '',
-      email: document.querySelector('[name="email"]')?.value || '',
-      phone: document.querySelector('[name="phone"]')?.value || 
-             document.querySelector('[name="tel"]')?.value || ''
+      email: document.querySelector('[name="email"]')?.value || ''
     };
   }
 

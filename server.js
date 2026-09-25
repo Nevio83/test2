@@ -1263,9 +1263,10 @@ app.post('/api/create-checkout-session', async (req, res) => {
       shipping_address_collection: {
         allowed_countries: LIEFERLAENDER
       },
-      phone_number_collection: {
-        enabled: true
-      },
+      // Bewusst KEINE Telefonnummer (phone_number_collection): Fuer die
+      // Bestellung wird sie nicht gebraucht — CJ fuehrt shippingPhone als
+      // optional (createOrderV2, "Required: N"). Was nicht erhoben wird,
+      // muss auch nicht geschuetzt, gesichert und beauskunftet werden.
       locale: 'de',
       payment_method_options: {
         card: {
@@ -1439,7 +1440,6 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
           customer = await stripe.customers.create({
             email: fullSession.customer_details.email,
             name: fullSession.customer_details.name,
-            phone: fullSession.customer_details.phone,
             address: fullSession.customer_details.address,
             metadata: {
               order_id: orderData.order_id
@@ -1665,7 +1665,7 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
               `<h2>Bezahlte Bestellung konnte nicht bei CJ angelegt werden</h2>` +
               `<p><b>Grund:</b> ${f(cjError.message)}</p>` +
               `<p><b>Stripe-Zahlung:</b> ${f(session.payment_intent)}<br><b>Betrag:</b> ${f(orderData.total_amount)} ${f(orderData.currency)}</p>` +
-              `<p><b>Liefern an:</b><br>${f(orderData.shipping_name || orderData.customer_name)}<br>${f(adr.line1)}${adr.line2 ? '<br>' + f(adr.line2) : ''}<br>${f(adr.postal_code)} ${f(adr.city)}<br>${f(adr.country)}<br>Tel. ${f(orderData.customer_phone || '-')}<br>${f(orderData.customer_email)}</p>` +
+              `<p><b>Liefern an:</b><br>${f(orderData.shipping_name || orderData.customer_name)}<br>${f(adr.line1)}${adr.line2 ? '<br>' + f(adr.line2) : ''}<br>${f(adr.postal_code)} ${f(adr.city)}<br>${f(adr.country)}<br>${f(orderData.customer_email)}</p>` +
               `<p><b>Positionen:</b></p><ul>${zeilen}</ul>`
             );
           }

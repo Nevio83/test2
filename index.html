@@ -205,8 +205,6 @@ button { font-family: var(--sans); }
 .reel-price { font-family: var(--serif); font-weight: 700; font-size: 54px; line-height: 1; color: var(--gold); }
 .strike { color: var(--dim); text-decoration: line-through; }
 .reel-priceline .strike { font-size: 18px; }
-.reel-rating { font-size: 12.5px; color: var(--muted); }
-.stars { color: var(--gold); letter-spacing: 2px; }
 .reel-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
 .cta-gold { display: flex; align-items: center; gap: 9px; background: var(--gold); color: var(--bg-deep); border: none; border-radius: 12px; padding: 16px 30px; font-size: 14.5px; font-weight: 700; letter-spacing: .04em; cursor: pointer; transition: all .2s; text-decoration: none; }
 .cta-gold:hover { background: var(--gold-hover); transform: translateY(-2px); }
@@ -273,16 +271,11 @@ button { font-family: var(--sans); }
 .deal-name { font-family: var(--serif); font-weight: 400; font-size: 42px; margin: 6px 0 0; line-height: 1.08; color: var(--text); }
 .deal-name a { color: inherit; text-decoration: none; }
 .deal-name a:hover { color: var(--gold-hover); }
-.deal-rating { font-size: 13px; color: var(--muted); }
 .deal-desc { font-size: 15px; line-height: 1.7; color: var(--muted); margin: 0; max-width: 520px; }
 .deal-priceline { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
 .deal-price { font-family: var(--serif); font-size: 52px; color: var(--gold); }
 .deal-priceline .strike { font-size: 18px; }
 .deal-save { font-size: 13px; letter-spacing: .1em; color: var(--text); border-bottom: 1px solid var(--gold); padding-bottom: 2px; }
-.deal-stockrow { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 8px; max-width: 420px; letter-spacing: .06em; }
-.deal-stockrow .left { color: var(--gold); }
-.deal-bar-track { height: 3px; background: rgba(216, 181, 108, .15); max-width: 420px; }
-.deal-bar { width: 82%; height: 100%; background: linear-gradient(90deg, #D8B56C, #E9CD8C); box-shadow: 0 0 10px rgba(216, 181, 108, .5); }
 .deal-ctas { display: flex; gap: 14px; margin-top: 12px; }
 .deal-add { flex: 1; max-width: 420px; background: var(--gold); color: var(--bg-deep); border: none; border-radius: 999px; padding: 17px 30px; font-size: 15px; font-weight: 700; letter-spacing: .05em; cursor: pointer; transition: all .2s; }
 .deal-add:hover { background: var(--gold-hover); transform: translateY(-2px); }
@@ -335,13 +328,9 @@ button { font-family: var(--sans); }
 .pcard h3 { font-size: 16px; font-weight: 600; margin: 0; line-height: 1.4; min-height: 45px; color: var(--text-strong); letter-spacing: .005em; }
 .pcard h3 a { color: inherit; text-decoration: none; }
 .pcard h3 a:hover { color: var(--gold-hover); }
-.pcard .rating { font-size: 12px; color: var(--muted); }
-.pcard .social { font-size: 11px; color: var(--dim2); display: flex; align-items: center; gap: 6px; }
-.pcard .social i { color: #C98A6A; }
 .pcard .priceline { display: flex; align-items: baseline; gap: 10px; margin-top: auto; }
 .pcard .price { font-family: var(--serif); font-weight: 700; font-size: 31px; color: var(--gold-price); }
 .pcard .priceline .strike { font-size: 13px; }
-.pcard .lowstock { font-size: 11.5px; letter-spacing: .08em; color: #C98A6A; }
 .pcard .ctas { display: flex; gap: 9px; margin-top: 12px; }
 .pcard .addbtn { flex: 1; background: transparent; color: var(--gold); border: 1px solid rgba(216, 181, 108, .5); border-radius: 999px; padding: 12px 14px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: all .25s; }
 .pcard .addbtn:hover { background: var(--gold); color: var(--bg-deep); border-color: var(--gold); }
@@ -373,16 +362,6 @@ button { font-family: var(--sans); }
 .sort-pills { display: flex; gap: 4px; background: rgba(216, 181, 108, .06); border: 1px solid rgba(216, 181, 108, .22); border-radius: 999px; padding: 4px; }
 .sort-pill { background: transparent; color: var(--muted); border: none; border-radius: 999px; padding: 8px 15px; font-size: 12px; font-weight: 700; letter-spacing: .04em; cursor: pointer; transition: all .2s ease; white-space: nowrap; }
 .sort-pill.active { background: var(--gold); color: var(--bg-deep); }
-
-/* ── Kundenstimmen ────────────────────────────────────────── */
-.voice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
-.voice { background: var(--card-grad); border: 1px solid var(--gold-border); border-radius: 16px; padding: 38px 36px; display: flex; flex-direction: column; gap: 18px; transition: transform .3s ease, border-color .3s ease; }
-.voice:hover { transform: translateY(-4px); border-color: rgba(216, 181, 108, .45); }
-.voice .quote-mark { font-family: var(--serif); font-size: 70px; line-height: .4; color: var(--gold); margin-top: 16px; }
-.voice p { font-family: var(--serif); font-size: 23px; line-height: 1.45; margin: 0; color: var(--text); }
-.voice .who { margin-top: auto; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
-.voice .who .name { font-size: 12px; letter-spacing: .22em; color: var(--muted); text-transform: uppercase; }
-.voice .who .stars { font-size: 12px; }
 
 /* ── Newsletter (Creme) ───────────────────────────────────── */
 .newsletter { background: linear-gradient(160deg, #F0E7D4 0%, #E7DBC2 100%); padding: 74px 52px; scroll-margin-top: 90px; }
@@ -476,7 +455,6 @@ button { font-family: var(--sans); }
 .qv .info { padding: 44px; display: flex; flex-direction: column; gap: 13px; border-left: 1px solid rgba(216, 181, 108, .15); box-sizing: border-box; }
 .qv .cattag { display: flex; align-items: center; gap: 7px; font-size: 10.5px; text-transform: uppercase; color: var(--ac); letter-spacing: .3em; }
 .qv h3 { font-family: var(--serif); font-weight: 400; font-size: 34px; margin: 0; line-height: 1.12; }
-.qv .rating { font-size: 12.5px; color: var(--muted); }
 .qv .priceline { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
 .qv .price { font-family: var(--serif); font-size: 42px; color: var(--gold); }
 .qv .priceline .strike { font-size: 16px; }
@@ -642,11 +620,6 @@ button { font-family: var(--sans); }
   .sort-group { flex-wrap: wrap; row-gap: 8px; }
   .sort-pills { flex-wrap: wrap; }
 
-  /* Kundenstimmen */
-  .voice { padding: 26px 24px; gap: 14px; }
-  .voice p { font-size: 19px; }
-  .voice .quote-mark { font-size: 52px; margin-top: 10px; }
-
   /* Newsletter — Eingabe + Button stapeln, Titel kleiner */
   .newsletter { padding-top: 52px; padding-bottom: 52px; }
   .newsletter h2 { font-size: 31px; line-height: 1.08; }
@@ -785,7 +758,7 @@ button { font-family: var(--sans); }
         </div>
         <div class="nav-links">
             <a class="hot" href="#deal">Mitternachts-Deal</a>
-            <a href="#bestseller">Bestseller</a>
+            <a href="#bestseller">Highlights</a>
             <a href="#sortiment">Sortiment</a>
         </div>
         <div class="nav-right">
@@ -828,7 +801,7 @@ button { font-family: var(--sans); }
             </div>
             <nav>
                 <a class="hot" href="#deal">Mitternachts-Deal</a>
-                <a href="#bestseller">Bestseller</a>
+                <a href="#bestseller">Highlights</a>
                 <a href="#sortiment">Sortiment</a>
             </nav>
             <div class="foot">
@@ -864,7 +837,6 @@ button { font-family: var(--sans); }
                 <span><i class="bi bi-truck"></i> Gratis Versand (DE &amp; EU)</span>
                 <span><i class="bi bi-shield-check"></i> Käuferschutz</span>
                 <span><i class="bi bi-arrow-repeat"></i> 30 Tage Rückgabe</span>
-                <span><i class="bi bi-star-fill"></i> 4,8 / 5 Bewertung</span>
             </div>
         </div>
     </header>
@@ -901,7 +873,7 @@ button { font-family: var(--sans); }
         <div class="wrap" style="padding-top:58px; padding-bottom:24px;">
             <div class="sec-head" style="margin-bottom:40px;">
                 <h2 class="sec-title">Die Hauptdarsteller</h2>
-                <span class="sec-sub">Am häufigsten gekauft</span>
+                <span class="sec-sub">Von uns ausgewählt</span>
             </div>
             <div class="prod-grid" id="bestGrid">
                 <div class="skel"><div class="img"></div><div class="lines"><div class="l1"></div><div class="l2"></div><div class="l3"></div><div class="l4"></div></div></div>
@@ -916,8 +888,6 @@ button { font-family: var(--sans); }
     <section class="reveal" data-reveal id="statsSec">
         <div class="wrap" style="padding-top:50px; padding-bottom:50px;">
             <div class="stats-grid">
-                <div class="stat-card"><div class="stat-num" data-stat="customers">0+</div><div class="stat-lbl">Zufriedene Kunden</div></div>
-                <div class="stat-card"><div class="stat-num" data-stat="rating">0,0</div><div class="stat-lbl">Durchschnittsbewertung</div></div>
                 <div class="stat-card"><div class="stat-num" data-stat="products">0</div><div class="stat-lbl">Kuratierte Produkte</div></div>
                 <div class="stat-card"><div class="stat-num" data-stat="days">0</div><div class="stat-lbl">Tage Rückgaberecht</div></div>
             </div>
@@ -943,30 +913,6 @@ button { font-family: var(--sans); }
                 <div class="skel"><div class="img"></div><div class="lines"><div class="l1"></div><div class="l2"></div><div class="l3"></div><div class="l4"></div></div></div>
                 <div class="skel"><div class="img"></div><div class="lines"><div class="l1"></div><div class="l2"></div><div class="l3"></div><div class="l4"></div></div></div>
                 <div class="skel"><div class="img"></div><div class="lines"><div class="l1"></div><div class="l2"></div><div class="l3"></div><div class="l4"></div></div></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Kundenstimmen -->
-    <section id="stimmen" class="reveal" data-reveal>
-        <div class="wrap" style="padding-bottom:68px;">
-            <h2 class="sec-title" style="margin-bottom:40px;">Der Applaus</h2>
-            <div class="voice-grid">
-                <div class="voice">
-                    <div class="quote-mark">„</div>
-                    <p>Der Beamer hat unser Wohnzimmer in ein kleines Kino verwandelt. Versand war schneller als angegeben.</p>
-                    <div class="who"><span class="name">Lena M. — München</span><span class="stars">★★★★★</span></div>
-                </div>
-                <div class="voice">
-                    <div class="quote-mark">„</div>
-                    <p>Endlich ein Shop, der kuratiert statt einfach alles zu listen. Die Kristalllampe ist ein Traum.</p>
-                    <div class="who"><span class="name">Jonas K. — Wien</span><span class="stars">★★★★★</span></div>
-                </div>
-                <div class="voice">
-                    <div class="quote-mark">„</div>
-                    <p>Unkomplizierte Retoure, freundlicher Support. Der Aroma-Diffusor läuft bei uns jeden Abend.</p>
-                    <div class="who"><span class="name">Sarah B. — Hamburg</span><span class="stars">★★★★☆</span></div>
-                </div>
             </div>
         </div>
     </section>

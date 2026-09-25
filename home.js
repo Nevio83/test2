@@ -18,9 +18,9 @@
   var BEST_ORDER = [46, 37, 47, 43, 33, 50, 27, 18];
   var DEAL_POOL = [44, 46, 43, 33, 27, 18, 50, 37, 47, 21];
   var REEL_SECS = 5;
-  // Marketing-Kennzahlen der Stats-Sektion (bei Bedarf anpassen):
-  var STAT_CUSTOMERS = 2400;
-  var STAT_RATING = 4.8;
+  // Kennzahlen der Stats-Sektion. Nur, was nachpruefbar stimmt: keine
+  // Kundenzahl und keine Durchschnittsbewertung — die standen hier frei
+  // erfunden (2.400+ Kunden, 4,8 Sterne), bevor es die erste Bestellung gab.
   var STAT_RETURN_DAYS = 30; // deckt sich mit infos/retouren.html
 
   var CAT_META = {
@@ -152,7 +152,7 @@
     ziel.scrollIntoView({ behavior: 'auto', block: 'start' });
     return true;
   }
-  var currentSort = 'beliebt';
+  var currentSort = 'empfohlen';
   var scene = 0;
   var reelTimer = null;
   var qvState = null;     // { product, qty, colorIdx }
@@ -205,15 +205,14 @@
   function productHref(p) { return p && p.slug ? '/produkte/' + p.slug + '.html' : '/produkte/produkt-' + p.id + '.html'; }
   function byId(id) { return products.find(function (p) { return Number(p.id) === Number(id); }); }
 
-  // Deterministische Pseudo-Werte (wie im Design-Prototyp; später durch echte Daten ersetzbar)
-  function rating(id) { return 4.2 + ((id * 7) % 8) / 10; }
-  function reviews(id) { return 23 + ((id * 13) % 180); }
-  function stockOf(id) { return 3 + ((id * 5) % 15); }
+  // Bewusst KEINE Sterne, Bewertungszahlen, "heute gekauft" oder "Nur noch X
+  // Stueck" auf der Startseite: Das waren Pseudo-Werte aus der Produkt-ID
+  // (4.2 + ((id*7)%8)/10 usw.), keine Daten. Erfundene Bewertungen und
+  // Verkaufszahlen sind irrefuehrend (UWG) — echte Bewertungen stehen auf
+  // der Produktseite und kommen aus der Datenbank (product-reviews.js).
   // Nicht lieferbar? Kommt aus products.json — der Server mischt dort den
   // aktuellen CJ-Bestandsstand dazu (siehe server.js / cj-stock-sync.js).
   function soldOut(p) { return !!p && p.inStock === false; }
-  function soldToday(id) { return 8 + ((id * 37) % 40); }
-  function stars(r) { var f = Math.round(r); return '★★★★★'.slice(0, f) + '☆☆☆☆☆'.slice(0, 5 - f); }
 
   function isColorName(name) {
     if (!name) return false;
@@ -392,8 +391,6 @@
   function cardHTML(p, rank, ranked) {
     var ac = acFor(p.category);
     var hasDisc = !!p.originalPrice && p.originalPrice > p.price;
-    var r = rating(p.id);
-    var stock = stockOf(p.id);
     var sec = secondImg(p);
     var href = productHref(p);
     var wished = isWished(p.id);
@@ -420,11 +417,7 @@
             '<div class="cattag"><i class="bi ' + ac.icon + '"></i><span>' + esc(ac.short) + '</span></div>' +
           '</div>' +
           '<h3><a href="' + href + '">' + esc(p.name) + '</a></h3>' +
-          '<div class="rating"><span class="stars">' + stars(r) + '</span> ' + r.toFixed(1).replace('.', ',') + ' (' + reviews(p.id) + ')</div>' +
-          '<div class="social"><i class="bi bi-fire"></i> ' + soldToday(p.id) + ' heute gekauft</div>' +
           '<div class="priceline"><span class="price">' + eur(p.price) + '</span>' + (hasDisc ? '<span class="strike">' + eur(p.originalPrice) + '</span>' : '') + '</div>' +
-          // "Nur noch X Stueck" waere bei ausverkaufter Ware ein Widerspruch.
-          (stock <= 8 && !weg ? '<div class="lowstock">Nur noch ' + stock + ' Stück</div>' : '') +
           (weg ? '<div class="soldout-hint">Zurzeit nicht lieferbar — Benachrichtigung auf der Produktseite</div>' : '') +
           '<div class="ctas">' +
             (weg
@@ -463,7 +456,6 @@
     var p = byId(ids[idx]);
     var ac = acFor(p.category);
     var hasDisc = !!p.originalPrice && p.originalPrice > p.price;
-    var r = rating(p.id);
     var alt = idx % 2 === 0;
     el('reelCounter').textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(ids.length).padStart(2, '0');
     el('reelBody').innerHTML =
@@ -480,7 +472,6 @@
         '<div class="reel-priceline">' +
           '<span class="reel-price">' + eur(p.price) + '</span>' +
           (hasDisc ? '<span class="strike">' + eur(p.originalPrice) + '</span>' : '') +
-          '<span class="reel-rating"><span class="stars">' + stars(r) + '</span> ' + r.toFixed(1).replace('.', ',') + '</span>' +
         '</div>' +
         '<div class="reel-ctas">' +
           '<button class="cta-gold" id="reelAdd"><i class="bi bi-bag-plus"></i> In den Warenkorb</button>' +
@@ -546,7 +537,6 @@
     if (!pool.length) return;
     var p = byId(pool[Math.floor(Date.now() / 86400000) % pool.length]);
     var hasDisc = !!p.originalPrice && p.originalPrice > p.price;
-    var r = rating(p.id);
     el('dealPanel').innerHTML =
       '<div class="deal-stage">' +
         '<img src="' + imgUrl(p.image) + '" alt="' + esc(p.name) + '">' +
@@ -562,15 +552,10 @@
           '<div class="cd-cell"><div class="cd-num" data-cd="s">–</div><div class="cd-lbl">SEKUNDEN</div></div>' +
         '</div>' +
         '<h2 class="deal-name"><a href="' + productHref(p) + '">' + esc(p.name) + '</a></h2>' +
-        '<div class="deal-rating"><span class="stars">' + stars(r) + '</span> ' + r.toFixed(1).replace('.', ',') + ' · ' + reviews(p.id) + ' Bewertungen</div>' +
         '<p class="deal-desc">' + esc(p.description || '') + '</p>' +
         '<div class="deal-priceline">' +
           '<span class="deal-price">' + eur(p.price) + '</span>' +
           (hasDisc ? '<span class="strike">' + eur(p.originalPrice) + '</span><span class="deal-save">Du sparst ' + eur(Math.max(0, p.originalPrice - p.price)) + '</span>' : '') +
-        '</div>' +
-        '<div>' +
-          '<div class="deal-stockrow"><span class="left">Nur noch ' + stockOf(p.id) + ' Stück verfügbar</span><span>82 % verkauft</span></div>' +
-          '<div class="deal-bar-track"><div class="deal-bar"></div></div>' +
         '</div>' +
         '<div class="deal-ctas">' +
           '<button class="deal-add" id="dealAdd">In den Warenkorb — ' + eur(p.price) + '</button>' +
@@ -610,11 +595,15 @@
   }
 
   var SORTS = [
-    { key: 'beliebt', label: 'Beliebt', fn: function (a, b) { return reviews(b.id) - reviews(a.id); } },
+    // "Empfohlen" = die eigene Auswahl (BEST_ORDER) zuerst, danach die Reihenfolge
+    // aus products.json. Vorher "Beliebt" — sortiert nach einer erfundenen
+    // Bewertungszahl, die es nicht gibt.
+    { key: 'empfohlen', label: 'Empfohlen', fn: function (a, b) { return auswahlPlatz(a) - auswahlPlatz(b); } },
     { key: 'preis-auf', label: 'Preis ↑', fn: function (a, b) { return a.price - b.price; } },
     { key: 'preis-ab', label: 'Preis ↓', fn: function (a, b) { return b.price - a.price; } },
     { key: 'rabatt', label: 'Rabatt', fn: function (a, b) { return discFrac(b) - discFrac(a); } }
   ];
+  function auswahlPlatz(p) { var i = BEST_ORDER.indexOf(Number(p.id)); return i < 0 ? BEST_ORDER.length : i; }
   function discFrac(p) { return p.originalPrice && p.originalPrice > p.price ? (p.originalPrice - p.price) / p.originalPrice : 0; }
 
   function renderChips() {
@@ -786,8 +775,6 @@
     var vPrice = sel && sel.price != null ? sel.price : p.price;
     var vOrig = sel && sel.originalPrice != null ? sel.originalPrice : p.originalPrice;
     var hasDisc = !!(vOrig && vOrig > vPrice);
-    var r = rating(p.id);
-    var stock = stockOf(p.id);
     var anyMotif = colors.some(function (c) { return !!c.image && !isColorName(c.name); });
     var allMotif = colors.length > 0 && colors.every(function (c) { return !!c.image && !isColorName(c.name); });
     var varLabel = allMotif ? 'Motiv' : anyMotif ? 'Variante' : 'Farbe';
@@ -812,7 +799,6 @@
           '<div class="info">' +
             '<div class="cattag"><i class="bi ' + ac.icon + '"></i><span>' + esc(ac.short) + '</span></div>' +
             '<h3>' + esc(name) + '</h3>' +
-            '<div class="rating"><span class="stars">' + stars(r) + '</span> ' + r.toFixed(1).replace('.', ',') + ' · ' + reviews(p.id) + ' Bewertungen</div>' +
             '<div class="priceline">' +
               '<span class="price">' + eur(vPrice) + '</span>' +
               (hasDisc ? '<span class="strike">' + eur(vOrig) + '</span><span class="disc">' + discountPct(vPrice, vOrig) + '</span>' : '') +
@@ -821,9 +807,7 @@
             (colors.length ? '<div><div class="var-lbl">' + varLabel + ': <span>' + esc(sel ? sel.name : '') + '</span></div><div class="swatches">' + swatches + '</div></div>' : '') +
             '<div class="shiprow">' +
               '<span><i class="bi bi-truck"></i> Lieferung: ' + esc(p.shippingTime || '6–13 Werktage') + '</span>' +
-              (soldOut(p)
-                ? '<span class="low">Zurzeit nicht lieferbar</span>'
-                : (stock <= 8 ? '<span class="low">Nur noch ' + stock + ' Stück</span>' : '')) +
+              (soldOut(p) ? '<span class="low">Zurzeit nicht lieferbar</span>' : '') +
             '</div>' +
             '<div class="buyrow">' +
               '<div class="stepper">' +
@@ -973,8 +957,6 @@
     function tick(t) {
       var p = Math.min(1, (t - t0) / dur);
       var e = 1 - Math.pow(1 - p, 3);
-      document.querySelector('[data-stat="customers"]').textContent = Math.round(STAT_CUSTOMERS * e).toLocaleString('de-DE') + '+';
-      document.querySelector('[data-stat="rating"]').textContent = (STAT_RATING * e).toFixed(1).replace('.', ',');
       document.querySelector('[data-stat="products"]').textContent = Math.round((products.length || 40) * e);
       document.querySelector('[data-stat="days"]').textContent = Math.round(STAT_RETURN_DAYS * e);
       if (p < 1) requestAnimationFrame(tick);

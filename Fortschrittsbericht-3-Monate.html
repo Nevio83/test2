@@ -292,11 +292,11 @@
   <div class="report-header">
     <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
     <h1 class="title">Maios Shop — Juni bis September 2026</h1>
-    <p class="subtitle">Zeitraum <strong>7. Juni – 25. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 853 automatischen Prüfungen und einem Marketing-Automaten geworden — und seit dem 23.&nbsp;September landet eine bezahlte Bestellung automatisch beim Lieferanten. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 25. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 858 automatischen Prüfungen und einem Marketing-Automaten geworden — und seit dem 23.&nbsp;September landet eine bezahlte Bestellung automatisch beim Lieferanten. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
-      <span style="color:var(--green);font-weight:600;">✓ 180 Commits an 40 Arbeitstagen</span>
-      <span><strong>853</strong> automatische Prüfungen (552 Shop + 301 Bot) · Marketing-Prüfungen derzeit rot</span>
+      <span style="color:var(--green);font-weight:600;">✓ 181 Commits an 40 Arbeitstagen</span>
+      <span><strong>858</strong> automatische Prüfungen (557 Shop + 301 Bot) · Marketing-Prüfungen derzeit rot</span>
       <span>Stand <strong>25.09.2026</strong></span>
     </div>
   </div>
@@ -311,19 +311,19 @@
 
     <div class="stats">
       <div class="stat acc-blue">
-        <div class="num">180</div>
+        <div class="num">181</div>
         <div class="lbl">Commits</div>
         <p class="sub">an 40 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
       </div>
       <div class="stat acc-green">
-        <div class="num">853</div>
+        <div class="num">858</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>552 im Shop</strong> und <strong>301 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Die 237 Marketing-Prüfungen sind rot: Die Datenbank ist am Kontingent, und neun warten auf Code, den es noch nicht gibt (siehe unten).</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>557 im Shop</strong> und <strong>301 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Die 237 Marketing-Prüfungen sind rot: Die Datenbank ist am Kontingent, und neun warten auf Code, den es noch nicht gibt (siehe unten).</p>
       </div>
       <div class="stat acc-orange">
-        <div class="num">545</div>
+        <div class="num">546</div>
         <div class="lbl">Geänderte Dateien</div>
-        <p class="sub">+102.730 Zeilen hinzugefügt, −97.148 entfernt. Unterm Strich <strong>5.582 Zeilen mehr</strong> — der Aufräum-Vorsprung ist im September vom Marketing-Ausbau eingeholt worden.</p>
+        <p class="sub">+97.998 Zeilen hinzugefügt, −97.160 entfernt. Unterm Strich <strong>838 Zeilen mehr</strong>. Der Marketing-Ausbau im September hatte den Aufräum-Vorsprung aufgezehrt; am 25.&nbsp;September fielen dann rund 4.900 Zeilen erfundener Bewertungen und Verkaufszahlen weg.</p>
       </div>
       <div class="stat acc-red">
         <div class="num">7</div>
@@ -338,7 +338,7 @@
         <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
       </thead>
       <tbody>
-        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">853</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">858</td><td class="gut">neu aufgebaut</td></tr>
         <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
         <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
         <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
@@ -353,7 +353,7 @@
     </div>
 
     <blockquote class="merke">
-      <p><strong>Die Zahl, die am meisten sagt:</strong> Von den 97.148 gelöschten Zeilen entfielen rund 5.600 auf toten Code, den niemand mehr aufrief, und weitere Tausende auf die Design-Migration der 40 Produktseiten. Ein Shop wird nicht dadurch besser, dass mehr Code darin steht — sondern dadurch, dass weniger davon lügen kann.</p>
+      <p><strong>Die Zahl, die am meisten sagt:</strong> Von den 97.160 gelöschten Zeilen entfielen rund 5.600 auf toten Code, den niemand mehr aufrief, und weitere Tausende auf die Design-Migration der 40 Produktseiten. Ein Shop wird nicht dadurch besser, dass mehr Code darin steht — sondern dadurch, dass weniger davon lügen kann.</p>
     </blockquote>
   </div>
 
@@ -555,6 +555,14 @@
           <p>Fünf Punkte aus dem Papier zum Videoschnitt, committet am 25.&nbsp;September (<code>701e183</code>). Der Stand dort: <strong>63 von 90 Vorschlägen gebaut</strong>.<br><br><strong>Der Preis auf der Endkarte war nie Orange.</strong> In der ASS-Schreibweise stand <code>&amp;H0000E5FF</code>, und weil ASS die Farbkanäle rückwärts liest, ist das Gelb. Clip und Shop hatten also verschiedene Farben, und niemand konnte es sehen, weil beide „warm“ aussehen. Die Farbe steht jetzt an <em>einer</em> Stelle in der Konfiguration (<code>#ff8c00</code> aus <code>styles.css</code>), die Umrechnung erledigt das Programm.<br><br><strong>Die Untertitel laufen unter TikToks Symbolspalte.</strong> Der Seitenrand ist 80&nbsp;px, die Spalte belegt rund 160. Nachgemessen: Eine volle Zeile (20 Zeichen) ragt hinein, eine kurze nicht. Die Ausgangsprüfung meldet das jetzt, sperrt aber nicht, weil TikTok keine Maße veröffentlicht und die Zonen deshalb Schätzungen sind.<br><br>Dazu: eine feste Zeile „Werbung“ auf der Endkarte, ohne Schalter zum Abstellen. Außerdem der <strong>Rückruf</strong> (<code>--rueckruf</code>): Er führt von einem Creator-Namen zu allen Fassungen, die aus dessen Material gebaut wurden. Und <strong>Hashtag-Vorschläge</strong> aus den Untertiteln des eigenen Materials; Reichweiten-Tags wie <code>#fyp</code> fliegen raus.<br><br><strong>Nicht fertig:</strong> Neun Prüfungen für Schnittlisten-Vorlagen, drei Hook-Fassungen und die Trockenprüfung liegen im Repository, die zugehörige Umsetzung in <code>style_c_schnittliste.py</code> aber nicht. Die Prüfungen sind rot, bis der Code steht (siehe offene Punkte).</p>
         </div>
       </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">25. Sep</div>
+        <div class="tl-body">
+          <h3>Die Bewertungen im Shop waren erfunden <span class="tl-tag tag-fund">Fund</span></h3>
+          <p><strong>Alle 40 Produktseiten</strong> trugen dieselben fest eingetippten Kundenbewertungen: „4.9 · 61 Bewertungen“, drei Rezensionen wie „Markus T. – Verifiziert“, dazu „201x bestellt“, „Nur noch 9 Stück – 79% verkauft“ und ein „★ BESTSELLER“-Abzeichen. Die Startseite rechnete Sterne, Bewertungszahl, „heute gekauft“ und „Nur noch X Stück“ aus der Produkt-ID aus (<code>4.2 + ((id*7)%8)/10</code>) und zeigte drei erfundene Kundenstimmen und „2.400+ zufriedene Kunden“. Zu diesem Zeitpunkt gab es genau eine echte Bestellung.<br><br><strong>Warum es niemand gemerkt hat:</strong> Diese Angaben sehen genauso aus wie echte. Es gibt keine Fehlermeldung und keinen Konsoleneintrag. Die Doku behauptete sogar das Gegenteil („keine erfundenen Bewertungen im Markup“), denn das stimmte für die Strukturdaten, die Google ausliest, aber nicht für das, was Kunden sehen. Rechtlich sind gefälschte Bewertungen seit 2022 ausdrücklich unlauter (UWG, Anhang Nr. 23b/23c).<br><br><strong>Entfernt</strong>, zusammen mit der <strong>Telefonnummer an der Kasse</strong>: CJ braucht sie nicht (<code>shippingPhone</code> ist dort optional). Die echten Bewertungen aus der Datenbank bleiben. Neue Prüfung <code>keine-erfundenen-angaben.test.js</code>: Gegen den alten Stand wird sie in drei Punkten rot. Beim Schreiben fand ihre Gegenprobe eine Lücke in ihr selbst, weil „4.9“ und „/5“ in getrennten Tags standen.<br><br><strong>Bewusst geblieben</strong> sind Besucherzähler, Countdown und Streichpreise (siehe offene Punkte).</p>
+        </div>
+      </div>
     </div>
 
     <blockquote class="merke">
@@ -599,6 +607,7 @@
             <dt>Ändert</dt><dd>Jede Einwilligung wird mit Zeitstempel und Beleg festgehalten. Tracker starten erst danach, nicht vorher.</dd>
             <dt>Bringt</dt><dd>Die Nachweispflicht ist erfüllbar, statt nur behauptet. Der Beleg-Versand ans Archiv fängt ab, dass Renders Dateisystem flüchtig ist.</dd>
             <dt>Fund</dt><dd>Die IP ging bis Anfang August an Google Analytics mit — und hebelte damit das dort gesetzte <code>anonymize_ip</code> aus. Behoben, mit Prüfung abgesichert.</dd>
+            <dt>Fund 25.09.</dt><dd>Alle 40 Produktseiten und die Startseite zeigten <strong>erfundene Bewertungen, Kundenstimmen und Verkaufszahlen</strong>. Entfernt, ebenso die Telefonnummer an der Kasse. Eine Prüfung meldet es, falls so etwas zurückkommt, zum Beispiel über eine kopierte alte Vorlage.</dd>
           </dl>
         </div>
       </div>
@@ -1048,6 +1057,13 @@
             <p>Preis-Tag, eingebettetes JSON, Detailzeile und die „Ähnliche Produkte"-Karten. Jede Preisänderung muss überall gepflegt werden, sonst driften Seite und Daten auseinander — genau das ist im Juni zweimal passiert.</p>
           </div>
         </div>
+        <div class="todo verworfen">
+          <div class="mark">✕</div>
+          <div class="body">
+            <h4>Besucherzähler, Countdown und Streichpreise entfernen <span class="who who-verworfen">Gestrichen</span></h4>
+            <p>Am 25.&nbsp;September entschieden: <strong>Die drei bleiben.</strong> Der Punkt steht hier weiter, damit er beim nächsten Durchgang nicht erneut vorgeschlagen wird.<br><br><strong>Was das bedeutet:</strong> „20 Personen sehen sich das gerade an“ ist eine Zufallszahl auf allen 40 Produktseiten. Der Countdown „Angebot endet in …“ springt jeden Tag um Mitternacht zurück. Ob die durchgestrichenen Preise der niedrigste Preis der letzten 30 Tage waren, wie es § 11 PAngV verlangt, ist nicht geprüft. Alle drei sind künstliche Dringlichkeit und damit angreifbar wie die erfundenen Bewertungen, nur weniger offensichtlich. Die Prüfung <code>keine-erfundenen-angaben.test.js</code> lässt sie deshalb <em>bewusst</em> durch. Wer sie später entfernen will: <code>initViewers</code> und <code>initCountdown</code> in <code>produkte/produkt-premium.js</code>, dazu die Abzeichen in den 40 Seiten.</p>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -1063,13 +1079,13 @@
     <div class="pruef-banner">
       <h3>✅ Drei Monate, ein Muster</h3>
       <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen — und dieser Bericht selbst stand zehn Tage lang öffentlich im Shop, ohne dass irgendetwas darauf hingewiesen hätte.<br><br>
-      Deshalb sind die 853 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+      Deshalb sind die 858 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
     </div>
   </div>
 
   <footer>
     Interner Fortschrittsbericht · Zeitraum 7. Juni – 25. September 2026 · Stand 25.09.2026.<br>
-    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (552 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (301 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (557 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (301 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
     Wird nach jedem abgeschlossenen Punkt fortgeschrieben. <strong>Nicht öffentlich:</strong> seit dem 7.&nbsp;September blockt die Datei-Freigabe interne HTML-Dokumente im Wurzelverzeichnis — diese Seite ist unter <code>maiosshop.com</code> nicht abrufbar.<br>
     Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
   </footer>

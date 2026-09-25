@@ -55,7 +55,13 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   **Kanonische Adresse** auf allen 54 indexierbaren Seiten, **`noindex`** auf Warenkorb, Merkzettel,
   Bestellbestätigung, Sendungsverfolgung und Auskunftsformular. Sitemap, Canonical und Noindex
   hängen an **einer** Liste (`FESTE_SEITEN`). Sterne kommen zur Laufzeit aus der Datenbank
-  (`product-reviews.js`) — **es stehen keine erfundenen Bewertungen im Markup**.
+  (`product-reviews.js`) — **es stehen keine erfundenen Bewertungen im Markup**. Das galt bis
+  zum 25.09. nur für die Strukturdaten: sichtbar trugen alle 40 Produktseiten eingetippte
+  Bewertungen („Markus T. — Verifiziert", „4.9 · 61 Bewertungen"), „201x bestellt" und „Nur noch
+  9 Stück — 79% verkauft"; die Startseite rechnete Sterne, „heute gekauft" und Bestand aus der
+  Produkt-ID aus und zeigte erfundene Kundenstimmen und „2.400+ Kunden". Alles entfernt, dazu die
+  **Telefonnummer an der Kasse** (`phone_number_collection` aus, CJ braucht sie nicht).
+  Wächter: `test/keine-erfundenen-angaben.test.js`.
 - **Cookie-Consent (DSGVO):** Eigener Banner `cookie-consent.js/.css` (kein Drittanbieter),
   Zwei-Stufen-Einwilligung (Alle / Nur notwendige), `window.MaiosConsent`-API, 12-Monats-TTL.
 - **Aufrufe-/Besucher-Tracking** (consent-gated): `page_views` + `user_consent_events`,
@@ -182,6 +188,7 @@ lautlos wirkt** — jeweils mit einem Test für den real aufgetretenen Fehler:
 | `geraete-abdeckung.test.js` | Ehrlichkeit der Geräte-Kachel im Dashboard | ohne Einwilligung fehlt das Gerät — die Kachel zeigte nur die *bekannten* Besuche und sah wie eine vollständige Verteilung aus (an einem Tag fehlten 56 von 175) |
 | `marketing-betrieb.test.js` | Workflow, lokaler Läufer, npm-Skripte des Automaten | ein Workflow, der einen Ablauf nie zuteilt, sieht aus wie „gerade nichts fällig" — **und ein versehentlich abgeschalteter Trockenlauf sieht aus wie Normalbetrieb, bis der erste Beitrag öffentlich steht** |
 | `marketing-dashboard.test.js` | die Admin-Seite des Automaten | ein Feld, das nie gefüllt wird, steht dauerhaft auf „Lädt…" und wirkt wie „nichts zu zeigen" — keine Fehlermeldung, kein Protokolleintrag |
+| `keine-erfundenen-angaben.test.js` | fest eingetragene Sterne, Bewertungs-, Verkaufs-, Bestands- und Kundenzahlen; Telefonabfrage an der Kasse | alle 40 Produktseiten trugen eingetippte Bewertungen samt „Verifiziert"-Haken und „201x bestellt", die Startseite rechnete Sterne aus der Produkt-ID — sieht aus wie echt, keine Fehlermeldung, rechtlich irreführend (UWG Anhang Nr. 23b/23c) |
 
 Faustregel beim Ergänzen: **ein Test, der nur grün werden kann, ist wertlos.** Zu jedem
 behobenen Fehler gehört eine Gegenprobe, die das alte Verhalten nachbildet und belegt, dass
