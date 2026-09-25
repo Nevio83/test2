@@ -51,7 +51,8 @@ const {
   herkunftAusName, ohneHerkunftImNamen,
   RECHTE_ARTEN, RECHTE_ZWECKE, rechteAkte, rechteLuecken, darfVeroeffentlicht,
   setzeRechte, widerrufeRechte, rechteBilanz,
-  creatorAnfrage, offeneAnfragen,
+  creatorAnfrage, offeneAnfragen, hashtagVorschlag, unterschriftMass,
+  begleitdateien, fassungenMitClip, rueckruf,
   sammleUrteil, ladeUrteile, speichereUrteile, urteilsBilanz, urteilePfad,
 } = require('./tiktok-video-sync');
 const { PassThrough } = require('stream');
@@ -5128,4 +5129,281 @@ test('kontaktbogen und tiktok-video-sync laden sich gegenseitig ohne Ring', () =
   const sync2 = require('./tiktok-video-sync.js');
   assert.equal(typeof bogen2.baueBoegen, 'function');
   assert.equal(typeof sync2.ladeIndex, 'function');
+});
+
+// ── Hashtags aus dem eigenen Material (Punkt 46) ─────────────────────
+//
+// Fuer jeden geladenen Clip liegt die Unterschrift des ERFOLGREICHEN Originals
+// im Index. Die eigene Unterschrift entstand trotzdem jedes Mal aus dem Nichts.
+
+// Echte Untertitel aus dem Herkunftsnachweis, um die Hashtags ergaenzt, wie
+// sie dort standen. Ausgedachte Beispiele bestaetigen nur die eigene Regel.
+const ECHTE_MIT_TAGS = [
+  'Staying hydrated with my new desktop water dispenser 💧office must have #waterdispenser #desksetup',
+  'No More Heavy Water Bottles! USB Rechargeable Automatic Water Pump. #waterdispenser #fyp',
+  'The one thing you need on your nightstand💧#waterdispenser #bedroomwaterdispenser',
+  'Automatic wireless water dispenser pump | Electric water pump with auto stop #waterdispenser #gadget',
+  'Mini water dispenser cooler for your office or desk 🫶🏻 just add water #desksetup #officegadget',
+  'This $18 water dispenser that goes on top of a 5 gallon jug was a great buy #waterdispenser #viral',
+];
+
+function tagIndex(texte, produktId = 10) {
+  return { version: 1, eintraege: texte.map((t, i) => ({
+    produkt_id: produktId, titel: t, likes: 1000 * (i + 1),
+  })) };
+}
+
+test('die haeufigsten Hashtags des eigenen Materials kommen als Vorschlag', () => {
+  const v = hashtagVorschlag(tagIndex(ECHTE_MIT_TAGS), 10);
+  assert.equal(v.clips, 6);
+  assert.deepEqual(v.vorschlag.map((x) => x.tag), ['waterdispenser', 'desksetup']);
+  assert.equal(v.vorschlag[0].clips, 5, '5 von 6 echten Untertiteln tragen ihn');
+
+  // GEGENPROBE: Reichweiten-Tags fliegen raus. #fyp und #viral stehen unter
+  // jedem zweiten Video und sagen ueber das Produkt nichts.
+  assert.equal(v.vorschlag.some((x) => ['fyp', 'viral'].includes(x.tag)), false);
+  // Und sie STEHEN in den Texten — der Test prueft also wirklich etwas.
+  assert.ok(ECHTE_MIT_TAGS.some((t) => t.includes('#fyp')));
+});
+
+test('ein einzelner Tag ist Zufall, zwei sind ein Muster', () => {
+  const index = tagIndex(ECHTE_MIT_TAGS);
+  const streng = hashtagVorschlag(index, 10, { abMindestens: 2 });
+  const weich = hashtagVorschlag(index, 10, { abMindestens: 1 });
+
+  assert.equal(streng.vorschlag.length, 2);
+  assert.ok(weich.vorschlag.length > streng.vorschlag.length,
+    'bei Schwelle 1 kommen die Einzelgaenger mit');
+
+  // GEGENPROBE: Genau die Einmaligen sind es, die dazukommen — dieselbe
+  // Schwelle wie bei den Creator-Favoriten (Punkt 02).
+  const nurBeiWeich = weich.vorschlag.filter(
+    (x) => !streng.vorschlag.some((y) => y.tag === x.tag));
+  assert.ok(nurBeiWeich.every((x) => x.clips === 1));
+});
+
+test('derselbe Tag im selben Clip zaehlt einmal', () => {
+  const v = hashtagVorschlag(tagIndex([
+    'Wasserspender #wasserspender #wasserspender #wasserspender',
+    'Noch einer #wasserspender',
+  ]), 10);
+  assert.equal(v.vorschlag[0].clips, 2, 'zwei Clips, nicht vier Nennungen');
+
+  // GEGENPROBE: Wer denselben Tag dreimal schreibt, hat ihn nicht dreimal
+  // belegt — sonst gewinnt der Clip mit der laengsten Tag-Wolke.
+  assert.notEqual(v.vorschlag[0].clips, 4);
+});
+
+test('Likes zaehlen je Clip, nicht in Summe', () => {
+  // "selten" steht unter EINEM sehr erfolgreichen Clip, "oft" unter dreien
+  // mit wenig. In der Summe gewinnt "oft" — je Clip gerechnet "selten".
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, titel: 'a #oft #selten', likes: 9000 },
+    { produkt_id: 10, titel: 'b #oft', likes: 100 },
+    { produkt_id: 10, titel: 'c #oft', likes: 100 },
+    { produkt_id: 10, titel: 'd #selten', likes: 9000 },
+  ] };
+  const v = hashtagVorschlag(index, 10);
+  const oft = v.vorschlag.find((x) => x.tag === 'oft');
+  const selten = v.vorschlag.find((x) => x.tag === 'selten');
+
+  assert.equal(oft.likes_schnitt, Math.round(9200 / 3));
+  assert.equal(selten.likes_schnitt, 9000);
+  assert.ok(selten.likes_schnitt > oft.likes_schnitt);
+
+  // GEGENPROBE: In der Summe waere es andersherum — und dann gewinnt der Tag,
+  // der unter den MEISTEN Clips steht, statt der unter den besten.
+  assert.ok(9200 > 9000, 'die Summe spricht fuer "oft"');
+  assert.equal(v.vorschlag[0].tag, 'oft', 'sortiert wird trotzdem nach Clips zuerst');
+});
+
+test('nur das eigene Produkt zaehlt', () => {
+  const index = { version: 1, eintraege: [
+    { produkt_id: 10, titel: 'a #wasserspender' },
+    { produkt_id: 10, titel: 'b #wasserspender' },
+    { produkt_id: 11, titel: 'c #mixer' },
+    { produkt_id: 11, titel: 'd #mixer' },
+  ] };
+  assert.deepEqual(hashtagVorschlag(index, 10).vorschlag.map((x) => x.tag), ['wasserspender']);
+  assert.deepEqual(hashtagVorschlag(index, 11).vorschlag.map((x) => x.tag), ['mixer']);
+
+  // GEGENPROBE: Ueber alle Produkte gezaehlt stuenden beide unter jedem —
+  // und die Hashtags eines Mixers unter einem Wasserspender sind schlechter
+  // als gar keine.
+  assert.equal(hashtagVorschlag(index, 10).clips, 2);
+});
+
+test('gemessen werden Laengen, nicht Formulierungen', () => {
+  // ABGESCHRIEBEN WIRD NICHT. Zurueck kommen Zahlen, an denen man die eigene
+  // Unterschrift ausrichten kann — keine fremden Saetze.
+  const mass = unterschriftMass(tagIndex(ECHTE_MIT_TAGS), 10);
+  assert.equal(mass.clips, 6);
+  assert.ok(mass.zeichen_mittel > 40 && mass.zeichen_mittel < 100);
+  assert.ok(mass.zeichen_kuerzeste <= mass.zeichen_mittel);
+  assert.ok(mass.zeichen_laengste >= mass.zeichen_mittel);
+  assert.equal(mass.tags_mittel, 2);
+
+  // GEGENPROBE: Kein Feld traegt einen fremden Text. Das ist der Punkt —
+  // eine fremde Unterschrift woertlich zu uebernehmen ist derselbe Fehlertyp
+  // wie fremdes Bildmaterial ungeprueft zu verwenden.
+  for (const wert of Object.values(mass)) {
+    assert.equal(typeof wert === 'number' || wert === null, true);
+  }
+});
+
+test('ohne Material gibt es keinen Vorschlag, statt einen erfundenen', () => {
+  const leer = { version: 1, eintraege: [] };
+  assert.deepEqual(hashtagVorschlag(leer, 10).vorschlag, []);
+  assert.equal(unterschriftMass(leer, 10).zeichen_mittel, null);
+
+  // GEGENPROBE: Mit Material kommt sehr wohl etwas.
+  assert.ok(hashtagVorschlag(tagIndex(ECHTE_MIT_TAGS), 10).vorschlag.length > 0);
+});
+
+// ── Rueckrufweg (Punkt 69) ───────────────────────────────────────────
+//
+// Ein Weg, den niemand gegangen ist, ist eine Behauptung. Diese Tests gehen
+// ihn: von einer Kennung (Name, Datei, ID, Adresse) zu allen Fassungen.
+
+function rueckrufAufbau(ordner, { sha = 'a'.repeat(64) } = {}) {
+  const schnitt = path.join(ordner, 'geschnitten');
+  fs.mkdirSync(schnitt, { recursive: true });
+  const schreib = (name, vorschau) => fs.writeFileSync(
+    path.join(schnitt, `${name}.fassung.json`),
+    JSON.stringify({
+      video: name, gebaut_am: '2026-08-15T09:00:00', produkt_id: 10, vorschau,
+      quellen: [{ datei: '07_wasserspender_14s_stil-b.mp4', sha256: sha }],
+    }), 'utf8');
+  schreib('fassung4.mp4', false);
+  schreib('vorschau.mp4', true);
+  // Eine Fassung aus ANDEREM Material — sie darf nicht mitkommen.
+  fs.writeFileSync(path.join(schnitt, 'fremd.mp4.fassung.json'), JSON.stringify({
+    video: 'fremd.mp4', produkt_id: 11, vorschau: false,
+    quellen: [{ datei: 'ganz_anderer_clip.mp4', sha256: 'b'.repeat(64) }],
+  }), 'utf8');
+  return schnitt;
+}
+
+function rueckrufIndex(sha = 'a'.repeat(64)) {
+  const e = {
+    produkt_id: 10, datei: '07_wasserspender_14s_stil-b.mp4', sha256: sha,
+    video_id: '7300000000000000007', creator: 'buerokram',
+    quelle_url: 'https://www.tiktok.com/@buerokram/video/7300000000000000007',
+    zustand: 'verwendet',
+  };
+  setzeRechte(e, { art: 'einwilligung', datum: '2026-08-02T10:00:00Z',
+                   beleg: 'dm.png', zwecke: ['organisch'] });
+  return { version: 1, eintraege: [e] };
+}
+
+test('vier Kennungen fuehren zum selben Clip', () => {
+  // Wer anruft, nennt selten die Pruefsumme — er nennt "mein Video" oder
+  // seinen Namen. Also nimmt der Weg alles vier an.
+  const ordner = tempOrdner();
+  const schnitt = rueckrufAufbau(ordner);
+  const index = rueckrufIndex();
+
+  for (const kennung of [
+    'buerokram',
+    '@buerokram',
+    '07_wasserspender_14s_stil-b.mp4',
+    '7300000000000000007',
+    'https://www.tiktok.com/@buerokram/video/7300000000000000007',
+  ]) {
+    const e = rueckruf(index, kennung, { fassungsOrdner: schnitt });
+    assert.equal(e.ok, true, `"${kennung}" haette treffen muessen`);
+    assert.equal(e.clips.length, 1);
+  }
+
+  // GEGENPROBE: Was nicht im Index steht, findet nichts — mit einem Hinweis,
+  // was man stattdessen probieren kann.
+  const nichts = rueckruf(index, 'jemand-anderes', { fassungsOrdner: schnitt });
+  assert.equal(nichts.ok, false);
+  assert.match(nichts.grund, /Dateiname, Video-ID, Adresse oder Creator-Name/);
+});
+
+test('Vorschauen werden getrennt gezaehlt', () => {
+  const ordner = tempOrdner();
+  const schnitt = rueckrufAufbau(ordner);
+  const e = rueckruf(rueckrufIndex(), 'buerokram', { fassungsOrdner: schnitt });
+
+  assert.equal(e.fassungen_gesamt, 2);
+  assert.equal(e.fassungen_echt, 1, 'die Vorschau war nie veroeffentlicht');
+  assert.equal(e.begleitdateien_gelesen, 3);
+
+  // GEGENPROBE: Eine Vorschau hat die falsche Aufloesung und faellt durch die
+  // Ausgangspruefung (Punkt 51) — sie mitzuzaehlen wuerde bei einem Rueckruf
+  // nur beunruhigen.
+  const fassungen = e.clips[0].fassungen;
+  assert.equal(fassungen.filter((f) => f.vorschau).length, 1);
+  assert.equal(fassungen.find((f) => f.vorschau).video, 'vorschau.mp4');
+});
+
+test('die Pruefsumme schlaegt den Dateinamen', () => {
+  const ordner = tempOrdner();
+  const sha = 'c'.repeat(64);
+  const schnitt = path.join(ordner, 'geschnitten');
+  fs.mkdirSync(schnitt, { recursive: true });
+  // Die Begleitdatei nennt einen ANDEREN Dateinamen, aber dieselbe Pruefsumme
+  // — genau der Fall nach einem Umbenennen.
+  fs.writeFileSync(path.join(schnitt, 'x.mp4.fassung.json'), JSON.stringify({
+    video: 'x.mp4', vorschau: false,
+    quellen: [{ datei: 'alter_name.mp4', sha256: sha }],
+  }), 'utf8');
+
+  const gefunden = fassungenMitClip(begleitdateien(schnitt),
+    { datei: 'neuer_name.mp4', sha256: sha });
+  assert.equal(gefunden.length, 1, 'ein umbenannter Clip bleibt derselbe Clip');
+
+  // GEGENPROBE: Ohne Pruefsumme und mit falschem Namen findet es nichts —
+  // die Uebereinstimmung kommt wirklich aus dem sha256.
+  assert.deepEqual(fassungenMitClip(begleitdateien(schnitt),
+    { datei: 'neuer_name.mp4' }), []);
+});
+
+test('ein Clip ohne Fassung meldet das, statt zu schweigen', () => {
+  const ordner = tempOrdner();
+  fs.mkdirSync(path.join(ordner, 'geschnitten'), { recursive: true });
+  const e = rueckruf(rueckrufIndex(), 'buerokram',
+    { fassungsOrdner: path.join(ordner, 'geschnitten') });
+
+  assert.equal(e.ok, true);
+  assert.equal(e.fassungen_gesamt, 0);
+  assert.deepEqual(e.clips[0].fassungen, []);
+  // Die Rechtelage steht trotzdem da — sie ist beim Rueckruf das Wichtigste.
+  assert.equal(e.clips[0].rechte.art, 'einwilligung');
+});
+
+test('eine kaputte Begleitdatei bricht die Suche nicht ab', () => {
+  const ordner = tempOrdner();
+  const schnitt = rueckrufAufbau(ordner);
+  fs.writeFileSync(path.join(schnitt, 'kaputt.mp4.fassung.json'), '{kein json');
+
+  const e = rueckruf(rueckrufIndex(), 'buerokram', { fassungsOrdner: schnitt });
+  assert.equal(e.ok, true);
+  assert.equal(e.fassungen_echt, 1, 'die heilen Dateien werden weiter gelesen');
+
+  // GEGENPROBE: Bei einem Rueckruf zaehlt die Reaktionszeit. Ein Abbruch wegen
+  // einer kaputten Datei waere genau dann am teuersten.
+  assert.doesNotThrow(() => rueckruf(rueckrufIndex(), 'buerokram',
+    { fassungsOrdner: schnitt }));
+  assert.equal(begleitdateien(path.join(ordner, 'gibt-es-nicht')).length, 0);
+});
+
+test('nach dem Widerruf steht es in der Akte', () => {
+  // Schritt 2 der Handlungsanweisung, einmal wirklich gegangen.
+  const index = rueckrufIndex();
+  const clip = index.eintraege[0];
+  assert.equal(darfVeroeffentlicht(clip, { zweck: 'organisch' }).ok, true);
+
+  widerrufeRechte(clip, { jetzt: new Date('2026-09-23T10:00:00Z') });
+  const nachher = rueckruf(index, 'buerokram', {});
+  assert.equal(nachher.clips[0].rechte.widerrufen_am, '2026-09-23T10:00:00.000Z');
+  assert.equal(darfVeroeffentlicht(clip).ok, false);
+
+  // GEGENPROBE: Die Akte bleibt LESBAR. Ein geloeschter Eintrag waere das
+  // Gegenteil eines Nachweises — man koennte dann nicht mehr zeigen, dass je
+  // eine Erlaubnis vorlag.
+  assert.equal(clip.rechte.art, 'einwilligung');
+  assert.equal(clip.rechte.beleg, 'dm.png');
 });

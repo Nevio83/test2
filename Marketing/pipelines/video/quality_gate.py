@@ -45,6 +45,8 @@ class Pruefergebnis:
     # bekommt sie nicht zu sehen, und genau dafuer sind sie da.
     schwarzer_anfang: bool | None = None
     untertitel_hell: float | None = None
+    # Punkt 31: Welche Textbereiche in eine Sperrzone der Plattform ragen.
+    sperrzonen: list[str] = field(default_factory=list)
 
     def als_text(self) -> str:
         return " | ".join(self.gruende) if self.gruende else "ok"
@@ -171,8 +173,27 @@ def pruefe(pfad: str | Path, *, erwartete_dauer: float | None = None) -> Pruefer
                   f"({untertitel_hell:.0f}/255) — weisser Text koennte untergehen. "
                   f"Vermerkt, nicht abgewiesen.")
 
+    # ── Sperrzonen der Plattform (Punkt 31) ──────────────────────────
+    #
+    # Es zaehlt die AUSSPIELUNG, nicht die Quelle. Ob ein Textkasten unter
+    # TikToks Bedienelementen verschwindet, sah man bisher erst in der App.
+    #
+    # Geprueft werden die RAENDER, mit denen die ASS-Stile arbeiten, nicht das
+    # fertige Bild: Der Fehler entsteht beim Setzen, und dort laesst er sich
+    # benennen statt nur zeigen. Deshalb haengt das Ergebnis auch nicht an
+    # dieser einen Datei — es gilt fuer jeden Clip mit demselben Stil.
+    #
+    # HINWEIS, KEINE SPERRE: Die Zonen sind Schaetzungen der Plattform, keine
+    # Messungen. Eine Sperre auf einer Schaetzung wuerde Clips abweisen, die
+    # in der App gut aussehen.
+    zonen = common.textzonen_verletzung(breite=info.breite or 1080,
+                                        hoehe=info.hoehe or 1920)
+    for hinweis in zonen:
+        print(f"[quality_gate] {p.name}: {hinweis}")
+
     return Pruefergebnis(not gruende, gruende, info, lufs,
-                         schwarzer_anfang=schwarz, untertitel_hell=untertitel_hell)
+                         schwarzer_anfang=schwarz, untertitel_hell=untertitel_hell,
+                         sperrzonen=zonen)
 
 
 def haltefest(video_id: int, ergebnis: Pruefergebnis) -> None:

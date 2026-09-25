@@ -97,6 +97,205 @@ SAFE_UNTEN = 420
 SAFE_SEITE = 80
 
 
+# ── Sperrzonen der Plattform (Punkt 31) ──────────────────────────────
+#
+# Die SAFE_*-Werte oben sagen, wo der Text GESETZT wird. Sie sagen nicht, wo
+# TikTok seine eigenen Bedienelemente darueberlegt — rechts die Symbolspalte,
+# unten Name und Unterschrift, oben die Suche. Ob ein Textkasten darunter
+# verschwindet, sah man bisher erst in der App.
+#
+# DIE ZAHLEN SIND SCHAETZUNGEN DER PLATTFORM, KEINE MESSUNGEN AN UNSEREM BILD.
+# Das ist ein Unterschied, der hier hingehoert: TikTok veroeffentlicht keine
+# Masse, und die Bedienelemente wandern zwischen App-Versionen. Deshalb stehen
+# sie in der Konfiguration und nicht im Quelltext — wer sie nachmisst, traegt
+# sie dort ein, ohne Code anzufassen.
+#
+# Es zaehlt die AUSSPIELUNG, nicht die Quelle — dieselbe Ueberlegung wie bei
+# den Bildern im Shop.
+
+def sperrzonen(*, breite: int = 1080, hoehe: int = 1920) -> dict[str, int]:
+    """Wieviele Pixel am Rand die Plattform fuer sich beansprucht."""
+    from ..orchestrator import guardrails
+    return {
+        "unten": int(guardrails.wert("video.sperrzone_unten", 320)),
+        "rechts": int(guardrails.wert("video.sperrzone_rechts", 160)),
+        "oben": int(guardrails.wert("video.sperrzone_oben", 120)),
+    }
+
+
+def textzonen_verletzung(*, breite: int = 1080, hoehe: int = 1920) -> list[str]:
+    """Ragt ein gesetzter Textbereich in eine Sperrzone? Leer heisst: nein.
+
+    Geprueft werden die Raender, mit denen die ASS-Stile arbeiten — nicht das
+    fertige Bild. Das ist Absicht: Der Fehler entsteht beim SETZEN, und dort
+    laesst er sich benennen ("Untertitel 40 px zu tief") statt nur zeigen.
+    """
+    zone = sperrzonen(breite=breite, hoehe=hoehe)
+    probleme: list[str] = []
+
+    # Untertitel: MarginV zaehlt vom unteren Rand nach oben.
+    if SAFE_UNTEN < zone["unten"]:
+        probleme.append(
+            f"Untertitel sitzt {zone['unten'] - SAFE_UNTEN} px zu tief "
+            f"(Rand {SAFE_UNTEN}, Sperrzone unten {zone['unten']})"
+        )
+    # Hook: MarginV zaehlt bei Alignment 8 vom oberen Rand nach unten.
+    if SAFE_OBEN < zone["oben"]:
+        probleme.append(
+            f"Hook sitzt {zone['oben'] - SAFE_OBEN} px zu hoch "
+            f"(Rand {SAFE_OBEN}, Sperrzone oben {zone['oben']})"
+        )
+    # Seitenrand gegen die Symbolspalte rechts.
+    #
+    # NACHGEMESSEN, WEIL EINE WARNUNG AUF VERDACHT NICHTS WERT IST.
+    # Weisser Text auf schwarzem Bild, gerendert und die rechten 160 Pixel
+    # abgetastet:
+    #
+    #     Zeile mit 20 Zeichen (MAX_ZEICHEN_JE_ZEILE)  YMAX 235  -> Text da
+    #     kurze Zeile ("Kurz")                         YMAX  16  -> nichts
+    #
+    # Bei voller Zeilenlaenge laeuft der Text also wirklich unter die
+    # Symbolspalte. Kurze Zeilen nicht — ASS zentriert sie. Die Meldung sagt
+    # das so, statt pauschal "Text ragt hinein" zu behaupten.
+    if SAFE_SEITE < zone["rechts"]:
+        probleme.append(
+            f"eine volle Zeile ({MAX_ZEICHEN_JE_ZEILE} Zeichen) laeuft "
+            f"{zone['rechts'] - SAFE_SEITE} px unter die Symbolspalte "
+            f"(Rand {SAFE_SEITE}, Sperrzone rechts {zone['rechts']}) — "
+            f"kurze Zeilen bleiben davor"
+        )
+    return probleme
+
+
+def zonenbild(quelle: Path, ziel: Path, *, zeitpunkt: float = 1.0) -> Path | None:
+    """Ein Standbild mit eingezeichneten Sperrzonen — zum Gegensehen.
+
+    Ein Bild, das man ansieht, ueberzeugt bei so etwas mehr als drei Zahlen.
+    None, wenn ffmpeg nicht kann — das ist kein Grund, einen Lauf zu faerben.
+    """
+    zone = sperrzonen()
+    # Halbdurchsichtige Kaesten ueber die drei Bereiche.
+    kaesten = [
+        f"drawbox=x=0:y=ih-{zone['unten']}:w=iw:h={zone['unten']}:color=red@0.35:t=fill",
+        f"drawbox=x=iw-{zone['rechts']}:y=0:w={zone['rechts']}:h=ih:color=red@0.35:t=fill",
+        f"drawbox=x=0:y=0:w=iw:h={zone['oben']}:color=red@0.35:t=fill",
+    ]
+    # -ss NUR BEI BEWEGTBILD.
+    #
+    # Beim Testlauf auf ein Standbild suchte -ss 1.0 hinter das Bildende:
+    # ffmpeg meldete Ruecklaufwert 0 und schrieb KEINE Datei ("Output file is
+    # empty, nothing was encoded"). Die Funktion gab trotzdem einen Pfad
+    # zurueck — genau der 0-Byte-Fehler aus quality_gate.py, eine Etage tiefer.
+    argumente: list[str] = []
+    if quelle.suffix.lower() not in (".png", ".jpg", ".jpeg", ".webp"):
+        argumente += ["-ss", f"{max(0.0, zeitpunkt):.2f}"]
+    argumente += ["-i", str(quelle), "-vf", ",".join(kaesten), "-frames:v", "1", str(ziel)]
+
+    try:
+        lauf(argumente)
+    except (RuntimeError, OSError) as fehler:
+        print(f"[common] Zonenbild nicht erzeugt ({fehler})")
+        return None
+    # DIE DATEI PRUEFEN, NICHT DEN RUECKLAUFWERT. Derselbe Grundsatz wie in
+    # der Ausgangspruefung: Ein Werkzeug kann "fertig" melden und nichts
+    # erzeugt haben.
+    if not ziel.exists() or ziel.stat().st_size == 0:
+        print("[common] Zonenbild blieb leer — Quelle oder Zeitpunkt pruefen")
+        return None
+    return ziel
+
+
+# ── Schriftbild (Punkt 42) ───────────────────────────────────────────
+#
+# Der fertige Clip hat eine eingebrannte Bildunterschrift. Beim zweiten Clip
+# wird Schriftart, Groesse und Position neu entschieden — und schon sehen die
+# beiden aus wie von zwei verschiedenen Absendern. Der Shop hat ein Design; die
+# Videos hatten bisher keins, sondern fuenf ASS-Zeilen mit rohen Farbwerten an
+# zwei Stellen im Quelltext.
+#
+# WAS GEMESSEN WURDE, BEVOR HIER ETWAS STAND
+# Der Preis im Video war &H0000E5FF — in ASS-Schreibweise (AABBGGRR) ist das
+# RGB(255, 229, 0), also GELB. Der Akzent des Shops ist laut styles.css
+# --orange-primary: #ff8c00, also ORANGE. Clip und Zielseite hatten schlicht
+# verschiedene Farben; gemerkt hat das niemand, weil die Zahl nirgends als
+# Farbe lesbar war.
+#
+# EINE STELLE, EINE FARBE. Die Marke steht als Hex in der Konfiguration, wo
+# man sie sieht und aendern kann. Alles andere leitet sich daraus ab.
+
+def hex_zu_ass(hexfarbe: str, *, alpha: int = 0) -> str:
+    """#rrggbb -> &HAABBGGRR. ASS dreht die Kanaele um; genau daran scheitert
+    jeder, der eine Farbe von Hand eintraegt.
+
+    @param alpha  0 = deckend, 255 = unsichtbar. In ASS ist es die
+        DURCHSICHTIGKEIT, nicht die Deckkraft — auch das andersherum als
+        ueberall sonst.
+    """
+    roh = str(hexfarbe or "").strip().lstrip("#")
+    if len(roh) == 3:
+        roh = "".join(z * 2 for z in roh)
+    # GEPRUEFT WIRD DER INHALT, NICHT NUR DIE LAENGE. Der erste Entwurf zaehlte
+    # nur die Zeichen — und "orange" hat sechs davon. Daraus waere ein
+    # &H00EGNARO geworden: kein Fehler, kein Absturz, nur eine Farbe, die
+    # ffmpeg still ignoriert. Gefunden hat das der Test, nicht das Nachdenken.
+    if len(roh) != 6 or any(z not in "0123456789abcdefABCDEF" for z in roh):
+        raise ValueError(f"Farbe muss #rrggbb sein, nicht {hexfarbe!r}")
+    rr, gg, bb = roh[0:2], roh[2:4], roh[4:6]
+    a = max(0, min(255, int(alpha)))
+    return f"&H{a:02X}{bb}{gg}{rr}".upper()
+
+
+def markenfarbe() -> str:
+    """Der Akzent aus dem Shop-Design. Eine Stelle, nicht fuenf."""
+    from ..orchestrator import guardrails
+    return str(guardrails.wert("video.markenfarbe", "#ff8c00"))
+
+
+# Schriftgroessen als ANTEIL der Bildhoehe, nicht als feste Pixelzahl.
+#
+# Die alten Werte (64, 76, 58, 44) galten stillschweigend fuer 1920 Pixel Hoehe.
+# Wer je in einem anderen Format rendert — und die Vorschau aus Punkt 51 tut
+# genau das —, bekommt mit festen Zahlen ein anderes Schriftbild. Als Anteil
+# gerechnet bleibt es dasselbe Bild in jeder Groesse.
+# Die drei Farben, die in jedem Stil vorkommen. Als Name statt als Zahlenfolge:
+# "&H00FFFFFF" muss man uebersetzen, "WEISS" nicht.
+# ── Werbekennzeichnung (Punkt 67) ────────────────────────────────────
+#
+# compliance.py prueft TEXTE gegen compliance_rules.json und sperrt im Zweifel.
+# Im BILD gab es die Kennzeichnung nicht: Die Endkarte trug Name, Preis und
+# Adresse — "Werbung" war kein fester Bestandteil der Vorlage.
+#
+# EIN BEITRAG, DER EIGENE PRODUKTE BEWIRBT, IST WERBUNG — auch auf dem eigenen
+# Kanal. Wird das je Beitrag von Hand gesetzt, fehlt es irgendwann. Deshalb
+# steht es hier als Konstante und nicht als Feld: Es gibt keinen Schalter, der
+# es abstellt, und keinen Aufrufer, der es vergessen kann.
+#
+# Die Zeile steht OBEN (Alignment 8), nicht unten bei Preis und Adresse:
+# Dort liegen die Bedienelemente der Plattform, und eine Kennzeichnung, die
+# hinter dem Namen des Kontos verschwindet, ist keine.
+KENNZEICHNUNG = "Werbung"
+
+WEISS = "&H00FFFFFF"
+SCHWARZ = "&H00000000"
+# Halbdurchsichtiger Kasten hinter dem Text der Endkarte. Er ist der Grund,
+# warum die Lesbarkeitspruefung (Punkt 43) eine hohe Grenze haben darf.
+KASTEN = "&HA0000000"
+
+SCHRIFT_ANTEILE = {
+    "standard": 64 / 1920,
+    "hook": 76 / 1920,
+    "name": 58 / 1920,
+    "preis": 64 / 1920,
+    "hinweis": 44 / 1920,
+}
+
+
+def schriftgroesse(rolle: str, *, hoehe: int = 1920) -> int:
+    """Groesse in Pixeln fuer diese Bildhoehe. Nie kleiner als 20."""
+    anteil = SCHRIFT_ANTEILE.get(rolle, SCHRIFT_ANTEILE["standard"])
+    return max(20, round(anteil * max(1, int(hoehe))))
+
+
 class KeinFfmpeg(RuntimeError):
     """ffmpeg ist nicht auffindbar."""
 
@@ -358,8 +557,8 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Standard,{schriftname},64,&H00FFFFFF,&H00000000,&H80000000,1,1,4,2,2,{SAFE_SEITE},{SAFE_SEITE},{SAFE_UNTEN},1
-Style: Hook,{schriftname},76,&H00FFFFFF,&H00000000,&H70000000,1,1,6,3,8,60,60,{SAFE_OBEN},1
+Style: Standard,{schriftname},{schriftgroesse("standard")},{WEISS},{SCHWARZ},{hex_zu_ass("#000000", alpha=128)},1,1,4,2,2,{SAFE_SEITE},{SAFE_SEITE},{SAFE_UNTEN},1
+Style: Hook,{schriftname},{schriftgroesse("hook")},{WEISS},{SCHWARZ},{hex_zu_ass("#000000", alpha=112)},1,1,6,3,8,60,60,{SAFE_OBEN},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -491,12 +690,14 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Name,{schriftname},58,&H00FFFFFF,&H00000000,&HA0000000,1,3,10,0,2,{SAFE_SEITE},{SAFE_SEITE},{SAFE_UNTEN + 210},1
-Style: Preis,{schriftname},64,&H0000E5FF,&H00000000,&HA0000000,1,3,10,0,2,{SAFE_SEITE},{SAFE_SEITE},{SAFE_UNTEN + 110},1
-Style: Hinweis,{schriftname},44,&H00FFFFFF,&H00000000,&HA0000000,1,3,8,0,2,{SAFE_SEITE},{SAFE_SEITE},{SAFE_UNTEN + 30},1
+Style: Name,{schriftname},{schriftgroesse("name")},{WEISS},{SCHWARZ},{KASTEN},1,3,10,0,2,{SAFE_SEITE},{SAFE_SEITE},{SAFE_UNTEN + 210},1
+Style: Preis,{schriftname},{schriftgroesse("preis")},{hex_zu_ass(markenfarbe())},{SCHWARZ},{KASTEN},1,3,10,0,2,{SAFE_SEITE},{SAFE_SEITE},{SAFE_UNTEN + 110},1
+Style: Hinweis,{schriftname},{schriftgroesse("hinweis")},{WEISS},{SCHWARZ},{KASTEN},1,3,8,0,2,{SAFE_SEITE},{SAFE_SEITE},{SAFE_UNTEN + 30},1
+Style: Kennzeichnung,{schriftname},{schriftgroesse("hinweis")},{WEISS},{SCHWARZ},{KASTEN},1,3,8,0,8,{SAFE_SEITE},{SAFE_SEITE},{SAFE_OBEN},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:59.00,Kennzeichnung,,0,0,0,,{sicher(KENNZEICHNUNG)}
 Dialogue: 0,0:00:00.00,0:00:59.00,Name,,0,0,0,,{sicher(name)}
 Dialogue: 0,0:00:00.00,0:00:59.00,Preis,,0,0,0,,{sicher(preistext)}
 Dialogue: 0,0:00:00.00,0:00:59.00,Hinweis,,0,0,0,,{sicher(hinweis)}

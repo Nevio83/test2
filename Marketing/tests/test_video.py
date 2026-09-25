@@ -614,3 +614,172 @@ def test_nicht_messbare_dateien_geben_none(tmp_path):
     # das als True gelesen wird, meldet bei jeder unlesbaren Datei einen
     # schwarzen Anfang — und nach der dritten Fehlmeldung liest niemand mehr.
     assert common.erstes_bild_schwarz(kaputt) is not True
+
+
+# ── Schriftbild aus einer Quelle (Punkt 42) ──────────────────────────
+#
+# Fuenf ASS-Zeilen mit rohen Farbwerten an zwei Stellen im Quelltext sind kein
+# Design. Und eine Zahl wie &H0000E5FF liest niemand als Farbe.
+
+def test_ass_dreht_die_farbkanaele_um():
+    """Genau daran scheitert jeder, der eine Farbe von Hand eintraegt."""
+    assert common.hex_zu_ass("#ff8c00") == "&H00008CFF"
+    assert common.hex_zu_ass("#ffffff") == "&H00FFFFFF"
+    assert common.hex_zu_ass("#000000") == "&H00000000"
+    # Kurzform wird aufgefuellt.
+    assert common.hex_zu_ass("#fff") == common.hex_zu_ass("#ffffff")
+    # Alpha ist die DURCHSICHTIGKEIT, nicht die Deckkraft — auch das
+    # andersherum als ueberall sonst.
+    assert common.hex_zu_ass("#000000", alpha=128) == "&H80000000"
+
+    # GEGENPROBE: Ohne die Umkehrung waere aus #ff8c00 ein &H00FF8C00 geworden
+    # — in ASS gelesen ein Blauton statt Orange.
+    assert common.hex_zu_ass("#ff8c00") != "&H00FF8C00"
+    with pytest.raises(ValueError):
+        common.hex_zu_ass("orange")
+
+
+def test_die_schriftgroessen_bleiben_wie_sie_waren():
+    """Umgestellt auf Anteile — bei 1920 Pixeln muss dasselbe herauskommen."""
+    assert common.schriftgroesse("standard") == 64
+    assert common.schriftgroesse("hook") == 76
+    assert common.schriftgroesse("name") == 58
+    assert common.schriftgroesse("preis") == 64
+    assert common.schriftgroesse("hinweis") == 44
+
+    # Bei halber Bildhoehe halbe Groesse — das ist der Sinn der Umstellung.
+    assert common.schriftgroesse("standard", hoehe=960) == 32
+
+    # GEGENPROBE: Nie kleiner als lesbar. Eine Vorschau in 240p soll nicht
+    # 8-Pixel-Schrift bekommen.
+    assert common.schriftgroesse("hinweis", hoehe=100) == 20
+
+
+def test_der_preis_traegt_die_farbe_des_shops(tmp_path):
+    """Gemessen: Er trug vorher Gelb, der Shop ist Orange."""
+    ass = common._endkarten_text(tmp_path / "e.ass", name="Wasserspender",
+                                 preistext="24,99 EUR", hinweis="maios.de")
+    text = ass.read_text(encoding="utf-8")
+    preis = [z for z in text.splitlines() if z.startswith("Style: Preis")][0]
+
+    assert common.hex_zu_ass(common.markenfarbe()) in preis
+    assert common.markenfarbe() == "#ff8c00"
+
+    # GEGENPROBE: Der alte Wert steht nicht mehr drin. &H0000E5FF ist
+    # RGB(255, 229, 0) — Gelb, nicht das Orange des Shops.
+    assert "&H0000E5FF" not in preis
+    # Und die anderen Zeilen bleiben weiss — nur der Preis ist farbig.
+    for rolle in ("Name", "Hinweis"):
+        zeile = [z for z in text.splitlines() if z.startswith(f"Style: {rolle}")][0]
+        assert common.WEISS in zeile
+
+
+def test_der_untertitelstil_bleibt_bitgleich(tmp_path):
+    """Die Umstellung auf eine Quelle darf das Aussehen NICHT aendern."""
+    ass = common.schreibe_untertitel(
+        [{"von": 0, "bis": 2, "text": "Hallo"}], tmp_path / "u.ass", hook="Hook")
+    zeilen = ass.read_text(encoding="utf-8").splitlines()
+    standard = [z for z in zeilen if z.startswith("Style: Standard")][0]
+    hook = [z for z in zeilen if z.startswith("Style: Hook")][0]
+
+    # Exakt die Werte, die vor der Umstellung fest im Quelltext standen.
+    assert standard.endswith(f",1,1,4,2,2,{common.SAFE_SEITE},{common.SAFE_SEITE},"
+                             f"{common.SAFE_UNTEN},1")
+    assert ",64," in standard and common.WEISS in standard
+    assert ",76," in hook and "&H70000000" in hook
+
+    # GEGENPROBE: Aendert man die Markenfarbe, aendert sich der Untertitel
+    # NICHT — er ist weiss und bleibt es. Nur der Preis haengt an der Marke.
+    assert common.hex_zu_ass("#ff8c00") not in standard
+
+
+# ── Werbekennzeichnung im Bild (Punkt 67) ────────────────────────────
+
+def test_die_endkarte_traegt_immer_werbung(tmp_path):
+    """Ein Beitrag, der eigene Produkte bewirbt, ist Werbung — auch auf dem
+    eigenen Kanal."""
+    ass = common._endkarten_text(tmp_path / "e.ass", name="Wasserspender",
+                                 preistext="24,99 EUR", hinweis="maios.de")
+    text = ass.read_text(encoding="utf-8")
+
+    assert "Style: Kennzeichnung" in text
+    zeile = [z for z in text.splitlines()
+             if z.startswith("Dialogue") and "Kennzeichnung" in z][0]
+    assert common.KENNZEICHNUNG in zeile
+
+    # SIE STEHT OBEN (Alignment 8), nicht unten bei Preis und Adresse: Dort
+    # liegen die Bedienelemente der Plattform, und eine Kennzeichnung, die
+    # hinter dem Kontonamen verschwindet, ist keine.
+    stil = [z for z in text.splitlines() if z.startswith("Style: Kennzeichnung")][0]
+    assert stil.split(",")[10] == "8", "Alignment 8 = oben"
+
+    # GEGENPROBE: Es gibt KEINEN Weg, sie wegzulassen. _endkarten_text nimmt
+    # drei Texte entgegen — keiner davon steuert die Kennzeichnung.
+    import inspect
+    unterschrift = inspect.signature(common._endkarten_text)
+    assert "kennzeichnung" not in str(unterschrift).lower()
+    # Auch mit leeren Texten bleibt sie da.
+    leer = common._endkarten_text(tmp_path / "l.ass", name="", preistext="", hinweis="")
+    assert common.KENNZEICHNUNG in leer.read_text(encoding="utf-8")
+
+
+# ── Sperrzonen der Plattform (Punkt 31) ──────────────────────────────
+
+def test_die_sperrzonen_kommen_aus_der_konfiguration():
+    zone = common.sperrzonen()
+    assert zone == {"unten": 320, "rechts": 160, "oben": 120}
+
+    # GEGENPROBE: Es sind SCHAETZUNGEN der Plattform, keine Messungen an
+    # unserem Bild. Deshalb stehen sie in der Konfiguration — wer nachmisst,
+    # traegt sie dort ein, ohne Code anzufassen.
+    from pipelines.orchestrator import guardrails
+    assert guardrails.wert("video.sperrzone_rechts", None) == 160
+
+
+def test_eine_volle_untertitelzeile_laeuft_unter_die_symbolspalte():
+    """NACHGEMESSEN, nicht vermutet — sonst waere die Warnung nichts wert."""
+    probleme = common.textzonen_verletzung()
+    rechts = [p for p in probleme if "Symbolspalte" in p]
+    assert len(rechts) == 1
+    assert "20 Zeichen" in rechts[0]
+    assert "kurze Zeilen bleiben davor" in rechts[0], \
+        "die Meldung darf nicht pauschal behaupten, jeder Text rage hinein"
+
+    # Die Zahl stimmt: Seitenrand 80, Symbolspalte 160, also 80 px Ueberlappung.
+    assert common.SAFE_SEITE == 80
+    assert common.sperrzonen()["rechts"] == 160
+    assert "80 px" in rechts[0]
+
+    # GEGENPROBE: Unten und oben ist alles in Ordnung — die Pruefung meldet
+    # nicht einfach alles.
+    assert not [p for p in probleme if "Untertitel sitzt" in p]
+    assert not [p for p in probleme if "Hook sitzt" in p]
+
+
+@hat_ffmpeg
+def test_der_text_erreicht_die_symbolspalte_wirklich(tmp_path):
+    """Die Messung, auf der die Warnung beruht — hier nachgestellt.
+
+    Weisser Text auf schwarzem Bild, dann die rechten 160 Pixel abtasten.
+    Eine volle Zeile leuchtet dort, eine kurze nicht.
+    """
+    schwarz = tmp_path / "sw.png"
+    common.lauf(["-f", "lavfi", "-i", "color=c=black:s=1080x1920:d=1",
+                 "-frames:v", "1", str(schwarz)])
+
+    def hell_rechts(text: str) -> float:
+        ass = common.schreibe_untertitel([{"von": 0, "bis": 2, "text": text}],
+                                         tmp_path / "m.ass")
+        ziel = tmp_path / "m.png"
+        common.lauf(["-i", str(schwarz),
+                     "-vf", f"subtitles='{common._ass_pfad(ass)}'",
+                     "-frames:v", "1", "-y", str(ziel)])
+        zone = common.sperrzonen()["rechts"]
+        return common.helligkeit(ziel, ausschnitt=(zone, 1920, 1080 - zone, 0)) or 0.0
+
+    voll = hell_rechts("M" * common.MAX_ZEICHEN_JE_ZEILE)
+    kurz = hell_rechts("Kurz")
+
+    assert voll > kurz, "die volle Zeile reicht weiter nach rechts"
+    assert voll > 16.5, "in der Symbolspalte steht Text (Schwarz waere 16)"
+    assert kurz < 17.0, "die kurze Zeile bleibt davor"

@@ -1539,6 +1539,222 @@ function rechteBilanz(index, { zweck = 'organisch', jetzt = new Date() } = {}) {
   };
 }
 
+// ── Rueckrufweg (Punkt 69) ───────────────────────────────────────────
+//
+// Wenn ein Creator seine Erlaubnis zurueckzieht oder eine Beschwerde kommt,
+// zaehlt die Reaktionszeit. Ohne vorbereiteten Weg sucht man dann erst, welche
+// Beitraege das betroffene Material enthalten — und findet es nicht, weil Clip
+// und fertiger Beitrag nur im Kopf verknuepft sind.
+//
+// DIE VERKNUEPFUNG LIEGT SEIT PUNKT 53 AUF DER PLATTE.
+// Jede gebaute Fassung legt eine Begleitdatei daneben ("<name>.mp4.fassung.json")
+// mit allen verwendeten Rohclips, jeder mit sha256. Rueckwaerts gelesen ist das
+// genau die Liste, die hier gebraucht wird — sie musste nur einmal gelesen
+// werden.
+//
+// EIN WEG, DEN NIEMAND GEGANGEN IST, IST EINE BEHAUPTUNG.
+// Deshalb gibt dieser Befehl nicht nur die Fundstellen aus, sondern die
+// Handlungsschritte gleich dazu — in der Reihenfolge, in der sie zaehlen:
+// erst den Beitrag herunternehmen, dann die Akte, dann die Antwort.
+
+/** Alle Begleitdateien unter einem Ordner, rekursiv. */
+function begleitdateien(ordner) {
+  const treffer = [];
+  const gehe = (ort) => {
+    let eintraege;
+    try {
+      eintraege = fs.readdirSync(ort, { withFileTypes: true });
+    } catch {
+      return;                       // unlesbarer Ordner ist kein Abbruchgrund
+    }
+    for (const e of eintraege) {
+      const voll = path.join(ort, e.name);
+      if (e.isDirectory()) gehe(voll);
+      else if (e.name.endsWith('.fassung.json')) treffer.push(voll);
+    }
+  };
+  gehe(ordner);
+  return treffer.sort();
+}
+
+/**
+ * Welche Fassungen enthalten diesen Rohclip?
+ *
+ * Gesucht wird ueber die PRUEFSUMME, wo eine da ist, sonst ueber den
+ * Dateinamen. Die Pruefsumme ist das staerkere Merkmal: Ein umbenannter Clip
+ * bleibt derselbe Clip, und genau darum geht es bei einem Rueckruf.
+ */
+function fassungenMitClip(begleitpfade, { datei = null, sha256 = null } = {}) {
+  const gefunden = [];
+  for (const pfad of begleitpfade) {
+    let inhalt;
+    try {
+      inhalt = JSON.parse(fs.readFileSync(pfad, 'utf8'));
+    } catch {
+      continue;                     // kaputte Begleitdatei ueberspringen
+    }
+    const quellen = [].concat(inhalt.quellen || []);
+    const passt = quellen.some((q) => (
+      (sha256 && q.sha256 && q.sha256 === sha256)
+      || (datei && q.datei === datei)
+    ));
+    if (!passt) continue;
+    gefunden.push({
+      begleitdatei: pfad,
+      video: inhalt.video || path.basename(pfad).replace(/\.fassung\.json$/, ''),
+      gebaut_am: inhalt.gebaut_am || null,
+      produkt_id: inhalt.produkt_id != null ? Number(inhalt.produkt_id) : null,
+      vorschau: !!inhalt.vorschau,
+    });
+  }
+  return gefunden;
+}
+
+/**
+ * Alles, was zu einer Rueckrufanfrage gehoert — in einem Zug.
+ *
+ * @param {string} kennung  Dateiname, Video-ID, Adresse ODER Creator-Name.
+ *   Wer anruft, nennt selten die Prüfsumme; er nennt "mein Video" oder
+ *   seinen Namen. Also nimmt dieser Weg alles vier an.
+ */
+function rueckruf(index, kennung, { fassungsOrdner = null } = {}) {
+  const suche = String(kennung || '').trim();
+  if (!suche) return { ok: false, grund: 'keine Kennung angegeben' };
+
+  const sauber = suche.toLowerCase();
+  const betroffen = (index.eintraege || []).filter((e) => (
+    String(e.datei || '').toLowerCase() === sauber
+    || String(e.video_id || '') === suche
+    || String(e.quelle_url || '').toLowerCase() === sauber
+    || String(e.creator || '').toLowerCase().replace(/^@+/, '') === sauber.replace(/^@+/, '')
+  ));
+
+  if (!betroffen.length) {
+    return { ok: false, grund: `nichts im Index zu "${suche}" — Dateiname, `
+      + 'Video-ID, Adresse oder Creator-Name probieren' };
+  }
+
+  const begleit = fassungsOrdner ? begleitdateien(fassungsOrdner) : [];
+  const clips = betroffen.map((e) => ({
+    datei: e.datei,
+    video_id: e.video_id,
+    creator: e.creator,
+    quelle_url: e.quelle_url,
+    rechte: rechteAkte(e),
+    zustand: zustandVon(e),
+    fassungen: fassungenMitClip(begleit, { datei: e.datei, sha256: e.sha256 }),
+  }));
+
+  const fassungen = clips.flatMap((c) => c.fassungen);
+  const veroeffentlichbar = fassungen.filter((f) => !f.vorschau);
+  return {
+    ok: true,
+    kennung: suche,
+    clips,
+    fassungen_gesamt: fassungen.length,
+    // Vorschauen zaehlen getrennt: Sie sind nie veroeffentlicht worden
+    // (falsche Aufloesung, siehe Punkt 51) und beunruhigen nur.
+    fassungen_echt: veroeffentlichbar.length,
+    begleitdateien_gelesen: begleit.length,
+  };
+}
+
+// ── Hashtags aus dem eigenen Material (Punkt 46) ─────────────────────
+//
+// Fuer jeden geladenen Clip liegt die Unterschrift des ERFOLGREICHEN Originals
+// im Index — samt Like-Zahl. Das ist eine Sammlung dessen, was bei diesem
+// Produkt tatsaechlich funktioniert hat. Die eigene Unterschrift entstand
+// trotzdem jedes Mal aus dem Nichts.
+//
+// DAS SCHLIESST DEN KREIS: Gefunden wird, wo spaeter auch veroeffentlicht wird
+// — dieselben Themenseiten, aus denen der Bot das Material geholt hat.
+//
+// ABGESCHRIEBEN WIRD NICHT.
+// Vorgeschlagen werden nur HASHTAGS, nie ganze Saetze. Eine fremde Unterschrift
+// woertlich zu uebernehmen ist derselbe Fehlertyp wie fremdes Bildmaterial
+// ungeprueft zu verwenden — und bei einem Satz faellt es schneller auf als bei
+// einem Clip. Was aus dem Fliesstext kommt, sind LAENGEN und Muster, keine
+// Formulierungen.
+//
+// REICHWEITEN-TAGS FLIEGEN RAUS. #fyp und #viral stehen unter jedem zweiten
+// Video und sagen ueber das Produkt nichts (siehe inhaltsTags).
+
+/**
+ * Die Hashtags, die bei diesem Produkt wirklich vorkamen — nach Haeufigkeit.
+ *
+ * @param {object} opt.nurAngenommen  nur Clips, die durch die Kette kamen
+ *   (Vorgabe). Ein abgelehnter Clip sagt nichts darueber, was funktioniert.
+ * @param {number} opt.abMindestens   wie oft ein Tag vorkommen muss. Einer
+ *   kann Zufall sein; bei zwei ist es ein Muster — dieselbe Schwelle wie bei
+ *   den Creator-Favoriten (Punkt 02).
+ */
+function hashtagVorschlag(index, produktId, { hoechstens = 12, abMindestens = 2 } = {}) {
+  const zaehler = new Map();
+  const likesJeTag = new Map();
+  let clips = 0;
+
+  for (const e of (index.eintraege || [])) {
+    if (Number(e.produkt_id) !== Number(produktId)) continue;
+    const text = [e.titel, e.unterschrift].filter(Boolean).join(' ');
+    if (!text) continue;
+    clips++;
+    const { hashtags } = trenneUnterschrift(text);
+    // Doppelte im SELBEN Clip zaehlen einmal: Wer denselben Tag dreimal
+    // schreibt, hat ihn nicht dreimal belegt.
+    for (const tag of new Set(inhaltsTags(hashtags).map((t) => normalisiere(t)))) {
+      if (!tag) continue;
+      zaehler.set(tag, (zaehler.get(tag) || 0) + 1);
+      const likes = Number(e.likes) || 0;
+      likesJeTag.set(tag, (likesJeTag.get(tag) || 0) + likes);
+    }
+  }
+
+  const vorschlag = [...zaehler.entries()]
+    .filter(([, anzahl]) => anzahl >= abMindestens)
+    .map(([tag, anzahl]) => ({
+      tag,
+      clips: anzahl,
+      // Likes je Clip, nicht in Summe: Sonst gewinnt der Tag, der unter den
+      // meisten Clips steht, statt der unter den besten.
+      likes_schnitt: Math.round((likesJeTag.get(tag) || 0) / anzahl),
+    }))
+    .sort((a, b) => b.clips - a.clips || b.likes_schnitt - a.likes_schnitt
+                    || a.tag.localeCompare(b.tag))
+    .slice(0, hoechstens);
+
+  return { produkt_id: Number(produktId), clips, vorschlag };
+}
+
+/**
+ * Wie lang sind die Unterschriften, die bei diesem Produkt funktionieren?
+ *
+ * KEINE FORMULIERUNGEN, NUR MASSE. Zurueck kommt, wie lang der Fliesstext war
+ * und wie viele Tags dranhingen — Zahlen, an denen man die eigene Unterschrift
+ * ausrichten kann, ohne eine fremde abzuschreiben.
+ */
+function unterschriftMass(index, produktId) {
+  const laengen = [];
+  const tagzahlen = [];
+  for (const e of (index.eintraege || [])) {
+    if (Number(e.produkt_id) !== Number(produktId)) continue;
+    const text = [e.titel, e.unterschrift].filter(Boolean).join(' ');
+    if (!text) continue;
+    const { fliesstext, hashtags } = trenneUnterschrift(text);
+    if (fliesstext) laengen.push(fliesstext.length);
+    tagzahlen.push(inhaltsTags(hashtags).length);
+  }
+  const mittel = (liste) => (liste.length
+    ? Math.round(liste.reduce((a, b) => a + b, 0) / liste.length)
+    : null);
+  return {
+    clips: laengen.length,
+    zeichen_mittel: mittel(laengen),
+    zeichen_kuerzeste: laengen.length ? Math.min(...laengen) : null,
+    zeichen_laengste: laengen.length ? Math.max(...laengen) : null,
+    tags_mittel: mittel(tagzahlen),
+  };
+}
+
 // ── Anfragen an Creator (Punkt 64) ───────────────────────────────────
 //
 // Eine Einwilligung ist der einzige saubere Weg: Ein fremder Clip in einem
@@ -5181,7 +5397,7 @@ function zahl(roh, standard, untergrenze, obergrenze) {
 function leseArgumente(argv) {
   const opt = { status: false, laden: false, max: null, schwelle: null, hilfe: false,
                 fund: null, schreiben: false, interaktiv: false, aufraeumen: false,
-                ordner: false, anfragen: false, absender: null, sprache: 'de',
+                ordner: false, anfragen: false, rueckruf: null, absender: null, sprache: 'de',
                 zwecke: null, dauer: null, gegenleistung: null, nennung: null,
                 produktNr: null };
   for (let i = 0; i < argv.length; i++) {
@@ -5204,6 +5420,9 @@ function leseArgumente(argv) {
     // Programm ungelesen an einen fremden Menschen schickt, ist genau das, was
     // eine Anfrage unglaubwuerdig macht.
     else if (a === '--anfragen') opt.anfragen = true;
+    // Punkt 69: Rueckwaertssuche. Von einem Rohclip (oder einem Creator) zu
+    // allen Fassungen, die daraus entstanden sind — samt Handlungsanweisung.
+    else if (a === '--rueckruf') opt.rueckruf = argv[++i] || null;
     else if (a === '--absender') opt.absender = argv[++i] || null;
     else if (a === '--produkt') opt.produktNr = argv[++i] || null;
     else if (a === '--dauer') opt.dauer = argv[++i] || null;
@@ -5321,6 +5540,76 @@ function anfragenAusgeben(opt) {
   return 0;
 }
 
+/**
+ * Die Rueckwaertssuche ausgeben — Fundstellen UND was zu tun ist.
+ *
+ * Die Handlungsschritte stehen in der Reihenfolge, in der sie zaehlen: erst
+ * den Beitrag herunternehmen (das sieht die Welt), dann die Akte (das sichert
+ * uns ab), dann die Antwort (das ist Anstand). Ein Weg, den niemand gegangen
+ * ist, ist eine Behauptung — deshalb steht er hier und nicht in einem Handbuch.
+ */
+function rueckrufAusgeben(opt) {
+  const ordner = datenOrdner();
+  let index;
+  try {
+    index = ladeIndex(ordner);
+  } catch (fehler) {
+    console.error(`❌ Index nicht lesbar: ${fehler.message}`);
+    return 1;
+  }
+
+  const fassungsOrdner = path.join(videoOrdnerAus(), GESCHNITTEN);
+  const ergebnis = rueckruf(index, opt.rueckruf, { fassungsOrdner });
+  if (!ergebnis.ok) {
+    console.error(`❌ ${ergebnis.grund}`);
+    return 1;
+  }
+
+  console.log(`── Rueckruf: "${ergebnis.kennung}" ──────────────────────────`);
+  console.log(`${ergebnis.clips.length} Rohclip(s) betroffen · `
+    + `${ergebnis.fassungen_echt} Fassung(en)`
+    + (ergebnis.fassungen_gesamt > ergebnis.fassungen_echt
+      ? ` (+${ergebnis.fassungen_gesamt - ergebnis.fassungen_echt} Vorschauen)` : ''));
+  console.log(`${ergebnis.begleitdateien_gelesen} Begleitdatei(en) durchsucht in ${fassungsOrdner}`);
+
+  for (const c of ergebnis.clips) {
+    console.log('');
+    console.log(`📼 ${c.datei || '(ohne Datei)'}`);
+    console.log(`   Creator:  ${c.creator || '—'}   ${c.quelle_url || ''}`);
+    console.log(`   Rechte:   ${RECHTE_ARTEN[c.rechte.art] || c.rechte.art}`
+      + (c.rechte.widerrufen_am ? `   ⚠️ widerrufen am ${String(c.rechte.widerrufen_am).slice(0, 10)}` : ''));
+    console.log(`   Zustand:  ${c.zustand}`);
+    if (!c.fassungen.length) {
+      console.log('   Fassungen: keine — dieser Clip steckt in keinem gebauten Video.');
+      continue;
+    }
+    for (const f of c.fassungen) {
+      console.log(`   → ${f.video}${f.vorschau ? '  (Vorschau, nie veroeffentlicht)' : ''}`
+        + (f.gebaut_am ? `   ${String(f.gebaut_am).slice(0, 10)}` : ''));
+    }
+  }
+
+  console.log('');
+  console.log('── Was jetzt zu tun ist ──────────────────────────────────────');
+  if (ergebnis.fassungen_echt) {
+    console.log('1. BEITRAG HERUNTERNEHMEN. Zuerst, weil das die Welt sieht.');
+    console.log('   Auf TikTok laesst sich ein Video nicht "kurz zurueckholen" —');
+    console.log('   entfernen geht, ungeschehen machen nicht.');
+  } else {
+    console.log('1. Nichts zu entfernen — aus diesem Material ist kein');
+    console.log('   veroeffentlichungsfaehiges Video entstanden.');
+  }
+  console.log('2. RECHTE WIDERRUFEN. Die Akte bleibt lesbar, sie bekommt nur ein');
+  console.log('   Datum — ein geloeschter Eintrag waere das Gegenteil eines Nachweises.');
+  console.log('3. MATERIAL SPERREN: Zustand auf "verworfen" mit Grund, damit kein');
+  console.log('   naechster Schnitt es wieder aufgreift.');
+  console.log('4. ANTWORTEN. Kurz, ohne Rechtfertigung, mit dem Datum der Entfernung.');
+  console.log('');
+  console.log('Schritt 2 und 3 stehen in der Rechteakte (Punkt 63) —');
+  console.log('setzeRechte/widerrufeRechte und setzeZustand im Index.');
+  return 0;
+}
+
 async function status() {
   const ordner = datenOrdner();
   console.log('── TikTok-Rohmaterial: Zustand ──────────────────────────────');
@@ -5418,6 +5707,37 @@ async function status() {
       console.log('                Umbenannt wird hier NICHTS: Jeder Indexeintrag zeigt auf');
       console.log('                seinen Dateinamen. Das ist ein eigener, bewusster Schritt.');
     }
+
+    // PUNKT 46: Welche Hashtags laufen beim eigenen Material?
+    //
+    // Das schliesst den Kreis: Gefunden wird, wo spaeter auch veroeffentlicht
+    // wird — dieselben Themenseiten, aus denen der Bot das Material geholt
+    // hat. Gezeigt wird das Produkt mit dem meisten Material; fuer die
+    // anderen steht der Befehl daneben.
+    try {
+      const produkteRoh = JSON.parse(fs.readFileSync(path.join(WURZEL, 'products.json'), 'utf8'));
+      const mitMaterial = bestandJeProdukt(index, produkteRoh, { ziel: 1 })
+        .filter((p) => p.vorhanden > 0)
+        .sort((a, b) => b.vorhanden - a.vorhanden)[0];
+      if (mitMaterial) {
+        const tags = hashtagVorschlag(index, mitMaterial.id);
+        const mass = unterschriftMass(index, mitMaterial.id);
+        if (tags.vorschlag.length) {
+          console.log('');
+          console.log(`Hashtags (${mitMaterial.id} ${mitMaterial.name}):`);
+          for (const t of tags.vorschlag.slice(0, 6)) {
+            console.log(`                  ${String(t.clips).padStart(2)}×  #${t.tag}`
+              + (t.likes_schnitt ? `   ⌀ ${t.likes_schnitt} Likes` : ''));
+          }
+          if (mass.zeichen_mittel) {
+            console.log(`                Unterschriften: ⌀ ${mass.zeichen_mittel} Zeichen `
+              + `(${mass.zeichen_kuerzeste}–${mass.zeichen_laengste}), ⌀ ${mass.tags_mittel} Tags`);
+          }
+          console.log('                Vorgeschlagen werden TAGS, nie ganze Saetze — eine fremde');
+          console.log('                Unterschrift abzuschreiben ist derselbe Fehler wie fremdes Bild.');
+        }
+      }
+    } catch { /* ohne products.json kein Vorschlag — das ist kein Fehler */ }
 
     // PUNKT 20: Wie gross ist die Messlatte inzwischen?
     const urteile = urteilsBilanz(ladeUrteile(ordner));
@@ -5634,6 +5954,7 @@ async function main(argv) {
 
   // PUNKT 64: Die Anfragetexte ausgeben — ein Creator, eine Nachricht.
   if (opt.anfragen) return anfragenAusgeben(opt);
+  if (opt.rueckruf) return rueckrufAusgeben(opt);
   if (opt.ordner) {
     const basis = videoOrdnerAus();
     const alle = JSON.parse(fs.readFileSync(path.join(WURZEL, 'products.json'), 'utf8'));
@@ -5769,6 +6090,8 @@ module.exports = {
   RECHTE_ARTEN, RECHTE_ZWECKE, rechteAkte, rechteLuecken, darfVeroeffentlicht,
   setzeRechte, widerrufeRechte, rechteBilanz,
   ANFRAGE_FELDER, creatorAnfrage, offeneAnfragen,
+  hashtagVorschlag, unterschriftMass,
+  begleitdateien, fassungenMitClip, rueckruf,
   URTEILE_DATEI, urteilePfad, sammleUrteil, ladeUrteile, speichereUrteile, urteilsBilanz,
   platzbedarf, lesbareGroesse, ablaufkandidaten,
   naechsteNummer, slugFuerDateiname, schuetzeDatei,
