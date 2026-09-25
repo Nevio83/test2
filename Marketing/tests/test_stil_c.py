@@ -1140,3 +1140,179 @@ def test_die_begleitdatei_entsteht_erst_nach_dem_video(tmp_path, monkeypatch):
     fertig, _ = sc.rendere(sc.lies(pfad), _produkt(), tmp_path / "geklappt.mp4")
     assert fertig.exists()
     assert fertig.with_suffix(fertig.suffix + sc.BEGLEIT_ENDUNG).exists()
+
+
+# ── Trockenpruefung (Punkt 48) ───────────────────────────────────────
+#
+# 131 Pruefungen decken das Finden und Filtern ab. Fuer das Schneiden gab es
+# keine einzige — dabei hat der Schnitt mehr Fallen.
+
+@hat_ffmpeg
+def test_die_pruefung_sammelt_alles_statt_beim_ersten_fehler_abzubrechen(tmp_path, monkeypatch):
+    video = _testvideo(tmp_path / "10_730.mp4", dauer=10.0)
+    pfad = _liste_schreiben(tmp_path, [
+        {"quelle": str(video), "von": 0, "bis": 6},
+    ], endkarte=False)
+    monkeypatch.setattr(sc.assets, "hat_lizenz", lambda p: False)
+
+    bericht = sc.trockenpruefung(pfad)
+    assert bericht["ok"] is False
+    assert any("ohne Lizenznachweis" in f for f in bericht["fehler"])
+    # Und die Hinweise stehen trotzdem da — eine Pruefung, die beim ersten
+    # Fehler abbricht, zwingt zu so vielen Laeufen wie es Fehler gibt.
+    assert any("eher ruhig" in h for h in bericht["hinweise"])
+    assert bericht["tempo"]["segmente"] == 1
+
+    # GEGENPROBE: Mit Nachweis ist dieselbe Liste bereit.
+    monkeypatch.setattr(sc.assets, "hat_lizenz", lambda p: True)
+    assert sc.trockenpruefung(pfad)["ok"] is True
+
+
+@hat_ffmpeg
+def test_der_bauversuch_schneidet_drei_sekunden_statt_alles(tmp_path, monkeypatch):
+    """Die eine Frage, die keine Textpruefung beantwortet: Laesst sich aus
+    diesen Quellen ueberhaupt ein Bild schneiden?"""
+    video = _testvideo(tmp_path / "10_730.mp4", dauer=20.0)
+    pfad = _liste_schreiben(tmp_path, [
+        {"quelle": str(video), "von": 0, "bis": 10},
+    ], endkarte=False)
+    monkeypatch.setattr(sc.assets, "hat_lizenz", lambda p: True)
+
+    bericht = sc.trockenpruefung(pfad, bauversuch=True)
+    assert bericht["ok"] is True
+    assert bericht["bauversuch"]["dauer"] == pytest.approx(3.0, abs=0.3), \
+        "drei Sekunden, nicht die zehn aus der Liste"
+    assert (bericht["bauversuch"]["breite"], bericht["bauversuch"]["hoehe"]) == (540, 960)
+
+    # GEGENPROBE: Ohne Schalter wird gar nichts gebaut — das Gegenlesen soll
+    # Sekunden kosten, nicht Minuten.
+    assert "bauversuch" not in sc.trockenpruefung(pfad)
+
+
+def test_eine_kaputte_liste_meldet_die_zeile(tmp_path):
+    pfad = tmp_path / "kaputt.json"
+    pfad.write_text("{kein json", encoding="utf-8")
+    bericht = sc.trockenpruefung(pfad)
+    assert bericht["ok"] is False
+    assert any("JSON" in f for f in bericht["fehler"])
+    assert bericht["liste"] is None
+
+    # GEGENPROBE: Eine fehlende Datei ist etwas anderes als eine kaputte —
+    # beide melden, aber mit verschiedenem Grund.
+    fehlt = sc.trockenpruefung(tmp_path / "gibt-es-nicht.json")
+    assert any("nicht gefunden" in f for f in fehlt["fehler"])
+
+
+# ── Vorlagen (Punkt 28) ──────────────────────────────────────────────
+
+def test_jede_vorlage_ergibt_ein_video_ueber_der_mindestdauer():
+    """Eine Vorlage, deren Ergebnis die Ausgangspruefung ablehnt, ist keine."""
+    from pipelines.orchestrator import guardrails
+    mindest = float(guardrails.wert("video.min_dauer_sek", 8))
+
+    for e in sc.vorlagen_uebersicht():
+        gesamt = e["dauer"] + sc.ENDKARTE_SEK
+        assert gesamt >= mindest, f"{e['schluessel']}: {gesamt}s unter {mindest}s"
+
+    # GEGENPROBE: Ohne Endkarte waere "drei_gruende" mit 7,5s zu kurz — die
+    # Rechnung haengt also wirklich an beidem.
+    kurz = [e for e in sc.vorlagen_uebersicht() if e["dauer"] < mindest]
+    assert kurz, "mindestens eine Vorlage braucht die Endkarte, um zu reichen"
+
+
+def test_eine_vorlage_erfindet_keine_dateinamen():
+    geruest = sc.vorlage("vorher_nachher", 10, quellen=["a.mp4"])
+    assert geruest["segmente"][0]["quelle"] == "a.mp4"
+    assert geruest["segmente"][1]["quelle"] == ""
+    assert geruest["segmente"][2]["quelle"] == ""
+
+    # GEGENPROBE: Eine Liste mit erfundenen Namen saehe fertig aus und waere
+    # es nicht — sie faellt erst beim Rendern auf die Nase.
+    assert all(isinstance(s["quelle"], str) for s in geruest["segmente"])
+    with pytest.raises(KeyError):
+        sc.vorlage("gibt-es-nicht", 10)
+
+
+def test_die_vorlagen_bleiben_wenige():
+    # Nach zwanzig veroeffentlichten Clips soll man sagen koennen, welche Form
+    # laeuft. Bei zwanzig Vorlagen hat man dann je eine Messung, also keine.
+    assert 3 <= len(sc.VORLAGEN) <= 6
+    for schluessel, v in sc.VORLAGEN.items():
+        assert v["wofuer"], f"{schluessel} sagt nicht, wofuer es taugt"
+        assert 3 <= len(v["segmente"]) <= 5
+
+
+# ── Hook-Varianten (Punkt 58) ────────────────────────────────────────
+
+@hat_ffmpeg
+def test_drei_fassungen_unterscheiden_sich_nur_am_anfang(tmp_path):
+    video = _testvideo(tmp_path / "10_730.mp4", dauer=12.0)
+    pfad = _liste_schreiben(tmp_path, [
+        {"quelle": str(video), "von": 0, "bis": 3, "text": "Eins"},
+        {"quelle": str(video), "von": 4, "bis": 7, "text": "Zwei"},
+        {"quelle": str(video), "von": 8, "bis": 11, "text": "Drei"},
+    ], hook="Erster Hook", hashtags=["x"])
+    liste = sc.lies(pfad)
+
+    fassungen = sc.hook_varianten(liste, ["Hook A", "Hook B", "Hook C"])
+    assert [f.hook for f in fassungen] == ["Hook A", "Hook B", "Hook C"]
+
+    # ALLES ANDERE IST IDENTISCH — sonst misst man nicht den Hook, sondern
+    # drei verschiedene Videos.
+    for f in fassungen:
+        assert f.gesamtdauer == liste.gesamtdauer
+        assert [s.text for s in f.segmente] == ["Eins", "Zwei", "Drei"]
+        assert f.hashtags == liste.hashtags
+        assert f.musik == liste.musik
+
+    # GEGENPROBE: Die Segmente sind KOPIEN. Wer an einer Fassung etwas aendert,
+    # darf die anderen nicht mitaendern.
+    fassungen[0].segmente[0].text = "Geaendert"
+    assert fassungen[1].segmente[0].text == "Eins"
+    assert liste.segmente[0].text == "Eins"
+
+
+@hat_ffmpeg
+def test_das_erste_segment_rotiert_statt_zu_mischen(tmp_path):
+    video = _testvideo(tmp_path / "10_730.mp4", dauer=12.0)
+    pfad = _liste_schreiben(tmp_path, [
+        {"quelle": str(video), "von": 0, "bis": 3, "text": "A"},
+        {"quelle": str(video), "von": 4, "bis": 7, "text": "B"},
+        {"quelle": str(video), "von": 8, "bis": 11, "text": "C"},
+    ])
+    liste = sc.lies(pfad)
+    fassungen = sc.hook_varianten(liste, ["h1", "h2", "h3"],
+                                  erstes_segment_tauschen=True)
+
+    assert [s.text for s in fassungen[0].segmente] == ["A", "B", "C"]
+    assert [s.text for s in fassungen[1].segmente] == ["B", "C", "A"]
+    assert [s.text for s in fassungen[2].segmente] == ["C", "A", "B"]
+
+    # ALLE BEHALTEN DIESELBEN TEILE — rotiert, nicht gemischt. Die Gesamtdauer
+    # bleibt damit gleich, und das ist die Voraussetzung fuer den Vergleich.
+    for f in fassungen:
+        assert sorted(s.text for s in f.segmente) == ["A", "B", "C"]
+        assert f.gesamtdauer == liste.gesamtdauer
+
+    # GEGENPROBE: Bei zwei Segmenten wird NICHT rotiert — sonst tauscht man
+    # den halben Clip und misst wieder zwei verschiedene Videos.
+    kurz = _liste_schreiben(tmp_path / "k", [
+        {"quelle": str(video), "von": 0, "bis": 3, "text": "A"},
+        {"quelle": str(video), "von": 4, "bis": 7, "text": "B"},
+    ]) if (tmp_path / "k").mkdir(exist_ok=True) is None else None
+    zwei = sc.hook_varianten(sc.lies(kurz), ["h1", "h2"], erstes_segment_tauschen=True)
+    assert [s.text for s in zwei[1].segmente] == ["A", "B"]
+
+
+def test_die_kennung_steht_vor_der_endung():
+    from pathlib import Path as P
+    assert sc.variantenname(P("/x/fassung.mp4"), 0).name == "fassung_a.mp4"
+    assert sc.variantenname(P("/x/fassung.mp4"), 2).name == "fassung_c.mp4"
+
+    # GEGENPROBE: Dahinter angehaengt hiesse die Datei "fassung.mp4_a" — und
+    # keine Anwendung erkennt sie mehr als Video.
+    assert sc.variantenname(P("/x/fassung.mp4"), 1).suffix == ".mp4"
+
+    # Ohne Hooktexte gibt es nichts zu vergleichen.
+    with pytest.raises(ValueError):
+        sc.hook_varianten(sc.Schnittliste(produkt_id=10, segmente=[]), [])

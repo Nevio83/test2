@@ -292,12 +292,12 @@
   <div class="report-header">
     <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
     <h1 class="title">Maios Shop — Juni bis September 2026</h1>
-    <p class="subtitle">Zeitraum <strong>7. Juni – 23. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 788 automatischen Prüfungen und einem Marketing-Automaten geworden — und seit dem 23.&nbsp;September landet eine bezahlte Bestellung automatisch beim Lieferanten. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 25. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 853 automatischen Prüfungen und einem Marketing-Automaten geworden — und seit dem 23.&nbsp;September landet eine bezahlte Bestellung automatisch beim Lieferanten. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
-      <span style="color:var(--green);font-weight:600;">✓ 178 Commits an 39 Arbeitstagen</span>
-      <span><strong>788</strong> automatische Prüfungen (539 Shop + 249 Bot) · Marketing-Prüfungen derzeit rot</span>
-      <span>Stand <strong>23.09.2026</strong></span>
+      <span style="color:var(--green);font-weight:600;">✓ 180 Commits an 40 Arbeitstagen</span>
+      <span><strong>853</strong> automatische Prüfungen (552 Shop + 301 Bot) · Marketing-Prüfungen derzeit rot</span>
+      <span>Stand <strong>25.09.2026</strong></span>
     </div>
   </div>
 
@@ -311,19 +311,19 @@
 
     <div class="stats">
       <div class="stat acc-blue">
-        <div class="num">178</div>
+        <div class="num">180</div>
         <div class="lbl">Commits</div>
-        <p class="sub">an 39 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
+        <p class="sub">an 40 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
       </div>
       <div class="stat acc-green">
-        <div class="num">788</div>
+        <div class="num">853</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>539 im Shop</strong> und <strong>249 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Die Marketing-Prüfungen laufen gerade ins Leere — die Datenbank ist am Kontingent (siehe unten).</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>552 im Shop</strong> und <strong>301 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Die 237 Marketing-Prüfungen sind rot: Die Datenbank ist am Kontingent, und neun warten auf Code, den es noch nicht gibt (siehe unten).</p>
       </div>
       <div class="stat acc-orange">
-        <div class="num">537</div>
+        <div class="num">545</div>
         <div class="lbl">Geänderte Dateien</div>
-        <p class="sub">+99.797 Zeilen hinzugefügt, −96.492 entfernt. Unterm Strich <strong>3.305 Zeilen mehr</strong> — der Aufräum-Vorsprung ist im September vom Marketing-Ausbau eingeholt worden.</p>
+        <p class="sub">+102.730 Zeilen hinzugefügt, −97.148 entfernt. Unterm Strich <strong>5.582 Zeilen mehr</strong> — der Aufräum-Vorsprung ist im September vom Marketing-Ausbau eingeholt worden.</p>
       </div>
       <div class="stat acc-red">
         <div class="num">7</div>
@@ -338,7 +338,7 @@
         <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
       </thead>
       <tbody>
-        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">788</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">853</td><td class="gut">neu aufgebaut</td></tr>
         <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
         <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
         <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
@@ -347,13 +347,13 @@
         <tr><td>Produktseite beim zweiten Aufruf</td><td class="num">alles neu geladen</td><td class="num">17 KB gesamt</td><td class="gut">ETag statt <code>no-store</code></td></tr>
         <tr><td>Adressen in der Sitemap</td><td class="num">keine Sitemap</td><td class="num">54</td><td class="gut">+ <code>noindex</code> auf 5 Seiten</td></tr>
         <tr><td>Zeilen in <code>app.js</code></td><td class="num">4.430</td><td class="num">1.802</td><td class="gut">−59 %</td></tr>
-        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">10.442 Zeilen, 152 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
+        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">12.309 Zeilen, 237 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
       </tbody>
     </table>
     </div>
 
     <blockquote class="merke">
-      <p><strong>Die Zahl, die am meisten sagt:</strong> Von den 96.525 gelöschten Zeilen entfielen rund 5.600 auf toten Code, den niemand mehr aufrief, und weitere Tausende auf die Design-Migration der 40 Produktseiten. Ein Shop wird nicht dadurch besser, dass mehr Code darin steht — sondern dadurch, dass weniger davon lügen kann.</p>
+      <p><strong>Die Zahl, die am meisten sagt:</strong> Von den 97.148 gelöschten Zeilen entfielen rund 5.600 auf toten Code, den niemand mehr aufrief, und weitere Tausende auf die Design-Migration der 40 Produktseiten. Ein Shop wird nicht dadurch besser, dass mehr Code darin steht — sondern dadurch, dass weniger davon lügen kann.</p>
     </blockquote>
   </div>
 
@@ -547,6 +547,14 @@
           <p>Auf die Frage „geht das Admin-Panel?" kam heraus: Alle sieben Seiten laden, aber <strong>13 von 14 Endpunkten antworten mit 500</strong>. Der einzige, der läuft, ist der einzige, der die Datenbank nicht anfasst. Neon verweigert jede Verbindung — <code>exceeded the quota</code>, Fehlercode 53000.<br><br><strong>Warum es niemand gemerkt hat:</strong> <code>/health</code> gibt ein statisches <code>ok</code> zurück und prüft die Datenbank gar nicht — Render und der Keep-Alive fragen es jede Minute und bekommen immer „alles gut". Der Mail-Alarm hängt an der Fehlerrate, nicht am Zustand: Er feuert erst ab mehreren 5xx in 15 Minuten. Wenig Besucher, niemand im Panel → kein Alarm.<br><br><strong>Zweiter Fund:</strong> Der Marketing-Workflow meldet seit dem 17.&nbsp;August durchgehend „success" — und hat in dieser Zeit <em>nichts</em> getan. Im Repository ist ein einziges Secret hinterlegt, der Workflow erwartet 16. Jeder Lauf überspringt alle elf Abläufe und endet grün.<br><br><strong>Am 23.&nbsp;September die Ursache gefunden:</strong> Nicht der Speicher war voll, sondern die monatliche Rechenzeit aufgebraucht — und zwar durch unseren eigenen Planer. Er fragte alle fünf Minuten für jeden Ablauf die Datenbank, zwei Abfragen je Ablauf, rund um die Uhr. Neon legt die Rechenleistung erst nach einigen Minuten Ruhe schlafen; dieser Takt ließ nie Ruhe aufkommen, und der Keep-Alive hielt den Server dazu dauerhaft wach. Behoben: Der Planer merkt sich jetzt, wann ein Ablauf fällig ist, und fragt nur dann. Fünf neue Prüfungen zählen die Abfragen — ohne den Merkzettel werden alle fünf rot.</p>
         </div>
       </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">23.–25. Sep</div>
+        <div class="tl-body">
+          <h3>Der Clip lernt die Plattform und die Marke kennen <span class="tl-tag tag-fund">Fund</span></h3>
+          <p>Fünf Punkte aus dem Papier zum Videoschnitt, committet am 25.&nbsp;September (<code>701e183</code>). Der Stand dort: <strong>63 von 90 Vorschlägen gebaut</strong>.<br><br><strong>Der Preis auf der Endkarte war nie Orange.</strong> In der ASS-Schreibweise stand <code>&amp;H0000E5FF</code>, und weil ASS die Farbkanäle rückwärts liest, ist das Gelb. Clip und Shop hatten also verschiedene Farben, und niemand konnte es sehen, weil beide „warm“ aussehen. Die Farbe steht jetzt an <em>einer</em> Stelle in der Konfiguration (<code>#ff8c00</code> aus <code>styles.css</code>), die Umrechnung erledigt das Programm.<br><br><strong>Die Untertitel laufen unter TikToks Symbolspalte.</strong> Der Seitenrand ist 80&nbsp;px, die Spalte belegt rund 160. Nachgemessen: Eine volle Zeile (20 Zeichen) ragt hinein, eine kurze nicht. Die Ausgangsprüfung meldet das jetzt, sperrt aber nicht, weil TikTok keine Maße veröffentlicht und die Zonen deshalb Schätzungen sind.<br><br>Dazu: eine feste Zeile „Werbung“ auf der Endkarte, ohne Schalter zum Abstellen. Außerdem der <strong>Rückruf</strong> (<code>--rueckruf</code>): Er führt von einem Creator-Namen zu allen Fassungen, die aus dessen Material gebaut wurden. Und <strong>Hashtag-Vorschläge</strong> aus den Untertiteln des eigenen Materials; Reichweiten-Tags wie <code>#fyp</code> fliegen raus.<br><br><strong>Nicht fertig:</strong> Neun Prüfungen für Schnittlisten-Vorlagen, drei Hook-Fassungen und die Trockenprüfung liegen im Repository, die zugehörige Umsetzung in <code>style_c_schnittliste.py</code> aber nicht. Die Prüfungen sind rot, bis der Code steht (siehe offene Punkte).</p>
+        </div>
+      </div>
     </div>
 
     <blockquote class="merke">
@@ -710,7 +718,7 @@
           <div class="card-title"><span class="ico">🤖</span> Marketing-Automat</div>
           <span class="badge badge-done">Committet</span>
         </div>
-        <p class="desc">Die Kette läuft: <strong>Trend → Produkt zuordnen → Briefing → Rechtsprüfung → Video → Warteschlange → Veröffentlichung → Kennzahlen → Umsatzzuordnung → Lernen.</strong> 10.442 Zeilen Python in 57 Dateien, 152 automatische Prüfungen, Zustand in 17 <code>mkt_*</code>-Tabellen derselben Postgres-Datenbank.</p>
+        <p class="desc">Die Kette läuft: <strong>Trend → Produkt zuordnen → Briefing → Rechtsprüfung → Video → Warteschlange → Veröffentlichung → Kennzahlen → Umsatzzuordnung → Lernen.</strong> 12.309 Zeilen Python in 58 Dateien, 237 automatische Prüfungen, Zustand in 17 <code>mkt_*</code>-Tabellen derselben Postgres-Datenbank.</p>
         <div class="wirkung">
           <dl>
             <dt>Ändert</dt><dd>Der Takt kommt von außen (GitHub Actions alle 30 Minuten), die Fälligkeit entscheidet <code>mkt_jobs.naechster_lauf</code>. <strong>Grund:</strong> Der Shop läuft auf Render-Free und startet ständig neu — ein Loop im Shop-Prozess liefe praktisch nie durch. Genau das war am 2.&nbsp;August schon einmal nachgewiesen worden.</dd>
@@ -726,7 +734,7 @@
           <div class="card-title"><span class="ico">📥</span> TikTok-Rohmaterial-Bot</div>
           <span class="badge badge-done">Committet</span>
         </div>
-        <p class="desc">Sucht fremdes TikTok-Material zu den eigenen Produkten, prüft jede Adresse gegen alle 40 Produkte und lädt nur über der Trefferschwelle. 3.022 Zeilen Programm, <strong>3.042 Zeilen Prüfungen</strong> (131 Stück), 976 Zeilen Handbuch.</p>
+        <p class="desc">Sucht fremdes TikTok-Material zu den eigenen Produkten, prüft jede Adresse gegen alle 40 Produkte und lädt nur über der Trefferschwelle. 6.101 Zeilen Programm, <strong>5.409 Zeilen Prüfungen</strong> (262 Stück, dazu 39 für den Kontaktbogen), 1.653 Zeilen Handbuch.</p>
         <div class="wirkung">
           <dl>
             <dt>Fund</dt><dd><strong>yt-dlp kann bei TikTok gar nicht suchen.</strong> Der Hashtag-Extractor ist vom Projekt selbst als <code>CURRENTLY BROKEN</code> markiert. Die erste Fassung prüfte nur, ob „tag" im Namen vorkommt, und meldete die Fähigkeit fälschlich als vorhanden. Der Marker wird jetzt ausgewertet.</dd>
@@ -737,10 +745,10 @@
         </div>
       </div>
 
-      <div class="card st-input">
+      <div class="card st-built">
         <div class="card-top">
           <div class="card-title"><span class="ico">✂️</span> Vorprüfung aus dem Seitentext</div>
-          <span class="badge badge-input">Nicht committet</span>
+          <span class="badge badge-done">Committet</span>
         </div>
         <p class="desc">Auf TikToks Themenseiten steht die Bildunterschrift direkt hinter dem Link, davor die Zahl der Likes. Beides wird jetzt mitgelesen und für zwei Dinge benutzt: aussortieren <em>vor</em> dem Abruf, und nach Beliebtheit sortieren.</p>
         <div class="wirkung">
@@ -763,6 +771,22 @@
             <dt>Ändert</dt><dd>Eine Merkliste (<code>.bestand.json</code>) hält fest, welche Rohdateien schon verarbeitet sind — die Schnitt-Aufgabe schneidet sonst bei jedem Lauf alles neu.</dd>
             <dt>Bringt</dt><dd>Der Schritt, den der Automat allein nicht kann: brauchbares Bildmaterial. Der Text ist der schwächste Punkt des generierten Videos — hier steht echtes Material dahinter.</dd>
             <dt>Handarbeit</dt><dd>Notiert ist auch, was <em>nicht</em> verwendet wurde und warum: Clips mit dem schwarzen Modell nicht mit den weißen mischen, das wirkt wie ein anderes Produkt.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="card st-progress">
+        <div class="card-top">
+          <div class="card-title"><span class="ico">🎯</span> Schnitt: Plattform, Marke, Rückruf</div>
+          <span class="badge badge-progress">Teilweise</span>
+        </div>
+        <p class="desc">Fünf Punkte aus <code>Marketing/VideosVerbessern.html</code>, committet am 25.&nbsp;September (<code>701e183</code>): Sperrzonen, Markenfarbe, feste Werbe-Kennzeichnung, Rückruf je Creator und Hashtag-Vorschläge. Damit sind <strong>63 von 90</strong> Vorschlägen gebaut.</p>
+        <div class="wirkung">
+          <dl>
+            <dt>Fund</dt><dd>Der Preis auf der Endkarte stand auf <code>&amp;H0000E5FF</code>, also <strong>Gelb statt Shop-Orange</strong>, weil ASS die Farbkanäle rückwärts liest. Beim ersten Entwurf der Umrechnung wäre aus „orange“ (sechs Zeichen, sieht aus wie Hex) still <code>&amp;H00EGNARO</code> geworden; eine Prüfung hat das abgefangen.</dd>
+            <dt>Fund</dt><dd>Eine volle Untertitelzeile läuft unter TikToks Symbolspalte (80&nbsp;px Rand gegen rund 160&nbsp;px Spalte). Gemeldet als Hinweis, nicht als Sperre: Die Zonen sind geschätzt, TikTok veröffentlicht keine Maße.</dd>
+            <dt>Bringt</dt><dd>Auf die Frage „Welche Videos enthalten Material von diesem Creator?“ gibt es jetzt eine Antwort aus der Datei statt aus dem Gedächtnis: <code>--rueckruf</code> geht über die Begleitdateien jeder Fassung, samt Handlungsanweisung. Die Hashtags kommen aus dem eigenen Material, am Wasserspender gemessen: <code>#waterdispenser</code> in 5 von 6 Untertiteln.</dd>
+            <dt>Offen</dt><dd>Die Prüfungen für Schnittlisten-Vorlagen, drei Hook-Fassungen und die Trockenprüfung sind committet, die Umsetzung fehlt. <strong>9 Prüfungen rot</strong>, <code>Marketing/SCHNITT.md</code> beschreibt Befehle (<code>vorlage</code>, <code>pruefen</code>), die es noch nicht gibt.</dd>
           </dl>
         </div>
       </div>
@@ -910,7 +934,7 @@
           <div class="mark" style="background:var(--red);border-color:var(--red);color:var(--card);">!</div>
           <div class="body">
             <h4>Neon-Kontingent freimachen <span class="who who-you">Du</span></h4>
-            <p><strong>Der Shop nimmt derzeit Geld an, ohne Bestellungen speichern zu können.</strong> Die Datenbank verweigert seit dem 22.&nbsp;September jede Verbindung. Laut Neon-Konsole ist die <strong>monatliche Rechenzeit</strong> aufgebraucht, nicht der Speicher (Projekt <code>maios</code>, <code>icy-rice-50632176</code>).<br><br><strong>Die Ursache war unser eigener Code — und ist am 23.&nbsp;September behoben:</strong> Der Planer für die zeitgesteuerten Abläufe fragte alle fünf Minuten für jeden Ablauf die Datenbank. Neon legt die Rechenleistung erst nach einigen Minuten Ruhe schlafen, und der Keep-Alive hielt den Server zugleich dauerhaft wach — die Datenbank lief also rund um die Uhr. Jetzt merkt sich der Planer, wann ein Ablauf fällig ist, und fragt nur dann: gemessen an einem Tag mit zwei Abläufen <strong>576 Abfragen vorher, höchstens 4 jetzt</strong>.<br><br>Wieder erreichbar wird die Datenbank trotzdem erst mit dem monatlichen Zurücksetzen oder einem größeren Plan — unter „Review usage“ steht, wann. Ohne die Behebung wäre das Kontingent auch nächsten Monat wieder leergelaufen, und ein bezahlter Plan hätte Rechenzeit rund um die Uhr berechnet.<br><br>Solange das steht, sind Bestellungen, Belege, Tracking, das Admin-Panel und der Marketing-Automat tot. Der Notausgang von heute verhindert nur, dass dabei <em>Geld ohne Gegenwert</em> kassiert wird — er ersetzt die Datenbank nicht.<br><br><strong>Bitte im Stripe-Dashboard nachsehen</strong>, ob seit dem Ausfall Zahlungen ohne zugehörige Bestellung eingegangen sind.</p>
+            <p><strong>Der Shop nimmt derzeit Geld an, ohne Bestellungen speichern zu können.</strong> Die Datenbank verweigert seit dem 22.&nbsp;September jede Verbindung. Laut Neon-Konsole ist die <strong>monatliche Rechenzeit</strong> aufgebraucht, nicht der Speicher (Projekt <code>maios</code>, <code>icy-rice-50632176</code>).<br><br><strong>Die Ursache war unser eigener Code — und ist am 23.&nbsp;September behoben:</strong> Der Planer für die zeitgesteuerten Abläufe fragte alle fünf Minuten für jeden Ablauf die Datenbank. Neon legt die Rechenleistung erst nach einigen Minuten Ruhe schlafen, und der Keep-Alive hielt den Server zugleich dauerhaft wach — die Datenbank lief also rund um die Uhr. Jetzt merkt sich der Planer, wann ein Ablauf fällig ist, und fragt nur dann: gemessen an einem Tag mit zwei Abläufen <strong>576 Abfragen vorher, höchstens 4 jetzt</strong>.<br><br>Wieder erreichbar wird die Datenbank trotzdem erst mit dem monatlichen Zurücksetzen oder einem größeren Plan — unter „Review usage“ steht, wann. <strong>Stand 25.&nbsp;September: weiterhin gesperrt</strong>, jede Verbindung endet mit <code>exceeded the quota</code>. Ohne die Behebung wäre das Kontingent auch nächsten Monat wieder leergelaufen, und ein bezahlter Plan hätte Rechenzeit rund um die Uhr berechnet.<br><br>Solange das steht, sind Bestellungen, Belege, Tracking, das Admin-Panel und der Marketing-Automat tot. Der Notausgang von heute verhindert nur, dass dabei <em>Geld ohne Gegenwert</em> kassiert wird — er ersetzt die Datenbank nicht.<br><br><strong>Bitte im Stripe-Dashboard nachsehen</strong>, ob seit dem Ausfall Zahlungen ohne zugehörige Bestellung eingegangen sind.</p>
           </div>
         </div>
         <div class="todo">
@@ -939,6 +963,20 @@
                 <dt>Fehlt</dt><dd>Zugangsdaten für die TikTok-Schnittstelle, <em>oder</em> der Browser-Weg — für den sind weder <code>selenium</code> installiert noch ein <code>chromedriver</code> vorhanden (der Pfad zeigt auf ein Verzeichnis, das es nicht mehr gibt).</dd>
                 <dt>Ausserdem</dt><dd>Die drei Beiträge in der Warteschlange zeigen auf Videodateien in einem längst aufgeräumten Sitzungsordner.</dd>
                 <dt>Grenze</dt><dd><code>publish_due</code> ist bewusst <code>requires_local</code> — der Upload braucht einen echten Browser und läuft nie in der Cloud. „Vollautomatisch" heißt hier zwangsläufig: ein Rechner, auf dem <code>run-local.js</code> dauerhaft läuft.</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+        <div class="todo">
+          <div class="mark">2</div>
+          <div class="body">
+            <h4>Schnittlisten-Vorlagen fertig bauen — 9 Prüfungen warten auf Code <span class="who who-me">Ich, auf dein Wort</span></h4>
+            <p>In <code>Marketing/tests/test_stil_c.py</code> stehen seit dem 25.&nbsp;September neun Prüfungen für <code>vorlage()</code>, <code>hook_varianten()</code>, <code>trockenpruefung()</code> und <code>variantenname()</code>. Diese Funktionen gibt es in <code>style_c_schnittliste.py</code> nicht, auch in keinem anderen Arbeitsordner. Die Umsetzung ist also nie gespeichert worden oder verloren gegangen. Auf deinen Wunsch trotzdem committet, damit nichts mehr lokal herumliegt.</p>
+            <div class="wirkung">
+              <dl>
+                <dt>Folge</dt><dd>Die Marketing-Prüfungen sind rot, und zwar nicht nur wegen der Datenbank. Der Prüflauf vor dem Deploy ist davon nicht betroffen, weil er die Marketing-Prüfungen nicht ausführt.</dd>
+                <dt>Doku</dt><dd><code>Marketing/SCHNITT.md</code> beschreibt die Befehle <code>vorlage</code> und <code>pruefen … --bauversuch</code>. Beide gibt es noch nicht.</dd>
+                <dt>Entweder</dt><dd>die Funktionen gegen die vorhandenen Prüfungen bauen, <em>oder</em> die Prüfungen und den Abschnitt in <code>SCHNITT.md</code> streichen. Rote Prüfungen stehen zu lassen ist die schlechteste Wahl, denn dann fällt der nächste echte Fehler darin nicht mehr auf.</dd>
               </dl>
             </div>
           </div>
@@ -1025,13 +1063,13 @@
     <div class="pruef-banner">
       <h3>✅ Drei Monate, ein Muster</h3>
       <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen — und dieser Bericht selbst stand zehn Tage lang öffentlich im Shop, ohne dass irgendetwas darauf hingewiesen hätte.<br><br>
-      Deshalb sind die 788 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+      Deshalb sind die 853 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
     </div>
   </div>
 
   <footer>
-    Interner Fortschrittsbericht · Zeitraum 7. Juni – 23. September 2026 · Stand 23.09.2026.<br>
-    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (539 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (249 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Interner Fortschrittsbericht · Zeitraum 7. Juni – 25. September 2026 · Stand 25.09.2026.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (552 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (301 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
     Wird nach jedem abgeschlossenen Punkt fortgeschrieben. <strong>Nicht öffentlich:</strong> seit dem 7.&nbsp;September blockt die Datei-Freigabe interne HTML-Dokumente im Wurzelverzeichnis — diese Seite ist unter <code>maiosshop.com</code> nicht abrufbar.<br>
     Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
   </footer>

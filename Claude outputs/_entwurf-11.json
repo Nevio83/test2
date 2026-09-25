@@ -1,0 +1,73 @@
+{
+  "_hinweis": "ENTWURF aus dem Kontaktbogen. Streichen, umsortieren, Zeitmarken setzen — und \"hook\", \"cta\" und \"hashtags\" ausfuellen, sonst geht der Beitrag ohne Text raus. Danach OHNE fuehrenden Unterstrich speichern, erst dann wird gerendert.",
+  "produkt_id": 11,
+  "musik": null,
+  "hook": "",
+  "cta": "",
+  "hashtags": [],
+  "segmente": [
+    {
+      "quelle": "12_350ml-elektrischer-mixer-entsafter_16s_stil-b.mp4",
+      "von": 4.13,
+      "bis": 6.33,
+      "_dauer": 16.9,
+      "_format": "hoch",
+      "_creator": "@creator1",
+      "_szenen": [
+        4.13
+      ]
+    },
+    {
+      "quelle": "13_350ml-elektrischer-mixer-entsafter_23s_stil-b.mp4",
+      "von": 3.7,
+      "bis": 5.9,
+      "_dauer": 23.5,
+      "_format": "hoch",
+      "_creator": "@creator2",
+      "_szenen": [
+        0.83,
+        3.7,
+        13.03,
+        17.23
+      ]
+    },
+    {
+      "quelle": "15_350ml-elektrischer-mixer-entsafter_35s_stil-b.mp4",
+      "von": 11.33,
+      "bis": 13.53,
+      "_dauer": 35.4,
+      "_format": "hoch",
+      "_creator": "@creator3",
+      "_szenen": [
+        6.8,
+        11.33
+      ]
+    },
+    {
+      "quelle": "19_350ml-elektrischer-mixer-entsafter_14s_stil-b.mp4",
+      "von": 11.67,
+      "bis": 13.87,
+      "_dauer": 14.9,
+      "_format": "hoch",
+      "_creator": "@creator4",
+      "_szenen": [
+        3.17,
+        5.17,
+        7.9,
+        9.27,
+        11.67
+      ]
+    },
+    {
+      "quelle": "21_350ml-elektrischer-mixer-entsafter_8s_stil-b.mp4",
+      "von": 2.9,
+      "bis": 5.1,
+      "_dauer": 8.3,
+      "_format": "hoch",
+      "_creator": "@creator5",
+      "_szenen": [
+        2.9
+      ]
+    }
+  ]
+}
