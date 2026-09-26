@@ -34,6 +34,7 @@ const {
   BILD_ABSTAND_MAX, randErkennung, randAnteil, randUntauglich,
   datumAusVideoId, alterInTagen, beliebtheitsRate,
   naechsteNummer, slugFuerDateiname, schuetzeDatei,
+  herkunftNachtragen,
   interaktiv, frageStelle, TIKTOK_VIDEO_MUSTER,
   verwaisteEintraege, raeumeIndexAuf, aufraeumen, schonImIndex, schonAlsDateiDa,
   sprachHinweise, textAusPuffern, videoText, ladeKonfig,
@@ -1169,7 +1170,9 @@ test('der gefuehrte Ablauf laedt genau die gewuenschte Anzahl — und nur Musik'
     'ein Video mit Sprache wurde geladen');
   assert.equal(index.eintraege.every((e) => e.rechte_geprueft === false), true);
   // Namensschema und Schutz
-  assert.match(dateien[0], /^\d{2}_elektrischer-wasserspender-fuer-schreibtisch_\d+s_stil-b\.mp4$/);
+  // Seit Punkt 71 mit der Video-ID am Ende — Pflicht, nicht optional: ohne sie
+  // waere die Datei von einem eigenen Rendering nicht zu unterscheiden.
+  assert.match(dateien[0], /^\d{2}_elektrischer-wasserspender-fuer-schreibtisch_\d+s_stil-b_\d{10,25}\.mp4$/);
   // SCHUTZ: Seit die Videos unter rohmaterial/ liegen, deckt eine Ordner-Regel
   // sie ab — es wird KEIN Einzeleintrag mehr geschrieben. Das ist die
   // Verbesserung: Die frueheren Einzelzeilen waren die fehleranfaelligste
@@ -5406,4 +5409,196 @@ test('nach dem Widerruf steht es in der Akte', () => {
   // eine Erlaubnis vorlag.
   assert.equal(clip.rechte.art, 'einwilligung');
   assert.equal(clip.rechte.beleg, 'dm.png');
+});
+
+
+// ── Der Seitentext kann wegbrechen, ohne dass etwas scheitert ─────────
+//
+// Am 26.09. lieferte Tavily bei der einfachen Suche keinen Seitentext mehr.
+// Gemessen an derselben Anfrage: basic → 20 Treffer, 0 Adressen aus dem
+// Seitentext; advanced → 20 Treffer, 32 Adressen. Der Lauf davor meldete
+// "0 Adressen" und sah damit aus wie "es gibt nichts zu finden".
+
+test('die gruendliche Suche wird angefragt — sonst kommt kein Seitentext', async () => {
+  let gesendet = null;
+  const holen = async (adresse, einstellungen) => {
+    gesendet = JSON.parse(einstellungen.body);
+    return { ok: true, json: async () => ({ results: [] }) };
+  };
+  await sucheAdressen({ begriff: 'x', env: { TAVILY_API_KEY: 't' }, holen });
+
+  assert.equal(gesendet.include_raw_content, true);
+  assert.equal(gesendet.search_depth, 'advanced',
+    'ohne "advanced" liefert Tavily keinen Seitentext mehr — und damit fast keine Adressen');
+});
+
+test('Treffer ohne Seitentext werden gemeldet, nicht verschluckt', async () => {
+  // So sah die Antwort aus, als die Fundgrube zuging: Treffer da, Text leer.
+  const holen = async () => ({ ok: true, json: async () => ({ results: [
+    { url: 'https://www.tiktok.com/shop/product/x', raw_content: null },
+    { url: 'https://www.tiktok.com/@a/video/7300000000000000001', raw_content: '' },
+  ] }) });
+
+  const e = await sucheAdressen({ begriff: 'x', env: { TAVILY_API_KEY: 't' }, holen });
+  assert.equal(e.ok, true, 'es ist kein Fehler — die Suche hat geantwortet');
+  assert.equal(e.ohneSeitentext, 2, 'aber der fehlende Text wird beziffert');
+
+  // GEGENPROBE: Ohne dieses Kennzeichen bleibt nur "eine Adresse gefunden"
+  // uebrig — und das ist von "es gibt wirklich nur eine" nicht zu
+  // unterscheiden. Genau daran habe ich zuerst die Suche selbst verdaechtigt.
+  assert.equal(e.adressen.length, 1);
+  assert.equal(e.funde.length, 0);
+});
+
+test('mit Seitentext bleibt das Kennzeichen aus', async () => {
+  const holen = async () => ({ ok: true, json: async () => ({ results: [
+    {
+      url: 'https://www.tiktok.com/discover/thema',
+      raw_content: '… **42**](https://www.tiktok.com/@a/video/7300000000000000002)\n\nEin Wasserspender fuer den Schreibtisch',
+    },
+  ] }) });
+
+  const e = await sucheAdressen({ begriff: 'x', env: { TAVILY_API_KEY: 't' }, holen });
+  assert.equal(e.ohneSeitentext, 0, 'kein Ausfall, also keine Warnung');
+  assert.equal(e.funde.length, 1);
+  assert.match(e.funde[0].unterschrift, /Wasserspender fuer den Schreibtisch/);
+  assert.equal(e.funde[0].likes, 42);
+});
+
+
+// ── Punkt 07: kein Produkt ohne Eintrag, kein Eintrag ohne Produkt ────
+//
+// products.json ist die eine Produktquelle; tiktok-quellen.json haelt daneben
+// von Hand gepflegte Suchbegriffe. Das ist berechtigt — Suchbegriffe sind keine
+// Produktdaten. Unberechtigt waere, wenn beide auseinanderlaufen: Ein neues
+// Produkt ohne Eintrag wird vom Bot einfach uebersprungen. Kein Fehler, keine
+// Meldung, es taucht nur nie Material dafuer auf.
+
+test('jedes Produkt hat einen Eintrag in tiktok-quellen.json', () => {
+  const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
+  const konfig = ladeKonfig();
+
+  const ohneEintrag = produkte
+    .filter((p) => !konfig.produkte[String(p.id)])
+    .map((p) => `${p.id} ${p.name}`);
+  assert.deepEqual(ohneEintrag, [],
+    'ein Produkt ohne Suchbegriffe wird lautlos uebersprungen — es faellt erst auf, wenn jemand fragt, warum dafuer nie Material kommt');
+
+  const ohneProdukt = Object.keys(konfig.produkte)
+    .filter((s) => !s.startsWith('_'))
+    .filter((s) => !produkte.some((p) => String(p.id) === s));
+  assert.deepEqual(ohneProdukt, [],
+    'ein Eintrag ohne Produkt ist Pflegeaufwand fuer nichts — und verdeckt beim Zaehlen, wie viele Produkte wirklich versorgt sind');
+
+  // GEGENPROBE: Die Pruefung muss auch anschlagen. Ein erfundenes Produkt 99
+  // hat keinen Eintrag, und genau das soll die Liste melden.
+  const mitLuecke = produkte.concat([{ id: 99, name: 'Erfundenes Produkt' }]);
+  const gemeldet = mitLuecke.filter((p) => !konfig.produkte[String(p.id)]);
+  assert.equal(gemeldet.length, 1, 'die Pruefung erkennt eine Luecke');
+  assert.equal(gemeldet[0].id, 99);
+});
+
+
+// ── Punkt 71: die Herkunft steht im Dateinamen ───────────────────────
+//
+// Geladenes Fremdmaterial hiess "NN_<slug>_<dauer>s_stil-b.mp4" — dieselbe
+// Form wie die EIGENEN Renderings. Am Namen war fremd von eigen nicht zu
+// unterscheiden; der Ordner war der einzige Schutz. Eine Datei, die aus ihrem
+// Ordner herausfaellt, verlor damit jede Spur ihrer Herkunft.
+
+test('eine neu geladene Datei traegt ihre Video-ID im Namen', async () => {
+  const daten = tempOrdner();
+  const videos = tempOrdner();
+  const clip = lizenzierterTon(71);
+  const protokoll = { angaben: [], downloads: [] };
+
+  const antworten = ['10', '1', '1', '1'];
+  await interaktiv({
+    ytdlp: ytdlpFuer([clip], protokoll),
+    pruefeSprache: () => STILL_GEMESSEN,
+    impersonation: nachahmungDa,
+    wurzel: path.dirname(videos),
+    produkte: [PRODUKT],
+    konfig: { produkte: { 10: { videos: [clip.webpage_url] } } },
+    standard: { ...STANDARD },
+    datenOrdner: daten, videoOrdner: videos, gitignore: path.join(daten, '.gitignore'),
+    stopDatei: path.join(daten, 'kein-STOP'), env: {},
+    frage: async () => antworten.shift(),
+    jetzt: () => '2026-09-26T10:00:00.000Z',
+    melde: still, warte: async () => {},
+  });
+
+  const namen = geladeneVideos(videos);
+  assert.equal(namen.length, 1);
+  assert.ok(namen[0].includes(`_${clip.id}.mp4`), `Video-ID fehlt im Namen: ${namen[0]}`);
+  assert.equal(herkunftAusName(namen[0]).sagtHerkunft, true);
+  assert.equal(herkunftAusName(namen[0]).video_id, clip.id);
+
+  // GEGENPROBE: Ein eigenes Rendering hat keine ID — daran bleiben beide
+  // fuer immer zu unterscheiden, auch ausserhalb ihres Ordners.
+  assert.equal(herkunftAusName('01_nordic-crystal-lamp_20s_stil-a.mp4').sagtHerkunft, false);
+  // Und die alte Form haette die Herkunft nicht verraten:
+  assert.equal(herkunftAusName(namen[0].replace(`_${clip.id}`, '')).sagtHerkunft, false,
+    'ohne die ID am Ende waere die Datei von einem eigenen Rendering nicht zu unterscheiden');
+});
+
+test('der Slug wird auch mit Video-ID im Namen wiedererkannt', () => {
+  const ordner = tempOrdner();
+  fs.writeFileSync(path.join(ordner, '01_elektrischer-wasserspender_14s_stil-b_7410474104903453984.mp4'), 'x');
+  assert.equal(slugFuerDateiname(PRODUKT, ordner), 'elektrischer-wasserspender',
+    'sonst bekaeme jedes neue Video den langen Slug aus products.json');
+});
+
+function altbestand() {
+  const daten = tempOrdner();
+  const videos = tempOrdner();
+  const ordner = path.join(videos, 'rohmaterial', '10_wasserspender');
+  fs.mkdirSync(ordner, { recursive: true });
+  const inhalt = 'altes Video';
+  fs.writeFileSync(path.join(ordner, '01_wasserspender_14s_stil-b.mp4'), inhalt);
+  const summe = require('crypto').createHash('sha256').update(inhalt).digest('hex');
+  speichereIndex(daten, {
+    version: 1,
+    eintraege: [{
+      produkt_id: 10, video_id: '7300000000000000071',
+      quelle_url: 'https://www.tiktok.com/@a/video/7300000000000000071',
+      datei: '01_wasserspender_14s_stil-b.mp4',
+      ablage: 'Marketing/videos/rohmaterial/10_wasserspender',
+      sha256: summe,
+    }],
+  });
+  return { daten, videos, ordner };
+}
+
+test('der Altbestand wird nur mit --schreiben umbenannt', () => {
+  const { daten, videos, ordner } = altbestand();
+  const vorher = fs.readFileSync(path.join(daten, 'index.json'), 'utf8');
+
+  const code = herkunftNachtragen({ datenOrdner: daten, videoOrdner: videos, melde: still });
+  assert.equal(code, 0);
+  assert.ok(fs.existsSync(path.join(ordner, '01_wasserspender_14s_stil-b.mp4')), 'die Vorschau fasst nichts an');
+  assert.equal(fs.readFileSync(path.join(daten, 'index.json'), 'utf8'), vorher);
+
+  herkunftNachtragen({ datenOrdner: daten, videoOrdner: videos, schreiben: true, melde: still });
+  const neu = '01_wasserspender_14s_stil-b_7300000000000000071.mp4';
+  assert.ok(fs.existsSync(path.join(ordner, neu)), 'umbenannt');
+  assert.equal(ladeIndex(daten).eintraege[0].datei, neu, 'und der Nachweis zeigt auf den neuen Namen');
+});
+
+test('eine Datei mit fremder Pruefsumme wird nicht umbenannt', () => {
+  const { daten, videos, ordner } = altbestand();
+  // Unter dem Namen liegt jetzt eine ANDERE Datei — so wie nach einer doppelt
+  // vergebenen Nummer, die es hier schon gegeben hat.
+  fs.writeFileSync(path.join(ordner, '01_wasserspender_14s_stil-b.mp4'), 'ein ganz anderes Video');
+
+  herkunftNachtragen({ datenOrdner: daten, videoOrdner: videos, schreiben: true, melde: still });
+  assert.ok(fs.existsSync(path.join(ordner, '01_wasserspender_14s_stil-b.mp4')),
+    'nicht angefasst');
+  assert.equal(ladeIndex(daten).eintraege[0].datei, '01_wasserspender_14s_stil-b.mp4');
+
+  // GEGENPROBE: Ohne den Abgleich haette das Umbenennen die falsche Datei
+  // mit der falschen Herkunft verknuepft — endgueltig, denn danach traegt sie
+  // eine Video-ID im Namen, die nicht zu ihr gehoert.
+  const falscheId = herkunftAusName('01_wasserspender_14s_stil-b_7300000000000000071.mp4').video_id;
+  assert.equal(falscheId, '7300000000000000071', 'genau diese ID haette sie faelschlich bekommen');
 });

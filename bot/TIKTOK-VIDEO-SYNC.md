@@ -1010,6 +1010,34 @@ der aktuellen Fassung 2026.08.19:
 | `/tag/…` | `No working app info is available` |
 | `/@handle` | `Failed to parse JSON` |
 
+### ⚠️ Der Seitentext hängt an der *gründlichen* Suche
+
+Tavily liefert den Seitentext **nur bei `search_depth: 'advanced'`**. Bis Ende
+August ging es auch mit der einfachen Suche, seit dem 26.09. nicht mehr.
+Gemessen an derselben Anfrage (`max_results: 20`):
+
+| Suchtiefe | Treffer | Adressen aus dem Seitentext |
+|---|---|---|
+| `basic` | 20 | **0** |
+| `advanced` | 20 | **32** |
+
+**Wie es aufgefallen ist:** Ein Lauf meldete *„0 Adressen, 0 mit Unterschrift"* —
+das sieht aus wie „es gibt nichts zu finden". Die Suche antwortete mit HTTP 200
+und zehn TikTok-Treffern; nur war bei **jedem** das Feld `raw_content` leer.
+Kein Fehler, keine Meldung, keine Spur.
+
+Deshalb gibt es jetzt einen **Wächter**: Kommen Treffer, aber bei keinem
+Seitentext, sagt der Lauf das ausdrücklich und nennt die zwei Ursachen —
+Tarif deckt die gründliche Suche nicht ab, oder das Kontingent ist leer.
+
+**Der Preis:** die gründliche Suche kostet **zwei** Kontingentpunkte statt einem,
+also rund 500 statt 1000 Anfragen im Monat. Das ist billig gegen den Faktor, den
+der Seitentext bringt — und das Kontingent reicht weiter, seit ein Begriff nur
+sein Kontingent nimmt und Begriffe ohne neue Funde ruhen.
+
+Das `content`-Feld der Treffer hilft **nicht** als Ersatz: Es ist eine
+Zusammenfassung ohne Videolinks (geprüft, 0 Adressen aus 2818 Zeichen).
+
 ### Der Seitentext trägt mehr als die Adresse
 
 Auf den Themenseiten steht die **komplette Bildunterschrift direkt hinter dem

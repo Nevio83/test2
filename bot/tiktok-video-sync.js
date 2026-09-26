@@ -3214,6 +3214,8 @@ async function sucheAdressen(opt) {
   const anbieter = tavily ? 'Tavily' : 'Brave';
   // Was im Seitentext gefunden wurde, samt Unterschrift und Likes.
   const funde = [];
+  // >0, wenn Treffer kamen, aber keiner Seitentext trug — siehe Waechter unten.
+  let ohneSeitentext = 0;
   try {
     let roh = [];
     if (tavily) {
@@ -3230,11 +3232,37 @@ async function sucheAdressen(opt) {
           // Der Seitentext ist hier die eigentliche Fundgrube — siehe
           // adressenAusText(). Es bleibt EINE Anfrage je Begriff.
           include_raw_content: true,
+          // "advanced" IST PFLICHT, nicht Luxus.
+          //
+          // Tavily lieferte den Seitentext bis Ende August auch bei der
+          // einfachen Suche. Seit dem 26.09. nicht mehr: gemessen an derselben
+          // Anfrage mit max_results 20 —
+          //   basic    → 20 Treffer, 0 Adressen aus dem Seitentext
+          //   advanced → 20 Treffer, 32 Adressen
+          // Ohne diese Zeile ist die ganze Seitentext-Auswertung tot, und der
+          // Lauf meldet "0 Adressen" wie bei "es gibt nichts". Genau so ist es
+          // zuerst aufgefallen.
+          //
+          // Der Preis sind zwei Kontingentpunkte je Anfrage statt einem, also
+          // rund 500 statt 1000 Anfragen im Monat. Das ist billig gegen den
+          // Faktor, den der Seitentext bringt.
+          search_depth: 'advanced',
         }),
       });
       if (!antwort.ok) return { ok: false, grund: `${anbieter} antwortete mit ${antwort.status}`, adressen: [] };
       const daten = await antwort.json();
       const treffer = (daten && daten.results) || [];
+      // WAECHTER GEGEN DEN STILLEN AUSFALL.
+      //
+      // Wenn die Suche Treffer liefert, aber KEIN einziger davon Seitentext
+      // hat, obwohl er angefordert wurde, dann ist die Fundgrube zu — und der
+      // Lauf sieht danach aus wie "nichts gefunden". Genau das ist am 26.09.
+      // passiert, nachdem Tavily den Seitentext aus der einfachen Suche
+      // genommen hatte: 10 Treffer, 0 Zeichen Text, 0 Adressen, keine
+      // Fehlermeldung. Das gehoert benannt, nicht verschluckt.
+      if (treffer.length && !treffer.some((r) => r && r.raw_content)) {
+        ohneSeitentext = treffer.length;
+      }
       for (const r of treffer) funde.push(...fundeAusText(r && r.raw_content));
       // REIHENFOLGE: erst die Trefferadressen, dann die aus dem Seitentext.
       // Das ist keine Kosmetik. Die Trefferadressen sind von der Suchmaschine
@@ -3258,6 +3286,7 @@ async function sucheAdressen(opt) {
     }
     return {
       ok: true, grund: null, anbieter,
+      ohneSeitentext,
       adressen: Array.from(new Set(roh.filter((u) => TIKTOK_VIDEO_MUSTER.test(u)))),
       // Je Adresse hoechstens ein Fund, der mit der laengsten Unterschrift.
       funde: Array.from(funde.reduce((m, f) => {
@@ -4228,7 +4257,10 @@ function slugFuerDateiname(produkt, ordner = VIDEO_ORDNER) {
   const voll = String(produkt.slug || '');
   try {
     for (const name of fs.readdirSync(ordner)) {
-      const treffer = /^\d+_(.+?)_\d+s_stil-[ab]\./.exec(name);
+      // Das optionale "_<video-id>" am Ende gehoert zum Namen, nicht zum Slug
+      // (Punkt 71). Ohne diese Klammer faende die Suche den Slug nicht mehr
+      // wieder und jedes Video bekaeme den langen Namen aus products.json.
+      const treffer = /^\d+_(.+?)_\d+s_stil-[ab](?:_\d{10,25})?\./.exec(name);
       if (treffer && voll.startsWith(treffer[1])) return treffer[1];
     }
   } catch { /* egal */ }
@@ -4344,7 +4376,23 @@ async function holeUndSortiereEin(opt) {
   // Endgueltigen Namen VOR dem Laden festlegen, damit das Video in einem Zug
   // an seinen Platz kommt und nicht zweimal umziehen muss.
   const dauer = Math.round(Number(kandidat.dauer) || 0);
-  const name = `${String(opt.nummer).padStart(2, '0')}_${opt.slug}_${dauer}s_stil-b.mp4`;
+  // PUNKT 71: DIE HERKUNFT GEHOERT IN DEN NAMEN.
+  //
+  // Bis hierher hiess geladenes Fremdmaterial "NN_<slug>_<dauer>s_stil-b.mp4" —
+  // exakt die Form, die auch die EIGENEN Renderings tragen. Am Namen allein war
+  // fremd von eigen nicht zu unterscheiden; der Ordner war der einzige Schutz.
+  // Eine Datei, die aus ihrem Ordner herausfaellt (kopiert, verschickt, in ein
+  // Schnittprojekt gezogen), verliert damit jede Spur ihrer Herkunft — und
+  // fremdes Material ohne Herkunft ist rechtlich das Schlimmste, was hier
+  // liegen kann.
+  //
+  // Die TikTok-Video-ID am Ende loest das ohne Zusatzangabe: Sie steht ohnehin
+  // im Herkunftsnachweis, ist eindeutig, und HERKUNFT_MUSTER erkennt sie
+  // wieder. Eigene Renderings haben keine — daran sind beide fuer immer zu
+  // unterscheiden.
+  const kennung = String((opt.kandidat && opt.kandidat.id) || '').replace(/[^0-9]/g, '');
+  const name = `${String(opt.nummer).padStart(2, '0')}_${opt.slug}_${dauer}s_stil-b`
+    + `${kennung ? '_' + kennung : ''}.mp4`;
   const nach = path.join(opt.videoOrdner, name);
 
   const geladen = await ladeVideo(
@@ -4557,6 +4605,8 @@ async function interaktiv(opt) {
   let zweiteRunde = false;
   let naechsterBegriff = 0;
   let sucheGescheitert = null;
+  // Nur einmal je Lauf warnen, nicht bei jedem Suchbegriff erneut.
+  let seitentextGemeldet = false;
 
   const nachschub = async () => {
     while (naechsterBegriff < begriffe.length) {
@@ -4634,6 +4684,25 @@ async function interaktiv(opt) {
       melde(`🔎 "${begriff}": ${suche.adressen.length} Adresse(n), ${neu.length} neu `
         + `(${mitText} mit Unterschrift, ${wirklichNeu} noch nie geladen) — ${jetztNehmen.length} jetzt`
         + `${spaeter.length ? `, ${spaeter.length} in Reserve` : ''}.`);
+      // Die Fundgrube ist zu — das gehoert benannt, nicht verschluckt.
+      // Sonst sieht ein Lauf ohne Seitentext genauso aus wie einer, bei dem
+      // es wirklich nichts zu finden gab.
+      if (suche.ohneSeitentext && !seitentextGemeldet) {
+        seitentextGemeldet = true;
+        melde('');
+        melde(`⚠️  Die Suche lieferte ${suche.ohneSeitentext} Treffer, aber bei KEINEM den Seitentext.`);
+        melde('   Daran haengt die eigentliche Ausbeute: Die Videoadressen stehen nicht in');
+        melde('   den Treffern, sondern im Text der TikTok-Themenseiten. Ohne ihn bleiben');
+        melde('   je Anfrage ein bis zwei Adressen uebrig statt ueber zweihundert.');
+        melde('   Zwei Ursachen, in dieser Reihenfolge:');
+        melde('   1. Der Tarif liefert den Seitentext nur bei der gruendlichen Suche.');
+        melde('      Der Bot fragt sie an (search_depth: advanced) — bleibt der Text');
+        melde('      trotzdem leer, deckt der Schluessel sie nicht ab.');
+        melde('   2. Kontingent aufgebraucht (Tavily: 1000 Punkte/Monat, die');
+        melde('      gruendliche Suche kostet zwei je Anfrage).');
+        melde('   Stand des Kontingents: https://app.tavily.com');
+        melde('');
+      }
       if (!wirklichNeu && neu.length) {
         melde(`   Nichts Neues — "${begriff}" ruht die naechsten `
           + `${Number(standard.begriff_ruhe_tage) || 21} Tage.`);
@@ -5404,6 +5473,7 @@ function leseArgumente(argv) {
     const a = argv[i];
     if (a === '--status') opt.status = true;
     else if (a === '--ordner') opt.ordner = true;
+    else if (a === '--herkunft') opt.herkunft = true;
     else if (a === '--aufraeumen') opt.aufraeumen = true;
     else if (a === '--interaktiv' || a === '--frage') opt.interaktiv = true;
     else if (a === '--laden') opt.laden = true;
@@ -5943,6 +6013,93 @@ function aufraeumen(opt = {}) {
   return 0;
 }
 
+/**
+ * Traegt die Herkunft in die Namen des Altbestands nach (Punkt 71).
+ *
+ * WARUM NICHT BEIM AUFRAEUMEN MIT: Umbenennen ist der einzige Eingriff, der
+ * den Herkunftsnachweis und die Datei GLEICHZEITIG anfassen muss. Geht das
+ * eine durch und das andere nicht, zeigt der Nachweis auf eine Datei, die es
+ * nicht mehr gibt — genau der Zustand, gegen den der Nachweis da ist. Deshalb
+ * ein eigener Befehl, der standardmaessig nur anzeigt.
+ *
+ * WARUM DIE PRUEFSUMME VORHER VERGLICHEN WIRD: Der Dateiname ist die einzige
+ * Verbindung zwischen Eintrag und Datei. Liegt unter dem Namen eine ANDERE
+ * Datei (doppelt vergebene Nummer — ist vorgekommen), wuerde das Umbenennen
+ * die falsche Datei mit der falschen Herkunft verknuepfen, und zwar endgueltig.
+ */
+function herkunftNachtragen(opt = {}) {
+  const datenZiel = opt.datenOrdner || datenOrdner();
+  const videoZiel = opt.videoOrdner || videoOrdnerAus();
+  const melde = opt.melde || console.log;
+
+  let index;
+  try {
+    index = ladeIndex(datenZiel);
+  } catch (fehler) {
+    melde(`❌ ${fehler.message}`);
+    return 1;
+  }
+
+  const offen = ohneHerkunftImNamen(index);
+  melde('── Herkunft in den Dateinamen nachtragen ───────────────────');
+  if (!offen.length) {
+    melde(`✅ Nichts zu tun — alle ${(index.eintraege || []).length} Dateien tragen ihre Herkunft.`);
+    return 0;
+  }
+
+  const plan = [];
+  const probleme = [];
+  for (const e of index.eintraege) {
+    if (herkunftAusName(e.datei).sagtHerkunft) continue;
+    if (!e.video_id) { probleme.push(`${e.datei}: keine Video-ID im Nachweis`); continue; }
+    const neuName = String(e.datei).replace(/\.([^.]+)$/, `_${e.video_id}.$1`);
+    const ort = dateiOrte(e, videoZiel, datenZiel).find((o) => fs.existsSync(o));
+    if (!ort) { probleme.push(`${e.datei}: Datei nicht gefunden`); continue; }
+    if (e.sha256) {
+      let ist;
+      try { ist = sha256(ort); } catch { ist = null; }
+      if (ist && ist !== e.sha256) { probleme.push(`${e.datei}: Pruefsumme weicht ab — NICHT angefasst`); continue; }
+    }
+    const nach = path.join(path.dirname(ort), neuName);
+    if (fs.existsSync(nach)) { probleme.push(`${neuName}: gibt es schon`); continue; }
+    plan.push({ eintrag: e, von: ort, nach, neuName });
+  }
+
+  melde(`${plan.length} Datei(en) umzubenennen, ${probleme.length} Problem(e).`);
+  melde('');
+  for (const p of plan) melde(`  ${p.eintrag.datei}  →  ${p.neuName}`);
+  if (probleme.length) { melde(''); probleme.forEach((x) => melde(`  ⚠️  ${x}`)); }
+
+  if (!opt.schreiben) {
+    melde('');
+    melde('   Nichts geaendert — das war eine Vorschau.');
+    melde('   Wirklich nachtragen: npm run tiktok:herkunft -- --schreiben');
+    return 0;
+  }
+
+  let fertig = 0;
+  for (const p of plan) {
+    try {
+      fs.renameSync(p.von, p.nach);
+    } catch (fehler) {
+      melde(`❌ ${p.eintrag.datei}: ${fehler.code || fehler.message} — abgebrochen, Nachweis unveraendert`);
+      break;
+    }
+    p.eintrag.datei = p.neuName;      // erst nach dem gelungenen Umbenennen
+    fertig++;
+  }
+  try {
+    speichereIndex(datenZiel, index);
+  } catch (fehler) {
+    melde(`❌ Nachweis nicht schreibbar: ${fehler.message}`);
+    melde('   Die Dateien sind umbenannt, der Nachweis nicht — VON HAND nachziehen!');
+    return 1;
+  }
+  melde('');
+  melde(`✅ ${fertig} Datei(en) umbenannt, Nachweis nachgefuehrt.`);
+  return 0;
+}
+
 async function main(argv) {
   const opt = leseArgumente(argv);
 
@@ -5955,6 +6112,7 @@ async function main(argv) {
   // PUNKT 64: Die Anfragetexte ausgeben — ein Creator, eine Nachricht.
   if (opt.anfragen) return anfragenAusgeben(opt);
   if (opt.rueckruf) return rueckrufAusgeben(opt);
+  if (opt.herkunft) return herkunftNachtragen({ schreiben: opt.schreiben });
   if (opt.ordner) {
     const basis = videoOrdnerAus();
     const alle = JSON.parse(fs.readFileSync(path.join(WURZEL, 'products.json'), 'utf8'));
@@ -6083,7 +6241,7 @@ module.exports = {
   hatMerkmal, getroffeneMerkmale,
   technischUntauglich, formatVermerk,
   ERLAUBTE_ABLAGEN, ablageErlaubt, fremdmaterialAmFalschenOrt,
-  HERKUNFT_MUSTER, RENDER_MUSTER, herkunftAusName, ohneHerkunftImNamen,
+  HERKUNFT_MUSTER, RENDER_MUSTER, herkunftAusName, ohneHerkunftImNamen, herkunftNachtragen,
   ersteZeile, ffmpegVersion, werkzeugStand, werkzeugZeile, werkzeugUnterschied,
   rohText, werbeVerdacht, istFremdeWerbung, WERBE_SIGNALE,
   ZUSTAENDE, VERWURF_GRUENDE, setzeZustand, zustandVon, zustandsBilanz,
