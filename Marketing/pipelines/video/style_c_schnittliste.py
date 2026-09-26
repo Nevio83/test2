@@ -55,8 +55,12 @@ Eine JSON-Datei, Format siehe SCHNITTLISTE.md. Kurzfassung:
 
 from __future__ import annotations
 
+import copy
+import dataclasses
 import hashlib
 import json
+import re
+import shutil
 import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -151,6 +155,14 @@ class Schnittliste:
     # Punkt 36: Ausdrueckliche Freigabe zum Mischen. Manchmal IST die
     # Farbauswahl der Punkt des Clips — dann soll der Hinweis schweigen.
     varianten_mischen: bool = False
+    # Punkt 59: Aus welcher Vorlage (Punkt 28) die Liste entstand. Steht im
+    # Kopf `_vorlage.name`, den der Entwurf beim Umbenennen behaelt. Ohne
+    # diesen Namen kann das Lernen nie sagen, welche Form funktioniert.
+    vorlage: str | None = None
+    # Punkt 58: Mehrere Hooktexte -> mehrere Fassungen, die sich nur am
+    # Anfang unterscheiden. Leer = eine Fassung wie bisher.
+    hook_varianten: list[str] = field(default_factory=list)
+    varianten_rotieren: bool = False
 
     @property
     def gesamtdauer(self) -> float:
@@ -241,6 +253,70 @@ def _quellen_mit_pruefsumme(liste: "Schnittliste") -> list[dict[str, Any]]:
             # noch mehr als keine Begleitdatei.
             eintrag["sha256"] = None
         gesehen[name] = eintrag
+    return [gesehen[k] for k in sorted(gesehen)]
+
+
+def _vorlagenname(kopf: Any) -> str | None:
+    if isinstance(kopf, dict) and str(kopf.get("name") or "").strip():
+        return str(kopf["name"]).strip()
+    return None
+
+
+# ── Herkunft der Rohclips (Punkt 59) ─────────────────────────────────
+#
+# WARUM DAS IN DEN BERICHT MUSS
+# Gelernt wird in GitHub Actions, gerendert auf dem eigenen PC. Der Index des
+# TikTok-Bots liegt nur auf dem PC — beim Lernen ist er nicht erreichbar. Was
+# das Lernen ueber die Herkunft wissen soll, muss also beim RENDERN in den
+# Bericht, sonst ist es spaeter nicht mehr zu haben.
+#
+# Die TikTok-Kennung steht seit Punkt 71 im Dateinamen und braucht keinen
+# Index. Der Creator steht nur im Index; fehlt der, bleibt das Feld leer —
+# geraten wird nichts.
+HERKUNFT_MUSTER = re.compile(r"_(\d{10,25})\.(mp4|mov|webm|mkv)$", re.IGNORECASE)
+
+
+def _bot_index(pfad: Path | None = None) -> dict[str, dict[str, Any]]:
+    """Index-Eintraege des Bots nach Videokennung UND Dateiname. Leer, wenn keiner da ist."""
+    ziel = pfad or (common.DATEN / "tiktok-quellen" / "index.json")
+    try:
+        roh = json.loads(Path(ziel).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    nachschlag: dict[str, dict[str, Any]] = {}
+    for eintrag in (roh.get("eintraege") or []) + (roh.get("frueher_geladen") or []):
+        if not isinstance(eintrag, dict):
+            continue
+        if eintrag.get("video_id"):
+            nachschlag.setdefault(str(eintrag["video_id"]), eintrag)
+        if eintrag.get("datei"):
+            nachschlag.setdefault(str(eintrag["datei"]), eintrag)
+    return nachschlag
+
+
+def herkunft_der_quellen(liste: "Schnittliste", *, index_pfad: Path | None = None) -> list[dict[str, Any]]:
+    """Je Rohclip: eigen oder fremd, TikTok-Kennung und Creator — soweit bekannt."""
+    index = _bot_index(index_pfad)
+    eigen_ordner = assets.EIGENES_ROHMATERIAL.resolve()
+    gesehen: dict[str, dict[str, Any]] = {}
+    for segment in liste.segmente:
+        name = segment.quelle.name
+        if name in gesehen:
+            continue
+        try:
+            segment.quelle.resolve().relative_to(eigen_ordner)
+            eigen = True
+        except (ValueError, OSError):
+            eigen = False
+        treffer = HERKUNFT_MUSTER.search(name)
+        kennung = treffer.group(1) if treffer else None
+        eintrag = index.get(kennung or "") or index.get(name) or {}
+        gesehen[name] = {
+            "datei": name,
+            "material": "eigen" if eigen else "fremd",
+            "tiktok_id": None if eigen else (kennung or eintrag.get("video_id") or None),
+            "creator": None if eigen else (str(eintrag.get("creator") or "").strip() or None),
+        }
     return [gesehen[k] for k in sorted(gesehen)]
 
 
@@ -390,7 +466,10 @@ def lies(pfad: Path) -> Schnittliste:
     zwanzig Segmenten keine Hilfe.
     """
     try:
-        roh = json.loads(Path(pfad).read_text(encoding="utf-8"))
+        # "utf-8-sig": Unter Windows speichern PowerShell 5.1 und aeltere
+        # Editoren UTF-8 MIT Byte-Order-Mark. Mit "utf-8" hiess es dann "kein
+        # gueltiges JSON" — fuer eine Datei, die voellig in Ordnung ist.
+        roh = json.loads(Path(pfad).read_text(encoding="utf-8-sig"))
     except FileNotFoundError:
         raise SchnittlisteFehler(f"Schnittliste nicht gefunden: {pfad}") from None
     except json.JSONDecodeError as fehler:
@@ -475,7 +554,36 @@ def lies(pfad: Path) -> Schnittliste:
         quelle_datei=Path(pfad),
         warnungen=warnungen,
         varianten_mischen=bool(roh.get("varianten_mischen", False)),
+        vorlage=_vorlagenname(roh.get("_vorlage")),
+        hook_varianten=[str(h).strip() for h in (roh.get("hook_varianten") or [])
+                        if str(h or "").strip()],
+        varianten_rotieren=bool(roh.get("varianten_rotieren", False)),
     )
+
+    # PLATZHALTER AUS EINER VORLAGE (Punkt 28) — hier wird ABGEBROCHEN, nicht
+    # gewarnt. Die Vorlagen in schnittlisten/vorlagen/ tragen ihre Texte als
+    # "[[…]]". Stil C brennt `text` woertlich ins Bild und setzt `hook`, `cta`
+    # und die Hashtags woertlich in den Beitrag. Ein vergessener Platzhalter
+    # stuende also als "[[Der wichtigste Vorteil]]" im veroeffentlichten Video —
+    # und ein Beitrag auf TikTok laesst sich nicht zurueckholen. Anders als ein
+    # fehlender Hook ist das kein schwaches Video, sondern ein kaputtes.
+    platzhalter = []
+    for feld in ("hook", "cta"):
+        if "[[" in str(getattr(liste, feld) or ""):
+            platzhalter.append(f"'{feld}'")
+    for nr, segment in enumerate(liste.segmente, start=1):
+        if "[[" in str(segment.text or ""):
+            platzhalter.append(f"Segment {nr} 'text'")
+    if any("[[" in str(h) for h in liste.hashtags):
+        platzhalter.append("'hashtags'")
+    if any("[[" in h for h in liste.hook_varianten):
+        platzhalter.append("'hook_varianten'")
+    if platzhalter:
+        raise SchnittlisteFehler(
+            f"{Path(pfad).name}: noch nicht ausgefuellte Platzhalter aus der Vorlage in "
+            + ", ".join(platzhalter)
+            + ". Jedes [[…]] durch echten Text ersetzen oder das Feld weglassen."
+        )
 
     # Punkt 33: Ein Tippfehler im Uebergang soll auffallen, nicht still zum
     # harten Schnitt werden. Warnung, kein Abbruch — die Fassung ist renderbar.
@@ -701,6 +809,11 @@ def rendere(
         # Fuers Lernen: Welche Rohclips steckten drin? Ohne diese Spalte kann
         # der Bandit nie lernen, dass Material eines bestimmten Creators laeuft.
         "quellen": sorted({s.quelle.name for s in liste.segmente}),
+        # Punkt 59: dieselben Clips mit Herkunft (Creator, TikTok-Kennung,
+        # eigen/fremd) und die Vorlage — die Merkmale, aus denen das Lernen
+        # "Clips von diesem Creator laufen" ableiten kann.
+        "herkunft": herkunft_der_quellen(liste),
+        "vorlage": liste.vorlage,
         # Fuer die Bildunterschrift beim Posten — und damit im Bericht steht,
         # ob ueberhaupt Text da war.
         "hook": liste.hook,
@@ -934,6 +1047,223 @@ def rendere(
 
 # ── Job-Einstieg ─────────────────────────────────────────────────────
 
+# ── Vorlagen (Punkt 28) ──────────────────────────────────────────────
+#
+# Die Form eines Clips — wie viele Segmente, wie lang, wo Text steht — fing bei
+# jeder Fassung wieder bei null an. Die Vorlagen liegen als JSON in
+# schnittlisten/vorlagen/ (lesbar, ohne Python aenderbar); hier werden sie
+# EINMAL eingelesen, damit es eine Quelle gibt und nicht eine Liste im Code
+# und eine zweite auf der Platte, die auseinanderlaufen.
+#
+# Den Entwurf auf die Platte schreibt pipelines/video/vorlagen.py
+# (npm run marketing:vorlage).
+
+VORLAGEN_ORDNER = SCHNITTLISTEN / "vorlagen"
+
+
+def _lade_vorlagen(ordner: Path = VORLAGEN_ORDNER) -> dict[str, dict[str, Any]]:
+    """Alle Vorlagen nach Schluessel. Eine kaputte Datei wird gemeldet, nicht geworfen.
+
+    Geworfen wuerde hier beim IMPORT — und damit stuende das Rendern jeder
+    anderen Schnittliste still, nur weil eine Vorlage einen Tippfehler hat.
+    """
+    vorlagen: dict[str, dict[str, Any]] = {}
+    if not ordner.exists():
+        return vorlagen
+    for pfad in sorted(ordner.glob("*.json")):
+        try:
+            roh = json.loads(pfad.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError) as fehler:
+            print(f"[stil_c] ⚠️  Vorlage {pfad.name} unlesbar: {fehler}")
+            continue
+        kopf = roh.get("_vorlage") or {}
+        schluessel = str(kopf.get("name") or pfad.stem)
+        vorlagen[schluessel] = {
+            "wofuer": kopf.get("wofuer", ""),
+            "wann_nicht": kopf.get("wann_nicht", ""),
+            "segmente": roh.get("segmente") or [],
+            "pfad": pfad,
+            "roh": roh,
+        }
+    return vorlagen
+
+
+VORLAGEN = _lade_vorlagen()
+
+
+def vorlagen_uebersicht() -> list[dict[str, Any]]:
+    """Schluessel, Zweck und Laenge je Vorlage — OHNE Endkarte (die kommt beim Rendern dazu)."""
+    return [{
+        "schluessel": schluessel,
+        "wofuer": v["wofuer"],
+        "wann_nicht": v["wann_nicht"],
+        "segmente": len(v["segmente"]),
+        "dauer": round(sum(float(s.get("soll_sek") or 0) for s in v["segmente"]), 2),
+    } for schluessel, v in VORLAGEN.items()]
+
+
+def vorlage(schluessel: str, produkt_id: int, *, quellen: list[str] | None = None) -> dict[str, Any]:
+    """Ein Geruest aus einer Vorlage. KeyError bei unbekanntem Schluessel.
+
+    Quellen werden der Reihe nach eingesetzt; wo keine angegeben ist, bleibt
+    "quelle" LEER — kein erfundener Dateiname. Eine Liste mit erfundenen
+    Namen saehe fertig aus und fiele erst beim Rendern auf die Nase; eine
+    leere "quelle" bricht schon beim Einlesen ab, mit Segmentnummer.
+    """
+    eintrag = VORLAGEN[str(schluessel).replace("-", "_")]
+    geruest = copy.deepcopy(eintrag["roh"])
+    geruest["produkt_id"] = int(produkt_id)
+    angegeben = [str(q) for q in (quellen or [])]
+    for i, segment in enumerate(geruest.get("segmente") or []):
+        segment["quelle"] = angegeben[i] if i < len(angegeben) else ""
+    return geruest
+
+
+# ── Trockenpruefung (Punkt 48) ───────────────────────────────────────
+#
+# lies() bricht beim ERSTEN Fehler ab — richtig fuers Rendern, lastig beim
+# Bauen einer Liste: Wer drei Fehler hat, braucht drei Laeufe, um sie zu
+# sehen. Die Trockenpruefung sammelt alles, was sich ohne Video sagen laesst,
+# und trennt Fehler (das Rendern wuerde abbrechen) von Hinweisen (es wuerde
+# laufen, aber schwaecher).
+
+BAUVERSUCH_SEK = 3.0
+
+
+def trockenpruefung(pfad: Path, *, bauversuch: bool = False) -> dict[str, Any]:
+    """Eine Schnittliste gegenlesen, ohne ein Video zu bauen.
+
+    @param bauversuch  Zusaetzlich die ersten drei Sekunden in Vorschaugroesse
+        schneiden. Die eine Frage, die keine Textpruefung beantwortet: Laesst
+        sich aus diesen Quellen ueberhaupt ein Bild schneiden? Bewusst nur
+        drei Sekunden — das Gegenlesen soll Sekunden kosten, nicht Minuten.
+    """
+    bericht: dict[str, Any] = {"ok": False, "fehler": [], "hinweise": [],
+                               "tempo": None, "liste": None}
+    try:
+        liste = lies(Path(pfad))
+    except SchnittlisteFehler as fehler:
+        bericht["fehler"].append(str(fehler))
+        return bericht
+
+    bericht["liste"] = liste
+    bericht["hinweise"].extend(liste.warnungen)
+    bericht["tempo"] = tempo(liste)
+    bericht["hinweise"].extend(bericht["tempo"]["hinweise"])
+    bericht["hinweise"].extend(varianten(liste)["hinweise"])
+
+    # Dieselben Sperren wie in rendere() — mit denselben Worten, damit eine
+    # Meldung hier eine Meldung dort vorwegnimmt.
+    offen = ungeklaerte_rechte(liste)
+    if offen:
+        namen = ", ".join(p.name for p in offen[:4])
+        mehr = f" (+{len(offen) - 4} weitere)" if len(offen) > 4 else ""
+        bericht["fehler"].append(f"{len(offen)} Quellclip(s) ohne Lizenznachweis: {namen}{mehr}")
+
+    if products.nach_id(liste.produkt_id) is None:
+        bericht["fehler"].append(f"Produkt {liste.produkt_id} steht nicht in products.json")
+
+    # Ohne Musikbett bricht rendere() ab (der Originalton ist bewusst weg).
+    # Genau das soll hier vorher auffallen, nicht nach dem Schneiden.
+    if liste.musik:
+        musik = common.MUSIK / liste.musik
+        if not musik.exists():
+            bericht["fehler"].append(f"Musikstueck nicht gefunden: {liste.musik}")
+            musik = None
+    else:
+        musik = common.musik_waehlen(int(liste.produkt_id))
+        if musik is None:
+            bericht["fehler"].append(
+                "kein Musikstueck in Marketing/musik — das Rendern bricht ohne Ton ab"
+            )
+    if musik is not None and not assets.hat_lizenz(musik):
+        bericht["fehler"].append(f"Musikstueck ohne Lizenznachweis: {musik.name}")
+
+    if bauversuch and not bericht["fehler"]:
+        try:
+            bericht["bauversuch"] = _bauversuch(liste)
+        except Exception as fehler:  # noqa: BLE001 — jeder Fehler ist hier ein Befund
+            bericht["fehler"].append(f"Bauversuch gescheitert: {str(fehler)[:300]}")
+
+    bericht["ok"] = not bericht["fehler"]
+    return bericht
+
+
+def _bauversuch(liste: Schnittliste, sekunden: float = BAUVERSUCH_SEK) -> dict[str, Any]:
+    """Die ersten Sekunden der Liste wirklich schneiden — in Vorschaugroesse, ohne Ton."""
+    ordner = Path(tempfile.mkdtemp(prefix="maios_bauversuch_"))
+    try:
+        teile: list[Path] = []
+        rest = float(sekunden)
+        for i, segment in enumerate(liste.segmente):
+            if rest <= 0.05:
+                break
+            stueck = dataclasses.replace(segment, bis=segment.von + min(segment.dauer, rest))
+            teile.append(_segment_bauen(stueck, ordner / f"probe_{i:02d}.mp4", vorschau=True))
+            rest -= stueck.dauer
+        verzeichnis = ordner / "teile.txt"
+        verzeichnis.write_text(
+            "\n".join(f"file '{p.resolve().as_posix()}'" for p in teile), encoding="utf-8"
+        )
+        probe = ordner / "probe.mp4"
+        common.lauf(["-f", "concat", "-safe", "0", "-i", str(verzeichnis),
+                     "-c:v", "libx264", "-preset", "ultrafast", "-pix_fmt", "yuv420p",
+                     "-r", "30", str(probe)])
+        info = common.medien_info(probe)
+        if info is None or info.dauer <= 0:
+            raise RuntimeError("der Bauversuch ergab eine leere Datei")
+        return {"dauer": round(info.dauer, 2), "breite": info.breite,
+                "hoehe": info.hoehe, "segmente": len(teile)}
+    finally:
+        shutil.rmtree(ordner, ignore_errors=True)
+
+
+# ── Hook-Varianten (Punkt 58) ────────────────────────────────────────
+#
+# Welcher Anfang funktioniert, weiss man vorher nicht. Bei einer Fassung je
+# Clip ist jede Veroeffentlichung eine Einzelmessung ohne Vergleich. Deshalb
+# mehrere Fassungen aus DERSELBEN Liste, die sich nur am Anfang unterscheiden.
+#
+# ALLES ANDERE BLEIBT GLEICH — Laenge, Texte, Musik, Hashtags. Sonst misst man
+# nicht den Hook, sondern verschiedene Videos.
+
+def hook_varianten(liste: Schnittliste, hooks: list[str], *,
+                   erstes_segment_tauschen: bool = False) -> list[Schnittliste]:
+    """Eine Fassung je Hooktext, als unabhaengige Kopien.
+
+    @param erstes_segment_tauschen  Zusaetzlich die erste Einstellung wechseln:
+        Die Segmente werden ROTIERT (B C A, C A B), nicht gemischt — so
+        behaelt jede Fassung dieselben Teile und dieselbe Laenge. Erst ab drei
+        Segmenten; bei zweien waere jede Rotation der halbe Clip vertauscht.
+    """
+    texte = [str(h).strip() for h in (hooks or []) if str(h or "").strip()]
+    if not texte:
+        raise ValueError("keine Hooktexte — ohne mindestens einen gibt es nichts zu vergleichen")
+
+    fassungen: list[Schnittliste] = []
+    for i, text in enumerate(texte):
+        kopie = copy.deepcopy(liste)
+        kopie.hook = text
+        if erstes_segment_tauschen and len(kopie.segmente) >= 3:
+            n = i % len(kopie.segmente)
+            kopie.segmente = kopie.segmente[n:] + kopie.segmente[:n]
+            erstes = kopie.segmente[0]
+            if n and erstes.text:
+                kopie.warnungen.append(
+                    f"Fassung {chr(97 + i)}: das neue erste Segment traegt Text "
+                    f"('{erstes.text[:30]}') — er liegt unter dem Hook"
+                )
+        fassungen.append(kopie)
+    return fassungen
+
+
+def variantenname(pfad: Path, index: int) -> Path:
+    """fassung.mp4 -> fassung_a.mp4. Die Kennung VOR der Endung, sonst erkennt nichts die Datei als Video."""
+    if not 0 <= int(index) < 26:
+        raise ValueError(f"Variante {index} — hoechstens 26 Fassungen (a bis z)")
+    return pfad.with_name(f"{pfad.stem}_{chr(97 + int(index))}{pfad.suffix}")
+
+
 def pruefsumme(pfad: Path) -> str:
     """Fingerabdruck des LISTENINHALTS, nicht der Datei.
 
@@ -973,28 +1303,56 @@ def offene_listen() -> list[Path]:
         # macht: Ist das Ziel juenger als die Quelle, ist nichts zu tun.
         offen = []
         for p in alle:
-            ziel = common.RENDERS / f"{p.stem}_stil_c.mp4"
-            if ziel.exists() and ziel.stat().st_mtime >= p.stat().st_mtime:
+            if all(_ziel_aktuell(p, ziel) for ziel, _ in _ziele(p)):
                 continue
             offen.append(p)
         return offen
 
     zeilen = db.abfragen(
-        "SELECT schnittliste, schnittliste_hash FROM mkt_videos "
+        "SELECT schnittliste, schnittliste_hash, bericht->>'hook_variante' AS variante "
+        "FROM mkt_videos "
         "WHERE stil = 'C' AND pruefergebnis = 'ok' AND schnittliste IS NOT NULL",
         (),
     )
-    fertig = {(z["schnittliste"], z.get("schnittliste_hash")) for z in zeilen}
+    fertig = {(z["schnittliste"], z.get("schnittliste_hash"), z.get("variante")) for z in zeilen}
     # Zeilen aus der Zeit vor der Pruefsumme haben keine. Sie gelten weiter
     # als fertig — sonst wuerde der Umstellungstag alles noch einmal rendern.
     alt_ohne_summe = {z["schnittliste"] for z in zeilen if not z.get("schnittliste_hash")}
 
     offen = []
     for p in alle:
-        if (p.name, pruefsumme(p)) in fertig or p.name in alt_ohne_summe:
+        if p.name in alt_ohne_summe:
+            continue
+        summe = pruefsumme(p)
+        # Punkt 58: Mit Hook-Varianten ist eine Liste erst fertig, wenn JEDE
+        # Fassung bestanden hat. Sonst bliebe eine gescheiterte Fassung b
+        # liegen, sobald a durch ist — und der Vergleich faende nie statt.
+        if all((p.name, summe, kennung) in fertig for _, kennung in _ziele(p)):
             continue
         offen.append(p)
     return offen
+
+
+def _ziele(pfad: Path) -> list[tuple[Path, str | None]]:
+    """Zieldateien einer Liste mit Variantenkennung — ohne Varianten genau eine, Kennung None.
+
+    Liest nur das JSON, nicht die Clips: offene_listen() laeuft bei jedem
+    Takt, und eine unlesbare Liste soll hier nicht scheitern, sondern beim
+    Rendern mit Segmentnummer gemeldet werden.
+    """
+    basis = common.RENDERS / f"{pfad.stem}_stil_c.mp4"
+    try:
+        roh = json.loads(pfad.read_text(encoding="utf-8-sig"))
+        anzahl = len([h for h in (roh.get("hook_varianten") or []) if str(h or "").strip()])
+    except (OSError, json.JSONDecodeError, AttributeError):
+        anzahl = 0
+    if anzahl <= 0:
+        return [(basis, None)]
+    return [(variantenname(basis, i), chr(97 + i)) for i in range(min(anzahl, 26))]
+
+
+def _ziel_aktuell(liste_pfad: Path, ziel: Path) -> bool:
+    return ziel.exists() and ziel.stat().st_mtime >= liste_pfad.stat().st_mtime
 
 
 def job_render_stil_c() -> dict[str, Any]:
@@ -1036,52 +1394,148 @@ def job_render_stil_c() -> dict[str, Any]:
             print(f"[stil_c] ⛔ {pfad.name}: Produkt {liste.produkt_id} gibt es nicht")
             continue
 
-        ziel = common.RENDERS / f"{pfad.stem}_stil_c.mp4"
-        video_id = None
-        if db.verfuegbar():
-            zeile = db.eine_zeile(
-                "INSERT INTO mkt_videos "
-                "(stil, pfad, schnittliste, schnittliste_hash, produkt_id) "
-                "VALUES ('C', %s, %s, %s, %s) RETURNING id",
-                (str(ziel), pfad.name, pruefsumme(pfad), liste.produkt_id),
-            )
-            video_id = int(zeile["id"]) if zeile else None
-
-        import time as _zeit
-        begonnen = _zeit.monotonic()
-        try:
-            _, bericht = rendere(liste, produkt, ziel)
-            ergebnis = quality_gate.pruefe(ziel, erwartete_dauer=bericht.get("dauer_soll"))
-            if video_id:
-                quality_gate.haltefest(video_id, ergebnis)
-                # Der Bericht wandert MIT in die Datenbank. Er stand bisher
-                # nur im Protokoll eines Laufs — dabei ist genau das die
-                # Angabe, die das Lernmodul braucht ("welche Rohclips, welche
-                # Musik, welcher Hook steckten drin"), und features.py kann
-                # sie bis heute nicht lesen, weil sie nirgends steht.
-                db.ausfuehren(
-                    "UPDATE mkt_videos SET renderdauer_sek = %s, bericht = %s "
-                    "WHERE id = %s",
-                    (round(_zeit.monotonic() - begonnen, 2),
-                     json.dumps(bericht, ensure_ascii=False, default=str),
-                     video_id),
-                )
-            if ergebnis.bestanden:
+        # PUNKT 58: Mit Hook-Varianten entsteht je Hooktext eine eigene Datei
+        # (fassung_stil_c_a.mp4, _b, _c) mit eigener Zeile in mkt_videos — und
+        # damit eigener Kampagnenkennung (mkt_<video_id>). Nur so lassen sich
+        # die Fassungen nach dem Veroeffentlichen auseinanderhalten.
+        summe = pruefsumme(pfad)
+        if liste.hook_varianten:
+            fassungen = hook_varianten(liste, liste.hook_varianten,
+                                       erstes_segment_tauschen=liste.varianten_rotieren)
+        else:
+            fassungen = [liste]
+        for fassung, (ziel, kennung) in zip(fassungen, _ziele(pfad)):
+            if kennung and _fassung_fertig(pfad, summe, kennung, ziel):
+                continue
+            for warnung in fassung.warnungen[len(liste.warnungen):]:
+                print(f"[stil_c] ⚠️  {pfad.name}: {warnung}")
+            ergebnis_ok = _rendere_fassung(fassung, produkt, pfad, summe, ziel, kennung)
+            if ergebnis_ok:
                 gerendert += 1
-                print(f"[stil_c] ✅ {produkt.name}: {ergebnis.info.dauer:.1f}s aus "
-                      f"{bericht['segmente']} Segment(en), Musik '{bericht.get('musik')}'")
             else:
                 verworfen += 1
-                print(f"[stil_c] ⛔ verworfen: {ergebnis.als_text()}")
-        except Exception as fehler:
-            verworfen += 1
-            print(f"[stil_c] ❌ {pfad.name}: {fehler}")
-            if video_id:
-                quality_gate.haltefest(
-                    video_id, quality_gate.Pruefergebnis(False, [str(fehler)[:300]])
-                )
 
     if wartend:
-        print(f"[stil_c] {gerendert + verworfen} von {len(listen)} Listen bearbeitet, "
+        print(f"[stil_c] {min(len(listen), JE_LAUF)} von {len(listen)} Listen bearbeitet, "
               f"{wartend} warten auf den naechsten Lauf.")
     return {"gerendert": gerendert, "verworfen": verworfen, "wartend": wartend}
+
+
+def _fassung_fertig(pfad: Path, summe: str, kennung: str, ziel: Path) -> bool:
+    """Ist DIESE Fassung schon bestanden? Dann wird sie nicht noch einmal gerendert."""
+    if not db.verfuegbar():
+        return _ziel_aktuell(pfad, ziel)
+    zeile = db.eine_zeile(
+        "SELECT 1 AS da FROM mkt_videos WHERE stil = 'C' AND pruefergebnis = 'ok' "
+        "AND schnittliste = %s AND schnittliste_hash = %s AND bericht->>'hook_variante' = %s",
+        (pfad.name, summe, kennung),
+    )
+    return zeile is not None
+
+
+def _rendere_fassung(liste: Schnittliste, produkt: Produkt, pfad: Path, summe: str,
+                     ziel: Path, kennung: str | None) -> bool:
+    """Eine Fassung rendern, pruefen und festhalten. True, wenn sie bestanden hat."""
+    video_id = None
+    if db.verfuegbar():
+        zeile = db.eine_zeile(
+            "INSERT INTO mkt_videos "
+            "(stil, pfad, schnittliste, schnittliste_hash, produkt_id) "
+            "VALUES ('C', %s, %s, %s, %s) RETURNING id",
+            (str(ziel), pfad.name, summe, liste.produkt_id),
+        )
+        video_id = int(zeile["id"]) if zeile else None
+
+    import time as _zeit
+    begonnen = _zeit.monotonic()
+    try:
+        _, bericht = rendere(liste, produkt, ziel)
+        if kennung:
+            # Welche Fassung das ist — daran erkennt offene_listen(), ob die
+            # Liste fertig ist, und das Lernen, welcher Hook lief.
+            bericht["hook_variante"] = kennung
+        ergebnis = quality_gate.pruefe(ziel, erwartete_dauer=bericht.get("dauer_soll"))
+        if video_id:
+            quality_gate.haltefest(video_id, ergebnis)
+            # Der Bericht wandert MIT in die Datenbank. Er stand bisher
+            # nur im Protokoll eines Laufs — dabei ist genau das die
+            # Angabe, die das Lernmodul braucht ("welche Rohclips, welche
+            # Musik, welcher Hook steckten drin").
+            db.ausfuehren(
+                "UPDATE mkt_videos SET renderdauer_sek = %s, bericht = %s "
+                "WHERE id = %s",
+                (round(_zeit.monotonic() - begonnen, 2),
+                 json.dumps(bericht, ensure_ascii=False, default=str),
+                 video_id),
+            )
+        name = f"{produkt.name}" + (f" (Fassung {kennung})" if kennung else "")
+        if ergebnis.bestanden:
+            print(f"[stil_c] ✅ {name}: {ergebnis.info.dauer:.1f}s aus "
+                  f"{bericht['segmente']} Segment(en), Musik '{bericht.get('musik')}'")
+            return True
+        print(f"[stil_c] ⛔ verworfen ({name}): {ergebnis.als_text()}")
+        return False
+    except Exception as fehler:
+        print(f"[stil_c] ❌ {pfad.name}" + (f" Fassung {kennung}" if kennung else "") + f": {fehler}")
+        if video_id:
+            quality_gate.haltefest(
+                video_id, quality_gate.Pruefergebnis(False, [str(fehler)[:300]])
+            )
+        return False
+
+
+def _befehl(argv: list[str] | None = None) -> int:
+    """Die Unterbefehle aus SCHNITT.md: `vorlage` und `pruefen`.
+
+        py -m pipelines.video.style_c_schnittliste vorlage [name --produkt N …]
+        py -m pipelines.video.style_c_schnittliste pruefen <liste> [--bauversuch]
+
+    `vorlage` reicht an vorlagen.py weiter — EIN Weg, auch fuer
+    npm run marketing:vorlage. Ohne Unterbefehl wird geprueft.
+    """
+    import sys
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "vorlage":
+        from . import vorlagen
+        return vorlagen.main(argv[1:])
+    if argv and argv[0] == "pruefen":
+        argv = argv[1:]
+    return _pruefen_befehl(argv)
+
+
+def _pruefen_befehl(argv: list[str] | None = None) -> int:
+    """Punkt 48 von der Kommandozeile: npm run marketing:pruefen -- <liste> [--bauversuch]."""
+    import argparse
+    parser = argparse.ArgumentParser(description="Schnittliste gegenlesen, ohne ein Video zu bauen.")
+    parser.add_argument("liste", help="Pfad oder Dateiname in Marketing/schnittlisten/")
+    parser.add_argument("--bauversuch", action="store_true",
+                        help="zusaetzlich die ersten drei Sekunden in Vorschaugroesse schneiden")
+    args = parser.parse_args(argv)
+
+    pfad = Path(args.liste)
+    if not pfad.exists() and (SCHNITTLISTEN / args.liste).exists():
+        pfad = SCHNITTLISTEN / args.liste
+    bericht = trockenpruefung(pfad, bauversuch=args.bauversuch)
+
+    print(f"── {pfad.name} ──")
+    for fehler in bericht["fehler"]:
+        print(f"  ❌ {fehler}")
+    for hinweis in bericht["hinweise"]:
+        print(f"  ⚠️  {hinweis}")
+    liste = bericht["liste"]
+    if liste is not None:
+        endkarte = ENDKARTE_SEK if liste.endkarte else 0.0
+        print(f"  {len(liste.segmente)} Segment(e), {liste.gesamtdauer:.1f} s"
+              + (f" + {endkarte:.1f} s Endkarte" if endkarte else "")
+              + (f", {len(liste.hook_varianten)} Hook-Varianten" if liste.hook_varianten else ""))
+    if "bauversuch" in bericht:
+        b = bericht["bauversuch"]
+        print(f"  Bauversuch: {b['dauer']:.1f} s in {b['breite']}x{b['hoehe']} geschnitten")
+    print("  ✅ bereit zum Rendern" if bericht["ok"] else
+          f"  ⛔ {len(bericht['fehler'])} Fehler — so wuerde das Rendern abbrechen")
+    return 0 if bericht["ok"] else 1
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(_befehl())

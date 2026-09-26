@@ -18,9 +18,12 @@
  * daran hindern.
  */
 
+const fs = require('fs');
+const path = require('path');
 const { db } = require('../database');
 
 const hatDatenbank = !!process.env.DATABASE_URL;
+const KONFIG_PFAD = path.join(__dirname, 'config', 'marketing.config.json');
 
 /** Kleiner Helfer: Abfrage ausfuehren, bei fehlender DB leeres Ergebnis. */
 async function frag(sql, params = []) {
@@ -107,10 +110,14 @@ async function warteschlange(limit = 25) {
 /** Videos, die die Ausgangspruefung NICHT bestanden haben — mit Grund. */
 async function verworfen(limit = 15) {
   return frag(
-    `SELECT v.id, v.stil, v.pruefergebnis, v.pruefgrund, v.erstellt_am, m.produkt_id
+    // LEFT JOIN wie bei der Warteschlange: Mit INNER JOIN fehlte hier jedes
+    // verworfene Stil-C-Video — und damit ausgerechnet der Grund, warum ein
+    // handgeschnittener Clip nie in der Warteschlange ankam.
+    `SELECT v.id, v.stil, v.pruefergebnis, v.pruefgrund, v.erstellt_am, v.schnittliste,
+            COALESCE(m.produkt_id, v.produkt_id) AS produkt_id
        FROM mkt_videos v
-       JOIN mkt_briefs b ON b.id = v.brief_id
-       JOIN mkt_matches m ON m.id = b.match_id
+       LEFT JOIN mkt_briefs b ON b.id = v.brief_id
+       LEFT JOIN mkt_matches m ON m.id = b.match_id
       WHERE v.pruefergebnis = 'verworfen'
       ORDER BY v.erstellt_am DESC LIMIT $1`,
     [Math.min(limit, 50)]
@@ -187,6 +194,99 @@ async function overrides() {
   );
 }
 
+// ── Vorrat: wie lange reicht, was freigegeben ist? (Punkt 56) ───────
+//
+// Der Takt ist gebaut (publish/slots.py vergibt Zeitfenster, der Workflow
+// laeuft alle 30 Minuten). Was niemand gemessen hat, ist der NACHSCHUB. Ein
+// Kanal schlaeft nicht ein, weil der Zeitplan fehlt, sondern weil der Vorrat
+// leer ist — und das merkt man sonst erst am ersten Tag ohne Beitrag.
+
+function ladeKonfig() {
+  try { return JSON.parse(fs.readFileSync(KONFIG_PFAD, 'utf8')); } catch { return {}; }
+}
+
+function konfigWert(konfig, punktPfad, standard) {
+  let knoten = konfig;
+  for (const teil of String(punktPfad).split('.')) {
+    if (!knoten || typeof knoten !== 'object' || !(teil in knoten)) return standard;
+    knoten = knoten[teil];
+  }
+  return knoten;
+}
+
+/** ENV-Schalter lesen — dieselben Woerter wie guardrails._flag in Python. */
+function schalter(roh, standard) {
+  const w = String(roh == null ? '' : roh).trim().toLowerCase();
+  if (['true', '1', 'ja', 'yes'].includes(w)) return true;
+  if (['false', '0', 'nein', 'no'].includes(w)) return false;
+  return standard;
+}
+
+/**
+ * Laeuft der Automat im Trockenlauf? Dieselbe Entscheidung wie
+ * guardrails.trockenlauf() — ENV schlaegt Vorgabe aus der Konfiguration.
+ */
+function trockenlaufAktiv(env = process.env, konfig = ladeKonfig()) {
+  return schalter(env.MARKETING_DRY_RUN, Boolean(konfigWert(konfig, 'trockenlauf.standard', true)));
+}
+
+/**
+ * Die Rechnung selbst — ohne Datenbank, damit sie pruefbar ist.
+ *
+ * TAKT = min(Zahl der Slots, max_posts_pro_tag). Beides zaehlt: Vier Slots bei
+ * hoechstens drei Beitraegen am Tag heissen drei; lernt der Automat die Slots
+ * auf zwei herunter (veroeffentlichung.slots steht auf der Positivliste),
+ * heisst es zwei. Wer nur max_posts_pro_tag liest, unterstellt dann einen
+ * schnelleren Verbrauch als den echten: 20 Clips reichten rechnerisch 6,7
+ * statt 10 Tage, und die Warnung kaeme ein Drittel zu frueh. Ein Fehlalarm
+ * klingt harmlos — aber wer ein paar davon bekommen hat, liest den echten
+ * nicht mehr.
+ *
+ * GEZAEHLT wird nur FREIGEGEBENES. Beitraege, die noch auf eine Freigabe
+ * warten, sind kein Vorrat, sondern Arbeit — sie werden getrennt ausgewiesen,
+ * weil genau dort meist der Hebel liegt.
+ */
+function vorratRechnen({ frei = 0, wartet = 0, slots = 0, maxProTag = 0, grenzeTage = 14 } = {}) {
+  const takt = Math.min(Number(slots) || 0, Number(maxProTag) || 0);
+  if (!(takt > 0)) {
+    return {
+      frei, wartet, pro_tag: 0, reicht_tage: null, grenze_tage: grenzeTage, warnung: false,
+      grund: 'kein Veroeffentlichungs-Slot konfiguriert — es wird gar nichts verbraucht',
+    };
+  }
+  const reicht = Math.round((Number(frei) / takt) * 10) / 10;
+  return {
+    frei, wartet, pro_tag: takt, reicht_tage: reicht, grenze_tage: grenzeTage,
+    warnung: reicht < grenzeTage, grund: null,
+  };
+}
+
+async function vorrat() {
+  if (!hatDatenbank) return { datenbank: false, grund: 'DATABASE_URL fehlt' };
+  const [z] = await frag(
+    `SELECT
+       (SELECT COUNT(*) FROM mkt_posts
+         WHERE freigabe = 'frei'  AND status IN ('geplant', 'wartet_freigabe'))::int AS frei,
+       (SELECT COUNT(*) FROM mkt_posts
+         WHERE freigabe = 'offen' AND status IN ('geplant', 'wartet_freigabe'))::int AS wartet`
+  );
+  const konfig = ladeKonfig();
+  let slots = konfigWert(konfig, 'veroeffentlichung.slots', []);
+  // Gelernter Wert schlaegt die Datei — genau wie guardrails.wert().
+  const [ov] = await frag(`SELECT wert FROM mkt_config_overrides WHERE pfad = 'veroeffentlichung.slots'`);
+  if (ov && Array.isArray(ov.wert)) slots = ov.wert;
+  return {
+    datenbank: true,
+    trockenlauf: trockenlaufAktiv(process.env, konfig),
+    ...vorratRechnen({
+      frei: z ? z.frei : 0,
+      wartet: z ? z.wartet : 0,
+      slots: Array.isArray(slots) ? slots.length : 0,
+      maxProTag: Number(konfigWert(konfig, 'veroeffentlichung.max_posts_pro_tag', 3)),
+    }),
+  };
+}
+
 /** Zusammenfassung fuer die Kopfzeile. */
 async function ueberblick() {
   if (!hatDatenbank) {
@@ -209,6 +309,7 @@ async function ueberblick() {
   return {
     datenbank: true,
     ...z,
+    vorrat: await vorrat(),
     // DIE VIERTE SPERRE, DIE NIRGENDS STAND.
     //
     // Gezaehlt wurden bisher drei Notaus, die sperrende Rechtspruefung und
@@ -327,5 +428,6 @@ async function freigeben(postId, frei, { von = 'admin', notiz = null } = {}) {
 module.exports = {
   jobs, laeufe, trends, warteschlange, verworfen, ergebnisse,
   lernstand, kosten, protokoll, overrides, ueberblick, schalte, schalte_alle,
-  offeneFreigaben, freigeben
+  offeneFreigaben, freigeben,
+  vorrat, vorratRechnen, trockenlaufAktiv
 };

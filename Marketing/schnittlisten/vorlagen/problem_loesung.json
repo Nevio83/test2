@@ -1,0 +1,46 @@
+{
+  "_vorlage": {
+    "name": "problem_loesung",
+    "wofuer": "Der Klassiker: erst das Aergernis, dann das Geraet, das es loest. Fuer alles, was einen Handgriff abnimmt (Wasserspender, Gemueseschneider, Sensorlicht).",
+    "wann_nicht": "Wenn das Problem sich nicht in 2,5 Sekunden zeigen laesst — dann lieber drei_gruende.",
+    "hinweis": "Das Produkt erscheint ab Sekunde 2,5. Spaeter nicht: Wer bis dahin nichts vom Produkt gesehen hat, ist weg."
+  },
+  "produkt_id": null,
+  "hook": "[[Das Aergernis in hoechstens sechs Woertern]]",
+  "cta": "Link im Profil. Werbung.",
+  "hashtags": [],
+  "segmente": [
+    {
+      "rolle": "problem",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "_suche": "Das Aergernis ohne Produkt: schwere Flasche, verschuettetes Wasser, dunkler Flur. Keine Schrift — hier liegt der Hook im Bild."
+    },
+    {
+      "rolle": "produkt_auftritt",
+      "soll_sek": 2.0,
+      "quelle": null,
+      "text": "[[Was es ist, in drei Woertern]]",
+      "_suche": "Das Geraet gross und scharf im Bild, am besten in der Hand."
+    },
+    {
+      "rolle": "in_benutzung",
+      "soll_sek": 3.0,
+      "quelle": null,
+      "_suche": "Der eine Handgriff, der das Problem loest. Die laengste Einstellung — hier passiert, was verkauft."
+    },
+    {
+      "rolle": "vorteil",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "text": "[[Der wichtigste Vorteil]]",
+      "_suche": "Nahaufnahme des Details, das den Vorteil zeigt (Akku, Knopf, Klinge)."
+    },
+    {
+      "rolle": "ergebnis",
+      "soll_sek": 2.0,
+      "quelle": null,
+      "_suche": "Das geloeste Problem: volles Glas, geschnittenes Gemuese, heller Flur. Danach kommt die Endkarte mit Preis."
+    }
+  ]
+}

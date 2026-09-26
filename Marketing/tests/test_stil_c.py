@@ -525,8 +525,13 @@ def test_die_musik_blendet_aus_statt_abzureissen(tmp_path, monkeypatch):
     ziel = tmp_path / "fertig.mp4"
     sc.rendere(liste, _produkt(), ziel)
 
+    # Das Ende GEMESSEN, nicht angenommen: Hier stand fest 9,6 s — gerechnet
+    # mit 10 s Liste. Seit der Endkarte ist das Video 12,5 s lang, die Messung
+    # lag mitten im Clip und meldete eine fehlende Ausblendung, die es gab
+    # (nachgemessen am 26.09.: Mitte -13,1 dB, letzte 0,4 s -29,3 dB).
+    gesamt = common.medien_info(ziel).dauer
     mitte = _mittlere_lautstaerke(ziel, 4.0, 0.4)
-    ende = _mittlere_lautstaerke(ziel, 9.6, 0.4)
+    ende = _mittlere_lautstaerke(ziel, gesamt - 0.4, 0.4)
     assert ende < mitte - 6.0, (
         f"das Ende ({ende:.1f} dB) ist nicht merklich leiser als die Mitte "
         f"({mitte:.1f} dB) — die Ausblendung fehlt"
@@ -1154,6 +1159,7 @@ def test_die_pruefung_sammelt_alles_statt_beim_ersten_fehler_abzubrechen(tmp_pat
         {"quelle": str(video), "von": 0, "bis": 6},
     ], endkarte=False)
     monkeypatch.setattr(sc.assets, "hat_lizenz", lambda p: False)
+    monkeypatch.setattr(sc.common, "musik_waehlen", lambda saat: _musik(tmp_path))
 
     bericht = sc.trockenpruefung(pfad)
     assert bericht["ok"] is False
@@ -1167,6 +1173,13 @@ def test_die_pruefung_sammelt_alles_statt_beim_ersten_fehler_abzubrechen(tmp_pat
     monkeypatch.setattr(sc.assets, "hat_lizenz", lambda p: True)
     assert sc.trockenpruefung(pfad)["ok"] is True
 
+    # Ohne Musikbett bricht das Rendern ab (der Originalton ist bewusst weg) —
+    # genau das soll hier auffallen, nicht nach dem Schneiden.
+    monkeypatch.setattr(sc.common, "musik_waehlen", lambda saat: None)
+    ohne = sc.trockenpruefung(pfad)
+    assert ohne["ok"] is False
+    assert any("kein Musikstueck" in f for f in ohne["fehler"])
+
 
 @hat_ffmpeg
 def test_der_bauversuch_schneidet_drei_sekunden_statt_alles(tmp_path, monkeypatch):
@@ -1177,6 +1190,7 @@ def test_der_bauversuch_schneidet_drei_sekunden_statt_alles(tmp_path, monkeypatc
         {"quelle": str(video), "von": 0, "bis": 10},
     ], endkarte=False)
     monkeypatch.setattr(sc.assets, "hat_lizenz", lambda p: True)
+    monkeypatch.setattr(sc.common, "musik_waehlen", lambda saat: _musik(tmp_path))
 
     bericht = sc.trockenpruefung(pfad, bauversuch=True)
     assert bericht["ok"] is True
@@ -1214,7 +1228,7 @@ def test_jede_vorlage_ergibt_ein_video_ueber_der_mindestdauer():
         gesamt = e["dauer"] + sc.ENDKARTE_SEK
         assert gesamt >= mindest, f"{e['schluessel']}: {gesamt}s unter {mindest}s"
 
-    # GEGENPROBE: Ohne Endkarte waere "drei_gruende" mit 7,5s zu kurz — die
+    # GEGENPROBE: Ohne Endkarte waere "auspacken_kurz" mit 7,5s zu kurz — die
     # Rechnung haengt also wirklich an beidem.
     kurz = [e for e in sc.vorlagen_uebersicht() if e["dauer"] < mindest]
     assert kurz, "mindestens eine Vorlage braucht die Endkarte, um zu reichen"

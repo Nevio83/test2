@@ -18,7 +18,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from .. import db
+from .. import db, products
 from ..orchestrator import guardrails
 from . import bandit, features, reward
 
@@ -57,27 +57,63 @@ def offene_belohnungen(limit: int = 50) -> list[int]:
     return [int(z["id"]) for z in zeilen]
 
 
-def merkmale_von_post(post_id: int) -> tuple[dict[str, str], str] | None:
-    """Merkmalsvektor und Kontext eines Beitrags."""
+Zuordnung = tuple[dict[str, str], str, list[tuple[str, str]]]
+
+
+def _als_dict(wert: Any) -> dict[str, Any]:
+    if isinstance(wert, dict):
+        return wert
+    if isinstance(wert, str) and wert:
+        try:
+            geladen = json.loads(wert)
+            return geladen if isinstance(geladen, dict) else {}
+        except json.JSONDecodeError:
+            return {}
+    return {}
+
+
+def merkmale_von_post(post_id: int) -> Zuordnung | None:
+    """Merkmalsvektor, Kontext und beobachtete Herkunft eines Beitrags.
+
+    Hier stand ein JOIN auf mkt_briefs. Stil C entsteht aber ohne Briefing
+    (brief_id ist leer) — jeder Stil-C-Beitrag fiel damit still heraus, und
+    das Lernen sah von genau den Videos nichts, die tatsaechlich gemacht
+    werden. Keine Fehlermeldung, nur ein Bandit, der nie gefuettert wird.
+    """
     if not db.verfuegbar():
         return None
     zeile = db.eine_zeile(
-        """SELECT b.merkmale, p.slot
+        """SELECT b.merkmale, p.slot, v.stil, v.bericht, v.produkt_id
              FROM mkt_posts p
              JOIN mkt_videos v ON v.id = p.video_id
-             JOIN mkt_briefs b ON b.id = v.brief_id
+             LEFT JOIN mkt_briefs b ON b.id = v.brief_id
             WHERE p.id = %s""",
         (post_id,),
     )
     if not zeile:
         return None
-    merkmale = zeile["merkmale"] or {}
-    if isinstance(merkmale, str):
-        try:
-            merkmale = json.loads(merkmale)
-        except json.JSONDecodeError:
-            merkmale = {}
-    return features.merkmalsvektor(merkmale, slot=zeile["slot"]), features.kontext(merkmale)
+    return merkmale_aus_zeile(dict(zeile))
+
+
+def merkmale_aus_zeile(zeile: dict[str, Any]) -> Zuordnung | None:
+    """Die Zuordnung aus einer Datenbankzeile — getrennt, damit sie ohne Datenbank pruefbar ist."""
+    merkmale = _als_dict(zeile.get("merkmale"))
+    herkunft = features.herkunftsmerkmale(_als_dict(zeile.get("bericht")))
+    if merkmale:
+        return (features.merkmalsvektor(merkmale, slot=zeile.get("slot")),
+                features.kontext(merkmale), herkunft)
+
+    # Ohne Briefing (Stil C): gesteuert wurde nur der Sendeplatz, alles
+    # andere hat ein Mensch am Schnitt entschieden. Die Hook-Machart oder
+    # die Stimme werden NICHT geraten — ein erfundener Wert waere schlimmer
+    # als keiner, weil er die Statistik der echten Briefings verwaessert.
+    if zeile.get("produkt_id") is None:
+        return None
+    produkt = products.nach_id(int(zeile["produkt_id"]))
+    ersatz = {"produktkategorie": produkt.kategorie if produkt else None,
+              "trendquelle": "schnittliste"}
+    return (features.merkmalsvektor({}, slot=zeile.get("slot")),
+            features.kontext(ersatz), herkunft)
 
 
 def lerne_aus_post(post_id: int) -> dict[str, Any] | None:
@@ -97,9 +133,10 @@ def lerne_aus_post(post_id: int) -> dict[str, Any] | None:
     zuordnung = merkmale_von_post(post_id)
     if zuordnung is None:
         return None
-    vektor, kontext = zuordnung
+    vektor, kontext, herkunft = zuordnung
+    paare = list(vektor.items()) + herkunft
 
-    for dimension, auspraegung in vektor.items():
+    for dimension, auspraegung in paare:
         # Zweimal fuettern: einmal im Kontext (fuer die feine Aussage) und
         # einmal ohne (fuer die allgemeine). Ohne den allgemeinen Eintrag
         # haette jede neue Produktkategorie bei null angefangen.
@@ -107,7 +144,7 @@ def lerne_aus_post(post_id: int) -> dict[str, Any] | None:
         bandit.aktualisiere(dimension, auspraegung, "*", ergebnis["belohnung"])
 
     return {"post_id": post_id, "belohnung": ergebnis["belohnung"],
-            "final": True, "arme": len(vektor) * 2, "kontext": kontext}
+            "final": True, "arme": len(paare) * 2, "kontext": kontext}
 
 
 def passe_gewichte_an() -> dict[str, Any]:

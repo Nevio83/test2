@@ -120,12 +120,14 @@ def zu_oft_beworben(produkt_id: int) -> tuple[bool, str]:
     if not db.verfuegbar():
         return False, "keine Datenbank — Haeufigkeit nicht pruefbar"
     zeile = db.eine_zeile(
+        # Stil C zaehlt mit: Ein handgeschnittener Beitrag zeigt das Produkt
+        # genauso — ueber mkt_briefs allein waere er unsichtbar (kein Briefing).
         """SELECT COUNT(*)::int AS n
              FROM mkt_posts p
              JOIN mkt_videos v ON v.id = p.video_id
-             JOIN mkt_briefs b ON b.id = v.brief_id
-             JOIN mkt_matches m ON m.id = b.match_id
-            WHERE m.produkt_id = %s
+             LEFT JOIN mkt_briefs b ON b.id = v.brief_id
+             LEFT JOIN mkt_matches m ON m.id = b.match_id
+            WHERE COALESCE(v.produkt_id, m.produkt_id) = %s
               AND p.erstellt_am > now() - interval '7 days'
               AND p.status <> 'fehler'""",
         (produkt_id,),

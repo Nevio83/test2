@@ -40,6 +40,21 @@ python -m pipelines.video.style_c_schnittliste pruefen Marketing/schnittlisten/1
 python -m pipelines.video.style_c_schnittliste pruefen …/10_a.json --bauversuch
 ```
 
+Dasselbe vom Projektordner aus, ohne `cd Marketing` und mit dem richtigen
+Python (auf diesem Rechner `py`, nicht `python` — siehe CLAUDE.md):
+
+```bash
+npm run marketing:vorlage                                             # Formen anzeigen
+npm run marketing:vorlage -- vorher_nachher --produkt 10 --hook "…"   # → schnittlisten/_entwurf-10-vorher_nachher.json
+npm run marketing:pruefen -- 10_a.json --bauversuch                   # Dateiname reicht
+```
+
+Ohne `--ziel` beginnt der Entwurf mit `_` und wird deshalb **nicht**
+gerendert, bis er umbenannt ist. Mit `--ziel` gilt der gewählte Name — dann
+greift der Render-Lauf sofort und meldet die Liste bei jedem Durchgang, bis
+alles ausgefüllt ist. Die Formen selbst liegen als JSON in
+`schnittlisten/vorlagen/`; ein übrig gebliebenes `[[…]]` bricht das Einlesen ab.
+
 Die Trennung ist Absicht: Eine Vorlage kostet nichts, Gegenlesen kostet
 Sekunden, Rendern kostet Minuten. Wer sie in einen Aufruf packt, zahlt beim
 Gegenlesen den Preis des Renderns.
@@ -73,6 +88,8 @@ Gegenlesen den Preis des Renderns.
 | `variante` | Farbe/Modell — gemischte Varianten werden gemeldet |
 | `uebergang` | `schnitt` (Vorgabe) oder `blitz` |
 | `varianten_mischen` | Kopfzeile: schaltet die Variantenwarnung ab |
+| `hook_varianten` | Kopfzeile: mehrere Hooktexte → je eine Fassung (`_a`, `_b`, `_c`), sonst identisch |
+| `varianten_rotieren` | Kopfzeile: zusätzlich die erste Einstellung wechseln (rotiert, ab drei Segmenten) |
 
 **Warum JSON und nicht ein Videoprojekt:** Eine 4-KB-Liste gehört ins
 Repository, ein 40-MB-Video nicht. Dieselbe Liste ergibt dasselbe Video, und

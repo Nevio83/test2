@@ -181,16 +181,24 @@ def berechne_fuer_post(post_id: int) -> dict[str, Any] | None:
     """Zuordnung eines Beitrags berechnen und ablegen."""
     if not db.verfuegbar():
         return None
+    # Produkt aus dem Video (Stil C) ODER ueber Briefing und Treffer (A/B).
+    # Hier stand eine harte Verbindung ueber mkt_briefs: Stil C hat kein
+    # Briefing, jeder Stil-C-Beitrag bekam damit KEINEN Umsatz zugeordnet —
+    # ohne Fehlermeldung, nur eine Null in der Spalte, die Geld heissen soll.
     zeile = db.eine_zeile(
-        """SELECT p.id, p.video_id, p.gepostet_am, p.status, m.produkt_id
+        """SELECT p.id, p.video_id, p.gepostet_am, p.status,
+                  COALESCE(v.produkt_id, m.produkt_id) AS produkt_id
              FROM mkt_posts p
              JOIN mkt_videos v ON v.id = p.video_id
-             JOIN mkt_briefs b ON b.id = v.brief_id
-             JOIN mkt_matches m ON m.id = b.match_id
+             LEFT JOIN mkt_briefs b ON b.id = v.brief_id
+             LEFT JOIN mkt_matches m ON m.id = b.match_id
             WHERE p.id = %s""",
         (post_id,),
     )
     if not zeile or zeile["status"] != "gepostet" or zeile["gepostet_am"] is None:
+        return None
+    if zeile["produkt_id"] is None:
+        print(f"[attribution] Beitrag {post_id}: kein Produkt am Video — nicht zuordenbar")
         return None
 
     kampagne = f"mkt_{int(zeile['video_id'])}"

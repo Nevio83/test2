@@ -83,6 +83,16 @@
         ['trockenlauf', 'im Trockenlauf', d.trockenlauf, ''],
         ['gepostet', 'veröffentlicht', d.gepostet, '']
       ];
+      // VORRAT (Punkt 56): nicht der Zeitplan laesst einen Kanal einschlafen,
+      // sondern ein leerer Vorrat. Zwei Zahlen: was freigegeben bereitliegt, und
+      // wie viele Tage das beim aktuellen Takt traegt.
+      var v = d.vorrat || {};
+      if (v.datenbank) {
+        kacheln.push(['vorrat_frei', 'freigegeben bereit', v.frei, v.frei === 0 ? 'bad' : '']);
+        kacheln.push(['vorrat_tage', 'Vorrat reicht',
+          v.reicht_tage == null ? '—' : (v.reicht_tage + ' Tage'),
+          v.warnung ? (v.reicht_tage < 3 ? 'bad' : 'warn') : '']);
+      }
       sendezustand.privacy = d.tiktok_privacy || null;
       setze('ueberblick', kacheln.map(function (k) {
         return '<div class="kpi"><div class="kpi-val ' + k[3] + '">' + schuetze(k[2]) +
@@ -96,6 +106,13 @@
       if (d.gepostet === 0 && d.trockenlauf > 0) {
         warnungen.push('Der Trockenlauf ist aktiv: Es wird alles geplant, aber nichts veröffentlicht. ' +
           'Das ist der Standard und wird nur von Hand umgestellt.');
+      }
+      if (v.datenbank && v.warnung) {
+        warnungen.push('Der freigegebene Vorrat reicht beim aktuellen Takt (' + v.pro_tag +
+          ' Beiträge am Tag) nur noch ' + v.reicht_tage + ' Tage — die Grenze liegt bei ' +
+          v.grenze_tage + '.' + (v.wartet > 0
+            ? ' ' + v.wartet + ' Beitrag/Beiträge warten auf eine Freigabe — dort liegt der schnellste Hebel.'
+            : ' Es wartet auch nichts auf Freigabe: Es braucht neue Clips.'));
       }
       if (warnungen.length) {
         setze('hinweise', warnungen.map(function (w) {

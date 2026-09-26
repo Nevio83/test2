@@ -41,6 +41,17 @@
  *         wuerde. Schreibt nichts.
  *     node Marketing/run-local.js --bestand-umstellen --schreiben --regeln v3
  *         Schreibt es fest, mit Sicherung daneben.
+ *
+ *     npm run marketing:vorlage                                  Vorlagen auflisten
+ *     npm run marketing:vorlage -- problem-loesung --produkt 10  Entwurf anlegen
+ *         Punkt 28: legt aus einer Schnitt-Vorlage einen Entwurf an
+ *         (`schnittlisten/_entwurf-10-problem-loesung.json`). Der Entwurf
+ *         wird nicht gerendert, solange sein Name mit "_" beginnt.
+ *
+ *     npm run marketing:pruefen -- fassung-10.json               gegenlesen
+ *     npm run marketing:pruefen -- fassung-10.json --bauversuch  + 3 s schneiden
+ *         Punkt 48: sammelt alle Fehler einer Schnittliste (fehlende Datei,
+ *         Rechte, Musik, Zeitangaben), ohne ein Video zu bauen.
  */
 
 'use strict';
@@ -75,7 +86,9 @@ function zahl(roh, standard, untergrenze) {
 function leseArgumente(argv) {
   const opt = { einmal: false, status: false, taktSek: TAKT_STANDARD_SEK,
                 fristMin: FRIST_STANDARD_MIN, job: null,
-                bestandUmstellen: false, schreiben: false, regeln: null };
+                bestandUmstellen: false, schreiben: false, regeln: null,
+                vorlage: false, vorlageName: null, produkt: null,
+                pruefen: null, bauversuch: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--once' || a === '--einmal') opt.einmal = true;
@@ -89,6 +102,19 @@ function leseArgumente(argv) {
     else if (a === '--bestand-umstellen') opt.bestandUmstellen = true;
     else if (a === '--schreiben') opt.schreiben = true;
     else if (a === '--regeln') opt.regeln = argv[++i];
+    // Punkt 28: Schnitt-Vorlagen. Ohne Namen wird aufgelistet.
+    else if (a === '--vorlage') {
+      opt.vorlage = true;
+      if (argv[i + 1] && !argv[i + 1].startsWith('--')) opt.vorlageName = argv[++i];
+    }
+    else if (a === '--produkt') opt.produkt = argv[++i];
+    else if (a === '--quellen') opt.quellen = argv[++i];
+    // Punkt 48: Trockenpruefung einer Schnittliste.
+    else if (a === '--pruefen') opt.pruefen = argv[++i] || '';
+    else if (a === '--bauversuch') opt.bauversuch = true;
+    // npm reicht alles hinter "--" weiter; ein freies Wort nach --vorlage ist
+    // der Vorlagenname, auch wenn es erst hinter --produkt steht.
+    else if (opt.vorlage && !opt.vorlageName && !a.startsWith('--')) opt.vorlageName = a;
     else if (a === '--help' || a === '-h') opt.hilfe = true;
   }
   return opt;
@@ -166,8 +192,12 @@ function laufUmgebung(basis = process.env) {
 }
 
 function fuehreAus(python, argumente) {
+  return fuehreModulAus(python, 'pipelines.orchestrator.run_loop', argumente);
+}
+
+function fuehreModulAus(python, modul, argumente) {
   return new Promise((fertig) => {
-    const kind = spawn(python, ['-m', 'pipelines.orchestrator.run_loop', ...argumente], {
+    const kind = spawn(python, ['-m', modul, ...argumente], {
       cwd: MARKETING,
       // Ausgabe direkt durchreichen: Der Python-Teil protokolliert bereits
       // ausfuehrlich, und eine zweite Protokollebene wuerde nur verdoppeln.
@@ -515,6 +545,32 @@ async function main() {
     console.error('   Versucht wurden: ' + (process.platform === 'win32' ? 'py, python, python3' : 'python3, python'));
     console.error('   Fester Pfad moeglich ueber MARKETING_PYTHON=<pfad zur python.exe>');
     return 1;
+  }
+
+  // Punkt 28: Vorlagen brauchen weder Datenbank noch run_loop — deshalb
+  // vor beiden Pruefungen, sonst kaeme die DATABASE_URL-Warnung fuer etwas,
+  // das gar keine Datenbank anfasst.
+  if (opt.vorlage) {
+    const argumente = [];
+    if (opt.vorlageName) argumente.push(opt.vorlageName);
+    if (opt.produkt) argumente.push('--produkt', String(opt.produkt));
+    if (opt.quellen) argumente.push('--quellen', String(opt.quellen));
+    return fuehreModulAus(python, 'pipelines.video.vorlagen', argumente);
+  }
+
+  // Punkt 48: Python laeuft in Marketing/ — ein Pfad, der relativ zum Ort des
+  // Aufrufs gemeint war, wird deshalb hier aufgeloest. Ein blosser Dateiname
+  // wird in Python unter schnittlisten/ gesucht.
+  if (opt.pruefen !== null) {
+    if (!opt.pruefen) {
+      console.error('❌ Welche Liste? Beispiel: npm run marketing:pruefen -- fassung-10.json');
+      return 1;
+    }
+    const basis = process.env.INIT_CWD || process.cwd();
+    const absolut = path.resolve(basis, opt.pruefen);
+    const argumente = ['pruefen', fs.existsSync(absolut) ? absolut : opt.pruefen];
+    if (opt.bauversuch) argumente.push('--bauversuch');
+    return fuehreModulAus(python, 'pipelines.video.style_c_schnittliste', argumente);
   }
 
   if (!fs.existsSync(path.join(MARKETING, 'pipelines', 'orchestrator', 'run_loop.py'))) {

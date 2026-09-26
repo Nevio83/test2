@@ -847,7 +847,11 @@ einzige Stelle, die sie noch festhält.
    *Hinweis:* Der PATH-Eintrag greift erst in **neu gestarteten** Shells. Die Video-Etappen
    suchen ffmpeg deshalb erst im PATH und dann am bekannten Installationsort — das ist
    ohnehin robuster, weil es auf dem PC, in Actions und auf einem Server jeweils woanders liegt.
-2. **Einkaufspreise für die Margenprüfung** — stehen nur namensbasiert in
+2. ~~**Einkaufspreise für die Margenprüfung**~~ — ✅ **erledigt am 07.09.**: `matching.einkaufspreise`
+   in `marketing.config.json` hat Einkauf und Versand für **27 von 40** Produkten, der
+   Automat rechnet damit echte Margen. ⚠️ Der Versand ist größtenteils geschätzt (siehe
+   `CLAUDE-CODE.md` §2). Nachgetragen am 26.09. — hier stand der Punkt noch als offen.
+   *Ursprünglicher Text:* stehen nur namensbasiert in
    `excel/Maios Produkte.csv`, nicht per Produkt-ID. Solange sie fehlen, gilt
    `matching.unbekannte_marge = "erlauben_mit_hinweis"`: es wird beworben, aber im
    Nachweis-Protokoll als **ungeprüft** vermerkt. Auf `"sperren"` stellen, wenn dir das zu
@@ -878,6 +882,11 @@ sondern eine Entscheidung von dir**:
 3. **Als Nächstes:** den Trockenlauf abschalten. Vorher die Warteschlange im Dashboard
    durchsehen und **mindestens ein fertiges Video ganz anschauen** — das Bildmaterial ist
    der schwächste Punkt der Kette (siehe unten).
+   *Seit 26.09. dazu:* Die Kachel **„Vorrat reicht"** im Dashboard zeigt, für wie viele Tage
+   die freigegebenen Beiträge beim eingestellten Takt reichen; im Livebetrieb kommt unter
+   14 Tagen täglich eine Warnmail. Und handgeschnittene Beiträge (Stil C) zählen jetzt
+   überhaupt mit — vorher bekamen sie **keinen Umsatz zugeordnet** und flossen nicht ins
+   Lernen, weil vier Abfragen über das Briefing liefen, das Stil C nicht hat.
 
 **Wichtig für den nächsten Durchgang:** `MARKETING_DATA_DIR` setzen, wenn der Prozess nicht
 in den Projektordner schreiben darf (in dieser Umgebung der Fall). Beispiel:

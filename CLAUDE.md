@@ -144,7 +144,9 @@ node get-cj-token.js         # CJ Access-Token holen/erneuern
 npm run marketing:status     # Zustand einmal anzeigen (Trockenlauf, Notaus, Budget, Fälligkeit)
 npm run marketing:once       # genau ein Durchgang
 npm run marketing:local      # Dauerläufer für alles mit Browser/GPU (5-Min-Takt)
-py -m pytest Marketing/tests # 152 Prüfungen der Marketing-Kette
+npm run marketing:vorlage -- problem_loesung --produkt 10   # Schnitt-Entwurf aus einer Vorlage
+npm run marketing:pruefen -- fassung-10.json --bauversuch   # Schnittliste gegenlesen, ohne zu rendern
+py -m pytest Marketing/tests # 270 Prüfungen der Marketing-Kette (48 davon nur mit Datenbank)
 py -m pipelines.orchestrator.run_loop --job render_style_a --once   # aus Marketing/ heraus
 
 # ── TikTok-Rohmaterial (Recherche, lädt nur über der Trefferschwelle) ──

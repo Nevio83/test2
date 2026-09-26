@@ -1,0 +1,41 @@
+{
+  "_vorlage": {
+    "name": "drei_gruende",
+    "wofuer": "Wenn das Produkt mehrere Staerken hat und keine davon allein traegt (Beamer, Klimageraet, Tumbler, Thermodrucker).",
+    "wann_nicht": "Bei einem Ein-Zweck-Geraet — drei Gruende fuer ein Nachtlicht klingen nach Verkaufsgespraech.",
+    "hinweis": "Der staerkste Grund zuerst, nicht zuletzt. Wer nach dem ersten weiterwischt, hat den besten wenigstens gesehen."
+  },
+  "produkt_id": null,
+  "hook": "[[Drei Gruende fuer … — mit dem Produktnamen]]",
+  "cta": "Link im Profil. Werbung.",
+  "hashtags": [],
+  "segmente": [
+    {
+      "rolle": "hook",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "_suche": "Das Produkt als Ganzes, gut ausgeleuchtet. Keine Schrift — der Hook liegt darueber."
+    },
+    {
+      "rolle": "grund_1",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "text": "[[1 · der staerkste Grund]]",
+      "_suche": "Das Bild, das den ersten Grund BEWEIST, nicht nur illustriert."
+    },
+    {
+      "rolle": "grund_2",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "text": "[[2 · zweiter Grund]]",
+      "_suche": "Anderer Bildausschnitt als Grund 1 — gleiche Einstellungsgroesse hintereinander wirkt wie ein Haenger."
+    },
+    {
+      "rolle": "grund_3",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "text": "[[3 · dritter Grund]]",
+      "_suche": "Am besten in Benutzung. Danach die Endkarte mit Preis."
+    }
+  ]
+}

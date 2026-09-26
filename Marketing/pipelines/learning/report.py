@@ -44,12 +44,12 @@ def _sammle() -> dict[str, Any]:
     )
     daten["beste"] = db.abfragen(
         """SELECT p.id, p.slot, p.plattform, r.reward_final, r.reward_vorlaeufig,
-                  v.stil, m.produkt_id
+                  v.stil, COALESCE(v.produkt_id, m.produkt_id) AS produkt_id
              FROM mkt_rewards r
              JOIN mkt_posts p ON p.id = r.post_id
              JOIN mkt_videos v ON v.id = p.video_id
-             JOIN mkt_briefs b ON b.id = v.brief_id
-             JOIN mkt_matches m ON m.id = b.match_id
+             LEFT JOIN mkt_briefs b ON b.id = v.brief_id
+             LEFT JOIN mkt_matches m ON m.id = b.match_id
             WHERE r.berechnet_am > now() - interval '7 days'
             ORDER BY COALESCE(r.reward_final, r.reward_vorlaeufig) DESC NULLS LAST
             LIMIT 3"""
@@ -107,6 +107,32 @@ def _sammle() -> dict[str, Any]:
             } for z in zeilen],
         })
     daten["lernstand"] = lernstand
+
+    # Punkt 59: Herkunft — beobachtet, nicht gesteuert. Nur Arme mit genug
+    # Versuchen, sonst steht ein Creator mit einem einzigen Glueckstreffer
+    # ganz oben und sieht aus wie eine Erkenntnis.
+    min_stichprobe = int(guardrails.wert("lernen.min_stichprobe", 8))
+    herkunft = []
+    for dimension in features.BEOBACHTET:
+        zeilen = db.abfragen(
+            """SELECT auspraegung, alpha, beta, versuche
+                 FROM mkt_arms WHERE dimension = %s AND kontext = '*'
+                ORDER BY alpha / NULLIF(alpha + beta, 0) DESC""",
+            (dimension,),
+        )
+        genug = [z for z in zeilen if int(z["versuche"]) >= min_stichprobe]
+        if not zeilen:
+            continue
+        herkunft.append({
+            "dimension": dimension,
+            "zu_wenig": len(zeilen) - len(genug),
+            "arme": [{
+                "auspraegung": z["auspraegung"],
+                "wert": round(float(z["alpha"]) / (float(z["alpha"]) + float(z["beta"])), 3),
+                "versuche": int(z["versuche"]),
+            } for z in genug[:5]],
+        })
+    daten["herkunft"] = herkunft
 
     daten["naechste_versuche"] = _naechste_versuche(lernstand)
     return daten
@@ -173,6 +199,18 @@ def baue_html(daten: dict[str, Any]) -> str:
     if not lernstand_html:
         lernstand_html = "<p style='color:#888'>Noch nichts gelernt — es fehlen bewertete Beitraege.</p>"
 
+    herkunft_html = ""
+    for eintrag in daten.get("herkunft", []):
+        arme = "".join(
+            f"<li>{e(a['auspraegung'])}: <strong>{a['wert']:.2f}</strong> ({a['versuche']} Beitraege)</li>"
+            for a in eintrag["arme"]
+        )
+        rest = (f"<p style='color:#888;margin:0'>{eintrag['zu_wenig']} weitere mit zu wenig Beitraegen</p>"
+                if eintrag.get("zu_wenig") else "")
+        herkunft_html += f"<p><strong>{e(eintrag['dimension'])}</strong></p>" + (f"<ul>{arme}</ul>" if arme else "") + rest
+    if not herkunft_html:
+        herkunft_html = "<p style='color:#888'>Noch keine bewerteten Stil-C-Beitraege.</p>"
+
     return f"""<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><title>Marketing-Wochenbericht</title></head>
 <body style="font-family:-apple-system,Segoe UI,Arial,sans-serif;background:#14161a;
@@ -201,6 +239,9 @@ def baue_html(daten: dict[str, Any]) -> str:
 
     <h2>Was das System gelernt hat</h2>
     {lernstand_html}
+
+    <h2>Herkunft (Stil C, nur beobachtet)</h2>
+    {herkunft_html}
 
     <h2>Was es als Naechstes ausprobieren will</h2>
     <ul>{''.join(f'<li>{e(v)}</li>' for v in daten.get('naechste_versuche', []))}</ul>

@@ -4246,5 +4246,39 @@ app.listen(PORT, HOST, () => {
     '📦 CJ-Bestandsabgleich-Zeitplan INAKTIV (CJ_STOCK_SYNC_ENABLED != true) — manueller Trigger im Admin-Panel funktioniert trotzdem'
   );
 
+  // VORRAT DES MARKETING-AUTOMATEN (Punkt 56 in Marketing/VideosVerbessern.html).
+  //
+  // Ein Kanal schlaeft nicht ein, weil der Zeitplan fehlt, sondern weil der
+  // Vorrat leer ist. Das Dashboard zeigt es — aber nur dem, der hinsieht.
+  // Deshalb einmal am Tag dieselbe Warnmail wie bei den uebrigen
+  // Betriebswarnungen, sobald das Freigegebene keine zwei Wochen mehr traegt.
+  //
+  // NUR IM ECHTBETRIEB: Im Trockenlauf wird nichts veroeffentlicht; eine
+  // taegliche Mail ueber einen hypothetischen Engpass waere Laerm, und Laerm
+  // bringt Leute dazu, Warnungen zu ueberlesen. Das Dashboard zeigt den Wert
+  // trotzdem — wer vor dem Scharfschalten nachsieht, soll ihn kennen.
+  const marketingLive = !marketingApi.trockenlaufAktiv()
+    && (process.env.MARKETING_ENABLED || '').trim().toLowerCase() !== 'false';
+  einplanen(
+    !!process.env.DATABASE_URL && marketingLive,
+    'marketing-vorrat',
+    TAG,
+    async () => {
+      const v = await marketingApi.vorrat();
+      if (!v.datenbank || !v.warnung) return;
+      await sendOpsAlert(
+        `⚠️ Marketing: Vorrat reicht nur noch ${v.reicht_tage} Tage`,
+        `<p>Freigegeben und eingeplant: <strong>${v.frei}</strong> Beitrag/Beiträge.<br>`
+        + `Takt: ${v.pro_tag} am Tag → reicht <strong>${v.reicht_tage} Tage</strong> `
+        + `(Grenze: ${v.grenze_tage}).</p>`
+        + (v.wartet > 0
+          ? `<p>${v.wartet} Beitrag/Beiträge warten auf eine Freigabe — `
+            + 'dort liegt der schnellste Hebel: <code>/a29715347575/marketing.html</code>.</p>'
+          : '<p>Es wartet auch nichts auf Freigabe — es braucht neue Clips.</p>')
+      );
+    },
+    '📣 Marketing-Vorratswarnung INAKTIV (Trockenlauf oder Notaus) — das Dashboard zeigt den Vorrat trotzdem'
+  );
+
   planer.start();
 });

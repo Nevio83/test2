@@ -1,0 +1,39 @@
+{
+  "_vorlage": {
+    "name": "alltag_szene",
+    "wofuer": "Wenn das Produkt eine Stimmung verkauft statt eine Loesung: Schreibtisch-Setup, Schlafzimmer, Kueche am Morgen (Tassenwaermer, Diffuser, Wandlampe, Uhr).",
+    "wann_nicht": "Wenn es ohne Erklaerung nicht verstanden wird — dann problem_loesung.",
+    "hinweis": "Das Produkt steht im Raum, nicht im Mittelpunkt — aber ab Sekunde 2,5 muss klar sein, WAS gemeint ist."
+  },
+  "produkt_id": null,
+  "hook": "[[Die Szene in einem Satz, aus der Ich-Sicht]]",
+  "cta": "Link im Profil. Werbung.",
+  "hashtags": [],
+  "segmente": [
+    {
+      "rolle": "szene",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "_suche": "Der Raum, die Tageszeit, die Stimmung. Keine Schrift — der Hook liegt darueber."
+    },
+    {
+      "rolle": "produkt_im_raum",
+      "soll_sek": 2.0,
+      "quelle": null,
+      "_suche": "Das Produkt an seinem Platz, klar erkennbar. Hier faellt die Entscheidung, ob man weiss, worum es geht."
+    },
+    {
+      "rolle": "handgriff",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "text": "[[Was es im Alltag abnimmt]]",
+      "_suche": "Die eine Handbewegung, mit der es benutzt wird."
+    },
+    {
+      "rolle": "stimmung",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "_suche": "Die Szene mit dem Produkt in Betrieb — Licht an, Dampf, warme Tasse. Danach die Endkarte mit Preis."
+    }
+  ]
+}

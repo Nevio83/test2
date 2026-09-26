@@ -435,6 +435,49 @@
     </div>
 
     <div class="pruef-banner" style="background:var(--blue-dim);border-color:color-mix(in srgb, var(--blue) 32%, transparent);">
+      <h3>Stand am 26.09., abends: 73 gebaut, 5 halb, 11 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <p class="warum" style="border-left:3px solid var(--green);padding-left:12px;">
+        <b>Eine Berichtigung zuerst.</b> Beim Nachzählen am Mittag standen
+        <strong>48</strong> und <strong>58</strong> auf „gebaut", weil ihre Prüfungen im Repo lagen.
+        Der Code dazu fehlte: Commit <code>414a4c4</code> vom 25.09. hatte zehn Stil-C-Prüfungen
+        ohne Umsetzung eingecheckt. Der Prüflauf führt die Marketing-Tests nicht aus — deshalb
+        blieb das unbemerkt, blockierte aber auch kein Ausrollen. Beide sind jetzt wirklich gebaut;
+        die Marketing-Suite steht bei <strong>222 grün, 0 rot</strong> (vorher 10 rot).
+        Die Lehre: <strong>Eine Prüfung im Repo ist kein Beleg für Code im Repo.</strong>
+      </p>
+      <p class="tun" style="margin-top:10px;">
+        <b>Heute gebaut</b> —
+        <strong>07</strong> (Prüfung: jedes Produkt hat einen Eintrag in <code>tiktok-quellen.json</code>) ·
+        <strong>56</strong> (wie lange der freigegebene Vorrat reicht — Dashboard + tägliche Mail nur im Livebetrieb) ·
+        <strong>71</strong> (TikTok-Kennung im Dateinamen, 35 Dateien nachgetragen) ·
+        <strong>28</strong> (fünf Schnitt-Vorlagen) ·
+        <strong>48</strong> (Trockenprüfung) ·
+        <strong>58</strong> (Hook-Varianten bis ins Rendern) ·
+        <strong>59</strong> (Herkunft als Lernmerkmal — und Stil C fällt nicht mehr aus Lernen, Umsatz und Wochengrenze).
+        Nebenbei: Der Ausblende-Test maß fest bei 9,6 s, seit der Endkarte endet das Video bei 12,5 s —
+        die Ausblendung war da (−29,3 dB gegen −13,1 dB), der Test sah an die falsche Stelle.
+      </p>
+      <p class="warum" style="margin-top:10px;">
+        <b>Was wirklich offen ist</b> —
+        <strong>60</strong> (Render Starter, 7 $/Monat — deine Entscheidung) ·
+        <strong>61</strong> und <strong>62</strong> (laufende Arbeit, kein Code) ·
+        <strong>86</strong> (Material filmen oder Läufe — keine Programmieraufgabe) ·
+        <strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank, und die ist gerade gesperrt) ·
+        <strong>35</strong> und <strong>39</strong> (Produkt-Sichtbarkeit, Schnitt auf den Takt — beide brauchen
+        eine neue Abhängigkeit, erst nach Rückfrage) ·
+        <strong>03</strong> andere Plattformen ·
+        <strong>06</strong> Läufe im Zeitplan ·
+        <strong>11</strong> Kommentare mitlesen (mehr Abrufe bei TikTok — mit der Sperrregel abzuwägen) ·
+        <strong>50</strong> Rendern im Hintergrund.
+      </p>
+      <p class="warum" style="margin-top:10px;">
+        <b>Halb</b> heißt: der Weg steht, der letzte Schritt fehlt.
+        <strong>19</strong>, <strong>23</strong> und <strong>30</strong>
+        (Standbilder und Verwurfsgründe da, die automatische Erkennung bräuchte ein Bildmodell) ·
+        <strong>44</strong> (Untertitel aus dem Briefing, nicht aus dem Ton) ·
+        <strong>87</strong> (die Meldung steht; <code>.bestand.json</code> ist Handarbeit, die „tägliche Aufgabe" gab es nie).
+        <strong>15</strong> ist anders gelöst als vorgeschlagen.
+      </p>
       <h3 style="color:var(--blue);">Stand am Abend des 18.09.: sechzehn von achtzehn — und zwei aus den ursprünglichen 72</h3>
       <p>Gebaut sind <strong>73 bis 85 sowie 87, 89 und 90</strong>. Offen bleiben zwei — und zwar die beiden, die kein Code löst:
       <strong>86</strong> (drei von 41 Produktordnern haben Material — dagegen hilft nur filmen) und
@@ -569,7 +612,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">02</span> Gute Creator merken und gezielt wieder besuchen <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">02</span> Gute Creator merken und gezielt wieder besuchen <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Jeder Eintrag trägt bereits den Creator. Diese Spalte wird bisher nur mitgeschrieben, nicht benutzt. Dabei ist sie das stärkste Signal im ganzen Index: Wer einmal einen brauchbaren Clip zum Wasserspender gemacht hat, macht mit hoher Wahrscheinlichkeit weitere.</p>
         <p class="tun"><b>Was tun</b> Eine Bestenliste führen: Creator, wie viele seiner Clips angenommen wurden, wie viele abgelehnt. Ab zwei Annahmen wandert sein Profil als eigene Quelle in die Liste und wird bei jedem Lauf mit abgefragt. Ab drei Ablehnungen in Folge fliegt er raus.</p>
         <p class="bringt"><b>Bringt</b> Die Trefferquote steigt mit jedem Lauf, statt gleich zu bleiben. Und für die Rechtefrage (Gruppe I) ist ein bekannter Creator, den man zweimal angeschrieben hat, ungleich einfacher als 40 Einzelfälle.</p>
@@ -595,7 +638,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">05</span> Nach Datum filtern, nicht nur nach Beliebtheit <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">05</span> Nach Datum filtern, nicht nur nach Beliebtheit <span class="chip p-niedrig">gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> Sortiert wird heute nach Likes. Ein Clip mit 800.000 Likes aus 2023 sieht aus wie der beste Fund des Laufs — und wirkt im Schnitt von 2026 alt: anderer Schnittrhythmus, andere Textgestaltung, oft ein sichtbar veraltetes Produktmodell.</p>
         <p class="tun"><b>Was tun</b> Das Veröffentlichungsdatum mitlesen (yt-dlp liefert es in den Metadaten) und eine Altersgrenze setzen — 18 Monate ist ein brauchbarer Start. Statt roher Likes eine Rate rechnen: Likes geteilt durch Tage seit Veröffentlichung. Damit gewinnt ein frischer Clip mit 20.000 Likes gegen einen alten mit 800.000.</p>
         <p class="bringt"><b>Bringt</b> Das Material passt optisch zu dem, was gerade auf der Plattform läuft. Ein Werbeclip, der aussieht wie von vorgestern, wird in den ersten zwei Sekunden weggewischt — dagegen hilft kein Schnitt.</p>
@@ -609,7 +652,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">07</span> Eine Produktquelle — im Marketing erledigt, im Bot zu prüfen <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">07</span> Eine Produktquelle — im Marketing erledigt, im Bot zu prüfen <span class="chip p-niedrig">gebaut am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Die teure Hälfte ist <strong>erledigt</strong>: Die Marketing-eigene <code>products.json</code> ist weg — sie hatte 17 statt 40 Produkte und 11 abweichende Preise, bei einem 17&nbsp;€ zu niedrig; gelesen wird jetzt die Wurzel-Liste über <code>pipelines/products.py</code>. Auch die <strong>Merkmale</strong> des Bots stammen aus der Produktbeschreibung in <code>products.json</code>, nicht aus einer Vermutung.</p>
         <p class="tun"><b>Was tun</b> Offen bleibt eine Kopie: die <strong>984 Suchbegriffe und 403 Kernwörter</strong> in <code>tiktok-quellen.json</code> sind von Hand gepflegt. Das ist berechtigt — Suchbegriffe sind keine Produktdaten. Aber eine Prüfung sollte melden, wenn ein Produkt aus <code>products.json</code> dort <em>gar keinen</em> Eintrag hat oder wenn ein Eintrag auf eine Produkt-ID zeigt, die es nicht mehr gibt.</p>
         <p class="bringt"><b>Bringt</b> Ein neues Produkt im Shop fällt auf, statt still ohne Rohmaterial zu bleiben. Die Fehlerklasse „zweite Liste, die niemand pflegt" ist im Marketing geschlossen — im Bot ist sie es nur, solange jemand daran denkt.</p>
@@ -623,7 +666,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">09</span> Blockaden und Sperren zählen, nicht nur vermerken <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">09</span> Blockaden und Sperren zählen, nicht nur vermerken <span class="chip p-niedrig">gebaut am 18.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Eine Regionssperre bei einem Video wird heute übersprungen und vermerkt — genau richtig. Aber der Vermerk liegt im Protokoll eines Laufs. Ob Sperren zunehmen, ob eine bestimmte Quelle systematisch sperrt, ob sich das nach einem TikTok-Update geändert hat: nicht sichtbar.</p>
         <p class="tun"><b>Was tun</b> Je Lauf eine Zeile in eine kleine Statistiktabelle: Funde, Vorfilter-Ablehnungen, Abrufe, Erfolge, Sperren, Fehler nach Typ. Nach zehn Läufen ist das eine Kurve, kein Bauchgefühl.</p>
         <p class="bringt"><b>Bringt</b> Man merkt, dass eine Quelle tot ist, <em>bevor</em> man drei Läufe lang nichts bekommt. Dieselbe Logik wie bei den Wochenläufen im Shop, die praktisch nie liefen und das niemandem meldeten.</p>
@@ -631,7 +674,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">10</span> Eigenes Material als gleichberechtigte Quelle führen <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">10</span> Eigenes Material als gleichberechtigte Quelle führen <span class="chip p-niedrig">gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Die ganze Kette ist auf fremdes Material gebaut, und fremdes Material bringt die Rechtefrage mit — den einzigen Fehler in diesem Papier, der eine Rechnung von außen nach sich zieht. Selbst gefilmtes Material hat dieses Problem nicht, und für 40 Produkte im eigenen Lager ist es mit einem Handy machbar.</p>
         <p class="tun"><b>Was tun</b> Denselben Index und dieselbe Schnittkette auch für eigene Aufnahmen öffnen: Ordner <code>eigenes/</code>, Einträge mit <code>quelle: eigen</code> und <code>rechte_geprueft: true</code> ab Werk. Eine Aufnahmeliste je Produkt (Auspacken, Gerät in Betrieb, Detail, Vorher-Nachher, Hand im Bild) als Merkzettel.</p>
         <p class="bringt"><b>Bringt</b> Jeder eigene Clip ist einer, der sofort veröffentlicht werden darf. Und im Schnitt mischt sich eigenes Material gut mit fremdem: die Produktaufnahme ist eigen, der Trend-Rahmen drumherum ist die Anleihe.</p>
@@ -645,7 +688,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">12</span> Einen Vorrats-Zielwert setzen <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">12</span> Einen Vorrats-Zielwert setzen <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> „Genug Material" ist heute ein Gefühl. Für den Wasserspender gab es 23 Clips und daraus wurde einer — das Verhältnis ist bekannt, aber nirgends festgehalten. Für die anderen 39 Produkte ist unbekannt, ob überhaupt etwas da ist.</p>
         <p class="tun"><b>Was tun</b> Eine Zielzahl je Produkt festlegen (etwa 15 brauchbare Clips), im Index zählen und eine Übersicht ausgeben: Produkt, vorhanden, Ziel, Lücke. Der Bot arbeitet die Lücken ab, statt gleichmäßig über alles zu streuen.</p>
         <p class="bringt"><b>Bringt</b> Der Bot sammelt dort, wo nichts ist, statt dort nachzulegen, wo schon 23 Clips liegen. Und die Frage „können wir für Produkt X nächste Woche einen Clip machen" hat eine Antwort ohne Nachsehen.</p>
@@ -674,7 +717,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">14</span> Auflösung, Dauer und Seitenverhältnis vor dem Laden prüfen <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">14</span> Auflösung, Dauer und Seitenverhältnis vor dem Laden prüfen <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Neun Hürden prüfen, ob es das <em>richtige Produkt</em> ist — und das gründlich, bis hin zu Verneinungen („No Electricity Needed" wurde angenommen, weil <code>elektrisch</code> in „Electricity" steckt). Keine einzige prüft, ob der Clip <em>technisch brauchbar</em> ist. Ein Video mit perfektem Untertitel kann 480p sein, drei Sekunden kurz oder Querformat — für einen 1080×1920-Schnitt wertlos. Die Ausgangsprüfung des Automaten lehnt genau diese Eigenschaften am Ende ab; vorne fragt sie niemand.</p>
         <p class="tun"><b>Was tun</b> <code>yt-dlp --dump-json</code> liefert Höhe, Dauer und Format, <strong>ohne die Datei zu laden</strong>. Als Hürde einhängen, wo heute Hürde 7 endet: mindestens 720 Pixel Höhe, mindestens 5 Sekunden, Hochformat oder quadratisch. Querformat nicht ablehnen, sondern markieren — es taugt als Einblendung. Die Grenzen aus <code>video.min_dauer_sek</code>/<code>video.hoehe</code> lesen, damit vorne dieselben Werte gelten wie hinten.</p>
         <p class="bringt"><b>Bringt</b> Weniger echte Abrufe — und das zählt doppelt, seit bekannt ist, dass nach rund 50 Abrufen die Sperre kommt. Der Grundsatz „ein Abruf zu viel ist billiger als ein gutes Video, das nie angesehen wurde" gilt weiter; ein Abruf für 480p-Querformat ist aber keiner zu viel, sondern einer zu blind.</p>
@@ -710,14 +753,14 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">18</span> Die Like-Zahl als Rate lesen, nicht als Menge <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">18</span> Die Like-Zahl als Rate lesen, nicht als Menge <span class="chip p-niedrig">gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> Die Zahl selbst stimmt inzwischen — die Falle ist dokumentiert: <code>**1,2K**</code> sind <strong>1200, nicht 12000</strong>, weil das Zeichen mit Einheit ein Dezimaltrenner ist und ohne Einheit ein Tausendertrenner. Sie steuert die <em>Reihenfolge</em>, und das ist wichtig geworden: Eine Anfrage liefert über 200 Adressen, die Obergrenze liegt bei 60 Abrufen — die Reihenfolge entscheidet, <strong>welche 60</strong> überhaupt geprüft werden. Nur: 800.000 Likes aus 2023 gewinnen gegen 20.000 von letzter Woche, obwohl der alte Clip nach dem Schnittrhythmus von vorgestern aussieht.</p>
         <p class="tun"><b>Was tun</b> Veröffentlichungsdatum aus den Metadaten mitlesen und Likes je Tag rechnen statt roher Likes. Zusammen mit Punkt 05 (Altersgrenze). Die K/M-Umrechnung bleibt, wie sie ist — sie hat ihren Test.</p>
         <p class="bringt"><b>Bringt</b> Die 60 geprüften Adressen sind die 60 aussichtsreichsten. Ein halbes Jahr Vorsprung schlägt sonst jeden Qualitätsunterschied.</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">19</span> Ein Zweitfilter, der ins Bild schaut <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-gross">ein bis zwei Tage</span></h4>
+        <h4><span class="nr">19</span> Ein Zweitfilter, der ins Bild schaut <span class="chip p-mittel">halb gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-gross">ein bis zwei Tage</span></h4>
         <p class="warum"><b>Warum</b> Die härteste Grenze des heutigen Filters: Er hat noch nie ein Bild gesehen. Ob das beworbene Gerät im Clip überhaupt vorkommt, ob es das eigene Modell ist oder ein ähnliches, ob die Aufnahme scharf ist — alles unbekannt, bis jemand von Hand hinsieht.</p>
         <p class="tun"><b>Was tun</b> Nach dem Laden vier Standbilder ziehen und durch ein lokales Bildmodell schicken (CLIP-artig reicht, läuft auf der eigenen Maschine, keine laufenden Kosten). Ähnlichkeit gegen die eigenen Produktfotos aus dem Shop rechnen. Unter der Schwelle: aussortieren, aber <em>mit Standbild im Protokoll</em>, damit eine Fehlentscheidung sichtbar wird.</p>
         <p class="bringt"><b>Bringt</b> Der Schritt, bei dem heute die meiste Handarbeit steckt, wird zur Vorauswahl. Wichtig ist die Reihenfolge: erst Text (billig, kein Abruf), dann Bild (teurer, nach dem Abruf) — die billige Prüfung zuerst.</p>
@@ -734,7 +777,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">21</span> Kontaktbogen je Lauf statt Dateiliste <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">21</span> Kontaktbogen je Lauf statt Dateiliste <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> „23 Rohclips gesichtet" heißt: 23 Dateien einzeln geöffnet, angeschaut, wieder geschlossen. Das ist die zeitaufwendigste Handarbeit der ganzen Kette und die, die am wenigsten Können erfordert.</p>
         <p class="tun"><b>Was tun</b> Nach jedem Lauf mit ffmpeg je Clip vier Standbilder ziehen (bei 10 %, 35 %, 60 %, 85 % der Laufzeit) und zu einem HTML-Blatt zusammensetzen: Bilder, Dauer, Auflösung, Creator, Likes, Unterschrift, Dateiname. Ein Blatt je Lauf, im Browser zu öffnen.</p>
         <p class="bringt"><b>Bringt</b> Sichtung in zwei Minuten statt einer halben Stunde, und die Entscheidung fällt im Vergleich statt nacheinander — man sieht sofort, welche drei Clips dasselbe zeigen. Der größte Zeitgewinn dieser Liste pro investierter Stunde.</p>
@@ -744,7 +787,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">22</span> Eine Ablage für „taugt nicht, aber merken" <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">22</span> Eine Ablage für „taugt nicht, aber merken" <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> Beim Wasserspender wurde notiert, was <em>nicht</em> verwendet wurde und warum — Clips mit dem schwarzen Modell nicht mit den weißen mischen. Solche Notizen sind wertvoll und leben heute in einer Datei neben dem Projekt. Beim nächsten Produkt fängt man wieder bei null an.</p>
         <p class="tun"><b>Was tun</b> Drei Zustände je Clip im Index statt zwei: <code>verwendet</code>, <code>vorrat</code>, <code>verworfen</code> — und bei <code>verworfen</code> ein Pflichtfeld mit dem Grund aus einer kurzen Auswahlliste (falsches Modell, zu dunkel, fremdes Wasserzeichen, Person im Bild, Ton unbrauchbar, Doppelgänger).</p>
         <p class="bringt"><b>Bringt</b> Nach zwanzig Produkten ist die Gründe-Liste die beste Beschreibung dessen, was gutes Rohmaterial ausmacht — und Vorlage für die Filterregeln aus Punkt 19.</p>
@@ -754,14 +797,14 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">23</span> Personen im Bild gesondert markieren <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">23</span> Personen im Bild gesondert markieren <span class="chip p-mittel">halb gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Ein erkennbares Gesicht in einem fremden Clip ist zwei Fragen auf einmal: Urheberrecht am Video <em>und</em> Recht am eigenen Bild der gefilmten Person. Für einen gewerblichen Werbeclip ist die zweite oft die heiklere — und sie ist mit der Einwilligung des Creators nicht miterledigt.</p>
         <p class="tun"><b>Was tun</b> Gesichtserkennung über die Standbilder (nur erkennen, nicht identifizieren — eine lokale Bibliothek reicht), Ergebnis als Feld <code>personen_im_bild</code> im Index. Clips mit Gesichtern landen in einem eigenen Freigabepfad und dürfen ohne ausdrückliche Zustimmung nicht in einen veröffentlichten Beitrag.</p>
         <p class="bringt"><b>Bringt</b> Die Frage wird an der Stelle gestellt, an der sie billig ist — beim Sichten, nicht nach der Veröffentlichung. Hände sind unkritisch, Gesichter nicht: diese Unterscheidung trifft heute niemand systematisch.</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">24</span> Erkennen, wenn ein Clip selbst Werbung ist <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">24</span> Erkennen, wenn ein Clip selbst Werbung ist <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Ein Teil des gefundenen Materials ist die Werbung eines Mitbewerbers: fremdes Logo, fremder Preis, fremde Rabattaktion, oft ein sichtbarer Shop-Name. Als Anschauungsmaterial ist das brauchbar, im eigenen Clip ist es ein Eigentor — und rechtlich der klarste Fall von allen.</p>
         <p class="tun"><b>Was tun</b> Unterschrift auf Kaufsignale prüfen (Link in der Bio, Rabattcode, Preisangabe, „Werbung", „ad", „gesponsert") und entsprechend markieren. Zusammen mit der Texterkennung aus Punkt 30 auch sichtbare Shop-Namen im Bild. Markierte Clips wandern in einen Ordner <em>Mitbewerber</em> — ansehen ja, schneiden nein.</p>
         <p class="bringt"><b>Bringt</b> Kein fremder Rabattcode im eigenen Werbeclip. Und ein nützlicher Nebeneffekt: der Ordner ist die laufende Mitbewerber-Beobachtung, die sonst niemand macht.</p>
@@ -800,21 +843,22 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">27</span> Schnittliste als Datei — die fehlende Naht zwischen Handarbeit und Automat <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">27</span> Schnittliste als Datei — die fehlende Naht zwischen Handarbeit und Automat <span class="chip p-niedrig">gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> <strong>Der wichtigste Punkt dieses Papiers.</strong> Der Automat hat einen vollständigen Weg vom Briefing zum geprüften Video: Materialkatalog mit Lizenzpflicht, Zoomfahrt statt Standbild, Untertitel, Musikbett, Endkarte, Lautheit, Ausgangsprüfung, Eintrag in <code>mkt_videos</code>. Der handgeschnittene Wasserspender-Clip durchläuft <strong>nichts davon</strong> — er entstand in einem ffmpeg-Aufruf daneben. Damit gilt für ihn keine Ausgangsprüfung, keine Rechtsprüfung, kein Lernen, keine Zuordnung zum Umsatz.</p>
         <p class="tun"><b>Was tun</b> Die Schnittliste als JSON: Segmente mit Quelle, Anfang, Ende, Zuschnitt, Texteinblendungen, Musikbett, Zielformat. Ein Renderer im Automaten baut daraus den ffmpeg-Aufruf — als <strong>dritter Stil neben <code>style_a</code> und <code>style_b</code></strong>, statt als eigenes Werkzeug. Damit läuft der handgeschnittene Clip durch dieselbe Ausgangsprüfung, denselben Materialkatalog und dieselbe Rechtsprüfung wie alles andere.</p>
         <p class="bringt"><b>Bringt</b> Aus zwei Welten wird eine. Fassungen werden vergleichbar und wiederherstellbar — und die <strong>Schnittliste ist versionierbar, das Video nicht</strong>: eine 4-KB-Liste gehört ins Repository, ein 40-MB-Clip nicht.</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">28</span> Vorlagen für wiederkehrende Clip-Formen <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
+        <h4><span class="nr">28</span> Vorlagen für wiederkehrende Clip-Formen <span class="chip p-niedrig">gebaut am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
         <p class="warum"><b>Warum</b> Werbeclips auf TikTok folgen wenigen Bauformen: Problem → Lösung → Preis; Auspacken → Detail → Einsatz; Vorher → Nachher; drei Gründe in drei Schnitten. Diese Form wird heute bei jedem Clip neu erfunden, obwohl sie sich kaum ändert.</p>
         <p class="tun"><b>Was tun</b> Vier bis fünf Vorlagen als Schnittlisten-Gerüst: Anzahl der Segmente, Sollzeit je Segment, Textpositionen, wo der Preis steht, wo der Aufruf zum Handeln kommt. Der Schnitt füllt nur noch die Segmente mit passenden Clips.</p>
         <p class="bringt"><b>Bringt</b> Von 23 Rohclips zu einer ersten Fassung in Minuten. Und die Vorlagen sind vergleichbar: Nach zwanzig veröffentlichten Clips weiß man, welche Form für welche Produktart funktioniert — das ist messbar, Bauchgefühl nicht.</p>
+        <p class="tun"><b>Gebaut am 26.09.</b> Fünf Vorlagen in <code>Marketing/schnittlisten/vorlagen/</code>: <code>problem_loesung</code>, <code>vorher_nachher</code>, <code>drei_gruende</code>, <code>auspacken_kurz</code> (bewusst 7,5 s — erst die Endkarte trägt sie über die Mindestdauer), <code>alltag_szene</code> — je mit Rolle, Sollzeit und Suchhinweis pro Segment und einer Zeile, <em>wann die Form nicht passt</em>. <code>npm run marketing:vorlage -- problem_loesung --produkt 10</code> legt daraus <code>_entwurf-10-problem_loesung.json</code> an (optional <code>--quellen a.mp4,b.mp4</code>); Hashtags kommen als Vorschlag aus den Kernwörtern des Bots, Clips und Texte setzt ein Mensch. Zwei Sperren: Der Unterstrich hält den Entwurf vom Rendern fern, und ein übrig gebliebenes <code>[[…]]</code> bricht das Einlesen in Stil C ab — Stil C brennt Text wörtlich ins Bild. Die Vorlagen liest Stil C <em>einmal</em> ein (<code>sc.VORLAGEN</code>) — die eingecheckten Prüfungen aus <code>414a4c4</code> verlangten eine Vorlagen-Schnittstelle im Code, die es nicht gab; statt einer zweiten Liste im Code gibt es jetzt eine Quelle. 15 Prüfungen in <code>test_vorlagen.py</code> plus drei in <code>test_stil_c.py</code>; Gegenprobe: ohne die Sperre fallen alle vier Platzhalter-Prüfungen durch. Der Vergleich der Formen läuft über Punkt 59: Die Vorlage steht als Merkmal am Beitrag.</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">29</span> Die ersten zwei Sekunden gesondert behandeln <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">29</span> Die ersten zwei Sekunden gesondert behandeln <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Auf TikTok entscheidet sich in den ersten ein bis zwei Sekunden, ob weitergeschaut wird. Alles danach ist für die Mehrheit der Zuschauer nie passiert. Im heutigen Schnitt ist der Anfang einfach das erste Segment der Liste — ohne Sonderrolle.</p>
         <p class="tun"><b>Was tun</b> In der Vorlage einen eigenen Platz „Hook" führen, maximal 1,5 Sekunden, mit eigenen Regeln: Bewegung im Bild ab Frame eins (kein Standbild, kein Logo-Einblender), Text sofort sichtbar, kein Vorspann. Beim Bauen eine Prüfung: Ist in den ersten 500 ms Bewegung messbar, steht Text im Bild?</p>
         <p class="bringt"><b>Bringt</b> Der Teil des Clips mit der größten Wirkung wird als eigener Teil behandelt statt als Zufall. Ein guter Clip mit schwachem Anfang wird nicht gesehen — die Arbeit in Sekunde 5 bis 20 ist dann vollständig verloren.</p>
@@ -822,14 +866,14 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">30</span> Fremde Wasserzeichen und Overlay-Text automatisch finden <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
+        <h4><span class="nr">30</span> Fremde Wasserzeichen und Overlay-Text automatisch finden <span class="chip p-mittel">halb gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
         <p class="warum"><b>Warum</b> Fremdes Material trägt fast immer eine fremde Handschrift: das wandernde TikTok-Logo mit dem Namen des Creators, eingebrannte Untertitel in fremder Sprache, der Shop-Name eines Mitbewerbers. Solange das von Hand gesucht wird, rutscht früher oder später eins durch — und dann steht der Name eines anderen im eigenen Werbeclip.</p>
         <p class="tun"><b>Was tun</b> Texterkennung (Tesseract, lokal) über acht Standbilder je Clip. Gefundene Textbereiche mit Position und Standzeit im Index ablegen. Zwei Verwendungen: als Ausschlusskriterium (dauerhafter Text mitten im Bild → unbrauchbar) und als Schnittvorgabe (Text nur am Rand → wegschneiden oder unscharf legen). Das TikTok-Logo wandert, deshalb über mehrere Standbilder prüfen, nicht über eins.</p>
         <p class="bringt"><b>Bringt</b> Das häufigste Ausschlusskriterium wird gemessen statt gesucht. Und die Fälle, in denen ein Zuschnitt reicht, werden gerettet statt weggeworfen — bei fremdem Material ist der Rand oft die einzige Stelle mit Fremdzeichen.</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">31</span> Sicherer Bereich — halb gelöst, nur nicht geprüft <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">31</span> Sicherer Bereich — halb gelöst, nur nicht geprüft <span class="chip p-niedrig">gebaut am 23.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Ein Teil ist gebaut: Die Untertitel laufen über ASS-Stile mit gesetzten Seitenrändern („rund 20 Zeichen passen sicher in eine Zeile"), und <code>drawtext</code> wurde bewusst aufgegeben, weil es weder umbrechen noch an die Breite anpassen kann. Was fehlt, ist die <em>Prüfung</em>: TikTok legt eigene Bedienelemente über das Video — rechts die Symbolspalte, unten Name und Unterschrift. Ob ein Textkasten darunter verschwindet, sieht man erst in der App.</p>
         <p class="tun"><b>Was tun</b> Sperrzonen als Werte in <code>marketing.config.json</code> (unten ~320 px, rechts ~160, oben ~120 bei 1080×1920), damit sie neben den anderen Grenzen stehen. Die Ausgangsprüfung um eine Zeile erweitern: Ragt ein Textbereich hinein, ist das ein Grund wie „keine Tonspur". Zum Gegensehen ein Standbild mit eingezeichneten Zonen.</p>
         <p class="bringt"><b>Bringt</b> Der Clip sieht dort gut aus, wo er angeschaut wird — nicht dort, wo er gebaut wird. Dieselbe Überlegung wie bei den Bildern im Shop: Es zählt die Ausspielung, nicht die Quelle.</p>
@@ -839,7 +883,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">32</span> Alles auf ein Zielformat bringen, bevor geschnitten wird <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">32</span> Alles auf ein Zielformat bringen, bevor geschnitten wird <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Rohclips kommen mit unterschiedlicher Bildrate (24, 25, 30, 60), unterschiedlichem Farbraum und unterschiedlicher Tonabtastrate. Wer sie direkt aneinanderhängt, bekommt Ruckler an den Schnittstellen, Tonversatz oder einen Farbsprung — und sucht den Fehler dann im Schnitt statt im Material.</p>
         <p class="tun"><b>Was tun</b> Ein Vereinheitlichungsschritt vor dem Schnitt: alles auf 30 fps, 1080×1920, H.264, yuv420p, Ton auf 48 kHz Stereo AAC. Ergebnis in einen Zwischenordner, der Schnitt arbeitet nur noch damit. Der Schritt ist auch die natürliche Stelle für den Zuschnitt aus Punkt 25.</p>
         <p class="bringt"><b>Bringt</b> Der Schnitt wird berechenbar. Und Fehler, die erst am fertigen Clip auffallen (Ton läuft nach 12 Sekunden weg), entstehen gar nicht erst.</p>
@@ -847,7 +891,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">33</span> Übergänge sparsam, aber einheitlich <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">33</span> Übergänge sparsam, aber einheitlich <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Harte Schnitte sind auf TikTok die Regel und wirken schneller. Ein weicher Übergang an der falschen Stelle wirkt wie eine Diashow. Andersherum braucht der Übergang von fremdem Material zu eigenem Produktbild manchmal eine Kante, damit der Bruch nicht als Fehler gelesen wird.</p>
         <p class="tun"><b>Was tun</b> Zwei Übergänge festlegen und mehr nicht: harter Schnitt als Vorgabe, ein kurzer Weißblitz (drei Frames) für den Sprung von Fremd- auf Eigenmaterial. Als Feld in der Schnittliste, nicht als Entscheidung im Moment.</p>
         <p class="bringt"><b>Bringt</b> Die Clips wirken wie eine Reihe, nicht wie Einzelstücke. Wiedererkennbarkeit entsteht durch Wiederholung, und die geht nur über eine Festlegung.</p>
@@ -857,7 +901,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">34</span> Tempo messen, nicht schätzen <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">34</span> Tempo messen, nicht schätzen <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> „Zu langsam" fällt erst beim Ansehen auf, und dann ist die Fassung fertig. Dabei ist es eine Zahl: durchschnittliche Segmentlänge. Bei 19,5 Sekunden und, sagen wir, sechs Segmenten sind das gut drei Sekunden pro Einstellung — für einen Werbeclip eher ruhig.</p>
         <p class="tun"><b>Was tun</b> Beim Bauen aus der Schnittliste mitrechnen: Anzahl Segmente, mittlere Länge, längstes Segment. Warnung, wenn ein Segment über vier Sekunden liegt oder die mittlere Länge über 2,5 Sekunden. Keine Sperre, nur ein Hinweis.</p>
         <p class="bringt"><b>Bringt</b> Die häufigste Schwäche selbstgebauter Werbeclips wird zu einer Zahl in der Konsole statt zu einem Gefühl nach dem dritten Ansehen.</p>
@@ -873,7 +917,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">36</span> Nicht mischen, was nicht zusammengehört <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">36</span> Nicht mischen, was nicht zusammengehört <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Die Lehre steht schon in der Handarbeit-Notiz: Clips mit dem schwarzen Modell nicht mit den weißen mischen, das wirkt wie ein anderes Produkt. Als Notiz hält so etwas genau so lange, wie jemand daran denkt — und beim zwanzigsten Clip denkt niemand daran.</p>
         <p class="tun"><b>Was tun</b> Ein Feld <code>variante</code> je Clip im Index (Farbe, Modell, Größe). Beim Bauen prüfen, ob alle Segmente einer Fassung dieselbe Variante tragen — sonst Warnung mit Angabe der abweichenden Segmente. Bewusstes Mischen bleibt möglich, aber nur mit ausdrücklicher Freigabe in der Schnittliste.</p>
         <p class="bringt"><b>Bringt</b> Aus einer Notiz wird eine Regel. Und für den Kunden bleibt das Produkt im Clip dasselbe wie das auf der Produktseite — sonst ist der erste Eindruck nach dem Klick ein Widerspruch.</p>
@@ -893,7 +937,7 @@
       <p class="vb-group-note"><strong>Hier ist am meisten schon da</strong> — und besser, als der Bericht vermuten ließ: Lautheitsnormung, Ducking, Untertitel als ASS-Stile, drei Sprachausgaben (Piper lokal, ElevenLabs, eigene Aufnahmen), Musik nur aus einem eigenen, belegbaren Ordner. Diese Gruppe ist deshalb kurz — sie sagt vor allem, was an dem Gebauten noch offen ist.</p>
 
       <div class="vb-item">
-        <h4><span class="nr">37</span> Fremden Originalton grundsätzlich entfernen <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">37</span> Fremden Originalton grundsätzlich entfernen <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> Der Ton eines fremden Clips bringt zwei Probleme mit: die Stimme eines fremden Creators (Recht an der eigenen Stimme) und häufig lizenzierte Musik, die auf TikTok nur innerhalb der App erlaubt ist. Beides wandert stillschweigend mit, wenn man einen Clip einfach schneidet.</p>
         <p class="tun"><b>Was tun</b> In der Vereinheitlichung aus Punkt 32 den Ton fremder Clips standardmäßig verwerfen (<code>-an</code>) und eine Tonspur bewusst neu aufbauen: eigenes Musikbett, eigene Stimme, eigene Geräusche. Wenn Originalton gewollt ist — ein Klicken, ein Wasserplätschern — ausdrücklich in der Schnittliste vermerken.</p>
         <p class="bringt"><b>Bringt</b> Die Standardeinstellung ist die sichere. Heute ist sie es nicht: Wer nichts tut, veröffentlicht fremden Ton mit.</p>
@@ -929,7 +973,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">42</span> Schriftbild einmal festlegen und durchhalten <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">42</span> Schriftbild einmal festlegen und durchhalten <span class="chip p-niedrig">gebaut am 23.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Der fertige Clip hat eine eingebrannte Bildunterschrift. Beim zweiten Clip wird Schriftart, Größe und Position neu entschieden — und schon sehen die beiden aus wie von zwei verschiedenen Absendern. Der Shop hat ein Design; die Videos haben bisher keins.</p>
         <p class="tun"><b>Was tun</b> Eine Textvorlage festschreiben: Schriftart (eine, mit Lizenz für gewerbliche Nutzung), Größe relativ zur Bildhöhe, immer mit Kontur oder halbtransparentem Kasten hinterlegt, feste Positionen aus der Vorlage. Farben aus dem Shop-Design übernehmen, damit der Clip und die Zielseite zusammenpassen.</p>
         <p class="bringt"><b>Bringt</b> Wiedererkennbarkeit ohne Logo. Und die Brücke zwischen Clip und Shop: Wer nach dem Klick dieselben Farben sieht, ist nicht sicher, ob er richtig ist — er weiß es.</p>
@@ -939,7 +983,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">43</span> Lesbarkeit des Textes prüfen, nicht hoffen <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">43</span> Lesbarkeit des Textes prüfen, nicht hoffen <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Weißer Text auf hellem Wasser ist unlesbar, und das passiert bei fremdem Material ständig, weil man den Hintergrund nicht selbst gedreht hat. Auffallen tut es erst am Handy in der Sonne.</p>
         <p class="tun"><b>Was tun</b> Beim Bauen den mittleren Helligkeitswert im Bereich unter dem Textkasten messen. Ist der Kontrast zu gering, automatisch den halbtransparenten Kasten zuschalten oder die Textfarbe umschalten. Als Prüfung in der Endabnahme aus Punkt 52.</p>
         <p class="bringt"><b>Bringt</b> Kein unlesbarer Text mehr, und zwar ohne dass jemand jeden Clip auf dem Handy gegenprüfen muss. Derselbe Gedanke wie bei der Barrierefreiheit im Shop: Kontrast ist messbar, nicht Geschmack.</p>
@@ -948,7 +992,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">44</span> Untertitel: vorhanden — aus dem Briefing, nicht aus dem Ton <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">44</span> Untertitel: vorhanden — aus dem Briefing, nicht aus dem Ton <span class="chip p-mittel">halb gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> <strong>Teilweise gebaut:</strong> <code>schreibe_untertitel()</code> erzeugt ASS-Untertitel mit eigenem Hook-Stil und bricht den Text in Blöcke von wenigen Wörtern — also genau der Rhythmus, der auf TikTok funktioniert. Die Zeiten stammen aber aus dem Briefing und der Sprechdauer, nicht aus dem tatsächlichen Ton. Bei erzeugter Stimme passt das; bei einem <em>handgeschnittenen</em> Clip mit Originalton gibt es gar keine Untertitel.</p>
         <p class="tun"><b>Was tun</b> Für die Schnitt-Welt (Punkt 27) dieselbe ASS-Ausgabe nutzen, gespeist aus einer echten Tonanalyse. Der Spracherkenner ist schon da: <code>bot/sprach-erkennung.py</code> nutzt faster-whisper und hat die Segmentzeiten bereits in der Hand — heute wirft es sie weg und zählt nur Wörter. Für Untertitel müsste es den Text <em>optional</em> ausgeben; die heutige Zurückhaltung ist bei fremdem Ton richtig und sollte für eigene Aufnahmen gelockert werden, nicht generell.</p>
         <p class="bringt"><b>Bringt</b> Auch Clips mit echtem Ton bekommen Text — und der Großteil schaut ohne Ton. Der Baustein existiert, ihm fehlt nur die Zeitquelle.</p>
@@ -962,7 +1006,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">46</span> Bildunterschrift und Hashtags aus dem Material ableiten <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">46</span> Bildunterschrift und Hashtags aus dem Material ableiten <span class="chip p-niedrig">gebaut am 23.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Für jeden geladenen Clip liegen bereits die Unterschriften der erfolgreichen Originale im Index — samt Like-Zahl. Das ist eine Sammlung dessen, was bei diesem Produkt tatsächlich funktioniert hat. Die eigene Unterschrift entsteht trotzdem jedes Mal aus dem Nichts.</p>
         <p class="tun"><b>Was tun</b> Aus den angenommenen Unterschriften je Produkt die häufigsten Hashtags und Formulierungsmuster ziehen und als Vorschlag zur Freigabe anbieten. <strong>Nicht abschreiben</strong> — eine fremde Unterschrift wörtlich zu übernehmen ist derselbe Fehlertyp wie fremdes Bildmaterial ungeprüft zu verwenden.</p>
         <p class="bringt"><b>Bringt</b> Die Hashtags treffen die Themenseiten, die beim eigenen Produkt wirklich laufen — dieselben, aus denen der Bot das Material geholt hat. Das schließt den Kreis: gefunden wird, wo später auch veröffentlicht wird.</p>
@@ -982,21 +1026,22 @@
       <p class="vb-group-note">Die Ausgangsprüfung gibt es — sie entstand, weil in <code>data/renders/</code> neun MP4-Dateien mit <strong>0 Byte</strong> lagen, die aussahen wie fertige Arbeit. Was hier fehlt, betrifft vor allem die Handarbeit daneben.</p>
 
       <div class="vb-item">
-        <h4><span class="nr">47</span> Die Schnitt-Arbeit committen <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwanzig Minuten</span></h4>
+        <h4><span class="nr">47</span> Die Schnitt-Arbeit committen <span class="chip p-niedrig">gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwanzig Minuten</span></h4>
         <p class="warum"><b>Warum</b> Die Vorprüfung aus dem Seitentext und die Likes-Sortierung liegen unversioniert im Arbeitsverzeichnis — 254 geänderte Zeilen, alle 131 Prüfungen grün. Unversionierter Code ist ein Einzelstück auf einer Festplatte: Er verschwindet bei einem Fehlgriff und existiert für niemanden sonst.</p>
         <p class="tun"><b>Was tun</b> Code, Prüfungen und Handbuch committen — das Videomaterial ausdrücklich nicht. Vorher mit <code>git status</code> und dem Secret-Scanner gegenprüfen, was tatsächlich im Index landet. Die Lehre vom 22. Juni gilt hier besonders: <em>nie blind den ganzen Ordner stagen.</em></p>
         <p class="bringt"><b>Bringt</b> Der Zustand ist wiederherstellbar und nachvollziehbar. Und alles Weitere in diesem Papier baut darauf auf — auf unversioniertem Code kann man nicht weiterbauen, ohne ihn zu riskieren.</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">48</span> Prüfungen für die Schnittkette, nicht nur für den Bot <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">48</span> Prüfungen für die Schnittkette, nicht nur für den Bot <span class="chip p-niedrig">gebaut am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> 131 Prüfungen decken das Finden und Filtern ab. Für das Schneiden gibt es keine einzige. Dabei hat der Schnitt mehr Fallen: falsche Segmentgrenzen, kaputte Zeitangaben, fehlende Dateien, Textkasten außerhalb des Bildes.</p>
         <p class="tun"><b>Was tun</b> Prüfungen gegen die Schnittliste, ohne Video zu bauen: Verweisen alle Segmente auf vorhandene Dateien? Liegt jedes Ende nach seinem Anfang und innerhalb der Clip-Länge? Ergibt die Summe die angestrebte Gesamtlänge? Liegt jeder Textkasten im sicheren Bereich? Dazu ein Bauversuch mit drei Sekunden Beispielmaterial im Testlauf.</p>
         <p class="bringt"><b>Bringt</b> Fehler fallen in Sekunden auf statt nach einem Rendervorgang. Und die Kette bekommt dieselbe Sperrwirkung, die im Shop seit dem 3. August gilt.</p>
+        <p class="tun"><b>Gebaut am 26.09. — und eine Berichtigung.</b> Mittags stand hier schon „gebaut", weil die Prüfungen dazu im Repo lagen. Der Code fehlte: Commit <code>414a4c4</code> vom 25.09. hatte zehn Stil-C-Prüfungen ohne Umsetzung eingecheckt, und weil der Prüflauf (<code>pruefung.yml</code>) die Marketing-Tests nicht ausführt, fiel es nirgends auf. Jetzt steht <code>trockenpruefung()</code>: sammelt <em>alle</em> Fehler einer Liste in einem Lauf (Dateien, Zeitangaben, Rechte der Clips, Musikbett samt Nachweis, Produkt) und trennt sie von Hinweisen (Tempo, Varianten, fehlender Hook). Mit <code>--bauversuch</code> werden die ersten drei Sekunden in 540×960 wirklich geschnitten — an echtem Wasserspender-Material nachgemessen: 3,0 s aus zwei Segmenten. Aufruf: <code>npm run marketing:pruefen -- fassung-10.json --bauversuch</code>. Beim Ausprobieren gefunden: Eine unter PowerShell gespeicherte Liste (UTF-8 mit BOM) galt als „kein gültiges JSON" — <code>lies()</code> liest jetzt <code>utf-8-sig</code>.</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">49</span> Merkliste auf Prüfsummen umstellen <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">49</span> Merkliste auf Prüfsummen umstellen <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> <code>.bestand.json</code> hält fest, welche Rohdateien schon verarbeitet sind — sonst schneidet die Aufgabe bei jedem Lauf alles neu. Steht darin nur der Dateiname, wird eine <em>geänderte</em> Datei unter altem Namen übersehen. Die Prüfsummen werden beim Laden ohnehin schon gerechnet.</p>
         <p class="tun"><b>Was tun</b> Je Eintrag Prüfsumme statt oder zusätzlich zum Namen, dazu die Fassung der Schnittregeln. Ändert sich die Vorlage, gelten alle damit gebauten Clips als veraltet und werden beim nächsten Lauf neu erzeugt — gezielt, nicht pauschal.</p>
         <p class="bringt"><b>Bringt</b> Kein stiller Fehlgriff durch Namensgleichheit, und eine Vorlagenänderung wirkt rückwirkend, ohne dass jemand eine Liste pflegen muss.</p>
@@ -1014,7 +1059,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">51</span> Vorschau in klein, Endfassung in groß <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">51</span> Vorschau in klein, Endfassung in groß <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> Beim Bauen einer Fassung geht es um Reihenfolge und Rhythmus, nicht um Bildqualität. Trotzdem wird jedes Mal in voller Auflösung gerendert — die Wartezeit fällt dort an, wo sie am wenigsten nützt.</p>
         <p class="tun"><b>Was tun</b> Zwei Ausgabestufen: Vorschau mit 540×960, niedriger Bitrate und schnellster Einstellung; Endfassung mit 1080×1920 und langsamerer, besserer Einstellung. Dieselbe Schnittliste, nur ein anderer Schalter.</p>
         <p class="bringt"><b>Bringt</b> Vorschauen in einem Bruchteil der Zeit. Man baut mehr Fassungen, weil es billig ist — und mehr Fassungen ist der einzige verlässliche Weg zu einer guten.</p>
@@ -1033,7 +1078,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">53</span> Jede Fassung dokumentiert sich selbst <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">53</span> Jede Fassung dokumentiert sich selbst <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Es gibt fünf Fassungen des Wasserspender-Clips. Welche warum entstand, was von Fassung 3 zu 4 geändert wurde und warum 5 gewann — das weiß heute nur, wer dabei war. In vier Wochen weiß es niemand mehr.</p>
         <p class="tun"><b>Was tun</b> Neben jede gebaute Datei eine kleine Begleitdatei: Datum, Fassung, verwendete Rohclips mit Prüfsumme, Vorlage, Musikbett, Änderung gegenüber der Vorfassung in einem Satz. Erzeugt das Bauprogramm automatisch, ein Feld füllt der Mensch.</p>
         <p class="bringt"><b>Bringt</b> Die Fassungsgeschichte überlebt das Projekt. Und bei einer Rückfrage zu einem veröffentlichten Clip — von wem war das Material? — steht die Antwort neben der Datei.</p>
@@ -1043,14 +1088,14 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">54</span> Ein Befehl je Schritt, nicht ein Programm für alles <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">54</span> Ein Befehl je Schritt, nicht ein Programm für alles <span class="chip p-niedrig">gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Je größer die Kette wird, desto teurer wird es, sie im Ganzen laufen zu lassen, um einen Schritt zu prüfen. Das ist dieselbe Überlegung, die im Shop zur Trennung von Lint, Tests und Startprüfung geführt hat.</p>
         <p class="tun"><b>Was tun</b> Klare Einzelschritte: <code>finden</code>, <code>filtern</code>, <code>laden</code>, <code>bogen</code> (Kontaktbogen), <code>schneiden</code>, <code>pruefen</code>, <code>freigeben</code>. Jeder liest aus dem Index und schreibt in den Index, jeder einzeln aufrufbar, jeder mit Trockenlauf-Schalter.</p>
         <p class="bringt"><b>Bringt</b> Man kann einen Schritt wiederholen, ohne die anderen anzufassen — und einen neuen Schritt einhängen, ohne alles zu verstehen. Für alles, was in Gruppe B und C dazukommt, ist das die Voraussetzung.</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">55</span> Ein Handbuch für die Videokette wie für den Bot <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">55</span> Ein Handbuch für die Videokette wie für den Bot <span class="chip p-niedrig">gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Der Bot hat 976 Zeilen Handbuch — auch deshalb ist er der belastbarste Teil der Kette. Für den Schnitt gibt es Notizen. Was dabei verloren geht, ist genau das teure Wissen: dass Leerzeilen zwischen Klammer und Unterschrift stehen, dass <code>1,2K</code> nicht 12000 ist, dass schwarze und weiße Modelle nicht gemischt werden.</p>
         <p class="tun"><b>Was tun</b> Eine Datei <code>SCHNITT.md</code> mit demselben Aufbau wie das Bot-Handbuch: geprüfte Grenzen der Werkzeuge, die ffmpeg-Aufrufe mit Begründung, gelöste Fehler mit Datum, die Regeln aus Gruppe C und D. Jede neue Erkenntnis kommt dort hinein, nicht in eine Chatnachricht.</p>
         <p class="bringt"><b>Bringt</b> Das Wissen liegt an einer Stelle statt in fünf Köpfen und zwei Ordnern. Und beim nächsten Bericht ist es die Grundlage, genau wie <code>bot/TIKTOK-VIDEO-SYNC.md</code> es diesmal war.</p>
@@ -1067,7 +1112,7 @@
       <p class="vb-group-note">Der Marketing-Automat baut und plant, veröffentlicht aber nichts. Das ist die richtige Vorsicht — sie darf nur nicht zum Dauerzustand werden, sonst lernt die Kette nie, was funktioniert.</p>
 
       <div class="vb-item">
-        <h4><span class="nr">56</span> Veröffentlichungszeiten: Bausteine da, Vorrat ungemessen <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">56</span> Veröffentlichungszeiten: Bausteine da, Vorrat ungemessen <span class="chip p-niedrig">gebaut am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Der Takt ist gebaut: <code>publish/slots.py</code> vergibt Zeitfenster, der Workflow läuft alle 30 Minuten, <code>mkt_jobs</code> hält den Zustand. Was niemand misst, ist der <em>Nachschub</em>: Wie viele freigegebene Clips liegen bereit, für wie viele Wochen reicht das? Ein Kanal schläft nicht ein, weil der Zeitplan fehlt, sondern weil der Vorrat leer ist.</p>
         <p class="tun"><b>Was tun</b> Im Dashboard zwei Zahlen ergänzen: freigegebene Clips in der Warteschlange und daraus die Reichweite in Tagen beim aktuellen Takt. Warnung, wenn sie unter zwei Wochen fällt — über denselben Weg wie die übrigen Betriebswarnungen.</p>
         <p class="bringt"><b>Bringt</b> Der Engpass wird sichtbar, bevor er eintritt. Und die Kette bekommt ein Ziel, an dem man sie messen kann.</p>
@@ -1081,17 +1126,19 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">58</span> Drei Hook-Varianten je Clip <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">58</span> Drei Hook-Varianten je Clip <span class="chip p-niedrig">gebaut am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Welcher Anfang funktioniert, weiß man vorher nicht — und man rät es auch nicht besser, je länger man darüber nachdenkt. Bei einer Fassung je Clip ist jede Veröffentlichung eine Einzelmessung ohne Vergleich.</p>
         <p class="tun"><b>Was tun</b> Aus derselben Schnittliste drei Fassungen bauen, die sich <em>nur</em> in den ersten zwei Sekunden unterscheiden: anderer Einstieg, anderer Text, andere erste Einstellung. Zeitversetzt veröffentlichen, Kennungen getrennt halten. Mit der Warteschlange aus Punkt 50 kostet das kaum Mehrarbeit.</p>
         <p class="bringt"><b>Bringt</b> Nach zehn Clips weiß man, welche Art Einstieg beim eigenen Publikum funktioniert — und das gilt dann für alle folgenden. Ohne Varianten lernt die Kette nichts, egal wie viele Clips sie produziert.</p>
+        <p class="tun"><b>Gebaut am 26.09.</b> (dieselbe Berichtigung wie bei 48 — mittags gab es nur die Prüfungen). <code>"hook_varianten": ["…", "…", "…"]</code> in der Schnittliste ergibt beim Rendern je Hook eine eigene Datei (<code>…_stil_c_a.mp4</code>, <code>_b</code>, <code>_c</code>) mit eigener Zeile in <code>mkt_videos</code> und damit eigener Kampagnenkennung. Alles andere bleibt identisch; mit <code>"varianten_rotieren": true</code> wechselt zusätzlich die erste Einstellung — rotiert, nicht gemischt, erst ab drei Segmenten. Eine Liste gilt erst als fertig, wenn <em>jede</em> Fassung bestanden hat, und eine fertige Fassung wird nicht noch einmal gerendert. Der Hooktext geht als Merkmal ins Lernen (Punkt 59).</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">59</span> Kennzahlen zurückholen — Bausteine vorhanden, Bezug zum Rohclip fehlt <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">59</span> Kennzahlen zurückholen — Bausteine vorhanden, Bezug zum Rohclip fehlt <span class="chip p-niedrig">gebaut am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> <code>analytics/collectors.py</code>, <code>metrics.py</code> und <code>mkt_metrics</code> sind da, ebenso das Lernen mit <code>bandit.py</code>, <code>reward.py</code> und <code>policy.py</code>. Der Bandit kann aber nur über Dinge lernen, die als Merkmal am Beitrag hängen. Welche <em>Rohclips</em> in einem Video stecken, welche Vorlage, welches Musikbett — das steht heute nirgends in <code>features.py</code>.</p>
         <p class="tun"><b>Was tun</b> Die Merkmalsliste um die Herkunft erweitern: Clip-Kennungen der verwendeten Segmente, Vorlage, Hook-Variante, Musikstück, Stimmen-Weg. Wichtigste Einzelzahl bleibt der Anteil, der über die ersten drei Sekunden hinaus schaut.</p>
         <p class="bringt"><b>Bringt</b> Der Bandit lernt dann nicht nur „Stil A schlägt Stil B", sondern „Clips von diesem Creator laufen" — und das steuert wiederum den Bot.</p>
+        <p class="tun"><b>Gebaut am 26.09. — und dabei ein Loch gefunden, das größer war als der Punkt.</b> Vier Abfragen verbanden Beitrag und Produkt hart über <code>mkt_briefs</code>. Stil C hat kein Briefing — jeder Stil-C-Beitrag fiel damit still heraus: <strong>kein Lernen</strong> (<code>policy.merkmale_von_post</code>), <strong>kein zugeordneter Umsatz</strong> (<code>attribution</code>), <strong>nicht in der Wochengrenze je Produkt</strong> (<code>matcher.zu_oft_beworben</code>), nie unter „beste Beiträge" im Wochenbericht; dazu fehlten verworfene Stil-C-Videos im Dashboard. Keine Fehlermeldung, nur Nullen — und das bei genau den Videos, die tatsächlich gemacht werden. Jetzt: <code>COALESCE(v.produkt_id, m.produkt_id)</code> über <code>LEFT JOIN</code>. Die Herkunft kommt beim Rendern in den Bericht (Creator aus dem Bot-Index, TikTok-Kennung aus dem Dateinamen, eigen/fremd, Vorlage, Musikstück, Hook) und wird als <em>beobachtete</em> Merkmale gelernt — bewusst nicht steuerbar, damit der Automat keinen Creator nach drei Beiträgen sperrt. Neuer Abschnitt „Herkunft" im Wochenbericht. <b>Offen:</b> Die drei Datenbankproben (<code>test_herkunft_lernen.py</code>) konnten nicht laufen — Neon verweigert seit heute Abend jede Verbindung („exceeded the quota").</p>
       </div>
 
       <div class="vb-item">
@@ -1126,7 +1173,7 @@
       <p class="vb-group-note">Diese Gruppe ist keine Verbesserung im Sinne von „schöner". Sie ist die Bedingung dafür, dass die Kette überhaupt scharfgeschaltet werden darf — eine Urheberrechtsverletzung ist der einzige Fehler in diesem Papier, der eine Rechnung von außen nach sich zieht.</p>
 
       <div class="vb-item">
-        <h4><span class="nr">63</span> Rechteakte je Clip — der Automat kann das längst, der Bot nicht <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">63</span> Rechteakte je Clip — der Automat kann das längst, der Bot nicht <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Der Vergleich macht die Lücke sichtbar. Der <strong>Materialkatalog des Automaten</strong> setzt die Regel hart durch: „Ein Asset ohne Lizenzeintrag kommt nicht ins Video. Punkt." — mit klarer Quellenrangfolge (eigene Produktvideos, eigene Bilder, CJ-Medien, lizenzfreier Stock nur mit Eintrag) und dem Hinweis, dass man ein Video auf TikTok „nicht nachträglich kurz zurückholen" kann. Der <strong>Bot</strong> dagegen hat ein einzelnes <code>rechte_geprueft: false</code>, das „nur von Hand" umgestellt wird. Was, wann, durch wen und in welchem Umfang geprüft wurde, steht nirgends — ein Wahrheitswert kann keine Einwilligung belegen.</p>
         <p class="tun"><b>Was tun</b> Den Bot-Index an den Materialkatalog angleichen: Art der Erlaubnis, Datum, Rechteinhaber samt Kontakt (<code>creator</code> und <code>quelle_url</code> stehen schon da — genau dafür werden sie mitgeschrieben), Beleg, <strong>Umfang</strong> (nur organisch? auch bezahlte Anzeigen? wie lange?) und ein Widerrufsfeld. Ideal: dieselbe Tabelle wie <code>mkt_assets</code>, dann gilt für Fremdclips dieselbe Sperre wie für Stockmaterial.</p>
         <p class="bringt"><b>Bringt</b> Die strengste Regel des Projekts gilt auch für das Material mit dem höchsten Risiko. Heute ist es umgekehrt: Ein Pexels-Bild braucht einen Lizenzeintrag, ein fremder TikTok-Clip nur ein Häkchen.</p>
@@ -1137,7 +1184,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">64</span> Anfragen an Creator standardisieren <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">64</span> Anfragen an Creator standardisieren <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Ohne Vorlage wird jede Anfrage neu formuliert, mal vollständig, mal nicht — und dann fehlt genau die Zeile zum Umfang. Zugleich ist eine Einwilligung der einzige saubere Weg: Ein fremder Clip in einem gewerblichen Werbeclip ist keine Grauzone.</p>
         <p class="tun"><b>Was tun</b> Eine deutsche und eine englische Vorlage: wer fragt, für welchen konkreten Clip, wofür (organisch und/oder Anzeige), wie lange, welche Nennung, ob eine Gegenleistung angeboten wird (Produkt, Gutschein, Vergütung). Antwort als Screenshot zur Akte aus Punkt 63. Bei den Creator-Favoriten aus Punkt 02 zuerst fragen — dort lohnt eine dauerhafte Absprache.</p>
         <p class="bringt"><b>Bringt</b> Aus einem heiklen Sonderfall wird ein Vorgang mit Vorlage. Und die Antwortquote steigt messbar, wenn die Anfrage klar sagt, was gewollt ist und was es dafür gibt.</p>
@@ -1148,7 +1195,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">65</span> Fremdmaterial-Ordner komplett ignorieren <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwanzig Minuten</span></h4>
+        <h4><span class="nr">65</span> Fremdmaterial-Ordner komplett ignorieren <span class="chip p-niedrig">gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwanzig Minuten</span></h4>
         <p class="warum"><b>Warum</b> Diese Falle ist bereits zugeschnappt: Das Muster in <code>.gitignore</code> unterscheidet fremd von eigen <em>am Dateinamen</em> — werden Fremdvideos auf das eigene Schema umgetauft, greift es nicht mehr, und sie standen prompt als neu im <code>git status</code>. Solange das Repository öffentlich ist, ist das fremdes Material auf GitHub.</p>
         <p class="tun"><b>Was tun</b> Die Regel am Ordner festmachen, nicht am Namen: ein Ordner für Fremdmaterial, vollständig ignoriert, egal wie die Dateien darin heißen. Dazu eine Prüfung im Prüflauf, die rot meldet, wenn irgendeine Videodatei außerhalb der erlaubten Orte im Index auftaucht. Und Punkt 01 des Hauptberichts — Repository auf privat — nimmt dem Ganzen zusätzlich die Grundlage.</p>
         <p class="bringt"><b>Bringt</b> Der Schutz hängt nicht mehr davon ab, wie jemand eine Datei benennt. Genau die Unterscheidung, die im ganzen Bericht den Unterschied macht: strukturell unmöglich statt durch Aufmerksamkeit vermieden.</p>
@@ -1157,7 +1204,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">66</span> Musiklizenzen in den Materialkatalog aufnehmen <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">66</span> Musiklizenzen in den Materialkatalog aufnehmen <span class="chip p-niedrig">gebaut am 23.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> Die halbe Absicherung steht: Musik kommt nur aus dem eigenen Ordner, ausdrücklich nicht aus dem Netz, weil sie „die häufigste Ursache für eine Urheberrechtsmeldung auf TikTok" ist. Aber der Materialkatalog mit seiner Lizenzpflicht gilt für <em>Bild</em>material; die Musikdateien gehen an ihm vorbei. „Jemand hat es bewusst hingelegt" ist ein Vorsatz, kein Beleg.</p>
         <p class="tun"><b>Was tun</b> Jedes Stück als Asset eintragen, mit denselben Feldern wie Bildmaterial und einer zusätzlichen Spalte <strong>gewerbliche Nutzung erlaubt</strong>. Der kommerzielle Katalog einer Plattform ist kleiner als der private. Fehlt der Eintrag, greift dieselbe Regel wie beim Bild: kommt nicht ins Video.</p>
         <p class="bringt"><b>Bringt</b> Eine Sperre statt einer Absicht — und die Prüfung läuft automatisch mit, statt beim Hochladen erinnert werden zu müssen.</p>
@@ -1166,7 +1213,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">67</span> Werbekennzeichnung — in der Rechtsprüfung, noch nicht im Bild <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">67</span> Werbekennzeichnung — in der Rechtsprüfung, noch nicht im Bild <span class="chip p-niedrig">gebaut am 23.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> <code>compliance.py</code> prüft Texte gegen <code>compliance_rules.json</code> und sperrt im Zweifel — mit dem Grundsatz „lieber zu streng: Ein fälschlich blockiertes Video kostet Rechenzeit. Ein durchgerutschtes kostet eine Abmahnung." Damit ist die Kennzeichnung in <em>Text</em> abgedeckt, sofern die Regel dort steht. Im <em>Bild</em> gibt es sie nicht: Die Endkarte trägt Name, Preis und Hinweis — „Werbung" ist kein fester Bestandteil der Vorlage.</p>
         <p class="tun"><b>Was tun</b> Kennzeichnung in die ASS-Vorlage aufnehmen, lesbar und außerhalb der Sperrzonen, nicht abschaltbar. Dazu den Plattform-Schalter für kommerzielle Inhalte beim Posten setzen. Die Ausgangsprüfung kann das Vorhandensein der Textzeile mitprüfen, sie steht ohnehin in der ASS-Datei.</p>
         <p class="bringt"><b>Bringt</b> Ein Beitrag, der eigene Produkte bewirbt, ist Werbung — auch auf dem eigenen Kanal. Wird das je Beitrag von Hand gesetzt, fehlt es irgendwann.</p>
@@ -1175,14 +1222,14 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">68</span> Freigabe je Beitrag — die echte Lücke vor dem Betrieb <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
+        <h4><span class="nr">68</span> Freigabe je Beitrag — die echte Lücke vor dem Betrieb <span class="chip p-niedrig">gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
         <p class="warum"><b>Warum</b> Alles Schützende ist da, aber es kennt nur zwei Stellungen. Der <strong>Trockenlauf ist der Standard</strong> und lässt sich nur von Hand abschalten; dazu kommen drei unabhängige Notaus (ENV, Datei <code>Marketing/STOP</code>, Kennzeichen in <code>mkt_jobs</code>), die sperrende Rechtsprüfung und die Ausgangsprüfung. Was fehlt, ist die Stellung dazwischen: <em>diesen einen Beitrag darf raus.</em> Deshalb bleibt der Schalter an — zu Recht, denn „ein System, das ungeprüft nach draußen sendet" ist genau der Fehlertyp, den die letzten Monate abgebaut haben. Nur lernt die Kette so nie etwas.</p>
         <p class="tun"><b>Was tun</b> Die Admin-Seite <code>marketing.html</code> ist bereits „die einzige Stelle, an der ein Mensch sieht, was der Automat tut". Dort eine Freigabeliste: geplante Beiträge mit Standbild, Bildunterschrift, Zielverweis, Rechtestatus je verwendetem Clip, Musikbeleg und Kennzeichnung — ein Knopf je Beitrag. Ohne Freigabe geht nichts; kein Beitrag ist freigebbar, solange ein Clip ohne geklärte Rechte darin steckt. Die drei Notaus bleiben unangetastet darüber.</p>
         <p class="bringt"><b>Bringt</b> Der Trockenlauf darf aus, ohne dass die Kontrolle wegfällt. Das ist die einzige Änderung, die die Kette vom Bauzustand in den Betrieb überführt — alles andere in diesem Papier verbessert etwas, das nicht läuft.</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">69</span> Rückrufweg für veröffentlichte Beiträge <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">69</span> Rückrufweg für veröffentlichte Beiträge <span class="chip p-niedrig">gebaut am 23.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Wenn ein Creator seine Erlaubnis zurückzieht oder eine Beschwerde kommt, zählt die Reaktionszeit. Ohne vorbereiteten Weg sucht man dann erst, welche Beiträge das betroffene Material enthalten — und findet es nicht, weil Clip und Rohmaterial nur im Kopf verknüpft sind.</p>
         <p class="tun"><b>Was tun</b> Rückwärtssuche im Index: Von einem Rohclip zu allen Fassungen, zu allen Beiträgen, die daraus entstanden sind. Dazu eine kurze Handlungsanweisung im Handbuch: Beitrag entfernen, Rechtestatus auf widerrufen setzen, Material sperren, Antwort an den Creator. Einmal durchspielen, nicht nur aufschreiben.</p>
         <p class="bringt"><b>Bringt</b> Aus einem Vorfall wird ein Vorgang von zehn Minuten. Dieselbe Logik wie beim Zurückspielen einer Sicherung: Ein Weg, den niemand gegangen ist, ist eine Behauptung.</p>
@@ -1202,7 +1249,7 @@
       <p class="vb-group-note">Unspektakulär, aber der Teil, der bei wachsendem Materialbestand als Erstes zum Problem wird — und zwar auf eine Art, die niemand meldet.</p>
 
       <div class="vb-item">
-        <h4><span class="nr">70</span> Speicherplatz und Alter des Materials überwachen <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">70</span> Speicherplatz und Alter des Materials überwachen <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Rohvideos sind groß. 23 Clips für ein Produkt sind unkritisch; 23 Clips für 40 Produkte sind es nicht mehr — und eine volle Platte meldet sich beim Rendern mit einem abgebrochenen Auftrag, nicht mit einer klaren Fehlermeldung.</p>
         <p class="tun"><b>Was tun</b> Je Lauf Gesamtgröße, Anzahl Dateien und ältestes Datum berichten. Aufbewahrungsregel festlegen: verworfenes Rohmaterial nach 90 Tagen löschen (der Indexeintrag mit Prüfsumme bleibt, damit es nicht neu geladen wird), verwendetes Material bleibt, solange der Beitrag online ist.</p>
         <p class="bringt"><b>Bringt</b> Der Bestand wächst kontrolliert. Und die Indexeinträge sind ohnehin das Wertvolle — die Dateien sind nachladbar, die Beurteilung nicht.</p>
@@ -1212,7 +1259,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">71</span> Einheitliche Benennung mit Herkunft im Namen <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">71</span> Einheitliche Benennung mit Herkunft im Namen <span class="chip p-niedrig">gebaut am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> Die Falle vom Umbenennen zeigt, wie viel am Dateinamen hängt. Solange die Herkunft nur im Index steht, kann eine Datei außerhalb des Index nicht mehr zugeordnet werden — und genau solche Dateien landen im falschen Ordner.</p>
         <p class="tun"><b>Was tun</b> Ein festes Schema: <code>&lt;quelle&gt;_&lt;produkt-id&gt;_&lt;datum&gt;_&lt;kurzprüfsumme&gt;.mp4</code>, wobei <code>quelle</code> klar zwischen <code>fremd</code> und <code>eigen</code> unterscheidet. Der Bot vergibt den Namen, niemand tauft um. Eine Prüfung meldet Dateien, die nicht zum Schema passen.</p>
         <p class="bringt"><b>Bringt</b> Jede Datei trägt ihre Herkunft mit sich, auch wenn sie verschoben wird. Die Ordnerregel aus Punkt 65 bleibt trotzdem die eigentliche Absicherung — der Name ist der zweite Gürtel.</p>
@@ -1222,7 +1269,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">72</span> Werkzeugversionen festhalten <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
+        <h4><span class="nr">72</span> Werkzeugversionen festhalten <span class="chip p-niedrig">gebaut am 20.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">eine Stunde</span></h4>
         <p class="warum"><b>Warum</b> Die ganze Kette hängt an zwei fremden Werkzeugen: yt-dlp und ffmpeg. yt-dlp ändert sich fast wöchentlich, weil sich die Plattformen ändern — die Lehre aus dem <code>CURRENTLY BROKEN</code>-Marker ist genau die: <strong>Fähigkeiten verschwinden, ohne dass jemand es sagt.</strong> Umgekehrt ist ein zu altes yt-dlp der häufigste Grund für plötzlich scheiternde Abrufe.</p>
         <p class="tun"><b>Was tun</b> Beide Versionen bei jedem Lauf ins Protokoll. Eine feste Version in der Projektkonfiguration, Aktualisierung als bewusster Schritt mit kurzem Gegenlauf danach (ein bekannter Clip, der vorher ging). Beim Bot zusätzlich die vorhandenen Fähigkeiten protokollieren, nicht nur einmalig prüfen.</p>
         <p class="bringt"><b>Bringt</b> Wenn ein Lauf scheitert, ist die erste Frage — hat sich das Werkzeug geändert? — in einer Zeile beantwortet statt in einer Stunde Suche.</p>

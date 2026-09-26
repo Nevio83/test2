@@ -231,6 +231,93 @@ Ein vorhandener Entwurf wird **nie** überschrieben. Wer den Bogen neu baut,
 weil zwei Clips dazugekommen sind, verliert seine Zeitmarken nicht;
 `--neu` erzwingt das Überschreiben.
 
+### Vorlagen: die Form steht schon
+
+Der Kontaktbogen-Entwurf beantwortet „welche Clips gibt es". Offen bleibt die
+Formfrage: Wie viele Segmente, wie lang, wo steht Text? Die fing bei jeder
+Fassung wieder bei null an. Dafür gibt es fünf Vorlagen in
+`schnittlisten/vorlagen/`:
+
+| Vorlage | Segmente | mit Endkarte | wofür |
+|---|---|---|---|
+| `problem_loesung` | 5 | ~14,5 s | erst das Ärgernis, dann das Gerät (Wasserspender, Gemüseschneider) |
+| `vorher_nachher` | 4 | ~12 s | sichtbarer Unterschied aus derselben Einstellung |
+| `drei_gruende` | 4 | ~12,5 s | mehrere Stärken, keine trägt allein (Beamer, Klimagerät) |
+| `auspacken_kurz` | 4 | ~10 s | schönes Produkt, schöne Verpackung — Geschenk-Clip; ohne Endkarte (7,5 s) zu kurz |
+| `alltag_szene` | 4 | ~12 s | das Produkt verkauft eine Stimmung (Diffuser, Wandlampe) |
+
+Jede Vorlage nennt auch, **wann sie nicht passt** — das ist die Hälfte der
+Entscheidung.
+
+```bash
+npm run marketing:vorlage                                  # alle mit Zweck auflisten
+npm run marketing:vorlage -- problem_loesung --produkt 10  # Entwurf anlegen
+npm run marketing:vorlage -- problem_loesung --produkt 10 --quellen a.mp4,b.mp4
+```
+
+Das legt `schnittlisten/_entwurf-10-problem_loesung.json` an: Rollen,
+Sollzeiten und ein Suchhinweis (`_suche`) je Segment, Texte als `[[…]]`,
+Hashtags als Vorschlag aus den Kernwörtern des Bots (nur Einzelwörter; ohne
+Eintrag bleibt die Liste leer statt erfunden). Clips werden **nicht**
+zugeordnet und Texte **nicht** geschrieben — die Vorlage nimmt nur die
+Formentscheidung ab.
+
+Zwei Sperren halten einen halbfertigen Entwurf vom Rendern ab:
+
+1. **Der führende Unterstrich.** Stil C rendert keine `_`-Dateien, und der
+   Unterordner `vorlagen/` wird gar nicht durchsucht. Fertig ist ein Entwurf
+   erst, wenn ihn jemand umbenennt.
+2. **Platzhalter brechen ab.** Steht in `hook`, `cta`, einem Segment-`text`
+   oder den Hashtags noch ein `[[`, bricht `lies()` mit Segmentnummer ab —
+   nicht als Warnung. Stil C brennt Text wörtlich ins Bild; ein vergessenes
+   `[[Der wichtigste Vorteil]]` stünde sonst im veröffentlichten Video.
+
+Das erste Segment trägt in keiner Vorlage Text: Darüber liegt 2,5 s lang der
+Hook. Ein vorhandener Entwurf wird nie überschrieben, ein zweiter bekommt
+`-2`, `-3` angehängt. Prüfungen: `Marketing/tests/test_vorlagen.py`.
+
+Die Vorlagen liest Stil C **einmal** ein (`VORLAGEN`, `vorlage()`,
+`vorlagen_uebersicht()`) — die JSON-Dateien sind die einzige Quelle. Ein
+Schlüssel mit Bindestrich (`problem-loesung`) findet dieselbe Vorlage.
+
+### Hook-Varianten: dieselbe Fassung, drei Anfänge
+
+```json
+"hook": "Nie wieder Flaschen schleppen",
+"hook_varianten": ["Nie wieder Flaschen schleppen", "Ein Knopf, volles Glas", "Mein Schreibtisch-Upgrade"],
+"varianten_rotieren": false
+```
+
+Mit `hook_varianten` entsteht je Hook eine eigene Datei
+(`<liste>_stil_c_a.mp4`, `_b`, `_c`) mit eigener Zeile in `mkt_videos` —
+und damit eigener Kampagnenkennung. **Alles andere bleibt identisch**: Länge,
+Texte, Musik, Hashtags. Sonst misst man nicht den Hook, sondern drei
+verschiedene Videos. `varianten_rotieren: true` wechselt zusätzlich die erste
+Einstellung (B C A, C A B — rotiert, nicht gemischt, erst ab drei Segmenten).
+
+Eine Liste gilt erst als fertig, wenn **jede** Fassung bestanden hat; eine
+fertige Fassung wird nicht noch einmal gerendert. Auch in `hook_varianten`
+bricht ein `[[…]]` das Einlesen ab.
+
+## Gegenlesen ohne zu rendern
+
+```bash
+npm run marketing:pruefen -- fassung-10.json               # alle Fehler auf einmal
+npm run marketing:pruefen -- fassung-10.json --bauversuch  # + erste 3 s wirklich schneiden
+```
+
+`lies()` bricht beim **ersten** Fehler ab — richtig fürs Rendern, lästig beim
+Bauen einer Liste. Die Trockenprüfung sammelt alles, was sich ohne Video sagen
+lässt, und trennt **Fehler** (das Rendern würde abbrechen: Datei, Zeitangabe,
+Rechte der Clips, Musikbett samt Nachweis, Produkt) von **Hinweisen** (es würde
+laufen, aber schwächer: Tempo, gemischte Varianten, fehlender Hook). Der
+Bauversuch schneidet drei Sekunden in 540×960 — die eine Frage, die keine
+Textprüfung beantwortet: Lässt sich aus diesen Quellen überhaupt ein Bild
+schneiden? Ein blosser Dateiname wird unter `schnittlisten/` gesucht.
+
+Listen dürfen UTF-8 **mit** Byte-Order-Mark sein (so speichert PowerShell 5.1).
+Vorher hieß das „kein gültiges JSON" für eine einwandfreie Datei.
+
 ## Was beim Lesen geprüft wird
 
 Bevor ffmpeg startet, prüft `lies()` die Liste gegen die echten Dateien und
@@ -243,6 +330,8 @@ nennt bei jedem Fehler die **Segmentnummer** (bei zwanzig Segmenten ist
   ffmpeg ein **leeres Ergebnis ohne Fehlermeldung** — das Video wäre still
   kürzer als geplant.
 - `bis` liegt hinter dem Dateiende → wird gekürzt, aber **gemeldet**
+- ein `[[…]]` aus einer Vorlage steht noch in `hook`, `cta`, `text` oder den
+  Hashtags → Abbruch (siehe „Vorlagen")
 - Gesamtdauer außerhalb `video.min_dauer_sek` / `max_dauer_sek` → Warnung,
   damit es nicht erst nach dem Rendern auffällt
 

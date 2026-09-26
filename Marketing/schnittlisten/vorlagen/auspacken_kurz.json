@@ -1,0 +1,39 @@
+{
+  "_vorlage": {
+    "name": "auspacken_kurz",
+    "wofuer": "Wenn das Produkt schoen aussieht und die Verpackung mithalten kann (Kristalllampe, Kristallkugel, Tumbler Winter, Jade-Stein) — gut als Geschenk-Clip.",
+    "wann_nicht": "Wenn die Verpackung billig wirkt. Ein brauner Karton mit Klebeband verkauft nichts.",
+    "hinweis": "Hier ist Stille oder ruhige Musik richtig. Kein Geraeusch des Auspackens aus fremdem Material — der Originalton faellt ohnehin weg. Bewusst kurz (7,5 s): Erst die Endkarte mit Preis bringt den Clip ueber die Mindestdauer — ein Auspack-Clip lebt vom Moment, nicht von der Laenge."
+  },
+  "produkt_id": null,
+  "hook": "[[Was drin ist, ohne es zu verraten]]",
+  "cta": "Link im Profil. Werbung.",
+  "hashtags": [],
+  "segmente": [
+    {
+      "rolle": "karton",
+      "soll_sek": 2,
+      "quelle": null,
+      "_suche": "Die geschlossene Verpackung, Haende oeffnen sie. Keine Schrift — der Hook liegt darueber."
+    },
+    {
+      "rolle": "enthuellung",
+      "soll_sek": 1.5,
+      "quelle": null,
+      "_suche": "Der Moment, in dem das Produkt zum ersten Mal ganz zu sehen ist."
+    },
+    {
+      "rolle": "nahaufnahme",
+      "soll_sek": 2,
+      "quelle": null,
+      "text": "[[Material oder Detail, das man sonst uebersieht]]",
+      "_suche": "Oberflaeche, Licht, Gravur — das, was auf dem Produktfoto nicht rueberkommt."
+    },
+    {
+      "rolle": "erster_einsatz",
+      "soll_sek": 2,
+      "quelle": null,
+      "_suche": "Eingeschaltet, aufgestellt, benutzt. Danach die Endkarte mit Preis."
+    }
+  ]
+}

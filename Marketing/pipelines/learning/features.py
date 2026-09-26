@@ -36,7 +36,23 @@ DIMENSIONEN: dict[str, tuple[str, ...]] = {
     "miniaturbild": ("produkt_frei", "produkt_in_szene", "text_gross"),
     "posting_slot": (),          # frei: "Di 12:30" — waechst mit den Daten
     "produktkategorie": (),      # kommt aus products.json
+    # Punkt 59: Herkunft eines geschnittenen Videos (Stil C). Frei, weil die
+    # Werte mit dem Material wachsen — neue Creator, neue Vorlagen.
+    "vorlage": (),               # Schnitt-Vorlage aus Punkt 28
+    "musikstueck": (),           # Dateiname aus Marketing/musik
+    "creator": (),               # TikTok-Konto eines verwendeten Rohclips
+    "rohclip": (),               # TikTok-Kennung eines verwendeten Rohclips
+    "hook": (),                  # Hooktext (Punkt 58: Varianten derselben Liste)
+    "material": ("eigen", "fremd", "gemischt"),
 }
+
+# Punkt 59: Was an einem Beitrag BEOBACHTET wird, aber nie gewaehlt. Der
+# Bandit fuehrt dafuer Arme, damit "Clips von diesem Creator laufen" als Zahl
+# dasteht — entscheiden tut darueber ein Mensch beim Schnitt und der Bot bei
+# der Suche. Diese Dimensionen stehen bewusst NICHT in STEUERBAR: Sonst
+# koennte sperre_verlierer() einen Creator sperren, und das waere eine
+# Entscheidung ueber fremdes Material auf Grundlage von drei Beitraegen.
+BEOBACHTET = ("vorlage", "musikstueck", "creator", "rohclip", "material", "hook")
 
 # Dimensionen, die das Lernmodul selbst waehlen darf. Alles andere wird
 # beobachtet, aber nicht gesteuert (z.B. die Produktkategorie ergibt sich
@@ -76,6 +92,41 @@ def merkmalsvektor(merkmale: dict[str, Any], *, slot: str | None = None) -> dict
             continue
         vektor[dimension] = str(wert)
     return vektor
+
+
+def herkunftsmerkmale(bericht: dict[str, Any] | None) -> list[tuple[str, str]]:
+    """Die beobachteten Merkmale eines Stil-C-Berichts als (Dimension, Wert).
+
+    Eine Liste statt eines Woerterbuchs, weil ein Video mehrere Creator und
+    mehrere Rohclips hat — jeder bekommt dieselbe Belohnung gutgeschrieben.
+    Was im Bericht fehlt, fehlt hier auch. Aeltere Berichte ohne `herkunft`
+    liefern deshalb nur Musik und Vorlage, keine erfundenen Creator.
+    """
+    if not isinstance(bericht, dict):
+        return []
+    paare: list[tuple[str, str]] = []
+    if bericht.get("vorlage"):
+        paare.append(("vorlage", str(bericht["vorlage"])))
+    if bericht.get("musik"):
+        paare.append(("musikstueck", str(bericht["musik"])))
+    # Der Hook als Text, gekuerzt: Bei drei Fassungen derselben Liste ist er
+    # das EINZIGE, was sich unterscheidet (Punkt 58) — also die Zahl, auf die
+    # es ankommt.
+    if str(bericht.get("hook") or "").strip():
+        paare.append(("hook", str(bericht["hook"]).strip()[:80]))
+
+    herkunft = [h for h in (bericht.get("herkunft") or []) if isinstance(h, dict)]
+    arten = {h.get("material") for h in herkunft if h.get("material") in ("eigen", "fremd")}
+    if arten:
+        paare.append(("material", arten.pop() if len(arten) == 1 else "gemischt"))
+    for dimension, feld in (("creator", "creator"), ("rohclip", "tiktok_id")):
+        gesehen: list[str] = []
+        for h in herkunft:
+            wert = str(h.get(feld) or "").strip()
+            if wert and wert not in gesehen:
+                gesehen.append(wert)
+        paare.extend((dimension, w) for w in gesehen)
+    return paare
 
 
 def ist_gueltig(dimension: str, auspraegung: str) -> bool:

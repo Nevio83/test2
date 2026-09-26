@@ -1,0 +1,40 @@
+{
+  "_vorlage": {
+    "name": "vorher_nachher",
+    "wofuer": "Wenn der Unterschied sichtbar ist: Haut (Mitesserentferner, Gesichtssauna), Ordnung (Rollo, Licht), Haare (Buerste, Haartrockner).",
+    "wann_nicht": "Wenn das Vorher nur behauptet werden kann. Ein gestelltes Vorher ist bei Kosmetik rechtlich heikel — lieber problem_loesung.",
+    "hinweis": "Vorher und Nachher aus DERSELBEN Einstellung, sonst glaubt es niemand. Das Nachher darf den Hook tragen."
+  },
+  "produkt_id": null,
+  "hook": "[[Der Unterschied in einem Satz]]",
+  "cta": "Link im Profil. Werbung.",
+  "hashtags": [],
+  "segmente": [
+    {
+      "rolle": "vorher",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "_suche": "Der Zustand vorher, ruhig und gut ausgeleuchtet. Keine Schrift — der Hook liegt darueber."
+    },
+    {
+      "rolle": "nachher",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "text": "[[Nachher — ein Wort oder eine Zahl]]",
+      "_suche": "Derselbe Bildausschnitt nachher. Harter Schnitt, kein Uebergang — der Sprung ist die Aussage."
+    },
+    {
+      "rolle": "nahaufnahme",
+      "soll_sek": 2.0,
+      "quelle": null,
+      "_suche": "Das Geraet selbst, nah. Hier sieht man zum ersten Mal, WOMIT."
+    },
+    {
+      "rolle": "in_benutzung",
+      "soll_sek": 2.5,
+      "quelle": null,
+      "text": "[[Wie lange es dauert]]",
+      "_suche": "Die Anwendung in Echtzeit. Danach die Endkarte mit Preis."
+    }
+  ]
+}
