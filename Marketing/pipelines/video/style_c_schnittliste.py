@@ -805,14 +805,36 @@ def woerter_zu_bloecken(woerter: list[tuple[float, float, str]], *,
     return bloecke
 
 
+def woerter_zusammenfuegen(roh: list[tuple[float, float, str]]) -> list[tuple[float, float, str]]:
+    """Whisper-Stuecke zu ganzen Woertern.
+
+    Whisper liefert Woerter MIT fuehrendem Leerzeichen; ein Stueck ohne ist die
+    Fortsetzung des vorigen ("USB" + "-Ladung"). Alles mit Leerzeichen
+    aneinanderzuhaengen ergab "USB -Ladung" — und ein Block koennte mitten im
+    Wort trennen.
+    """
+    woerter: list[tuple[float, float, str]] = []
+    for von, bis, stueck in roh:
+        stueck = str(stueck)
+        if not stueck.strip():
+            continue
+        if woerter and not stueck[:1].isspace():
+            a, _, wort = woerter[-1]
+            woerter[-1] = (a, float(bis), wort + stueck.strip())
+        else:
+            woerter.append((float(von), float(bis), stueck.strip()))
+    return woerter
+
+
 def untertitel_aus_ton(wav: Path, *, sprache: str | None = "de",
                        modell: str | None = None) -> list[dict[str, Any]]:
     """Den eigenen Ton abhoeren und als Untertitelbloecke zurueckgeben.
 
     Das Modell kommt aus der Konfiguration (video.untertitel_modell, Vorgabe
-    "tiny" — das liegt nach dem ersten Bot-Lauf schon auf der Platte). Ein
-    groesseres Modell erkennt Deutsch deutlich besser, muss aber einmal
-    heruntergeladen werden.
+    "small"). Gemessen am 28.09. an zwei gesprochenen Saetzen: "tiny" hoerte
+    "Wasserspende fuehlt", "zwei Liedtern" und "Lardung" — "small" beide
+    Saetze richtig, bei 6-7 s statt 1-3 s je Satz. Fehlt das Modell, laedt
+    faster-whisper es beim ersten Aufruf (einmal rund 460 MB).
     """
     try:
         from faster_whisper import WhisperModel
@@ -821,7 +843,7 @@ def untertitel_aus_ton(wav: Path, *, sprache: str | None = "de",
         raise RuntimeError(f"Untertitel aus dem Ton brauchen '{fehlt}' "
                            f"(py -m pip install {fehlt})") from None
 
-    name = modell or str(guardrails.wert("video.untertitel_modell", "tiny"))
+    name = modell or str(guardrails.wert("video.untertitel_modell", "small"))
     erkenner = WhisperModel(name, device="cpu", compute_type="int8")
     segmente, _ = erkenner.transcribe(str(wav), beam_size=1, vad_filter=True,
                                       word_timestamps=True, language=sprache or None)
@@ -833,7 +855,7 @@ def untertitel_aus_ton(wav: Path, *, sprache: str | None = "de",
             continue
         for w in (s.words or []):
             woerter.append((float(w.start), float(w.end), str(w.word)))
-    return woerter_zu_bloecken(woerter)
+    return woerter_zu_bloecken(woerter_zusammenfuegen(woerter))
 
 
 def untertitel_datei(liste_pfad: Path | None) -> Path | None:
@@ -877,7 +899,7 @@ def _untertitel_holen(liste: "Schnittliste", spur: Path) -> tuple[list[dict[str,
     if datei is not None:
         spuren[kennung] = {
             "erkannt_am": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-            "modell": str(guardrails.wert("video.untertitel_modell", "tiny")),
+            "modell": str(guardrails.wert("video.untertitel_modell", "small")),
             "bloecke": bloecke,
         }
         daten["_hinweis"] = ("Automatisch erkannt — Text hier verbessern, dann wird neu gerendert. "

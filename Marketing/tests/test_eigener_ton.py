@@ -153,6 +153,14 @@ def test_woerter_werden_zu_kurzen_bloecken_mit_echten_zeiten():
     assert sc.woerter_zu_bloecken([]) == []
 
 
+def test_fortsetzungen_bleiben_am_wort():
+    """Whisper liefert "USB" und "-Ladung" getrennt; nur das erste traegt ein Leerzeichen."""
+    roh = [(0.0, 0.4, " USB"), (0.4, 0.9, "-Ladung"), (0.9, 1.2, " hält")]
+    assert sc.woerter_zusammenfuegen(roh) == [(0.0, 0.9, "USB-Ladung"), (0.9, 1.2, "hält")]
+    # GEGENPROBE: Alles mit Leerzeichen aneinandergehaengt — so stand es zuerst im Bild.
+    assert " ".join(w.strip() for _, _, w in roh) == "USB -Ladung hält"
+
+
 # ── Der ganze Weg mit echter Sprache ─────────────────────────────────
 
 @hat_ffmpeg

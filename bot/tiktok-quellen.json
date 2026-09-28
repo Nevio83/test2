@@ -12,6 +12,9 @@
       "tiktok",
       "youtube"
     ],
+    "_kommentare_mitlesen": "Punkt 11: Bei angenommenen YouTube-Clips die beliebtesten Kommentare mitspeichern (nur Text und Likes, kein Name, nicht die des Hochladers). Kostet je Clip einen Abruf. TikTok geht nicht: yt-dlp kann dort keine Kommentare abrufen, ein Umweg waere Umgehung. Auswerten: npm run tiktok:fragen.",
+    "kommentare_mitlesen": false,
+    "kommentare_hoechstens": 20,
     "max_kandidaten_je_quelle": 20,
     "_max_anfragen": "Harte Obergrenze fuer yt-dlp-Aufrufe je Lauf. Verhindert, dass ein Durchgang ueber 40 Produkte hunderte Anfragen an TikTok stellt.",
     "max_anfragen": 60,

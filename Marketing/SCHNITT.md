@@ -150,14 +150,16 @@ derselben Prüfung, die auch über die Lizenz entscheidet.
 Mit `"untertitel": "aus_ton"` hört faster-whisper den eigenen Ton ab und setzt die
 Wörter zeitgenau als Untertitel ein (drei Wörter, höchstens 22 Zeichen je Block).
 **Gegenlesen ist Pflicht:** Das Modell `tiny` hörte beim ersten Versuch „Der
-Wasserspende fühlt dein Glas" — Stil C brennt Text wörtlich ein. Deshalb landet der
+Wasserspende fühlt dein Glas" — Stil C brennt Text wörtlich ein. Seit dem 28.09. ist
+`small` die Vorgabe: an zwei gesprochenen Sätzen fehlerfrei, wo `tiny` drei Fehler
+machte (6–7 s statt 1–3 s je Satz, einmal 464 MB Download). Deshalb landet der
 erkannte Text in `_<liste>.untertitel.json` neben der Liste. Dort verbessern; der
 nächste Lauf nimmt den verbesserten Text, und die Änderung zählt als neue Fassung
 (sie geht in den Fingerabdruck der Liste ein). Ändert sich der Schnitt, passt der
 alte Text nicht mehr zur Tonspur und wird neu erkannt, ohne den alten zu löschen.
 
-Ein größeres Modell (`video.untertitel_modell`, z. B. `small`) erkennt Deutsch
-deutlich besser, muss aber einmal heruntergeladen werden (einige hundert MB).
+Das Modell steht in `video.untertitel_modell`; fehlt es auf einem Rechner, lädt
+faster-whisper es beim ersten Aufruf.
 
 **Warum JSON und nicht ein Videoprojekt:** Eine 4-KB-Liste gehört ins
 Repository, ein 40-MB-Video nicht. Dieselbe Liste ergibt dasselbe Video, und

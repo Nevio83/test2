@@ -435,7 +435,7 @@
     </div>
 
     <div class="pruef-banner" style="background:var(--blue-dim);border-color:color-mix(in srgb, var(--blue) 32%, transparent);">
-      <h3>Stand am 28.09.: 78 gebaut, 4 halb, 7 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <h3>Stand am 28.09.: 78 gebaut, 5 halb, 6 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
       <p class="warum" style="border-left:3px solid var(--green);padding-left:12px;">
         <b>Eine Berichtigung zuerst.</b> Beim Nachzählen am Mittag standen
         <strong>48</strong> und <strong>58</strong> auf „gebaut", weil ihre Prüfungen im Repo lagen.
@@ -457,7 +457,7 @@
         <b>Am 27.09. dazu:</b> <strong>03</strong> (YouTube Shorts als zweite Quelle) ·
         <strong>06</strong> (Planlauf zweimal je Woche) ·
         <strong>50</strong> (Rendern im Hintergrund).
-        <b>Am 28.09.:</b> <strong>44</strong> (eigener Ton und Untertitel daraus) · <strong>39</strong> (Schnitte auf den Takt, ohne neue Abhängigkeit).
+        <b>Am 28.09.:</b> <strong>44</strong> (eigener Ton und Untertitel daraus) · <strong>39</strong> (Schnitte auf den Takt, ohne neue Abhängigkeit) · <strong>11</strong> halb (Kommentare — nur YouTube, TikTok ginge nur per Umgehung).
         Nebenbei: Der Ausblende-Test maß fest bei 9,6 s, seit der Endkarte endet das Video bei 12,5 s —
         die Ausblendung war da (−29,3 dB gegen −13,1 dB), der Test sah an die falsche Stelle.
       </p>
@@ -469,7 +469,7 @@
         <strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank, und die ist gerade gesperrt) ·
         <strong>35</strong> (Produkt-Sichtbarkeit — braucht das Bildmodell aus Punkt 19, also eine neue
         Abhängigkeit, erst nach Rückfrage) ·
-        <strong>11</strong> Kommentare mitlesen (mehr Abrufe bei TikTok — mit der Sperrregel abzuwägen).
+        und das Bildmodell für 35, 19, 23 und 30 — dazu liegt ein Vorschlag vor, installiert ist nichts.
       </p>
       <p class="warum" style="margin-top:10px;">
         <b>Halb</b> heißt: der Weg steht, der letzte Schritt fehlt.
@@ -683,10 +683,11 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">11</span> Kommentare mitlesen <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">11</span> Kommentare mitlesen <span class="chip p-mittel">halb gebaut am 28.09. — nur YouTube</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Unter den Clips steht, was die Leute am Produkt wirklich interessiert — und in welchen Worten sie es sagen. Das ist Formulierungsmaterial für Bildunterschriften und Hooks, das sonst erfunden werden muss. Der Text ist ohnehin der schwächste Punkt der generierten Videos.</p>
         <p class="tun"><b>Was tun</b> Bei angenommenen Clips die zwanzig beliebtesten Kommentare mitspeichern. Häufige Fragen sammeln — „wie laut ist das", „passt das unter die Spüle" — und daraus eine Liste wiederkehrender Einwände bauen. Die beantwortet der eigene Clip dann in Sekunde drei.</p>
         <p class="bringt"><b>Bringt</b> Hooks, die eine echte Frage aufgreifen, statt einer Produktbeschreibung in Werbesprache. Und ein Nebenprodukt für den Shop: dieselben Fragen gehören in die Produktbeschreibung.</p>
+        <p class="tun"><b>Halb gebaut am 28.09. — und die Hälfte, die fehlt, bleibt mit Absicht offen.</b> Bei angenommenen YouTube-Clips speichert der Lauf die beliebtesten Kommentare mit (<code>"kommentare_mitlesen": true</code>, Vorgabe aus): ein Abruf, nur Text und Likes, kein Name, nicht die des Hochladers. <code>npm run tiktok:fragen</code> zeigt die Fragen nach Likes und die Wörter, die in allen Kommentaren wiederkehren. Der erste echte Abruf lieferte genau das Gesuchte: „It's too loud", „how do you clean it", „does it come with the big bottle". <b>Bei TikTok geht es nicht:</b> yt-dlp kann dort keine Kommentare abrufen, und der einzige Weg wären nicht offengelegte, signierte Schnittstellen — also Umgehung.</p>
       </div>
 
       <div class="vb-item">
@@ -999,7 +1000,7 @@
         <p class="warum"><b>Warum</b> <strong>Teilweise gebaut:</strong> <code>schreibe_untertitel()</code> erzeugt ASS-Untertitel mit eigenem Hook-Stil und bricht den Text in Blöcke von wenigen Wörtern — also genau der Rhythmus, der auf TikTok funktioniert. Die Zeiten stammen aber aus dem Briefing und der Sprechdauer, nicht aus dem tatsächlichen Ton. Bei erzeugter Stimme passt das; bei einem <em>handgeschnittenen</em> Clip mit Originalton gibt es gar keine Untertitel.</p>
         <p class="tun"><b>Was tun</b> Für die Schnitt-Welt (Punkt 27) dieselbe ASS-Ausgabe nutzen, gespeist aus einer echten Tonanalyse. Der Spracherkenner ist schon da: <code>bot/sprach-erkennung.py</code> nutzt faster-whisper und hat die Segmentzeiten bereits in der Hand — heute wirft es sie weg und zählt nur Wörter. Für Untertitel müsste es den Text <em>optional</em> ausgeben; die heutige Zurückhaltung ist bei fremdem Ton richtig und sollte für eigene Aufnahmen gelockert werden, nicht generell.</p>
         <p class="bringt"><b>Bringt</b> Auch Clips mit echtem Ton bekommen Text — und der Großteil schaut ohne Ton. Der Baustein existiert, ihm fehlt nur die Zeitquelle.</p>
-        <p class="tun"><b>Gebaut am 28.09.</b> <code>"ton": "eigen"</code> behält den Originalton — nur bei eigenem Material, bei fremdem bricht das Einlesen ab (dieselbe Prüfung wie bei der Lizenz). Die Musik weicht der Stimme aus: gemessen 19,6 dB leiser, solange gesprochen wird. <code>"untertitel": "aus_ton"</code> hört den eigenen Ton mit faster-whisper ab und setzt die Wörter zeitgenau ein. Geprüft mit echter Sprache (Windows-Sprachausgabe), kein Nachbau. <b>Gegenlesen ist Pflicht:</b> Das kleine Modell hörte „Der Wasserspende fühlt dein Glas" — deshalb landet der Text in <code>_&lt;liste&gt;.untertitel.json</code>, dort wird verbessert, und die Korrektur zählt als neue Fassung. Ein größeres Modell erkennt besser, braucht aber einen Download.</p>
+        <p class="tun"><b>Gebaut am 28.09.</b> <code>"ton": "eigen"</code> behält den Originalton — nur bei eigenem Material, bei fremdem bricht das Einlesen ab (dieselbe Prüfung wie bei der Lizenz). Die Musik weicht der Stimme aus: gemessen 19,6 dB leiser, solange gesprochen wird. <code>"untertitel": "aus_ton"</code> hört den eigenen Ton mit faster-whisper ab und setzt die Wörter zeitgenau ein. Geprüft mit echter Sprache (Windows-Sprachausgabe), kein Nachbau. <b>Gegenlesen ist Pflicht:</b> Das kleine Modell hörte „Der Wasserspende fühlt dein Glas" — deshalb landet der Text in <code>_&lt;liste&gt;.untertitel.json</code>, dort wird verbessert, und die Korrektur zählt als neue Fassung. <b>Seit dem 28.09. mit „small"</b> (einmal 464 MB): an zwei gesprochenen Sätzen fehlerfrei, wo „tiny" drei Fehler machte; dabei fiel noch auf, dass Wortfortsetzungen („USB" + „-Ladung") mit Leerzeichen angehängt wurden.</p>
       </div>
 
       <div class="vb-item">

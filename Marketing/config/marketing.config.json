@@ -327,8 +327,8 @@
     "_takt": "Punkt 39: Schnitte auf den Takt des Musikbetts ziehen, wenn der naechste Schlag hoechstens takt_toleranz_ms entfernt ist. Takt aus ffmpeg + numpy, ohne librosa. Je Schnittliste abschaltbar mit \"takt\": false.",
     "takt_schnitt": true,
     "takt_toleranz_ms": 150,
-    "_untertitel": "Punkt 44: Modell fuer Untertitel aus dem eigenen Ton (faster-whisper). \"tiny\" liegt schon auf der Platte, erkennt Deutsch aber fehlerhaft (\"Wasserspende fuehlt\") — \"small\" deutlich besser, braucht einmal einige hundert MB Download.",
-    "untertitel_modell": "tiny",
+    "_untertitel": "Punkt 44: Modell fuer Untertitel aus dem eigenen Ton (faster-whisper). Gemessen am 28.09. an zwei gesprochenen Saetzen: \"tiny\" hoerte \"Wasserspende fuehlt\", \"zwei Liedtern\", \"Lardung\" — \"small\" beide richtig, 6-7 s statt 1-3 s je Satz. Fehlt es, laedt faster-whisper es beim ersten Aufruf (einmal rund 460 MB).",
+    "untertitel_modell": "small",
     "_hinweis_stock_clips": "Wie viele lizenzierte Stockclips als Zwischenschnitt dazukommen, wenn es KEIN eigenes Produktvideo gibt. Sie zeigen nie das Produkt, nur Stimmung — deshalb bewusst hoechstens zwei, damit das Produkt die Mehrheit der Einstellungen behaelt. 0 schaltet sie ab. Braucht PEXELS_API_KEY; ohne Schluessel passiert nichts.",
     "stock_clips_max": 2,
     "stil_mix": {

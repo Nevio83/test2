@@ -5854,6 +5854,7 @@ test('Plattform: ein YouTube-Kanal wird nie zu einem TikTok-Profil', () => {
 function plattformLauf(plattformen, {
   tiktokMeldung = 'ERROR: Unable to download webpage: HTTP Error 429: Too Many Requests',
   tiktokVideos = ['https://www.tiktok.com/@a/video/7300000000000000001'],
+  standard: extraStandard = {},
 } = {}) {
   const daten = tempOrdner();
   const videos = tempOrdner();
@@ -5866,6 +5867,12 @@ function plattformLauf(plattformen, {
   const ytdlp = async (a) => {
     aufrufe.push(a);
     const letztes = a[a.length - 1];
+    if (a.includes('--get-comments')) {
+      return { code: 0, stdout: JSON.stringify({ ...hoch, comments: [
+        { text: 'Wie laut ist das?', like_count: 7, author: 'Jemand' },
+        { text: 'Link im Profil', like_count: 50, author: 'kanal', author_is_uploader: true },
+      ] }), stderr: '' };
+    }
     if (a.includes('--flat-playlist')) {
       return { code: 0, stdout: [quer, hoch].map((v) => JSON.stringify({ id: v.id, title: v.title, duration: v.duration })).join('\n'), stderr: '' };
     }
@@ -5885,7 +5892,7 @@ function plattformLauf(plattformen, {
   const lauf = interaktiv({
     ytdlp, wurzel: path.dirname(videos), produkte: [PRODUKT],
     konfig: { produkte: { 10: { videos: tiktokVideos } } },
-    standard: { ...STANDARD, plattformen, bei_sperre_abbrechen: true },
+    standard: { ...STANDARD, plattformen, bei_sperre_abbrechen: true, ...extraStandard },
     datenOrdner: daten, videoOrdner: videos, gitignore: path.join(daten, '.gitignore'),
     stopDatei: path.join(daten, 'kein-STOP'), env: {},
     frage: async () => antworten.shift(), jetzt: () => '2026-09-27T10:00:00.000Z',
@@ -5951,4 +5958,90 @@ test('Plattform: der YouTube-Suchbegriff bleibt ganz — kein "s" verschwindet',
   await lauf;
   const suche = aufrufe.find((a) => a.includes('--flat-playlist'));
   assert.equal(suche[suche.length - 1], `ytsearch20:${PRODUKT.name}`);
+});
+
+
+// ── Kommentare mitlesen (Punkt 11) ───────────────────────────────────
+
+const { holeKommentare, fragenAusKommentaren } = require('./tiktok-video-sync.js');
+
+test('Kommentare: ohne Namen, ohne den Hochlader, nach Likes, mit Obergrenze', async () => {
+  let argumente;
+  const antwort = {
+    comments: [
+      { text: 'Get it on Amazon!', like_count: 900, author: 'Kanal', author_is_uploader: true },
+      { text: 'Wie laut ist das?', like_count: 40, author: 'Anna M.', author_url: 'https://x' },
+      { text: 'Passt das unter die Spüle?', like_count: 75, author: 'Ben' },
+      { text: 'nice', like_count: 3, author: 'C' },
+    ],
+  };
+  const ergebnis = await holeKommentare(async (a) => { argumente = a; return { code: 0, stdout: JSON.stringify(antwort), stderr: '' }; },
+    'https://www.youtube.com/watch?v=AAAAAAAAAAA', { hoechstens: 2 });
+  assert.ok(argumente.includes('--get-comments') && argumente.includes('--skip-download'));
+  assert.ok(argumente.some((a) => a.startsWith('youtube:max_comments=2,')), 'die Obergrenze geht an yt-dlp, nicht erst hinterher');
+  assert.deepEqual(ergebnis.kommentare, [
+    { text: 'Passt das unter die Spüle?', likes: 75 },
+    { text: 'Wie laut ist das?', likes: 40 },
+  ]);
+  assert.ok(!JSON.stringify(ergebnis).includes('Anna'), 'kein Name im Nachweis');
+});
+
+test('Kommentare: bei TikTok kein einziger Abruf', async () => {
+  let aufgerufen = false;
+  const ergebnis = await holeKommentare(async () => { aufgerufen = true; return { code: 0, stdout: '', stderr: '' }; },
+    'https://www.tiktok.com/@a/video/7300000000000000001');
+  assert.equal(aufgerufen, false, 'yt-dlp kann es nicht — und ein Umweg waere Umgehung');
+  assert.match(ergebnis.grund, /nur bei YouTube/);
+});
+
+test('Kommentare: eine Sperre wird gemeldet, nicht verschluckt', async () => {
+  const ergebnis = await holeKommentare(async () => ({ code: 1, stdout: '', stderr: 'ERROR: Sign in to confirm you are not a bot' }),
+    'https://www.youtube.com/watch?v=AAAAAAAAAAA');
+  assert.equal(ergebnis.gesperrt, true);
+});
+
+test('Kommentare: im Lauf nur, wenn eingeschaltet — und dann im Nachweis', async () => {
+  const an = plattformLauf(['youtube'], { standard: { kommentare_mitlesen: true } });
+  assert.equal(await an.lauf, 0);
+  const [eintrag] = ladeIndex(an.daten).eintraege;
+  assert.deepEqual(eintrag.kommentare, [{ text: 'Wie laut ist das?', likes: 7 }]);
+  assert.equal(an.aufrufe.filter((a) => a.includes('--get-comments')).length, 1);
+
+  // GEGENPROBE: Standard (aus) — kein einziger Kommentar-Abruf, kein Feld.
+  const aus = plattformLauf(['youtube']);
+  assert.equal(await aus.lauf, 0);
+  assert.equal(aus.aufrufe.filter((a) => a.includes('--get-comments')).length, 0);
+  assert.equal(ladeIndex(aus.daten).eintraege[0].kommentare, undefined);
+});
+
+test('Fragen: doppelte zusammengefasst, wiederkehrende Woerter gezaehlt', () => {
+  const eintraege = [
+    { produkt_id: 10, kommentare: [{ text: 'Wie laut ist das Gerät?', likes: 30 }, { text: 'Super!', likes: 99 }] },
+    { produkt_id: 10, kommentare: [{ text: 'wie laut ist das gerät?', likes: 12 }, { text: 'Ist das Gerät laut beim Pumpen?', likes: 5 }] },
+    { produkt_id: 22, kommentare: [{ text: 'Wasserdicht?', likes: 50 }] },
+  ];
+  const { fragen, woerter } = fragenAusKommentaren(eintraege, { nurProdukt: 10 });
+  assert.equal(fragen[0].text, 'Wie laut ist das Gerät?');
+  assert.equal(fragen[0].likes, 42, 'dieselbe Frage zweimal: Likes addiert');
+  assert.equal(fragen[0].anzahl, 2);
+  assert.equal(fragen.length, 2, '"Super!" ist keine Frage, Produkt 22 nicht gefragt');
+  // Gezaehlt ueber ALLE Kommentare: Die doppelte Frage kommt von zwei Menschen.
+  assert.ok(woerter.some((w) => w.wort === 'laut' && w.anzahl === 3));
+});
+
+test('Fragen: auch ohne Fragezeichen, und Einwaende zaehlen mit', () => {
+  const { istFrage } = require('./tiktok-video-sync.js');
+  // Aus dem ersten echten Abruf (28.09.):
+  assert.equal(istFrage('Does it come with the big bottle'), true);
+  assert.equal(istFrage('Passt das unter die Spüle'), true);
+  // GEGENPROBE: Ein Einwand ist keine Frage.
+  assert.equal(istFrage("It's too loud"), false);
+  assert.equal(istFrage('Isolation ist super'), false, '"Is" nur als ganzes Wort');
+
+  const { fragen, woerter } = fragenAusKommentaren([
+    { produkt_id: 10, kommentare: [{ text: "It's too loud", likes: 4 }, { text: 'Way too loud at night', likes: 2 },
+                                   { text: 'Does it come with the big bottle', likes: 0 }] },
+  ]);
+  assert.deepEqual(fragen.map((f) => f.text), ['Does it come with the big bottle']);
+  assert.ok(woerter.some((w) => w.wort === 'loud' && w.anzahl === 2), 'der Einwand "laut" steht in keiner Frage');
 });

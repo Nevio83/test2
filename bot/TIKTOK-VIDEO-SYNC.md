@@ -1213,6 +1213,40 @@ Instagram fast nichts, und Anmelden ist hier ausgeschlossen. Erkannt wird die
 Adresse trotzdem, damit ein von Hand eingetragener Reel-Link nicht als TikTok
 durchgeht.
 
+### Kommentare mitlesen (Punkt 11)
+
+Unter den Clips steht, was die Leute am Produkt wirklich interessiert — in ihren
+eigenen Worten. Der erste echte Abruf unter einem Wasserspender-Short: „It's too
+loud", „please explain how to set it up", „it tastes like metal, how do you clean
+it", „does it come with the big bottle". Das sind Hooks und Produkttext, die sonst
+erfunden werden müssten.
+
+```json
+"kommentare_mitlesen": true
+```
+
+Dann holt der Lauf bei jedem **angenommenen YouTube-Clip** die beliebtesten
+Kommentare (`kommentare_hoechstens`, Vorgabe 20) — **ein** Abruf, die Obergrenze
+geht direkt an yt-dlp. Gespeichert werden nur **Text und Likes**, kein Name, keine
+Kontoadresse; Kommentare des Hochladers fallen weg (das ist fast immer der
+Kauflink). Jeder Abruf zählt ins Anfragebudget, eine Sperre beendet das Mitlesen
+für den Rest des Laufs.
+
+**Bei TikTok geht es nicht.** yt-dlp kann dort keine Kommentare abrufen — der
+Extractor kennt nur ihre Anzahl. An die Kommentare käme man nur über nicht
+offengelegte, signierte Schnittstellen, und das wäre Umgehung.
+
+```bash
+npm run tiktok:fragen                 # Fragen aus allen Kommentaren, nach Likes
+npm run tiktok:fragen -- --produkt 10
+```
+
+Fragen erkennt die Auswertung am Fragezeichen **oder** am Fragewort vorn („Does it
+come with the big bottle" hat keins). Gleiche Fragen werden zusammengefasst, und
+darunter stehen die Wörter, die in allen Kommentaren wiederkehren — „too loud" ist
+keine Frage, aber genau der Einwand, den der eigene Clip in Sekunde drei beantworten
+kann.
+
 ### Es wird nachgelegt, bis die Zahl steht
 
 Suchbegriffe gehen **einer nach dem anderen** raus, nicht alle vorweg. Der

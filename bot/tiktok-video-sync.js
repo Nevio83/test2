@@ -101,6 +101,10 @@ const STANDARD = {
   // Video und fast immer ein Testbericht im Querformat.
   youtube_max_dauer_sek: 180,
   youtube_nur_hochformat: true,
+  // PUNKT 11: Kommentare angenommener Clips mitlesen (nur YouTube). Aus, weil
+  // es je Clip einen Abruf mehr kostet.
+  kommentare_mitlesen: false,
+  kommentare_hoechstens: 20,
   // Ein Treffer muss UNTERSCHEIDEN: Mindestens ein Begriff, den hoechstens so
   // viele Produkte fuehren. 0 = aus.
   //
@@ -263,6 +267,130 @@ async function sucheYoutube({ ytdlp, begriff, anzahl = 20, maxDauer = 180 }) {
     return { ok: false, gesperrt: false, grund: meldung.slice(0, 200) || `yt-dlp endete mit Code ${code}`, funde };
   }
   return { ok: true, gesperrt: false, funde, adressen: funde.map((f) => f.url) };
+}
+
+// ── Kommentare mitlesen (Punkt 11) ───────────────────────────────────
+//
+// WARUM
+// Unter den Clips steht, was die Leute am Produkt wirklich interessiert — und in
+// welchen Worten ("wie laut ist das", "passt das unter die Spuele"). Das ist
+// Formulierungsmaterial fuer Hooks, das sonst erfunden werden muss, und es
+// gehoert genauso in die Produktbeschreibung.
+//
+// WAS GEHT UND WAS NICHT
+// yt-dlp holt Kommentare bei YOUTUBE, mit Obergrenze und in EINER Anfrage.
+// Bei TIKTOK kann es das nicht (der Extractor kennt nur die Anzahl) — und an
+// die Kommentare kaeme man dort nur ueber nicht offengelegte, signierte
+// Schnittstellen. Das waere Umgehung; es bleibt deshalb bei YouTube.
+//
+// WAS GESPEICHERT WIRD
+// Nur Text und Likes, KEIN Name, keine Konto-Adresse — Kommentare sind Aeusserungen
+// fremder Menschen, gebraucht wird ihr Inhalt, nicht wer es war. Kommentare des
+// Hochladers selbst fallen weg: Das ist fast immer der Kauflink.
+//
+// Standardmaessig AUS (kommentare_mitlesen). Jeder Abruf zaehlt ins
+// Anfragebudget, und eine Sperre beendet das Mitlesen wie jeden anderen Abruf.
+
+async function holeKommentare(ytdlp, url, { hoechstens = 20 } = {}) {
+  if (plattformAus(url) !== 'youtube') {
+    return { ok: false, grund: 'nur bei YouTube — yt-dlp kann TikTok-Kommentare nicht abrufen', kommentare: [] };
+  }
+  const n = Math.max(1, Math.min(100, Number(hoechstens) || 20));
+  const { stdout, stderr } = await ytdlp([
+    '--skip-download', '--get-comments', '--no-playlist', '--no-warnings', '--dump-json',
+    '--extractor-args', `youtube:max_comments=${n},${n},0,0;comment_sort=top`,
+    url,
+  ]);
+  const meldung = String(stderr || '').trim();
+  if (SPERRE.test(meldung)) return { ok: false, gesperrt: true, grund: meldung.slice(0, 200), kommentare: [] };
+  const zeile = String(stdout || '').split(/\r?\n/).find((z) => z.trim().startsWith('{'));
+  if (!zeile) return { ok: false, grund: meldung.slice(0, 160) || 'keine Angaben', kommentare: [] };
+  let roh;
+  try { roh = JSON.parse(zeile); } catch { return { ok: false, grund: 'Antwort nicht lesbar', kommentare: [] }; }
+  const kommentare = [].concat(roh.comments || [])
+    .filter((k) => k && !k.author_is_uploader && String(k.text || '').trim())
+    .map((k) => ({ text: String(k.text).replace(/\s+/g, ' ').trim().slice(0, 500), likes: Number(k.like_count) || 0 }))
+    .sort((a, b) => b.likes - a.likes)
+    .slice(0, n);
+  return { ok: true, kommentare };
+}
+
+const FRAGE_FUELLWOERTER = new Set(('der die das und ist ein eine es ich du wie was wo wer ob den dem des mit auf fuer für '
+  + 'von zu im in an the a an is it i you to of and do does can how what this that for on with are my your').split(' '));
+
+// Eine Frage erkennt man nicht nur am Fragezeichen: Im ersten echten Abruf
+// stand "Does it come with the big bottle" — ohne.
+const FRAGEWORT = /^(?:how|what|where|when|why|which|who|does|do|did|is|are|can|could|will|would|should|has|have|wie|was|wo|wann|warum|welche[rsnm]?|wer|ist|sind|kann|koennen|können|passt|gibt|hat|haben|geht|braucht|muss)\b/i;
+
+function istFrage(text) {
+  const t = String(text || '').trim();
+  return t.includes('?') || FRAGEWORT.test(t);
+}
+
+/**
+ * Die Fragen aus den Kommentaren: nach Likes, doppelte zusammengefasst — dazu
+ * die Woerter, die in ALLEN Kommentaren wiederkehren. "It's too loud" ist
+ * keine Frage, aber genau der Einwand, den der eigene Clip beantworten muss.
+ */
+function fragenAusKommentaren(eintraege, { nurProdukt = null, hoechstens = 15 } = {}) {
+  const gesehen = new Map();
+  for (const e of eintraege || []) {
+    if (nurProdukt != null && Number(e.produkt_id) !== Number(nurProdukt)) continue;
+    for (const k of e.kommentare || []) {
+      const text = String(k.text || '').trim();
+      if (!istFrage(text)) continue;
+      const schluessel = normalisiere(text).replace(/[^a-z0-9äöüß ]/g, '').replace(/\s+/g, ' ').trim();
+      if (!schluessel) continue;
+      const bisher = gesehen.get(schluessel);
+      if (bisher) { bisher.likes += Number(k.likes) || 0; bisher.anzahl += 1; } else {
+        gesehen.set(schluessel, { text, likes: Number(k.likes) || 0, anzahl: 1, produkt_id: Number(e.produkt_id) });
+      }
+    }
+  }
+  const fragen = [...gesehen.values()].sort((a, b) => b.likes - a.likes || b.anzahl - a.anzahl);
+  const zaehler = new Map();
+  const alleTexte = [];
+  for (const e of eintraege || []) {
+    if (nurProdukt != null && Number(e.produkt_id) !== Number(nurProdukt)) continue;
+    for (const k of e.kommentare || []) alleTexte.push(String(k.text || ''));
+  }
+  for (const text of alleTexte) {
+    for (const wort of new Set(normalisiere(text).split(/[^a-z0-9äöüß]+/))) {
+      if (wort.length < 3 || FRAGE_FUELLWOERTER.has(wort)) continue;
+      zaehler.set(wort, (zaehler.get(wort) || 0) + 1);
+    }
+  }
+  const woerter = [...zaehler.entries()].filter(([, n]) => n >= 2)
+    .sort((a, b) => b[1] - a[1]).slice(0, 10).map(([wort, anzahl]) => ({ wort, anzahl }));
+  return { fragen: fragen.slice(0, hoechstens), gesamt: fragen.length, woerter };
+}
+
+function fragenAusgeben(opt = {}) {
+  let index;
+  try {
+    index = ladeIndex(opt.datenOrdner || datenOrdner());
+  } catch (fehler) {
+    console.error(`❌ Index nicht lesbar: ${fehler.message}`);
+    return 1;
+  }
+  const mitKommentaren = (index.eintraege || []).filter((e) => (e.kommentare || []).length);
+  const nurProdukt = opt.produktNr != null ? Number(opt.produktNr) : null;
+  const { fragen, gesamt, woerter } = fragenAusKommentaren(index.eintraege, { nurProdukt });
+  console.log(`── Fragen aus Kommentaren${nurProdukt != null ? ` zu Produkt ${nurProdukt}` : ''} ──`);
+  console.log(`${mitKommentaren.length} Clip(s) mit Kommentaren, ${gesamt} verschiedene Fragen.`);
+  if (!mitKommentaren.length) {
+    console.log('Noch keine — "kommentare_mitlesen": true in tiktok-quellen.json setzen (nur YouTube).');
+    return 0;
+  }
+  for (const f of fragen) {
+    console.log(`  ${String(f.likes).padStart(5)} 👍  ${f.anzahl > 1 ? `${f.anzahl}× ` : ''}${f.text.slice(0, 110)}`);
+  }
+  if (woerter.length) {
+    console.log('');
+    console.log('Was wiederkehrt: ' + woerter.map((w) => `${w.wort} (${w.anzahl})`).join(', '));
+    console.log('Jede davon ist eine Frage, die der eigene Clip in Sekunde drei beantworten kann.');
+  }
+  return 0;
 }
 
 // ── Ablageort ────────────────────────────────────────────────────────
@@ -4767,6 +4895,13 @@ async function interaktiv(opt) {
   const plattformen = [].concat(standard.plattformen || ['tiktok'])
     .filter((p) => PLATTFORMEN[p] && PLATTFORMEN[p].suche);
   const gesperrtePlattformen = new Set();
+  // Von Hand eingetragene Adressen einer Plattform, die nicht eingeschaltet
+  // ist, werden gar nicht erst angefragt. Gefunden an der Pruefung: Mit
+  // "plattformen": ["youtube"] holte der Lauf trotzdem die eingetragene
+  // TikTok-Adresse ab, lief in die Sperre und hoerte auf.
+  for (let i = warteschlange.length - 1; i >= 0; i--) {
+    if (!plattformen.includes(plattformAus(warteschlange[i].url) || 'tiktok')) warteschlange.splice(i, 1);
+  }
   let naechsterYtBegriff = 0;
   let ytGenutzt = false;
 
@@ -5074,6 +5209,7 @@ async function interaktiv(opt) {
   // Punkt 03: Eine Plattform, die nicht mehr antwortet, wurde abgeschaltet,
   // waehrend der Lauf mit der anderen weiterging — der Planlauf muss es trotzdem wissen.
   let stummGeschaltet = false;
+  let kommentareGesperrt = false;
 
   // WIEVIELE ABRUFE DIESER LAUF DARF.
   //
@@ -5573,6 +5709,23 @@ async function interaktiv(opt) {
           + `Redeanteil ${messung.redeanteil})`;
     }
 
+    // PUNKT 11: Kommentare mitlesen — nur wenn eingeschaltet, nur YouTube,
+    // nur solange das Budget reicht, und nach einer Sperre gar nicht mehr.
+    if (standard.kommentare_mitlesen && !kommentareGesperrt
+        && plattformAus(ergebnis.eintrag.quelle_url) === 'youtube' && geprueft < anfrageBudget) {
+      geprueft++;
+      const gelesen = await holeKommentare(opt.ytdlp, ergebnis.eintrag.quelle_url,
+        { hoechstens: standard.kommentare_hoechstens });
+      if (gelesen.gesperrt) {
+        kommentareGesperrt = true;
+        vorfaelle.sperren++;
+        melde(`⏹  YouTube blockt das Kommentarlesen — in diesem Lauf nicht mehr: ${gelesen.grund}`);
+      } else if (gelesen.ok) {
+        ergebnis.eintrag.kommentare = gelesen.kommentare;
+        ergebnis.eintrag.kommentare_gelesen_am = jetzt();
+      }
+    }
+
     index.eintraege.push(ergebnis.eintrag);
     speichereIndex(datenZiel, index);
     geladen++;
@@ -5990,6 +6143,8 @@ function leseArgumente(argv) {
     else if (a === '--plan') opt.plan = true;
     else if (a === '--sofort') opt.sofort = true;
     else if (a === '--aufgabe') opt.aufgabe = true;
+    // Punkt 11: die Fragen aus den mitgelesenen Kommentaren.
+    else if (a === '--fragen') opt.fragen = true;
     else if (a === '--aufraeumen') opt.aufraeumen = true;
     else if (a === '--interaktiv' || a === '--frage') opt.interaktiv = true;
     else if (a === '--laden') opt.laden = true;
@@ -6630,6 +6785,7 @@ async function main(argv) {
   if (opt.rueckruf) return rueckrufAusgeben(opt);
   if (opt.herkunft) return herkunftNachtragen({ schreiben: opt.schreiben });
   if (opt.plan && opt.aufgabe) return aufgabeAusgeben();
+  if (opt.fragen) return fragenAusgeben({ produktNr: opt.produktNr });
   // Ist der Planlauf nicht faellig, braucht er weder yt-dlp noch die Konfiguration —
   // deshalb die Faelligkeit VOR der Werkzeugsuche. Ein stuendlicher Aufruf, der
   // jedes Mal yt-dlp startet, nur um "nicht faellig" zu sagen, waere Verschwendung.
@@ -6758,6 +6914,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  holeKommentare, fragenAusKommentaren, istFrage,
   PLATTFORMEN, plattformAus, youtubeId, dateiKennung, formatArgumente, sucheYoutube, youtubeBegriff,
   planlauf, planFaellig, naechsterPlanlauf, waehlePlanProdukte, planZusammenfassung,
   ladePlan, speicherePlan, planPfad, PLAN_STANDARD, sendePlanMail, aufgabeBefehl,

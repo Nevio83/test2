@@ -29,6 +29,7 @@
     "tiktok:ordner": "node bot/tiktok-video-sync.js --ordner",
     "tiktok:herkunft": "node bot/tiktok-video-sync.js --herkunft",
     "tiktok:plan": "node bot/tiktok-video-sync.js --plan",
+    "tiktok:fragen": "node bot/tiktok-video-sync.js --fragen",
     "tiktok:bogen": "node bot/kontaktbogen.js"
   },
   "dependencies": {
