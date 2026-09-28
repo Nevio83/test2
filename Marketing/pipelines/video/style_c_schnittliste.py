@@ -71,7 +71,7 @@ from .. import db, products
 from ..env_loader import REPO_ROOT
 from ..orchestrator import guardrails
 from ..products import Produkt
-from . import assets, common, quality_gate
+from . import assets, common, quality_gate, takt
 
 # Wo Schnittlisten liegen. Versioniert — das ist der ganze Zweck: Die Liste
 # gehoert ins Repo, das Video nicht.
@@ -169,6 +169,9 @@ class Schnittliste:
     # Punkt 44: "aus_ton" = Untertitel aus dem eigenen Ton erkennen.
     untertitel: str | None = None
     sprache: str = "de"
+    # Punkt 39: Schnitte auf den Takt ziehen. None = Vorgabe aus der
+    # Konfiguration (video.takt_schnitt), False schaltet es fuer diese Liste ab.
+    takt: bool | None = None
 
     @property
     def gesamtdauer(self) -> float:
@@ -591,6 +594,7 @@ def lies(pfad: Path) -> Schnittliste:
         varianten_rotieren=bool(roh.get("varianten_rotieren", False)),
         untertitel=(str(roh["untertitel"]).strip() if roh.get("untertitel") else None),
         sprache=str(roh.get("sprache") or "de").strip(),
+        takt=(bool(roh["takt"]) if "takt" in roh else None),
     )
     if liste.untertitel not in (None, "aus_ton"):
         raise SchnittlisteFehler(
@@ -912,6 +916,89 @@ def _tonspur_bauen(liste: "Schnittliste", ordner: Path, *, nachlauf_sek: float =
     return spur
 
 
+def _musik_bestimmen(liste: "Schnittliste", bericht: dict[str, Any]) -> Path:
+    """Das Musikbett waehlen und seinen Nachweis pruefen. Wirft bei jedem Hindernis."""
+    # Ohne Musik bliebe das Video vollstaendig stumm — der Originalton ist
+    # bewusst weg (siehe _segment_bauen). Und ein stummes Video faellt in der
+    # Ausgangspruefung durch: "ein stummes Video ist kein fertiges Video".
+    musik = None
+    if liste.musik:
+        vorgabe = common.MUSIK / liste.musik
+        if not vorgabe.exists():
+            raise RuntimeError(f"Musikstueck nicht gefunden: {liste.musik}")
+        musik = vorgabe
+    else:
+        musik = common.musik_waehlen(int(liste.produkt_id))
+    if musik is None:
+        raise RuntimeError(
+            "kein Musikstueck in Marketing/musik — ohne Ton faellt das Video "
+            "in der Ausgangspruefung durch"
+        )
+    bericht["musik"] = musik.name
+
+    # DIESELBE SPERRE WIE FUER DIE QUELLCLIPS.
+    #
+    # Hier stand vorher nur ein Vermerk im Bericht — das Rendern lief weiter.
+    # Damit galt die haertere Regel fuer das kleinere Risiko: ein fremder
+    # Videoclip ohne Nachweis brach ab, ein fremdes Musikstueck nicht, obwohl
+    # Musik die haeufigste Ursache einer Urheberrechtsmeldung auf TikTok ist.
+    # Ein Vermerk in einem Bericht, den niemand liest, ist keine Sperre.
+    #
+    # Die Pruefung laeuft ueber musik/lizenzen.json (siehe assets.py) und
+    # funktioniert deshalb auch ohne Datenbank.
+    # Die Pruefung laeuft ueber DIESELBE Tuer wie bei den Quellclips
+    # (assets.hat_lizenz); den ausfuehrlichen Grund holt erst der Fehlerfall.
+    # So gibt es eine Stelle, an der ueber Rechte entschieden wird, und nicht
+    # zwei, die auseinanderlaufen koennen.
+    if not assets.hat_lizenz(musik):
+        grund = assets.musik_ohne_nachweis(musik) or "kein Lizenzeintrag"
+        raise RuntimeError(
+            f"Musikstueck ohne Lizenznachweis: {musik.name} — {grund}. "
+            f"Erst die Rechte klaeren und in {assets.MUSIK_REGISTER.name} eintragen, "
+            f"dann rendern."
+        )
+    bericht["musik_lizenz"] = (assets.musikregister().get(musik.name) or {}).get("lizenz")
+    return musik
+
+
+def _auf_takt(liste: "Schnittliste", musik: Path, bericht: dict[str, Any]) -> "Schnittliste":
+    """Punkt 39: Segmentgrenzen auf die Schlaege des Musikbetts ziehen — wo es nah genug ist."""
+    an = liste.takt if liste.takt is not None else bool(guardrails.wert("video.takt_schnitt", True))
+    if not an or not liste.segmente:
+        return liste
+    try:
+        raster = takt.schlaege(musik)
+    except Exception as fehler:  # noqa: BLE001 — ohne Takt ist das Video trotzdem eins
+        bericht["takt"] = {"erkannt": False, "grund": f"nicht lesbar: {str(fehler)[:120]}"}
+        return liste
+    if not raster["erkannt"]:
+        bericht["takt"] = {"erkannt": False, "grund": raster.get("grund")}
+        return liste
+
+    hoechstens: list[float | None] = []
+    for s in liste.segmente:
+        laenge = s.quelldauer
+        if laenge is None:
+            info = common.medien_info(s.quelle)
+            laenge = info.dauer if info is not None and info.dauer > 0 else None
+        hoechstens.append(max(laenge - s.von, 0.0) if laenge is not None else None)
+
+    toleranz = float(guardrails.wert("video.takt_toleranz_ms", 150)) / 1000.0
+    neu, protokoll = takt.auf_takt_ziehen(
+        [s.dauer for s in liste.segmente], raster["schlaege"],
+        toleranz=toleranz, hoechstens=hoechstens)
+    gezogen = [p for p in protokoll if p["verschoben_ms"]]
+    bericht["takt"] = {
+        "erkannt": True, "bpm": raster["bpm"], "quelle": raster["quelle"],
+        "gezogen": len(gezogen),
+        "nicht_gezogen": sum(1 for p in protokoll if p.get("nicht") and p.get("nicht") != "kein Schlag"),
+        "verschiebungen_ms": [p["verschoben_ms"] for p in protokoll],
+    }
+    return dataclasses.replace(liste, segmente=[
+        dataclasses.replace(s, bis=round(s.von + d, 3)) for s, d in zip(liste.segmente, neu)
+    ])
+
+
 def _segment_bauen(segment: Segment, ziel: Path, *, vorschau: bool = False) -> Path:
     """Ein Segment auf 1080x1920 bringen — Ton bewusst weg.
 
@@ -1035,6 +1122,14 @@ def rendere(
         # nicht wie eine Endfassung aussieht.
         "vorschau": bool(vorschau),
     }
+
+    # ── 0. Musik und Takt (Punkt 39) ─────────────────────────────────
+    # Vor dem Schneiden: Das Raster aus dem Musikbett bestimmt, wo die
+    # Schnitte liegen. Nebenbei faellt eine fehlende Musik oder ein fehlender
+    # Nachweis jetzt auf, BEVOR Rechenzeit ins Schneiden geflossen ist.
+    musik = _musik_bestimmen(liste, bericht)
+    liste = _auf_takt(liste, musik, bericht)
+    bericht["dauer_soll"] = liste.gesamtdauer
 
     # ── 1. Segmente ──────────────────────────────────────────────────
     teile = [
@@ -1167,46 +1262,8 @@ def rendere(
         bericht["hook_eingeblendet"] = bool(hooktext)
 
     # ── 4. Musik ─────────────────────────────────────────────────────
-    # Ohne Musik bliebe das Video vollstaendig stumm — der Originalton ist
-    # bewusst weg (siehe _segment_bauen). Und ein stummes Video faellt in der
-    # Ausgangspruefung durch: "ein stummes Video ist kein fertiges Video".
-    musik = None
-    if liste.musik:
-        vorgabe = common.MUSIK / liste.musik
-        if not vorgabe.exists():
-            raise RuntimeError(f"Musikstueck nicht gefunden: {liste.musik}")
-        musik = vorgabe
-    else:
-        musik = common.musik_waehlen(int(liste.produkt_id))
-    if musik is None:
-        raise RuntimeError(
-            "kein Musikstueck in Marketing/musik — ohne Ton faellt das Video "
-            "in der Ausgangspruefung durch"
-        )
-    bericht["musik"] = musik.name
-
-    # DIESELBE SPERRE WIE FUER DIE QUELLCLIPS.
-    #
-    # Hier stand vorher nur ein Vermerk im Bericht — das Rendern lief weiter.
-    # Damit galt die haertere Regel fuer das kleinere Risiko: ein fremder
-    # Videoclip ohne Nachweis brach ab, ein fremdes Musikstueck nicht, obwohl
-    # Musik die haeufigste Ursache einer Urheberrechtsmeldung auf TikTok ist.
-    # Ein Vermerk in einem Bericht, den niemand liest, ist keine Sperre.
-    #
-    # Die Pruefung laeuft ueber musik/lizenzen.json (siehe assets.py) und
-    # funktioniert deshalb auch ohne Datenbank.
-    # Die Pruefung laeuft ueber DIESELBE Tuer wie bei den Quellclips
-    # (assets.hat_lizenz); den ausfuehrlichen Grund holt erst der Fehlerfall.
-    # So gibt es eine Stelle, an der ueber Rechte entschieden wird, und nicht
-    # zwei, die auseinanderlaufen koennen.
-    if not assets.hat_lizenz(musik):
-        grund = assets.musik_ohne_nachweis(musik) or "kein Lizenzeintrag"
-        raise RuntimeError(
-            f"Musikstueck ohne Lizenznachweis: {musik.name} — {grund}. "
-            f"Erst die Rechte klaeren und in {assets.MUSIK_REGISTER.name} eintragen, "
-            f"dann rendern."
-        )
-    bericht["musik_lizenz"] = (assets.musikregister().get(musik.name) or {}).get("lizenz")
+    # Ausgewaehlt und geprueft wird sie seit Punkt 39 VOR dem Schneiden
+    # (_musik_bestimmen, ganz oben): Das Taktraster kommt aus ihr.
 
     ziel.parent.mkdir(parents=True, exist_ok=True)
 

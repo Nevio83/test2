@@ -435,7 +435,7 @@
     </div>
 
     <div class="pruef-banner" style="background:var(--blue-dim);border-color:color-mix(in srgb, var(--blue) 32%, transparent);">
-      <h3>Stand am 28.09.: 77 gebaut, 4 halb, 8 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <h3>Stand am 28.09.: 78 gebaut, 4 halb, 7 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
       <p class="warum" style="border-left:3px solid var(--green);padding-left:12px;">
         <b>Eine Berichtigung zuerst.</b> Beim Nachzählen am Mittag standen
         <strong>48</strong> und <strong>58</strong> auf „gebaut", weil ihre Prüfungen im Repo lagen.
@@ -457,7 +457,7 @@
         <b>Am 27.09. dazu:</b> <strong>03</strong> (YouTube Shorts als zweite Quelle) ·
         <strong>06</strong> (Planlauf zweimal je Woche) ·
         <strong>50</strong> (Rendern im Hintergrund).
-        <b>Am 28.09.:</b> <strong>44</strong> (eigener Ton und Untertitel daraus).
+        <b>Am 28.09.:</b> <strong>44</strong> (eigener Ton und Untertitel daraus) · <strong>39</strong> (Schnitte auf den Takt, ohne neue Abhängigkeit).
         Nebenbei: Der Ausblende-Test maß fest bei 9,6 s, seit der Endkarte endet das Video bei 12,5 s —
         die Ausblendung war da (−29,3 dB gegen −13,1 dB), der Test sah an die falsche Stelle.
       </p>
@@ -467,8 +467,8 @@
         <strong>61</strong> und <strong>62</strong> (laufende Arbeit, kein Code) ·
         <strong>86</strong> (Material filmen oder Läufe — keine Programmieraufgabe) ·
         <strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank, und die ist gerade gesperrt) ·
-        <strong>35</strong> und <strong>39</strong> (Produkt-Sichtbarkeit, Schnitt auf den Takt — beide brauchen
-        eine neue Abhängigkeit, erst nach Rückfrage) ·
+        <strong>35</strong> (Produkt-Sichtbarkeit — braucht das Bildmodell aus Punkt 19, also eine neue
+        Abhängigkeit, erst nach Rückfrage) ·
         <strong>11</strong> Kommentare mitlesen (mehr Abrufe bei TikTok — mit der Sperrregel abzuwägen).
       </p>
       <p class="warum" style="margin-top:10px;">
@@ -954,10 +954,11 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">39</span> Schnitte auf den Takt legen <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">39</span> Schnitte auf den Takt legen <span class="chip p-niedrig">gebaut am 28.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Wenn Schnitt und Musik nebeneinanderher laufen, wirkt der Clip zusammengesetzt. Liegen die Schnitte auf den Betonungen, wirkt derselbe Schnitt professionell — ohne dass jemand sagen könnte, woran es liegt.</p>
         <p class="tun"><b>Was tun</b> Beat-Erkennung über das Bett (<code>librosa</code> oder <code>aubio</code>, beides lokal), Zeitpunkte als Raster in die Schnittliste. Beim Bauen die Segmentgrenzen auf den nächstgelegenen Beat ziehen, solange die Abweichung unter etwa 150 ms bleibt. Größere Verschiebungen nicht erzwingen.</p>
         <p class="bringt"><b>Bringt</b> Der größte wahrgenommene Qualitätssprung, den man rechnen statt können muss. Und weil das Raster aus dem Bett kommt, funktioniert es für jeden künftigen Clip mit.</p>
+        <p class="tun"><b>Gebaut am 28.09. — ohne librosa.</b> ffmpeg liefert die Samples, numpy (kommt mit faster-whisper) rechnet Einsatzkurve, Tempo und Raster. Gemessen: Die fünf Betten mit Tempo im Namen werden ohne den Namen auf ±0,01 BPM getroffen, ein Klicktakt mit bekannter Lage auf −8 ms. Schnitte bis 150 ms neben einem Schlag werden gezogen, weiter entfernte bleiben. Zwei Fehler fand erst die Messung: Das Raster lag 78 ms zu früh (Fensterlage), und bei <code>clean_minimal</code> rastete es auf die Offbeats ein, 263 ms daneben — jetzt entscheidet der Bass über die Eins, 5 ms. Ohne erkennbaren Takt (Dauerton, Flächen ohne Schlagzeug) wird nichts verschoben. Nebenbei prüft Stil C die Musik jetzt <em>vor</em> dem Schneiden: Fehlt sie oder ihr Nachweis, bricht es ab, bevor Rechenzeit geflossen ist.</p>
       </div>
 
       <div class="vb-item">

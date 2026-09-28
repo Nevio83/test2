@@ -114,6 +114,30 @@ der Start einmal, und es wird ohne Eintrag in `mkt_videos` gerendert.
 | `ton` | `"eigen"` = Originalton behalten — **nur** bei eigenem Material, sonst bricht das Einlesen ab |
 | `untertitel` | Kopfzeile: `"aus_ton"` = Untertitel aus dem eigenen Ton erkennen |
 | `sprache` | Kopfzeile: Sprache des eigenen Tons für die Erkennung (Vorgabe `de`) |
+| `takt` | Kopfzeile: `false` = Schnitte NICHT auf den Takt ziehen (Vorgabe aus `video.takt_schnitt`) |
+
+### Schnitte auf den Takt (Punkt 39)
+
+Vor dem Schneiden wird das Musikbett abgehört: Tempo und Lage der Schläge. Jeder
+Schnitt, der höchstens **150 ms** neben einem Schlag liegt, wird darauf gezogen
+(`video.takt_toleranz_ms`); weiter entfernte bleiben, wo sie sind — einen Schnitt
+eine halbe Sekunde zu verlegen, ändert die Aussage des Segments. Nie unter 0,5 s
+Segmentlänge und nie über das Ende der Quelldatei hinaus. Im Bericht steht, wie
+viele Schnitte gezogen wurden und um wie viele Millisekunden.
+
+Gerechnet ohne librosa: ffmpeg liefert die Samples, numpy (kommt mit faster-whisper)
+die Einsatzkurve, das Tempo und das Raster. **Gemessen:** Die fünf Betten mit Tempo
+im Namen werden ohne den Namen auf ±0,01 BPM getroffen; ein Klicktakt mit bekannter
+Lage auf −8 ms. Zwei Fehler hat erst die Messung gezeigt:
+
+- Das Raster lag **78 ms zu früh** — ein Spektrum sieht einen Einsatz schon im
+  hinteren Viertel seines Fensters. Jetzt ausgeglichen.
+- Bei `clean_minimal` (Kick auf 1 und 3, Hi-Hat auf jedem Offbeat) rastete es auf
+  die Offbeats ein, **263 ms daneben** bei 536 ms Schlagabstand. Die Wahrheit steht
+  im Erzeuger der Stücke; jetzt entscheidet der Bass über die Eins: 5 ms.
+
+Ohne erkennbaren Takt — Dauerton, Flächen ohne Schlagzeug (`bett_hell`,
+`bett_warm`) — wird nichts verschoben, statt an ein erfundenes Raster zu ziehen.
 
 ### Eigener Ton und Untertitel daraus (Punkt 44)
 

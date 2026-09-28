@@ -296,7 +296,7 @@
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
       <span style="color:var(--green);font-weight:600;">✓ 181 Commits an 40 Arbeitstagen</span>
-      <span><strong>916</strong> automatische Prüfungen (589 Shop + 327 Bot) · Marketing 242 grün, 48 warten auf die Datenbank</span>
+      <span><strong>916</strong> automatische Prüfungen (589 Shop + 327 Bot) · Marketing 258 grün, 48 warten auf die Datenbank</span>
       <span>Stand <strong>28.09.2026</strong></span>
     </div>
   </div>
@@ -318,7 +318,7 @@
       <div class="stat acc-green">
         <div class="num">916</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>589 im Shop</strong> und <strong>327 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Von den <strong>290 Marketing-Prüfungen</strong> sind 242 grün und keine rot; 48 brauchen die Datenbank, und die ist am Kontingent. Die Prüfungen, die auf fehlenden Code warteten, sind seit dem 26.&nbsp;September grün (siehe unten).</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>589 im Shop</strong> und <strong>327 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Von den <strong>306 Marketing-Prüfungen</strong> sind 258 grün und keine rot; 48 brauchen die Datenbank, und die ist am Kontingent. Die Prüfungen, die auf fehlenden Code warteten, sind seit dem 26.&nbsp;September grün (siehe unten).</p>
       </div>
       <div class="stat acc-orange">
         <div class="num">546</div>
@@ -347,7 +347,7 @@
         <tr><td>Produktseite beim zweiten Aufruf</td><td class="num">alles neu geladen</td><td class="num">17 KB gesamt</td><td class="gut">ETag statt <code>no-store</code></td></tr>
         <tr><td>Adressen in der Sitemap</td><td class="num">keine Sitemap</td><td class="num">54</td><td class="gut">+ <code>noindex</code> auf 5 Seiten</td></tr>
         <tr><td>Zeilen in <code>app.js</code></td><td class="num">4.430</td><td class="num">1.802</td><td class="gut">−59 %</td></tr>
-        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">13.646 Zeilen, 290 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
+        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">13.979 Zeilen, 306 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
       </tbody>
     </table>
     </div>
@@ -583,8 +583,8 @@
       <div class="tl-entry">
         <div class="tl-date">28. Sep</div>
         <div class="tl-body">
-          <h3>Eigener Ton im Clip — und Untertitel, die man korrigieren kann <span class="tl-tag tag-neu">Neu</span></h3>
-          <p>Punkt 44 aus dem Papier zum Videoschnitt, damit <strong>77 von 90</strong>. Bei eigenem Material darf der Originalton jetzt bleiben (<code>"ton": "eigen"</code>); bei fremdem bricht das Einlesen ab. Die Musik weicht der Stimme aus, gemessen um 19,6&nbsp;dB. Mit <code>"untertitel": "aus_ton"</code> hört faster-whisper den eigenen Ton ab und setzt die Wörter zeitgenau ins Bild.<br><br><strong>Geprüft mit echter Sprache:</strong> Die Windows-Sprachausgabe spricht einen Satz, Stil C rendert ihn, und der Satz muss im Untertitel stehen. Dabei zeigte sich die Grenze des kleinen Modells: „Der Wasserspende fühlt dein Glas". Weil Stil C Text wörtlich einbrennt, landet der erkannte Text in einer Korrekturdatei neben der Schnittliste; dort verbessert, zählt die Änderung als neue Fassung.</p>
+          <h3>Eigener Ton, korrigierbare Untertitel, Schnitte auf den Takt <span class="tl-tag tag-fund">Fund</span></h3>
+          <p>Punkt 44 aus dem Papier zum Videoschnitt, damit <strong>77 von 90</strong>. Bei eigenem Material darf der Originalton jetzt bleiben (<code>"ton": "eigen"</code>); bei fremdem bricht das Einlesen ab. Die Musik weicht der Stimme aus, gemessen um 19,6&nbsp;dB. Mit <code>"untertitel": "aus_ton"</code> hört faster-whisper den eigenen Ton ab und setzt die Wörter zeitgenau ins Bild.<br><br><strong>Geprüft mit echter Sprache:</strong> Die Windows-Sprachausgabe spricht einen Satz, Stil C rendert ihn, und der Satz muss im Untertitel stehen. Dabei zeigte sich die Grenze des kleinen Modells: „Der Wasserspende fühlt dein Glas". Weil Stil C Text wörtlich einbrennt, landet der erkannte Text in einer Korrekturdatei neben der Schnittliste; dort verbessert, zählt die Änderung als neue Fassung.<br><br><strong>Schnitte auf den Takt</strong> (Punkt 39, damit <strong>78 von 90</strong>) — ohne die vorgeschlagene neue Bibliothek: ffmpeg und numpy reichen. Die fünf Betten mit Tempo im Namen trifft die Erkennung ohne den Namen auf ±0,01&nbsp;BPM. Zwei Fehler zeigte erst die Messung gegen eine bekannte Wahrheit: Das Raster lag 78&nbsp;ms zu früh, und bei einem Stück mit Hi-Hat auf jedem Offbeat rastete es genau eine halbe Zählzeit daneben ein. Beide behoben und mit Gegenprobe belegt.</p>
         </div>
       </div>
     </div>
