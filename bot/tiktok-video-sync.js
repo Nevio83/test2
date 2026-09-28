@@ -6110,8 +6110,10 @@ async function planlauf(opt) {
 // Das Protokoll liegt im Datenordner des Bots, NICHT unter "Dokumente": Dort
 // blockiert der Ransomware-Schutz von Windows Schreibzugriffe fremder Prozesse,
 // und ein Protokoll, das nie entsteht, sieht aus wie ein Lauf, der nie lief.
+// path.win32, weil schtasks ein Windows-Befehl ist: Im Prueflauf (Linux) baute
+// path.join daraus "C:\...\tiktok-quellen/planlauf.log" — und der Lauf war rot.
 function aufgabeBefehl(wurzel = WURZEL, ordner = datenOrdner()) {
-  return `schtasks /Create /SC HOURLY /TN "Maios TikTok-Planlauf" /TR "cmd /c cd /d \\"${wurzel}\\" && npm run tiktok:plan >> \\"${path.join(ordner, 'planlauf.log')}\\" 2>&1"`;
+  return `schtasks /Create /SC HOURLY /TN "Maios TikTok-Planlauf" /TR "cmd /c cd /d \\"${wurzel}\\" && npm run tiktok:plan >> \\"${path.win32.join(ordner, 'planlauf.log')}\\" 2>&1"`;
 }
 
 function aufgabeAusgeben() {
