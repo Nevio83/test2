@@ -111,6 +111,29 @@ der Start einmal, und es wird ohne Eintrag in `mkt_videos` gerendert.
 | `varianten_mischen` | Kopfzeile: schaltet die Variantenwarnung ab |
 | `hook_varianten` | Kopfzeile: mehrere Hooktexte → je eine Fassung (`_a`, `_b`, `_c`), sonst identisch |
 | `varianten_rotieren` | Kopfzeile: zusätzlich die erste Einstellung wechseln (rotiert, ab drei Segmenten) |
+| `ton` | `"eigen"` = Originalton behalten — **nur** bei eigenem Material, sonst bricht das Einlesen ab |
+| `untertitel` | Kopfzeile: `"aus_ton"` = Untertitel aus dem eigenen Ton erkennen |
+| `sprache` | Kopfzeile: Sprache des eigenen Tons für die Erkennung (Vorgabe `de`) |
+
+### Eigener Ton und Untertitel daraus (Punkt 44)
+
+Fremder Originalton fällt grundsätzlich weg. Bei **eigenem** Material (Produktvideos,
+`videos/rohmaterial/eigenes/`) darf er bleiben: `"ton": "eigen"` am Segment. Die
+Musik weicht der Stimme dann aus — gemessen 19,6 dB leiser, solange gesprochen wird,
+und wieder voll, wo nicht. Bei fremdem Material lehnt `lies()` das ab, mit
+derselben Prüfung, die auch über die Lizenz entscheidet.
+
+Mit `"untertitel": "aus_ton"` hört faster-whisper den eigenen Ton ab und setzt die
+Wörter zeitgenau als Untertitel ein (drei Wörter, höchstens 22 Zeichen je Block).
+**Gegenlesen ist Pflicht:** Das Modell `tiny` hörte beim ersten Versuch „Der
+Wasserspende fühlt dein Glas" — Stil C brennt Text wörtlich ein. Deshalb landet der
+erkannte Text in `_<liste>.untertitel.json` neben der Liste. Dort verbessern; der
+nächste Lauf nimmt den verbesserten Text, und die Änderung zählt als neue Fassung
+(sie geht in den Fingerabdruck der Liste ein). Ändert sich der Schnitt, passt der
+alte Text nicht mehr zur Tonspur und wird neu erkannt, ohne den alten zu löschen.
+
+Ein größeres Modell (`video.untertitel_modell`, z. B. `small`) erkennt Deutsch
+deutlich besser, muss aber einmal heruntergeladen werden (einige hundert MB).
 
 **Warum JSON und nicht ein Videoprojekt:** Eine 4-KB-Liste gehört ins
 Repository, ein 40-MB-Video nicht. Dieselbe Liste ergibt dasselbe Video, und

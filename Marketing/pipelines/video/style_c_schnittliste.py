@@ -121,6 +121,9 @@ class Segment:
     # Punkt 33: "schnitt" (Vorgabe) oder "blitz". Zwei und mehr nicht —
     # Wiedererkennbarkeit entsteht durch Wiederholung, nicht durch Auswahl.
     uebergang: str | None = None
+    # Punkt 44: "eigen" = Originalton behalten. NUR bei eigenem Material —
+    # das prueft lies(), nicht der Renderer.
+    ton: str | None = None
 
     @property
     def dauer(self) -> float:
@@ -163,6 +166,9 @@ class Schnittliste:
     # Anfang unterscheiden. Leer = eine Fassung wie bisher.
     hook_varianten: list[str] = field(default_factory=list)
     varianten_rotieren: bool = False
+    # Punkt 44: "aus_ton" = Untertitel aus dem eigenen Ton erkennen.
+    untertitel: str | None = None
+    sprache: str = "de"
 
     @property
     def gesamtdauer(self) -> float:
@@ -465,6 +471,22 @@ def _finde_quelle(angabe: str) -> Path | None:
     return None
 
 
+def _ton_pruefen(wert: Any, quelle: Path, nr: int) -> str | None:
+    """Punkt 44: Originalton nur bei eigenem Material — sonst Abbruch."""
+    if wert in (None, "", "weg"):
+        return None
+    ton = str(wert).strip().lower()
+    if ton not in TON_WERTE:
+        raise SchnittlisteFehler(f"Segment {nr}: 'ton' kennt nur {', '.join(TON_WERTE)} — nicht \"{wert}\"")
+    if ton == "eigen" and not assets._ist_eigenes(quelle):
+        raise SchnittlisteFehler(
+            f"Segment {nr}: Originalton nur bei eigenem Material — {quelle.name} liegt nicht in "
+            "rohmaterial/eigenes/ (oder bei den eigenen Produktvideos). Fremder Ton bleibt draussen: "
+            "fremde Stimmen und Musik, die nur in der App erlaubt ist."
+        )
+    return ton
+
+
 def lies(pfad: Path) -> Schnittliste:
     """Eine Schnittliste einlesen und auf Unmoeglichkeiten pruefen.
 
@@ -545,6 +567,7 @@ def lies(pfad: Path) -> Schnittliste:
             zuschnitt=(eintrag.get("zuschnitt") or None),
             variante=(str(eintrag["variante"]).strip() if eintrag.get("variante") else None),
             uebergang=(str(eintrag["uebergang"]).strip() if eintrag.get("uebergang") else None),
+            ton=_ton_pruefen(eintrag.get("ton"), quelle, nr),
             # Hier wurde die Datei ohnehin schon gemessen (Zeitpruefung oben).
             # Das Ergebnis wegzuwerfen und spaeter erneut zu messen, war reine
             # Verschwendung.
@@ -566,7 +589,22 @@ def lies(pfad: Path) -> Schnittliste:
         hook_varianten=[str(h).strip() for h in (roh.get("hook_varianten") or [])
                         if str(h or "").strip()],
         varianten_rotieren=bool(roh.get("varianten_rotieren", False)),
+        untertitel=(str(roh["untertitel"]).strip() if roh.get("untertitel") else None),
+        sprache=str(roh.get("sprache") or "de").strip(),
     )
+    if liste.untertitel not in (None, "aus_ton"):
+        raise SchnittlisteFehler(
+            f"{Path(pfad).name}: 'untertitel' kennt nur \"aus_ton\" — nicht \"{liste.untertitel}\""
+        )
+    mit_ton = [nr for nr, s in enumerate(liste.segmente, start=1) if s.ton == "eigen"]
+    if liste.untertitel == "aus_ton" and not mit_ton:
+        warnungen.append("'untertitel': \"aus_ton\", aber kein Segment mit \"ton\": \"eigen\" — "
+                         "es gibt nichts abzuhoeren")
+    if liste.untertitel == "aus_ton":
+        doppelt = [nr for nr in mit_ton if liste.segmente[nr - 1].text]
+        if doppelt:
+            warnungen.append(f"Segment {', '.join(map(str, doppelt))}: 'text' und Untertitel aus dem "
+                             "Ton liegen beide unten im Bild — einer davon ist zu viel")
 
     # PLATZHALTER AUS EINER VORLAGE (Punkt 28) — hier wird ABGEBROCHEN, nicht
     # gewarnt. Die Vorlagen in schnittlisten/vorlagen/ tragen ihre Texte als
@@ -711,6 +749,168 @@ def ungeklaerte_rechte(liste: Schnittliste) -> list[Path]:
 
 
 # ── Rendern ──────────────────────────────────────────────────────────
+
+# ── Eigener Ton und Untertitel aus dem Ton (Punkt 44) ────────────────
+#
+# Der Originalton faellt grundsaetzlich weg (siehe _segment_bauen) — bei
+# FREMDEM Material ist das die einzige sichere Einstellung. Bei eigenem
+# Material ist es ein Verlust: Wer selbst etwas vorfuehrt und dabei erklaert,
+# hat genau den Ton, den ein Werbeclip braucht.
+#
+# DESHALB EINE TUER, NICHT ZWEI. "ton": "eigen" ist nur fuer Material erlaubt,
+# das assets._ist_eigenes() als eigen erkennt (Produktbilder, Produktvideos,
+# rohmaterial/eigenes/). Dieselbe Pruefung, die auch ueber die Lizenz
+# entscheidet — ein zweiter, laxerer Begriff von "eigen" waere die Luecke, durch
+# die fremde Stimmen doch ins Video kaemen.
+#
+# UNTERTITEL AUS DEM TON. Die meisten schauen ohne Ton. Der Spracherkenner
+# (faster-whisper) war schon im Projekt — der Bot nutzt ihn, um zu hoeren, OB
+# geredet wird, und wirft den Text bewusst weg (fremde Stimmen gehoeren in
+# keine Datei). Hier geht es nur um eigenen Ton; der Text landet ausschliesslich
+# im Video.
+
+TON_WERTE = ("eigen", "weg")
+
+
+def woerter_zu_bloecken(woerter: list[tuple[float, float, str]], *,
+                        hoechstens: int = 3, zeichen: int = 22) -> list[dict[str, Any]]:
+    """Woerter mit Zeitmarken zu kurzen Untertitelbloecken.
+
+    Derselbe Rhythmus wie schreibe_untertitel() (drei Woerter, begrenzte
+    Zeichenzahl), aber mit den ECHTEN Zeiten aus dem Ton — ein Block steht
+    genau so lange, wie seine Woerter gesprochen werden.
+    """
+    bloecke: list[dict[str, Any]] = []
+    aktuell: list[tuple[float, float, str]] = []
+
+    def abschliessen() -> None:
+        if aktuell:
+            bloecke.append({"von": round(aktuell[0][0], 2), "bis": round(aktuell[-1][1], 2),
+                            "text": " ".join(w for _, _, w in aktuell)})
+            aktuell.clear()
+
+    for von, bis, wort in woerter:
+        wort = str(wort).strip()
+        if not wort:
+            continue
+        laenge = len(" ".join(w for _, _, w in aktuell) + " " + wort) if aktuell else len(wort)
+        if aktuell and (len(aktuell) >= hoechstens or laenge > zeichen):
+            abschliessen()
+        aktuell.append((float(von), float(bis), wort))
+    abschliessen()
+    return bloecke
+
+
+def untertitel_aus_ton(wav: Path, *, sprache: str | None = "de",
+                       modell: str | None = None) -> list[dict[str, Any]]:
+    """Den eigenen Ton abhoeren und als Untertitelbloecke zurueckgeben.
+
+    Das Modell kommt aus der Konfiguration (video.untertitel_modell, Vorgabe
+    "tiny" — das liegt nach dem ersten Bot-Lauf schon auf der Platte). Ein
+    groesseres Modell erkennt Deutsch deutlich besser, muss aber einmal
+    heruntergeladen werden.
+    """
+    try:
+        from faster_whisper import WhisperModel
+    except ImportError as fehler:
+        fehlt = getattr(fehler, "name", None) or "faster-whisper"
+        raise RuntimeError(f"Untertitel aus dem Ton brauchen '{fehlt}' "
+                           f"(py -m pip install {fehlt})") from None
+
+    name = modell or str(guardrails.wert("video.untertitel_modell", "tiny"))
+    erkenner = WhisperModel(name, device="cpu", compute_type="int8")
+    segmente, _ = erkenner.transcribe(str(wav), beam_size=1, vad_filter=True,
+                                      word_timestamps=True, language=sprache or None)
+    woerter: list[tuple[float, float, str]] = []
+    for s in segmente:
+        # Was das Modell selbst fuer Nicht-Sprache haelt, wird kein Untertitel —
+        # sonst stuende bei Musik oder Rauschen erfundener Text im Bild.
+        if getattr(s, "no_speech_prob", 0.0) > 0.6:
+            continue
+        for w in (s.words or []):
+            woerter.append((float(w.start), float(w.end), str(w.word)))
+    return woerter_zu_bloecken(woerter)
+
+
+def untertitel_datei(liste_pfad: Path | None) -> Path | None:
+    """Wo die erkannten Untertitel zum Korrigieren liegen: neben der Liste.
+
+    Mit fuehrendem Unterstrich, damit offene_listen() sie nicht fuer eine
+    Schnittliste haelt (sie endet ebenfalls auf .json).
+    """
+    if liste_pfad is None:
+        return None
+    return Path(liste_pfad).with_name(f"_{Path(liste_pfad).stem}.untertitel.json")
+
+
+def _untertitel_holen(liste: "Schnittliste", spur: Path) -> tuple[list[dict[str, Any]], str]:
+    """Untertitel fuer DIESE Tonspur: aus der Korrekturdatei, sonst erkennen und dort ablegen.
+
+    WARUM EINE DATEI ZUM KORRIGIEREN
+    Stil C brennt Text woertlich ins Bild. Das kleine Modell hoerte beim
+    ersten Versuch "Der Wasserspende fuehlt dein Glas" — zwei Fehler in einem
+    Satz, und im veroeffentlichten Video waeren sie nicht mehr zu aendern.
+    Also: einmal erkennen, in die Datei schreiben, dort verbessern lassen.
+    Jeder weitere Lauf nimmt den verbesserten Text.
+
+    Schluessel ist der Fingerabdruck der Tonspur — aendert sich der Schnitt,
+    passt der alte Text nicht mehr und wird neu erkannt, ohne den alten zu
+    ueberschreiben.
+    """
+    kennung = hashlib.sha256(spur.read_bytes()).hexdigest()[:16]
+    datei = untertitel_datei(liste.quelle_datei)
+    daten: dict[str, Any] = {}
+    if datei is not None and datei.exists():
+        try:
+            daten = json.loads(datei.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError) as fehler:
+            raise RuntimeError(f"{datei.name} ist nicht lesbar: {fehler}") from None
+    spuren = daten.get("spuren") if isinstance(daten.get("spuren"), dict) else {}
+    if kennung in spuren and isinstance(spuren[kennung].get("bloecke"), list):
+        return [b for b in spuren[kennung]["bloecke"] if str(b.get("text") or "").strip()], "datei"
+
+    bloecke = untertitel_aus_ton(spur, sprache=liste.sprache)
+    if datei is not None:
+        spuren[kennung] = {
+            "erkannt_am": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "modell": str(guardrails.wert("video.untertitel_modell", "tiny")),
+            "bloecke": bloecke,
+        }
+        daten["_hinweis"] = ("Automatisch erkannt — Text hier verbessern, dann wird neu gerendert. "
+                             "Zeiten nur aendern, wenn noetig; ein leerer Text blendet den Block aus.")
+        daten["spuren"] = spuren
+        datei.write_text(json.dumps(daten, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return bloecke, "erkannt"
+
+
+def _tonspur_bauen(liste: "Schnittliste", ordner: Path, *, nachlauf_sek: float = 0.0) -> Path:
+    """Eine Spur so lang wie das Video: eigener Ton, wo erlaubt, sonst Stille."""
+    teile: list[Path] = []
+    for i, segment in enumerate(liste.segmente):
+        ziel = ordner / f"ton_{i:02d}.wav"
+        dauer = max(segment.dauer, 0.04)
+        info = common.medien_info(segment.quelle) if segment.ton == "eigen" else None
+        if info is not None and info.hat_ton:
+            common.lauf(["-ss", f"{segment.von:.3f}", "-t", f"{dauer:.3f}", "-i", str(segment.quelle),
+                         "-vn", "-ac", "1", "-ar", "48000",
+                         "-af", f"apad=whole_dur={dauer:.3f}", "-t", f"{dauer:.3f}",
+                         "-c:a", "pcm_s16le", str(ziel)])
+        else:
+            common.lauf(["-f", "lavfi", "-i", "anullsrc=r=48000:cl=mono", "-t", f"{dauer:.3f}",
+                         "-c:a", "pcm_s16le", str(ziel)])
+        teile.append(ziel)
+    if nachlauf_sek > 0:
+        ziel = ordner / "ton_endkarte.wav"
+        common.lauf(["-f", "lavfi", "-i", "anullsrc=r=48000:cl=mono", "-t", f"{nachlauf_sek:.3f}",
+                     "-c:a", "pcm_s16le", str(ziel)])
+        teile.append(ziel)
+    verzeichnis = ordner / "ton_teile.txt"
+    verzeichnis.write_text("\n".join(f"file '{p.resolve().as_posix()}'" for p in teile),
+                           encoding="utf-8")
+    spur = ordner / "eigener_ton.wav"
+    common.lauf(["-f", "concat", "-safe", "0", "-i", str(verzeichnis), "-c", "copy", str(spur)])
+    return spur
+
 
 def _segment_bauen(segment: Segment, ziel: Path, *, vorschau: bool = False) -> Path:
     """Ein Segment auf 1080x1920 bringen — Ton bewusst weg.
@@ -915,6 +1115,14 @@ def rendere(
         bericht["uebergaenge"] = {"blitz": blitze,
                                   "schnitt": len(liste.segmente) - blitze}
 
+    # ── 2c. Eigener Ton (Punkt 44) ───────────────────────────────────
+    eigener_ton = None
+    mit_ton = [nr for nr, s in enumerate(liste.segmente, start=1) if s.ton == "eigen"]
+    if mit_ton:
+        eigener_ton = _tonspur_bauen(
+            liste, ordner, nachlauf_sek=max(gesamt - liste.gesamtdauer, 0.0))
+        bericht["eigener_ton"] = mit_ton
+
     # ── 3. Einblendungen ─────────────────────────────────────────────
     # Aus den Segmenttexten wird dieselbe ASS-Datei wie bei Stil A gebaut —
     # gleiche Schrift, gleiche Raender, gleiches Aussehen. Ein Clip, der
@@ -927,6 +1135,19 @@ def rendere(
                 "von": laufzeit, "bis": laufzeit + segment.dauer, "text": segment.text,
             })
         laufzeit += segment.dauer
+
+    # Punkt 44: Untertitel aus dem eigenen Ton — nicht in der Vorschau, dort
+    # wird ohnehin nichts eingebrannt, und das Abhoeren kostet Sekunden.
+    if liste.untertitel == "aus_ton" and eigener_ton is not None and not vorschau:
+        try:
+            bloecke, herkunft = _untertitel_holen(liste, eigener_ton)
+            segmente_text.extend(bloecke)
+            segmente_text.sort(key=lambda s: s["von"])
+            bericht["untertitel_aus_ton"] = len(bloecke)
+            bericht["untertitel_quelle"] = herkunft
+        except Exception as fehler:  # noqa: BLE001 — ohne Untertitel ist das Video trotzdem eins
+            bericht["untertitel_aus_ton"] = 0
+            print(f"[stil_c] ⚠️  Untertitel aus dem Ton nicht erkannt: {fehler}")
 
     # DER HOOK IST EIN EIGENER PLATZ, KEIN ERSTES SEGMENT.
     #
@@ -990,6 +1211,8 @@ def rendere(
     ziel.parent.mkdir(parents=True, exist_ok=True)
 
     argumente = ["-i", str(stumm), "-stream_loop", "-1", "-i", str(musik)]
+    if eigener_ton is not None:
+        argumente += ["-i", str(eigener_ton)]
     if ass is not None and not vorschau:
         argumente += ["-vf", f"subtitles='{common._ass_pfad(ass)}'"]
     elif ass is not None and vorschau:
@@ -1018,12 +1241,26 @@ def rendere(
     argumente += [
         # Lautheit auf denselben Zielwert wie bei A und B. Unterschiedlich
         # laute Clips im selben Kanal sind der hoerbarste Amateurfehler.
-        "-af", (f"{common.loudnorm_filter()},"
-                f"afade=t=in:st=0:d={einblendung:.2f},"
-                f"afade=t=out:st={max(gesamt - ausblendung, 0):.2f}:d={ausblendung:.2f}"),
         "-t", f"{gesamt:.2f}",
-        "-map", "0:v:0", "-map", "1:a:0",
     ]
+    blenden = (f"{common.loudnorm_filter()},"
+               f"afade=t=in:st=0:d={einblendung:.2f},"
+               f"afade=t=out:st={max(gesamt - ausblendung, 0):.2f}:d={ausblendung:.2f}")
+    if eigener_ton is None:
+        argumente += ["-af", blenden, "-map", "0:v:0", "-map", "1:a:0"]
+    else:
+        # PUNKT 44: Die Musik WEICHT der Stimme (sidechaincompress), statt
+        # dauerhaft leise zu laufen: Wo niemand spricht, traegt sie den Clip,
+        # wo gesprochen wird, geht sie runter. Danach dieselbe Lautheit und
+        # dieselben Blenden wie immer.
+        argumente += [
+            "-filter_complex",
+            ("[2:a]aformat=channel_layouts=stereo,asplit=2[steuer][stimme];"
+             "[1:a]aformat=channel_layouts=stereo[musik];"
+             "[musik][steuer]sidechaincompress=threshold=0.02:ratio=10:attack=15:release=400[geduckt];"
+             f"[geduckt][stimme]amix=inputs=2:duration=first:normalize=0,{blenden}[ton]"),
+            "-map", "0:v:0", "-map", "[ton]",
+        ]
     if vorschau:
         # Verkleinert wurde schon beim Segmentbau — hier nur noch schnell
         # kodieren. Ein zweites scale waere Rechenzeit fuer nichts.
@@ -1160,6 +1397,20 @@ def trockenpruefung(pfad: Path, *, bauversuch: bool = False) -> dict[str, Any]:
     bericht["hinweise"].extend(bericht["tempo"]["hinweise"])
     bericht["hinweise"].extend(varianten(liste)["hinweise"])
 
+    # Punkt 44: Erkannter Text landet woertlich im Bild — das gehoert vor dem
+    # Rendern gesagt, nicht erst beim Anschauen des fertigen Videos.
+    if liste.untertitel == "aus_ton":
+        try:
+            import faster_whisper  # noqa: F401
+        except ImportError:
+            bericht["hinweise"].append(
+                "Untertitel aus dem Ton: faster-whisper fehlt — das Video entsteht ohne sie")
+        korrektur = untertitel_datei(Path(pfad))
+        if korrektur is not None and not korrektur.exists():
+            bericht["hinweise"].append(
+                f"Untertitel aus dem Ton werden beim ersten Rendern erkannt und in {korrektur.name} "
+                "abgelegt — dort gegenlesen, Stil C brennt sie woertlich ein")
+
     # Dieselben Sperren wie in rendere() — mit denselben Worten, damit eine
     # Meldung hier eine Meldung dort vorwegnimmt.
     offen = ungeklaerte_rechte(liste)
@@ -1284,9 +1535,18 @@ def pruefsumme(pfad: Path) -> str:
     Zeitstempel neu, ohne dass sich etwas geaendert hat.
     """
     try:
-        return hashlib.sha256(pfad.read_bytes()).hexdigest()[:16]
+        inhalt = pfad.read_bytes()
     except OSError:
         return ""
+    # Punkt 44: Eine korrigierte Untertiteldatei ist eine geaenderte Fassung —
+    # sonst bliebe der verbesserte Text liegen und das Video mit dem falschen.
+    korrektur = untertitel_datei(pfad)
+    if korrektur is not None and korrektur.exists():
+        try:
+            inhalt += b"\0" + korrektur.read_bytes()
+        except OSError:
+            pass
+    return hashlib.sha256(inhalt).hexdigest()[:16]
 
 
 def offene_listen(*, nur_dateien: bool = False) -> list[Path]:
@@ -1365,7 +1625,13 @@ def _ziele(pfad: Path) -> list[tuple[Path, str | None]]:
 
 
 def _ziel_aktuell(liste_pfad: Path, ziel: Path) -> bool:
-    return ziel.exists() and ziel.stat().st_mtime >= liste_pfad.stat().st_mtime
+    if not ziel.exists():
+        return False
+    stand = liste_pfad.stat().st_mtime
+    korrektur = untertitel_datei(liste_pfad)
+    if korrektur is not None and korrektur.exists():
+        stand = max(stand, korrektur.stat().st_mtime)
+    return ziel.stat().st_mtime >= stand
 
 
 def job_render_stil_c() -> dict[str, Any]:
@@ -1485,11 +1751,15 @@ def _rendere_fassung(liste: Schnittliste, produkt: Produkt, pfad: Path, summe: s
             # nur im Protokoll eines Laufs — dabei ist genau das die
             # Angabe, die das Lernmodul braucht ("welche Rohclips, welche
             # Musik, welcher Hook steckten drin").
+            # Der Fingerabdruck wird NACH dem Rendern neu genommen: Hat dieser
+            # Lauf die Untertitel-Korrekturdatei eben erst angelegt, zaehlt sie
+            # schon dazu — sonst galt die Liste sofort wieder als geaendert.
             db.ausfuehren(
-                "UPDATE mkt_videos SET renderdauer_sek = %s, bericht = %s "
-                "WHERE id = %s",
+                "UPDATE mkt_videos SET renderdauer_sek = %s, bericht = %s, "
+                "schnittliste_hash = %s WHERE id = %s",
                 (round(_zeit.monotonic() - begonnen, 2),
                  json.dumps(bericht, ensure_ascii=False, default=str),
+                 pruefsumme(pfad) or summe,
                  video_id),
             )
         name = f"{produkt.name}" + (f" (Fassung {kennung})" if kennung else "")
