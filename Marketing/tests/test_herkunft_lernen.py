@@ -138,11 +138,31 @@ def test_herkunft_der_quellen_aus_name_und_index(tmp_path, monkeypatch):
     ])
     herkunft = {h["datei"]: h for h in sc.herkunft_der_quellen(liste, index_pfad=index)}
     assert len(herkunft) == 3, "derselbe Clip zweimal ist EINE Quelle"
-    assert herkunft[fremd.name] == {"datei": fremd.name, "material": "fremd",
+    assert herkunft[fremd.name] == {"datei": fremd.name, "material": "fremd", "plattform": "tiktok",
+                                    "video_id": "7410474104903453984",
                                     "tiktok_id": "7410474104903453984", "creator": "smart_produkt"}
     # Kein Name, kein Index-Eintrag: leer statt geraten.
     assert herkunft[ohne.name]["tiktok_id"] is None and herkunft[ohne.name]["creator"] is None
     assert herkunft[eigen.name]["material"] == "eigen"
+
+
+def test_youtube_clips_tragen_ihre_plattform(tmp_path):
+    """Seit Punkt 03 laedt der Bot auch YouTube Shorts: "_yt-<kennung>" im Namen."""
+    clip = tmp_path / "80_wasserspender_60s_stil-b_yt-iTNqo2wQdEM.mp4"
+    clip.write_bytes(b"x")
+    index = tmp_path / "index.json"
+    index.write_text(json.dumps({"eintraege": [
+        {"video_id": "iTNqo2wQdEM", "creator": "RecentRatings", "plattform": "youtube"},
+    ]}), encoding="utf-8")
+    liste = sc.Schnittliste(produkt_id=10, segmente=[sc.Segment(quelle=clip)])
+    [h] = sc.herkunft_der_quellen(liste, index_pfad=index)
+    assert (h["plattform"], h["video_id"], h["creator"]) == ("youtube", "iTNqo2wQdEM", "RecentRatings")
+    assert h["tiktok_id"] is None, "eine YouTube-Kennung ist keine TikTok-Kennung"
+
+    paare = features.herkunftsmerkmale({"herkunft": [h]})
+    assert ("plattform", "youtube") in paare and ("rohclip", "iTNqo2wQdEM") in paare
+    # GEGENPROBE: Mit dem alten Muster (nur Ziffern) waere die Kennung verloren.
+    assert re.search(r"_(\d{10,25})\.(mp4)$", clip.name) is None
 
 
 def test_ohne_index_bleibt_die_kennung_aus_dem_dateinamen(tmp_path):

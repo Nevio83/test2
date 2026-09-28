@@ -52,6 +52,11 @@
  *     npm run marketing:pruefen -- fassung-10.json --bauversuch  + 3 s schneiden
  *         Punkt 48: sammelt alle Fehler einer Schnittliste (fehlende Datei,
  *         Rechte, Musik, Zeitangaben), ohne ein Video zu bauen.
+ *
+ *     npm run marketing:rendern                     Warteschlange (Strg+C beendet)
+ *     npm run marketing:rendern -- --einmal         abarbeiten, was da ist
+ *         Punkt 50: rendert Schnittlisten im Hintergrund, parallel, mit
+ *         Protokoll neben dem Ergebnis. Fragt die Datenbank nicht im Takt.
  */
 
 'use strict';
@@ -88,7 +93,8 @@ function leseArgumente(argv) {
                 fristMin: FRIST_STANDARD_MIN, job: null,
                 bestandUmstellen: false, schreiben: false, regeln: null,
                 vorlage: false, vorlageName: null, produkt: null,
-                pruefen: null, bauversuch: false };
+                pruefen: null, bauversuch: false,
+                rendern: false, rendernArgs: [] };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--once' || a === '--einmal') opt.einmal = true;
@@ -112,6 +118,8 @@ function leseArgumente(argv) {
     // Punkt 48: Trockenpruefung einer Schnittliste.
     else if (a === '--pruefen') opt.pruefen = argv[++i] || '';
     else if (a === '--bauversuch') opt.bauversuch = true;
+    // Punkt 50: alles hinter --rendern geht an die Warteschlange.
+    else if (a === '--rendern') { opt.rendern = true; opt.rendernArgs = argv.slice(i + 1); break; }
     // npm reicht alles hinter "--" weiter; ein freies Wort nach --vorlage ist
     // der Vorlagenname, auch wenn es erst hinter --produkt steht.
     else if (opt.vorlage && !opt.vorlageName && !a.startsWith('--')) opt.vorlageName = a;
@@ -556,6 +564,11 @@ async function main() {
     if (opt.produkt) argumente.push('--produkt', String(opt.produkt));
     if (opt.quellen) argumente.push('--quellen', String(opt.quellen));
     return fuehreModulAus(python, 'pipelines.video.vorlagen', argumente);
+  }
+
+  // Punkt 50: Die Warteschlange prueft die Datenbank selbst (einmal beim Start).
+  if (opt.rendern) {
+    return fuehreModulAus(python, 'pipelines.video.warteschlange', opt.rendernArgs);
   }
 
   // Punkt 48: Python laeuft in Marketing/ — ein Pfad, der relativ zum Ort des

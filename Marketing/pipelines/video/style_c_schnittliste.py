@@ -273,7 +273,8 @@ def _vorlagenname(kopf: Any) -> str | None:
 # Die TikTok-Kennung steht seit Punkt 71 im Dateinamen und braucht keinen
 # Index. Der Creator steht nur im Index; fehlt der, bleibt das Feld leer —
 # geraten wird nichts.
-HERKUNFT_MUSTER = re.compile(r"_(\d{10,25})\.(mp4|mov|webm|mkv)$", re.IGNORECASE)
+# Punkt 03 (Bot): YouTube-Kennungen stehen als "_yt-<elf Zeichen>" im Namen.
+HERKUNFT_MUSTER = re.compile(r"_(\d{10,25}|yt-[A-Za-z0-9_-]{11})\.(mp4|mov|webm|mkv)$", re.IGNORECASE)
 
 
 def _bot_index(pfad: Path | None = None) -> dict[str, dict[str, Any]]:
@@ -310,11 +311,18 @@ def herkunft_der_quellen(liste: "Schnittliste", *, index_pfad: Path | None = Non
             eigen = False
         treffer = HERKUNFT_MUSTER.search(name)
         kennung = treffer.group(1) if treffer else None
-        eintrag = index.get(kennung or "") or index.get(name) or {}
+        youtube = bool(kennung and kennung.startswith("yt-"))
+        video_id = kennung[3:] if youtube else kennung
+        eintrag = index.get(video_id or "") or index.get(name) or {}
+        video_id = video_id or eintrag.get("video_id") or None
+        plattform = ("youtube" if youtube else "tiktok") if kennung else (eintrag.get("plattform") or ("tiktok" if eintrag else None))
         gesehen[name] = {
             "datei": name,
             "material": "eigen" if eigen else "fremd",
-            "tiktok_id": None if eigen else (kennung or eintrag.get("video_id") or None),
+            "plattform": None if eigen else plattform,
+            "video_id": None if eigen else video_id,
+            # Bleibt fuer aeltere Leser: nur bei TikTok gesetzt.
+            "tiktok_id": None if eigen or plattform != "tiktok" else video_id,
             "creator": None if eigen else (str(eintrag.get("creator") or "").strip() or None),
         }
     return [gesehen[k] for k in sorted(gesehen)]
@@ -1281,11 +1289,16 @@ def pruefsumme(pfad: Path) -> str:
         return ""
 
 
-def offene_listen() -> list[Path]:
+def offene_listen(*, nur_dateien: bool = False) -> list[Path]:
     """Schnittlisten, zu denen es noch kein bestandenes Video gibt.
 
     Erkannt an Name UND Pruefsumme: Gleicher Name, anderer Inhalt heisst neu
     rendern. Gleicher Inhalt heisst ueberspringen, egal wie die Datei heisst.
+
+    @param nur_dateien  PUNKT 50: nur an den Zieldateien entscheiden, die
+        Datenbank nicht fragen. Die Warteschlange sieht alle paar Sekunden
+        nach — mit Datenbank hiesse das: Neon kommt nie zur Ruhe, und genau
+        so lief am 22.09. das Monatskontingent leer.
     """
     if not SCHNITTLISTEN.exists():
         return []
@@ -1293,7 +1306,7 @@ def offene_listen() -> list[Path]:
     # nicht gerendert. Ein Beispiel mit erfundenen Dateinamen wuerde sonst bei
     # jedem Lauf scheitern und die Protokolle mit Fehlern fuellen, die keine sind.
     alle = sorted(p for p in SCHNITTLISTEN.glob("*.json") if not p.name.startswith("_"))
-    if not db.verfuegbar():
+    if nur_dateien or not db.verfuegbar():
         # OHNE DATENBANK ENTSCHEIDET DIE ZIELDATEI.
         #
         # Hier stand "return alle" — beim lokalen Lauf ueber run-local.js,
@@ -1378,47 +1391,58 @@ def job_render_stil_c() -> dict[str, Any]:
     wartend = max(len(listen) - JE_LAUF, 0)
 
     for pfad in listen[:JE_LAUF]:
-        try:
-            liste = lies(pfad)
-        except SchnittlisteFehler as fehler:
-            verworfen += 1
-            print(f"[stil_c] ⛔ {pfad.name}: {fehler}")
-            continue
-
-        for warnung in liste.warnungen:
-            print(f"[stil_c] ⚠️  {pfad.name}: {warnung}")
-
-        produkt = products.nach_id(liste.produkt_id)
-        if produkt is None:
-            verworfen += 1
-            print(f"[stil_c] ⛔ {pfad.name}: Produkt {liste.produkt_id} gibt es nicht")
-            continue
-
-        # PUNKT 58: Mit Hook-Varianten entsteht je Hooktext eine eigene Datei
-        # (fassung_stil_c_a.mp4, _b, _c) mit eigener Zeile in mkt_videos — und
-        # damit eigener Kampagnenkennung (mkt_<video_id>). Nur so lassen sich
-        # die Fassungen nach dem Veroeffentlichen auseinanderhalten.
-        summe = pruefsumme(pfad)
-        if liste.hook_varianten:
-            fassungen = hook_varianten(liste, liste.hook_varianten,
-                                       erstes_segment_tauschen=liste.varianten_rotieren)
-        else:
-            fassungen = [liste]
-        for fassung, (ziel, kennung) in zip(fassungen, _ziele(pfad)):
-            if kennung and _fassung_fertig(pfad, summe, kennung, ziel):
-                continue
-            for warnung in fassung.warnungen[len(liste.warnungen):]:
-                print(f"[stil_c] ⚠️  {pfad.name}: {warnung}")
-            ergebnis_ok = _rendere_fassung(fassung, produkt, pfad, summe, ziel, kennung)
-            if ergebnis_ok:
-                gerendert += 1
-            else:
-                verworfen += 1
+        ergebnis = rendere_liste(pfad)
+        gerendert += ergebnis["gerendert"]
+        verworfen += ergebnis["verworfen"]
 
     if wartend:
         print(f"[stil_c] {min(len(listen), JE_LAUF)} von {len(listen)} Listen bearbeitet, "
               f"{wartend} warten auf den naechsten Lauf.")
     return {"gerendert": gerendert, "verworfen": verworfen, "wartend": wartend}
+
+
+def rendere_liste(pfad: Path) -> dict[str, Any]:
+    """Eine Schnittliste rendern — alle ihre Fassungen. Wirft nicht.
+
+    Gemeinsamer Weg fuer den Takt-Lauf (job_render_stil_c) und die
+    Warteschlange (Punkt 50): Was hier geprueft wird, gilt in beiden.
+    """
+    gerendert = 0
+    verworfen = 0
+    try:
+        liste = lies(pfad)
+    except SchnittlisteFehler as fehler:
+        print(f"[stil_c] ⛔ {pfad.name}: {fehler}")
+        return {"gerendert": 0, "verworfen": 1, "fehler": str(fehler)}
+
+    for warnung in liste.warnungen:
+        print(f"[stil_c] ⚠️  {pfad.name}: {warnung}")
+
+    produkt = products.nach_id(liste.produkt_id)
+    if produkt is None:
+        print(f"[stil_c] ⛔ {pfad.name}: Produkt {liste.produkt_id} gibt es nicht")
+        return {"gerendert": 0, "verworfen": 1, "fehler": f"Produkt {liste.produkt_id} gibt es nicht"}
+
+    # PUNKT 58: Mit Hook-Varianten entsteht je Hooktext eine eigene Datei
+    # (fassung_stil_c_a.mp4, _b, _c) mit eigener Zeile in mkt_videos — und
+    # damit eigener Kampagnenkennung (mkt_<video_id>). Nur so lassen sich
+    # die Fassungen nach dem Veroeffentlichen auseinanderhalten.
+    summe = pruefsumme(pfad)
+    if liste.hook_varianten:
+        fassungen = hook_varianten(liste, liste.hook_varianten,
+                                   erstes_segment_tauschen=liste.varianten_rotieren)
+    else:
+        fassungen = [liste]
+    for fassung, (ziel, kennung) in zip(fassungen, _ziele(pfad)):
+        if kennung and _fassung_fertig(pfad, summe, kennung, ziel):
+            continue
+        for warnung in fassung.warnungen[len(liste.warnungen):]:
+            print(f"[stil_c] ⚠️  {pfad.name}: {warnung}")
+        if _rendere_fassung(fassung, produkt, pfad, summe, ziel, kennung):
+            gerendert += 1
+        else:
+            verworfen += 1
+    return {"gerendert": gerendert, "verworfen": verworfen, "fehler": None}
 
 
 def _fassung_fertig(pfad: Path, summe: str, kennung: str, ziel: Path) -> bool:

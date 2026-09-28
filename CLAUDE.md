@@ -146,6 +146,7 @@ npm run marketing:once       # genau ein Durchgang
 npm run marketing:local      # Dauerläufer für alles mit Browser/GPU (5-Min-Takt)
 npm run marketing:vorlage -- problem_loesung --produkt 10   # Schnitt-Entwurf aus einer Vorlage
 npm run marketing:pruefen -- fassung-10.json --bauversuch   # Schnittliste gegenlesen, ohne zu rendern
+npm run marketing:rendern    # Schnittlisten im Hintergrund rendern (fragt die DB NICHT im Takt)
 py -m pytest Marketing/tests # 270 Prüfungen der Marketing-Kette (48 davon nur mit Datenbank)
 py -m pipelines.orchestrator.run_loop --job render_style_a --once   # aus Marketing/ heraus
 
@@ -153,7 +154,11 @@ py -m pipelines.orchestrator.run_loop --job render_style_a --once   # aus Market
 npm run tiktok:status        # Bestand und Grenzen anzeigen
 npm run tiktok:probe         # Trockenlauf: sucht und bewertet, lädt NICHTS
 npm run tiktok:laden -- --max 2   # erst wenn die Prüfliste plausibel aussieht
-node bot/tiktok-video-sync.test.js  # 131 Prüfungen des Bots
+npm run tiktok:plan          # Planlauf: 2×/Woche, 5 Produkte rollierend — läuft nur, wenn fällig
+npm run tiktok:plan -- --aufgabe  # schtasks-Befehl für die Aufgabenplanung AUSGEBEN (nicht anlegen)
+node bot/tiktok-video-sync.test.js  # 287 Prüfungen des Bots
+# YouTube Shorts ist zweite Quelle ("plattformen" in bot/tiktok-quellen.json) — eine Sperre gilt
+# nur für die Plattform, die sperrt. Instagram bewusst nicht (geht nur mit Anmeldung).
 ```
 
 > ⚠️ **Der Marketing-Code braucht `py`/`python3`, nicht `python`.** Auf diesem Rechner zeigt

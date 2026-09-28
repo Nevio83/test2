@@ -43,6 +43,7 @@ DIMENSIONEN: dict[str, tuple[str, ...]] = {
     "creator": (),               # TikTok-Konto eines verwendeten Rohclips
     "rohclip": (),               # TikTok-Kennung eines verwendeten Rohclips
     "hook": (),                  # Hooktext (Punkt 58: Varianten derselben Liste)
+    "plattform": ("tiktok", "youtube"),  # woher das Fremdmaterial kam (Bot, Punkt 03)
     "material": ("eigen", "fremd", "gemischt"),
 }
 
@@ -52,7 +53,7 @@ DIMENSIONEN: dict[str, tuple[str, ...]] = {
 # der Suche. Diese Dimensionen stehen bewusst NICHT in STEUERBAR: Sonst
 # koennte sperre_verlierer() einen Creator sperren, und das waere eine
 # Entscheidung ueber fremdes Material auf Grundlage von drei Beitraegen.
-BEOBACHTET = ("vorlage", "musikstueck", "creator", "rohclip", "material", "hook")
+BEOBACHTET = ("vorlage", "musikstueck", "creator", "rohclip", "material", "hook", "plattform")
 
 # Dimensionen, die das Lernmodul selbst waehlen darf. Alles andere wird
 # beobachtet, aber nicht gesteuert (z.B. die Produktkategorie ergibt sich
@@ -119,10 +120,12 @@ def herkunftsmerkmale(bericht: dict[str, Any] | None) -> list[tuple[str, str]]:
     arten = {h.get("material") for h in herkunft if h.get("material") in ("eigen", "fremd")}
     if arten:
         paare.append(("material", arten.pop() if len(arten) == 1 else "gemischt"))
-    for dimension, feld in (("creator", "creator"), ("rohclip", "tiktok_id")):
+    for dimension, feld in (("creator", "creator"), ("rohclip", "video_id"), ("plattform", "plattform")):
         gesehen: list[str] = []
         for h in herkunft:
-            wert = str(h.get(feld) or "").strip()
+            # Aeltere Berichte kennen nur "tiktok_id".
+            roh = h.get(feld) or (h.get("tiktok_id") if feld == "video_id" else None)
+            wert = str(roh or "").strip()
             if wert and wert not in gesehen:
                 gesehen.append(wert)
         paare.extend((dimension, w) for w in gesehen)

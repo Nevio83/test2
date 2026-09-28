@@ -292,12 +292,12 @@
   <div class="report-header">
     <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
     <h1 class="title">Maios Shop — Juni bis September 2026</h1>
-    <p class="subtitle">Zeitraum <strong>7. Juni – 26. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 880 automatischen Prüfungen und einem Marketing-Automaten geworden — und seit dem 23.&nbsp;September landet eine bezahlte Bestellung automatisch beim Lieferanten. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 28. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 916 automatischen Prüfungen und einem Marketing-Automaten geworden — und seit dem 23.&nbsp;September landet eine bezahlte Bestellung automatisch beim Lieferanten. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
       <span style="color:var(--green);font-weight:600;">✓ 181 Commits an 40 Arbeitstagen</span>
-      <span><strong>880</strong> automatische Prüfungen (571 Shop + 309 Bot) · Marketing 222 grün, 48 warten auf die Datenbank</span>
-      <span>Stand <strong>26.09.2026</strong></span>
+      <span><strong>916</strong> automatische Prüfungen (589 Shop + 327 Bot) · Marketing 234 grün, 48 warten auf die Datenbank</span>
+      <span>Stand <strong>28.09.2026</strong></span>
     </div>
   </div>
 
@@ -316,9 +316,9 @@
         <p class="sub">an 40 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
       </div>
       <div class="stat acc-green">
-        <div class="num">880</div>
+        <div class="num">916</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>571 im Shop</strong> und <strong>309 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Von den <strong>270 Marketing-Prüfungen</strong> sind 222 grün und keine rot; 48 brauchen die Datenbank, und die ist am Kontingent. Die Prüfungen, die auf fehlenden Code warteten, sind seit dem 26.&nbsp;September grün (siehe unten).</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>589 im Shop</strong> und <strong>327 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Von den <strong>282 Marketing-Prüfungen</strong> sind 234 grün und keine rot; 48 brauchen die Datenbank, und die ist am Kontingent. Die Prüfungen, die auf fehlenden Code warteten, sind seit dem 26.&nbsp;September grün (siehe unten).</p>
       </div>
       <div class="stat acc-orange">
         <div class="num">546</div>
@@ -338,7 +338,7 @@
         <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
       </thead>
       <tbody>
-        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">880</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">916</td><td class="gut">neu aufgebaut</td></tr>
         <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
         <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
         <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
@@ -347,7 +347,7 @@
         <tr><td>Produktseite beim zweiten Aufruf</td><td class="num">alles neu geladen</td><td class="num">17 KB gesamt</td><td class="gut">ETag statt <code>no-store</code></td></tr>
         <tr><td>Adressen in der Sitemap</td><td class="num">keine Sitemap</td><td class="num">54</td><td class="gut">+ <code>noindex</code> auf 5 Seiten</td></tr>
         <tr><td>Zeilen in <code>app.js</code></td><td class="num">4.430</td><td class="num">1.802</td><td class="gut">−59 %</td></tr>
-        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">13.098 Zeilen, 270 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
+        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">13.376 Zeilen, 282 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
       </tbody>
     </table>
     </div>
@@ -568,7 +568,15 @@
         <div class="tl-date">26. Sep</div>
         <div class="tl-body">
           <h3>Die Schnittkette ist vollständig — und Stil C zählt endlich mit <span class="tl-tag tag-fund">Fund</span></h3>
-          <p>Aus dem Papier zum Videoschnitt sind jetzt <strong>73 von 90</strong> Vorschlägen gebaut, 5 halb, 11 offen; einer ist anders gelöst. Neu: <strong>Vorlagen</strong> für fünf wiederkehrende Clip-Formen, die <strong>Trockenprüfung</strong> (alle Fehler einer Schnittliste in einem Lauf, dazu drei Sekunden echter Bauversuch), <strong>drei Hook-Fassungen</strong> je Liste mit getrennten Kennungen, und die <strong>Herkunft</strong> der Rohclips als Lernmerkmal.<br><br><strong>Stil C fiel an vier Stellen still heraus.</strong> Lernen, Umsatzzuordnung, Wochengrenze je Produkt und Wochenbericht verbanden Beitrag und Produkt über das Briefing. Ein handgeschnittener Clip hat keins. Jeder Stil-C-Beitrag hätte also <em>keinen Umsatz zugeordnet</em> bekommen und nie etwas zum Lernen beigetragen, ohne jede Fehlermeldung. Betroffen waren genau die Videos, die tatsächlich gemacht werden. Behoben; drei neue Datenbankproben prüfen es gegen die alte Abfrage, sie laufen, sobald Neon wieder erreichbar ist.<br><br><strong>Der Bot fand still nichts mehr.</strong> Die Suchmaschine liefert den Seitentext seit kurzem nur noch bei der gründlichen Suche. Ohne ihn fehlen Likes und Beschreibung, und die Vorprüfung verwirft still. Jetzt wird die gründliche Suche angefragt, und fehlt der Text trotzdem, meldet der Lauf das. Außerdem trägt jede geladene Datei jetzt ihre TikTok-Kennung im Namen, 35 vorhandene sind nachgetragen.<br><br>Dazu: Das Dashboard zeigt, <strong>wie viele Tage der freigegebene Vorrat reicht</strong>. Eine tägliche Warnmail geht nur im Livebetrieb raus, damit der Trockenlauf niemanden weckt. Eine unter PowerShell gespeicherte Schnittliste (UTF-8 mit BOM) galt als „kein gültiges JSON“, jetzt nicht mehr.<br><br><strong>Noch nicht committet.</strong></p>
+          <p>Aus dem Papier zum Videoschnitt sind jetzt <strong>73 von 90</strong> Vorschlägen gebaut, 5 halb, 11 offen; einer ist anders gelöst. Neu: <strong>Vorlagen</strong> für fünf wiederkehrende Clip-Formen, die <strong>Trockenprüfung</strong> (alle Fehler einer Schnittliste in einem Lauf, dazu drei Sekunden echter Bauversuch), <strong>drei Hook-Fassungen</strong> je Liste mit getrennten Kennungen, und die <strong>Herkunft</strong> der Rohclips als Lernmerkmal.<br><br><strong>Stil C fiel an vier Stellen still heraus.</strong> Lernen, Umsatzzuordnung, Wochengrenze je Produkt und Wochenbericht verbanden Beitrag und Produkt über das Briefing. Ein handgeschnittener Clip hat keins. Jeder Stil-C-Beitrag hätte also <em>keinen Umsatz zugeordnet</em> bekommen und nie etwas zum Lernen beigetragen, ohne jede Fehlermeldung. Betroffen waren genau die Videos, die tatsächlich gemacht werden. Behoben; drei neue Datenbankproben prüfen es gegen die alte Abfrage, sie laufen, sobald Neon wieder erreichbar ist.<br><br><strong>Der Bot fand still nichts mehr.</strong> Die Suchmaschine liefert den Seitentext seit kurzem nur noch bei der gründlichen Suche. Ohne ihn fehlen Likes und Beschreibung, und die Vorprüfung verwirft still. Jetzt wird die gründliche Suche angefragt, und fehlt der Text trotzdem, meldet der Lauf das. Außerdem trägt jede geladene Datei jetzt ihre TikTok-Kennung im Namen, 35 vorhandene sind nachgetragen.<br><br>Dazu: Das Dashboard zeigt, <strong>wie viele Tage der freigegebene Vorrat reicht</strong>. Eine tägliche Warnmail geht nur im Livebetrieb raus, damit der Trockenlauf niemanden weckt. Eine unter PowerShell gespeicherte Schnittliste (UTF-8 mit BOM) galt als „kein gültiges JSON“, jetzt nicht mehr.<br><br>Committet als <code>943625c</code> (Bot) und <code>36c0a32</code> (Schnittkette, Stil C, Doku).</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">27. Sep</div>
+        <div class="tl-body">
+          <h3>Der Vorrat wächst von selbst — und hängt nicht mehr an TikTok allein <span class="tl-tag tag-fund">Fund</span></h3>
+          <p>Drei weitere Punkte aus dem Papier zum Videoschnitt, damit <strong>76 von 90</strong> gebaut (5 halb, 8 offen).<br><br><strong>YouTube Shorts als zweite Quelle.</strong> Macht TikTok dicht, geht der Lauf auf YouTube weiter — gefunden über die eingebaute Suche von yt-dlp, ohne Anmeldung, mit derselben Prüfkette und nur im Hochformat. Eine Sperre gilt für die Plattform, die sperrt: kein weiterer Abruf dort, umgangen wird nichts. Instagram bleibt außen vor, weil es ohne Anmeldung nichts liefert. Im echten Lauf kam ein Short für den Wasserspender durch, 10 Querformat-Treffer wurden abgewiesen.<br><br><strong>Der Bot läuft von selbst.</strong> <code>npm run tiktok:plan</code> ist zweimal je Woche fällig, zu einer gewürfelten Uhrzeit, fünf Produkte rollierend, mit Zusammenfassung per Mail. Die Windows-Aufgabe trägt man von Hand ein; das Programm gibt nur den Befehl aus.<br><br><strong>Rendern neben der Arbeit.</strong> <code>npm run marketing:rendern</code> arbeitet Schnittlisten im Hintergrund ab, zwei parallel, mit Protokoll und Windows-Benachrichtigung. Die Warteschlange fragt die Datenbank bewusst nicht im Takt; so ein Poller hätte Neon wachgehalten wie am 22.&nbsp;September.<br><br><strong>Zwei Funde beim Ausprobieren.</strong> Die erste Formatwahl für YouTube lud VP9 in einem mp4-Behälter, weil YouTube VP9-Ströme mit der Endung „mp4“ anbietet — jetzt wird nach Codec sortiert, nachgemessen h264. Und ein Einfügeskript hatte in der Suchbegriff-Regel <code>\s</code> zu <code>s</code> gemacht: Die Regel ersetzte jedes „s“ durch ein Leerzeichen, aus „water dispenser“ wurde „water di pen er“. Keine der Prüfungen fiel darauf herein, gefunden hat es ESLint an einem Steuerzeichen in derselben Zeile. Jetzt eine eigene Funktion mit Prüfung und Gegenprobe. Nebenbei: <code>ladeKonfig()</code> gab einen <code>plan</code>-Abschnitt gar nicht weiter.</p>
         </div>
       </div>
     </div>
@@ -988,7 +996,7 @@
           <div class="mark" style="background:var(--green);border-color:var(--green);color:var(--card);">✓</div>
           <div class="body">
             <h4>Schnittlisten-Vorlagen fertig bauen — 9 Prüfungen warten auf Code <span class="who who-me">Erledigt</span></h4>
-            <p>In <code>Marketing/tests/test_stil_c.py</code> stehen seit dem 25.&nbsp;September neun Prüfungen für <code>vorlage()</code>, <code>hook_varianten()</code>, <code>trockenpruefung()</code> und <code>variantenname()</code>. Diese Funktionen gibt es in <code>style_c_schnittliste.py</code> nicht, auch in keinem anderen Arbeitsordner. Die Umsetzung ist also nie gespeichert worden oder verloren gegangen. Auf deinen Wunsch trotzdem committet, damit nichts mehr lokal herumliegt.<br><br><strong>Am 26.&nbsp;September gegen die vorhandenen Prüfungen gebaut</strong> (noch nicht committet). Alle zehn roten Prüfungen sind grün; die Befehle aus <code>SCHNITT.md</code> laufen so, wie sie dort stehen.</p>
+            <p>In <code>Marketing/tests/test_stil_c.py</code> stehen seit dem 25.&nbsp;September neun Prüfungen für <code>vorlage()</code>, <code>hook_varianten()</code>, <code>trockenpruefung()</code> und <code>variantenname()</code>. Diese Funktionen gibt es in <code>style_c_schnittliste.py</code> nicht, auch in keinem anderen Arbeitsordner. Die Umsetzung ist also nie gespeichert worden oder verloren gegangen. Auf deinen Wunsch trotzdem committet, damit nichts mehr lokal herumliegt.<br><br><strong>Am 26.&nbsp;September gegen die vorhandenen Prüfungen gebaut</strong> (committet als <code>36c0a32</code>). Alle zehn roten Prüfungen sind grün; die Befehle aus <code>SCHNITT.md</code> laufen so, wie sie dort stehen.</p>
             <div class="wirkung">
               <dl>
                 <dt>Gebaut</dt><dd><code>trockenpruefung()</code> samt Bauversuch, fünf Vorlagen als JSON (Stil C liest sie <em>einmal</em> ein, keine zweite Liste im Code), <code>hook_varianten()</code> bis ins Rendern, <code>variantenname()</code>. Dazu <code>npm run marketing:vorlage</code> und <code>npm run marketing:pruefen</code>.</dd>
@@ -1086,13 +1094,13 @@
     <div class="pruef-banner">
       <h3>✅ Drei Monate, ein Muster</h3>
       <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen — und dieser Bericht selbst stand zehn Tage lang öffentlich im Shop, ohne dass irgendetwas darauf hingewiesen hätte.<br><br>
-      Deshalb sind die 880 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+      Deshalb sind die 916 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
     </div>
   </div>
 
   <footer>
-    Interner Fortschrittsbericht · Zeitraum 7. Juni – 26. September 2026 · Stand 26.09.2026.<br>
-    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (571 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (309 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Interner Fortschrittsbericht · Zeitraum 7. Juni – 28. September 2026 · Stand 28.09.2026.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (589 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (327 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
     Wird nach jedem abgeschlossenen Punkt fortgeschrieben. <strong>Nicht öffentlich:</strong> seit dem 7.&nbsp;September blockt die Datei-Freigabe interne HTML-Dokumente im Wurzelverzeichnis — diese Seite ist unter <code>maiosshop.com</code> nicht abrufbar.<br>
     Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
   </footer>

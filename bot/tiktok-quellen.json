@@ -7,6 +7,11 @@
     "schwelle": 0.5,
     "_max_downloads": "Harte Obergrenze je Lauf. Ueberschreibbar mit --max.",
     "max_downloads": 5,
+    "_plattformen": "Woher Material kommen darf, in dieser Reihenfolge (Punkt 03). YouTube Shorts springt ein, wenn die TikTok-Suche nichts mehr hergibt oder TikTok blockt — eine Sperre gilt nur fuer die Plattform, die sperrt. Von YouTube nur Hochformat bis 180 s. Instagram geht ohne Anmeldung nicht und ist deshalb keine Quelle. Nur TikTok: [\"tiktok\"].",
+    "plattformen": [
+      "tiktok",
+      "youtube"
+    ],
     "max_kandidaten_je_quelle": 20,
     "_max_anfragen": "Harte Obergrenze fuer yt-dlp-Aufrufe je Lauf. Verhindert, dass ein Durchgang ueber 40 Produkte hunderte Anfragen an TikTok stellt.",
     "max_anfragen": 60,

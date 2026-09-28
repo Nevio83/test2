@@ -5602,3 +5602,353 @@ test('eine Datei mit fremder Pruefsumme wird nicht umbenannt', () => {
   const falscheId = herkunftAusName('01_wasserspender_14s_stil-b_7300000000000000071.mp4').video_id;
   assert.equal(falscheId, '7300000000000000071', 'genau diese ID haette sie faelschlich bekommen');
 });
+
+
+// ── Laeufe im Zeitplan (Punkt 06) ────────────────────────────────────
+
+const {
+  planlauf, planFaellig, naechsterPlanlauf, waehlePlanProdukte,
+  ladePlan, PLAN_STANDARD, sendePlanMail, aufgabeBefehl,
+} = require('./tiktok-video-sync.js');
+
+const PLAN_PRODUKTE = [1, 2, 3, 4, 5, 6, 7].map((id) => ({ id, name: `Produkt ${id}` }));
+
+test('Planlauf: ohne Zustand faellig, danach erst zum naechsten Termin', () => {
+  assert.equal(planFaellig({ laeufe: [] }, new Date('2026-09-27T10:00:00Z')), true,
+    'wer den Plan einrichtet, will ihn laufen sehen');
+  const zustand = { naechster_lauf: '2026-09-30T12:00:00.000Z' };
+  assert.equal(planFaellig(zustand, new Date('2026-09-30T11:59:00Z')), false);
+  assert.equal(planFaellig(zustand, new Date('2026-09-30T12:00:00Z')), true);
+});
+
+test('Planlauf: zweimal je Woche, Uhrzeit gewuerfelt zwischen 10 und 21 Uhr', () => {
+  const ab = new Date(2026, 8, 28, 15, 0);          // Montag, 15 Uhr Ortszeit
+  const frueh = naechsterPlanlauf(ab, PLAN_STANDARD, () => 0);
+  const spaet = naechsterPlanlauf(ab, PLAN_STANDARD, () => 0.999);
+  assert.equal(frueh.getHours(), 10);
+  assert.equal(spaet.getHours(), 21);
+  assert.notEqual(frueh.getTime(), spaet.getTime(), 'zwei Wuerfe, zwei Zeiten — kein festes Muster');
+  const tage = (d) => (d.getTime() - ab.getTime()) / 86400000;
+  assert.ok(tage(frueh) > 2.5 && tage(spaet) < 4.5, `Abstand ${tage(frueh)}..${tage(spaet)} Tage`);
+  // GEGENPROBE: einmal je Woche heisst eine Woche Abstand, nicht dreieinhalb Tage.
+  assert.ok(tage(naechsterPlanlauf(ab, { ...PLAN_STANDARD, pro_woche: 1 }, () => 0.5)) > 6);
+});
+
+test('Planlauf: rollierend durchs Sortiment statt immer dasselbe Produkt', () => {
+  const index = { eintraege: [] };
+  const plan = { ...PLAN_STANDARD, produkte_je_lauf: 3 };
+  const erster = waehlePlanProdukte(index, PLAN_PRODUKTE, { zuletzt_dran: {} }, plan).map((p) => p.id);
+  assert.deepEqual(erster, [1, 2, 3]);
+  const zuletzt = Object.fromEntries(erster.map((id) => [id, '2026-09-27T10:00:00Z']));
+  const zweiter = waehlePlanProdukte(index, PLAN_PRODUKTE, { zuletzt_dran: zuletzt }, plan).map((p) => p.id);
+  assert.deepEqual(zweiter, [4, 5, 6], 'wer zuletzt dran war, stellt sich hinten an');
+
+  // Ein Produkt mit vollem Bestand kommt gar nicht erst dran.
+  const voll = { eintraege: Array.from({ length: STANDARD.ziel_clips_je_produkt }, () => ({ produkt_id: 1 })) };
+  assert.ok(!waehlePlanProdukte(voll, PLAN_PRODUKTE, { zuletzt_dran: {} }, plan).some((p) => p.id === 1));
+});
+
+function planOpt(daten, extra = {}) {
+  const aufrufe = [];
+  const mails = [];
+  const standardErgebnis = () => ({ geladen: 1, geprueft: 4, abgelehnt: 3, sperren: 0, fehler: 0, grund: 'Ziel erreicht' });
+  return {
+    aufrufe, mails,
+    opt: {
+      produkte: PLAN_PRODUKTE, konfig: {}, standard: { ...STANDARD },
+      datenOrdner: daten, stopDatei: path.join(daten, 'kein-STOP'), env: {},
+      melde: still, jetzt: () => new Date('2026-09-27T10:00:00Z'), zufall: () => 0.5,
+      sendeMail: async (text) => { mails.push(text); return { verschickt: false, grund: 'Test' }; },
+      interaktivFn: async (o) => {
+        const antworten = [await o.frage(), await o.frage(), await o.frage(), await o.frage()];
+        aufrufe.push(antworten);
+        const ergebnis = (extra.ergebnis || standardErgebnis)(antworten);
+        Object.assign(o.bericht, ergebnis);
+        return ergebnis.geladen > 0 ? 0 : 1;
+      },
+      ...extra.opt,
+    },
+  };
+}
+
+test('Planlauf: gibt dieselben Antworten wie ein Mensch an der Konsole', async () => {
+  const daten = tempOrdner();
+  const { opt, aufrufe, mails } = planOpt(daten);
+  const code = await planlauf(opt);
+  assert.equal(code, 0);
+  assert.equal(aufrufe.length, 5, 'fuenf Produkte je Lauf');
+  assert.deepEqual(aufrufe[0], ['1', '3', '2', '1'], 'Produkt, Anzahl, Englisch, nur Musik');
+  assert.equal(mails.length, 1);
+  assert.match(mails[0], /geladen 5 · geprueft 20 · abgelehnt 15/);
+  assert.match(mails[0], /rechte_geprueft: false/);
+
+  const zustand = ladePlan(daten);
+  assert.ok(new Date(zustand.naechster_lauf) > new Date('2026-09-30T00:00:00Z'), 'naechster Termin in der Zukunft');
+  assert.equal(Object.keys(zustand.zuletzt_dran).length, 5);
+
+  // Zweiter Aufruf kurz danach: nicht faellig, nichts passiert.
+  const zweiter = planOpt(daten);
+  assert.equal(await planlauf(zweiter.opt), 0);
+  assert.equal(zweiter.aufrufe.length, 0, 'nicht faellig heisst: kein einziger Abruf');
+  // GEGENPROBE: --sofort laeuft trotzdem.
+  const sofort = planOpt(daten, { opt: { sofort: true } });
+  await planlauf(sofort.opt);
+  assert.equal(sofort.aufrufe.length, 5);
+});
+
+test('Planlauf: blockt TikTok, endet der ganze Lauf — nicht nur das Produkt', async () => {
+  const daten = tempOrdner();
+  const { opt, aufrufe, mails } = planOpt(daten, {
+    ergebnis: ([id]) => (id === '2'
+      ? { geladen: 0, sperren: 1, gesperrt: true, grund: 'TikTok blockt: HTTP 429' }
+      : { geladen: 1, grund: 'Ziel erreicht' }),
+  });
+  const code = await planlauf(opt);
+  assert.equal(code, 1);
+  assert.deepEqual(aufrufe.map((a) => a[0]), ['1', '2'], 'nach der Sperre kein weiteres Produkt');
+  assert.match(mails[0], /vorzeitig beendet: TikTok blockt/);
+  // Die uebrigen kommen beim naechsten Mal zuerst dran.
+  const naechste = waehlePlanProdukte({ eintraege: [] }, PLAN_PRODUKTE, ladePlan(daten)).map((p) => p.id);
+  assert.deepEqual(naechste.slice(0, 3), [3, 4, 5]);
+});
+
+test('Planlauf: Notaus verhindert jeden Abruf', async () => {
+  const daten = tempOrdner();
+  const stop = path.join(daten, 'STOP');
+  fs.writeFileSync(stop, '');
+  const { opt, aufrufe } = planOpt(daten, { opt: { stopDatei: stop } });
+  assert.equal(await planlauf(opt), 1);
+  assert.equal(aufrufe.length, 0);
+});
+
+test('Planlauf: interaktiv liefert den Bericht, und eine Sperre steht darin', async () => {
+  const daten = tempOrdner();
+  const videos = tempOrdner();
+  const ytdlp = async () => ({ code: 1, stdout: '',
+    stderr: 'ERROR: Unable to download webpage: HTTP Error 429: Too Many Requests' });
+  const antworten = ['10', '2', '2', '1'];
+  const bericht = {};
+  await interaktiv({
+    ytdlp, wurzel: path.dirname(videos), produkte: [PRODUKT],
+    konfig: { produkte: { 10: { videos: [
+      'https://www.tiktok.com/@a/video/7300000000000000001',
+      'https://www.tiktok.com/@b/video/7300000000000000002',
+    ] } } },
+    standard: { ...STANDARD, bei_sperre_abbrechen: true },
+    datenOrdner: daten, videoOrdner: videos, gitignore: path.join(daten, '.gitignore'),
+    stopDatei: path.join(daten, 'kein-STOP'), env: {},
+    frage: async () => antworten.shift(), jetzt: () => '2026-09-27T10:00:00.000Z',
+    melde: still, warte: async () => {}, impersonation: nachahmungDa, bogen: false,
+    bericht,
+  });
+  assert.equal(bericht.geladen, 0);
+  assert.equal(bericht.gesperrt, true, 'ohne dieses Feld liefe der Planlauf ins naechste Produkt');
+  assert.match(bericht.grund, /blockt|hintereinander/);
+});
+
+test('Planlauf: Mail nur mit Schluessel und Adresse, und nie ein Absturz', async () => {
+  assert.equal((await sendePlanMail('x', { env: {} })).verschickt, false);
+  const gesendet = [];
+  const ok = await sendePlanMail('Planlauf\ngeladen 3', {
+    env: { RESEND_API_KEY: 're_test', ADMIN_EMAIL: 'a@b.de' },
+    abruf: async (url, init) => { gesendet.push({ url, body: JSON.parse(init.body) }); return { ok: true }; },
+  });
+  assert.equal(ok.verschickt, true);
+  assert.equal(gesendet[0].url, 'https://api.resend.com/emails');
+  assert.deepEqual(gesendet[0].body.to, ['a@b.de']);
+  // GEGENPROBE: Ein Netzfehler wird gemeldet, nicht geworfen — sonst endete ein
+  // erfolgreicher Planlauf mit einem Absturz, nur weil die Mail nicht rausging.
+  const kaputt = await sendePlanMail('x', {
+    env: { RESEND_API_KEY: 're_test', ADMIN_EMAIL: 'a@b.de' },
+    abruf: async () => { throw new Error('offline'); },
+  });
+  assert.deepEqual(kaputt, { verschickt: false, grund: 'offline' });
+});
+
+test('Planlauf: die Aufgabe schreibt ihr Protokoll nicht unter "Dokumente"', () => {
+  const befehl = aufgabeBefehl('C:\\Users\\x\\Documents\\Maios', 'C:\\tiktok-rohmaterial\\tiktok-quellen');
+  assert.match(befehl, /schtasks \/Create \/SC HOURLY/);
+  assert.match(befehl, /npm run tiktok:plan/);
+  assert.ok(befehl.includes('C:\\tiktok-rohmaterial\\tiktok-quellen\\planlauf.log'));
+  assert.ok(!/Documents[^"]*planlauf\.log/.test(befehl));
+});
+
+
+// ── Plattformen (Punkt 03) ───────────────────────────────────────────
+
+const {
+  plattformAus, youtubeId, dateiKennung, formatArgumente, sucheYoutube, PLATTFORMEN,
+} = require('./tiktok-video-sync.js');
+
+test('Plattform: Adresse erkennen, Kennung fuer den Dateinamen', () => {
+  assert.equal(plattformAus('https://www.tiktok.com/@a/video/7300000000000000001'), 'tiktok');
+  assert.equal(plattformAus('https://www.youtube.com/watch?v=JdvqZD_KNn0'), 'youtube');
+  assert.equal(plattformAus('https://youtu.be/JdvqZD_KNn0'), 'youtube');
+  assert.equal(plattformAus('https://www.instagram.com/reel/abc/'), 'instagram');
+  assert.equal(PLATTFORMEN.instagram.suche, false, 'Instagram nur mit Anmeldung — bewusst keine Quelle');
+  assert.equal(youtubeId('https://www.youtube.com/shorts/JdvqZD_KNn0'), 'JdvqZD_KNn0');
+
+  assert.equal(dateiKennung({ url: 'https://www.youtube.com/watch?v=JdvqZD_KNn0', id: 'JdvqZD_KNn0' }),
+    'yt-JdvqZD_KNn0');
+  assert.equal(dateiKennung({ url: 'https://www.tiktok.com/@a/video/7300000000000000001', id: '7300000000000000001' }),
+    '7300000000000000001');
+  // GEGENPROBE: Der alte Ziffernfilter haette aus der YouTube-Kennung "0" gemacht —
+  // eine Datei, die nach TikTok aussieht und auf kein Video zeigt.
+  assert.equal('JdvqZD_KNn0'.replace(/[^0-9]/g, ''), '0');
+});
+
+test('Plattform: YouTube-Namen tragen ihre Herkunft wie TikTok-Namen', () => {
+  const h = herkunftAusName('03_elektrischer-wasserspender_41s_stil-b_yt-JdvqZD_KNn0.mp4');
+  assert.equal(h.sagtHerkunft, true);
+  assert.equal(h.plattform, 'youtube');
+  assert.equal(h.video_id, 'JdvqZD_KNn0');
+  assert.equal(herkunftAusName('01_x_14s_stil-b_7410474104903453984.mp4').plattform, 'tiktok');
+  // Ohne Kennung bleibt es beim alten Befund: Die Form sagt nichts ueber die Herkunft.
+  assert.equal(herkunftAusName('01_x_14s_stil-b.mp4').sagtHerkunft, false);
+});
+
+test('Plattform: YouTube wird als mp4 geladen, TikTok wie bisher', () => {
+  const yt = formatArgumente('https://www.youtube.com/watch?v=JdvqZD_KNn0');
+  assert.ok(yt.includes('--merge-output-format') && yt.includes('mp4'));
+  // h264 per Codec-Sortierung, nicht per Endung: [ext=mp4] lud beim echten Lauf VP9.
+  assert.ok(yt.includes('-S') && yt[yt.indexOf('-S') + 1].startsWith('vcodec:h264'));
+  assert.ok(!yt.some((a) => a.includes('[ext=mp4]')), 'die Endung sagt nichts ueber den Codec');
+  assert.deepEqual(formatArgumente('https://www.tiktok.com/@a/video/1'), [],
+    'an den TikTok-Abrufen aendert sich nichts');
+});
+
+test('Plattform: die YouTube-Suche nimmt nur kurze Videos', async () => {
+  const zeilen = [
+    { id: 'AAAAAAAAAAA', title: 'Wasserspender kurz', duration: 41, view_count: 900, channel: 'k1' },
+    { id: 'BBBBBBBBBBB', title: 'Wasserspender Testbericht', duration: 600, view_count: 90000, channel: 'k2' },
+    { id: 'kaputt', title: 'keine Kennung' },
+  ].map((z) => JSON.stringify(z)).join('\n');
+  let argumente;
+  const ergebnis = await sucheYoutube({
+    ytdlp: async (a) => { argumente = a; return { code: 0, stdout: zeilen, stderr: '' }; },
+    begriff: 'water dispenser', anzahl: 5, maxDauer: 180,
+  });
+  assert.equal(argumente[argumente.length - 1], 'ytsearch5:water dispenser');
+  assert.deepEqual(ergebnis.adressen, ['https://www.youtube.com/watch?v=AAAAAAAAAAA']);
+
+  const gesperrt = await sucheYoutube({
+    ytdlp: async () => ({ code: 1, stdout: '', stderr: 'ERROR: Sign in to confirm you\'re not a bot' }),
+    begriff: 'x',
+  });
+  assert.equal(gesperrt.gesperrt, true, 'eine Anmeldeaufforderung ist eine Sperre, kein Fehler');
+});
+
+test('Plattform: ein YouTube-Kanal wird nie zu einem TikTok-Profil', () => {
+  const { creatorQuellen } = require('./tiktok-video-sync.js');
+  const index = { eintraege: [
+    { produkt_id: 10, creator: 'Zone Industry', quelle_url: 'https://www.youtube.com/watch?v=AAAAAAAAAAA' },
+    { produkt_id: 10, creator: 'Zone Industry', quelle_url: 'https://www.youtube.com/watch?v=BBBBBBBBBBB' },
+    { produkt_id: 10, creator: 'smart_produkt', quelle_url: 'https://www.tiktok.com/@smart_produkt/video/1' },
+    { produkt_id: 10, creator: 'smart_produkt', quelle_url: 'https://www.tiktok.com/@smart_produkt/video/2' },
+  ] };
+  const quellen = creatorQuellen(index);
+  assert.deepEqual(quellen.map((q) => q.url), ['https://www.tiktok.com/@smart_produkt'],
+    'hier stand vorher tiktok.com/@Zone Industry — ein fremdes Konto');
+});
+
+function plattformLauf(plattformen, {
+  tiktokMeldung = 'ERROR: Unable to download webpage: HTTP Error 429: Too Many Requests',
+  tiktokVideos = ['https://www.tiktok.com/@a/video/7300000000000000001'],
+} = {}) {
+  const daten = tempOrdner();
+  const videos = tempOrdner();
+  const aufrufe = [];
+  const hoch = { id: 'HHHHHHHHHHH', webpage_url: 'https://www.youtube.com/watch?v=HHHHHHHHHHH',
+    title: 'Elektrischer Wasserspender am Schreibtisch', duration: 30, width: 1080, height: 1920,
+    uploader: 'kanal', channel_url: 'https://www.youtube.com/channel/UCx', track: 'Ein Lied', artist: 'Jemand' };
+  const quer = { ...hoch, id: 'QQQQQQQQQQQ', webpage_url: 'https://www.youtube.com/watch?v=QQQQQQQQQQQ',
+    width: 1920, height: 1080 };
+  const ytdlp = async (a) => {
+    aufrufe.push(a);
+    const letztes = a[a.length - 1];
+    if (a.includes('--flat-playlist')) {
+      return { code: 0, stdout: [quer, hoch].map((v) => JSON.stringify({ id: v.id, title: v.title, duration: v.duration })).join('\n'), stderr: '' };
+    }
+    if (/tiktok\.com/.test(letztes)) {
+      return { code: 1, stdout: '', stderr: tiktokMeldung };
+    }
+    if (a.includes('--dump-json') && !a.includes('-o')) {
+      const v = [hoch, quer].find((x) => x.webpage_url === letztes);
+      return { code: 0, stdout: v ? JSON.stringify(v) : '', stderr: '' };
+    }
+    const ziel = a[a.indexOf('-o') + 1].replace('%(ext)s', 'mp4');
+    fs.writeFileSync(ziel, 'video-' + path.basename(ziel));
+    return { code: 0, stdout: '', stderr: '' };
+  };
+  const antworten = ['10', '1', '1', '1'];
+  const bericht = {};
+  const lauf = interaktiv({
+    ytdlp, wurzel: path.dirname(videos), produkte: [PRODUKT],
+    konfig: { produkte: { 10: { videos: tiktokVideos } } },
+    standard: { ...STANDARD, plattformen, bei_sperre_abbrechen: true },
+    datenOrdner: daten, videoOrdner: videos, gitignore: path.join(daten, '.gitignore'),
+    stopDatei: path.join(daten, 'kein-STOP'), env: {},
+    frage: async () => antworten.shift(), jetzt: () => '2026-09-27T10:00:00.000Z',
+    melde: still, warte: async () => {}, impersonation: nachahmungDa, bogen: false, bericht,
+  });
+  return { lauf, aufrufe, daten, videos, bericht };
+}
+
+test('Plattform: blockt TikTok, kommt das Material von YouTube — ohne TikTok erneut zu fragen', async () => {
+  const { lauf, aufrufe, daten, videos, bericht } = plattformLauf(['tiktok', 'youtube']);
+  assert.equal(await lauf, 0);
+  const tiktokAbrufe = aufrufe.filter((a) => /tiktok\.com/.test(a[a.length - 1]));
+  assert.equal(tiktokAbrufe.length, 1, 'nach der Sperre kein weiterer TikTok-Abruf');
+
+  const [eintrag] = ladeIndex(daten).eintraege;
+  assert.equal(eintrag.plattform, 'youtube');
+  assert.equal(eintrag.video_id, 'HHHHHHHHHHH', 'das Querformat-Video wurde abgewiesen');
+  assert.equal(eintrag.creator_url, 'https://www.youtube.com/channel/UCx');
+  assert.equal(eintrag.rechte_geprueft, false);
+  assert.match(geladeneVideos(videos)[0], /_stil-b_yt-HHHHHHHHHHH\.mp4$/);
+  assert.equal(bericht.gesperrt, true, 'der Planlauf erfaehrt trotzdem von der TikTok-Sperre');
+});
+
+test('Plattform: GEGENPROBE — nur TikTok eingestellt, endet der Lauf an der Sperre', async () => {
+  const { lauf, aufrufe, daten } = plattformLauf(['tiktok']);
+  assert.equal(await lauf, 1);
+  assert.equal(aufrufe.filter((a) => a.includes('--flat-playlist')).length, 0, 'YouTube wurde nicht gefragt');
+  assert.equal(ladeIndex(daten).eintraege.length, 0);
+});
+
+test('Plattform: antwortet TikTok fuenfmal nicht, geht es auf YouTube weiter', async () => {
+  // Die echte Meldung, die in KEIN Sperrmuster passt — erkannt wird sie am Muster.
+  const videos = [1, 2, 3, 4, 5, 6].map((n) => `https://www.tiktok.com/@a/video/730000000000000000${n}`);
+  const { lauf, aufrufe, daten, bericht } = plattformLauf(['tiktok', 'youtube'], {
+    tiktokMeldung: 'ERROR: [TikTok] 7300000000000000001: Unexpected response from webpage request',
+    tiktokVideos: videos,
+  });
+  assert.equal(await lauf, 0);
+  assert.equal(aufrufe.filter((a) => /tiktok.com/.test(a[a.length - 1])).length, 5,
+    'nach fuenf Fehlschlaegen kein sechster TikTok-Abruf');
+  assert.equal(ladeIndex(daten).eintraege[0].plattform, 'youtube');
+  assert.equal(bericht.gesperrt, true, 'der Planlauf muss trotzdem aufhoeren');
+
+  // GEGENPROBE: nur TikTok — dann endet der Lauf nach den fuenf, wie bisher.
+  const nurTiktok = plattformLauf(['tiktok'], {
+    tiktokMeldung: 'ERROR: [TikTok] 7300000000000000001: Unexpected response from webpage request',
+    tiktokVideos: videos,
+  });
+  assert.equal(await nurTiktok.lauf, 1);
+  assert.match(nurTiktok.bericht.grund, /hintereinander gescheitert/);
+});
+
+test('Plattform: der YouTube-Suchbegriff bleibt ganz — kein "s" verschwindet', async () => {
+  const { youtubeBegriff } = require('./tiktok-video-sync.js');
+  assert.equal(youtubeBegriff('tiktok Elektrischer Wasserspender'), 'Elektrischer Wasserspender');
+  assert.equal(youtubeBegriff('water dispenser desk'), 'water dispenser desk');
+  assert.equal(youtubeBegriff('TikTokShop gadgets'), 'TikTokShop gadgets', 'nur das ganze Wort');
+  // GEGENPROBE: Die zerschossene erste Fassung ersetzte jedes "s".
+  assert.equal('water dispenser desk'.replace(/s+/g, ' ').trim(), 'water di pen er de k');
+
+  // Und so kommt er wirklich bei yt-dlp an:
+  const { lauf, aufrufe } = plattformLauf(['tiktok', 'youtube']);
+  await lauf;
+  const suche = aufrufe.find((a) => a.includes('--flat-playlist'));
+  assert.equal(suche[suche.length - 1], `ytsearch20:${PRODUKT.name}`);
+});

@@ -435,7 +435,7 @@
     </div>
 
     <div class="pruef-banner" style="background:var(--blue-dim);border-color:color-mix(in srgb, var(--blue) 32%, transparent);">
-      <h3>Stand am 26.09., abends: 73 gebaut, 5 halb, 11 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <h3>Stand am 27.09.: 76 gebaut, 5 halb, 8 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
       <p class="warum" style="border-left:3px solid var(--green);padding-left:12px;">
         <b>Eine Berichtigung zuerst.</b> Beim Nachzählen am Mittag standen
         <strong>48</strong> und <strong>58</strong> auf „gebaut", weil ihre Prüfungen im Repo lagen.
@@ -454,6 +454,9 @@
         <strong>48</strong> (Trockenprüfung) ·
         <strong>58</strong> (Hook-Varianten bis ins Rendern) ·
         <strong>59</strong> (Herkunft als Lernmerkmal — und Stil C fällt nicht mehr aus Lernen, Umsatz und Wochengrenze).
+        <b>Am 27.09. dazu:</b> <strong>03</strong> (YouTube Shorts als zweite Quelle) ·
+        <strong>06</strong> (Planlauf zweimal je Woche) ·
+        <strong>50</strong> (Rendern im Hintergrund).
         Nebenbei: Der Ausblende-Test maß fest bei 9,6 s, seit der Endkarte endet das Video bei 12,5 s —
         die Ausblendung war da (−29,3 dB gegen −13,1 dB), der Test sah an die falsche Stelle.
       </p>
@@ -465,10 +468,7 @@
         <strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank, und die ist gerade gesperrt) ·
         <strong>35</strong> und <strong>39</strong> (Produkt-Sichtbarkeit, Schnitt auf den Takt — beide brauchen
         eine neue Abhängigkeit, erst nach Rückfrage) ·
-        <strong>03</strong> andere Plattformen ·
-        <strong>06</strong> Läufe im Zeitplan ·
-        <strong>11</strong> Kommentare mitlesen (mehr Abrufe bei TikTok — mit der Sperrregel abzuwägen) ·
-        <strong>50</strong> Rendern im Hintergrund.
+        <strong>11</strong> Kommentare mitlesen (mehr Abrufe bei TikTok — mit der Sperrregel abzuwägen).
       </p>
       <p class="warum" style="margin-top:10px;">
         <b>Halb</b> heißt: der Weg steht, der letzte Schritt fehlt.
@@ -621,10 +621,11 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">03</span> Nicht nur TikTok als Quelle <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
+        <h4><span class="nr">03</span> Nicht nur TikTok als Quelle <span class="chip p-niedrig">gebaut am 27.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
         <p class="warum"><b>Warum</b> TikTok ist die Plattform mit der härtesten Gegenwehr, und der Bot kennt sie genau: nach rund <strong>50 Abrufen ohne Pause</strong> antwortete TikTok auch auf eine Adresse nicht mehr, die eine Stunde vorher noch ging; <strong>fünf Fehlschläge hintereinander</strong> gelten als „die Gegenseite redet nicht mehr mit uns". Instagram Reels und YouTube Shorts zeigen oft dasselbe Material, teils vom selben Creator, mit deutlich weniger davon.</p>
         <p class="tun"><b>Was tun</b> yt-dlp kann beide. Quellenliste um ein Feld <code>plattform</code>, Fehlerbehandlung je Plattform getrennt, Index um die Plattform ergänzen — sonst wird derselbe Clip zweimal geladen. Die Doppelgänger-Erkennung aus Punkt 04 ist dafür die Voraussetzung, nicht die Kür.</p>
         <p class="bringt"><b>Bringt</b> Wenn TikTok für zwei Stunden dichtmacht, steht die Kette nicht. Und Shorts liefert oft höhere Auflösungen desselben Clips — bei 1080×1920 als Ziel ist das direkt Qualität.</p>
+        <p class="tun"><b>Gebaut am 27.09. — YouTube Shorts, Instagram bewusst nicht.</b> Eingeschaltet in <code>tiktok-quellen.json</code> (<code>"plattformen": ["tiktok", "youtube"]</code>). YouTube springt ein, wenn die TikTok-Suche nichts mehr hergibt oder TikTok blockt; gesucht wird mit denselben Begriffen über die eingebaute Suche von yt-dlp, ohne Anmeldung. Danach dieselbe Prüfkette, dazu nur Hochformat bis 180 s. <b>Eine Sperre gilt für die Plattform, die sperrt:</b> kein weiterer Abruf dort in diesem Lauf, der Rest geht auf der anderen weiter — umgangen wird nichts. Im Nachweis stehen <code>plattform</code> und die Kanaladresse, im Dateinamen <code>_yt-&lt;kennung&gt;</code>. Doppelgänger über die Plattformen hinweg fängt der Bildfingerabdruck aus Punkt 04. Echter Lauf: ein Short für den Wasserspender geladen, 10 Querformat-Treffer abgewiesen. Dabei gefunden: <code>[ext=mp4]</code> lud VP9 im mp4-Behälter — jetzt wird nach Codec sortiert, nachgemessen h264. Instagram liefert ohne Anmeldung fast nichts und bleibt deshalb außen vor.</p>
       </div>
 
       <div class="vb-item">
@@ -645,10 +646,11 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">06</span> Der Lauf soll von selbst laufen <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">06</span> Der Lauf soll von selbst laufen <span class="chip p-niedrig">gebaut am 27.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Der Bot läuft, wenn jemand ihn startet. Rohmaterial sammelt sich damit stoßweise an — und zwar genau dann, wenn ohnehin gerade an Videos gearbeitet wird. Gebraucht wird es umgekehrt: ein Vorrat, der schon da ist, wenn die Idee kommt.</p>
         <p class="tun"><b>Was tun</b> Zwei Läufe pro Woche zu unauffälligen Zeiten, gestreut über die Produkte — nicht alle 40 auf einmal, sondern rollierend fünf je Lauf. Ergebnis als kurze Zusammenfassung per Mail: wie viele gefunden, wie viele abgelehnt, wie viele geladen, welche Fehler.</p>
         <p class="bringt"><b>Bringt</b> Ein wachsender Vorrat statt eines Vorrats, der nur beim Hinsehen entsteht. Und die Streuung über die Woche sieht für TikTok deutlich weniger nach Bot aus als 40 Produkte in zehn Minuten.</p>
+        <p class="tun"><b>Gebaut am 27.09.</b> <code>npm run tiktok:plan</code> läuft nur, wenn fällig: zweimal je Woche zu einer gewürfelten Uhrzeit zwischen 10 und 21 Uhr, fünf Produkte mit Lücke, zuerst die, die am längsten nicht dran waren. Geladen wird über denselben Weg wie <code>npm run tiktok</code>. Blockt TikTok, endet der ganze Planlauf. Die Zusammenfassung geht ins Protokoll und, wenn eingerichtet, per Mail. Die Windows-Aufgabe legt das Programm <em>nicht</em> selbst an — <code>--aufgabe</code> gibt den <code>schtasks</code>-Befehl aus. Nebenbei gefunden: <code>ladeKonfig()</code> gab nur <code>standard</code> und <code>produkte</code> weiter; ein <code>plan</code>-Abschnitt wäre still ignoriert worden.</p>
       </div>
 
       <div class="vb-item">
@@ -1052,10 +1054,11 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">50</span> Rendern neben der Arbeit laufen lassen <span class="chip p-niedrig">Priorität niedrig</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">50</span> Rendern neben der Arbeit laufen lassen <span class="chip p-niedrig">gebaut am 27.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Rendern blockiert. Wer fünf Fassungen baut, wartet fünfmal — und wartet dabei am selben Rechner, an dem er weiterarbeiten will. Das begrenzt die Zahl der Varianten aus reiner Ungeduld, nicht aus inhaltlichen Gründen.</p>
         <p class="tun"><b>Was tun</b> Eine kleine Warteschlange: Schnittlisten in einen Ordner legen, ein Hintergrundprozess arbeitet sie ab und legt die Ergebnisse mit Protokoll daneben. Mehrere Aufträge parallel, so viele wie der Rechner verträgt. Fertigmeldung als Systembenachrichtigung oder Mail.</p>
         <p class="bringt"><b>Bringt</b> Fünf Varianten kosten nicht fünfmal Wartezeit. Das entscheidet darüber, ob Punkt 58 (drei Hook-Varianten je Clip) praktisch gemacht wird oder nur auf dem Papier steht.</p>
+        <p class="tun"><b>Gebaut am 27.09.</b> <code>npm run marketing:rendern</code> schaut alle fünf Sekunden in <code>schnittlisten/</code>, rendert offene Listen im Hintergrund (zwei parallel bei acht Kernen), legt je Liste ein Protokoll neben das Ergebnis und meldet Fertiges als Windows-Benachrichtigung. Echter Lauf mit zwei Hook-Fassungen: 34 s, danach baut ein zweiter Lauf nichts neu. <b>Die Warteschlange fragt die Datenbank nicht im Takt</b> — offen entscheidet die Zieldatei; ein Poller mit Datenbankzugriff hätte Neon wachgehalten wie am 22.09. Eine gescheiterte Liste kommt erst nach einer Änderung wieder dran.</p>
       </div>
 
       <div class="vb-item">

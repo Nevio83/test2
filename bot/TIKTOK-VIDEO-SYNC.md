@@ -326,6 +326,53 @@ node tiktok-video-sync.js --laden --schwelle 0.7    # strengere Zuordnung
 node tiktok-video-sync.js --help                    # Kurzhilfe
 ```
 
+### Läufe im Zeitplan: `npm run tiktok:plan` (Punkt 06)
+
+Der Bot lief, wenn jemand ihn startete — Material sammelte sich also genau dann,
+wenn ohnehin gerade an Videos gearbeitet wurde. Der Planlauf dreht das um:
+
+```bash
+npm run tiktok:plan                  # läuft nur, wenn fällig — sonst "nicht fällig" in Sekundenbruchteilen
+npm run tiktok:plan -- --sofort      # jetzt, egal wann der letzte war
+npm run tiktok:plan -- --aufgabe     # Befehl für die Windows-Aufgabenplanung AUSGEBEN
+```
+
+- **Zweimal je Woche**, jeweils zu einer **gewürfelten Uhrzeit zwischen 10 und
+  21 Uhr**. Ein fester Termin wäre selbst ein Muster.
+- **Fünf Produkte je Lauf, rollierend**: nur Produkte mit Lücke, und zuerst die,
+  die am längsten nicht dran waren. So bleibt der Lauf nicht jedes Mal am selben
+  Produkt ohne Material hängen.
+- Geladen wird über **denselben Weg wie `npm run tiktok`** — dieselben vier
+  Antworten, die ein Mensch an der Konsole gäbe (Produkt, Anzahl, Englisch, nur
+  Musik). Gleiche Prüfung, gleiche Schwelle, gleiche Grenzen.
+- **Blockt TikTok, endet der ganze Planlauf** — nicht nur das Produkt. Die übrigen
+  Produkte kommen beim nächsten Mal zuerst dran.
+- Am Ende eine **Zusammenfassung** (geladen · geprüft · abgelehnt · Sperren ·
+  Fehler, je Produkt eine Zeile) ins Protokoll und — wenn `RESEND_API_KEY` und
+  `TIKTOK_PLAN_EMAIL` (sonst `ADMIN_EMAIL`) gesetzt sind — per Mail. Eine
+  fehlgeschlagene Mail ist nie ein Fehlschlag des Laufs.
+- Zustand in `<Datenordner>/planlauf.json`: letzter und nächster Termin, wann
+  welches Produkt dran war, die letzten 26 Läufe.
+
+**Eingetragen wird die Aufgabe von Hand.** Das Programm legt nichts in der
+Windows-Aufgabenplanung an; `--aufgabe` gibt den `schtasks`-Befehl aus
+(stündlich — der Planlauf entscheidet selbst, ob er fällig ist). Das Protokoll
+landet im Datenordner, **nicht** unter „Dokumente": Dort blockiert der
+Ransomware-Schutz fremde Schreibzugriffe, und ein Protokoll, das nie entsteht,
+sieht aus wie ein Lauf, der nie lief. **Der allererste Aufruf ist sofort
+fällig** — wer den Plan einrichtet, will ihn laufen sehen.
+
+Einstellbar in `tiktok-quellen.json` unter `"plan"` (bis zum 27.09. kam dieser
+Abschnitt gar nicht an — `ladeKonfig()` gab nur `standard` und `produkte` weiter):
+
+| Feld | Vorgabe |
+|---|---|
+| `pro_woche` | 2 |
+| `produkte_je_lauf` | 5 |
+| `clips_je_produkt` | 3 (höchstens die Lücke) |
+| `sprache` | `en` |
+| `frueheste_stunde` / `spaeteste_stunde` | 10 / 21 |
+
 ---
 
 ## 3b. Wo die Videos liegen
@@ -1112,6 +1159,59 @@ Wortlaut.
 > später erneut versuchen; (2) veraltetes yt-dlp — `py -m pip install --upgrade
 > yt-dlp`. Beide erzeugen dieselbe Meldung, was schon einmal einen Tag gekostet
 > hat.
+
+### Zweite Quelle: YouTube Shorts (Punkt 03)
+
+TikTok ist die Plattform mit der härtesten Gegenwehr. Machte sie dicht, stand
+die ganze Kette. Seit dem 27.09. springt **YouTube Shorts** ein — eingeschaltet
+in `tiktok-quellen.json`:
+
+```json
+"plattformen": ["tiktok", "youtube"]
+```
+
+Im Code steht als Vorgabe nur `["tiktok"]`; wer die Datei nicht hat (und die
+Prüfungen), merkt keinen Unterschied.
+
+**Wann YouTube drankommt:** wenn die TikTok-Suche nichts mehr hergibt, wenn die
+Suchmaschine nicht erreichbar ist — oder wenn TikTok blockt. Gesucht wird mit
+denselben Suchbegriffen (ohne das Wort „tiktok"), über die **eingebaute Suche von
+yt-dlp** (`ytsearch20:`): keine Anmeldung, kein Suchdienst, ein Abruf je Begriff.
+Die flache Trefferliste liefert Titel, Dauer, Aufrufe und Kanal — alles über
+**180 s** fliegt vorab raus (`youtube_max_dauer_sek`), sortiert wird nach Aufrufen.
+
+**Danach gilt dieselbe Prüfkette** — Kernwort, Merkmale, Ausschlussliste, Ton,
+Hürde 8, Bildfingerabdruck. Dazu eine Zusatzregel: **von YouTube nur Hochformat**
+(`youtube_nur_hochformat`). Im ersten echten Lauf am 27.09. waren 13 der
+geprüften Treffer technisch unbrauchbar, davon 10 im Querformat — YouTube liefert
+im Querformat fast nur Testberichte.
+
+**Eine Sperre gilt für die Plattform, die sperrt.** Blockt TikTok (oder antwortet
+fünfmal hintereinander nicht), gibt es in diesem Lauf **keinen einzigen weiteren
+TikTok-Abruf**; vorgemerkte TikTok-Adressen werden verworfen, und der Lauf geht auf
+YouTube weiter. Umgangen wird nichts — eine andere Plattform ist eine andere
+Quelle. Verlangt YouTube eine Anmeldung („Sign in to confirm you're not a bot"),
+ist das ebenfalls eine Sperre. Ist keine Plattform mehr offen, endet der Lauf wie
+bisher. Der Planlauf erfährt von jeder Sperre und hört dann ganz auf.
+
+**Laden:** YouTube liefert ohne Formatwahl webm. Der erste Entwurf wählte per
+Endung (`[ext=mp4]`) — und lud beim echten Lauf **VP9 in einem mp4-Behälter**, weil
+YouTube VP9-Ströme mit der Endung „mp4" anbietet. Jetzt wird nach Codec sortiert
+(`-S vcodec:h264,res:1920,acodec:m4a`, zusammengefügt zu mp4); nachgemessen am
+selben Clip: h264, 1080×1920.
+
+**Im Nachweis:** `plattform: "youtube"`, `creator_url` (die Kanaladresse — aus
+der Videoadresse nicht ableitbar), und im Dateinamen `…_stil-b_yt-<kennung>.mp4`.
+YouTube-Kennungen sind nicht numerisch; der alte Ziffernfilter hätte aus
+`JdvqZD_KNn0` eine „0" gemacht. Ein YouTube-Kanal wird **nie** zu einem
+TikTok-Profil: Vorher baute `creatorProfil()` aus jedem Namen eine
+`tiktok.com/@…`-Adresse — bei einem YouTube-Kanal ein fremdes Konto, das zufällig
+gleich heißt.
+
+**Instagram bewusst nicht.** yt-dlp kann Reels, aber ohne Anmeldung liefert
+Instagram fast nichts, und Anmelden ist hier ausgeschlossen. Erkannt wird die
+Adresse trotzdem, damit ein von Hand eingetragener Reel-Link nicht als TikTok
+durchgeht.
 
 ### Es wird nachgelegt, bis die Zahl steht
 

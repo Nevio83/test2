@@ -59,6 +59,27 @@ Die Trennung ist Absicht: Eine Vorlage kostet nichts, Gegenlesen kostet
 Sekunden, Rendern kostet Minuten. Wer sie in einen Aufruf packt, zahlt beim
 Gegenlesen den Preis des Renderns.
 
+### Rendern neben der Arbeit (Punkt 50)
+
+```bash
+npm run marketing:rendern                     # Warteschlange: schaut alle 5 s nach, Strg+C beendet
+npm run marketing:rendern -- --einmal         # abarbeiten, was da ist, dann Ende
+npm run marketing:rendern -- --parallel 3     # mehr gleichzeitig (Vorgabe: 2 bei 8 Kernen)
+```
+
+Jede Liste in `schnittlisten/` ohne fertiges Video wird im Hintergrund gerendert,
+mehrere parallel; je Liste liegt ein Protokoll neben dem Ergebnis
+(`<liste>_stil_c.log`), und fertige Videos melden sich als Windows-Benachrichtigung
+(`--leise` schaltet sie ab). Hook-Varianten (`_a`, `_b`, `_c`) entstehen dabei wie im
+Takt-Lauf. Eine gescheiterte Liste kommt erst nach einer Änderung wieder dran, und
+eine Liste, die gerade gespeichert wird, wartet zwei Sekunden.
+
+**Die Warteschlange fragt die Datenbank nicht im Takt.** Ob eine Liste offen ist,
+entscheidet die Zieldatei. Ein Poller mit Datenbankzugriff alle paar Sekunden hält
+Neon dauerhaft wach — so lief am 22.09. das Monatskontingent leer. Die Datenbank
+wird nur beim Rendern selbst berührt, einmal je Video. Ist sie gesperrt, sagt das
+der Start einmal, und es wird ohne Eintrag in `mkt_videos` gerendert.
+
 ---
 
 ## 3. Die Schnittliste

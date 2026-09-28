@@ -93,6 +93,14 @@ const STANDARD = {
   // Zielzahl brauchbarer Clips je Produkt. Steuert, welches Produkt als
   // naechstes drankommt — nicht, wieviel ein einzelner Lauf laedt.
   ziel_clips_je_produkt: 15,
+  // PUNKT 03: Woher Material kommen darf, in dieser Reihenfolge. Im Code steht
+  // nur TikTok — eingeschaltet wird YouTube in tiktok-quellen.json, damit sich
+  // an Laeufen ohne diese Datei (und an den Pruefungen) nichts verschiebt.
+  plattformen: ['tiktok'],
+  // Shorts sind hoechstens drei Minuten lang; alles darueber ist ein normales
+  // Video und fast immer ein Testbericht im Querformat.
+  youtube_max_dauer_sek: 180,
+  youtube_nur_hochformat: true,
   // Ein Treffer muss UNTERSCHEIDEN: Mindestens ein Begriff, den hoechstens so
   // viele Produkte fuehren. 0 = aus.
   //
@@ -137,6 +145,125 @@ const STANDARD = {
   // bloss nie als Vollbild. Ablehnen hiesse brauchbares Material wegwerfen.
   quer_ablehnen: false,
 };
+
+// ── Plattformen (Punkt 03) ───────────────────────────────────────────
+//
+// WARUM
+// TikTok ist die Plattform mit der haertesten Gegenwehr: Nach rund 50 Abrufen
+// ohne Pause antwortete sie auch auf Adressen nicht mehr, die eine Stunde
+// vorher noch gingen. Stand die Kette dann, stand sie ganz. YouTube Shorts
+// zeigt oft dasselbe Material, teils vom selben Creator, und ist ohne
+// Anmeldung erreichbar.
+//
+// INSTAGRAM BEWUSST NICHT. yt-dlp kann Reels, aber ohne Anmeldung liefert
+// Instagram fast nichts ("login required") — und Anmelden ist hier
+// ausgeschlossen. Erkannt wird die Adresse trotzdem, damit ein von Hand
+// eingetragener Reel-Link nicht als TikTok durchgeht.
+//
+// DOPPELT GELADEN WIRD NICHTS: Derselbe Clip hat auf zwei Plattformen zwei
+// Adressen und zwei Kennungen — erkannt wird er am Bildfingerabdruck
+// (Punkt 04), der plattformunabhaengig ist.
+
+const PLATTFORMEN = {
+  tiktok: { name: 'TikTok', suche: true },
+  youtube: { name: 'YouTube', suche: true },
+  instagram: { name: 'Instagram', suche: false, grund: 'liefert ohne Anmeldung fast nichts' },
+};
+
+function plattformAus(url) {
+  const u = String(url || '').toLowerCase();
+  if (/^https?:\/\/(?:[\w-]+\.)?tiktok\.com\//.test(u)) return 'tiktok';
+  if (/^https?:\/\/(?:[\w-]+\.)?(?:youtube\.com|youtu\.be)\//.test(u)) return 'youtube';
+  if (/^https?:\/\/(?:[\w-]+\.)?instagram\.com\//.test(u)) return 'instagram';
+  return null;
+}
+
+/** Die elf Zeichen einer YouTube-Kennung aus watch?v=, shorts/ oder youtu.be/. */
+function youtubeId(url) {
+  const m = String(url || '').match(/(?:[?&]v=|\/shorts\/|youtu\.be\/)([A-Za-z0-9_-]{11})(?![A-Za-z0-9_-])/);
+  return m ? m[1] : null;
+}
+
+/** Was hinten an den Dateinamen kommt: TikTok-Ziffern oder "yt-<kennung>". */
+function dateiKennung(kandidat) {
+  const k = kandidat || {};
+  if (plattformAus(k.url) === 'youtube') {
+    const id = /^[A-Za-z0-9_-]{11}$/.test(String(k.id || '')) ? String(k.id) : youtubeId(k.url);
+    return id ? `yt-${id}` : '';
+  }
+  return String(k.id || '').replace(/[^0-9]/g, '');
+}
+
+/**
+ * Zusaetzliche yt-dlp-Angaben beim Laden.
+ *
+ * YouTube liefert ohne Formatwahl webm — unter einem .mp4-Namen abgelegt, waere
+ * das eine Datei, die ihre Endung luegt.
+ *
+ * NICHT UEBER DIE ENDUNG WAEHLEN. Der erste Entwurf nahm "bv*[ext=mp4]" — und
+ * lud beim echten Lauf VP9 in einem mp4-Behaelter: YouTube bietet VP9-Stroeme
+ * mit der Endung "mp4" an. Viele Schnittprogramme und der Windows-Player spielen
+ * das schlecht ab. Deshalb wird nach CODEC sortiert: h264 zuerst, bis 1920
+ * Hoehe, Ton als m4a — und nur wenn es das nicht gibt, das beste Uebrige.
+ */
+function formatArgumente(url) {
+  if (plattformAus(url) !== 'youtube') return [];
+  return ['-f', 'bv*+ba/b', '-S', 'vcodec:h264,res:1920,acodec:m4a',
+          '--merge-output-format', 'mp4'];
+}
+
+/**
+ * Ein Suchbegriff fuer YouTube: ohne das Wort "tiktok".
+ *
+ * Es steckt im Rueckfall-Begriff ("tiktok <Produktname>") — auf YouTube holt
+ * es genau die falschen Videos nach vorn (Zusammenschnitte "TikTok-Funde").
+ *
+ * Eigene Funktion, weil die erste Fassung inline stand und beim Einfuegen
+ * zerschossen wurde: Aus \b wurde ein Steuerzeichen und aus \s ein "s" —
+ * die Regel ersetzte danach JEDES "s" durch ein Leerzeichen ("water di pen
+ * er"). Gefunden hat das erst ESLint (no-control-regex), nicht die Pruefungen.
+ */
+function youtubeBegriff(begriff) {
+  return String(begriff || '').replace(/\btiktok\b/gi, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * YouTube-Suche ueber yt-dlp ("ytsearchN:"). Nur kurze Videos, ohne Anmeldung.
+ *
+ * Die flache Liste kostet EINEN Abruf und liefert Titel, Dauer, Aufrufe und
+ * Kanal — genug, um Laengeres vorab auszusortieren. Alles Weitere prueft der
+ * gewohnte Einzelabruf.
+ */
+async function sucheYoutube({ ytdlp, begriff, anzahl = 20, maxDauer = 180 }) {
+  const { code, stdout, stderr } = await ytdlp([
+    '--flat-playlist', '--dump-json', '--no-warnings', `ytsearch${anzahl}:${begriff}`,
+  ]);
+  const meldung = String(stderr || '').trim();
+  if (SPERRE.test(meldung)) return { ok: false, gesperrt: true, grund: meldung.slice(0, 200), funde: [] };
+
+  const funde = [];
+  for (const zeile of String(stdout || '').split(/\r?\n/)) {
+    if (!zeile.trim().startsWith('{')) continue;
+    let roh;
+    try { roh = JSON.parse(zeile); } catch { continue; }
+    const id = String(roh.id || '');
+    if (!/^[A-Za-z0-9_-]{11}$/.test(id)) continue;
+    const dauer = Number(roh.duration);
+    if (Number.isFinite(dauer) && dauer > maxDauer) continue;
+    funde.push({
+      url: `https://www.youtube.com/watch?v=${id}`,
+      id,
+      titel: String(roh.title || ''),
+      dauer: Number.isFinite(dauer) ? dauer : null,
+      aufrufe: Number(roh.view_count) || null,
+      kanal: String(roh.channel || roh.uploader || ''),
+    });
+  }
+  if (!funde.length && code !== 0) {
+    return { ok: false, gesperrt: false, grund: meldung.slice(0, 200) || `yt-dlp endete mit Code ${code}`, funde };
+  }
+  return { ok: true, gesperrt: false, funde, adressen: funde.map((f) => f.url) };
+}
 
 // ── Ablageort ────────────────────────────────────────────────────────
 
@@ -356,6 +483,9 @@ function ladeKonfig(pfad = KONFIG_PFAD) {
   }
   return {
     standard: { ...STANDARD, ...(roh.standard || {}) },
+    // Punkt 06: Ohne diese Zeile kam ein "plan"-Abschnitt nie beim Planlauf an —
+    // er lief still mit den eingebauten Werten.
+    plan: roh.plan || {},
     produkte: roh.produkte || {},
   };
 }
@@ -1042,6 +1172,11 @@ function produkteNachLuecke(index, produkte, opt = {}) {
 
 /** Profil-Adresse aus einer Video-Adresse. null, wenn keine drinsteht. */
 function creatorProfil(quelleUrl, creator) {
+  // PUNKT 03: Ein YouTube-Kanal ist kein TikTok-Konto. Ohne diese Zeile wurde
+  // aus dem Kanalnamen eine tiktok.com/@-Adresse gebaut — ein fremdes Konto,
+  // das zufaellig gleich heisst.
+  const plattform = plattformAus(quelleUrl);
+  if (plattform && plattform !== 'tiktok') return null;
   const ausUrl = String(quelleUrl || '').match(/https?:\/\/(?:www\.)?tiktok\.com\/(@[\w.-]+)/i);
   if (ausUrl) return `https://www.tiktok.com/${ausUrl[1]}`;
   const name = String(creator || '').trim().replace(/^@+/, '');
@@ -1797,7 +1932,7 @@ function creatorAnfrage(eintrag, opt = {}) {
   const handle = String((eintrag && eintrag.creator) || '').replace(/^@+/, '');
   const adresse = (eintrag && eintrag.quelle_url) || null;
   const titel = String((eintrag && eintrag.titel) || '').trim().slice(0, 80);
-  const profil = creatorProfil(adresse, handle);
+  const profil = (eintrag && eintrag.creator_url) || creatorProfil(adresse, handle);
 
   // Der Clip muss eindeutig benannt sein. "dein Video" reicht nicht — ein
   // Creator hat hunderte, und eine Zusage zu "einem davon" belegt nichts.
@@ -2455,6 +2590,9 @@ async function holeEinzelMeta(ytdlp, url) {
       title: roh.title || '',
       description: roh.description || '',
       uploader: roh.uploader || roh.uploader_id || '',
+      // Punkt 03: Bei YouTube laesst sich der Kanal nicht aus der Videoadresse
+      // ableiten — ohne diese Angabe gaebe es fuer Anfragen kein Profil.
+      kanal_url: roh.channel_url || roh.uploader_url || null,
       tags: roh.tags,
       dauer: roh.duration,
       // Masse fuer Huerde 8. yt-dlp liefert sie im selben --dump-json-Aufruf,
@@ -2626,6 +2764,7 @@ async function ladeVideo(ytdlp, ordner, produkt, kandidat, standard, zielDatei) 
       '--write-info-json',
       '--sleep-requests', String(standard.pause_zwischen_anfragen_sek),
       '--retries', String(standard.wiederholungen),
+      ...formatArgumente(kandidat.url),
       '-o', path.join(zwischen, `${stamm}.%(ext)s`),
       kandidat.url,
     ], { cwd: zwischen });        // auch die *.tmp-Dateien landen dort
@@ -4161,7 +4300,7 @@ function fremdmaterialAmFalschenOrt(index) {
 // ist der zweite Guertel, und dieser Guertel sitzt derzeit locker.
 
 /** Das Schema, das fremdes Material trug, bevor auf "stil-b" umgestellt wurde. */
-const HERKUNFT_MUSTER = /_(\d{10,25})\.(mp4|mov|webm|mkv)$/i;
+const HERKUNFT_MUSTER = /_(\d{10,25}|yt-[A-Za-z0-9_-]{11})\.(mp4|mov|webm|mkv)$/i;
 
 /** Das Schema der eigenen Renderings — und, seit der Umstellung, auch der fremden. */
 const RENDER_MUSTER = /^(\d{2})_(.+?)_(\d+)s_stil-([abc])\.(mp4|mov|webm|mkv)$/i;
@@ -4177,10 +4316,12 @@ function herkunftAusName(name) {
   const mitId = roh.match(HERKUNFT_MUSTER);
   if (mitId) {
     const nummer = roh.match(/^(\d{2})_/);
+    const youtube = mitId[1].startsWith('yt-');
     return {
       schema: 'mit-video-id',
       produkt_id: nummer ? Number(nummer[1]) : null,
-      video_id: mitId[1],
+      video_id: youtube ? mitId[1].slice(3) : mitId[1],
+      plattform: youtube ? 'youtube' : 'tiktok',
       sagtHerkunft: true,
     };
   }
@@ -4260,7 +4401,7 @@ function slugFuerDateiname(produkt, ordner = VIDEO_ORDNER) {
       // Das optionale "_<video-id>" am Ende gehoert zum Namen, nicht zum Slug
       // (Punkt 71). Ohne diese Klammer faende die Suche den Slug nicht mehr
       // wieder und jedes Video bekaeme den langen Namen aus products.json.
-      const treffer = /^\d+_(.+?)_\d+s_stil-[ab](?:_\d{10,25})?\./.exec(name);
+      const treffer = /^\d+_(.+?)_\d+s_stil-[ab](?:_(?:\d{10,25}|yt-[A-Za-z0-9_-]{11}))?\./.exec(name);
       if (treffer && voll.startsWith(treffer[1])) return treffer[1];
     }
   } catch { /* egal */ }
@@ -4390,7 +4531,9 @@ async function holeUndSortiereEin(opt) {
   // im Herkunftsnachweis, ist eindeutig, und HERKUNFT_MUSTER erkennt sie
   // wieder. Eigene Renderings haben keine — daran sind beide fuer immer zu
   // unterscheiden.
-  const kennung = String((opt.kandidat && opt.kandidat.id) || '').replace(/[^0-9]/g, '');
+  // Punkt 03: YouTube-Kennungen sind nicht numerisch — "yt-" davor, sonst
+  // blieben nach dem Ziffernfilter Bruchstuecke uebrig, die nach TikTok aussehen.
+  const kennung = dateiKennung(opt.kandidat);
   const name = `${String(opt.nummer).padStart(2, '0')}_${opt.slug}_${dauer}s_stil-b`
     + `${kennung ? '_' + kennung : ''}.mp4`;
   const nach = path.join(opt.videoOrdner, name);
@@ -4435,6 +4578,9 @@ async function holeUndSortiereEin(opt) {
       produkt_name: opt.produkt.name,
       video_id: kandidat.id,
       quelle_url: kandidat.url,
+      // Punkt 03: Fehlt das Feld (Altbestand), ist es TikTok.
+      plattform: plattformAus(kandidat.url) || 'tiktok',
+      ...(kandidat.kanal_url ? { creator_url: kandidat.kanal_url } : {}),
       creator: kandidat.uploader,
       titel: kandidat.title,
       dauer_sek: dauer,
@@ -4479,6 +4625,9 @@ async function holeUndSortiereEin(opt) {
  */
 async function interaktiv(opt) {
   const melde = opt.melde || console.log;
+  // Punkt 06: Der Planlauf braucht die Zahlen, nicht nur den Rueckgabewert.
+  // Ohne opt.bericht aendert sich nichts.
+  const berichte = (werte) => { if (opt.bericht) Object.assign(opt.bericht, werte); };
   const jetzt = opt.jetzt || (() => new Date().toISOString());
   const standard = { ...STANDARD, ...(opt.standard || {}) };
   const datenZiel = opt.datenOrdner || datenOrdner();
@@ -4487,7 +4636,11 @@ async function interaktiv(opt) {
   const notaus = notausGrund({ stopDatei: opt.stopDatei, env: opt.env });
   // Vor dem Notaus wird nicht einmal gefragt — und die Konsole erst danach
   // geoeffnet, damit sie den Prozess in diesem Fall gar nicht erst festhaelt.
-  if (notaus) { melde(`⏹  Notaus aktiv — es wird nichts geladen. Grund: ${notaus}`); return 1; }
+  if (notaus) {
+    melde(`⏹  Notaus aktiv — es wird nichts geladen. Grund: ${notaus}`);
+    berichte({ geladen: 0, abgebrochen: true, grund: `Notaus: ${notaus}` });
+    return 1;
+  }
 
   // Eigene Fragen (Test) oder eine echte Konsole, die bis zur letzten Frage offen bleibt.
   const konsole = opt.frage ? null : frageStelle();
@@ -4607,8 +4760,17 @@ async function interaktiv(opt) {
   let sucheGescheitert = null;
   // Nur einmal je Lauf warnen, nicht bei jedem Suchbegriff erneut.
   let seitentextGemeldet = false;
+  // PUNKT 03: Welche Plattformen diesem Lauf offenstehen — und welche schon
+  // gesperrt haben. Eine Sperre gilt fuer DIE Plattform, die sperrt: kein
+  // weiterer Abruf dort in diesem Lauf. Umgangen wird nichts; eine andere
+  // Plattform ist keine Umgehung, sondern eine andere Quelle.
+  const plattformen = [].concat(standard.plattformen || ['tiktok'])
+    .filter((p) => PLATTFORMEN[p] && PLATTFORMEN[p].suche);
+  const gesperrtePlattformen = new Set();
+  let naechsterYtBegriff = 0;
+  let ytGenutzt = false;
 
-  const nachschub = async () => {
+  const nachschubTiktok = async () => {
     while (naechsterBegriff < begriffe.length) {
       const begriff = begriffe[naechsterBegriff++];
       const suche = await sucheAdressen({
@@ -4723,6 +4885,79 @@ async function interaktiv(opt) {
     return false;
   };
 
+  // PUNKT 03: YouTube Shorts als zweite Quelle — mit denselben Suchbegriffen,
+  // ueber die eingebaute Suche von yt-dlp (keine Anmeldung, kein Suchdienst).
+  const nachschubYoutube = async () => {
+    while (naechsterYtBegriff < begriffe.length) {
+      // Das Wort "tiktok" steckt im Rueckfall-Begriff ("tiktok <Produktname>") —
+      // auf YouTube wuerde es genau die falschen Videos nach vorn holen.
+      const begriff = youtubeBegriff(begriffe[naechsterYtBegriff++]);
+      if (!begriff) continue;
+      const suche = await sucheYoutube({
+        ytdlp: opt.ytdlp, begriff, anzahl: 20,
+        maxDauer: Number(standard.youtube_max_dauer_sek) || 180,
+      });
+      if (suche.gesperrt) {
+        sperrePlattform('youtube', suche.grund);
+        return false;
+      }
+      if (!suche.ok) {
+        melde(`⚠️  YouTube-Suche nicht moeglich: ${suche.grund}`);
+        return false;
+      }
+      ytGenutzt = true;
+      const neu = suche.funde
+        .filter((f) => !gesehen.has(f.url))
+        .map((f) => ({ url: f.url, meta: null, unterschrift: f.titel || '', likes: null,
+                       rate: null, aufrufe: f.aufrufe, plattform: 'youtube' }))
+        .sort((a, x) => (x.aufrufe || 0) - (a.aufrufe || 0));
+      const wirklichNeu = neu.filter((k) => !schonImIndex(index, { url: k.url })).length;
+      const kontingent = Math.max(1, Number(standard.max_kandidaten_je_quelle) || 20);
+      const jetztNehmen = neu.slice(0, kontingent);
+      melde(`▶️  YouTube "${begriff}": ${suche.funde.length} kurze Video(s), ${neu.length} neu `
+        + `(${wirklichNeu} noch nie geladen) — ${jetztNehmen.length} jetzt.`);
+      if (jetztNehmen.length) {
+        warteschlange.push(...jetztNehmen);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const nachschub = async () => {
+    if (plattformen.includes('tiktok') && !gesperrtePlattformen.has('tiktok') && !sucheGescheitert
+        && await nachschubTiktok()) return true;
+    if (plattformen.includes('youtube') && !gesperrtePlattformen.has('youtube')) {
+      if (!ytGenutzt && naechsterYtBegriff === 0) {
+        melde('');
+        melde(plattformen.includes('tiktok')
+          ? '▶️  TikTok gibt nichts mehr her — weiter mit YouTube Shorts (gleiche Pruefung, gleiche Schwelle).'
+          : '▶️  Suche auf YouTube Shorts.');
+      }
+      if (await nachschubYoutube()) return true;
+    }
+    return false;
+  };
+
+  // Sperrt eine Plattform fuer den Rest des Laufs. true = keine Plattform mehr offen.
+  const sperrePlattform = (plattform, grund) => {
+    gesperrtePlattformen.add(plattform);
+    const name = (PLATTFORMEN[plattform] || {}).name || plattform;
+    const vorher = warteschlange.length + reserve.length + zweiteChance.length;
+    const behalten = (k) => (plattformAus(k.url) || 'tiktok') !== plattform;
+    for (const liste of [warteschlange, reserve, zweiteChance]) {
+      const rest = liste.filter(behalten);
+      liste.length = 0;
+      liste.push(...rest);
+    }
+    const verworfen = vorher - (warteschlange.length + reserve.length + zweiteChance.length);
+    const offen = plattformen.filter((p) => !gesperrtePlattformen.has(p));
+    melde(`⏹  ${name}: ${grund ? String(grund).slice(0, 160) + ' — ' : ''}kein weiterer Abruf dort in diesem Lauf`
+      + `${verworfen ? ` (${verworfen} vorgemerkte Adresse(n) verworfen)` : ''}.`);
+    if (offen.length) melde(`   Weiter mit ${offen.map((p) => PLATTFORMEN[p].name).join(', ')}.`);
+    return offen.length === 0;
+  };
+
   // 4. Bekanntes ueberspringen, Tonspur pruefen, laden.
   try {
     fs.mkdirSync(datenZiel, { recursive: true });
@@ -4743,6 +4978,7 @@ async function interaktiv(opt) {
     melde('');
     melde('   Ohne das Paket meldet yt-dlp "Unexpected response from webpage request".');
     melde('   Das klingt nach einem einzelnen kaputten Video, betrifft aber alle.');
+    berichte({ geladen: 0, abgebrochen: true, grund: 'yt-dlp ohne Browser-Kennung (curl_cffi fehlt)' });
     return 1;
   }
 
@@ -4835,6 +5071,9 @@ async function interaktiv(opt) {
   // Draufhalten, das eine Sperre erst verlaengert.
   const FEHLER_HINTEREINANDER = 5;
   let fehlerFolge = 0;
+  // Punkt 03: Eine Plattform, die nicht mehr antwortet, wurde abgeschaltet,
+  // waehrend der Lauf mit der anderen weiterging — der Planlauf muss es trotzdem wissen.
+  let stummGeschaltet = false;
 
   // WIEVIELE ABRUFE DIESER LAUF DARF.
   //
@@ -4885,9 +5124,11 @@ async function interaktiv(opt) {
         warteschlange.push(...zweiteChance.splice(0));
         continue;
       }
-      grundFuersEnde = sucheGescheitert
-        ? `Suche nicht moeglich: ${sucheGescheitert}`
-        : 'alle Suchbegriffe abgearbeitet, keine weiteren Adressen';
+      grundFuersEnde = ytGenutzt
+        ? 'alle Suchbegriffe abgearbeitet, auch auf YouTube keine weiteren Adressen'
+        : sucheGescheitert
+          ? `Suche nicht moeglich: ${sucheGescheitert}`
+          : 'alle Suchbegriffe abgearbeitet, keine weiteren Adressen';
       break;
     }
     const kandidat = warteschlange.shift();
@@ -4975,8 +5216,17 @@ async function interaktiv(opt) {
     const meta = kandidat.meta || await holeEinzelMeta(opt.ytdlp, url);
     if (meta.gesperrt) {
       vorfaelle.sperren++;
-      melde(`❌ TikTok blockt: ${meta.meldung}`);
-      if (standard.bei_sperre_abbrechen !== false) break;
+      const plattform = plattformAus(url) || 'tiktok';
+      const name = (PLATTFORMEN[plattform] || {}).name || plattform;
+      melde(`❌ ${name} blockt: ${meta.meldung}`);
+      if (standard.bei_sperre_abbrechen !== false) {
+        // Mit nur einer Plattform endet der Lauf wie bisher. Sonst endet er
+        // fuer DIESE Plattform — die andere ist eine andere Quelle.
+        if (plattformen.length < 2 || sperrePlattform(plattform, meta.meldung)) {
+          grundFuersEnde = `${name} blockt: ${meta.meldung}`;
+          break;
+        }
+      }
       continue;
     }
     if (meta.fehler) {
@@ -4996,6 +5246,13 @@ async function interaktiv(opt) {
         melde('      (wird beim Start geprueft — dann waere der Lauf gar nicht gestartet)');
         melde('   2. Veraltetes yt-dlp:  py -m pip install --upgrade yt-dlp');
         melde('   3. Zu viele Abrufe in kurzer Zeit — spaeter noch einmal versuchen.');
+        const stumm = plattformAus(url) || 'tiktok';
+        if (plattformen.length >= 2
+            && !sperrePlattform(stumm, `${fehlerFolge} Abrufe hintereinander ohne Antwort`)) {
+          stummGeschaltet = true;
+          fehlerFolge = 0;
+          continue;
+        }
         grundFuersEnde = `${fehlerFolge} Abrufe hintereinander gescheitert (TikTok antwortet nicht)`;
         break;
       }
@@ -5107,7 +5364,11 @@ async function interaktiv(opt) {
     // der Brauchbarkeit. Sie steht bewusst ganz am Ende der Vorpruefung: Die
     // Textpruefungen sind billiger, und was inhaltlich nicht passt, muss gar
     // nicht erst vermessen werden.
-    const untauglich = technischUntauglich(meta.video, standard);
+    // Punkt 03: Von YouTube nur Hochformat — Shorts sind wegen 9:16 interessant,
+    // und im Querformat liefert YouTube vor allem Testberichte.
+    const huerde = plattformAus(url) === 'youtube' && standard.youtube_nur_hochformat !== false
+      ? { ...standard, quer_ablehnen: true } : standard;
+    const untauglich = technischUntauglich(meta.video, huerde);
     if (untauglich) {
       buch.vermerke('technisch unbrauchbar', untauglich);
       merkeUrteil(meta.video, `technisch: ${untauglich}`);
@@ -5166,7 +5427,18 @@ async function interaktiv(opt) {
       melde('   Das Video selbst wurde geladen — nur das Ablegen scheiterte.');
       break;
     }
-    if (!ergebnis.ok) { melde(`⚠️  ${url}: ${ergebnis.grund}`); if (ergebnis.gesperrt && standard.bei_sperre_abbrechen !== false) break; continue; }
+    if (!ergebnis.ok) {
+      melde(`⚠️  ${url}: ${ergebnis.grund}`);
+      if (ergebnis.gesperrt && standard.bei_sperre_abbrechen !== false) {
+        vorfaelle.sperren++;
+        const plattform = plattformAus(url) || 'tiktok';
+        if (plattformen.length < 2 || sperrePlattform(plattform, ergebnis.grund)) {
+          grundFuersEnde = `${(PLATTFORMEN[plattform] || {}).name || plattform} blockt: ${ergebnis.grund}`;
+          break;
+        }
+      }
+      continue;
+    }
 
     // JETZT ERST laesst sich der Ton wirklich pruefen — dafuer muss die Datei da
     // sein. Das track-Feld war nur eine Vermutung und lag bei vier von sieben
@@ -5382,7 +5654,9 @@ async function interaktiv(opt) {
 
   melde('');
   melde(`— ${geladen} von ${anzahl} gewuenschten Videos geladen, ${geprueft} Adresse(n) geprueft, `
-    + `${naechsterBegriff} von ${begriffe.length} Suchbegriffen gebraucht.`);
+    + `${naechsterBegriff} von ${begriffe.length} Suchbegriffen gebraucht`
+    // Punkt 03: Ohne diesen Zusatz stand bei einem reinen YouTube-Lauf "0 von 24".
+    + `${ytGenutzt ? ` (TikTok), ${naechsterYtBegriff} auf YouTube` : ''}.`);
 
   // ── Warum die anderen nicht durchkamen ─────────────────────────────
   //
@@ -5450,6 +5724,16 @@ async function interaktiv(opt) {
       melde('   2. Links von Hand unter "videos" eintragen.');
     }
   }
+  // Punkt 06: Gesperrt heisst hier auch "fuenf Abrufe hintereinander ohne
+  // Antwort" — fuer den Planlauf dasselbe Signal: aufhoeren, nicht beim
+  // naechsten Produkt weiter anklopfen.
+  berichte({
+    geladen, anzahl, geprueft,
+    abgelehnt: auswertung.reduce((s, r) => s + r.anzahl, 0),
+    sperren: vorfaelle.sperren, fehler: vorfaelle.fehler,
+    gesperrt: vorfaelle.sperren > 0 || stummGeschaltet || /hintereinander gescheitert/.test(grundFuersEnde),
+    grund: grundFuersEnde,
+  });
   // Nichts geladen ist kein Erfolg — sonst haelt ein Skript den Lauf fuer gut.
   return geladen > 0 ? 0 : 1;
 }
@@ -5463,6 +5747,234 @@ function zahl(roh, standard, untergrenze, obergrenze) {
   return Math.min(obergrenze, Math.max(untergrenze, wert));
 }
 
+// ── Laeufe im Zeitplan (Punkt 06) ────────────────────────────────────
+//
+// WARUM
+// Der Bot lief, wenn jemand ihn startete. Material sammelte sich also genau
+// dann an, wenn ohnehin gerade an Videos gearbeitet wurde — gebraucht wird es
+// umgekehrt: ein Vorrat, der schon da ist, wenn die Idee kommt.
+//
+// WIE
+// `npm run tiktok:plan` fragt zuerst nur: Ist ein Lauf faellig? Zweimal je
+// Woche, jeweils zu einer GEWUERFELTEN Tageszeit zwischen 10 und 21 Uhr —
+// ein fester Termin waere selbst ein Muster. Ist er faellig, kommen fuenf
+// Produkte mit Luecke dran, und zwar die, die am laengsten nicht dran waren:
+// So rollt der Lauf durch das Sortiment, statt jedes Mal am selben Produkt
+// ohne Material haengenzubleiben. Geladen wird ueber DENSELBEN Weg wie bei
+// `npm run tiktok` — gleiche Pruefung, gleiche Schwelle, gleiche Grenzen.
+//
+// WAS BEWUSST SO BLEIBT
+//   * Blockt TikTok, endet der GANZE Planlauf — nicht nur das Produkt. Die
+//     Regel "keine Umgehung von Sperren" gilt auch fuer das naechste Produkt.
+//   * Der Notaus gilt wie ueberall (Marketing/STOP, MARKETING_ENABLED=false).
+//   * Die Aufgabe in der Windows-Aufgabenplanung legt das Programm NICHT
+//     selbst an. `--aufgabe` gibt den Befehl aus — eingetragen wird von Hand.
+
+const PLAN_STANDARD = {
+  pro_woche: 2,
+  produkte_je_lauf: 5,
+  clips_je_produkt: 3,
+  sprache: 'en',
+  frueheste_stunde: 10,
+  spaeteste_stunde: 21,
+};
+
+function planPfad(ordner) { return path.join(ordner, 'planlauf.json'); }
+
+function ladePlan(ordner) {
+  try {
+    const roh = JSON.parse(fs.readFileSync(planPfad(ordner), 'utf8'));
+    return { laeufe: [], zuletzt_dran: {}, ...roh };
+  } catch {
+    return { laeufe: [], zuletzt_dran: {} };
+  }
+}
+
+function speicherePlan(ordner, zustand) {
+  fs.mkdirSync(ordner, { recursive: true });
+  const ziel = planPfad(ordner);
+  const zwischen = `${ziel}.neu`;
+  fs.writeFileSync(zwischen, JSON.stringify(zustand, null, 2) + '\n', 'utf8');
+  fs.renameSync(zwischen, ziel);
+}
+
+function zeitText(iso) {
+  if (!iso) return 'sofort';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso);
+  return d.toLocaleString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit',
+    hour: '2-digit', minute: '2-digit' });
+}
+
+/** Ohne Zustand ist der erste Lauf faellig — wer den Plan einrichtet, will ihn laufen sehen. */
+function planFaellig(zustand, jetzt = new Date()) {
+  if (!zustand || !zustand.naechster_lauf) return true;
+  const naechster = new Date(zustand.naechster_lauf);
+  return Number.isNaN(naechster.getTime()) || jetzt.getTime() >= naechster.getTime();
+}
+
+/** Naechster Termin: im Wochenabstand geteilt durch pro_woche, Uhrzeit gewuerfelt. */
+function naechsterPlanlauf(ab, plan = PLAN_STANDARD, zufall = Math.random) {
+  const tage = 7 / Math.max(1, Number(plan.pro_woche) || 1);
+  const ziel = new Date(ab.getTime() + tage * 86400000);
+  const frueh = Math.max(0, Math.min(23, Number(plan.frueheste_stunde)));
+  const spaet = Math.max(frueh, Math.min(23, Number(plan.spaeteste_stunde)));
+  const stunde = frueh + Math.floor(zufall() * (spaet - frueh + 1));
+  ziel.setHours(Math.min(stunde, spaet), Math.floor(zufall() * 60), 0, 0);
+  return ziel;
+}
+
+/**
+ * Welche Produkte kommen dran? Nur solche mit Luecke; zuerst, was am laengsten
+ * nicht dran war (nie dran = ganz vorn), bei Gleichstand die groessere Luecke.
+ */
+function waehlePlanProdukte(index, produkte, zustand, plan = PLAN_STANDARD, standard = STANDARD) {
+  const zuletzt = (zustand && zustand.zuletzt_dran) || {};
+  return produkteNachLuecke(index, produkte, { ziel: standard.ziel_clips_je_produkt })
+    .sort((a, b) => String(zuletzt[a.id] || '').localeCompare(String(zuletzt[b.id] || ''))
+      || b.luecke - a.luecke || a.id - b.id)
+    .slice(0, Math.max(1, Number(plan.produkte_je_lauf) || 1));
+}
+
+function planZusammenfassung(ergebnisse, zustand) {
+  const summe = (feld) => ergebnisse.reduce((s, e) => s + (Number(e[feld]) || 0), 0);
+  const zeilen = [
+    `Planlauf ${zeitText(zustand.letzter_lauf)} — ${ergebnisse.length} Produkt(e)`,
+    `geladen ${summe('geladen')} · geprueft ${summe('geprueft')} · abgelehnt ${summe('abgelehnt')}`
+      + ` · Sperren ${summe('sperren')} · Fehler ${summe('fehler')}`,
+    '',
+  ];
+  for (const e of ergebnisse) {
+    zeilen.push(`${String(e.id).padStart(2, '0')} ${e.name}: ${Number(e.geladen) || 0} von ${e.gewuenscht}`
+      + (e.grund && e.grund !== 'Ziel erreicht' ? ` — ${e.grund}` : ''));
+  }
+  const gesperrt = ergebnisse.find((e) => e.gesperrt || e.abgebrochen);
+  if (gesperrt) {
+    zeilen.push('', `⏹ Planlauf vorzeitig beendet: ${gesperrt.grund}`);
+  }
+  zeilen.push('', `Naechster Lauf ab ${zeitText(zustand.naechster_lauf)}.`,
+    'Alles Geladene steht auf rechte_geprueft: false — Recherche, kein Sendematerial.');
+  return zeilen.join('\n');
+}
+
+/** Zusammenfassung per Mail, wenn Resend und eine Adresse eingerichtet sind. Nie ein Fehlerfall. */
+async function sendePlanMail(text, { env = process.env, abruf = globalThis.fetch } = {}) {
+  const schluessel = String(env.RESEND_API_KEY || '').trim();
+  const an = String(env.TIKTOK_PLAN_EMAIL || env.ADMIN_EMAIL || '').trim();
+  if (!schluessel || !an || typeof abruf !== 'function') {
+    return { verschickt: false, grund: !schluessel ? 'RESEND_API_KEY fehlt' : !an ? 'keine Adresse (TIKTOK_PLAN_EMAIL/ADMIN_EMAIL)' : 'kein fetch' };
+  }
+  try {
+    const antwort = await abruf('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${schluessel}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: env.RESEND_FROM_EMAIL || 'noreply@maiosshop.com',
+        to: [an],
+        subject: `TikTok-Planlauf: ${text.split('\n')[1] || ''}`.slice(0, 150),
+        text,
+      }),
+    });
+    return antwort && antwort.ok ? { verschickt: true } : { verschickt: false, grund: `HTTP ${antwort && antwort.status}` };
+  } catch (fehler) {
+    return { verschickt: false, grund: fehler.message };
+  }
+}
+
+async function planlauf(opt) {
+  const melde = opt.melde || console.log;
+  const jetzt = opt.jetzt || (() => new Date());
+  const ordner = opt.datenOrdner || datenOrdner();
+  const plan = { ...PLAN_STANDARD, ...((opt.konfig && opt.konfig.plan) || {}) };
+  const standard = { ...STANDARD, ...(opt.standard || {}) };
+  const zustand = ladePlan(ordner);
+
+  if (!opt.sofort && !planFaellig(zustand, jetzt())) {
+    melde(`⏳ Planlauf nicht faellig — naechster ab ${zeitText(zustand.naechster_lauf)}.`);
+    return 0;
+  }
+  const notaus = notausGrund({ stopDatei: opt.stopDatei, env: opt.env });
+  if (notaus) {
+    melde(`⏹  Notaus aktiv — kein Planlauf. Grund: ${notaus}`);
+    return 1;
+  }
+
+  let index;
+  try {
+    index = ladeIndex(ordner);
+  } catch (fehler) {
+    melde(`❌ Index nicht lesbar: ${fehler.message}`);
+    return 1;
+  }
+  const auswahl = waehlePlanProdukte(index, opt.produkte, zustand, plan, standard);
+  melde(`── Planlauf: ${auswahl.length} Produkt(e) — ${auswahl.map((p) => p.id).join(', ') || 'keins'} ──`);
+
+  const ergebnisse = [];
+  for (const p of auswahl) {
+    const gewuenscht = Math.max(1, Math.min(p.luecke, Number(plan.clips_je_produkt) || 1));
+    // Dieselben vier Antworten, die ein Mensch an der Konsole gaebe.
+    const antworten = [String(p.id), String(gewuenscht), plan.sprache === 'de' ? '1' : '2', '1'];
+    const bericht = {};
+    melde('');
+    melde(`▶ ${String(p.id).padStart(2, '0')} ${p.name} — ${gewuenscht} gewuenscht`);
+    const code = await (opt.interaktivFn || interaktiv)({
+      ...(opt.interaktivOpt || {}),
+      frage: async () => (antworten.length ? antworten.shift() : ''),
+      melde,
+      bericht,
+    });
+    zustand.zuletzt_dran = { ...(zustand.zuletzt_dran || {}), [p.id]: jetzt().toISOString() };
+    ergebnisse.push({ id: p.id, name: p.name, gewuenscht, code, ...bericht });
+    if (bericht.gesperrt || bericht.abgebrochen) {
+      melde('');
+      melde(`⏹  ${bericht.grund || 'Abbruch'} — der Planlauf endet hier, die uebrigen Produkte kommen beim naechsten Mal.`);
+      break;
+    }
+  }
+
+  zustand.letzter_lauf = jetzt().toISOString();
+  zustand.naechster_lauf = naechsterPlanlauf(jetzt(), plan, opt.zufall).toISOString();
+  const text = planZusammenfassung(ergebnisse, zustand);
+  zustand.laeufe = [...(zustand.laeufe || []), {
+    zeit: zustand.letzter_lauf,
+    produkte: ergebnisse.map((e) => ({ id: e.id, gewuenscht: e.gewuenscht, geladen: Number(e.geladen) || 0,
+      grund: e.grund || null })),
+  }].slice(-26);
+  try {
+    speicherePlan(ordner, zustand);
+  } catch (fehler) {
+    melde(`⚠️  Planzustand nicht gespeichert (${fehler.code || fehler.message}) — der naechste Aufruf laeuft sofort wieder.`);
+  }
+
+  melde('');
+  text.split('\n').forEach((z) => melde(z));
+  const post = await (opt.sendeMail || sendePlanMail)(text, { env: opt.env || process.env });
+  melde(post.verschickt ? '✉️  Zusammenfassung verschickt.' : `ℹ️  Keine Mail: ${post.grund}.`);
+  return ergebnisse.some((e) => e.gesperrt || e.abgebrochen) ? 1 : 0;
+}
+
+/** Der Befehl fuer die Windows-Aufgabenplanung — ausgegeben, nicht ausgefuehrt. */
+// Das Protokoll liegt im Datenordner des Bots, NICHT unter "Dokumente": Dort
+// blockiert der Ransomware-Schutz von Windows Schreibzugriffe fremder Prozesse,
+// und ein Protokoll, das nie entsteht, sieht aus wie ein Lauf, der nie lief.
+function aufgabeBefehl(wurzel = WURZEL, ordner = datenOrdner()) {
+  return `schtasks /Create /SC HOURLY /TN "Maios TikTok-Planlauf" /TR "cmd /c cd /d \\"${wurzel}\\" && npm run tiktok:plan >> \\"${path.join(ordner, 'planlauf.log')}\\" 2>&1"`;
+}
+
+function aufgabeAusgeben() {
+  console.log('── Planlauf in der Windows-Aufgabenplanung ──');
+  console.log('Stuendlich aufrufen reicht: Der Planlauf entscheidet selbst, ob er faellig ist,');
+  console.log('und antwortet sonst in Sekundenbruchteilen mit "nicht faellig".');
+  console.log('');
+  console.log('Eintragen (einmal, von Hand, in einer Eingabeaufforderung):');
+  console.log('');
+  console.log('  ' + aufgabeBefehl());
+  console.log('');
+  console.log('Wieder austragen:  schtasks /Delete /TN "Maios TikTok-Planlauf" /F');
+  console.log('Der PC muss dafuer an sein; ein verpasster Termin wird beim naechsten Aufruf nachgeholt.');
+  return 0;
+}
+
 function leseArgumente(argv) {
   const opt = { status: false, laden: false, max: null, schwelle: null, hilfe: false,
                 fund: null, schreiben: false, interaktiv: false, aufraeumen: false,
@@ -5474,6 +5986,10 @@ function leseArgumente(argv) {
     if (a === '--status') opt.status = true;
     else if (a === '--ordner') opt.ordner = true;
     else if (a === '--herkunft') opt.herkunft = true;
+    // Punkt 06: Lauf im Zeitplan. Laeuft nur, wenn faellig — --sofort erzwingt.
+    else if (a === '--plan') opt.plan = true;
+    else if (a === '--sofort') opt.sofort = true;
+    else if (a === '--aufgabe') opt.aufgabe = true;
     else if (a === '--aufraeumen') opt.aufraeumen = true;
     else if (a === '--interaktiv' || a === '--frage') opt.interaktiv = true;
     else if (a === '--laden') opt.laden = true;
@@ -6113,6 +6629,17 @@ async function main(argv) {
   if (opt.anfragen) return anfragenAusgeben(opt);
   if (opt.rueckruf) return rueckrufAusgeben(opt);
   if (opt.herkunft) return herkunftNachtragen({ schreiben: opt.schreiben });
+  if (opt.plan && opt.aufgabe) return aufgabeAusgeben();
+  // Ist der Planlauf nicht faellig, braucht er weder yt-dlp noch die Konfiguration —
+  // deshalb die Faelligkeit VOR der Werkzeugsuche. Ein stuendlicher Aufruf, der
+  // jedes Mal yt-dlp startet, nur um "nicht faellig" zu sagen, waere Verschwendung.
+  if (opt.plan && !opt.sofort) {
+    const zustand = ladePlan(datenOrdner());
+    if (!planFaellig(zustand, new Date())) {
+      console.log(`⏳ Planlauf nicht faellig — naechster ab ${zeitText(zustand.naechster_lauf)}.`);
+      return 0;
+    }
+  }
   if (opt.ordner) {
     const basis = videoOrdnerAus();
     const alle = JSON.parse(fs.readFileSync(path.join(WURZEL, 'products.json'), 'utf8'));
@@ -6145,6 +6672,22 @@ async function main(argv) {
   const konfig = ladeKonfig();
   const standard = { ...konfig.standard, ...ausUmgebung() };
   const produkte = JSON.parse(fs.readFileSync(path.join(WURZEL, 'products.json'), 'utf8'));
+
+  if (opt.plan) {
+    return planlauf({
+      interaktivOpt: {
+        ytdlp: macheYtdlpAufruf(gefunden.aufruf),
+        produkte, konfig, standard,
+        datenOrdner: datenOrdner(),
+        stopDatei: STOP_DATEI,
+        ytdlpVersion: gefunden.version,
+      },
+      produkte, konfig, standard,
+      datenOrdner: datenOrdner(),
+      stopDatei: STOP_DATEI,
+      sofort: opt.sofort,
+    });
+  }
 
   if (opt.interaktiv) {
     return interaktiv({
@@ -6215,6 +6758,9 @@ if (require.main === module) {
 }
 
 module.exports = {
+  PLATTFORMEN, plattformAus, youtubeId, dateiKennung, formatArgumente, sucheYoutube, youtubeBegriff,
+  planlauf, planFaellig, naechsterPlanlauf, waehlePlanProdukte, planZusammenfassung,
+  ladePlan, speicherePlan, planPfad, PLAN_STANDARD, sendePlanMail, aufgabeBefehl,
   datenOrdner, notausGrund, findeYtdlp, macheYtdlpAufruf, tiktokFaehigkeiten,
   ladeKonfig, konfigZuProdukt, normalisiere, zerlege, produktBegriffe, videoText,
   trefferwert, getroffeneBegriffe, belastbar,
