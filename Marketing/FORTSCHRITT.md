@@ -838,6 +838,40 @@ Wer weiteres Fremdmaterial umbenennt, muss eine Zeile ergänzen. Und: Am Dateina
 Herkunft dann nicht mehr zu sehen — `Marketing/data/tiktok-quellen/index.json` ist die
 einzige Stelle, die sie noch festhält.
 
+### Nachtrag 02.10.: Der Filter sieht ein Bild — gemessen, was das taugt
+
+`pipelines/video/bild.py` (neu) schaut in die Clips: Ähnlichkeit zu den eigenen
+Produktfotos (CLIP ViT-B/32, Bildteil), Gesichter (YuNet), Text im Bild (PP-OCRv3, nur
+die Suche). Alles über `onnxruntime`, das mit faster-whisper schon da war — **kein neues
+Paket**, drei Modelldateien, zusammen 92 MB. Aufgerufen vom Bot (`npm run tiktok:bild`
+und nach jedem Laden) und von Stil C beim Rendern.
+
+| Frage | Ergebnis an echtem Material |
+|---|---|
+| Ganzer Clip unter 0,63 = falsches Modell? | 5 von 34 darunter, **alle fünf falsch**; Abstand dünn (0,622 / 0,636) |
+| Welches der 40 Produkte ist es? | **unbrauchbar** — eigenes Produkt nur bei 7 von 34 vorn |
+| Leeres Bild unter der Schwelle? | **nein** — blau 0,67, weiß 0,72, Rauschen 0,70 |
+| Produkt in den ersten 3 s? (Punkt 35) | findet **4 von 8** Anfängen ohne Produkt, 0 Fehlalarme bei 7 |
+| Gemeinsamen Anteil abziehen? | **verworfen** — sichtbarer Wasserspender fiel ans untere Ende |
+| Gesichter | klar 0,78–0,94 · Fehlalarm 0,66 · unscharf echt 0,52–0,65 → zwei Stufen |
+| Einblendung = ortsfester Text | 22 von 34 Clips, 3 davon nur am Rand |
+
+**Zwei Fehler, die erst die Gegenprobe zeigte.** Die Prüfung „ein leeres Bild liegt unter
+der Schwelle" stand zuerst als Zusicherung im Test und fiel durch — der Wert trennt echte
+Aufnahmen, keine Grafiken. Und `skaliere()` gab `float64` zurück, obwohl `float32`
+dokumentiert war (doppelter Speicher je Standbild); gefunden hat es eine Zeile im Test.
+
+**Deshalb sortiert nichts von selbst aus.** Die Befunde sind Hinweise im Kontaktbogen und
+beim Rendern. Die einzige harte Folge: Ein sicher erkanntes Gesicht verlangt in der
+Rechteakte des Bots einen eigenen Beleg (`personen_beleg`).
+
+**Die Bilderkennung ist in den Prüfungen abgeschaltet** (`MARKETING_BILD=aus` in
+`conftest.py`) und wird in `test_bild.py` gezielt eingeschaltet. Sonst liefe das Modell
+auf diesem Rechner in jedem Rendertest mit und anderswo nie.
+
+**Die 48 Datenbank-Prüfungen liefen am 02.10. zum ersten Mal** (Neon war vom 22.09. bis
+zum Monatsende gesperrt): 328 von 328 grün, keine übersprungen.
+
 ---
 
 ## ⛔ Offen — braucht dich

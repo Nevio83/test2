@@ -20,9 +20,10 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   wird **nur über den Prüflauf** (`.github/workflows/pruefung.yml`): Lint → Tests → Prüfung auf
   Ereignisbehandler mit eingesetzten Werten → **Startprüfung** (Server hochfahren, `/health`
   abfragen, beenden) → erst dann der Deploy-Hook. Ist ein Schritt rot, bleibt der alte Stand live.
-  Von Hand: Render-Dashboard → „Manual Deploy". **608 automatische Prüfungen** (325 Shop via
-  `npm test`, 152 Marketing via `py -m pytest Marketing/tests`, 131 Bot via
-  `node bot/tiktok-video-sync.test.js`).
+  Von Hand: Render-Dashboard → „Manual Deploy". **610 automatische Prüfungen** im Prüflauf via
+  `npm test` — 262 Shop und 348 Bot (`test/lauf.js` sammelt `bot/*.test.js` mit ein, also **nicht
+  addieren**: genau das ist einmal passiert), dazu **328 Marketing** via
+  `py -m pytest Marketing/tests`, die **nur lokal** laufen (Stand 02.10.).
 - **Sicherheitsschicht** (alles seit Ende Juli, Details in §3): Datei-Freigabe
   (`static-guard.js`), Content-Security-Policy ohne `'unsafe-inline'` für Skripte
   (`csp-policy.js` + `csp-inline.js`), HSTS (`hsts-policy.js`), CSRF-Herkunftsprüfung,
@@ -37,7 +38,11 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   `npm run marketing:local` auf dem eigenen PC — **der TikTok-Upload gehört dazu.**
 - **TikTok-Rohmaterial-Bot** (`bot/`, seit 27.08.): sucht fremdes TikTok-Material zu den eigenen
   Produkten, prüft jede Adresse gegen alle 40 und lädt nur über der Trefferschwelle. Alles bleibt
-  auf `rechte_geprueft: false` — das ist Recherche, kein Sendematerial.
+  auf `rechte_geprueft: false` — das ist Recherche, kein Sendematerial. **Seit 02.10. schaut er
+  ins Bild** (`Marketing/pipelines/video/bild.py`, drei ONNX-Modelle, 92 MB, kein neues Paket):
+  Ähnlichkeit zu den Produktfotos, Gesichter, Einblendungen — als **Hinweise im Kontaktbogen,
+  nichts sortiert von selbst aus** (Abstand an der Schwelle 0,622/0,636; leere Flächen bekommen
+  0,67). Ein sicher erkanntes Gesicht verlangt in der Rechteakte einen eigenen Beleg.
 - **Margen im Marketing** (seit 07.09.): `matching.einkaufspreise` in
   `Marketing/config/marketing.config.json` hat **27 von 40 Produkten** mit Einkauf und Versand,
   der Automat rechnet damit echte Margen (35–46 %). ⚠️ Der **Versand ist größtenteils geschätzt**
@@ -147,7 +152,7 @@ npm run marketing:local      # Dauerläufer für alles mit Browser/GPU (5-Min-Ta
 npm run marketing:vorlage -- problem_loesung --produkt 10   # Schnitt-Entwurf aus einer Vorlage
 npm run marketing:pruefen -- fassung-10.json --bauversuch   # Schnittliste gegenlesen, ohne zu rendern
 npm run marketing:rendern    # Schnittlisten im Hintergrund rendern (fragt die DB NICHT im Takt)
-py -m pytest Marketing/tests # 270 Prüfungen der Marketing-Kette (48 davon nur mit Datenbank)
+py -m pytest Marketing/tests # 328 Prüfungen der Marketing-Kette (48 davon nur mit Datenbank)
 py -m pipelines.orchestrator.run_loop --job render_style_a --once   # aus Marketing/ heraus
 
 # ── TikTok-Rohmaterial (Recherche, lädt nur über der Trefferschwelle) ──
@@ -156,7 +161,8 @@ npm run tiktok:probe         # Trockenlauf: sucht und bewertet, lädt NICHTS
 npm run tiktok:laden -- --max 2   # erst wenn die Prüfliste plausibel aussieht
 npm run tiktok:plan          # Planlauf: 2×/Woche, 5 Produkte rollierend — läuft nur, wenn fällig
 npm run tiktok:plan -- --aufgabe  # schtasks-Befehl für die Aufgabenplanung AUSGEBEN (nicht anlegen)
-node bot/tiktok-video-sync.test.js  # 287 Prüfungen des Bots
+npm run tiktok:bild          # alle Clips ansehen: Produkt, Gesichter, Einblendungen (~8 s je Clip)
+node bot/tiktok-video-sync.test.js  # 308 Prüfungen des Bots
 # YouTube Shorts ist zweite Quelle ("plattformen" in bot/tiktok-quellen.json) — eine Sperre gilt
 # nur für die Plattform, die sperrt. Instagram bewusst nicht (geht nur mit Anmeldung).
 ```

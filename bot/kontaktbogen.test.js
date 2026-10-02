@@ -257,6 +257,32 @@ test('technisch schwaches Material wird im Blatt markiert', () => {
   assert.ok(!gut.includes('class="clip warnung"'));
 });
 
+test('was die Bilderkennung gesehen hat, steht am Clip — und ob sie ueberhaupt hingesehen hat', () => {
+  const technik = { dauer: 20, breite: 1080, hoehe: 1920, bytes: 4000000 };
+  const blatt = (eintrag) => baueBlatt('Test', '10', [{ eintrag, info: technik, bilder: ['clip_1.jpg'] }]);
+
+  const auffaellig = blatt({ ...EINTRAG, bild_geprueft_am: '2026-10-02T09:00:00.000Z',
+    bild: { wert: 0.58, passt: false }, personen_im_bild: true, gesicht_anteil: 0.2,
+    fremdtext: { einblendung: true, ortsfest: true, lage: 'rand' } });
+  assert.ok(auffaellig.includes('class="clip warnung"'), 'technisch einwandfrei, aber mit Befund');
+  assert.ok(auffaellig.includes('anderes Modell (Bildwert 0.58)'));
+  assert.ok(auffaellig.includes('Person im Bild'));
+  assert.ok(auffaellig.includes('Einblendung am Rand'));
+
+  // GEGENPROBE: derselbe Clip, angesehen und ohne Befund — keine Warnung.
+  const sauber = blatt({ ...EINTRAG, bild_geprueft_am: '2026-10-02T09:00:00.000Z',
+    bild: { wert: 0.74, passt: true }, personen_im_bild: false });
+  assert.ok(!sauber.includes('class="clip warnung"'));
+  assert.ok(sauber.includes('Bild angesehen'));
+
+  // Und der nie angesehene Clip sieht NICHT genauso aus: Auch er hat keine
+  // Warnung, aber das Blatt sagt, dass niemand hingesehen hat.
+  const ungesehen = blatt(EINTRAG);
+  assert.ok(!ungesehen.includes('class="clip warnung"'));
+  assert.ok(ungesehen.includes('Bild nicht angesehen'));
+  assert.ok(!ungesehen.includes('Bild angesehen'));
+});
+
 test('das Blatt sagt, dass Rechte damit nicht geprueft sind', () => {
   const blatt = baueBlatt('Test', '10', [{
     eintrag: EINTRAG,

@@ -161,6 +161,29 @@ alte Text nicht mehr zur Tonspur und wird neu erkannt, ohne den alten zu lösche
 Das Modell steht in `video.untertitel_modell`; fehlt es auf einem Rechner, lädt
 faster-whisper es beim ersten Aufruf.
 
+### Ist das Produkt früh zu sehen? (Punkt 35)
+
+Bei fremdem Rohmaterial zeigen die ersten Sekunden leicht nur Kontext — eine Küche,
+eine Hand, ein Gesicht — und das Produkt kommt in Sekunde acht. Beim Rendern und
+beim Bauversuch (`marketing:pruefen -- <liste> --bauversuch`) hält Stil C deshalb
+die **ersten drei Sekunden der geschnittenen Segmente** gegen die Produktfotos —
+nach dem Zuschnitt auf 9:16, der ein Produkt am Rand wegschneiden kann, und vor den
+Einblendungen. Liegt der beste Bildwert unter `video.produkt_sichtbar_ab` (0,655),
+steht ein Hinweis da; im Bericht des Videos steht `produkt_frueh`.
+
+**Das ist ein schwacher Hinweis, und die Zahl dazu gehört hierher.** Nachgesehen am
+02.10. an 15 Clips: Von acht Anfängen ohne Produkt fielen **vier** auf, von sieben
+mit Produkt wurde **keiner** fälschlich gemeldet. Durchgekommen sind ein Weidenkorb
+(0,68), ein Schreibtisch (0,70), eine Verpackung mit Produktfoto (0,73) und ein sehr
+klein abgebildetes Gerät — der gut sichtbare Wasserspender im selben Material bekam
+nur 0,59 bis 0,67. Der Abstand ist dünn (0,648 ohne, 0,664 mit). **Kein Hinweis ist
+also keine Zusage**, und deshalb ist es nie eine Sperre.
+
+Geladen wird beim Rendern nichts: Liegt das Bildmodell nicht auf der Platte
+(`npm run tiktok:bild` lädt es einmal), steht im Bericht `geprueft: false` samt
+Grund — „nicht nachgesehen" sieht damit anders aus als „nichts gefunden".
+Abschalten: `video.produkt_sichtbar_pruefen: false`.
+
 **Warum JSON und nicht ein Videoprojekt:** Eine 4-KB-Liste gehört ins
 Repository, ein 40-MB-Video nicht. Dieselbe Liste ergibt dasselbe Video, und
 fünf Fassungen zu vergleichen heißt fünf Dateien zu lesen, nicht fünf Videos
@@ -321,6 +344,11 @@ wertlos.** Zu jeder Prüfung steht eine Gegenprobe.
 
 Videos in Tests sind **echt** (per `lavfi` erzeugt), nie Dummies mit beliebigen
 Bytes — sonst liefe die Zeitprüfung gegen die echte Dateilänge ins Leere.
+
+Die Bilderkennung ist in den Tests **abgeschaltet** (`MARKETING_BILD=aus` in
+`conftest.py`): Sonst liefe das Modell auf einem Rechner, auf dem es liegt, in jedem
+Rendertest mit und anderswo nie. `test_bild.py` schaltet es gezielt ein und
+überspringt die drei Modell-Prüfungen, wenn die Dateien fehlen.
 
 ---
 

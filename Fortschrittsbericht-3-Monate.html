@@ -291,13 +291,13 @@
 
   <div class="report-header">
     <p class="eyebrow">Fortschrittsbericht · Drei Monate</p>
-    <h1 class="title">Maios Shop — Juni bis September 2026</h1>
-    <p class="subtitle">Zeitraum <strong>7. Juni – 28. September 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 928 automatischen Prüfungen und einem Marketing-Automaten geworden — und seit dem 23.&nbsp;September landet eine bezahlte Bestellung automatisch beim Lieferanten. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
+    <h1 class="title">Maios Shop — Juni bis Anfang Oktober 2026</h1>
+    <p class="subtitle">Zeitraum <strong>7. Juni – 2. Oktober 2026</strong>, gezählt aus der Commit-Historie auf <code>main</code> und am laufenden System nachgemessen. In diesen drei Monaten ist aus einem Shop, dessen Kasse live auf einen toten Endpunkt zeigte und dessen Quellcode öffentlich abrufbar war, ein Betrieb mit eigener Deploy-Sperre, 938 automatischen Prüfungen und einem Marketing-Automaten geworden — und seit dem 23.&nbsp;September landet eine bezahlte Bestellung automatisch beim Lieferanten. Dieser Bericht schließt an den Bericht vom 16.&nbsp;August an und wird seit dem 7.&nbsp;September <strong>nach jedem abgeschlossenen Punkt fortgeschrieben</strong> — Erledigtes abgehakt, Verworfenes durchgestrichen statt gelöscht.</p>
     <div class="meta-row">
       <span><strong>maiosshop.com</strong> · Render, Deploy nur bei grünem Prüflauf</span>
-      <span style="color:var(--green);font-weight:600;">✓ 181 Commits an 40 Arbeitstagen</span>
-      <span><strong>928</strong> automatische Prüfungen (595 Shop + 333 Bot) · Marketing 259 grün, 48 warten auf die Datenbank</span>
-      <span>Stand <strong>28.09.2026</strong></span>
+      <span style="color:var(--green);font-weight:600;">✓ 189 Commits an 43 Arbeitstagen</span>
+      <span><strong>938</strong> automatische Prüfungen: 610 im Prüflauf (262 Shop + 348 Bot) · 328 Marketing, lokal, jetzt mit Datenbank</span>
+      <span>Stand <strong>02.10.2026</strong></span>
     </div>
   </div>
 
@@ -307,18 +307,18 @@
       <span class="section-label">Die drei Monate in Zahlen</span>
       <span class="section-rule"></span>
     </div>
-    <p class="section-note">Alle Werte sind gemessen, nicht geschätzt: <code>git log</code> ab dem 7.&nbsp;Juni, <code>npm test</code> und die Bot-Prüfungen in diesem Durchgang gelaufen, die Python-Prüfungen ausgezählt.</p>
+    <p class="section-note">Alle Werte sind gemessen, nicht geschätzt: <code>git log</code> ab dem 7.&nbsp;Juni, <code>npm test</code>, die Bot-Prüfungen und die Python-Prüfungen in diesem Durchgang gelaufen — letztere zum ersten Mal mit Datenbank.</p>
 
     <div class="stats">
       <div class="stat acc-blue">
-        <div class="num">181</div>
+        <div class="num">189</div>
         <div class="lbl">Commits</div>
-        <p class="sub">an 40 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
+        <p class="sub">an 43 Tagen mit Arbeit. Dichtester Tag: <strong>21. Juni</strong> mit 17 Commits, danach 19. und 22. Juni mit je 14.</p>
       </div>
       <div class="stat acc-green">
-        <div class="num">928</div>
+        <div class="num">938</div>
         <div class="lbl">Automatische Prüfungen</div>
-        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute: <strong>595 im Shop</strong> und <strong>333 im Bot</strong>, alle grün (6 davon laufen nur mit Datenbank). Von den <strong>307 Marketing-Prüfungen</strong> sind 259 grün und keine rot; 48 brauchen die Datenbank, und die ist am Kontingent. Die Prüfungen, die auf fehlenden Code warteten, sind seit dem 26.&nbsp;September grün (siehe unten).</p>
+        <p class="sub">Am 7. Juni gab es <strong>keine einzige</strong>. Heute laufen <strong>610 bei jedem Push</strong> — 262 im Shop und 348 im Bot, alle grün (6 im Shop nur mit Datenbank). Dazu <strong>328 Marketing-Prüfungen</strong>, die am 2.&nbsp;Oktober zum ersten Mal vollständig liefen, auch die 48 mit Datenbank: alle grün, keine übersprungen. Sie laufen nur auf diesem Rechner, nicht im Prüflauf.<br><br><strong>Berichtigung:</strong> <s>928 (595 Shop + 333 Bot)</s>. Die 595 waren schon das Ergebnis von <code>npm test</code>, und der sammelt die Bot-Prüfungen mit ein — sie waren hier also <strong>doppelt gezählt</strong>. Richtig waren am 28.&nbsp;September 595 im Prüflauf (262 + 333). Aufgefallen beim Neuzählen am 2.&nbsp;Oktober: Die Zahl sprang um drei, nachdem nur im Bot etwas dazugekommen war.</p>
       </div>
       <div class="stat acc-orange">
         <div class="num">546</div>
@@ -338,7 +338,7 @@
         <tr><th>Was</th><th>Anfang Juni</th><th>Heute</th><th>Veränderung</th></tr>
       </thead>
       <tbody>
-        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">928</td><td class="gut">neu aufgebaut</td></tr>
+        <tr><td>Automatische Prüfungen</td><td class="num">0</td><td class="num">938</td><td class="gut">neu aufgebaut — 610 davon sperren das Ausrollen</td></tr>
         <tr><td>Sperre vor dem Ausrollen</td><td class="num">keine</td><td class="num">Lint + Tests + Startprüfung</td><td class="gut">roter Lauf = alter Stand bleibt live</td></tr>
         <tr><td>Datenbank</td><td class="num">SQLite-Reste</td><td class="num">Neon-Postgres</td><td class="gut">dauerhaft, mit täglicher Sicherung</td></tr>
         <tr><td>Produktseiten mit Slug-Adresse</td><td class="num">0 von 40</td><td class="num">40 von 40</td><td class="gut">+ 301-Umleitung der alten IDs</td></tr>
@@ -347,7 +347,7 @@
         <tr><td>Produktseite beim zweiten Aufruf</td><td class="num">alles neu geladen</td><td class="num">17 KB gesamt</td><td class="gut">ETag statt <code>no-store</code></td></tr>
         <tr><td>Adressen in der Sitemap</td><td class="num">keine Sitemap</td><td class="num">54</td><td class="gut">+ <code>noindex</code> auf 5 Seiten</td></tr>
         <tr><td>Zeilen in <code>app.js</code></td><td class="num">4.430</td><td class="num">1.802</td><td class="gut">−59 %</td></tr>
-        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">13.979 Zeilen, 307 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
+        <tr><td>Marketing-Pipeline</td><td class="num">1.364 Zeilen, überwiegend Attrappe</td><td class="num">14.656 Zeilen, 328 Prüfungen</td><td class="gut">Kette schließt bis zum Umsatz</td></tr>
       </tbody>
     </table>
     </div>
@@ -585,6 +585,14 @@
         <div class="tl-body">
           <h3>Eigener Ton, korrigierbare Untertitel, Schnitte auf den Takt <span class="tl-tag tag-fund">Fund</span></h3>
           <p>Punkt 44 aus dem Papier zum Videoschnitt, damit <strong>77 von 90</strong>. Bei eigenem Material darf der Originalton jetzt bleiben (<code>"ton": "eigen"</code>); bei fremdem bricht das Einlesen ab. Die Musik weicht der Stimme aus, gemessen um 19,6&nbsp;dB. Mit <code>"untertitel": "aus_ton"</code> hört faster-whisper den eigenen Ton ab und setzt die Wörter zeitgenau ins Bild.<br><br><strong>Geprüft mit echter Sprache:</strong> Die Windows-Sprachausgabe spricht einen Satz, Stil C rendert ihn, und der Satz muss im Untertitel stehen. Dabei zeigte sich die Grenze des kleinen Modells: „Der Wasserspende fühlt dein Glas". Weil Stil C Text wörtlich einbrennt, landet der erkannte Text in einer Korrekturdatei neben der Schnittliste; dort verbessert, zählt die Änderung als neue Fassung.<br><br><strong>Schnitte auf den Takt</strong> (Punkt 39, damit <strong>78 von 90</strong>) — ohne die vorgeschlagene neue Bibliothek: ffmpeg und numpy reichen. Die fünf Betten mit Tempo im Namen trifft die Erkennung ohne den Namen auf ±0,01&nbsp;BPM. Zwei Fehler zeigte erst die Messung gegen eine bekannte Wahrheit: Das Raster lag 78&nbsp;ms zu früh, und bei einem Stück mit Hi-Hat auf jedem Offbeat rastete es genau eine halbe Zählzeit daneben ein. Beide behoben und mit Gegenprobe belegt.<br><br><strong>Untertitel mit dem größeren Modell.</strong> Nach deiner Freigabe ist Whisper „small" geladen (464&nbsp;MB). An zwei gesprochenen Sätzen fehlerfrei, wo „tiny" drei Fehler machte. Dabei fiel auf, dass Wortfortsetzungen wie „USB" + „-Ladung" mit Leerzeichen angehängt wurden.<br><br><strong>Kommentare mitlesen</strong> (Punkt 11, halb): Bei YouTube-Clips speichert der Lauf auf Wunsch die beliebtesten Kommentare, nur Text und Likes, ohne Namen; <code>npm run tiktok:fragen</code> zeigt die Fragen und die wiederkehrenden Einwände. Der erste echte Abruf: „It's too loud", „how do you clean it", „does it come with the big bottle". Bei TikTok geht es nicht ohne Umgehung — das bleibt offen. Nebenbei gefunden: Mit „nur YouTube" fragte der Lauf trotzdem die von Hand eingetragenen TikTok-Adressen ab.</p>
+        </div>
+      </div>
+
+      <div class="tl-entry">
+        <div class="tl-date">2. Okt</div>
+        <div class="tl-body">
+          <h3>Der Filter sieht zum ersten Mal ein Bild — und die Datenbank ist zurück <span class="tl-tag tag-fund">Fund</span></h3>
+          <p><strong>Neon ist wieder erreichbar.</strong> Mit dem Monatswechsel ist das Kontingent zurückgesetzt. Beim ersten Zugriff fehlten der Live-Datenbank <strong>acht Spalten</strong> (Freigabe je Beitrag, Bericht und Schnittliste je Video): Das Schema legt der Server beim Start an, und während der Sperre konnte kein Start es nachziehen. Nach dem Ausrollen waren alle da. Damit liefen die <strong>48 Marketing-Prüfungen mit Datenbank zum ersten Mal</strong> — auch die drei Proben, die belegen, dass Stil C nicht mehr aus Lernen und Umsatz fällt: alle grün.<br><br><strong>Der Prüflauf war einmal rot.</strong> Der Befehl für die Windows-Aufgabe baute seinen Pfad mit <code>path.join</code>; unter Linux, wo der Prüflauf läuft, kam ein Schrägstrich in den Windows-Pfad. Lokal fiel das nie auf. Der alte Stand blieb live, wie es die Sperre vorsieht.<br><br><strong>Ins Bild schauen</strong> (Punkte 19, 23, 30 aus dem Papier zum Videoschnitt, damit <strong>81 von 90</strong>; Punkt 35 halb). Nach deiner Freigabe sind drei kleine Modelle geladen (92&nbsp;MB, kein neues Paket). Der Bot zieht je Clip acht Standbilder und hält fest: Ähnlichkeit zu den eigenen Produktfotos, Gesichter, Einblendungen. <code>npm run tiktok:bild</code> hat alle 36 vorhandenen Clips angesehen.<br><br><strong>Was dabei herauskam:</strong> Zwei „Videos" im Vorrat enthielten <strong>nur Ton</strong> — TikTok-Fotobeiträge, von denen yt-dlp die Musik als <code>.mp4</code> lädt. Sie werden jetzt vor dem Laden abgewiesen. Fünf Clips liegen unter der Bildschwelle, und es sind genau die fünf falschen: ein Ninja-Mixer, eine fremde Massagepistole, eine Handpumpe, eine Frau, die nur spricht, und der eigene Mixer in einer Farbe, die der Shop nicht führt. Zwölf Clips zeigen sicher ein Gesicht, drei möglicherweise; 22 tragen eine Einblendung.<br><br><strong>Ein Gesicht ist jetzt eine eigene Freigabefrage.</strong> Die Einwilligung des Creators deckt das Video, nicht das Recht am eigenen Bild der gefilmten Person. Die Rechteakte verlangt bei einem sicher erkannten Gesicht einen zweiten Beleg; wird das Gesicht erst nach der Freigabe gefunden, ist die Freigabe zurückgenommen.<br><br><strong>Die Grenzen, gemessen statt behauptet.</strong> Nichts sortiert von selbst aus, und das hat einen Grund: Der Abstand an der Schwelle ist dünn (0,622 falsch, 0,636 richtig), und eine leere blaue Fläche bekommt 0,67 — der Wert trennt echte Aufnahmen, keine Grafiken. Aufgefallen ist das, weil die Gegenprobe im Test durchfiel; die Zusicherung „ein leeres Bild liegt unter der Schwelle" war schlicht falsch. Die Prüfung „ist das Produkt in den ersten drei Sekunden zu sehen" (Punkt 35) findet an 15 nachgesehenen Clips nur <strong>vier von acht</strong> Anfängen ohne Produkt — ein Weidenkorb und ein Schreibtisch kamen durch. Sie ist deshalb ein Hinweis beim Rendern und als „halb" geführt.<br><br><strong>Eine Zahl in diesem Bericht war falsch.</strong> Die Gesamtzahl der Prüfungen zählte den Bot doppelt: <code>npm test</code> sammelt seine Prüfungen bereits mit ein. Statt 928 waren es am 28.&nbsp;September 595 im Prüflauf; heute sind es 610, dazu 328 lokale für das Marketing. Oben berichtigt, die alte Zahl steht durchgestrichen daneben.<br><br>Probiert und verworfen: den gemeinsamen Anteil aller Produktfotos abzuziehen; danach rutschte ein Clip mit gut sichtbarem Wasserspender ans untere Ende.</p>
         </div>
       </div>
     </div>
@@ -964,10 +972,10 @@
           </div>
         </div>
         <div class="todo">
-          <div class="mark" style="background:var(--red);border-color:var(--red);color:var(--card);">!</div>
+          <div class="mark" style="background:var(--green);border-color:var(--green);color:var(--card);">✓</div>
           <div class="body">
-            <h4>Neon-Kontingent freimachen <span class="who who-you">Du</span></h4>
-            <p><strong>Der Shop nimmt derzeit Geld an, ohne Bestellungen speichern zu können.</strong> Die Datenbank verweigert seit dem 22.&nbsp;September jede Verbindung. Laut Neon-Konsole ist die <strong>monatliche Rechenzeit</strong> aufgebraucht, nicht der Speicher (Projekt <code>maios</code>, <code>icy-rice-50632176</code>).<br><br><strong>Die Ursache war unser eigener Code — und ist am 23.&nbsp;September behoben:</strong> Der Planer für die zeitgesteuerten Abläufe fragte alle fünf Minuten für jeden Ablauf die Datenbank. Neon legt die Rechenleistung erst nach einigen Minuten Ruhe schlafen, und der Keep-Alive hielt den Server zugleich dauerhaft wach — die Datenbank lief also rund um die Uhr. Jetzt merkt sich der Planer, wann ein Ablauf fällig ist, und fragt nur dann: gemessen an einem Tag mit zwei Abläufen <strong>576 Abfragen vorher, höchstens 4 jetzt</strong>.<br><br>Wieder erreichbar wird die Datenbank trotzdem erst mit dem monatlichen Zurücksetzen oder einem größeren Plan — unter „Review usage“ steht, wann. <strong>Stand 26.&nbsp;September abends: weiterhin gesperrt</strong>, jede Verbindung endet mit <code>exceeded the quota</code>. Ohne die Behebung wäre das Kontingent auch nächsten Monat wieder leergelaufen, und ein bezahlter Plan hätte Rechenzeit rund um die Uhr berechnet.<br><br>Solange das steht, sind Bestellungen, Belege, Tracking, das Admin-Panel und der Marketing-Automat tot. Der Notausgang von heute verhindert nur, dass dabei <em>Geld ohne Gegenwert</em> kassiert wird — er ersetzt die Datenbank nicht.<br><br><strong>Bitte im Stripe-Dashboard nachsehen</strong>, ob seit dem Ausfall Zahlungen ohne zugehörige Bestellung eingegangen sind.</p>
+            <h4>Neon-Kontingent freimachen <span class="who who-me">Erledigt — mit dem Monatswechsel</span></h4>
+            <p><strong>Stand 2.&nbsp;Oktober: Die Datenbank ist wieder erreichbar.</strong> Das Kontingent wurde mit dem Monatswechsel zurückgesetzt, die Datenbank nimmt wieder Verbindungen an — geprüft per Schemavergleich und mit 48 Prüfungen gegen die echte Datenbank, <strong>nicht</strong> mit einer Testbestellung. Acht Spalten, die der Server während der Sperre nicht anlegen konnte, sind nach dem Neustart da. <strong>Offen bleibt deine Nachschau im Stripe-Dashboard</strong> (letzter Absatz) — und die Entscheidung, ob das kostenlose Kontingent auf Dauer reicht: Die Ursache ist behoben, aber gemessen ist bisher nur ein einzelner Tag.<br><br><em>Der Stand während der Sperre, zum Nachlesen:</em><br><br><s>Der Shop nimmt derzeit Geld an, ohne Bestellungen speichern zu können.</s> Die Datenbank verweigerte vom 22.&nbsp;September bis zum Monatsende jede Verbindung. Laut Neon-Konsole ist die <strong>monatliche Rechenzeit</strong> aufgebraucht, nicht der Speicher (Projekt <code>maios</code>, <code>icy-rice-50632176</code>).<br><br><strong>Die Ursache war unser eigener Code — und ist am 23.&nbsp;September behoben:</strong> Der Planer für die zeitgesteuerten Abläufe fragte alle fünf Minuten für jeden Ablauf die Datenbank. Neon legt die Rechenleistung erst nach einigen Minuten Ruhe schlafen, und der Keep-Alive hielt den Server zugleich dauerhaft wach — die Datenbank lief also rund um die Uhr. Jetzt merkt sich der Planer, wann ein Ablauf fällig ist, und fragt nur dann: gemessen an einem Tag mit zwei Abläufen <strong>576 Abfragen vorher, höchstens 4 jetzt</strong>.<br><br>Wieder erreichbar wird die Datenbank trotzdem erst mit dem monatlichen Zurücksetzen oder einem größeren Plan — unter „Review usage“ steht, wann. <strong>Stand 26.&nbsp;September abends: weiterhin gesperrt</strong>, jede Verbindung endet mit <code>exceeded the quota</code>. Ohne die Behebung wäre das Kontingent auch nächsten Monat wieder leergelaufen, und ein bezahlter Plan hätte Rechenzeit rund um die Uhr berechnet.<br><br>Solange das steht, sind Bestellungen, Belege, Tracking, das Admin-Panel und der Marketing-Automat tot. Der Notausgang von heute verhindert nur, dass dabei <em>Geld ohne Gegenwert</em> kassiert wird — er ersetzt die Datenbank nicht.<br><br><strong>Bitte im Stripe-Dashboard nachsehen</strong>, ob seit dem Ausfall Zahlungen ohne zugehörige Bestellung eingegangen sind.</p>
           </div>
         </div>
         <div class="todo">
@@ -1102,13 +1110,13 @@
     <div class="pruef-banner">
       <h3>✅ Drei Monate, ein Muster</h3>
       <p>Der rote Faden dieser drei Monate ist nicht „mehr Funktionen", sondern <strong>weniger Stellen, an denen etwas lautlos falsch sein kann</strong>. Fast jeder große Fund war unsichtbar: die tote Kasse meldete nichts, der abrufbare Quellcode meldete nichts, die nie durchlaufenden Wochenläufe meldeten nichts, die fehlenden Einwilligungs-Nachweise in der Sicherung meldeten nichts, die erfundenen Marketing-Kennzahlen sahen aus wie echte Zahlen — und dieser Bericht selbst stand zehn Tage lang öffentlich im Shop, ohne dass irgendetwas darauf hingewiesen hätte.<br><br>
-      Deshalb sind die 928 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
+      Deshalb sind die 938 Prüfungen die eigentliche Bilanz — nicht weil Tests an sich wertvoll wären, sondern weil zu jeder eine Gegenprobe gehört, die belegt, dass sie den alten Fehler rot gemeldet hätte. Und deshalb steht der Marketing-Automat trotz fertiger Kette noch im Trockenlauf: <em>Ein System, das ungeprüft nach draußen sendet, ist genau der Fehlertyp, den die letzten drei Monate abgebaut haben.</em></p>
     </div>
   </div>
 
   <footer>
-    Interner Fortschrittsbericht · Zeitraum 7. Juni – 28. September 2026 · Stand 28.09.2026.<br>
-    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (595 Prüfungen), <code>node bot/tiktok-video-sync.test.js</code> + <code>kontaktbogen.test.js</code> (333 Prüfungen), <code>py -m pytest Marketing/tests</code> sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
+    Interner Fortschrittsbericht · Zeitraum 7. Juni – 2. Oktober 2026 · Stand 02.10.2026.<br>
+    Grundlage: <code>git log</code> auf <code>main</code>, <code>npm test</code> (610 Prüfungen — darin die 348 des Bots aus <code>bot/tiktok-video-sync.test.js</code> und <code>kontaktbogen.test.js</code>), <code>py -m pytest Marketing/tests</code> (328, mit Datenbank) sowie die Messungen in <code>CLAUDE.md</code>, <code>Marketing/FORTSCHRITT.md</code> und <code>bot/TIKTOK-VIDEO-SYNC.md</code>.<br>
     Wird nach jedem abgeschlossenen Punkt fortgeschrieben. <strong>Nicht öffentlich:</strong> seit dem 7.&nbsp;September blockt die Datei-Freigabe interne HTML-Dokumente im Wurzelverzeichnis — diese Seite ist unter <code>maiosshop.com</code> nicht abrufbar.<br>
     Vorgänger: <code>Fortschrittsbericht.html</code> (19. Juni – 16. August 2026).
   </footer>

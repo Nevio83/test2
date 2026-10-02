@@ -5855,13 +5855,16 @@ function plattformLauf(plattformen, {
   tiktokMeldung = 'ERROR: Unable to download webpage: HTTP Error 429: Too Many Requests',
   tiktokVideos = ['https://www.tiktok.com/@a/video/7300000000000000001'],
   standard: extraStandard = {},
+  bildAufruf,
+  meta = {},
 } = {}) {
   const daten = tempOrdner();
   const videos = tempOrdner();
   const aufrufe = [];
   const hoch = { id: 'HHHHHHHHHHH', webpage_url: 'https://www.youtube.com/watch?v=HHHHHHHHHHH',
     title: 'Elektrischer Wasserspender am Schreibtisch', duration: 30, width: 1080, height: 1920,
-    uploader: 'kanal', channel_url: 'https://www.youtube.com/channel/UCx', track: 'Ein Lied', artist: 'Jemand' };
+    uploader: 'kanal', channel_url: 'https://www.youtube.com/channel/UCx', track: 'Ein Lied', artist: 'Jemand',
+    ...meta };
   const quer = { ...hoch, id: 'QQQQQQQQQQQ', webpage_url: 'https://www.youtube.com/watch?v=QQQQQQQQQQQ',
     width: 1920, height: 1080 };
   const ytdlp = async (a) => {
@@ -5897,6 +5900,9 @@ function plattformLauf(plattformen, {
     stopDatei: path.join(daten, 'kein-STOP'), env: {},
     frage: async () => antworten.shift(), jetzt: () => '2026-09-27T10:00:00.000Z',
     melde: still, warte: async () => {}, impersonation: nachahmungDa, bogen: false, bericht,
+    // Nie der echte Aufruf: Der wuerde Python und drei Modelle starten — im
+    // Prueflauf gibt es beides nicht. Gerufen wird er nur mit bild_pruefen.
+    bildAufruf: bildAufruf || (() => { throw new Error('bildAufruf ohne Nachbau gerufen'); }),
   });
   return { lauf, aufrufe, daten, videos, bericht };
 }
@@ -6044,4 +6050,247 @@ test('Fragen: auch ohne Fragezeichen, und Einwaende zaehlen mit', () => {
   ]);
   assert.deepEqual(fragen.map((f) => f.text), ['Does it come with the big bottle']);
   assert.ok(woerter.some((w) => w.wort === 'loud' && w.anzahl === 2), 'der Einwand "laut" steht in keiner Frage');
+});
+
+
+// ── Ins Bild schauen (Punkte 19, 23, 30) ─────────────────────────────
+//
+// Das Modell selbst laeuft hier nie — es braucht Python und 92 MB Dateien,
+// die es im Prueflauf nicht gibt (seine Pruefungen: Marketing/tests/test_bild.py).
+// Geprueft wird, was der Bot aus einem Befund MACHT: was in den Nachweis
+// kommt, was der Mensch zu lesen bekommt, und dass nichts von selbst
+// aussortiert wird.
+
+const { bildFelder, bildHinweise, bildPruefen } = require('./tiktok-video-sync.js');
+
+const BEFUND = {
+  ok: true, datei: 'clip.mp4',
+  produkt: { ok: true, max: 0.74, mittel: 0.71, je_bild: [0.7, 0.72, 0.74, 0.68], fotos: 3 },
+  gesichter: { ok: true, bilder: 4, mit_gesicht: 0, unsicher: 0, groesstes_anteil: 0, personen_im_bild: false, personen_moeglich: false },
+  text: { ok: true, bilder: 4, mit_text: 0, ortsfest: false, lage: null, haeufig: false, einblendung: false },
+};
+const FEST = { jetzt: () => '2026-10-02T09:00:00.000Z' };
+
+test('Bild: ein unauffaelliger Clip bekommt Werte, aber keinen Hinweis', () => {
+  const felder = bildFelder(BEFUND, { schwelle: 0.63, ...FEST });
+  assert.deepEqual(felder.bild, { wert: 0.71, max: 0.74, bilder: 4, passt: true });
+  assert.equal(felder.personen_im_bild, false);
+  assert.equal(felder.bild_geprueft_am, '2026-10-02T09:00:00.000Z');
+  assert.deepEqual(bildHinweise(felder), []);
+});
+
+test('Bild: die Schwelle entscheidet ueber "passt" — und nur darueber', () => {
+  const knapp = { ...BEFUND, produkt: { ...BEFUND.produkt, mittel: 0.622 } };
+  const felder = bildFelder(knapp, { schwelle: 0.63, ...FEST });
+  assert.equal(felder.bild.passt, false);
+  assert.match(bildHinweise(felder)[0], /anderes Modell \(Bildwert 0\.62\)/);
+  // GEGENPROBE: derselbe Clip mit niedrigerer Schwelle — kein Hinweis.
+  assert.equal(bildFelder(knapp, { schwelle: 0.6, ...FEST }).bild.passt, true);
+  // Der Befund loescht nichts und sperrt nichts: Es gibt kein Feld, das der
+  // Bot beim Laden oder Rendern als Ablehnung liest.
+  assert.deepEqual(Object.keys(felder).sort(),
+    ['bild', 'bild_geprueft_am', 'fremdtext', 'personen_im_bild', 'personen_moeglich']);
+});
+
+test('Bild: sicheres Gesicht, moegliches Gesicht und keins sind drei verschiedene Saetze', () => {
+  const sicher = bildFelder({ ...BEFUND, gesichter: { ok: true, personen_im_bild: true, personen_moeglich: true, groesstes_anteil: 0.21 } }, FEST);
+  assert.equal(sicher.gesicht_anteil, 0.21);
+  assert.match(bildHinweise(sicher)[0], /Person im Bild \(Gesicht bis 21 % der Höhe\)/);
+
+  const moeglich = bildFelder({ ...BEFUND, gesichter: { ok: true, personen_im_bild: false, personen_moeglich: true, groesstes_anteil: 0 } }, FEST);
+  assert.deepEqual(bildHinweise(moeglich), ['Person möglich — bitte ansehen']);
+  assert.equal(moeglich.gesicht_anteil, undefined);
+});
+
+test('Bild: eine Einblendung am Rand ist ein anderer Befund als eine mitten im Bild', () => {
+  const mit = (text) => bildHinweise(bildFelder({ ...BEFUND, text: { ok: true, ...text } }, FEST));
+  assert.deepEqual(mit({ einblendung: true, ortsfest: true, lage: 'rand' }), ['Einblendung am Rand — wegschneidbar']);
+  assert.deepEqual(mit({ einblendung: true, ortsfest: true, lage: 'mitte' }), ['Einblendung mitten im Bild']);
+  assert.deepEqual(mit({ einblendung: true, ortsfest: false, haeufig: true }), ['Schrift in fast jedem Bild']);
+  // GEGENPROBE: Text am Geraet selbst (nicht ortsfest, nicht haeufig) ist keine Einblendung.
+  assert.deepEqual(mit({ einblendung: false, ortsfest: false, haeufig: false, mit_text: 5 }), []);
+});
+
+test('Bild: eine Datei ohne Bildspur wird als solche festgehalten', () => {
+  const felder = bildFelder({ ok: false, keine_bildspur: true, grund: 'keine Bildspur' }, FEST);
+  assert.deepEqual(felder, { keine_bildspur: true, bild_geprueft_am: '2026-10-02T09:00:00.000Z' });
+  assert.match(bildHinweise(felder)[0], /KEIN BILD/);
+  // Ein gescheiterter Blick dagegen hinterlaesst NICHTS — sonst gaelte der
+  // Clip als angesehen und wuerde beim naechsten Lauf uebersprungen.
+  assert.deepEqual(bildFelder({ ok: false, grund: 'nicht lesbar' }, FEST), {});
+  assert.deepEqual(bildFelder(undefined, FEST), {});
+});
+
+test('Bild: scheitert ein Teil, bleiben die anderen stehen', () => {
+  const felder = bildFelder({ ...BEFUND, produkt: { ok: false, grund: 'keine Produktfotos zu Produkt 99' } }, FEST);
+  assert.equal(felder.bild, undefined, 'kein Wert ist kein schlechter Wert');
+  assert.equal(felder.personen_im_bild, false);
+  assert.deepEqual(bildHinweise(felder), []);
+});
+
+function bildVorrat() {
+  const wurzel = tempOrdner();
+  const daten = tempOrdner();
+  const ablage = path.join('videos', '10_wasserspender');
+  fs.mkdirSync(path.join(wurzel, ablage), { recursive: true });
+  for (const name of ['neu.mp4', 'gesehen.mp4']) fs.writeFileSync(path.join(wurzel, ablage, name), 'x');
+  speichereIndex(daten, { version: 1, eintraege: [
+    { produkt_id: 10, ablage, datei: 'neu.mp4', rechte_geprueft: false },
+    { produkt_id: 10, ablage, datei: 'gesehen.mp4', rechte_geprueft: false, bild_geprueft_am: '2026-09-30T00:00:00.000Z' },
+    { produkt_id: 10, ablage, datei: 'geloescht.mp4', rechte_geprueft: false },
+    { produkt_id: 11, ablage, datei: 'neu.mp4', rechte_geprueft: false },
+  ] });
+  return { wurzel, daten, ablage };
+}
+
+test('Bild: angesehen wird, was eine Datei hat und noch nicht dran war', () => {
+  const { wurzel, daten, ablage } = bildVorrat();
+  let liste;
+  const code = bildPruefen({
+    datenOrdner: daten, wurzel, melde: still, produktNr: 10, ...FEST,
+    bildAufruf: (l) => { liste = l; return { ok: true, befunde: l.map((x) => ({ ...BEFUND, pfad: x.datei })) }; },
+  });
+  assert.equal(code, 0);
+  assert.deepEqual(liste, [{ datei: path.join(wurzel, ablage, 'neu.mp4'), produkt_id: 10 }]);
+  const eintraege = ladeIndex(daten).eintraege;
+  assert.equal(eintraege[0].bild.wert, 0.71);
+  assert.equal(eintraege[1].bild, undefined, 'schon angesehen — nicht noch einmal');
+  assert.equal(eintraege[1].bild_geprueft_am, '2026-09-30T00:00:00.000Z');
+  assert.equal(eintraege[2].bild_geprueft_am, undefined, 'ohne Datei kein Befund');
+  assert.equal(eintraege[3].bild_geprueft_am, undefined, 'anderes Produkt nicht gefragt');
+  assert.ok(eintraege.every((e) => e.rechte_geprueft === false), 'am Rechtestand aendert der Blick nichts');
+
+  // GEGENPROBE: mit --neu kommt auch der schon Angesehene dran.
+  let zweite;
+  bildPruefen({ datenOrdner: daten, wurzel, melde: still, produktNr: 10, neu: true, ...FEST,
+    bildAufruf: (l) => { zweite = l; return { ok: true, befunde: [] }; } });
+  assert.deepEqual(zweite.map((x) => path.basename(x.datei)), ['neu.mp4', 'gesehen.mp4']);
+});
+
+test('Bild: laeuft die Erkennung nicht, bleibt der Nachweis unberuehrt', () => {
+  const { wurzel, daten } = bildVorrat();
+  const vorher = fs.readFileSync(path.join(daten, 'index.json'), 'utf8');
+  const meldungen = [];
+  const code = bildPruefen({ datenOrdner: daten, wurzel, melde: (m) => meldungen.push(m),
+    bildAufruf: () => ({ ok: false, grund: 'ModuleNotFoundError: onnxruntime', befunde: [] }) });
+  assert.equal(code, 1);
+  assert.equal(fs.readFileSync(path.join(daten, 'index.json'), 'utf8'), vorher);
+  assert.ok(meldungen.some((m) => /onnxruntime/.test(m)), 'der Grund wird gesagt');
+});
+
+test('Bild: im Lauf nur, wenn eingeschaltet — der Befund steht dann im Nachweis', async () => {
+  let gefragt;
+  const an = plattformLauf(['youtube'], {
+    standard: { bild_pruefen: true },
+    bildAufruf: (liste) => {
+      gefragt = liste;
+      return { ok: true, befunde: [{ ...BEFUND, produkt: { ...BEFUND.produkt, mittel: 0.58 } }] };
+    },
+  });
+  assert.equal(await an.lauf, 0);
+  const [eintrag] = ladeIndex(an.daten).eintraege;
+  assert.equal(gefragt.length, 1);
+  assert.equal(gefragt[0].produkt_id, 10);
+  assert.equal(path.basename(gefragt[0].datei), eintrag.datei);
+  assert.equal(eintrag.bild.passt, false);
+  // KEIN AUSSORTIEREN: Der Clip unter der Schwelle ist trotzdem geladen und
+  // im Nachweis — entschieden wird am Kontaktbogen.
+  assert.equal(geladeneVideos(an.videos).length, 1);
+
+  // GEGENPROBE: Standard (aus) — die Erkennung wird nicht einmal gerufen.
+  let gerufen = false;
+  const aus = plattformLauf(['youtube'], { bildAufruf: () => { gerufen = true; return { ok: true, befunde: [] }; } });
+  assert.equal(await aus.lauf, 0);
+  assert.equal(gerufen, false);
+  assert.equal(ladeIndex(aus.daten).eintraege[0].bild_geprueft_am, undefined);
+});
+
+test('Bild: faellt die Erkennung aus, wird trotzdem geladen', async () => {
+  const kaputt = plattformLauf(['youtube'], {
+    standard: { bild_pruefen: true },
+    bildAufruf: () => { throw new Error('py nicht gefunden'); },
+  });
+  assert.equal(await kaputt.lauf, 0);
+  const [eintrag] = ladeIndex(kaputt.daten).eintraege;
+  assert.equal(eintrag.video_id, 'HHHHHHHHHHH');
+  assert.equal(eintrag.bild_geprueft_am, undefined, 'ungesehen bleibt ungesehen — der naechste tiktok:bild holt es nach');
+});
+
+test('Bild: ein Fotobeitrag (nur Ton) wird gar nicht erst geladen', async () => {
+  // So lagen zwei "Videos" im Vorrat: yt-dlp meldet vcodec "none" und laedt die Musik.
+  assert.match(technischUntauglich({ nur_ton: true, hoehe: 1920, breite: 1080, dauer: 20 }, STANDARD), /kein Bild/);
+  const foto = plattformLauf(['youtube'], { meta: { vcodec: 'none' } });
+  await foto.lauf;
+  assert.equal(ladeIndex(foto.daten).eintraege.length, 0);
+  assert.equal(geladeneVideos(foto.videos).length, 0);
+
+  // GEGENPROBE: dieselbe Antwort mit Bildspur wird geladen.
+  const video = plattformLauf(['youtube'], { meta: { vcodec: 'avc1.64001F' } });
+  assert.equal(await video.lauf, 0);
+  assert.equal(ladeIndex(video.daten).eintraege.length, 1);
+});
+
+test('Bild: die Einwilligung des Creators deckt kein Gesicht im Bild', () => {
+  const akte = { art: 'einwilligung', datum: '2026-09-01T10:00:00Z', beleg: 'screenshot-dm.png', zwecke: ['organisch'] };
+  const clip = { creator: 'x', quelle_url: 'https://www.tiktok.com/@x/video/1', personen_im_bild: true };
+  setzeRechte(clip, akte);
+  const urteil = darfVeroeffentlicht(clip);
+  assert.equal(urteil.ok, false);
+  assert.match(urteil.grund, /Zustimmung der abgebildeten Person/);
+  assert.equal(clip.rechte_geprueft, false, 'auch der abgeleitete Wahrheitswert bleibt zu');
+
+  // Mit Beleg zur Person geht es durch — die Zustimmung oder der Vermerk
+  // eines Menschen, dass niemand erkennbar ist (die Erkennung irrt sich auch).
+  setzeRechte(clip, { ...akte, personen_beleg: 'nachgesehen 02.10.: nur Haende, kein Gesicht erkennbar' });
+  assert.equal(darfVeroeffentlicht(clip).ok, true);
+
+  // GEGENPROBE: derselbe Clip ohne Gesicht braucht den Beleg nicht —
+  // und ein nur MOEGLICHES Gesicht ist ein Hinweis, keine Sperre.
+  for (const ohne of [{}, { personen_im_bild: false, personen_moeglich: true }]) {
+    const e = { creator: 'x', quelle_url: 'https://www.tiktok.com/@x/video/1', ...ohne };
+    setzeRechte(e, akte);
+    assert.equal(darfVeroeffentlicht(e).ok, true);
+  }
+  // Eigenes Material bleibt frei: Wer selbst filmt, weiss, wer im Bild ist.
+  const eigen = { datei: 'a.mp4', personen_im_bild: true };
+  setzeRechte(eigen, { art: 'eigen' });
+  assert.equal(darfVeroeffentlicht(eigen).ok, true);
+});
+
+test('Bild: wird das Gesicht NACH der Freigabe gefunden, ist die Freigabe weg', () => {
+  const { wurzel, daten } = bildVorrat();
+  const index = ladeIndex(daten);
+  const akte = { art: 'einwilligung', datum: '2026-09-01T10:00:00Z', beleg: 'mail.eml', zwecke: ['organisch'],
+                 inhaber: 'x', kontakt: 'https://www.tiktok.com/@x' };
+  setzeRechte(index.eintraege[0], akte);
+  assert.equal(index.eintraege[0].rechte_geprueft, true, 'erst freigegeben, dann angesehen');
+  speichereIndex(daten, index);
+
+  const mitGesicht = { ...BEFUND, gesichter: { ok: true, personen_im_bild: true, personen_moeglich: true, groesstes_anteil: 0.18 } };
+  const meldungen = [];
+  bildPruefen({ datenOrdner: daten, wurzel, melde: (m) => meldungen.push(m), produktNr: 10, ...FEST,
+    bildAufruf: (l) => ({ ok: true, befunde: l.map((x) => ({ ...mitGesicht, pfad: x.datei })) }) });
+  const danach = ladeIndex(daten).eintraege[0];
+  assert.equal(danach.personen_im_bild, true);
+  assert.equal(danach.rechte_geprueft, false);
+  assert.equal(danach.rechte.beleg, 'mail.eml', 'die Akte bleibt — nur die Freigabe faellt');
+  assert.ok(meldungen.some((m) => /Freigabe ist zurückgenommen/.test(m)), 'und es wird gesagt');
+
+  // GEGENPROBE: derselbe Ablauf ohne Gesicht — die Freigabe bleibt.
+  const zweiter = bildVorrat();
+  const index2 = ladeIndex(zweiter.daten);
+  setzeRechte(index2.eintraege[0], akte);
+  speichereIndex(zweiter.daten, index2);
+  bildPruefen({ datenOrdner: zweiter.daten, wurzel: zweiter.wurzel, melde: still, produktNr: 10, ...FEST,
+    bildAufruf: (l) => ({ ok: true, befunde: l.map((x) => ({ ...BEFUND, pfad: x.datei })) }) });
+  assert.equal(ladeIndex(zweiter.daten).eintraege[0].rechte_geprueft, true);
+});
+
+test('Bild: wo die ortsfeste Einblendung steht, kommt mit in den Nachweis', () => {
+  const kasten = [{ x: 0.1, y: 0.03, w: 0.8, h: 0.06 }];
+  const fest = bildFelder({ ...BEFUND, text: { ok: true, einblendung: true, ortsfest: true, lage: 'rand', bereiche: kasten } }, FEST);
+  assert.deepEqual(fest.fremdtext.bereiche, kasten);
+  // Gegenprobe: Ohne ortsfesten Text gibt es keine Stelle, die man wegschneiden koennte.
+  const lose = bildFelder({ ...BEFUND, text: { ok: true, einblendung: true, ortsfest: false, haeufig: true, bereiche: [] } }, FEST);
+  assert.equal(lose.fremdtext.bereiche, undefined);
 });

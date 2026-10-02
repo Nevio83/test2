@@ -14,6 +14,7 @@ und die Notiz "Nachbauten muessen luegenfrei sein".
 
 from __future__ import annotations
 
+import os
 import sys
 import uuid
 from pathlib import Path
@@ -23,6 +24,12 @@ import pytest
 MARKETING = Path(__file__).resolve().parents[1]
 if str(MARKETING) not in sys.path:
     sys.path.insert(0, str(MARKETING))
+
+# Punkt 35: Stil C schaut beim Rendern nebenbei ins Bild — aber nur, wenn das
+# Bildmodell auf der Platte liegt. Ohne diese Zeile liefe es auf diesem Rechner
+# in JEDEM Rendertest mit und anderswo nie: derselbe Test, zwei Ablaeufe. Die
+# Pruefungen, die das Modell meinen (test_bild.py), schalten es gezielt ein.
+os.environ.setdefault("MARKETING_BILD", "aus")
 
 from pipelines import db  # noqa: E402
 

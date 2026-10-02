@@ -1247,6 +1247,85 @@ darunter stehen die Wörter, die in allen Kommentaren wiederkehren — „too lo
 keine Frage, aber genau der Einwand, den der eigene Clip in Sekunde drei beantworten
 kann.
 
+### Ins Bild schauen (Punkte 19, 23, 30)
+
+Bis zum 02.10. hat der Filter **nie ein Bild gesehen** — er las Titel, Untertitel
+und Maße. Ob das Gerät im Clip überhaupt vorkommt, ob ein Gesicht zu erkennen ist,
+ob ein fremder Shopname im Bild steht: unbekannt, bis jemand von Hand hinsah.
+
+```json
+"bild_pruefen": true,
+"bild_schwelle": 0.63
+```
+
+Nach dem Laden zieht der Bot **acht Standbilder** aus dem Clip (das erste Zehntel
+bleibt aus, dort steht fast immer ein Titel) und sieht dreierlei nach. Kostet rund
+8 Sekunden je Clip.
+
+```bash
+npm run tiktok:bild                    # alle noch nicht angesehenen Clips nachholen
+npm run tiktok:bild -- --produkt 10
+npm run tiktok:bild -- --neu           # auch schon Angesehene noch einmal
+```
+
+| Blick | Feld im Nachweis | Hinweis im Kontaktbogen |
+|---|---|---|
+| Ähnlichkeit zu den eigenen Produktfotos | `bild: { wert, max, bilder, passt }` | „Produkt kaum zu sehen oder anderes Modell" |
+| Gesichter | `personen_im_bild`, `personen_moeglich`, `gesicht_anteil` | „Person im Bild — eigene Zustimmung nötig" / „Person möglich — bitte ansehen" |
+| Text im Bild | `fremdtext: { einblendung, ortsfest, lage, haeufig }` | „Einblendung am Rand — wegschneidbar" / „mitten im Bild" / „Schrift in fast jedem Bild" |
+| keine Bildspur | `keine_bildspur` | „KEIN BILD — die Datei enthält nur Ton" |
+
+**Nichts davon sortiert von selbst aus.** Die Befunde sind Hinweise für den
+Menschen am Kontaktbogen. Das ist keine Vorsicht aus Prinzip, sondern das Ergebnis
+der Messung:
+
+**Was der Bildwert kann.** Gemessen an den 34 vorhandenen Clips von drei Produkten:
+Die **fünf Clips unter 0,63 waren genau die fünf falschen** — ein Ninja-Mixer statt
+des eigenen, eine Gymtastic-Massagepistole, eine Handpumpe, eine Frau, die nur in
+die Kamera spricht, und der eigene Mixer in Schwarz mit fremdem Aufdruck (führt der
+Shop nicht). Keiner der richtigen lag darunter.
+
+**Was er nicht kann.**
+
+* Der Abstand ist dünn: der höchste falsche Clip **0,622**, der niedrigste
+  richtige **0,636**.
+* Er trennt **echte Aufnahmen**, keine Grafiken. Eine leere blaue Fläche bekommt
+  gegen die Wasserspender-Fotos 0,67, eine weiße 0,72, Rauschen 0,70 — alles
+  *über* der Schwelle. Eine Texttafel oder ein Schwarzbild mit Schrift fällt also
+  nicht auf.
+* Die Frage „welches der 40 Produkte ist es?" beantwortet er nicht: Das eigene
+  Produkt lag nur bei 7 von 34 Clips vorn, weil alle Produktfotos einander als
+  „Studiofoto eines Geräts" ähneln.
+* Probiert und verworfen: den gemeinsamen Anteil aller Produktfotos vorher
+  abzuziehen. Danach rutschte ein Clip mit gut sichtbarem Wasserspender ans
+  untere Ende.
+
+**Gesichter werden erkannt, nie identifiziert.** Kein Modell hier kann sagen, *wer*
+zu sehen ist. Es gibt zwei Stufen, weil eine einzige Grenze eins von beidem falsch
+machen müsste: Klare Gesichter kamen mit 0,78–0,94, der runde Aufsatz einer
+Massagepistole mit 0,66 — und unscharfe, aber echte Gesichter mit 0,52–0,65. Ab 0,7
+heißt es „Person im Bild", zwischen 0,5 und 0,7 „Person möglich — bitte ansehen".
+Ein übersehenes Gesicht wiegt schwerer als ein Fehlalarm (Recht am eigenen Bild).
+
+**Text wird gefunden, nicht gelesen.** Entscheidend ist, ob er **an derselben
+Stelle bleibt**: Der Aufdruck „100 ML" am Gerät wandert mit dem Gerät durchs Bild,
+eine Einblendung steht über mehrere Standbilder am selben Ort. Die erste Fassung
+zählte jeden Text und meldete einen Clip ohne jede Einblendung als „dauerhaft,
+Mitte".
+
+**Fotobeiträge werden jetzt vor dem Laden abgewiesen.** Aufgefallen ist es, weil die
+Bilderkennung von zwei „Videos" keine Standbilder bekam: TikTok-Fotobeiträge haben
+kein Video, yt-dlp meldet `vcodec: none` und lädt nur die Musik — als `.mp4`. Zwei
+solche Dateien lagen im Vorrat. Sie stehen jetzt als „KEIN BILD" im Nachweis;
+gelöscht hat sie niemand.
+
+**Was es braucht.** Python mit `onnxruntime` und `numpy` (beides kommt mit
+faster-whisper) und drei Modelldateien, zusammen 92 MB, die `tiktok:bild` beim
+ersten Lauf einmal von Hugging Face lädt: CLIP ViT-B/32 (Bildteil, 89 MB), YuNet
+(Gesichter, 0,2 MB), PP-OCRv3 (Textsuche, 2,4 MB). **Kein neues Paket.** Fehlt
+etwas, lädt der Bot normal weiter, sagt es einmal, und der Clip bleibt ungesehen —
+`tiktok:bild` holt es nach.
+
 ### Es wird nachgelegt, bis die Zahl steht
 
 Suchbegriffe gehen **einer nach dem anderen** raus, nicht alle vorweg. Der
@@ -1801,6 +1880,11 @@ wertlos.** Zu jeder Prüfung steht eine Gegenprobe daneben:
 | ein gekipptes Urteil wird festgehalten | ein gleichbleibendes hinterlässt keine Änderung |
 | eine kaputte Urteilsdatei gilt als leer | die Sammlung ist Beiwerk, der Index ist das Wertvolle |
 | nach einem Fund wird der Bogen gebaut | ohne Fund entsteht keiner |
+| ein Fotobeitrag (nur Ton) wird nicht geladen | dieselbe Antwort mit Bildspur lädt sehr wohl |
+| ins Bild geschaut wird nur, wenn eingeschaltet | im Standard wird die Erkennung nicht einmal gerufen |
+| ein Clip unter der Bildschwelle bleibt geladen | — (es gibt bewusst kein Aussortieren, das man prüfen könnte) |
+| schon Angesehene kommen nicht noch einmal dran | mit `--neu` kommen sie dran |
+| ein gescheiterter Blick hinterlässt nichts | eine Datei ohne Bildspur hinterlässt genau diesen Befund |
 | beide Module laden sich ohne Ring | auch in umgekehrter Reihenfolge |
 
 ---

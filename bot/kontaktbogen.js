@@ -454,6 +454,10 @@ Rechte sind damit nicht geprüft.</p>
       if (info.dauer && info.dauer < 5) hinweise.push(`nur ${info.dauer.toFixed(1)} s`);
       if (formatWort(info.breite, info.hoehe) === 'quer') hinweise.push('Querformat');
     }
+    // Punkte 19/23/30: Was die Bilderkennung gesehen hat (npm run tiktok:bild).
+    hinweise.push(...sync.bildHinweise(e));
+    // "Nicht angesehen" darf nicht aussehen wie "angesehen, nichts gefunden".
+    const bildStand = e.bild_geprueft_am ? 'Bild angesehen' : 'Bild nicht angesehen';
 
     const werte = info ? [
       `<span><b>${zahl(info.dauer, 1)} s</b></span>`,
@@ -471,6 +475,7 @@ Rechte sind damit nicht geprüft.</p>
       <span>Treffer <b>${zahl(e.trefferwert, 2)}</b></span>
       ${e.creator ? `<span>${schuetzeHtml(e.creator)}</span>` : ''}
       ${hinweise.length ? `<span class="warn">⚠ ${hinweise.map(schuetzeHtml).join(' · ')}</span>` : '<span class="gut">✓ technisch brauchbar</span>'}
+      <span>${bildStand}</span>
     </div>
     ${e.untertitel ? `<p class="untertitel">${schuetzeHtml(e.untertitel)}</p>` : ''}
     <div class="werte">

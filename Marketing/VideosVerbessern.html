@@ -359,9 +359,9 @@
     <p class="subtitle">Dieses Papier gehört zum <strong>Fortschrittsbericht 7. Juni – 2. September 2026</strong> und vertieft den Teil, der dort nur eine Karte und fünf Punkte bekommen hat: die Kette aus <strong>Bot → Filter → Schnitt → Veröffentlichung</strong>. <strong>Wichtig:</strong> Es ist gegen den echten Code geschrieben, nicht gegen den Bericht — und dabei hat sich herausgestellt, dass <strong>ein guter Teil dessen, was der Bericht als Lücke las, längst gebaut ist</strong>: neun Prüfhürden im Bot, Spracherkennung per faster-whisper, Lautheitsnormung, Ducking, Untertitel, Ausgangsprüfung und eine sperrende Rechtsprüfung. Dieses Papier sagt bei jedem Punkt, was <em>wirklich</em> fehlt. <strong>Nachtrag vom 18.09.:</strong> Der Code wurde erneut gelesen. Fünf der 72 Punkte sind seitdem gebaut — Kontaktbogen, Vorprüfung, Schnittliste als Stil C, Kampagnen-Verweis, Freigabe je Beitrag (bis auf die Oberfläche). Der erste Abschnitt sagt, was davon steht; ganz unten stehen <strong>18 neue Punkte</strong>, die es vorher nicht geben konnte.</p>
     <div class="meta-row">
       <span><strong>bot/</strong> · 3.022 Zeilen Programm, 3.042 Zeilen Prüfungen (131 Stück)</span>
-      <span style="color:var(--blue);font-weight:600;">90 Vorschläge · 63 gebaut</span>
+      <span style="color:var(--blue);font-weight:600;">90 Vorschläge · 81 gebaut, 3 halb, 5 offen</span>
       <span><strong>23</strong> Rohclips → 5 Schnittfassungen → 1 fertiger Clip (19,5 s)</span>
-      <span>Stand <strong>18.09.2026</strong> · am Code nachgeprüft</span>
+      <span>Stand <strong>02.10.2026</strong> · am Code nachgeprüft</span>
     </div>
   </div>
 
@@ -435,7 +435,21 @@
     </div>
 
     <div class="pruef-banner" style="background:var(--blue-dim);border-color:color-mix(in srgb, var(--blue) 32%, transparent);">
-      <h3>Stand am 28.09.: 78 gebaut, 5 halb, 6 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <h3>Stand am 02.10.: 81 gebaut, 3 halb, 5 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <p class="tun" style="border-left:3px solid var(--blue);padding-left:12px;">
+        <b>Am 02.10.: Der Filter sieht zum ersten Mal ein Bild.</b>
+        <strong>19</strong> (Ähnlichkeit zu den eigenen Produktfotos) ·
+        <strong>23</strong> (Gesichter, mit eigener Frage in der Rechteakte) ·
+        <strong>30</strong> (Einblendungen, am Rand oder mitten im Bild) sind gebaut;
+        <strong>35</strong> (Produkt früh zu sehen) ist <em>halb</em> — die Prüfung läuft, findet aber nur die Hälfte.
+        Drei Modelle, zusammen 92&nbsp;MB, kein neues Paket. <code>npm run tiktok:bild</code> hat alle 36 Clips angesehen:
+        zwei enthielten <strong>nur Ton</strong> (TikTok-Fotobeiträge, jetzt vor dem Laden abgewiesen),
+        fünf liegen unter der Bildschwelle — genau die fünf falschen —, zwölf zeigen sicher ein Gesicht, 22 eine Einblendung.
+        <strong>Nichts wird von selbst aussortiert</strong>, und die Messung sagt warum: Abstand an der Schwelle 0,622 gegen 0,636,
+        und eine leere blaue Fläche bekommt 0,67. Die Einzelheiten stehen bei den vier Punkten.
+        Außerdem: Die Datenbank ist seit dem Monatswechsel wieder da — <strong>88</strong> wäre damit möglich.
+      </p>
+      <h3 style="color:var(--blue);">Stand am 28.09.: 78 gebaut, 5 halb, 6 offen, 1 anders gelöst</h3>
       <p class="warum" style="border-left:3px solid var(--green);padding-left:12px;">
         <b>Eine Berichtigung zuerst.</b> Beim Nachzählen am Mittag standen
         <strong>48</strong> und <strong>58</strong> auf „gebaut", weil ihre Prüfungen im Repo lagen.
@@ -466,15 +480,18 @@
         <strong>60</strong> (Render Starter, 7 $/Monat — deine Entscheidung) ·
         <strong>61</strong> und <strong>62</strong> (laufende Arbeit, kein Code) ·
         <strong>86</strong> (Material filmen oder Läufe — keine Programmieraufgabe) ·
-        <strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank, und die ist gerade gesperrt) ·
-        <strong>35</strong> (Produkt-Sichtbarkeit — braucht das Bildmodell aus Punkt 19, also eine neue
+        <strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank; <em>seit dem 02.10. ist sie wieder erreichbar</em>).
+        <s><strong>35</strong> (Produkt-Sichtbarkeit — braucht das Bildmodell aus Punkt 19, also eine neue
         Abhängigkeit, erst nach Rückfrage) ·
-        und das Bildmodell für 35, 19, 23 und 30 — dazu liegt ein Vorschlag vor, installiert ist nichts.
+        und das Bildmodell für 35, 19, 23 und 30 — dazu liegt ein Vorschlag vor, installiert ist nichts.</s>
+        <em>Am 02.10. nach Freigabe gebaut — ohne neues Paket.</em>
       </p>
       <p class="warum" style="margin-top:10px;">
         <b>Halb</b> heißt: der Weg steht, der letzte Schritt fehlt.
-        <strong>19</strong>, <strong>23</strong> und <strong>30</strong>
-        (Standbilder und Verwurfsgründe da, die automatische Erkennung bräuchte ein Bildmodell) ·
+        <s><strong>19</strong>, <strong>23</strong> und <strong>30</strong>
+        (Standbilder und Verwurfsgründe da, die automatische Erkennung bräuchte ein Bildmodell)</s> <em>gebaut am 02.10.</em> ·
+        <strong>35</strong> (die Prüfung läuft beim Rendern, findet aber nur vier von acht Anfängen ohne Produkt) ·
+        <strong>11</strong> (Kommentare nur bei YouTube) ·
         <strong>87</strong> (die Meldung steht; <code>.bestand.json</code> ist Handarbeit, die „tägliche Aufgabe" gab es nie).
         <strong>15</strong> ist anders gelöst als vorgeschlagen.
       </p>
@@ -763,10 +780,15 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">19</span> Ein Zweitfilter, der ins Bild schaut <span class="chip p-mittel">halb gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-gross">ein bis zwei Tage</span></h4>
+        <h4><span class="nr">19</span> Ein Zweitfilter, der ins Bild schaut <span class="chip p-niedrig">gebaut am 02.10. — als Hinweis</span> <span class="chip c-gratis">gratis</span> <span class="chip c-gross">ein bis zwei Tage</span></h4>
         <p class="warum"><b>Warum</b> Die härteste Grenze des heutigen Filters: Er hat noch nie ein Bild gesehen. Ob das beworbene Gerät im Clip überhaupt vorkommt, ob es das eigene Modell ist oder ein ähnliches, ob die Aufnahme scharf ist — alles unbekannt, bis jemand von Hand hinsieht.</p>
         <p class="tun"><b>Was tun</b> Nach dem Laden vier Standbilder ziehen und durch ein lokales Bildmodell schicken (CLIP-artig reicht, läuft auf der eigenen Maschine, keine laufenden Kosten). Ähnlichkeit gegen die eigenen Produktfotos aus dem Shop rechnen. Unter der Schwelle: aussortieren, aber <em>mit Standbild im Protokoll</em>, damit eine Fehlentscheidung sichtbar wird.</p>
         <p class="bringt"><b>Bringt</b> Der Schritt, bei dem heute die meiste Handarbeit steckt, wird zur Vorauswahl. Wichtig ist die Reihenfolge: erst Text (billig, kein Abruf), dann Bild (teurer, nach dem Abruf) — die billige Prüfung zuerst.</p>
+        <p class="tun"><b>Gebaut am 02.10. — ohne neues Paket.</b> <code>onnxruntime</code> und <code>numpy</code> lagen schon da (sie kommen mit faster-whisper), die Standbilder liefert ffmpeg. Dazu der Bildteil von CLIP ViT-B/32 als einzelne Datei (89&nbsp;MB, einmal geladen). Nach dem Laden zieht der Bot acht Standbilder — das erste Zehntel bleibt aus, dort steht fast immer ein Titel —, hält je Bild drei Ausschnitte gegen die eigenen Produktfotos und schreibt Mittel und Bestwert in den Nachweis (<code>bild</code>). Einschalten: <code>bild_pruefen</code> in <code>tiktok-quellen.json</code>; nachholen: <code>npm run tiktok:bild</code>. Rund 8&nbsp;s je Clip.</p>
+        <p class="warum"><b>Gemessen an den 34 vorhandenen Clips</b> Die <strong>fünf Clips unter 0,63 waren genau die fünf falschen</strong>: ein Ninja-Mixer statt des eigenen, eine Gymtastic-Massagepistole, eine Handpumpe, eine Frau, die nur in die Kamera spricht, und der eigene Mixer in Schwarz mit fremdem Aufdruck — eine Farbe, die der Shop nicht führt. Keiner der richtigen lag darunter.</p>
+        <p class="warum"><b>Was der Wert nicht kann — und warum deshalb nichts aussortiert wird</b> Vorgeschlagen war „unter der Schwelle: aussortieren". Gebaut ist ein <em>Hinweis im Kontaktbogen</em>, und das ist das Ergebnis der Messung, nicht Vorsicht aus Prinzip. <strong>Erstens</strong> ist der Abstand dünn: höchster falscher Clip 0,622, niedrigster richtiger 0,636. <strong>Zweitens</strong> trennt der Wert echte Aufnahmen, keine Grafiken — eine leere blaue Fläche bekommt 0,67, eine weiße 0,72, Rauschen 0,70. Gefunden hat das die Gegenprobe im Test: Die Zusicherung „ein leeres Bild liegt unter der Schwelle" stand zuerst da und fiel durch. <strong>Drittens</strong> beantwortet er die naheliegende Frage nicht, <em>welches</em> der 40 Produkte zu sehen ist: Das eigene lag nur bei 7 von 34 Clips vorn, weil alle Produktfotos einander als „Studiofoto eines Geräts" ähneln.</p>
+        <p class="tun"><b>Probiert und verworfen</b> Den gemeinsamen Anteil aller 40 Produktfotos vorher abzuziehen (das hebt üblicherweise den Kontrast). Danach rutschte ein Clip mit gut sichtbarem Wasserspender ans untere Ende, und die Werte waren zwischen den Produkten nicht mehr vergleichbar.</p>
+        <p class="warum"><b>Ein Fund am Rand</b> Zwei „Videos" im Vorrat lieferten keine Standbilder: TikTok-<em>Foto</em>beiträge. yt-dlp meldet dort <code>vcodec: none</code> und lädt nur die Musik — als <code>.mp4</code>. Sie werden jetzt <em>vor</em> dem Laden abgewiesen; die beiden vorhandenen stehen als „KEIN BILD" im Nachweis.</p>
       </div>
 
       <div class="vb-item">
@@ -800,10 +822,14 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">23</span> Personen im Bild gesondert markieren <span class="chip p-mittel">halb gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
+        <h4><span class="nr">23</span> Personen im Bild gesondert markieren <span class="chip p-niedrig">gebaut am 02.10.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">halber Tag</span></h4>
         <p class="warum"><b>Warum</b> Ein erkennbares Gesicht in einem fremden Clip ist zwei Fragen auf einmal: Urheberrecht am Video <em>und</em> Recht am eigenen Bild der gefilmten Person. Für einen gewerblichen Werbeclip ist die zweite oft die heiklere — und sie ist mit der Einwilligung des Creators nicht miterledigt.</p>
         <p class="tun"><b>Was tun</b> Gesichtserkennung über die Standbilder (nur erkennen, nicht identifizieren — eine lokale Bibliothek reicht), Ergebnis als Feld <code>personen_im_bild</code> im Index. Clips mit Gesichtern landen in einem eigenen Freigabepfad und dürfen ohne ausdrückliche Zustimmung nicht in einen veröffentlichten Beitrag.</p>
         <p class="bringt"><b>Bringt</b> Die Frage wird an der Stelle gestellt, an der sie billig ist — beim Sichten, nicht nach der Veröffentlichung. Hände sind unkritisch, Gesichter nicht: diese Unterscheidung trifft heute niemand systematisch.</p>
+        <p class="tun"><b>Gebaut am 02.10.</b> YuNet (0,2&nbsp;MB, MIT-Lizenz) über dieselben acht Standbilder. <strong>Erkannt, nie identifiziert</strong> — kein Modell hier kann sagen, <em>wer</em> zu sehen ist. Im Nachweis stehen <code>personen_im_bild</code>, <code>personen_moeglich</code> und die Größe des größten Gesichts als Anteil der Bildhöhe: 3&nbsp;% ist ein Passant im Hintergrund, 20&nbsp;% die Person, um die es geht.</p>
+        <p class="warum"><b>Zwei Stufen statt einer Grenze</b> Klare Gesichter kamen mit 0,78–0,94. Der runde Aufsatz einer Massagepistole mit rotem Punkt bekam 0,66 — und unscharfe, aber echte Gesichter 0,52–0,65. Eine einzige Grenze müsste entweder den Fehlalarm melden oder echte Gesichter übersehen. Ab 0,7 heißt es „Person im Bild", zwischen 0,5 und 0,7 „Person möglich — bitte ansehen". Ein übersehenes Gesicht wiegt schwerer als ein Fehlalarm. Im Vorrat: <strong>zwölf Clips sicher, drei möglich</strong>.</p>
+        <p class="tun"><b>Der eigene Freigabepfad sitzt in der Rechteakte</b> (Punkt 63). Bei einem sicher erkannten Gesicht fehlt der Akte ein zweiter Beleg: die Zustimmung der abgebildeten Person — oder der Vermerk eines Menschen, dass niemand erkennbar ist, denn die Erkennung irrt sich auch. Die Einwilligung des Creators allein gibt den Clip nicht mehr frei. <strong>Die Reihenfolge war die Falle:</strong> Wird erst freigegeben und der Clip danach angesehen, stünde die Freigabe weiter auf wahr — für eine Frage, die niemand gestellt hat. Findet der Blick ein Gesicht, wird sie deshalb zurückgenommen und gemeldet. Eigenes Material bleibt frei; „Person möglich" sperrt nicht.</p>
+        <p class="warum"><b>Was fehlt</b> Eine Prüfung mit einem <em>echten</em> Gesicht. Im Repo liegt kein Bild eines Menschen, und eines dafür einzuchecken wäre genau das, wovor dieser Punkt warnt. Die Schwellen sind an fremdem Rohmaterial gemessen, das nicht ins Repo gehört; automatisch geprüft wird nur die Regel dahinter und dass ein Bild ohne Gesicht keins meldet.</p>
       </div>
 
       <div class="vb-item">
@@ -869,10 +895,14 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">30</span> Fremde Wasserzeichen und Overlay-Text automatisch finden <span class="chip p-mittel">halb gebaut — geprueft am 26.09.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
+        <h4><span class="nr">30</span> Fremde Wasserzeichen und Overlay-Text automatisch finden <span class="chip p-niedrig">gebaut am 02.10. — gefunden, nicht gelesen</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">ein Tag</span></h4>
         <p class="warum"><b>Warum</b> Fremdes Material trägt fast immer eine fremde Handschrift: das wandernde TikTok-Logo mit dem Namen des Creators, eingebrannte Untertitel in fremder Sprache, der Shop-Name eines Mitbewerbers. Solange das von Hand gesucht wird, rutscht früher oder später eins durch — und dann steht der Name eines anderen im eigenen Werbeclip.</p>
         <p class="tun"><b>Was tun</b> Texterkennung (Tesseract, lokal) über acht Standbilder je Clip. Gefundene Textbereiche mit Position und Standzeit im Index ablegen. Zwei Verwendungen: als Ausschlusskriterium (dauerhafter Text mitten im Bild → unbrauchbar) und als Schnittvorgabe (Text nur am Rand → wegschneiden oder unscharf legen). Das TikTok-Logo wandert, deshalb über mehrere Standbilder prüfen, nicht über eins.</p>
         <p class="bringt"><b>Bringt</b> Das häufigste Ausschlusskriterium wird gemessen statt gesucht. Und die Fälle, in denen ein Zuschnitt reicht, werden gerettet statt weggeworfen — bei fremdem Material ist der Rand oft die einzige Stelle mit Fremdzeichen.</p>
+        <p class="tun"><b>Gebaut am 02.10. — anders als vorgeschlagen.</b> Statt Tesseract (ein eigenes Programm, das installiert werden müsste) läuft der Textsucher von PP-OCRv3 über onnxruntime: 2,4&nbsp;MB, Apache-Lizenz. Er <strong>findet</strong> Text, er <strong>liest</strong> ihn nicht. Für die beiden Verwendungen reicht das — wo der Text steht und ob er dort bleibt —, aber <em>wessen</em> Shopname im Bild steht, weiß das Programm nicht.</p>
+        <p class="warum"><b>Ortsfest ist das Merkmal</b> Die erste Fassung zählte jeden Text und meldete einen Clip ohne jede Einblendung als „dauerhaft, Mitte": Der Aufdruck „100 ML" am Wasserspender ist auch Text. Der wandert aber mit dem Gerät durchs Bild. Eine Einblendung steht über mehrere Standbilder <em>an derselben Stelle</em> — gezählt wird die Fläche, auf der in mindestens der Hälfte der Bilder Text steht. Zweites Merkmal für Untertitel, die mit jedem Satz springen: Schrift in mindestens drei Vierteln der Bilder (gemessen: Aufdruck 5 von 8, Untertitel 7 von 8).</p>
+        <p class="tun"><b>Was im Nachweis steht</b> <code>fremdtext</code> mit <code>einblendung</code>, <code>ortsfest</code>, <code>lage</code> (Rand oder Mitte) und den <code>bereiche</code>n als Anteile des Bildes — die Vorgabe für einen Zuschnitt. Im Kontaktbogen: „Einblendung am Rand — wegschneidbar", „Einblendung mitten im Bild" oder „Schrift in fast jedem Bild". Im Vorrat tragen <strong>22 von 34 Clips</strong> eine Einblendung, drei davon nur am Rand.</p>
+        <p class="warum"><b>Was fehlt</b> Der Zuschnitt wird nicht von selbst in den Schnitt-Entwurf übernommen (bei schwarzen Balken aus Punkt 25 passiert das), und „mitten im Bild" verwirft nicht — wie bei Punkt 19 entscheidet der Mensch am Kontaktbogen. Das wandernde TikTok-Logo fällt unter keine der beiden Regeln, wenn es klein ist und seine Ecke wechselt.</p>
       </div>
 
       <div class="vb-item">
@@ -913,10 +943,14 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">35</span> Das Produkt muss früh und deutlich zu sehen sein <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">35</span> Das Produkt muss früh und deutlich zu sehen sein <span class="chip p-mittel">halb gebaut am 02.10. — findet 4 von 8</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Bei fremdem Rohmaterial passiert es leicht, dass die ersten Sekunden Kontext zeigen — eine Küche, eine Person, eine Handbewegung — und das Produkt erst in Sekunde acht auftaucht. Wer bis dahin weggewischt hat, hat einen Clip über eine Küche gesehen.</p>
         <p class="tun"><b>Was tun</b> Mit dem Bildmodell aus Punkt 19 je Segment einen Produkt-Sichtbarkeitswert rechnen. Regel in der Vorlage: In den ersten drei Sekunden muss mindestens ein Segment über der Schwelle liegen. Die Prüfung läuft beim Bauen, nicht beim Ansehen.</p>
         <p class="bringt"><b>Bringt</b> Kein Clip mehr, der schön ist und das Produkt versteckt. Bei einem Werbeclip ist das kein Stilfehler, sondern ein Zweckverfehlung.</p>
+        <p class="tun"><b>Halb gebaut am 02.10.</b> Die Prüfung läuft beim Bauen, wie vorgeschlagen: Beim Rendern von Stil C und beim Bauversuch (<code>marketing:pruefen -- &lt;liste&gt; --bauversuch</code>) werden die ersten drei Sekunden der <em>geschnittenen</em> Segmente gegen die Produktfotos gehalten — nach dem Zuschnitt auf 9:16, der ein Produkt am Rand wegschneiden kann, und vor dem Hook-Text. Liegt der beste Bildwert unter 0,655, steht ein Hinweis da; im Bericht des Videos steht <code>produkt_frueh</code>.</p>
+        <p class="warum"><b>Warum nur halb: Sie findet die Hälfte.</b> Nachgesehen an 15 Clips, Bild für Bild. Von <strong>acht</strong> Anfängen ohne Produkt fielen <strong>vier</strong> auf; von sieben mit Produkt wurde keiner fälschlich gemeldet. Durchgekommen sind ein Weidenkorb (0,68), ein Schreibtisch (0,70), eine Verpackung mit Produktfoto (0,73) und ein sehr klein abgebildetes Gerät — während der gut sichtbare Wasserspender im selben Material nur 0,59 bis 0,67 bekam. Abstand an der Grenze: 0,648 ohne, 0,664 mit. Am einzelnen Bild trennt der Wert schlechter als über den ganzen Clip (Punkt 19), weil nichts die Ausreißer mittelt.</p>
+        <p class="tun"><b>Deshalb ein Hinweis, nie eine Sperre</b> — und „kein Hinweis" ist keine Zusage. Die vorgeschlagene Regel „muss über der Schwelle liegen" wäre mit dieser Trefferquote eine Sperre gewesen, die zufällig zuschlägt. Liegt das Bildmodell nicht auf der Platte, steht im Bericht „nicht geprüft" samt Grund; beim Rendern wird nie etwas aus dem Netz geladen.</p>
+        <p class="warum"><b>Was es bräuchte</b> Einen Wert, der das Gerät meint und nicht „sieht aus wie ein Studiofoto". Der naheliegende nächste Versuch wäre der Textteil desselben Modells („a photo of a water dispenser") — eine weitere Datei von rund 65&nbsp;MB, nicht geladen, nicht gemessen.</p>
       </div>
 
       <div class="vb-item">

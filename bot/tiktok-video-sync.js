@@ -105,6 +105,13 @@ const STANDARD = {
   // es je Clip einen Abruf mehr kostet.
   kommentare_mitlesen: false,
   kommentare_hoechstens: 20,
+  // PUNKTE 19/23/30: Nach dem Laden ins Bild schauen. Im Code aus (die
+  // Pruefungen sollen ohne Python laufen), eingeschaltet in tiktok-quellen.json.
+  bild_pruefen: false,
+  // Unter diesem Mittelwert gilt "Produkt kaum zu sehen oder anderes Modell".
+  // Gemessen an 34 Clips: die fuenf darunter waren genau die fuenf falschen —
+  // bei duennem Abstand (0,622 falsch, 0,636 richtig).
+  bild_schwelle: 0.63,
   // Ein Treffer muss UNTERSCHEIDEN: Mindestens ein Begriff, den hoechstens so
   // viele Produkte fuehren. 0 = aus.
   //
@@ -390,6 +397,197 @@ function fragenAusgeben(opt = {}) {
     console.log('Was wiederkehrt: ' + woerter.map((w) => `${w.wort} (${w.anzahl})`).join(', '));
     console.log('Jede davon ist eine Frage, die der eigene Clip in Sekunde drei beantworten kann.');
   }
+  return 0;
+}
+
+// ── Ins Bild schauen (Punkte 19, 23, 30) ─────────────────────────────
+//
+// Der Filter hat bis hierher nie ein Bild gesehen. Die eigentliche Arbeit
+// macht Marketing/pipelines/video/bild.py (onnxruntime, drei kleine Modelle);
+// hier wird sie aufgerufen, in den Nachweis geschrieben und fuer den
+// Menschen am Kontaktbogen in Worte gefasst.
+//
+// WAS DIE WERTE BEDEUTEN — gemessen am 02.10. an 34 vorhandenen Clips:
+//   * bild.wert unter 0,63: Die fuenf Clips darunter zeigten ein FREMDES MODELL
+//     (Ninja-Mixer, Gymtastic-Massagepistole, eine Handpumpe), gar kein Geraet
+//     oder das eigene in einer Farbe, die der Shop nicht fuehrt (schwarzer
+//     Mixer mit fremdem Aufdruck). Darueber lag bei allen nachgesehenen das
+//     eigene Produkt. Der Abstand ist duenn: 0,622 falsch, 0,636 richtig.
+//   * Die Frage "welches der 40 Produkte ist es?" beantwortet der Wert NICHT
+//     (eigenes Produkt nur bei 7 von 34 auf Platz 1) — nur der absolute Wert
+//     gegen die eigenen Fotos traegt.
+//   * Der Wert trennt ECHTE AUFNAHMEN voneinander, keine Grafiken: Eine leere
+//     Farbflaeche bekommt 0,67, Rauschen 0,70. Ein Schwarzbild mit Schrift
+//     oder eine Texttafel faellt also NICHT auf.
+//
+// NICHTS HIER SORTIERT VON SELBST AUS. Drei Produkte und 34 Clips sind eine
+// Messung, kein Beweis. Die Befunde sind Hinweise — entschieden wird am
+// Kontaktbogen.
+
+const MARKETING_ORDNER = path.join(WURZEL, 'Marketing');
+
+/** Mehrere Clips in EINEM Python-Prozess ansehen. Rueckgabe: Befunde in der Reihenfolge der Liste. */
+function bildAufruf(liste, opt = {}) {
+  const python = opt.python || (process.platform === 'win32' ? 'py' : 'python3');
+  const zwischen = path.join(os.tmpdir(), `maios-bild-${process.pid}-${Date.now()}.json`);
+  fs.writeFileSync(zwischen, JSON.stringify(liste), 'utf8');
+  try {
+    const lauf = spawnSync(python, ['-m', 'pipelines.video.bild', '--liste', zwischen], {
+      cwd: MARKETING_ORDNER, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
+      env: { ...process.env, HF_HUB_DISABLE_PROGRESS_BARS: '1' },
+    });
+    const zeilen = String(lauf.stdout || '').split(/\r?\n/).filter((z) => z.trim().startsWith('{'));
+    if (!zeilen.length) {
+      const grund = String(lauf.stderr || '').trim().split(/\r?\n/).slice(-1)[0] || 'keine Antwort';
+      return { ok: false, grund: grund.slice(0, 200), befunde: [] };
+    }
+    const befunde = [];
+    for (const zeile of zeilen) {
+      try { befunde.push(JSON.parse(zeile)); } catch { /* eine kaputte Zeile kippt nicht den Lauf */ }
+    }
+    return { ok: true, befunde };
+  } finally {
+    try { fs.unlinkSync(zwischen); } catch { /* egal */ }
+  }
+}
+
+/**
+ * Aus dem Befund von bild.py die Felder fuer den Nachweis.
+ *
+ * Getrennt vom Aufruf, damit sich pruefen laesst, was ins Index kommt — ohne
+ * dass ein Modell laufen muss.
+ */
+function bildFelder(befund, { schwelle = STANDARD.bild_schwelle, jetzt = () => new Date().toISOString() } = {}) {
+  if (!befund) return {};
+  if (befund.keine_bildspur) return { keine_bildspur: true, bild_geprueft_am: jetzt() };
+  if (!befund.ok) return {};
+  const felder = { bild_geprueft_am: jetzt() };
+  const p = befund.produkt;
+  if (p && p.ok) {
+    felder.bild = { wert: p.mittel, max: p.max, bilder: (p.je_bild || []).length,
+                    passt: Number(p.mittel) >= Number(schwelle) };
+  }
+  const g = befund.gesichter;
+  if (g && g.ok) {
+    felder.personen_im_bild = !!g.personen_im_bild;
+    felder.personen_moeglich = !!g.personen_moeglich;
+    if (g.personen_im_bild) felder.gesicht_anteil = g.groesstes_anteil;
+  }
+  const t = befund.text;
+  if (t && t.ok) {
+    felder.fremdtext = { einblendung: !!t.einblendung, ortsfest: !!t.ortsfest, lage: t.lage || null,
+                         haeufig: !!t.haeufig };
+    // Wo die ortsfeste Einblendung steht (Anteile des Bildes, 0..1) — die
+    // Vorgabe fuer einen Zuschnitt, der sie wegnimmt.
+    if (t.ortsfest && Array.isArray(t.bereiche)) felder.fremdtext.bereiche = t.bereiche;
+  }
+  return felder;
+}
+
+/**
+ * PUNKT 23: Findet der Blick ein Gesicht, gilt eine fruehere Freigabe nicht mehr.
+ *
+ * Die Reihenfolge ist das Problem: Wird erst die Einwilligung des Creators
+ * eingetragen und der Clip danach angesehen, stuende `rechte_geprueft` weiter
+ * auf wahr — fuer eine Frage, die bei der Freigabe niemand gestellt hat.
+ * Zurueckgenommen wird nur, was die Akte nicht mehr traegt; wer den Beleg zur
+ * Person nachtraegt (setzeRechte, personen_beleg), bekommt die Freigabe wieder.
+ *
+ * @returns {boolean} wahr, wenn eine Freigabe zurueckgenommen wurde
+ */
+function freigabeNachBild(eintrag) {
+  if (!eintrag || !eintrag.personen_im_bild || !eintrag.rechte_geprueft) return false;
+  if (darfVeroeffentlicht(eintrag).ok) return false;
+  eintrag.rechte_geprueft = false;
+  return true;
+}
+
+/** Was der Mensch am Kontaktbogen ueber das Bild wissen muss — in Worten. */
+function bildHinweise(eintrag) {
+  const e = eintrag || {};
+  const hinweise = [];
+  if (e.keine_bildspur) hinweise.push('KEIN BILD — die Datei enthält nur Ton');
+  if (e.bild && e.bild.passt === false) {
+    hinweise.push(`Produkt kaum zu sehen oder anderes Modell (Bildwert ${Number(e.bild.wert).toFixed(2)})`);
+  }
+  if (e.personen_im_bild) {
+    hinweise.push(`Person im Bild (Gesicht bis ${Math.round(Number(e.gesicht_anteil || 0) * 100)} % der Höhe) — eigene Zustimmung nötig`);
+  } else if (e.personen_moeglich) {
+    hinweise.push('Person möglich — bitte ansehen');
+  }
+  if (e.fremdtext && e.fremdtext.einblendung) {
+    hinweise.push(e.fremdtext.ortsfest
+      ? (e.fremdtext.lage === 'rand' ? 'Einblendung am Rand — wegschneidbar' : 'Einblendung mitten im Bild')
+      : 'Schrift in fast jedem Bild');
+  }
+  return hinweise;
+}
+
+/** `npm run tiktok:bild` — alle Clips im Nachweis ansehen und die Befunde festhalten. */
+function bildPruefen(opt = {}) {
+  const melde = opt.melde || console.log;
+  const ordner = opt.datenOrdner || datenOrdner();
+  const basis = opt.wurzel || WURZEL;
+  let index;
+  try {
+    index = ladeIndex(ordner);
+  } catch (fehler) {
+    melde(`❌ Index nicht lesbar: ${fehler.message}`);
+    return 1;
+  }
+  const nurProdukt = opt.produktNr != null ? Number(opt.produktNr) : null;
+  const dran = [];
+  for (const e of index.eintraege || []) {
+    if (nurProdukt != null && Number(e.produkt_id) !== nurProdukt) continue;
+    if (!opt.neu && e.bild_geprueft_am) continue;
+    const datei = path.join(basis, e.ablage || '', e.datei || '');
+    if (!e.datei || !fs.existsSync(datei)) continue;
+    dran.push({ eintrag: e, datei });
+  }
+  if (!dran.length) {
+    melde('Nichts zu tun — alle Clips mit Datei sind schon angesehen (mit --neu noch einmal).');
+    return 0;
+  }
+  melde(`── ${dran.length} Clip(s) ansehen (Produkt, Gesichter, Einblendungen) ──`);
+  const antwort = (opt.bildAufruf || bildAufruf)(
+    dran.map((d) => ({ datei: d.datei, produkt_id: Number(d.eintrag.produkt_id) })));
+  if (!antwort.ok) {
+    melde(`❌ Bilderkennung nicht möglich: ${antwort.grund}`);
+    melde('   Braucht onnxruntime und numpy (kommen mit faster-whisper) sowie ffmpeg.');
+    return 1;
+  }
+  const nachPfad = new Map(antwort.befunde.map((b) => [path.resolve(String(b.pfad || '')), b]));
+  const standard = { ...STANDARD, ...(opt.standard || {}) };
+  let geschrieben = 0;
+  for (const d of dran) {
+    const befund = nachPfad.get(path.resolve(d.datei));
+    const felder = bildFelder(befund, { schwelle: standard.bild_schwelle, jetzt: opt.jetzt });
+    if (!Object.keys(felder).length) {
+      melde(`⚠️  ${d.eintrag.datei}: ${(befund && befund.grund) || 'kein Befund'}`);
+      continue;
+    }
+    Object.assign(d.eintrag, felder);
+    geschrieben++;
+    if (freigabeNachBild(d.eintrag)) {
+      melde(`⛔ ${d.eintrag.datei}: Gesicht im Bild — die Freigabe ist zurückgenommen, bis der Beleg zur Person vorliegt.`);
+    }
+  }
+  try {
+    speichereIndex(ordner, index);
+  } catch (fehler) {
+    melde(`❌ Befunde nicht gespeichert: ${fehler.code || fehler.message}`);
+    return 1;
+  }
+
+  const auffaellig = dran.map((d) => ({ e: d.eintrag, hinweise: bildHinweise(d.eintrag) }))
+    .filter((z) => z.hinweise.length)
+    .sort((a, b) => Number((a.e.bild || {}).wert || 0) - Number((b.e.bild || {}).wert || 0));
+  melde(`${geschrieben} Clip(s) angesehen, ${auffaellig.length} mit Hinweis:`);
+  for (const z of auffaellig) {
+    melde(`  ${String(z.e.datei).slice(0, 52).padEnd(52)}  ${z.hinweise.join(' · ')}`);
+  }
+  melde('');
+  melde('Nichts wurde aussortiert — die Hinweise stehen im Nachweis und im Kontaktbogen (npm run tiktok:bogen).');
   return 0;
 }
 
@@ -1666,6 +1864,7 @@ function rechteAkte(eintrag) {
       zwecke: [].concat(akte.zwecke || []).filter((z) => RECHTE_ZWECKE.includes(z)),
       bis: akte.bis || null,
       widerrufen_am: akte.widerrufen_am || null,
+      personen_beleg: akte.personen_beleg || null,
       quelle: 'akte',
     };
   }
@@ -1680,9 +1879,12 @@ function rechteAkte(eintrag) {
     zwecke: [],
     bis: null,
     widerrufen_am: null,
+    personen_beleg: null,
     quelle: 'altbestand',
   };
 }
+
+const PERSONEN_LUECKE = 'Zustimmung der abgebildeten Person (Gesicht im Bild) — oder der Vermerk, dass niemand erkennbar ist';
 
 /**
  * Was der Akte noch fehlt, damit sie etwas belegt.
@@ -1700,6 +1902,13 @@ function rechteLuecken(eintrag) {
   if (!a.kontakt) fehlt.push('Kontakt zum Rechteinhaber');
   if (!a.beleg) fehlt.push('Beleg (Screenshot, Mail, Lizenzdatei)');
   if (!a.zwecke.length) fehlt.push('Umfang (organisch und/oder Anzeige)');
+  // PUNKT 23: Ein erkennbares Gesicht ist eine ZWEITE Frage. Die Einwilligung
+  // des Creators deckt das Urheberrecht am Video — nicht das Recht am eigenen
+  // Bild der gefilmten Person, und die muss nicht der Creator sein. Deshalb
+  // ein eigener Beleg: die Zustimmung der Person, oder der Vermerk eines
+  // Menschen, dass niemand erkennbar ist (die Erkennung irrt sich auch).
+  // Nur beim SICHEREN Fund — "Person moeglich" ist ein Hinweis, keine Sperre.
+  if (eintrag && eintrag.personen_im_bild && !a.personen_beleg) fehlt.push(PERSONEN_LUECKE);
   return fehlt;
 }
 
@@ -1743,7 +1952,7 @@ function darfVeroeffentlicht(eintrag, { zweck = 'organisch', jetzt = new Date() 
  * keinen Lauf beenden.
  */
 function setzeRechte(eintrag, { art, datum = null, inhaber = null, kontakt = null,
-                                beleg = null, zwecke = [], bis = null,
+                                beleg = null, zwecke = [], bis = null, personen_beleg = null,
                                 jetzt = new Date() } = {}) {
   if (!eintrag) return { ok: false, grund: 'kein Eintrag' };
   if (!RECHTE_ARTEN[art]) {
@@ -1763,6 +1972,8 @@ function setzeRechte(eintrag, { art, datum = null, inhaber = null, kontakt = nul
     zwecke: saubereZwecke,
     bis,
     widerrufen_am: null,
+    // Punkt 23: nur noetig, wenn die Bilderkennung ein Gesicht gefunden hat.
+    personen_beleg,
   };
   // Der alte Wahrheitswert bleibt — Marketing-Abfragen lesen ihn noch. Er ist
   // ab jetzt ABGELEITET und nicht mehr die Wahrheit selbst.
@@ -2730,6 +2941,10 @@ async function holeEinzelMeta(ytdlp, url) {
       // Ablehnen auf Verdacht wuerde gutes Material kosten.
       breite: Number(roh.width) || null,
       hoehe: Number(roh.height) || null,
+      // TikTok-Fotobeitraege haben kein Video: yt-dlp meldet vcodec "none" und
+      // laedt nur die Musik. Zwei solche Dateien lagen als .mp4 im Vorrat —
+      // aufgefallen erst, als die Bilderkennung keine Standbilder bekam.
+      nur_ton: String(roh.vcodec || '').toLowerCase() === 'none',
       // Der Ton entscheidet, ob jemand spricht — siehe istMusik().
       track: roh.track || '',
       artist: roh.artist || '',
@@ -3887,6 +4102,8 @@ function technischUntauglich(video, standard = STANDARD) {
 
   const minHoehe = Number(standard.min_hoehe) || 0;
   const minDauer = Number(standard.min_dauer_sek) || 0;
+
+  if (video.nur_ton) return 'kein Bild — Fotobeitrag, es gaebe nur den Ton';
 
   const hoehe = Number(video.hoehe) || 0;
   const breite = Number(video.breite) || 0;
@@ -5210,6 +5427,7 @@ async function interaktiv(opt) {
   // waehrend der Lauf mit der anderen weiterging — der Planlauf muss es trotzdem wissen.
   let stummGeschaltet = false;
   let kommentareGesperrt = false;
+  let bildFehlerGemeldet = false;
 
   // WIEVIELE ABRUFE DIESER LAUF DARF.
   //
@@ -5709,6 +5927,26 @@ async function interaktiv(opt) {
           + `Redeanteil ${messung.redeanteil})`;
     }
 
+    // PUNKTE 19/23/30: Den frisch geladenen Clip ansehen. Ein Befund aendert
+    // nichts am Laden — er steht im Nachweis und wird hier einmal gesagt.
+    if (standard.bild_pruefen) {
+      try {
+        const gesehen = (opt.bildAufruf || bildAufruf)([{
+          datei: path.join(videoZiel, ergebnis.eintrag.datei), produkt_id: Number(produkt.id),
+        }]);
+        if (gesehen.ok && gesehen.befunde[0]) {
+          Object.assign(ergebnis.eintrag, bildFelder(gesehen.befunde[0],
+            { schwelle: standard.bild_schwelle, jetzt }));
+          for (const hinweis of bildHinweise(ergebnis.eintrag)) melde(`   👁  ${hinweis}`);
+        } else if (!gesehen.ok && !bildFehlerGemeldet) {
+          bildFehlerGemeldet = true;
+          melde(`ℹ️  Bilderkennung nicht moeglich (${gesehen.grund}) — die Clips bleiben ungesehen.`);
+        }
+      } catch (fehler) {
+        if (!bildFehlerGemeldet) { bildFehlerGemeldet = true; melde(`ℹ️  Bilderkennung: ${fehler.message}`); }
+      }
+    }
+
     // PUNKT 11: Kommentare mitlesen — nur wenn eingeschaltet, nur YouTube,
     // nur solange das Budget reicht, und nach einer Sperre gar nicht mehr.
     if (standard.kommentare_mitlesen && !kommentareGesperrt
@@ -6147,6 +6385,9 @@ function leseArgumente(argv) {
     else if (a === '--aufgabe') opt.aufgabe = true;
     // Punkt 11: die Fragen aus den mitgelesenen Kommentaren.
     else if (a === '--fragen') opt.fragen = true;
+    // Punkte 19/23/30: vorhandene Clips ansehen. --neu sieht auch schon Angesehene an.
+    else if (a === '--bild') opt.bild = true;
+    else if (a === '--neu') opt.neu = true;
     else if (a === '--aufraeumen') opt.aufraeumen = true;
     else if (a === '--interaktiv' || a === '--frage') opt.interaktiv = true;
     else if (a === '--laden') opt.laden = true;
@@ -6788,6 +7029,7 @@ async function main(argv) {
   if (opt.herkunft) return herkunftNachtragen({ schreiben: opt.schreiben });
   if (opt.plan && opt.aufgabe) return aufgabeAusgeben();
   if (opt.fragen) return fragenAusgeben({ produktNr: opt.produktNr });
+  if (opt.bild) return bildPruefen({ produktNr: opt.produktNr, neu: opt.neu, standard: ladeKonfig().standard });
   // Ist der Planlauf nicht faellig, braucht er weder yt-dlp noch die Konfiguration —
   // deshalb die Faelligkeit VOR der Werkzeugsuche. Ein stuendlicher Aufruf, der
   // jedes Mal yt-dlp startet, nur um "nicht faellig" zu sagen, waere Verschwendung.
@@ -6916,6 +7158,7 @@ if (require.main === module) {
 }
 
 module.exports = {
+  bildAufruf, bildFelder, bildHinweise, bildPruefen, freigabeNachBild,
   holeKommentare, fragenAusKommentaren, istFrage,
   PLATTFORMEN, plattformAus, youtubeId, dateiKennung, formatArgumente, sucheYoutube, youtubeBegriff,
   planlauf, planFaellig, naechsterPlanlauf, waehlePlanProdukte, planZusammenfassung,

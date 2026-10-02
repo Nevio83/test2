@@ -1075,6 +1075,53 @@ def _segment_bauen(segment: Segment, ziel: Path, *, vorschau: bool = False) -> P
     return ziel
 
 
+# ── Ist das Produkt frueh zu sehen? (Punkt 35) ───────────────────────
+#
+# Bei fremdem Rohmaterial zeigen die ersten Sekunden leicht nur Kontext — eine
+# Kueche, eine Hand, ein Gesicht — und das Produkt kommt in Sekunde acht.
+#
+# NUR EIN HINWEIS, UND EIN SCHWACHER. Gemessen am 02.10. an 15 nachgesehenen
+# Clips: Die Pruefung fand vier von acht Anfaengen ohne Produkt und meldete
+# keinen der sieben mit Produkt faelschlich; ein Weidenkorb und ein
+# Schreibtisch kamen ueber die Grenze. Sie faengt also die klaren Faelle und
+# uebersieht die andere Haelfte. Wer "kein Hinweis" liest, hat keine Zusage.
+#
+# GELADEN WIRD HIER NICHTS. Liegt das Bildmodell nicht auf der Platte, steht
+# im Bericht "nicht geprueft" samt Grund — statt dass ein Rendern nebenbei
+# 89 MB aus dem Netz holt.
+
+def _produkt_frueh(teile: list[Path], produkt_id: int) -> dict[str, Any]:
+    """Die ersten Sekunden der geschnittenen Segmente gegen die Produktfotos halten."""
+    if not guardrails.wert("video.produkt_sichtbar_pruefen", True):
+        return {"geprueft": False, "grund": "abgeschaltet (video.produkt_sichtbar_pruefen)"}
+    try:
+        from . import bild
+
+        ok, grund = bild.verfuegbar()
+        if not ok:
+            return {"geprueft": False, "grund": grund}
+        befund = bild.fruehe_sichtbarkeit(
+            teile, int(produkt_id),
+            sekunden=float(guardrails.wert("video.produkt_sichtbar_bis_sek", 3.0)),
+            schwelle=float(guardrails.wert("video.produkt_sichtbar_ab", bild.SICHTBAR_AB)),
+        )
+    except Exception as fehler:  # noqa: BLE001 — ein Hinweis darf das Rendern nie kippen
+        return {"geprueft": False, "grund": f"{type(fehler).__name__}: {str(fehler)[:160]}"}
+    if not befund.get("ok"):
+        return {"geprueft": False, "grund": befund.get("grund")}
+    return {"geprueft": True, **{k: befund[k] for k in
+                                 ("sichtbar", "max", "mittel", "bilder", "sekunden", "schwelle")}}
+
+
+def _frueh_hinweis(frueh: dict[str, Any]) -> str | None:
+    """Der Satz fuer den Menschen — oder None, wenn es nichts zu sagen gibt."""
+    if not frueh.get("geprueft") or frueh.get("sichtbar"):
+        return None
+    return (f"In den ersten {frueh['sekunden']:g} Sekunden ist das Produkt kaum zu sehen "
+            f"(bester Bildwert {frueh['max']:.2f}, Grenze {frueh['schwelle']:.3g}) — "
+            "ein Segment mit dem Produkt nach vorn ziehen")
+
+
 def rendere(
     liste: Schnittliste,
     produkt: Produkt,
@@ -1158,6 +1205,14 @@ def rendere(
         _segment_bauen(segment, ordner / f"segment_{i:02d}.mp4", vorschau=vorschau)
         for i, segment in enumerate(liste.segmente)
     ]
+
+    # ── 1b. Produkt frueh zu sehen? (Punkt 35) ───────────────────────
+    # VOR der Endkarte und vor den Einblendungen: Gemessen wird das Bild der
+    # Segmente, nicht der Hook-Text darueber.
+    bericht["produkt_frueh"] = _produkt_frueh(teile, liste.produkt_id)
+    hinweis = _frueh_hinweis(bericht["produkt_frueh"])
+    if hinweis:
+        print(f"[stil_c] {hinweis}")
 
     # ── 2a. Endkarte ─────────────────────────────────────────────────
     # Bis hierher endete ein Stil-C-Clip mit dem letzten Schnitt: kein Preis,
@@ -1520,6 +1575,9 @@ def trockenpruefung(pfad: Path, *, bauversuch: bool = False) -> dict[str, Any]:
     if bauversuch and not bericht["fehler"]:
         try:
             bericht["bauversuch"] = _bauversuch(liste)
+            hinweis = _frueh_hinweis(bericht["bauversuch"]["produkt_frueh"])
+            if hinweis:
+                bericht["hinweise"].append(hinweis)
         except Exception as fehler:  # noqa: BLE001 — jeder Fehler ist hier ein Befund
             bericht["fehler"].append(f"Bauversuch gescheitert: {str(fehler)[:300]}")
 
@@ -1550,8 +1608,11 @@ def _bauversuch(liste: Schnittliste, sekunden: float = BAUVERSUCH_SEK) -> dict[s
         info = common.medien_info(probe)
         if info is None or info.dauer <= 0:
             raise RuntimeError("der Bauversuch ergab eine leere Datei")
+        # Punkt 35: Die drei Sekunden liegen ohnehin geschnitten da — genau der
+        # Abschnitt, um den es bei "ist das Produkt frueh zu sehen?" geht.
         return {"dauer": round(info.dauer, 2), "breite": info.breite,
-                "hoehe": info.hoehe, "segmente": len(teile)}
+                "hoehe": info.hoehe, "segmente": len(teile),
+                "produkt_frueh": _produkt_frueh(teile, liste.produkt_id)}
     finally:
         shutil.rmtree(ordner, ignore_errors=True)
 
@@ -1904,6 +1965,14 @@ def _pruefen_befehl(argv: list[str] | None = None) -> int:
     if "bauversuch" in bericht:
         b = bericht["bauversuch"]
         print(f"  Bauversuch: {b['dauer']:.1f} s in {b['breite']}x{b['hoehe']} geschnitten")
+        # Punkt 35: Auch "nicht geprueft" wird gesagt — sonst sieht ein
+        # fehlendes Modell aus wie ein Anfang ohne Befund.
+        frueh = b.get("produkt_frueh") or {}
+        if frueh.get("geprueft"):
+            print(f"  Produkt in den ersten {frueh['sekunden']:g} s: bester Bildwert {frueh['max']:.2f} "
+                  f"(Grenze {frueh['schwelle']:.3g}) — ein Hinweis, keine Zusage")
+        elif frueh:
+            print(f"  Produkt-Sichtbarkeit nicht geprueft: {frueh.get('grund')}")
     print("  ✅ bereit zum Rendern" if bericht["ok"] else
           f"  ⛔ {len(bericht['fehler'])} Fehler — so wuerde das Rendern abbrechen")
     return 0 if bericht["ok"] else 1

@@ -30,6 +30,7 @@
     "tiktok:herkunft": "node bot/tiktok-video-sync.js --herkunft",
     "tiktok:plan": "node bot/tiktok-video-sync.js --plan",
     "tiktok:fragen": "node bot/tiktok-video-sync.js --fragen",
+    "tiktok:bild": "node bot/tiktok-video-sync.js --bild",
     "tiktok:bogen": "node bot/kontaktbogen.js"
   },
   "dependencies": {
