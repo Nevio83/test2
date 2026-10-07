@@ -1109,14 +1109,22 @@ def _produkt_frueh(teile: list[Path], produkt_id: int) -> dict[str, Any]:
         return {"geprueft": False, "grund": f"{type(fehler).__name__}: {str(fehler)[:160]}"}
     if not befund.get("ok"):
         return {"geprueft": False, "grund": befund.get("grund")}
-    return {"geprueft": True, **{k: befund[k] for k in
-                                 ("sichtbar", "max", "mittel", "bilder", "sekunden", "schwelle")}}
+    return {"geprueft": True, **{k: befund.get(k) for k in
+                                 ("sichtbar", "max", "mittel", "bilder", "sekunden", "schwelle",
+                                  "geraet", "kein_geraet")}}
 
 
 def _frueh_hinweis(frueh: dict[str, Any]) -> str | None:
     """Der Satz fuer den Menschen — oder None, wenn es nichts zu sagen gibt."""
     if not frueh.get("geprueft") or frueh.get("sichtbar"):
         return None
+    if frueh.get("kein_geraet"):
+        # Das zweite Signal (Textteil): nicht "sieht den Fotos unaehnlich",
+        # sondern "hier ist gar nichts dergleichen" — mit grossem Abstand
+        # gemessen, deshalb der deutlichere Satz.
+        return (f"In den ersten {frueh['sekunden']:g} Sekunden ist kein Gerät dieser Art zu sehen "
+                f"(Wert {frueh['geraet']:.2f}, ab 0,15 wäre eins da) — "
+                "ein Segment mit dem Produkt nach vorn ziehen")
     return (f"In den ersten {frueh['sekunden']:g} Sekunden ist das Produkt kaum zu sehen "
             f"(bester Bildwert {frueh['max']:.2f}, Grenze {frueh['schwelle']:.3g}) — "
             "ein Segment mit dem Produkt nach vorn ziehen")
@@ -1969,8 +1977,10 @@ def _pruefen_befehl(argv: list[str] | None = None) -> int:
         # fehlendes Modell aus wie ein Anfang ohne Befund.
         frueh = b.get("produkt_frueh") or {}
         if frueh.get("geprueft"):
+            geraet = ("Textteil nicht geladen" if frueh.get("geraet") is None
+                      else f"Geraet dieser Art {frueh['geraet']:.2f} (ab 0,15)")
             print(f"  Produkt in den ersten {frueh['sekunden']:g} s: bester Bildwert {frueh['max']:.2f} "
-                  f"(Grenze {frueh['schwelle']:.3g}) — ein Hinweis, keine Zusage")
+                  f"(Grenze {frueh['schwelle']:.3g}), {geraet} — ein Hinweis, keine Zusage")
         elif frueh:
             print(f"  Produkt-Sichtbarkeit nicht geprueft: {frueh.get('grund')}")
     print("  ✅ bereit zum Rendern" if bericht["ok"] else

@@ -841,9 +841,10 @@ einzige Stelle, die sie noch festhält.
 ### Nachtrag 02.10.: Der Filter sieht ein Bild — gemessen, was das taugt
 
 `pipelines/video/bild.py` (neu) schaut in die Clips: Ähnlichkeit zu den eigenen
-Produktfotos (CLIP ViT-B/32, Bildteil), Gesichter (YuNet), Text im Bild (PP-OCRv3, nur
-die Suche). Alles über `onnxruntime`, das mit faster-whisper schon da war — **kein neues
-Paket**, drei Modelldateien, zusammen 92 MB. Aufgerufen vom Bot (`npm run tiktok:bild`
+Produktfotos (CLIP ViT-B/32, Bildteil), „ist überhaupt ein Gerät dieser Art zu sehen?"
+(Textteil desselben Modells), Gesichter (YuNet), Text im Bild (PP-OCRv3, nur die Suche).
+Alles über `onnxruntime`, das mit faster-whisper schon da war — **kein neues Paket**,
+vier Modelldateien, zusammen 157 MB. Aufgerufen vom Bot (`npm run tiktok:bild`
 und nach jedem Laden) und von Stil C beim Rendern.
 
 | Frage | Ergebnis an echtem Material |
@@ -851,8 +852,11 @@ und nach jedem Laden) und von Stil C beim Rendern.
 | Ganzer Clip unter 0,63 = falsches Modell? | 5 von 34 darunter, **alle fünf falsch**; Abstand dünn (0,622 / 0,636) |
 | Welches der 40 Produkte ist es? | **unbrauchbar** — eigenes Produkt nur bei 7 von 34 vorn |
 | Leeres Bild unter der Schwelle? | **nein** — blau 0,67, weiß 0,72, Rauschen 0,70 |
-| Produkt in den ersten 3 s? (Punkt 35) | findet **4 von 8** Anfängen ohne Produkt, 0 Fehlalarme bei 7 |
+| Produkt in den ersten 3 s? (Punkt 35) | Fotos allein: **4 von 8** Anfängen ohne Produkt, 0 Fehlalarme bei 7 — mit dem Textteil **5 von 8** |
 | Gemeinsamen Anteil abziehen? | **verworfen** — sichtbarer Wasserspender fiel ans untere Ende |
+| Textteil: „gar kein Gerät dieser Art"? | **trägt** — leere Flächen 0,01–0,06, Korb 0,02, Frau spricht nur 0,03; mit Gerät ≥ 0,46 |
+| Textteil als Hauptmaß? | **verworfen** — Sätze aus den Suchbegriffen: Wasserflaschen 0,80, Schreibtisch 0,65; fremdes Modell 0,94 |
+| Wie stabil ist ein Einzelwert? | **± 0,04** bei 40 ms Versatz; über 8 Bilder gemittelt rund 0,01 |
 | Gesichter | klar 0,78–0,94 · Fehlalarm 0,66 · unscharf echt 0,52–0,65 → zwei Stufen |
 | Einblendung = ortsfester Text | 22 von 34 Clips, 3 davon nur am Rand |
 

@@ -172,12 +172,23 @@ Einblendungen. Liegt der beste Bildwert unter `video.produkt_sichtbar_ab` (0,655
 steht ein Hinweis da; im Bericht des Videos steht `produkt_frueh`.
 
 **Das ist ein schwacher Hinweis, und die Zahl dazu gehört hierher.** Nachgesehen am
-02.10. an 15 Clips: Von acht Anfängen ohne Produkt fielen **vier** auf, von sieben
-mit Produkt wurde **keiner** fälschlich gemeldet. Durchgekommen sind ein Weidenkorb
-(0,68), ein Schreibtisch (0,70), eine Verpackung mit Produktfoto (0,73) und ein sehr
-klein abgebildetes Gerät — der gut sichtbare Wasserspender im selben Material bekam
-nur 0,59 bis 0,67. Der Abstand ist dünn (0,648 ohne, 0,664 mit). **Kein Hinweis ist
-also keine Zusage**, und deshalb ist es nie eine Sperre.
+02.10. an 15 Clips: Von acht Anfängen ohne Produkt fielen mit den Produktfotos
+allein **vier** auf, von sieben mit Produkt wurde **keiner** fälschlich gemeldet.
+Durchgekommen sind ein Weidenkorb (0,68), ein Schreibtisch (0,70), eine Verpackung
+mit Produktfoto (0,73) und ein sehr klein abgebildetes Gerät — der gut sichtbare
+Wasserspender im selben Material bekam nur 0,59 bis 0,67. Der Abstand ist dünn
+(0,648 ohne, 0,664 mit), und die Werte schwanken selbst in dieser Größe: Dasselbe
+Standbild, 40 ms später gezogen, bekam bis zu 0,04 mehr oder weniger.
+
+**Ein zweites Signal fängt den klarsten Fall.** Der Textteil desselben Modells fragt
+nicht „sieht es den Fotos ähnlich?", sondern „ist hier überhaupt ein Gerät dieser
+Art?" — gegen Sätze aus den englischen Suchbegriffen des Bots. Der Weidenkorb bekam
+0,02, eine leere Fläche 0,02, jeder Anfang mit Gerät 0,60 und mehr. Unter 0,15 heißt
+der Hinweis „kein Gerät dieser Art zu sehen". Damit **fünf von acht**. Als Hauptmaß
+taugt der Textteil nicht: Über 0,15 trennt er nichts mehr (Wasserflaschen auf einem
+Tisch: 0,80), und ein fremdes Modell hält er für das eigene.
+
+**Kein Hinweis ist also keine Zusage**, und deshalb ist es nie eine Sperre.
 
 Geladen wird beim Rendern nichts: Liegt das Bildmodell nicht auf der Platte
 (`npm run tiktok:bild` lädt es einmal), steht im Bericht `geprueft: false` samt

@@ -1271,6 +1271,7 @@ npm run tiktok:bild -- --neu           # auch schon Angesehene noch einmal
 | Blick | Feld im Nachweis | Hinweis im Kontaktbogen |
 |---|---|---|
 | Ähnlichkeit zu den eigenen Produktfotos | `bild: { wert, max, bilder, passt }` | „Produkt kaum zu sehen oder anderes Modell" |
+| Ist überhaupt ein Gerät dieser Art zu sehen? | `geraet: { wert, da }` | „Kein Gerät dieser Art zu sehen" |
 | Gesichter | `personen_im_bild`, `personen_moeglich`, `gesicht_anteil` | „Person im Bild — eigene Zustimmung nötig" / „Person möglich — bitte ansehen" |
 | Text im Bild | `fremdtext: { einblendung, ortsfest, lage, haeufig }` | „Einblendung am Rand — wegschneidbar" / „mitten im Bild" / „Schrift in fast jedem Bild" |
 | keine Bildspur | `keine_bildspur` | „KEIN BILD — die Datei enthält nur Ton" |
@@ -1291,14 +1292,37 @@ Shop nicht). Keiner der richtigen lag darunter.
   richtige **0,636**.
 * Er trennt **echte Aufnahmen**, keine Grafiken. Eine leere blaue Fläche bekommt
   gegen die Wasserspender-Fotos 0,67, eine weiße 0,72, Rauschen 0,70 — alles
-  *über* der Schwelle. Eine Texttafel oder ein Schwarzbild mit Schrift fällt also
-  nicht auf.
+  *über* der Schwelle. Eine Texttafel oder ein Schwarzbild mit Schrift fällt an
+  *diesem* Wert also nicht auf — dafür gibt es das zweite Signal weiter unten.
 * Die Frage „welches der 40 Produkte ist es?" beantwortet er nicht: Das eigene
   Produkt lag nur bei 7 von 34 Clips vorn, weil alle Produktfotos einander als
   „Studiofoto eines Geräts" ähneln.
 * Probiert und verworfen: den gemeinsamen Anteil aller Produktfotos vorher
   abzuziehen. Danach rutschte ein Clip mit gut sichtbarem Wasserspender ans
   untere Ende.
+* Die Werte schwanken in der Größe ihrer Abstände: Dasselbe Standbild, 40 ms
+  später gezogen, bekam bis zu 0,04 mehr oder weniger. Über acht Standbilder
+  gemittelt bleiben rund 0,01. Die dritte Nachkommastelle der Schwelle ist Zufall.
+
+**Das zweite Signal: „ist überhaupt ein Gerät dieser Art zu sehen?"** Die blinde
+Stelle der Fotos — leere Flächen, Grafiken, Clips ganz ohne Gerät — schließt der
+Textteil desselben Modells. Er vergleicht jedes Standbild mit Sätzen aus
+`suchbegriff.en` des Produkts („a photo of a electric water dispenser desk") und mit
+einer festen Liste von Alltagsdingen (Person, Zimmer, Korb, Flasche …). Gemessen:
+
+| | Wert |
+|---|---|
+| leere Fläche, Rauschen, Muster | 0,01 – 0,06 |
+| Frau, die nur in die Kamera spricht (ganzer Clip) | 0,03 |
+| alle Clips mit einem Gerät dieser Art | 0,46 und mehr |
+
+Unter `geraet_schwelle` (0,15) steht „Kein Gerät dieser Art zu sehen". Das ist die
+einzige Aussage, die dieser Wert trägt. **Als Hauptmaß taugt er nicht:** Über 0,15
+trennt er nichts mehr, weil die Suchbegriffe Umgebungswörter mitbringen („bottle",
+„desk") — Wasserflaschen auf einem Tisch bekamen 0,80. Und ein fremdes Modell hält
+er für das eigene: Ein Ninja-Mixer ist auch „a portable blender" (0,94). Dafür sind
+die Fotos da. Von Hand geschriebene Sätze trennten besser, galten aber nur für die
+drei Produkte, an denen gemessen wurde.
 
 **Gesichter werden erkannt, nie identifiziert.** Kein Modell hier kann sagen, *wer*
 zu sehen ist. Es gibt zwei Stufen, weil eine einzige Grenze eins von beidem falsch
@@ -1319,10 +1343,11 @@ kein Video, yt-dlp meldet `vcodec: none` und lädt nur die Musik — als `.mp4`.
 solche Dateien lagen im Vorrat. Sie stehen jetzt als „KEIN BILD" im Nachweis;
 gelöscht hat sie niemand.
 
-**Was es braucht.** Python mit `onnxruntime` und `numpy` (beides kommt mit
-faster-whisper) und drei Modelldateien, zusammen 92 MB, die `tiktok:bild` beim
-ersten Lauf einmal von Hugging Face lädt: CLIP ViT-B/32 (Bildteil, 89 MB), YuNet
-(Gesichter, 0,2 MB), PP-OCRv3 (Textsuche, 2,4 MB). **Kein neues Paket.** Fehlt
+**Was es braucht.** Python mit `onnxruntime`, `numpy` und `tokenizers` (alle drei
+kommen mit faster-whisper) und vier Modelldateien, zusammen 157 MB, die
+`tiktok:bild` beim ersten Lauf einmal von Hugging Face lädt: CLIP ViT-B/32 (Bildteil
+89 MB, Textteil 65 MB), YuNet (Gesichter, 0,2 MB), PP-OCRv3 (Textsuche, 2,4 MB).
+**Kein neues Paket.** Ein Durchgang über 36 Clips dauert rund viereinhalb Minuten. Fehlt
 etwas, lädt der Bot normal weiter, sagt es einmal, und der Clip bleibt ungesehen —
 `tiktok:bild` holt es nach.
 

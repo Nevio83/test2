@@ -359,7 +359,7 @@
     <p class="subtitle">Dieses Papier gehört zum <strong>Fortschrittsbericht 7. Juni – 2. September 2026</strong> und vertieft den Teil, der dort nur eine Karte und fünf Punkte bekommen hat: die Kette aus <strong>Bot → Filter → Schnitt → Veröffentlichung</strong>. <strong>Wichtig:</strong> Es ist gegen den echten Code geschrieben, nicht gegen den Bericht — und dabei hat sich herausgestellt, dass <strong>ein guter Teil dessen, was der Bericht als Lücke las, längst gebaut ist</strong>: neun Prüfhürden im Bot, Spracherkennung per faster-whisper, Lautheitsnormung, Ducking, Untertitel, Ausgangsprüfung und eine sperrende Rechtsprüfung. Dieses Papier sagt bei jedem Punkt, was <em>wirklich</em> fehlt. <strong>Nachtrag vom 18.09.:</strong> Der Code wurde erneut gelesen. Fünf der 72 Punkte sind seitdem gebaut — Kontaktbogen, Vorprüfung, Schnittliste als Stil C, Kampagnen-Verweis, Freigabe je Beitrag (bis auf die Oberfläche). Der erste Abschnitt sagt, was davon steht; ganz unten stehen <strong>18 neue Punkte</strong>, die es vorher nicht geben konnte.</p>
     <div class="meta-row">
       <span><strong>bot/</strong> · 3.022 Zeilen Programm, 3.042 Zeilen Prüfungen (131 Stück)</span>
-      <span style="color:var(--blue);font-weight:600;">90 Vorschläge · 81 gebaut, 3 halb, 5 offen</span>
+      <span style="color:var(--blue);font-weight:600;">90 Vorschläge · 81 gebaut, 3 halb, 4 offen, 1 ausgelassen</span>
       <span><strong>23</strong> Rohclips → 5 Schnittfassungen → 1 fertiger Clip (19,5 s)</span>
       <span>Stand <strong>02.10.2026</strong> · am Code nachgeprüft</span>
     </div>
@@ -435,19 +435,23 @@
     </div>
 
     <div class="pruef-banner" style="background:var(--blue-dim);border-color:color-mix(in srgb, var(--blue) 32%, transparent);">
-      <h3>Stand am 02.10.: 81 gebaut, 3 halb, 5 offen, 1 anders gelöst — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <h3>Stand am 07.10.: 81 gebaut, 3 halb, 4 offen, 1 anders gelöst, 1 ausgelassen — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <p class="warum" style="border-left:3px solid var(--muted-2);padding-left:12px;">
+        <b>Am 07.10. ausgelassen:</b> <strong>88</strong> — auf deine Entscheidung. Die sieben alten Fassungen bleiben
+        im Ordner und kommen nicht in die Datenbank. Was die Nachprüfung vom 02.10. dazu ergab, steht beim Punkt.
+      </p>
       <p class="tun" style="border-left:3px solid var(--blue);padding-left:12px;">
         <b>Am 02.10.: Der Filter sieht zum ersten Mal ein Bild.</b>
         <strong>19</strong> (Ähnlichkeit zu den eigenen Produktfotos) ·
         <strong>23</strong> (Gesichter, mit eigener Frage in der Rechteakte) ·
         <strong>30</strong> (Einblendungen, am Rand oder mitten im Bild) sind gebaut;
         <strong>35</strong> (Produkt früh zu sehen) ist <em>halb</em> — die Prüfung läuft, findet aber nur die Hälfte.
-        Drei Modelle, zusammen 92&nbsp;MB, kein neues Paket. <code>npm run tiktok:bild</code> hat alle 36 Clips angesehen:
+        Vier Modelldateien, zusammen 157&nbsp;MB, kein neues Paket. <code>npm run tiktok:bild</code> hat alle 36 Clips angesehen:
         zwei enthielten <strong>nur Ton</strong> (TikTok-Fotobeiträge, jetzt vor dem Laden abgewiesen),
         fünf liegen unter der Bildschwelle — genau die fünf falschen —, zwölf zeigen sicher ein Gesicht, 22 eine Einblendung.
         <strong>Nichts wird von selbst aussortiert</strong>, und die Messung sagt warum: Abstand an der Schwelle 0,622 gegen 0,636,
         und eine leere blaue Fläche bekommt 0,67. Die Einzelheiten stehen bei den vier Punkten.
-        Außerdem: Die Datenbank ist seit dem Monatswechsel wieder da — <strong>88</strong> wäre damit möglich.
+        Außerdem: Die Datenbank ist seit dem Monatswechsel wieder da — <strong>88</strong> wäre damit möglich <em>(am 07.10. ausgelassen)</em>.
       </p>
       <h3 style="color:var(--blue);">Stand am 28.09.: 78 gebaut, 5 halb, 6 offen, 1 anders gelöst</h3>
       <p class="warum" style="border-left:3px solid var(--green);padding-left:12px;">
@@ -480,7 +484,8 @@
         <strong>60</strong> (Render Starter, 7 $/Monat — deine Entscheidung) ·
         <strong>61</strong> und <strong>62</strong> (laufende Arbeit, kein Code) ·
         <strong>86</strong> (Material filmen oder Läufe — keine Programmieraufgabe) ·
-        <strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank; <em>seit dem 02.10. ist sie wieder erreichbar</em>).
+        <s><strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank; <em>seit dem 02.10. ist sie wieder erreichbar</em>).</s>
+        <em>88 am 07.10. ausgelassen.</em>
         <s><strong>35</strong> (Produkt-Sichtbarkeit — braucht das Bildmodell aus Punkt 19, also eine neue
         Abhängigkeit, erst nach Rückfrage) ·
         und das Bildmodell für 35, 19, 23 und 30 — dazu liegt ein Vorschlag vor, installiert ist nichts.</s>
@@ -490,7 +495,7 @@
         <b>Halb</b> heißt: der Weg steht, der letzte Schritt fehlt.
         <s><strong>19</strong>, <strong>23</strong> und <strong>30</strong>
         (Standbilder und Verwurfsgründe da, die automatische Erkennung bräuchte ein Bildmodell)</s> <em>gebaut am 02.10.</em> ·
-        <strong>35</strong> (die Prüfung läuft beim Rendern, findet aber nur vier von acht Anfängen ohne Produkt) ·
+        <strong>35</strong> (die Prüfung läuft beim Rendern, findet aber nur fünf von acht Anfängen ohne Produkt) ·
         <strong>11</strong> (Kommentare nur bei YouTube) ·
         <strong>87</strong> (die Meldung steht; <code>.bestand.json</code> ist Handarbeit, die „tägliche Aufgabe" gab es nie).
         <strong>15</strong> ist anders gelöst als vorgeschlagen.
@@ -788,6 +793,7 @@
         <p class="warum"><b>Gemessen an den 34 vorhandenen Clips</b> Die <strong>fünf Clips unter 0,63 waren genau die fünf falschen</strong>: ein Ninja-Mixer statt des eigenen, eine Gymtastic-Massagepistole, eine Handpumpe, eine Frau, die nur in die Kamera spricht, und der eigene Mixer in Schwarz mit fremdem Aufdruck — eine Farbe, die der Shop nicht führt. Keiner der richtigen lag darunter.</p>
         <p class="warum"><b>Was der Wert nicht kann — und warum deshalb nichts aussortiert wird</b> Vorgeschlagen war „unter der Schwelle: aussortieren". Gebaut ist ein <em>Hinweis im Kontaktbogen</em>, und das ist das Ergebnis der Messung, nicht Vorsicht aus Prinzip. <strong>Erstens</strong> ist der Abstand dünn: höchster falscher Clip 0,622, niedrigster richtiger 0,636. <strong>Zweitens</strong> trennt der Wert echte Aufnahmen, keine Grafiken — eine leere blaue Fläche bekommt 0,67, eine weiße 0,72, Rauschen 0,70. Gefunden hat das die Gegenprobe im Test: Die Zusicherung „ein leeres Bild liegt unter der Schwelle" stand zuerst da und fiel durch. <strong>Drittens</strong> beantwortet er die naheliegende Frage nicht, <em>welches</em> der 40 Produkte zu sehen ist: Das eigene lag nur bei 7 von 34 Clips vorn, weil alle Produktfotos einander als „Studiofoto eines Geräts" ähneln.</p>
         <p class="tun"><b>Probiert und verworfen</b> Den gemeinsamen Anteil aller 40 Produktfotos vorher abzuziehen (das hebt üblicherweise den Kontrast). Danach rutschte ein Clip mit gut sichtbarem Wasserspender ans untere Ende, und die Werte waren zwischen den Produkten nicht mehr vergleichbar.</p>
+        <p class="tun"><b>Ein zweites Signal für genau diese Lücke</b> Der Textteil desselben Modells (65&nbsp;MB, nach Rückfrage geladen) fragt: „Ist überhaupt ein Gerät dieser Art zu sehen?" — gegen Sätze aus den englischen Suchbegriffen des Produkts. Leere Flächen, Rauschen und Muster bekommen 0,01–0,06; der Clip mit der Frau, die nur spricht, 0,03; <strong>alle Clips mit Gerät 0,46 und mehr</strong>. Unter 0,15 steht im Kontaktbogen „Kein Gerät dieser Art zu sehen". Mehr trägt der Wert nicht: Ein fremdes Modell hält er für das eigene (Ninja-Mixer 0,94) — dafür sind die Fotos da. Zusammen: vier Modelldateien, 157&nbsp;MB.</p>
         <p class="warum"><b>Ein Fund am Rand</b> Zwei „Videos" im Vorrat lieferten keine Standbilder: TikTok-<em>Foto</em>beiträge. yt-dlp meldet dort <code>vcodec: none</code> und lädt nur die Musik — als <code>.mp4</code>. Sie werden jetzt <em>vor</em> dem Laden abgewiesen; die beiden vorhandenen stehen als „KEIN BILD" im Nachweis.</p>
       </div>
 
@@ -943,14 +949,17 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">35</span> Das Produkt muss früh und deutlich zu sehen sein <span class="chip p-mittel">halb gebaut am 02.10. — findet 4 von 8</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">35</span> Das Produkt muss früh und deutlich zu sehen sein <span class="chip p-mittel">halb gebaut am 02.10. — findet 5 von 8</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> Bei fremdem Rohmaterial passiert es leicht, dass die ersten Sekunden Kontext zeigen — eine Küche, eine Person, eine Handbewegung — und das Produkt erst in Sekunde acht auftaucht. Wer bis dahin weggewischt hat, hat einen Clip über eine Küche gesehen.</p>
         <p class="tun"><b>Was tun</b> Mit dem Bildmodell aus Punkt 19 je Segment einen Produkt-Sichtbarkeitswert rechnen. Regel in der Vorlage: In den ersten drei Sekunden muss mindestens ein Segment über der Schwelle liegen. Die Prüfung läuft beim Bauen, nicht beim Ansehen.</p>
         <p class="bringt"><b>Bringt</b> Kein Clip mehr, der schön ist und das Produkt versteckt. Bei einem Werbeclip ist das kein Stilfehler, sondern ein Zweckverfehlung.</p>
         <p class="tun"><b>Halb gebaut am 02.10.</b> Die Prüfung läuft beim Bauen, wie vorgeschlagen: Beim Rendern von Stil C und beim Bauversuch (<code>marketing:pruefen -- &lt;liste&gt; --bauversuch</code>) werden die ersten drei Sekunden der <em>geschnittenen</em> Segmente gegen die Produktfotos gehalten — nach dem Zuschnitt auf 9:16, der ein Produkt am Rand wegschneiden kann, und vor dem Hook-Text. Liegt der beste Bildwert unter 0,655, steht ein Hinweis da; im Bericht des Videos steht <code>produkt_frueh</code>.</p>
         <p class="warum"><b>Warum nur halb: Sie findet die Hälfte.</b> Nachgesehen an 15 Clips, Bild für Bild. Von <strong>acht</strong> Anfängen ohne Produkt fielen <strong>vier</strong> auf; von sieben mit Produkt wurde keiner fälschlich gemeldet. Durchgekommen sind ein Weidenkorb (0,68), ein Schreibtisch (0,70), eine Verpackung mit Produktfoto (0,73) und ein sehr klein abgebildetes Gerät — während der gut sichtbare Wasserspender im selben Material nur 0,59 bis 0,67 bekam. Abstand an der Grenze: 0,648 ohne, 0,664 mit. Am einzelnen Bild trennt der Wert schlechter als über den ganzen Clip (Punkt 19), weil nichts die Ausreißer mittelt.</p>
         <p class="tun"><b>Deshalb ein Hinweis, nie eine Sperre</b> — und „kein Hinweis" ist keine Zusage. Die vorgeschlagene Regel „muss über der Schwelle liegen" wäre mit dieser Trefferquote eine Sperre gewesen, die zufällig zuschlägt. Liegt das Bildmodell nicht auf der Platte, steht im Bericht „nicht geprüft" samt Grund; beim Rendern wird nie etwas aus dem Netz geladen.</p>
-        <p class="warum"><b>Was es bräuchte</b> Einen Wert, der das Gerät meint und nicht „sieht aus wie ein Studiofoto". Der naheliegende nächste Versuch wäre der Textteil desselben Modells („a photo of a water dispenser") — eine weitere Datei von rund 65&nbsp;MB, nicht geladen, nicht gemessen.</p>
+        <p class="warum"><s><b>Was es bräuchte</b> Einen Wert, der das Gerät meint und nicht „sieht aus wie ein Studiofoto". Der naheliegende nächste Versuch wäre der Textteil desselben Modells („a photo of a water dispenser") — eine weitere Datei von rund 65&nbsp;MB, nicht geladen, nicht gemessen.</s> <em>Noch am 02.10. nach Freigabe geladen und gemessen — siehe unten.</em></p>
+        <p class="tun"><b>Der Textteil, gemessen: fünf von acht statt vier — und warum nicht mehr.</b> Die Hoffnung war ein besseres Hauptmaß. Mit von Hand geschriebenen Sätzen sah es zuerst so aus: alle acht Anfänge ohne Produkt lagen unter den sieben mit. Nur gilt das für die drei Produkte, an denen gemessen wurde; für 40 schreibt niemand Sätze. Automatisch aus den englischen Suchbegriffen des Bots gebildet, kippt es: Die Begriffe bringen Umgebungswörter mit („bottle", „desk"), Wasserflaschen auf einem Tisch bekamen 0,80, ein Schreibtisch 0,65 — über manchem Anfang <em>mit</em> Gerät (0,60).</p>
+        <p class="warum"><b>Was er verlässlich kann, ist enger — und genau die Lücke der Fotos:</b> „hier ist gar kein Gerät dieser Art". Der Weidenkorb bekam 0,02, eine leere Fläche 0,02, die Frau beim Auspacken 0,04; jeder Anfang mit Gerät 0,60 und mehr. Unter 0,15 lautet der Hinweis jetzt „kein Gerät dieser Art zu sehen". Übernommen ist nur das. Der Schreibtisch, die Verpackung und das sehr klein abgebildete Gerät kommen weiter durch.</p>
+        <p class="tun"><b>Und die Werte schwanken in der Größe ihrer Abstände.</b> Aufgefallen, weil zwei Messläufe bei einem Clip um 0,05 auseinanderlagen: Dasselbe Standbild, einen Filmbild-Abstand später gezogen, bekommt bis zu 0,04 mehr oder weniger. Die dritte Nachkommastelle der Grenze 0,655 ist also Zufall — ein weiterer Grund, warum hier nichts sperrt.</p>
       </div>
 
       <div class="vb-item">
@@ -1498,10 +1507,13 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">88</span> Sieben Fassungen für ein Produkt, null in der Datenbank <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
+        <h4><span class="nr">88</span> <s>Sieben Fassungen für ein Produkt, null in der Datenbank</s> <span class="chip p-niedrig">ausgelassen am 07.10.</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">zwei Stunden</span></h4>
         <p class="warum"><b>Warum</b> In <code>videos/geschnitten/hochgeladen/</code> liegen sieben fertige Wasserspender-Clips, zusammen rund 80 MB, der älteste vom 30. August, der neueste vom 10. September. Keiner davon steht in <code>mkt_videos</code> — sie sind vor Stil C entstanden. Damit ist genau das Material, mit dem die Kette lernen könnte, das einzige, von dem sie nichts weiß. Und <code>.bestand.json</code> führt nur vier davon als „ads".</p>
         <p class="tun"><b>Was tun</b> Für jede der sieben Fassungen nachträglich eine Schnittliste schreiben — die Segmentgrenzen stehen im Video, der Kontaktbogen liefert die Quellnamen — und sie einmal durch Stil C laufen lassen. Was nicht rekonstruierbar ist, wenigstens als Zeile in <code>mkt_videos</code> nachtragen, mit dem Vermerk „vor Stil C, von Hand".</p>
         <p class="bringt"><b>Bringt</b> Der Bandit bekommt Vergleichsmaterial statt einer leeren Tabelle. Und die Frage „warum sieht Fassung v3 so aus" hat zum ersten Mal eine Antwort, die nicht im Kopf steht.</p>
+        <p class="tun"><b>Nachgesehen am 02.10. — nur lesend, geschrieben ist nichts.</b> Die Datenbank ist wieder erreichbar. In <code>mkt_videos</code> stehen 13 Zeilen, alle Stil A (9 geprüft, 4 verworfen); in <code>mkt_posts</code> drei, alle aus dem Trockenlauf. Keine der sieben Fassungen ist dabei.</p>
+        <p class="warum"><b>Warum „einfach nachtragen" gefährlich wäre</b> Die Veröffentlichung nimmt jedes Video mit <code>pruefergebnis = 'ok'</code>, und ein Video ohne Briefing gilt dabei als rechtlich geprüft — bei Stil C zu Recht, weil der Renderer ohne geklärte Rechte gar nichts baut. Eine von Hand eingetragene Zeile hätte diese Sperre nie durchlaufen: Die sieben Clips bestehen aus fremdem Material mit <code>rechte_geprueft: false</code> und würden trotzdem eingeplant. Nachtragen geht also nur mit einem anderen Prüfergebnis, das niemand einplant.</p>
+        <p class="warum"><b>Und was es dann bringt — weniger als gedacht</b> Lernen und Umsatzzuordnung lesen nicht <code>mkt_videos</code>, sondern <em>veröffentlichte Beiträge</em> mit Kennzahlen. Eine ruhende Zeile ist Dokumentation, kein Vergleichsmaterial. Damit der Bandit etwas davon hat, bräuchte es je Fassung den Beitrag dazu: wo veröffentlicht, unter welcher Adresse, wann. Das weiß nur, wer sie hochgeladen hat.</p>
       </div>
 
       <div class="vb-item">

@@ -36,7 +36,7 @@ def _modelle_da() -> bool:
     alt = os.environ.get("MARKETING_BILD")
     os.environ["MARKETING_BILD"] = "an"
     try:
-        return bild.verfuegbar(("clip", "gesicht", "text"))[0]
+        return bild.verfuegbar(("clip", "gesicht", "text", "satz"))[0]
     finally:
         if alt is None:
             os.environ.pop("MARKETING_BILD", None)
@@ -257,6 +257,66 @@ def test_gemessen_werden_genau_die_ersten_drei_sekunden(tmp_path, monkeypatch):
     assert spaet["sichtbar"] is False and spaet["max"] == 0.60
 
 
+@hat_ffmpeg
+@pytest.mark.parametrize("geraet, sichtbar", [(0.03, False), (0.9, True), (None, True)],
+                         ids=["kein-geraet", "gegenprobe-geraet-da", "textteil-fehlt"])
+def test_das_zweite_signal_meldet_einen_anfang_ganz_ohne_geraet(tmp_path, monkeypatch, geraet, sichtbar):
+    # DER FALL, DEN DIE FOTOS UEBERSEHEN: Ein Weidenkorb bekam gegen die
+    # Produktfotos 0,68 — ueber der Grenze. Der Textteil gab ihm 0,02.
+    teile = [_farbvideo(tmp_path / "segment.mp4", sekunden=3.0)]
+    monkeypatch.setattr(bild, "foto_richtungen", lambda pid: np.ones((1, 512), dtype=np.float32))
+    monkeypatch.setattr(bild, "aehnlichkeit_je_bild", lambda bilder, richtungen: [0.68] * len(bilder))
+    monkeypatch.setattr(bild, "geraet_je_bild",
+                        lambda bilder, pid, laden=False: None if geraet is None else [geraet] * len(bilder))
+    befund = bild.fruehe_sichtbarkeit(teile, 10, schwelle=0.655)
+    assert befund["max"] == 0.68, "das Foto-Signal allein haette 'sichtbar' gesagt"
+    assert befund["sichtbar"] is sichtbar
+    assert befund["kein_geraet"] is (geraet is not None and geraet < bild.GERAET_AB)
+    # Fehlt der Textteil, steht None da — kein Wert, der wie "Geraet da" aussieht.
+    assert befund["geraet"] == geraet
+
+    hinweis = sc._frueh_hinweis({"geprueft": True, **befund})
+    if sichtbar:
+        assert hinweis is None
+    else:
+        assert "kein Gerät dieser Art" in hinweis and "0.03" in hinweis
+
+
+def test_die_saetze_kommen_aus_den_suchbegriffen_des_bots():
+    saetze = bild.produktsaetze(10)
+    assert len(saetze) == bild.SAETZE_JE_PRODUKT
+    assert all(s.startswith("a photo of a ") for s in saetze)
+    assert not any("tiktok" in s.lower() for s in saetze), "das Suchwort der Suchmaschine gehoert nicht ins Bild"
+    assert any("water dispenser" in s for s in saetze)
+    # Gegenprobe: Ein Produkt ohne Suchbegriffe bekommt KEINE Saetze — und
+    # damit keinen Wert. Ein erfundener Satz waere eine erfundene Messung.
+    assert bild.produktsaetze(999999) == []
+
+
+def test_dieselben_bilder_gehen_nur_einmal_durchs_modell(monkeypatch):
+    # Zwei Fragen an dieselben Standbilder (Fotos und Saetze) duerfen das
+    # teuerste Stueck nicht zweimal rechnen.
+    aufrufe = []
+
+    def falsch(stapel):
+        aufrufe.append(len(stapel))
+        return np.ones((len(stapel), 512), dtype=np.float32)
+
+    monkeypatch.setattr(bild, "einbetten", falsch)
+    monkeypatch.setattr(bild, "_letzte_ausschnitte", None)
+    bilder = np.zeros((2, 960, 540, 3), dtype=np.uint8)
+    erste = bild.ausschnitt_richtungen(bilder)
+    assert erste.shape == (2, 3, 512) and aufrufe == [3, 3], "je Standbild drei Ausschnitte in EINEM Stapel"
+    bild.ausschnitt_richtungen(bilder.copy())                # gleicher Inhalt, andere Adresse
+    assert aufrufe == [3, 3]
+
+    # Gegenprobe: andere Bilder werden neu gerechnet.
+    anders = bilder.copy()
+    anders[0, 0, 0, 0] = 255
+    bild.ausschnitt_richtungen(anders)
+    assert aufrufe == [3, 3, 3, 3]
+
+
 def _liste(tmp_path: Path, video: Path) -> Path:
     pfad = tmp_path / "fassung.json"
     pfad.write_text(json.dumps({
@@ -283,6 +343,7 @@ def test_der_bauversuch_sagt_wenn_das_produkt_am_anfang_fehlt(tmp_path, monkeypa
     monkeypatch.setattr(bild, "verfuegbar", lambda modelle=("clip",): (True, ""))
     monkeypatch.setattr(bild, "foto_richtungen", lambda pid: np.ones((1, 512), dtype=np.float32))
     monkeypatch.setattr(bild, "aehnlichkeit_je_bild", lambda bilder, richtungen: [wert] * len(bilder))
+    monkeypatch.setattr(bild, "geraet_je_bild", lambda bilder, pid, laden=False: None)
     bericht = sc.trockenpruefung(_liste(tmp_path, _farbvideo(tmp_path / "clip.mp4", sekunden=5)), bauversuch=True)
     assert bericht["ok"], bericht["fehler"]
     frueh = bericht["bauversuch"]["produkt_frueh"]
@@ -351,6 +412,11 @@ def test_das_eigene_produktfoto_liegt_weit_ueber_einem_leeren_bild(tmp_path, mod
     # durch. Der Wert trennt echte Aufnahmen voneinander — eine Grafik, ein
     # Schwarzbild oder eine leere Flaeche erkennt er nicht. Deshalb sortiert
     # nichts im Bot nach diesem Wert von selbst aus.
+
+    # DAS ZWEITE SIGNAL schliesst genau diese Luecke: Der Textteil sagt beim
+    # leeren Bild "kein Geraet", beim Produktfoto "Geraet da".
+    assert leer["geraet"] < bild.GERAET_AB, leer
+    assert da["geraet"] >= 0.5, da
 
 
 @hat_ffmpeg

@@ -112,6 +112,10 @@ const STANDARD = {
   // Gemessen an 34 Clips: die fuenf darunter waren genau die fuenf falschen —
   // bei duennem Abstand (0,622 falsch, 0,636 richtig).
   bild_schwelle: 0.63,
+  // Zweites Signal (Textteil des Modells): Unter diesem Wert ist GAR KEIN
+  // Geraet dieser Art zu sehen. Gemessen: leere Flaechen 0,01-0,06, eine Frau,
+  // die nur spricht, 0,03 — alle Clips mit Geraet 0,46 und mehr.
+  geraet_schwelle: 0.15,
   // Ein Treffer muss UNTERSCHEIDEN: Mindestens ein Begriff, den hoechstens so
   // viele Produkte fuehren. 0 = aus.
   //
@@ -418,7 +422,12 @@ function fragenAusgeben(opt = {}) {
 //     gegen die eigenen Fotos traegt.
 //   * Der Wert trennt ECHTE AUFNAHMEN voneinander, keine Grafiken: Eine leere
 //     Farbflaeche bekommt 0,67, Rauschen 0,70. Ein Schwarzbild mit Schrift
-//     oder eine Texttafel faellt also NICHT auf.
+//     oder eine Texttafel faellt an DIESEM Wert also nicht auf.
+//   * geraet.wert (Textteil desselben Modells) schliesst genau diese Luecke:
+//     "ist ueberhaupt ein Geraet dieser Art zu sehen?" Leere Flaechen 0,01-0,06,
+//     eine Frau, die nur spricht, 0,03 — alle Clips mit Geraet 0,46 und mehr.
+//     Mehr sagt er nicht: Ueber 0,15 trennt er nichts, und ein fremdes Modell
+//     haelt er fuer das eigene (Ninja-Mixer: 0,94).
 //
 // NICHTS HIER SORTIERT VON SELBST AUS. Drei Produkte und 34 Clips sind eine
 // Messung, kein Beweis. Die Befunde sind Hinweise — entschieden wird am
@@ -457,7 +466,8 @@ function bildAufruf(liste, opt = {}) {
  * Getrennt vom Aufruf, damit sich pruefen laesst, was ins Index kommt — ohne
  * dass ein Modell laufen muss.
  */
-function bildFelder(befund, { schwelle = STANDARD.bild_schwelle, jetzt = () => new Date().toISOString() } = {}) {
+function bildFelder(befund, { schwelle = STANDARD.bild_schwelle, geraetSchwelle = STANDARD.geraet_schwelle,
+                              jetzt = () => new Date().toISOString() } = {}) {
   if (!befund) return {};
   if (befund.keine_bildspur) return { keine_bildspur: true, bild_geprueft_am: jetzt() };
   if (!befund.ok) return {};
@@ -466,6 +476,12 @@ function bildFelder(befund, { schwelle = STANDARD.bild_schwelle, jetzt = () => n
   if (p && p.ok) {
     felder.bild = { wert: p.mittel, max: p.max, bilder: (p.je_bild || []).length,
                     passt: Number(p.mittel) >= Number(schwelle) };
+    // Das zweite Signal fehlt, wenn der Textteil nicht geladen ist oder das
+    // Produkt keine englischen Suchbegriffe hat — dann steht hier NICHTS,
+    // statt eines Werts, der wie "Geraet da" aussieht.
+    if (typeof p.geraet === 'number') {
+      felder.geraet = { wert: p.geraet, da: p.geraet >= Number(geraetSchwelle) };
+    }
   }
   const g = befund.gesichter;
   if (g && g.ok) {
@@ -482,6 +498,25 @@ function bildFelder(befund, { schwelle = STANDARD.bild_schwelle, jetzt = () => n
     if (t.ortsfest && Array.isArray(t.bereiche)) felder.fremdtext.bereiche = t.bereiche;
   }
   return felder;
+}
+
+const BILD_FELDER = ['bild', 'geraet', 'personen_im_bild', 'personen_moeglich', 'gesicht_anteil',
+                     'fremdtext', 'keine_bildspur', 'bild_geprueft_am'];
+
+/**
+ * Einen Befund in den Eintrag schreiben — und den ALTEN vorher wegnehmen.
+ *
+ * Ein blosses Object.assign liesse stehen, was der neue Blick nicht mehr
+ * meldet: Nach `--neu` trug ein Clip ohne Gesicht weiter die Gesichtsgroesse
+ * des ersten Laufs, und ein Wert des Textteils blieb, wenn der Textteil beim
+ * zweiten Lauf fehlte. Ein Feld, das keiner mehr schreibt, sieht aus wie ein
+ * frischer Befund.
+ */
+function uebernehmeBild(eintrag, felder) {
+  if (!felder || !Object.keys(felder).length) return false;
+  for (const feld of BILD_FELDER) delete eintrag[feld];
+  Object.assign(eintrag, felder);
+  return true;
 }
 
 /**
@@ -507,7 +542,11 @@ function bildHinweise(eintrag) {
   const e = eintrag || {};
   const hinweise = [];
   if (e.keine_bildspur) hinweise.push('KEIN BILD — die Datei enthält nur Ton');
-  if (e.bild && e.bild.passt === false) {
+  if (e.geraet && e.geraet.da === false) {
+    // Der deutlichere Befund ersetzt den schwaecheren: Wo gar kein Geraet
+    // ist, sagt "anderes Modell" das Falsche.
+    hinweise.push(`Kein Gerät dieser Art zu sehen (Wert ${Number(e.geraet.wert).toFixed(2)})`);
+  } else if (e.bild && e.bild.passt === false) {
     hinweise.push(`Produkt kaum zu sehen oder anderes Modell (Bildwert ${Number(e.bild.wert).toFixed(2)})`);
   }
   if (e.personen_im_bild) {
@@ -561,12 +600,12 @@ function bildPruefen(opt = {}) {
   let geschrieben = 0;
   for (const d of dran) {
     const befund = nachPfad.get(path.resolve(d.datei));
-    const felder = bildFelder(befund, { schwelle: standard.bild_schwelle, jetzt: opt.jetzt });
-    if (!Object.keys(felder).length) {
+    const felder = bildFelder(befund, { schwelle: standard.bild_schwelle,
+                                        geraetSchwelle: standard.geraet_schwelle, jetzt: opt.jetzt });
+    if (!uebernehmeBild(d.eintrag, felder)) {
       melde(`⚠️  ${d.eintrag.datei}: ${(befund && befund.grund) || 'kein Befund'}`);
       continue;
     }
-    Object.assign(d.eintrag, felder);
     geschrieben++;
     if (freigabeNachBild(d.eintrag)) {
       melde(`⛔ ${d.eintrag.datei}: Gesicht im Bild — die Freigabe ist zurückgenommen, bis der Beleg zur Person vorliegt.`);
@@ -5935,8 +5974,8 @@ async function interaktiv(opt) {
           datei: path.join(videoZiel, ergebnis.eintrag.datei), produkt_id: Number(produkt.id),
         }]);
         if (gesehen.ok && gesehen.befunde[0]) {
-          Object.assign(ergebnis.eintrag, bildFelder(gesehen.befunde[0],
-            { schwelle: standard.bild_schwelle, jetzt }));
+          uebernehmeBild(ergebnis.eintrag, bildFelder(gesehen.befunde[0],
+            { schwelle: standard.bild_schwelle, geraetSchwelle: standard.geraet_schwelle, jetzt }));
           for (const hinweis of bildHinweise(ergebnis.eintrag)) melde(`   👁  ${hinweis}`);
         } else if (!gesehen.ok && !bildFehlerGemeldet) {
           bildFehlerGemeldet = true;
@@ -7158,7 +7197,7 @@ if (require.main === module) {
 }
 
 module.exports = {
-  bildAufruf, bildFelder, bildHinweise, bildPruefen, freigabeNachBild,
+  bildAufruf, bildFelder, bildHinweise, bildPruefen, freigabeNachBild, uebernehmeBild,
   holeKommentare, fragenAusKommentaren, istFrage,
   PLATTFORMEN, plattformAus, youtubeId, dateiKennung, formatArgumente, sucheYoutube, youtubeBegriff,
   planlauf, planFaellig, naechsterPlanlauf, waehlePlanProdukte, planZusammenfassung,

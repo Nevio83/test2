@@ -6286,6 +6286,56 @@ test('Bild: wird das Gesicht NACH der Freigabe gefunden, ist die Freigabe weg', 
   assert.equal(ladeIndex(zweiter.daten).eintraege[0].rechte_geprueft, true);
 });
 
+test('Bild: "kein Geraet dieser Art" ist ein eigener, deutlicherer Befund', () => {
+  // Das zweite Signal (Textteil): leere Flaechen und eine Frau, die nur
+  // spricht, bekamen 0,01-0,06 — alle Clips mit Geraet 0,46 und mehr.
+  const leer = bildFelder({ ...BEFUND, produkt: { ...BEFUND.produkt, mittel: 0.67, geraet: 0.03 } }, FEST);
+  assert.deepEqual(leer.geraet, { wert: 0.03, da: false });
+  assert.equal(leer.bild.passt, true, 'die Fotos allein haetten die leere Flaeche durchgelassen (0,67)');
+  assert.deepEqual(bildHinweise(leer), ['Kein Gerät dieser Art zu sehen (Wert 0.03)']);
+
+  // Liegen beide Signale unten, steht nur der deutlichere Satz da — "anderes
+  // Modell" waere bei einem Clip ohne jedes Geraet das Falsche.
+  const beides = bildFelder({ ...BEFUND, produkt: { ...BEFUND.produkt, mittel: 0.5, geraet: 0.03 } }, FEST);
+  assert.deepEqual(bildHinweise(beides), ['Kein Gerät dieser Art zu sehen (Wert 0.03)']);
+
+  // GEGENPROBE 1: ein fremdes Modell IST ein Geraet dieser Art (Ninja-Mixer: 0,94).
+  // Dann spricht nur das Foto-Signal.
+  const fremd = bildFelder({ ...BEFUND, produkt: { ...BEFUND.produkt, mittel: 0.58, geraet: 0.94 } }, FEST);
+  assert.equal(fremd.geraet.da, true);
+  assert.match(bildHinweise(fremd)[0], /anderes Modell/);
+
+  // GEGENPROBE 2: Fehlt der Textteil, steht KEIN Feld da — nicht etwa "da".
+  const ohne = bildFelder(BEFUND, FEST);
+  assert.equal(ohne.geraet, undefined);
+  assert.deepEqual(bildHinweise(ohne), []);
+});
+
+test('Bild: ein neuer Blick nimmt den alten Befund weg, statt ihn zu ueberdecken', () => {
+  const { uebernehmeBild } = require('./tiktok-video-sync.js');
+  const eintrag = { datei: 'a.mp4', rechte_geprueft: false, titel: 'bleibt' };
+  uebernehmeBild(eintrag, bildFelder({ ...BEFUND,
+    produkt: { ...BEFUND.produkt, geraet: 0.9 },
+    gesichter: { ok: true, personen_im_bild: true, personen_moeglich: true, groesstes_anteil: 0.2 } }, FEST));
+  assert.equal(eintrag.gesicht_anteil, 0.2);
+  assert.equal(eintrag.geraet.wert, 0.9);
+
+  // Zweiter Blick: kein Gesicht mehr, kein Textteil mehr.
+  uebernehmeBild(eintrag, bildFelder(BEFUND, FEST));
+  assert.equal(eintrag.gesicht_anteil, undefined, 'sonst truege der Clip die Gesichtsgroesse des ersten Laufs');
+  assert.equal(eintrag.geraet, undefined, 'sonst saehe ein alter Wert aus wie ein frischer');
+  assert.equal(eintrag.personen_im_bild, false);
+  assert.equal(eintrag.titel, 'bleibt', 'alles andere am Eintrag ist nicht Sache der Bilderkennung');
+
+  // GEGENPROBE: Ein gescheiterter Blick (leere Felder) nimmt NICHTS weg.
+  assert.equal(uebernehmeBild(eintrag, {}), false);
+  assert.equal(eintrag.bild.wert, 0.71);
+  // Und so haette es mit blossem Object.assign ausgesehen:
+  const alt = { gesicht_anteil: 0.2 };
+  Object.assign(alt, bildFelder(BEFUND, FEST));
+  assert.equal(alt.gesicht_anteil, 0.2);
+});
+
 test('Bild: wo die ortsfeste Einblendung steht, kommt mit in den Nachweis', () => {
   const kasten = [{ x: 0.1, y: 0.03, w: 0.8, h: 0.06 }];
   const fest = bildFelder({ ...BEFUND, text: { ok: true, einblendung: true, ortsfest: true, lage: 'rand', bereiche: kasten } }, FEST);

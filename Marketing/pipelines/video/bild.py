@@ -6,11 +6,12 @@ Clip ueberhaupt vorkommt, ob ein Gesicht zu erkennen ist, ob fremder Text im
 Bild steht — alles unbekannt, bis jemand von Hand hinsieht.
 
 OHNE NEUES PAKET
-onnxruntime kommt mit faster-whisper, numpy ebenso, die Standbilder liefert
-ffmpeg. Dazu drei Modelldateien, zusammen rund 92 MB, einmal geladen (wie das
-Whisper-Modell) und danach offline:
+onnxruntime kommt mit faster-whisper, numpy und tokenizers ebenso, die
+Standbilder liefert ffmpeg. Dazu vier Modelldateien, zusammen rund 157 MB,
+einmal geladen (wie das Whisper-Modell) und danach offline:
 
   CLIP ViT-B/32, Bildteil, int8      89 MB   Aehnlichkeit zu den Produktfotos
+  CLIP ViT-B/32, Textteil, int8      65 MB   "ist ueberhaupt ein Geraet zu sehen?"
       Xenova/clip-vit-base-patch32 — eine Formatumwandlung von
       openai/clip-vit-base-patch32. Die Karte der Umwandlung nennt keine
       Lizenz; das Original hat OpenAI unter MIT veroeffentlicht.
@@ -47,6 +48,15 @@ Material nur 0,59 bis 0,67. Mit der Grenze 0,655 auf den BESTEN Wert fallen
 vier von acht Clips ohne fruehes Produkt auf und keiner der sieben mit; der
 Abstand ist duenn (0,648 gegen 0,664). Die Pruefung findet also die klaren
 Faelle und uebersieht die Haelfte — sie ist ein Hinweis, nie eine Sperre.
+Mit dem Textteil als zweitem Signal (siehe geraet_je_bild) kommt der
+Weidenkorb dazu: fuenf von acht.
+
+DIE WERTE SCHWANKEN IN DER GROESSE IHRER ABSTAENDE. Dasselbe Standbild, einen
+Filmbild-Abstand (40 ms) spaeter gezogen, bekam bis zu 0,04 mehr oder weniger;
+derselbe Ausschnitt einzeln statt zu dritt durchs Modell geschickt bis zu
+0,05. Ueber acht Standbilder gemittelt bleiben davon rund 0,01. Die dritte
+Nachkommastelle der Schwellen ist also Zufall — auch deshalb entscheidet hier
+nichts allein.
 
 WAS BEWUSST NICHT PASSIERT
   * Gesichter werden ERKANNT, nie identifiziert. Kein Modell hier kann sagen,
@@ -79,7 +89,12 @@ MODELLE = {
     "clip": ("Xenova/clip-vit-base-patch32", "onnx/vision_model_quantized.onnx"),
     "gesicht": ("opencv/face_detection_yunet", "face_detection_yunet_2023mar.onnx"),
     "text": ("SWHL/RapidOCR", "PP-OCRv3/ch_PP-OCRv3_det_infer.onnx"),
+    # Der Textteil von CLIP (64,5 MB): Er beantwortet eine ENGE Frage verlaesslich —
+    # "ist hier ueberhaupt ein Geraet dieser Art?" — siehe geraet_je_bild().
+    "satz": ("Xenova/clip-vit-base-patch32", "onnx/text_model_quantized.onnx"),
 }
+SATZTEILER = ("Xenova/clip-vit-base-patch32", "tokenizer.json")
+QUELLEN_DATEI = REPO_ROOT / "bot" / "tiktok-quellen.json"
 PRODUKTBILDER = REPO_ROOT / "produkt bilder"
 BILD_ENDUNGEN = (".jpg", ".jpeg", ".png", ".webp")
 KURZE_SEITE = 540
@@ -122,9 +137,15 @@ def verfuegbar(modelle: tuple[str, ...] = ("clip",)) -> tuple[bool, str]:
     except ImportError as fehler:
         return False, f"{fehler.name} fehlt"
     for name in modelle:
-        repo, datei = MODELLE[name]
-        if not isinstance(try_to_load_from_cache(repo, datei), str):
-            return False, f"Bildmodell \"{name}\" nicht geladen — einmal `npm run tiktok:bild`"
+        dateien = [MODELLE[name]] + ([SATZTEILER] if name == "satz" else [])
+        for repo, datei in dateien:
+            if not isinstance(try_to_load_from_cache(repo, datei), str):
+                return False, f"Bildmodell \"{name}\" nicht geladen — einmal `npm run tiktok:bild`"
+        if name == "satz":
+            try:
+                import tokenizers  # noqa: F401
+            except ImportError:
+                return False, "tokenizers fehlt"
     ok, grund = common.verfuegbar()
     return (True, "") if ok else (False, grund)
 
@@ -275,20 +296,49 @@ def foto_richtungen(produkt_id: int):
     return _fotos[produkt_id]
 
 
-def aehnlichkeit_je_bild(bilder, richtungen) -> list[float]:
-    """Je Standbild der beste Wert ueber drei Ausschnitte und alle Produktfotos."""
+_letzte_ausschnitte: tuple[bytes, Any] | None = None
+
+
+def ausschnitt_richtungen(bilder):
+    """Je Standbild drei eingebettete Ausschnitte: (n, 3, 512).
+
+    Das teuerste Stueck der ganzen Datei. Zwei Fragen stellen sich an DENSELBEN
+    Bildern (Produktfotos und Saetze) — das letzte Ergebnis bleibt deshalb
+    liegen, erkannt am Inhalt der Bilder, nicht an ihrer Adresse im Speicher.
+    """
+    import hashlib
+
     import numpy as np
 
-    werte = []
-    for bild in bilder:
-        teile = einbetten(np.stack(_ausschnitte(bild)))
-        werte.append(round(float((teile @ richtungen.T).max()), 3))
-    return werte
+    global _letzte_ausschnitte
+    feld = np.ascontiguousarray(bilder)
+    kennung = hashlib.blake2b(feld.tobytes(), digest_size=16).digest() + str(feld.shape).encode()
+    if _letzte_ausschnitte is not None and _letzte_ausschnitte[0] == kennung:
+        return _letzte_ausschnitte[1]
+    # Immer drei Ausschnitte EINES Bildes zusammen durchs Modell: Das int8-
+    # Modell rechnet seine Wertebereiche je Stapel aus, und derselbe Ausschnitt
+    # bekam einzeln eingebettet bis zu 0,05 andere Werte als zu dritt
+    # (gemessen: 0,653 gegen 0,701). So haengt der Wert eines Standbilds nur
+    # vom Standbild ab, nicht von seinen Nachbarn im Stapel.
+    teile = np.stack([einbetten(np.stack(_ausschnitte(bild))) for bild in feld])
+    _letzte_ausschnitte = (kennung, teile)
+    return teile
+
+
+def aehnlichkeit_je_bild(bilder, richtungen) -> list[float]:
+    """Je Standbild der beste Wert ueber drei Ausschnitte und alle Produktfotos."""
+    teile = ausschnitt_richtungen(bilder)
+    return [round(float(x), 3) for x in (teile @ richtungen.T).max(axis=(1, 2))]
 
 
 def produkt_aehnlichkeit(video: Path, produkt_id: int, *, anzahl: int = 8, bilder=None,
-                         von: float | None = None, bis: float | None = None) -> dict[str, Any]:
-    """Wie aehnlich sehen die Standbilder den eigenen Produktfotos?"""
+                         von: float | None = None, bis: float | None = None,
+                         laden: bool = False) -> dict[str, Any]:
+    """Wie aehnlich sehen die Standbilder den eigenen Produktfotos?
+
+    @param laden  Den Textteil fuer `geraet` notfalls aus dem Netz holen. Nur
+        der Bot setzt das (auf ausdruecklichen Wunsch: `npm run tiktok:bild`).
+    """
     import numpy as np
 
     richtungen = foto_richtungen(int(produkt_id))
@@ -297,8 +347,128 @@ def produkt_aehnlichkeit(video: Path, produkt_id: int, *, anzahl: int = 8, bilde
     if bilder is None:
         bilder = standbilder(video, anzahl=anzahl, von=von, bis=bis)
     je_bild = aehnlichkeit_je_bild(bilder, richtungen)
-    return {"ok": True, "max": max(je_bild), "mittel": round(float(np.mean(je_bild)), 3),
-            "je_bild": je_bild, "fotos": int(len(richtungen))}
+    ergebnis = {"ok": True, "max": max(je_bild), "mittel": round(float(np.mean(je_bild)), 3),
+                "je_bild": je_bild, "fotos": int(len(richtungen))}
+    try:
+        geraet = geraet_je_bild(bilder, int(produkt_id), laden=laden)
+    except Exception:  # noqa: BLE001 — das zweite Signal darf das erste nicht kippen
+        geraet = None
+    if geraet is not None:
+        ergebnis["geraet"] = round(float(np.mean(geraet)), 3)
+        ergebnis["geraet_je_bild"] = geraet
+    return ergebnis
+
+
+# ── Ist ueberhaupt ein Geraet dieser Art im Bild? ────────────────────
+#
+# DIE AEHNLICHKEIT ZU DEN PRODUKTFOTOS HAT EINE BLINDE STELLE: Sie sagt "sieht
+# aus wie ein Studiofoto", nicht "zeigt ein Geraet". Eine leere Flaeche bekam
+# 0,67, ein Weidenkorb 0,68. Der Textteil desselben Modells stellt die andere
+# Frage — wie gut passt das Bild zu "a photo of a <Suchbegriff>" im Vergleich
+# zu einer festen Liste von Alltagsdingen — und beantwortet EINE Sache mit
+# grossem Abstand (gemessen am 02.10. an 34 Clips):
+#
+#     leere Flaeche, Rauschen, Muster          0,01 - 0,06
+#     Weidenkorb, Frau packt aus (Anfang)      0,02 / 0,04
+#     Frau spricht nur in die Kamera (Clip)    0,03
+#     alle Clips MIT einem Geraet dieser Art   0,46 und mehr
+#
+# ALS HAUPTMASS TAUGT ER NICHT. Ueber 0,15 trennt er nichts mehr: Die Saetze
+# kommen aus den englischen Suchbegriffen des Bots ("water dispenser desk",
+# "... bottle"), und Wasserflaschen auf einem Tisch bekamen damit 0,80, ein
+# Schreibtisch 0,65. Von Hand geschriebene Saetze trennten besser, galten aber
+# nur fuer die drei Produkte, an denen gemessen wurde — 40 Produkte lang haelt
+# das niemand nach. Ein fremdes MODELL erkennt er grundsaetzlich nicht: Ein
+# Ninja-Mixer ist auch "a portable blender" (0,94). Dafuer sind die Fotos da.
+#
+# Deshalb nur die eine, enge Aussage: unter GERAET_AB ist nichts dergleichen
+# zu sehen.
+
+GERAET_AB = 0.15
+SAETZE_JE_PRODUKT = 3
+ANDERES = (
+    "a photo of a person", "a photo of a face", "a photo of a room", "a photo of a kitchen",
+    "a photo of a hand", "text on a plain background", "a photo of a cardboard box",
+    "a photo of a basket", "a photo of a desk with a computer", "a photo of a bottle",
+    "a photo of a bed", "an empty plain background", "a photo of furniture",
+    "a photo of a bedroom", "a photo of a table", "a photo of clothes", "a photo of food",
+    "a photo of fruit", "a photo of a garden", "a photo of a street", "a photo of a wall",
+)
+
+_satzteiler: Any = None
+_quellen: dict[str, Any] | None = None
+_satzfelder: dict[int, Any] = {}
+
+
+def produktsaetze(produkt_id: int, anzahl: int = SAETZE_JE_PRODUKT) -> list[str]:
+    """Saetze fuer ein Produkt — aus den englischen Suchbegriffen des Bots, ohne Handarbeit."""
+    import re
+
+    global _quellen
+    if _quellen is None:
+        try:
+            _quellen = json.loads(QUELLEN_DATEI.read_text(encoding="utf-8-sig")).get("produkte") or {}
+        except (OSError, ValueError):
+            _quellen = {}
+    begriffe = (_quellen.get(str(int(produkt_id))) or {}).get("suchbegriff")
+    englisch = begriffe.get("en") if isinstance(begriffe, dict) else None
+    saetze: list[str] = []
+    for begriff in englisch or []:
+        sauber = re.sub(r"\btiktok\b", "", str(begriff), flags=re.IGNORECASE).strip()
+        if sauber and sauber not in saetze:
+            saetze.append(sauber)
+    return [f"a photo of a {s}" for s in saetze[:anzahl]]
+
+
+def text_richtungen(saetze: list[str]):
+    """Saetze -> Richtungen der Laenge 1 (n, 512), im selben Raum wie die Bilder."""
+    import numpy as np
+
+    global _satzteiler
+    if _satzteiler is None:
+        from huggingface_hub import hf_hub_download
+        from tokenizers import Tokenizer
+
+        _satzteiler = Tokenizer.from_file(hf_hub_download(*SATZTEILER))
+    kennungen = np.full((len(saetze), 77), 49407, dtype=np.int64)       # 49407 = Satzende, zugleich Fuellung
+    for i, satz in enumerate(saetze):
+        teile = _satzteiler.encode(satz).ids[:77]
+        kennungen[i, :len(teile)] = teile
+    aus = _sitzung("satz").run(["text_embeds"], {"input_ids": kennungen})[0]
+    return aus / np.linalg.norm(aus, axis=1, keepdims=True)
+
+
+def _satzfeld(produkt_id: int):
+    """(Richtungen aller Saetze, Anzahl der eigenen) — einmal je Lauf. None ohne Suchbegriffe."""
+    import numpy as np
+
+    if produkt_id not in _satzfelder:
+        eigene = produktsaetze(produkt_id)
+        _satzfelder[produkt_id] = (
+            (np.concatenate([text_richtungen(eigene), text_richtungen(list(ANDERES))]), len(eigene))
+            if eigene else None)
+    return _satzfelder[produkt_id]
+
+
+def geraet_je_bild(bilder, produkt_id: int, *, laden: bool = False) -> list[float] | None:
+    """Je Standbild: Wie sicher ist ein Geraet dieser Art zu sehen (0..1)? None, wenn nicht messbar.
+
+    Gerechnet wie bei CLIP ueblich: die Aehnlichkeiten zu allen Saetzen mit 100
+    gestreckt und auf 1 normiert; gezaehlt wird der Anteil der eigenen Saetze,
+    je Standbild der beste der drei Ausschnitte.
+    """
+    import numpy as np
+
+    if not laden and not verfuegbar(("clip", "satz"))[0]:
+        return None
+    feld = _satzfeld(int(produkt_id))
+    if feld is None:
+        return None
+    richtungen, eigene = feld
+    werte = 100.0 * (ausschnitt_richtungen(bilder) @ richtungen.T)       # (n, 3, k)
+    anteile = np.exp(werte - werte.max(axis=2, keepdims=True))
+    anteile = anteile / anteile.sum(axis=2, keepdims=True)
+    return [round(float(x), 3) for x in anteile[:, :, :eigene].sum(axis=2).max(axis=1)]
 
 
 # Grenze fuer das EINZELNE Bild (Punkt 35). Nicht dieselbe wie fuer den ganzen
@@ -320,6 +490,7 @@ def fruehe_sichtbarkeit(teile: list[Path], produkt_id: int, *, sekunden: float =
     if richtungen is None:
         return {"ok": False, "grund": f"keine Produktfotos zu Produkt {produkt_id}"}
     je_bild: list[float] = []
+    geraet: list[float] | None = []
     rest = float(sekunden)
     for teil in teile:
         if rest <= 0.05:
@@ -330,13 +501,22 @@ def fruehe_sichtbarkeit(teile: list[Path], produkt_id: int, *, sekunden: float =
         stueck = min(info.dauer, rest)
         bilder = standbilder(teil, anzahl=max(1, int(round(stueck * je_sekunde))), von=0.0, bis=stueck)
         je_bild.extend(aehnlichkeit_je_bild(bilder, richtungen))
+        # Das zweite Signal — nur wenn der Textteil schon auf der Platte liegt.
+        # Fehlt er bei EINEM Stueck, gilt er fuer den ganzen Anfang als nicht
+        # gemessen: ein Mittel ueber die Haelfte der Bilder waere eine andere Zahl.
+        if geraet is not None:
+            werte = geraet_je_bild(bilder, int(produkt_id))
+            geraet = None if werte is None else geraet + werte
         rest -= stueck
     if not je_bild:
         return {"ok": False, "grund": "keine Standbilder aus den ersten Sekunden"}
     bester = max(je_bild)
+    geraet_mittel = round(float(np.mean(geraet)), 3) if geraet else None
+    kein_geraet = geraet_mittel is not None and geraet_mittel < GERAET_AB
     return {"ok": True, "sekunden": round(float(sekunden) - max(rest, 0.0), 2), "bilder": len(je_bild),
             "max": bester, "mittel": round(float(np.mean(je_bild)), 3), "je_bild": je_bild,
-            "schwelle": float(schwelle), "sichtbar": bool(bester >= float(schwelle))}
+            "schwelle": float(schwelle), "geraet": geraet_mittel, "kein_geraet": bool(kein_geraet),
+            "sichtbar": bool(bester >= float(schwelle) and not kein_geraet)}
 
 
 # ── Gesichter (Punkt 23) ─────────────────────────────────────────────
@@ -541,7 +721,9 @@ def pruefe(video: Path, produkt_id: int | None = None, *, anzahl: int = 8) -> di
     teile = {"gesichter": lambda: gesichter(video, bilder=bilder),
              "text": lambda: fremdtext(video, bilder=bilder)}
     if produkt_id is not None:
-        teile["produkt"] = lambda: produkt_aehnlichkeit(video, int(produkt_id), bilder=bilder)
+        # laden=True: Der Bot ruft das auf ausdruecklichen Wunsch auf — hier
+        # (und nur hier) darf der Textteil beim ersten Mal geladen werden.
+        teile["produkt"] = lambda: produkt_aehnlichkeit(video, int(produkt_id), bilder=bilder, laden=True)
     for name, aufruf in teile.items():
         try:
             ergebnis[name] = aufruf()
