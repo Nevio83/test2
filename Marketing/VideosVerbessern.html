@@ -359,7 +359,7 @@
     <p class="subtitle">Dieses Papier gehört zum <strong>Fortschrittsbericht 7. Juni – 2. September 2026</strong> und vertieft den Teil, der dort nur eine Karte und fünf Punkte bekommen hat: die Kette aus <strong>Bot → Filter → Schnitt → Veröffentlichung</strong>. <strong>Wichtig:</strong> Es ist gegen den echten Code geschrieben, nicht gegen den Bericht — und dabei hat sich herausgestellt, dass <strong>ein guter Teil dessen, was der Bericht als Lücke las, längst gebaut ist</strong>: neun Prüfhürden im Bot, Spracherkennung per faster-whisper, Lautheitsnormung, Ducking, Untertitel, Ausgangsprüfung und eine sperrende Rechtsprüfung. Dieses Papier sagt bei jedem Punkt, was <em>wirklich</em> fehlt. <strong>Nachtrag vom 18.09.:</strong> Der Code wurde erneut gelesen. Fünf der 72 Punkte sind seitdem gebaut — Kontaktbogen, Vorprüfung, Schnittliste als Stil C, Kampagnen-Verweis, Freigabe je Beitrag (bis auf die Oberfläche). Der erste Abschnitt sagt, was davon steht; ganz unten stehen <strong>18 neue Punkte</strong>, die es vorher nicht geben konnte.</p>
     <div class="meta-row">
       <span><strong>bot/</strong> · 3.022 Zeilen Programm, 3.042 Zeilen Prüfungen (131 Stück)</span>
-      <span style="color:var(--blue);font-weight:600;">90 Vorschläge · 82 gebaut, 2 halb, 4 offen, 1 ausgelassen</span>
+      <span style="color:var(--blue);font-weight:600;">90 Vorschläge · 83 gebaut, 3 halb, 2 offen, 1 ausgelassen</span>
       <span><strong>23</strong> Rohclips → 5 Schnittfassungen → 1 fertiger Clip (19,5 s)</span>
       <span>Stand <strong>02.10.2026</strong> · am Code nachgeprüft</span>
     </div>
@@ -435,7 +435,7 @@
     </div>
 
     <div class="pruef-banner" style="background:var(--blue-dim);border-color:color-mix(in srgb, var(--blue) 32%, transparent);">
-      <h3>Stand am 07.10.: 82 gebaut, 2 halb, 4 offen, 1 anders gelöst, 1 ausgelassen — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <h3>Stand am 07.10.: 83 gebaut, 3 halb, 2 offen, 1 anders gelöst, 1 ausgelassen — ausgezählt an den Abzeichen, geprüft am Code</h3>
       <p class="warum" style="border-left:3px solid var(--muted-2);padding-left:12px;">
         <b>Am 07.10. gebaut:</b> <strong>87</strong> — die Schnitt-Aufgabe gibt es nicht mehr (nachgesehen in der
         Windows-Aufgabenplanung und in der Claude-App); die Merkliste trägt jetzt einen Stilllegungsvermerk, statt bei
@@ -483,8 +483,8 @@
       </p>
       <p class="warum" style="margin-top:10px;">
         <b>Was wirklich offen ist</b> —
-        <strong>60</strong> (Render Starter, 7 $/Monat — deine Entscheidung) ·
-        <strong>61</strong> und <strong>62</strong> (laufende Arbeit, kein Code) ·
+        <strong>60</strong> (Render Starter, 7 $/Monat — deine Entscheidung; <em>am 07.10. gemessen, siehe beim Punkt</em>) ·
+        <strong>61</strong> (laufende Arbeit, kein Code) · <s><strong>62</strong> (laufende Arbeit, kein Code)</s> <em>62: das Werkzeug ist am 07.10. gebaut, die monatliche Entscheidung bleibt Handarbeit</em> ·
         <strong>86</strong> (Material filmen oder Läufe — keine Programmieraufgabe) ·
         <s><strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank; <em>seit dem 02.10. ist sie wieder erreichbar</em>).</s>
         <em>88 am 07.10. ausgelassen.</em>
@@ -1194,10 +1194,21 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">60</span> Die Zielseite auf Video-Besucher vorbereiten <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-geld">7 $/Monat</span> <span class="chip c-klein">ein Klick</span></h4>
+        <h4><span class="nr">60</span> Die Zielseite auf Video-Besucher vorbereiten <span class="chip p-mittel">halb am 07.10. — gemessen; Plan und Pinger entscheidest du</span> <span class="chip c-geld">7 $/Monat</span> <span class="chip c-klein">ein Klick</span></h4>
         <p class="warum"><b>Warum</b> Der Besucher aus einem TikTok-Video ist per Definition ein Erstaufruf — und auf dem kostenlosen Render-Plan dauert der erste Aufruf nach dem Schlaf rund 50 Sekunden. Niemand wartet 50 Sekunden. Der gesamte Aufwand dieses Papiers endet dann in einer weißen Seite.</p>
         <p class="tun"><b>Was tun</b> Render Starter statt Free (Punkt 12 im Hauptbericht) und ein externer Pinger als zweites Netz. Dazu die Produktseite auf Handy-Erstaufruf messen: Wie lange bis zum ersten sichtbaren Inhalt über Mobilfunk? Das ist die Zahl, die für Video-Besucher zählt, nicht die Bildgröße.</p>
         <p class="bringt"><b>Bringt</b> Der teuerste Moment der ganzen Kette ist der Klick vom Clip in den Shop. Alles davor ist Vorbereitung — und alles davor ist wertlos, wenn dieser Moment 50 Sekunden dauert.</p>
+        <p class="tun"><b>Gemessen am 07.10. — Handy, Erstbesuch, ohne Zwischenspeicher.</b> Chrome über das DevTools-Protokoll, Mittelklasse-Handy (Prozessor 4× gebremst), fünf Läufe je Seite, Median. Der Server war wach (<code>/health</code> nach 0,3&nbsp;s) — der Kaltstart nach dem Schlaf kommt also noch obendrauf.</p>
+        <table class="zahlen" style="margin:8px 0 12px"><thead><tr><th>Seite</th><th>Netz</th><th>erster Inhalt</th><th>größter Inhalt</th><th>Daten</th></tr></thead><tbody>
+          <tr><td>Startseite</td><td>4G mittel</td><td class="num">1,4 s</td><td class="num">3,9 s</td><td class="num">529 KB</td></tr>
+          <tr><td>Wasserspender</td><td>4G mittel</td><td class="num">2,0 s</td><td class="num">2,7 s</td><td class="num">443 KB</td></tr>
+          <tr><td>Mixer</td><td>4G mittel</td><td class="num">2,1 s</td><td class="num">3,4 s</td><td class="num">484 KB</td></tr>
+          <tr><td>Startseite</td><td>4G gut</td><td class="num">1,0 s</td><td class="num">2,9 s</td><td class="num">529 KB</td></tr>
+          <tr><td>Wasserspender</td><td>4G gut</td><td class="num">1,6 s</td><td class="num">2,7 s</td><td class="num">443 KB</td></tr>
+        </tbody></table>
+        <p class="warum"><b>Was das heißt</b> Google nennt bis 2,5&nbsp;s für den größten Inhalt „gut". Alle drei Seiten liegen knapp darüber, die Startseite mit 3,9&nbsp;s deutlich. Die Einzelläufe streuen stark (Startseite 3,4–5,2&nbsp;s) — die Zahlen sind ein Anhaltspunkt, keine Garantie.</p>
+        <p class="tun"><b>Woran es liegt — aus der Ladereihenfolge der Wasserspender-Seite</b> Zwei <em>fremde</em> Stylesheets halten die Darstellung auf: Google Fonts (fertig nach 1,7&nbsp;s) und die Bootstrap-Icons von jsdelivr (2,0&nbsp;s), jedes mit eigener neuer Verbindung. Das eigene CSS ist nach 0,6&nbsp;s da. Hinter den beiden wartet alles: Die Skripte laufen erst danach, <code>products.json</code> wird erst bei 3,3&nbsp;s abgefragt, und die Galerie tauscht das Hauptbild danach noch einmal aus — deshalb steht als größtes Element mal <code>main-product-image</code>, mal <code>gallery-image</code>. Dazu wird <code>products.json</code> <strong>achtmal</strong> geladen, von verschiedenen Skripten. Das Hauptbild selbst (37&nbsp;KB) ist kein Problem. Auf der Startseite ist das größte Element ein Produktbild, das erst nach dem Ende des Ladens kommt — es wird von JavaScript eingesetzt.</p>
+        <p class="warum"><b>Was offen ist</b> Render Starter (7&nbsp;$/Monat) und ein externer Pinger — beides deine Entscheidung. Und der größte Hebel im Code: Schriften und Icons selbst ausliefern statt von zwei fremden Servern (Inter und Outfit stehen unter OFL, die Icons unter MIT). Das betrifft 51 Seiten und ist ein Eingriff ins Design — deshalb nicht ungefragt gemacht.</p>
       </div>
 
       <div class="vb-item">
@@ -1208,10 +1219,13 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">62</span> Was funktioniert hat, zurück in die Vorlagen <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">laufend</span></h4>
+        <h4><span class="nr">62</span> Was funktioniert hat, zurück in die Vorlagen <span class="chip p-niedrig">gebaut am 07.10. — das Werkzeug; entscheiden bleibt Handarbeit</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">laufend</span></h4>
         <p class="warum"><b>Warum</b> Die Marketing-Kette endet mit „Lernen". Ohne einen festen Schritt, der Erkenntnisse in die Vorlagen zurückschreibt, bleibt das ein Kasten im Ablaufdiagramm.</p>
         <p class="tun"><b>Was tun</b> Einmal im Monat: die fünf besten und fünf schwächsten Beiträge nebeneinanderlegen, nach Vorlage, Hook-Art, Länge, Bett und Rohmaterialquelle sortieren. Was zweimal zu den Besten gehört, wird Vorgabe in der Vorlage; was zweimal unten steht, fliegt raus — mit Datum im Handbuch.</p>
         <p class="bringt"><b>Bringt</b> Die Vorlagen werden besser, statt gleich zu bleiben. Nach einem halben Jahr ist das der Unterschied zwischen einer Kette, die Clips ausstößt, und einer, die dazulernt.</p>
+        <p class="tun"><b>Gebaut am 07.10.: <code>npm run marketing:rueckschau</code>.</b> Legt die fünf besten und die fünf schwächsten veröffentlichten Beiträge eines Zeitraums nebeneinander und zählt je Merkmal — Vorlage, Hook, Länge, Musikbett, Quelle des Materials —, in wie vielen Beiträgen es oben und unten steckt. Daraus die Regel dieses Punkts als Vorschlag: mindestens zweimal oben und nie unten → Kandidat für die Vorlage; umgekehrt → Kandidat zum Streichen; oben <em>und</em> unten → unterscheidet nichts, auch wenn es häufig ist. Der erste Wochenbericht jedes Monats trägt dieselbe Rückschau mit — ein Befehl, an den man jeden Monat selbst denken muss, ist nach dem zweiten Monat vergessen.</p>
+        <p class="warum"><b>Was sie bewusst nicht tut</b> Sie schreibt nichts in die Vorlagen. Fünf oben und fünf unten sind eine kleine Stichprobe; ob „zweimal oben" ein Muster ist oder Zufall, entscheidet ein Mensch und trägt es mit Datum in <code>SCHNITT.md</code> §8 ein — dort steht die Tabelle dafür. Gezählt werden nur <em>endgültige</em> Bewertungen, wie beim Lernen selbst, und erst ab zehn Beiträgen: Darunter wäre derselbe Beitrag zugleich unter den besten und den schwächsten. Stil C ist dabei, obwohl es kein Briefing hat — die Abfrage hängt nicht am Briefing.</p>
+        <p class="tun"><b>Echt aufgerufen:</b> „nur 0 Beiträge mit endgültiger Bewertung in 30 Tagen". Richtig so — der Automat steht im Trockenlauf, veröffentlicht ist nichts. Die Rückschau erfindet dann keine Vorschläge, sie sagt, warum es keine gibt.</p>
       </div>
     </div>
 

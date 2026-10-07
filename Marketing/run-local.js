@@ -57,6 +57,12 @@
  *     npm run marketing:rendern -- --einmal         abarbeiten, was da ist
  *         Punkt 50: rendert Schnittlisten im Hintergrund, parallel, mit
  *         Protokoll neben dem Ergebnis. Fragt die Datenbank nicht im Takt.
+ *
+ *     npm run marketing:rueckschau                  letzte 30 Tage
+ *     npm run marketing:rueckschau -- --tage 60     laengerer Zeitraum
+ *         Punkt 62: die fuenf besten und fuenf schwaechsten Beitraege
+ *         nebeneinander, je Merkmal gezaehlt, mit Vorschlaegen fuer die
+ *         Vorlagen. Liest nur — geaendert wird nichts.
  */
 
 'use strict';
@@ -120,6 +126,8 @@ function leseArgumente(argv) {
     else if (a === '--bauversuch') opt.bauversuch = true;
     // Punkt 50: alles hinter --rendern geht an die Warteschlange.
     else if (a === '--rendern') { opt.rendern = true; opt.rendernArgs = argv.slice(i + 1); break; }
+    // Punkt 62: Rueckschau — alles dahinter (--tage, --anzahl) geht an das Modul.
+    else if (a === '--rueckschau') { opt.rueckschau = true; opt.rueckschauArgs = argv.slice(i + 1); break; }
     // npm reicht alles hinter "--" weiter; ein freies Wort nach --vorlage ist
     // der Vorlagenname, auch wenn es erst hinter --produkt steht.
     else if (opt.vorlage && !opt.vorlageName && !a.startsWith('--')) opt.vorlageName = a;
@@ -593,6 +601,11 @@ async function main() {
   // Punkt 50: Die Warteschlange prueft die Datenbank selbst (einmal beim Start).
   if (opt.rendern) {
     return fuehreModulAus(python, 'pipelines.video.warteschlange', opt.rendernArgs);
+  }
+
+  // Punkt 62: liest nur — eine Abfrage, keine Schreibzugriffe.
+  if (opt.rueckschau) {
+    return fuehreModulAus(python, 'pipelines.learning.rueckschau', opt.rueckschauArgs);
   }
 
   // Punkt 48: Python laeuft in Marketing/ — ein Pfad, der relativ zum Ort des

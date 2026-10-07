@@ -327,6 +327,28 @@ falsche Auflösung, also kann sie nie versehentlich veröffentlicht werden.
 * **Werbung steht fest in der Endkarte**, oben. Kein Schalter, kein Parameter
   — wird es je Beitrag von Hand gesetzt, fehlt es irgendwann.
 
+### Was aus den Zahlen kommt (Punkt 62)
+
+Einmal im Monat legt `npm run marketing:rueckschau` die fünf besten und die fünf
+schwächsten veröffentlichten Beiträge nebeneinander und zählt je Merkmal (Vorlage,
+Hook, Länge, Musikbett, Quelle), wie oft es oben und unten steht. Der erste
+Wochenbericht jedes Monats trägt dieselbe Rückschau mit. Die Regel aus dem Papier:
+
+* **In mindestens zwei der besten und in keinem der schwächsten** → Kandidat für die
+  Vorlage.
+* **In mindestens zwei der schwächsten und in keinem der besten** → Kandidat zum
+  Streichen.
+* **Oben und unten** → unterscheidet nichts, auch wenn es häufig ist.
+
+Gezählt werden nur **endgültige** Bewertungen (wie beim Lernen selbst) und erst ab
+zehn Beiträgen — darunter überschneiden sich die besten und die schwächsten fünf.
+**Geändert wird nichts von selbst.** Was übernommen oder gestrichen wird, entscheidet
+ein Mensch und trägt es hier ein, mit Datum:
+
+| Datum | Entscheidung | Grundlage (Rückschau) |
+|---|---|---|
+| — | noch keine: Stand 07.10. gibt es keinen veröffentlichten Beitrag (Trockenlauf) | — |
+
 ---
 
 ## 9. Was jede Fassung hinterlässt

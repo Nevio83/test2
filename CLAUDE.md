@@ -22,8 +22,8 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   abfragen, beenden) → erst dann der Deploy-Hook. Ist ein Schritt rot, bleibt der alte Stand live.
   Von Hand: Render-Dashboard → „Manual Deploy". **612 automatische Prüfungen** im Prüflauf via
   `npm test` — 262 Shop und 350 Bot (`test/lauf.js` sammelt `bot/*.test.js` mit ein, also **nicht
-  addieren**: genau das ist einmal passiert), dazu **333 Marketing** via
-  `py -m pytest Marketing/tests`, die **nur lokal** laufen (Stand 02.10.).
+  addieren**: genau das ist einmal passiert), dazu **345 Marketing** via
+  `py -m pytest Marketing/tests`, die **nur lokal** laufen (Stand 07.10.).
 - **Sicherheitsschicht** (alles seit Ende Juli, Details in §3): Datei-Freigabe
   (`static-guard.js`), Content-Security-Policy ohne `'unsafe-inline'` für Skripte
   (`csp-policy.js` + `csp-inline.js`), HSTS (`hsts-policy.js`), CSRF-Herkunftsprüfung,
@@ -153,7 +153,8 @@ npm run marketing:local      # Dauerläufer für alles mit Browser/GPU (5-Min-Ta
 npm run marketing:vorlage -- problem_loesung --produkt 10   # Schnitt-Entwurf aus einer Vorlage
 npm run marketing:pruefen -- fassung-10.json --bauversuch   # Schnittliste gegenlesen, ohne zu rendern
 npm run marketing:rendern    # Schnittlisten im Hintergrund rendern (fragt die DB NICHT im Takt)
-py -m pytest Marketing/tests # 333 Prüfungen der Marketing-Kette (48 davon nur mit Datenbank)
+npm run marketing:rueckschau # beste/schwächste 5 Beiträge je Merkmal — Vorschläge für die Vorlagen, ändert nichts
+py -m pytest Marketing/tests # 345 Prüfungen der Marketing-Kette (49 davon nur mit Datenbank)
 py -m pipelines.orchestrator.run_loop --job render_style_a --once   # aus Marketing/ heraus
 
 # ── TikTok-Rohmaterial (Recherche, lädt nur über der Trefferschwelle) ──

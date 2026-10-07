@@ -135,7 +135,23 @@ def _sammle() -> dict[str, Any]:
     daten["herkunft"] = herkunft
 
     daten["naechste_versuche"] = _naechste_versuche(lernstand)
+
+    # Punkt 62: Einmal im Monat gehoert die Rueckschau dazu. Ein Befehl, an den
+    # man jeden Monat selbst denken muss, wird nach dem zweiten Monat
+    # vergessen — der Wochenbericht kommt ohnehin.
+    if rueckschau_faellig(datetime.now()):
+        from . import rueckschau
+
+        try:
+            daten["rueckschau"] = rueckschau.rueckschau()
+        except Exception as fehler:  # noqa: BLE001 — der Wochenbericht darf daran nicht scheitern
+            daten["rueckschau"] = {"ok": False, "grund": f"Rueckschau gescheitert: {str(fehler)[:160]}"}
     return daten
+
+
+def rueckschau_faellig(heute: datetime) -> bool:
+    """Der erste Wochenbericht eines Monats traegt die Rueckschau."""
+    return heute.day <= 7
 
 
 def _naechste_versuche(lernstand: list[dict[str, Any]]) -> list[str]:
@@ -211,6 +227,25 @@ def baue_html(daten: dict[str, Any]) -> str:
     if not herkunft_html:
         herkunft_html = "<p style='color:#888'>Noch keine bewerteten Stil-C-Beitraege.</p>"
 
+    rueckschau_html = ""
+    rs = daten.get("rueckschau")
+    if rs is not None:
+        if not rs.get("ok"):
+            inhalt = f"<p style='color:#888'>{e(str(rs.get('grund') or 'nicht moeglich'))}</p>"
+        else:
+            def vorschlaege(titel: str, liste: list[dict[str, Any]]) -> str:
+                if not liste:
+                    return f"<p><strong>{e(titel)}:</strong> keine</p>"
+                return (f"<p><strong>{e(titel)}:</strong></p><ul>" + "".join(
+                    f"<li>{e(v['name'])}: {e(str(v['wert']))} (oben {v['oben']}×, unten {v['unten']}×)</li>"
+                    for v in liste) + "</ul>")
+            inhalt = (f"<p>{rs['anzahl_bewertet']} bewertete Beitraege in {rs['tage']} Tagen.</p>"
+                      + vorschlaege("Kandidat fuer die Vorlage", rs.get("uebernehmen") or [])
+                      + vorschlaege("Kandidat zum Streichen", rs.get("streichen") or [])
+                      + "<p style='color:#9aa3ad'>Geaendert wurde nichts — was uebernommen wird, "
+                        "entscheidet ein Mensch, mit Datum in Marketing/SCHNITT.md.</p>")
+        rueckschau_html = f"<h2>Monatliche Rueckschau fuer die Vorlagen</h2>{inhalt}"
+
     return f"""<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><title>Marketing-Wochenbericht</title></head>
 <body style="font-family:-apple-system,Segoe UI,Arial,sans-serif;background:#14161a;
@@ -245,6 +280,8 @@ def baue_html(daten: dict[str, Any]) -> str:
 
     <h2>Was es als Naechstes ausprobieren will</h2>
     <ul>{''.join(f'<li>{e(v)}</li>' for v in daten.get('naechste_versuche', []))}</ul>
+
+    {rueckschau_html}
 
     <h2>Kosten</h2>
     {liste(daten.get('kosten'), lambda z: f"{e(str(z['anbieter']))}: {_euro(z['cent'])} ({z['aufrufe']} Aufrufe)")}
