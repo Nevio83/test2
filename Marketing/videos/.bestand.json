@@ -1,6 +1,7 @@
 {
   "hinweis": "Merkliste fuer die taegliche Schnitt-Aufgabe. Verarbeitete Rohdateien pro Produktordner. Nicht von Hand loeschen - sonst schneidet die Aufgabe alles neu.",
   "zuletzt_gelaufen": "2026-08-30",
+  "stillgelegt": { "am": "2026-10-07", "grund": "keine geplante Aufgabe mehr — weder in der Windows-Aufgabenplanung noch in der Claude-App; Schnitte laufen über marketing:rendern" },
   "mindestens_clips_fuer_ein_video": 4,
   "mindestens_davon_1080p": 2,
   "produkte": {

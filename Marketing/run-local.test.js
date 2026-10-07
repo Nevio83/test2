@@ -77,6 +77,54 @@ test('ein unsinniges Datum wird nicht zu einer Warnung verrechnet', () => {
   assert.strictEqual(zeilen.length, 0);
 });
 
+// Punkt 87, zweiter Teil: Am 07.10. stand fest, dass es die Aufgabe nicht mehr
+// gibt. Eine Warnung, die danach bei jedem Start kommt, liest niemand mehr.
+function mitHinweisen(fn) {
+  const echt = console.log;
+  const hinweise = [];
+  console.log = (...a) => hinweise.push(a.join(' '));
+  try { return { ...ohneAusgabe(fn), hinweise }; } finally { console.log = echt; }
+}
+const STILL = { am: '2026-10-07', grund: 'keine geplante Aufgabe mehr gefunden' };
+
+test('eine ausdruecklich stillgelegte Merkliste warnt nicht mehr, sagt es aber', () => {
+  const modul = ladeMit(JSON.stringify({ zuletzt_gelaufen: '2026-08-30', stillgelegt: STILL }));
+  const { ergebnis, zeilen, hinweise } = mitHinweisen(
+    () => modul.meldeStehendeSchnittaufgabe(new Date('2026-10-08T12:00:00Z')));
+  assert.strictEqual(ergebnis.gemeldet, false);
+  assert.strictEqual(ergebnis.stillgelegt, '2026-10-07');
+  assert.strictEqual(zeilen.length, 0, 'keine Warnung mehr');
+  assert.match(hinweise.join(' '), /seit 2026-10-07 stillgelegt \(keine geplante Aufgabe/,
+    'still heisst nicht stumm: eine Zeile sagt, warum nichts kommt');
+});
+
+test('Gegenprobe: ohne Vermerk warnt dieselbe Liste weiter — und sagt, wie man ihn setzt', () => {
+  const modul = ladeMit(JSON.stringify({ zuletzt_gelaufen: '2026-08-30' }));
+  const { ergebnis, zeilen } = ohneAusgabe(
+    () => modul.meldeStehendeSchnittaufgabe(new Date('2026-10-08T12:00:00Z')));
+  assert.strictEqual(ergebnis.gemeldet, true);
+  assert.match(zeilen.join(' '), /"stillgelegt"/);
+});
+
+test('laeuft die Liste nach der Stilllegung wieder, wacht die Warnung wieder auf', () => {
+  // Eine wiederbelebte Aufgabe traegt ein spaeteres Datum ein — und bleibt
+  // danach wieder stehen. Der alte Vermerk darf das nicht verschlucken.
+  const modul = ladeMit(JSON.stringify({ zuletzt_gelaufen: '2026-10-20', stillgelegt: STILL }));
+  const { ergebnis, zeilen } = ohneAusgabe(
+    () => modul.meldeStehendeSchnittaufgabe(new Date('2026-11-01T12:00:00Z')));
+  assert.strictEqual(ergebnis.gemeldet, true);
+  assert.match(zeilen.join(' '), /2026-10-20/);
+});
+
+test('ein Vermerk ohne gueltiges Datum legt nichts still', () => {
+  for (const stillgelegt of [true, 'ja', { grund: 'weg' }, { am: '7.10.' }]) {
+    const modul = ladeMit(JSON.stringify({ zuletzt_gelaufen: '2026-08-30', stillgelegt }));
+    const { ergebnis } = ohneAusgabe(
+      () => modul.meldeStehendeSchnittaufgabe(new Date('2026-10-08T12:00:00Z')));
+    assert.strictEqual(ergebnis.gemeldet, true, JSON.stringify(stillgelegt));
+  }
+});
+
 // ── Merkliste auf Pruefsummen (Punkt 49) ─────────────────────────────
 
 const {

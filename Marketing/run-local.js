@@ -304,9 +304,12 @@ const BESTAND_FRIST_TAGE = 3;
  * wie einer, der nichts zu tun hatte. Der Unterschied wird erst sichtbar,
  * wenn jemand ihn ausspricht.
  *
- * Warum hier und nicht im Dashboard: Die Datei liegt in .gitignore und
- * entsteht lokal. Auf dem Server, wo das Dashboard laeuft, gibt es sie gar
- * nicht. Der lokale Starter ist die einzige Stelle, die sie sieht.
+ * Warum hier und nicht im Dashboard: Geschrieben wurde die Datei nur auf
+ * diesem Rechner. Hier stand frueher, sie liege in .gitignore und existiere
+ * auf dem Server gar nicht — das stimmt nicht (nachgesehen am 07.10.): Sie
+ * ist seit 9c5fd91 versioniert und wird mit ausgerollt. Am Grund aendert das
+ * wenig: Auf dem Server ist sie nur eine Kopie vom letzten Push, die Wahrheit
+ * steht hier.
  */
 function meldeStehendeSchnittaufgabe(jetzt = new Date()) {
   const datei = path.join(MARKETING, 'videos', '.bestand.json');
@@ -325,10 +328,31 @@ function meldeStehendeSchnittaufgabe(jetzt = new Date()) {
   const tage = Math.floor((jetzt - gelaufen) / 86400000);
   if (tage < BESTAND_FRIST_TAGE) return { tage, gemeldet: false };
 
+  // PUNKT 87, ZWEITER TEIL: Die Frage dieser Meldung hat seit dem 07.10. eine
+  // Antwort. Nachgesehen: Es gibt die Aufgabe nicht mehr — weder in der
+  // Windows-Aufgabenplanung noch unter den geplanten Aufgaben der Claude-App,
+  // und im Repo schreibt nichts in diese Datei. Eine Warnung, die danach bei
+  // JEDEM Start kommt, liest bald niemand mehr — auch dann nicht, wenn sie
+  // einmal wieder stimmt.
+  //
+  // Deshalb ein ausdruecklicher Vermerk in der Merkliste ("stillgelegt": {am,
+  // grund}). Er gilt nur, solange die Liste NICHT weiterlaeuft: Traegt eine
+  // wiederbelebte Aufgabe ein spaeteres Datum ein, ist der Vermerk ueberholt,
+  // und die Meldung wacht wieder auf.
+  const still = gelesen.stillgelegt;
+  const stillAm = still && typeof still === 'object' ? String(still.am || '') : '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(stillAm) && zuletzt <= stillAm) {
+    console.log(`ℹ️  Die tägliche Schnitt-Aufgabe ist seit ${stillAm} stillgelegt`
+      + (still.grund ? ` (${still.grund})` : '') + ' — .bestand.json ist nur noch Archiv.');
+    return { tage, gemeldet: false, stillgelegt: stillAm };
+  }
+
   console.warn(`⚠️  Die tägliche Schnitt-Aufgabe lief zuletzt am ${zuletzt} — vor ${tage} Tagen.`);
   console.warn('   Marketing/videos/.bestand.json steht seitdem still. Läuft die geplante');
   console.warn('   Aufgabe noch? Findet sie den Ordner? Bricht sie still ab?');
-  console.warn('   Ein Ablauf, der nicht läuft, sieht aus wie einer, der nichts zu tun hatte.\n');
+  console.warn('   Ein Ablauf, der nicht läuft, sieht aus wie einer, der nichts zu tun hatte.');
+  console.warn('   Gibt es die Aufgabe nicht mehr: in .bestand.json');
+  console.warn('   "stillgelegt": { "am": "JJJJ-MM-TT", "grund": "…" } eintragen.\n');
   return { tage, gemeldet: true };
 }
 
