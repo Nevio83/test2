@@ -84,6 +84,7 @@ button { font-family: var(--sans); }
 @keyframes reelbar { from { width: 0; } to { width: 100%; } }
 @keyframes kbA { from { transform: scale(1.02) translate(0, 10px); } to { transform: scale(1.16) translate(-12px, -14px); } }
 @keyframes kbB { from { transform: scale(1.02) translate(0, -8px); } to { transform: scale(1.16) translate(14px, 10px); } }
+@keyframes kbFill { from { transform: scale(1.01); } to { transform: scale(1.1); } }
 @keyframes slIn { from { opacity: 0; transform: translateY(34px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slideInLeft { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
@@ -188,7 +189,7 @@ button { font-family: var(--sans); }
 .reel-body { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); align-items: stretch; }
 .reel-stage { position: relative; min-height: 430px; display: flex; align-items: center; justify-content: center; padding: 40px; overflow: hidden; background: radial-gradient(460px 340px at 50% 48%, rgba(216, 181, 108, .14), transparent 72%); border-right: 1px solid rgba(216, 181, 108, .14); box-sizing: border-box; }
 .reel-stage .badge { position: absolute; top: 22px; left: 22px; z-index: 2; background: var(--gold); color: var(--bg-deep); border-radius: 9px; padding: 6px 13px; font-size: 12.5px; font-weight: 800; letter-spacing: .04em; }
-.reel-stage img.product { max-width: 78%; max-height: 80%; object-fit: contain; filter: drop-shadow(0 50px 70px rgba(0, 0, 0, .65)); }
+.reel-stage img.product { width: 78%; max-height: 80%; object-fit: contain; filter: drop-shadow(0 50px 70px rgba(0, 0, 0, .65)); }
 .reel-stage img.product.anim-a { animation: kbA 6s ease-out both; }
 .reel-stage img.product.anim-b { animation: kbB 6s ease-out both; }
 .reel-prev { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); z-index: 3; width: 48px; height: 48px; border-radius: 12px; border: 1px solid rgba(216, 181, 108, .45); background: rgba(11, 10, 9, .55); color: var(--text); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
@@ -259,7 +260,7 @@ button { font-family: var(--sans); }
 /* ── Deal des Tages ───────────────────────────────────────── */
 .deal-panel { background: var(--panel-grad); border: 1px solid rgba(216, 181, 108, .28); border-radius: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); overflow: hidden; }
 .deal-stage { position: relative; display: flex; align-items: center; justify-content: center; padding: 50px; min-height: 460px; background: radial-gradient(500px 320px at 50% 55%, #221C11 0%, transparent 75%); box-sizing: border-box; }
-.deal-stage img { max-width: 100%; max-height: 380px; object-fit: contain; filter: drop-shadow(0 40px 60px rgba(0, 0, 0, .55)); }
+.deal-stage img { width: 100%; max-height: 380px; object-fit: contain; filter: drop-shadow(0 40px 60px rgba(0, 0, 0, .55)); }
 .deal-stage .badge { position: absolute; top: 26px; left: 26px; border: 1px solid var(--gold); color: var(--gold); border-radius: 999px; padding: 8px 18px; font-size: 12.5px; letter-spacing: .2em; font-weight: 600; }
 .deal-info { padding: 54px 56px; display: flex; flex-direction: column; justify-content: center; gap: 16px; border-left: 1px solid rgba(216, 181, 108, .15); box-sizing: border-box; }
 .deal-live { display: flex; align-items: center; gap: 12px; font-size: 11.5px; letter-spacing: .3em; color: var(--gold); text-transform: uppercase; }
@@ -296,7 +297,10 @@ button { font-family: var(--sans); }
 .pcard .rail { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--ac), rgba(var(--ac-rgb), .15)); z-index: 4; }
 .pcard .stagewrap { position: relative; }
 .pcard .stage { position: relative; aspect-ratio: 1; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 36px; background: radial-gradient(320px 230px at 50% 62%, rgba(var(--ac-rgb), .12) 0%, rgba(0, 0, 0, 0) 72%); box-sizing: border-box; text-decoration: none; }
-.pcard .stage img.main { max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 26px 34px rgba(0, 0, 0, .55)); transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
+/* Volle Fläche statt max-*: Ein kleines Original (Tumbler: 256 px) blieb
+   sonst klein — per srcset sogar nur ~100 px, weil der Browser die 640er-Stufe
+   als 640 px breit verrechnet, der Server sie aber nie hochrechnet. */
+.pcard .stage img.main { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 26px 34px rgba(0, 0, 0, .55)); transition: transform .45s cubic-bezier(.2, .8, .2, 1); }
 .pcard:hover .stage img.main { transform: scale(1.09); }
 .pcard .stage img.second { position: absolute; inset: 0; margin: auto; width: 100%; height: 100%; padding: 36px; object-fit: contain; opacity: 0; transition: opacity .4s ease; pointer-events: none; box-sizing: border-box; }
 .pcard:hover .stage img.second { opacity: 1; }
@@ -482,8 +486,9 @@ button { font-family: var(--sans); }
 .qv .trust { display: flex; gap: 18px; font-size: 11.5px; color: var(--dim); margin-top: 8px; flex-wrap: wrap; letter-spacing: .06em; }
 .qv .trust span { display: flex; align-items: center; gap: 6px; }
 
-/* ── Zeitgesteuerter Promo-Banner (Nacht/Tag, Farben via CSS-Variablen aus JS) ── */
-.promo { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 26px; flex-wrap: wrap; width: 100%; text-align: left; cursor: pointer; padding: 52px 56px; min-height: 210px; border: none; border-bottom: 1px solid var(--p-border); background: var(--p-bg); color: #fff; font-family: var(--sans); overflow: hidden; transition: filter .25s ease; box-sizing: border-box; }
+/* ── Banner zum Deal des Tages ── */
+.promo { --p-bg: linear-gradient(120deg, #3A2410 0%, #8A5A22 44%, #D69A40 100%); --p-accent: #FFE4AE; --p-chip: rgba(255, 228, 174, .18); --p-border: rgba(255, 228, 174, .46); --p-glow: rgba(255, 205, 120, .5);
+  position: relative; display: flex; align-items: center; justify-content: space-between; gap: 26px; flex-wrap: wrap; width: 100%; text-align: left; cursor: pointer; padding: 52px 56px; min-height: 210px; border: none; border-bottom: 1px solid var(--p-border); background: var(--p-bg); color: #fff; font-family: var(--sans); overflow: hidden; transition: filter .25s ease; box-sizing: border-box; }
 .promo:hover { filter: brightness(1.08); }
 .promo .shine { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--p-accent), transparent); opacity: .7; pointer-events: none; }
 .promo .glow-a { position: absolute; top: -160px; right: 6%; width: 440px; height: 440px; border-radius: 50%; background: radial-gradient(circle, var(--p-glow) 0%, transparent 68%); pointer-events: none; }
@@ -568,10 +573,8 @@ button { font-family: var(--sans); }
   .hero-title { font-size: 27px; line-height: 1.16; }
   .overline { margin-bottom: 12px; font-size: 10.5px; }
 
-  /* Showreel */
+  /* Showreel (Bildbühne: siehe zweiten 600px-Block weiter unten) */
   .reel-head { padding: 12px 18px; }
-  .reel-stage { min-height: 300px; padding: 22px; }
-  .reel-stage img.product { max-width: 84%; }
   .reel-text { padding: 26px 22px; }
   .reel-name { font-size: 29px; }
   .reel-desc { font-size: 14px; margin-bottom: 18px; }
@@ -698,36 +701,48 @@ button { font-family: var(--sans); }
   .hero-head { margin-bottom: 12px; }
   .hero-title { font-size: 24px; }
 
-  /* Buehne des Karussells: Das Bild bleibt gross genug, um zu wirken,
-     verliert aber den Leerraum ringsum. */
+  /* Buehne des Karussells: Das Bild fuellt randlos die ganze Kartenbreite
+     (quadratisch). Vorher sass ein ~120 px kleines Bild in der Mitte einer
+     dunklen Flaeche, waehrend Text, Knoepfe und Vorschauleiste darunter fast
+     doppelt so viel Hoehe belegten. */
   .reel-head { padding: 9px 18px; }
-  .reel-stage { min-height: 194px; padding: 12px; }
-  .reel-stage img.product { max-height: 172px; width: auto; }
+  .reel-stage { min-height: 0; aspect-ratio: 1 / 1; padding: 0; }
+  .reel-stage img.product { width: 100%; height: 100%; max-height: none; object-fit: cover; filter: none; }
+  /* Ken-Burns nur als Zoom: die Desktop-Variante verschiebt das Bild und
+     wuerde am randlosen Bild einen Streifen Hintergrund freilegen. */
+  .reel-stage img.product.anim-a,
+  .reel-stage img.product.anim-b { animation-name: kbFill; }
+  .reel-stage .badge { top: 12px; left: 12px; }
+  .reel-prev { left: 12px; width: 42px; height: 42px; font-size: 16px; }
+  .reel-next { right: 12px; width: 46px; height: 46px; font-size: 20px; }
 
-  /* Die zweizeilige Produktbeschreibung weicht — Name, Preis und Knopf
-     sind auf dem ersten Bildschirm wichtiger. Sie steht unveraendert auf
-     der Produktseite. */
+  /* Textteil kompakt. Die zweizeilige Produktbeschreibung und die
+     Kategoriezeile weichen — sie stehen unveraendert auf der Produktseite. */
   .reel-desc { display: none; }
-  .reel-text { padding: 18px 22px; }
-  .reel-name { margin-bottom: 10px; }
-  .reel-priceline { margin-bottom: 14px; }
+  .reel-tagline { display: none; }
+  .reel-text { padding: 14px 18px 16px; }
+  .reel-name { font-size: 23px; margin-bottom: 6px; }
+  .reel-price { font-size: 30px; }
+  .reel-priceline { gap: 10px; margin-bottom: 12px; }
+  .reel-priceline .strike { font-size: 15px; }
+  .reel-ctas { gap: 10px; }
+  .cta-gold, .cta-line { padding: 12px 16px; font-size: 13.5px; }
+  /* Vorschauleiste weg: Pfeile, Zaehler und Auto-Weiterblaettern reichen. */
+  .reel-thumbs { display: none; }
 }
 
 /* Kuerzere Handy-Bildschirme (z. B. 360×740 — verbreitetes Android-Format).
    Dort fehlten dem Kaufknopf noch 40 px. Die Regel haengt an der HOEHE, nicht
    an der Breite: Ein 375×812-Geraet soll das groessere Bild behalten. */
 @media (max-width: 600px) and (max-height: 780px) {
-  /* Zuerst Weissraum, erst zuletzt das Bild — das Bild verkauft. */
+  /* Nur Weissraum — das Bild bleibt randlos, es verkauft. */
   .reel-head { padding: 6px 18px; }
-  .reel-text { padding: 12px 22px; }
-  .reel-name { margin-bottom: 6px; }
-  .reel-priceline { margin-bottom: 8px; }
+  .reel-text { padding: 12px 18px 14px; }
+  .reel-priceline { margin-bottom: 10px; }
   .hero-inner { padding-top: 14px; }
   .hero-head { margin-bottom: 8px; }
   .promo { padding: 10px 20px; }
   .promo .title { font-size: 22px; }
-  .reel-stage { min-height: 142px; padding: 8px; }
-  .reel-stage img.product { max-height: 126px; }
 }
 
 /* Sehr schmale Geräte (≤380px) */
@@ -757,7 +772,7 @@ button { font-family: var(--sans); }
             <a class="nav-logo" href="/index.html">MAIOS<span>.</span></a>
         </div>
         <div class="nav-links">
-            <a class="hot" href="#deal">Mitternachts-Deal</a>
+            <a class="hot" href="#deal">Deal des Tages</a>
             <a href="#bestseller">Highlights</a>
             <a href="#sortiment">Sortiment</a>
         </div>
@@ -800,7 +815,7 @@ button { font-family: var(--sans); }
                 <div class="m-results" id="mobileResults"></div>
             </div>
             <nav>
-                <a class="hot" href="#deal">Mitternachts-Deal</a>
+                <a class="hot" href="#deal">Deal des Tages</a>
                 <a href="#bestseller">Highlights</a>
                 <a href="#sortiment">Sortiment</a>
             </nav>
@@ -811,8 +826,8 @@ button { font-family: var(--sans); }
         </div>
     </div>
 
-    <!-- Zeitgesteuerter Promo-Banner (Inhalt/Farben rendert home.js je nach Uhrzeit) -->
-    <button class="promo" id="promoBanner" aria-label="Aktuelle Angebote ansehen"></button>
+    <!-- Banner zum Deal des Tages (Inhalt + Countdown rendert home.js) -->
+    <button class="promo" id="promoBanner" aria-label="Zum Deal des Tages"></button>
 
     <!-- Hero / Showreel -->
     <header class="hero">
@@ -1011,7 +1026,7 @@ button { font-family: var(--sans); }
 
     <!-- Mobile Sticky-CTA -->
     <div class="mobile-sticky">
-        <a class="deal-cta" href="#deal"><i class="bi bi-lightning-charge-fill"></i> Mitternachts-Deal</a>
+        <a class="deal-cta" href="#deal"><i class="bi bi-lightning-charge-fill"></i> Deal des Tages</a>
         <button class="cart-mini" id="stickyCartBtn" aria-label="Warenkorb">
             <i class="bi bi-bag"></i>
             <span class="mini-badge" id="stickyCartCount" style="display:none;">0</span>

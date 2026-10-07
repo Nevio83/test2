@@ -33,46 +33,25 @@
 
   var COLOR_WORDS = ['schwarz','weiß','weiss','white','black','blau','blue','navy','marine','hellblau','dunkelblau','grün','gruen','green','mint','oliv','rot','red','gelb','yellow','lila','violett','violet','purple','grau','gray','grey','anthrazit','braun','brown','orange','beige','sand','khaki','gold','golden','silber','silver','rosa','pink','türkis','tuerkis','turquoise','cyan','magenta','creme','cream','champagner','champagne','bronze','kupfer','copper','natur','transparent','klar','clear','elfenbein','ivory','roségold','rosegold'];
 
-  // ── Zeitgesteuerter Promo-Banner ──────────────────────────
-  // 22–6 Uhr = Mitternachts-Deal (Nacht), 6–22 Uhr = Sommerdeals (Tag).
-  // Zum Testen erzwingbar via URL: index.html?promo=nacht | ?promo=tag
-  var PROMO_FORCE = (function () {
-    try {
-      var v = new URLSearchParams(location.search).get('promo');
-      return v === 'nacht' || v === 'tag' ? v : 'auto';
-    } catch (e) { return 'auto'; }
-  })();
-  function promoIsNight() {
-    if (PROMO_FORCE === 'nacht') return true;
-    if (PROMO_FORCE === 'tag') return false;
-    var h = new Date().getHours();
-    return h >= 22 || h < 6;
+  // ── Deal des Tages: Banner + Countdown ────────────────────
+  // Ein Produkt pro Kalendertag (Ortszeit des Besuchers), Wechsel um
+  // Mitternacht — genau dorthin zählen Banner und Deal-Bereich herunter.
+  var PROMO = {
+    title: 'Deal des Tages', kicker: 'Jeden Tag neu',
+    sub: 'Jeden Tag stellen wir ein anderes Produkt vor – um Mitternacht kommt das nächste.',
+    cta: 'Zum Deal', icon: 'bi-lightning-charge-fill'
+  };
+  // Tage seit 1970 nach Ortszeit (Date.now() allein zählt UTC-Tage und
+  // würde in Deutschland erst um 1 bzw. 2 Uhr nachts wechseln).
+  function dealDay() {
+    var now = new Date();
+    return Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86400000);
   }
-  function promoInfo() {
-    return promoIsNight() ? {
-      title: 'Mitternachts-Deal', kicker: 'Täglich 22 – 6 Uhr',
-      sub: 'Nachts fallen die Preise – die besten Angebote nur für Nachtschwärmer.',
-      cta: 'Alle Angebote ansehen', icon: 'bi-moon-stars-fill',
-      bg: 'linear-gradient(120deg, #080C1A 0%, #141C38 46%, #0A1024 100%)',
-      accent: '#A9C2F0', chip: 'rgba(169,194,240,.16)', border: 'rgba(169,194,240,.42)', glow: 'rgba(120,150,220,.4)'
-    } : {
-      title: 'Sommerdeals', kicker: 'Täglich 6 – 22 Uhr',
-      sub: 'Sonnige Preise auf das ganze Sortiment – solange der Sommer läuft.',
-      cta: 'Jetzt shoppen', icon: 'bi-sun-fill',
-      bg: 'linear-gradient(120deg, #3A2410 0%, #8A5A22 44%, #D69A40 100%)',
-      accent: '#FFE4AE', chip: 'rgba(255,228,174,.18)', border: 'rgba(255,228,174,.46)', glow: 'rgba(255,205,120,.5)'
-    };
-  }
-  // Restzeit bis zum Ende des aktuellen Fensters (Nacht → 6:00, Tag → 22:00)
+  // Restzeit bis Mitternacht
   function windowRemaining() {
     var now = new Date();
     var end = new Date(now);
-    if (promoIsNight()) {
-      end.setHours(6, 0, 0, 0);
-      if (now.getHours() >= 6) end.setDate(end.getDate() + 1);
-    } else {
-      end.setHours(22, 0, 0, 0);
-    }
+    end.setHours(24, 0, 0, 0);
     var d = Math.max(0, end - now);
     var h = Math.floor(d / 3600000); d -= h * 3600000;
     var m = Math.floor(d / 60000); d -= m * 60000;
@@ -83,13 +62,7 @@
   function renderPromo() {
     var banner = el('promoBanner');
     if (!banner) return;
-    var m = promoInfo();
-    banner.style.setProperty('--p-bg', m.bg);
-    banner.style.setProperty('--p-accent', m.accent);
-    banner.style.setProperty('--p-chip', m.chip);
-    banner.style.setProperty('--p-border', m.border);
-    banner.style.setProperty('--p-glow', m.glow);
-    banner.setAttribute('aria-label', m.title + ' – alle Angebote ansehen');
+    var m = PROMO;
     banner.innerHTML =
       '<span class="shine"></span><span class="glow-a"></span><span class="glow-b"></span>' +
       '<span class="left">' +
@@ -535,7 +508,7 @@
   function renderDeal() {
     var pool = DEAL_POOL.filter(function (id) { return byId(id); });
     if (!pool.length) return;
-    var p = byId(pool[Math.floor(Date.now() / 86400000) % pool.length]);
+    var p = byId(pool[dealDay() % pool.length]);
     var hasDisc = !!p.originalPrice && p.originalPrice > p.price;
     el('dealPanel').innerHTML =
       '<div class="deal-stage">' +
@@ -543,7 +516,7 @@
         (hasDisc ? '<div class="badge">' + discountPct(p.price, p.originalPrice) + '</div>' : '') +
       '</div>' +
       '<div class="deal-info">' +
-        '<div class="deal-live"><span class="pulse-dot"></span> <span data-deal-label>' + esc(promoInfo().title) + '</span>&nbsp;— endet in</div>' +
+        '<div class="deal-live"><span class="pulse-dot"></span> ' + esc(PROMO.title) + '&nbsp;— endet in</div>' +
         '<div class="countdown">' +
           '<div class="cd-cell"><div class="cd-num" data-cd="h">–</div><div class="cd-lbl">STUNDEN</div></div>' +
           '<div class="cd-sep">:</div>' +
@@ -566,19 +539,16 @@
     el('dealQv').addEventListener('click', function () { openQv(p.id); });
     tickCountdown();
   }
-  // Sekunden-Tick: Deal-Countdown + Banner-Timer zählen beide bis zum Ende des
-  // aktuellen Zeitfensters (6:00 bzw. 22:00). Kippt das Fenster, werden Banner
-  // und Deal-Label ohne Reload umgeschaltet.
-  var lastNight = null;
+  // Sekunden-Tick: Deal-Countdown + Banner-Timer zählen beide bis Mitternacht.
+  // Springt der Tag um, kommt ohne Reload das nächste Produkt.
+  var lastDay = null;
   function tickCountdown() {
-    var night = promoIsNight();
-    if (lastNight === null) {
-      lastNight = night;
-    } else if (night !== lastNight) {
-      lastNight = night;
-      renderPromo();
-      var lbl = document.querySelector('[data-deal-label]');
-      if (lbl) lbl.textContent = promoInfo().title;
+    var day = dealDay();
+    if (lastDay === null) {
+      lastDay = day;
+    } else if (day !== lastDay) {
+      lastDay = day;
+      renderDeal();
     }
     var c = windowRemaining();
     document.querySelectorAll('[data-cd="h"]').forEach(function (x) { x.textContent = c.h; });
@@ -1018,10 +988,10 @@
     updateWishUI();
     attachGridActions(el('bestGrid'));
     attachGridActions(el('allGrid'));
-    // Promo-Banner (zeitgesteuert, unabhängig von den Produktdaten)
+    // Banner zum Deal des Tages (unabhängig von den Produktdaten)
     renderPromo();
     el('promoBanner').addEventListener('click', function () {
-      var s = el('sortiment');
+      var s = el('deal');
       if (s) window.scrollTo({ top: s.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth' });
     });
     setInterval(tickCountdown, 1000);

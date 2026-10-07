@@ -67,6 +67,11 @@ img{display:block;max-width:100%}
 /* --- Hero --- */
 .pp-hero{position:relative;z-index:1;padding:24px 24px 64px}
 .pp-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:start}
+/* Spalten duerfen schmaler werden als ihr Inhalt. Sonst drueckt die nicht
+   umbrechende Farbleiste (color-image-selection.js, overflow-x:auto) die Spalte
+   auf ihre volle Laenge — bei 11 Farben wurde die Seite auf dem Handy 719 statt
+   390 px breit, statt dass die Leiste seitlich scrollt. */
+.pp-hero-grid>*{min-width:0}
 
 /* --- Gallery --- */
 .pp-gallery{position:sticky;top:84px;animation:slideUp .7s ease forwards}
