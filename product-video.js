@@ -203,8 +203,11 @@
     }
   }
 
-  fetch('/products.json')
-    .then(function (r) { return r.json(); })
+  // Punkt 60: das gemeinsame Versprechen der Seite (Inline-Skript bzw. app.js),
+  // sonst wie bisher selbst holen. Dieses Skript laeuft vor app.js — deshalb
+  // zuerst das schon angelegte Versprechen, dann die Funktion, dann der Abruf.
+  (window.__maiosProdukte || (window.maiosProdukte && window.maiosProdukte()) ||
+    fetch('/products.json').then(function (r) { return r.json(); }))
     .then(function (prods) {
       var p = prods.find(function (x) { return Number(x.id) === pid; });
       if (!p || !p.video) return; // kein Video gepflegt -> nichts tun

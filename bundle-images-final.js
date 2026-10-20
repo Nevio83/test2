@@ -21,8 +21,10 @@ window.renderBundlesWithImages = async function () {
     if (cached.length) {
       all = cached;
     } else {
-      const r = await fetch('../products.json');
-      all = await r.json();
+      // Punkt 60: das gemeinsame Versprechen aus app.js, sonst wie bisher selbst holen.
+      all = window.maiosProdukte
+        ? await window.maiosProdukte()
+        : await fetch('/products.json').then((r) => r.json());
       localStorage.setItem('allProducts', JSON.stringify(all));
     }
   } catch (e) {

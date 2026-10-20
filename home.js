@@ -996,8 +996,11 @@
     });
     setInterval(tickCountdown, 1000);
 
-    fetch('products.json?v=' + Date.now())
-      .then(function (r) { return r.json(); })
+    // Ohne ?v=<Zeit> (Punkt 60): Das haengte jeden Besuch an einen vollen
+    // Download, obwohl die Route per ETag ein 304 liefern kann. cache:'no-cache'
+    // fragt trotzdem jedes Mal beim Server nach — der Bestand bleibt frisch.
+    fetch('/products.json', { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (all) {
         // Cache für cart.js (Slug-Auflösung, Add-ons) — VOLLSTÄNDIGE Liste
         try { localStorage.setItem('allProducts', JSON.stringify(all)); } catch (e) { /* voll */ }

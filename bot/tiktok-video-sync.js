@@ -36,9 +36,13 @@
  *
  * Aufruf:
  *     npm run tiktok:status              zeigt Vorbedingungen, laedt nichts
- *     npm run tiktok:probe               sucht + bewertet, laedt NICHTS
+ *     npm run tiktok:probe               fragt die FEST EINGETRAGENEN Adressen
+ *                                        ab (sucht nicht), laedt NICHTS
+ *     npm run tiktok:vorschau            sucht + bewertet wie der Planlauf,
+ *                                        laedt NICHTS, schreibt nur vorschau.json
  *     npm run tiktok:laden -- --max 2    laedt hoechstens 2 Videos
  *     npm run tiktok                  gefuehrt: Produktnummer, Anzahl, fertig
+ *     npm run tiktok -- --produkt 12 --vorschau   dasselbe fuer ein Produkt
  *
  *     node tiktok-video-sync.js --anfragen --absender "Name" --produkt 10 \
  *       --zwecke organisch anzeige --dauer "12 Monate" \
@@ -5007,6 +5011,31 @@ async function holeUndSortiereEin(opt) {
  * Alles Aeussere kommt herein, damit es pruefbar bleibt — auch die Fragen
  * selbst, sodass ein Test sie ohne Konsole beantworten kann.
  */
+const VORSCHAU_DATEI = 'vorschau.json';
+
+/**
+ * Punkt 86: Was ein Vorschau-Lauf gefunden hat — die EINZIGE Datei, die er
+ * schreibt. Wird bei jedem Vorschau-Lauf ueberschrieben; sie ist eine
+ * Momentaufnahme zum Ansehen, kein Nachweis.
+ */
+function schreibeVorschau(ordner, kandidaten, zeit, melde = console.log) {
+  const pfad = path.join(ordner, VORSCHAU_DATEI);
+  try {
+    fs.mkdirSync(ordner, { recursive: true });
+    fs.writeFileSync(pfad, JSON.stringify({
+      erstellt: zeit,
+      hinweis: 'Vorschau — nichts davon ist geladen. Was erst nach dem Laden geprueft wird '
+        + '(Ton, Doppelgaenger, Bild), fehlt hier; ein Kandidat kann im echten Lauf noch durchfallen.',
+      kandidaten,
+    }, null, 2), 'utf8');
+    melde(`👁  Vorschau: ${kandidaten.length} Kandidat(en) in ${pfad}`);
+    return pfad;
+  } catch (fehler) {
+    melde(`⚠️  Vorschau nicht gespeichert: ${fehler.code || fehler.message}`);
+    return null;
+  }
+}
+
 async function interaktiv(opt) {
   const melde = opt.melde || console.log;
   // Punkt 06: Der Planlauf braucht die Zahlen, nicht nur den Rueckgabewert.
@@ -5016,6 +5045,23 @@ async function interaktiv(opt) {
   const standard = { ...STANDARD, ...(opt.standard || {}) };
   const datenZiel = opt.datenOrdner || datenOrdner();
   let videoZiel = opt.videoOrdner || VIDEO_ORDNER;
+
+  // PUNKT 86: DER VORSCHAU-LAUF.
+  //
+  // 37 von 40 Produkten haben keinen einzigen Clip. Bevor ein echter Lauf
+  // fuenfzehn fremde Videos auf die Platte legt, soll sich ansehen lassen, WAS
+  // er laden wuerde. tiktok:probe kann das nicht — er sucht gar nicht, er
+  // fragt nur fest eingetragene Adressen ab, und davon gibt es fuer 37
+  // Produkte keine.
+  //
+  // Der Vorschau-Lauf sucht und bewertet genau wie ein echter Lauf (Tavily,
+  // yt-dlp --dump-json), springt aber vor dem Herunterladen ab und schreibt
+  // NICHTS fest: keinen Index (sonst ruhten Suchbegriffe 21 Tage, obwohl nie
+  // geladen wurde), keine Urteile, keinen Kontaktbogen. Was er gefunden hat,
+  // steht in vorschau.json. Im Planlauf sammelt der Planlauf die Kandidaten
+  // aller Produkte und schreibt die Datei einmal (opt.vorschauSammler).
+  const vorschau = opt.vorschau === true;
+  const vorschauListe = opt.vorschauSammler || [];
 
   const notaus = notausGrund({ stopDatei: opt.stopDatei, env: opt.env });
   // Vor dem Notaus wird nicht einmal gefragt — und die Konsole erst danach
@@ -5032,7 +5078,11 @@ async function interaktiv(opt) {
   const schliesseKonsole = () => { if (konsole) konsole.schliesse(); };
 
   // 1. Welches Produkt?
-  const eingabe = await stelleFrage('Produktnummer? ');
+  //
+  // Mit --produkt N nicht mehr fragen: tiktok:status empfiehlt seit dem 20.09.
+  // "npm run tiktok -- --produkt 12", die Nummer kam hier aber nie an — der
+  // empfohlene Befehl fragte trotzdem an der Konsole (gefunden am 15.10.).
+  const eingabe = opt.produktNr != null ? String(opt.produktNr) : await stelleFrage('Produktnummer? ');
   const produkt = opt.produkte.find((p) => Number(p.id) === Number(eingabe));
   if (!produkt) {
     schliesseKonsole();
@@ -5378,11 +5428,16 @@ async function interaktiv(opt) {
   // sich darauf, sodass die Nummern je Produkt bei 01 anfangen.
   const sammelOrdner = videoZiel;
   videoZiel = produktOrdner(sammelOrdner, produkt);
-  try {
-    fs.mkdirSync(videoZiel, { recursive: true });
-  } catch (fehler) {
-    melde(`❌ Produktordner nicht anlegbar: ${videoZiel} (${fehler.code || fehler.message})`);
-    return 1;
+  // Punkt 86: Die Vorschau legt auch keinen leeren Produktordner an — sonst
+  // stuende nach einer Vorschau ueber 37 Produkte fuer jedes ein leerer
+  // Ordner unter Marketing/videos. Nummer und Slug kommen ohne ihn aus.
+  if (!vorschau) {
+    try {
+      fs.mkdirSync(videoZiel, { recursive: true });
+    } catch (fehler) {
+      melde(`❌ Produktordner nicht anlegbar: ${videoZiel} (${fehler.code || fehler.message})`);
+      return 1;
+    }
   }
   melde(`   Ablage:  ${path.relative(sammelOrdner, videoZiel)}`);
   melde('');
@@ -5797,6 +5852,24 @@ async function interaktiv(opt) {
     // Clip im Schnitt nur Einblendung wurde — ohne die Datei zu oeffnen.
     meta.video.format = formatVermerk(meta.video.breite, meta.video.hoehe);
 
+    // PUNKT 86: Im Vorschau-Lauf endet der Weg hier — vor dem Herunterladen.
+    // Gezaehlt wird er wie ein geladener Clip, damit die Vorschau genauso viele
+    // Kandidaten liefert, wie der echte Lauf laden wuerde. Was erst NACH dem
+    // Laden geprueft wird (Ton, Doppelgaenger, Bild), fehlt in der Vorschau —
+    // ein Kandidat hier kann im echten Lauf also noch durchfallen.
+    if (vorschau) {
+      vorschauListe.push({
+        produkt_id: Number(produkt.id), produkt: produkt.name, adresse: url,
+        plattform: plattformAus(url) || 'tiktok', titel: meta.video.title || '',
+        creator: meta.video.uploader || '', trefferwert: bewertung.wert,
+        dauer: meta.video.dauer || null, format: meta.video.format || null,
+        fremde_werbung: meta.video.fremde_werbung ? meta.video.fremde_werbung.arten : null,
+      });
+      geladen++;
+      melde(`👁  Vorschau — würde laden: ${url} (Trefferwert ${Number(bewertung.wert).toFixed(2)})`);
+      continue;
+    }
+
     const ergebnis = await holeUndSortiereEin({
       ytdlp: opt.ytdlp, kandidat: meta.video, produkt, slug, nummer,
       datenOrdner: datenZiel, videoOrdner: videoZiel, gitignore: opt.gitignore,
@@ -6043,7 +6116,7 @@ async function interaktiv(opt) {
   // Gebaut wird NUR, wenn dieser Lauf etwas geladen hat. Ein Lauf ohne Fund
   // hat nichts Neues zu zeigen, und der alte Bogen liegt ja noch da.
   let bogenPfad = null;
-  if (geladen > 0 && opt.bogen !== false) {
+  if (geladen > 0 && opt.bogen !== false && !vorschau) {
     try {
       const bogen = require('./kontaktbogen.js');
       const ffprobePfad = opt.ffprobe !== undefined ? opt.ffprobe : bogen.findeWerkzeug('ffprobe');
@@ -6065,8 +6138,16 @@ async function interaktiv(opt) {
     }
   }
 
+  // PUNKT 86: Der Vorschau-Lauf schreibt NUR seine Kandidaten fest. Urteile und
+  // Begriffs-Bilanz bleiben im Speicher — sonst ruhte ein Suchbegriff 21 Tage,
+  // obwohl mit ihm nie etwas geladen wurde.
+  // Der Lauf geht trotzdem zu Ende: Die Auswertung, WARUM Kandidaten
+  // durchfielen, ist gerade fuer eine Vorschau das Interessante, und eine
+  // Sperre muss den Planlauf auch hier anhalten.
+  if (vorschau && !opt.vorschauSammler) schreibeVorschau(datenZiel, vorschauListe, jetzt(), melde);
+
   // PUNKT 20: Die Urteilssammlung festschreiben.
-  const urteilsDatei = speichereUrteile(datenZiel, urteile);
+  const urteilsDatei = vorschau ? null : speichereUrteile(datenZiel, urteile);
 
   // PUNKT 01: Die Begriffs-Bilanz festschreiben — auch wenn nichts geladen wurde.
   //
@@ -6076,14 +6157,17 @@ async function interaktiv(opt) {
   // faengt der naechste Lauf wieder bei Begriff 1 an — die ganze Umsortierung
   // waere wirkungslos gewesen. Aufgefallen ist das erst im Durchlauf, nicht im
   // Einzeltest der Sortierfunktion.
-  try {
-    speichereIndex(datenZiel, index);
-  } catch (fehler) {
-    melde(`⚠️  Begriffs-Bilanz nicht gespeichert: ${fehler.code || fehler.message}`);
+  if (!vorschau) {
+    try {
+      speichereIndex(datenZiel, index);
+    } catch (fehler) {
+      melde(`⚠️  Begriffs-Bilanz nicht gespeichert: ${fehler.code || fehler.message}`);
+    }
   }
 
   melde('');
-  melde(`— ${geladen} von ${anzahl} gewuenschten Videos geladen, ${geprueft} Adresse(n) geprueft, `
+  melde(`— ${geladen} von ${anzahl} gewuenschten Videos ${vorschau ? 'wuerden geladen (Vorschau — nichts geladen, nichts festgeschrieben)' : 'geladen'}, `
+    + `${geprueft} Adresse(n) geprueft, `
     + `${naechsterBegriff} von ${begriffe.length} Suchbegriffen gebraucht`
     // Punkt 03: Ohne diesen Zusatz stand bei einem reinen YouTube-Lauf "0 von 24".
     + `${ytGenutzt ? ` (TikTok), ${naechsterYtBegriff} auf YouTube` : ''}.`);
@@ -6131,7 +6215,9 @@ async function interaktiv(opt) {
         : '';
       melde(`     ${String(regel.anzahl).padStart(3)}  ${regel.regel}${oben}`);
     }
-    const geschrieben = schreibeAblehnungen(datenZiel, auswertung, {
+    // Punkt 86: Eine Vorschau gehoert nicht in den Verlauf — dort stuende sie
+    // als Lauf mit "0 geladen" und saehe aus wie eine tote Quelle.
+    const geschrieben = vorschau ? null : schreibeAblehnungen(datenZiel, auswertung, {
       geprueft, geladen, produkt: produkt && produkt.id, jetzt, vorfaelle,
     });
     if (geschrieben) {
@@ -6140,7 +6226,7 @@ async function interaktiv(opt) {
       melde('   staendig oben steht, gehoert in die Feinjustierung.');
     }
   }
-  if (geladen) {
+  if (geladen && !vorschau) {
     melde(`   Ablage:  ${videoZiel}`);
     melde(`   Nachweis: ${indexPfad(datenZiel)}  (alle mit rechte_geprueft: false)`);
   }
@@ -6158,7 +6244,8 @@ async function interaktiv(opt) {
   // Antwort" — fuer den Planlauf dasselbe Signal: aufhoeren, nicht beim
   // naechsten Produkt weiter anklopfen.
   berichte({
-    geladen, anzahl, geprueft,
+    // Im Vorschau-Lauf wurde nichts geladen — die Kandidaten stehen getrennt.
+    geladen: vorschau ? 0 : geladen, vorschau: vorschau ? geladen : undefined, anzahl, geprueft,
     abgelehnt: auswertung.reduce((s, r) => s + r.anzahl, 0),
     sperren: vorfaelle.sperren, fehler: vorfaelle.fehler,
     gesperrt: vorfaelle.sperren > 0 || stummGeschaltet || /hintereinander gescheitert/.test(grundFuersEnde),
@@ -6337,7 +6424,12 @@ async function planlauf(opt) {
     return 1;
   }
   const auswahl = waehlePlanProdukte(index, opt.produkte, zustand, plan, standard);
-  melde(`── Planlauf: ${auswahl.length} Produkt(e) — ${auswahl.map((p) => p.id).join(', ') || 'keins'} ──`);
+  // Punkt 86: Im Vorschau-Lauf dieselbe Auswahl, aber nichts laden und den
+  // Planzustand nicht anfassen — sonst gaelten die Produkte als erledigt und
+  // kaemen beim naechsten echten Lauf nicht dran.
+  const vorschau = opt.vorschau === true;
+  const sammler = vorschau ? [] : null;
+  melde(`── Planlauf${vorschau ? ' (Vorschau)' : ''}: ${auswahl.length} Produkt(e) — ${auswahl.map((p) => p.id).join(', ') || 'keins'} ──`);
 
   const ergebnisse = [];
   for (const p of auswahl) {
@@ -6352,14 +6444,22 @@ async function planlauf(opt) {
       frage: async () => (antworten.length ? antworten.shift() : ''),
       melde,
       bericht,
+      ...(vorschau ? { vorschau: true, vorschauSammler: sammler } : {}),
     });
-    zustand.zuletzt_dran = { ...(zustand.zuletzt_dran || {}), [p.id]: jetzt().toISOString() };
+    if (!vorschau) zustand.zuletzt_dran = { ...(zustand.zuletzt_dran || {}), [p.id]: jetzt().toISOString() };
     ergebnisse.push({ id: p.id, name: p.name, gewuenscht, code, ...bericht });
     if (bericht.gesperrt || bericht.abgebrochen) {
       melde('');
       melde(`⏹  ${bericht.grund || 'Abbruch'} — der Planlauf endet hier, die uebrigen Produkte kommen beim naechsten Mal.`);
       break;
     }
+  }
+
+  if (vorschau) {
+    // Keine planlauf.json, keine Mail: Eine Vorschau ist kein Lauf.
+    schreibeVorschau(ordner, sammler, jetzt().toISOString(), melde);
+    melde('Vorschau beendet — nichts geladen, Planzustand unveraendert, keine Mail.');
+    return ergebnisse.some((e) => e.gesperrt || e.abgebrochen) ? 1 : 0;
   }
 
   zustand.letzter_lauf = jetzt().toISOString();
@@ -6412,7 +6512,7 @@ function leseArgumente(argv) {
                 fund: null, schreiben: false, interaktiv: false, aufraeumen: false,
                 ordner: false, anfragen: false, rueckruf: null, absender: null, sprache: 'de',
                 zwecke: null, dauer: null, gegenleistung: null, nennung: null,
-                produktNr: null };
+                produktNr: null, vorschau: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--status') opt.status = true;
@@ -6421,6 +6521,9 @@ function leseArgumente(argv) {
     // Punkt 06: Lauf im Zeitplan. Laeuft nur, wenn faellig — --sofort erzwingt.
     else if (a === '--plan') opt.plan = true;
     else if (a === '--sofort') opt.sofort = true;
+    // Punkt 86: suchen und bewerten wie ein echter Lauf, aber nichts laden und
+    // nichts festschreiben — Ergebnis nur in vorschau.json.
+    else if (a === '--vorschau') opt.vorschau = true;
     else if (a === '--aufgabe') opt.aufgabe = true;
     // Punkt 11: die Fragen aus den mitgelesenen Kommentaren.
     else if (a === '--fragen') opt.fragen = true;
@@ -7125,6 +7228,7 @@ async function main(argv) {
       datenOrdner: datenOrdner(),
       stopDatei: STOP_DATEI,
       sofort: opt.sofort,
+      vorschau: opt.vorschau,
     });
   }
 
@@ -7137,6 +7241,8 @@ async function main(argv) {
       // Punkt 72: faellt bei findeYtdlp() ohnehin ab — ein eigener Aufruf nur
       // fuers Protokoll waere ein Abruf zu viel.
       ytdlpVersion: gefunden.version,
+      produktNr: opt.produktNr,
+      vorschau: opt.vorschau,
     });
   }
 
@@ -7243,4 +7349,5 @@ module.exports = {
   produktOrdner, imRohmaterial, brauchtEinzelschutz, ROHMATERIAL, GESCHNITTEN,
   legeProduktOrdnerAn,
   holeUndSortiereEin, interaktiv, frageStelle, VIDEO_ORDNER, TIKTOK_VIDEO_MUSTER,
+  VORSCHAU_DATEI, schreibeVorschau,
 };

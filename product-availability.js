@@ -189,8 +189,12 @@
     }
   }
 
-  fetch('/products.json')
-    .then(function (r) { return r.json(); })
+  // Punkt 60: das gemeinsame Versprechen der Seite (Inline-Skript bzw. app.js),
+  // sonst wie bisher selbst holen. Der Bestand darin ist frisch: Das
+  // Versprechen fragt mit cache:'no-cache' beim Server nach (ETag), und der
+  // Server mischt den Lieferantenbestand bei jeder Antwort dazu.
+  (window.__maiosProdukte || (window.maiosProdukte && window.maiosProdukte()) ||
+    fetch('/products.json').then(function (r) { return r.json(); }))
     .then(function (prods) {
       var p = prods.find(function (x) { return Number(x.id) === pid; });
       // Nur bei ausdruecklichem false sperren. Fehlt das Feld, bleibt alles wie bisher.

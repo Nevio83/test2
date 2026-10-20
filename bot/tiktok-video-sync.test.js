@@ -5857,6 +5857,8 @@ function plattformLauf(plattformen, {
   standard: extraStandard = {},
   bildAufruf,
   meta = {},
+  // Punkt 86: weitere Optionen fuer interaktiv (vorschau, produktNr, frage …)
+  zusatz = {},
 } = {}) {
   const daten = tempOrdner();
   const videos = tempOrdner();
@@ -5903,8 +5905,9 @@ function plattformLauf(plattformen, {
     // Nie der echte Aufruf: Der wuerde Python und drei Modelle starten — im
     // Prueflauf gibt es beides nicht. Gerufen wird er nur mit bild_pruefen.
     bildAufruf: bildAufruf || (() => { throw new Error('bildAufruf ohne Nachbau gerufen'); }),
+    ...zusatz,
   });
-  return { lauf, aufrufe, daten, videos, bericht };
+  return { lauf, aufrufe, daten, videos, bericht, antworten };
 }
 
 test('Plattform: blockt TikTok, kommt das Material von YouTube — ohne TikTok erneut zu fragen', async () => {
@@ -6343,4 +6346,132 @@ test('Bild: wo die ortsfeste Einblendung steht, kommt mit in den Nachweis', () =
   // Gegenprobe: Ohne ortsfesten Text gibt es keine Stelle, die man wegschneiden koennte.
   const lose = bildFelder({ ...BEFUND, text: { ok: true, einblendung: true, ortsfest: false, haeufig: true, bereiche: [] } }, FEST);
   assert.equal(lose.fremdtext.bereiche, undefined);
+});
+
+// ── Vorschau-Lauf und --produkt (Punkt 86) ───────────────────────────
+//
+// 37 von 40 Produkten haben keinen Clip. Bevor ein echter Lauf fremdes
+// Material auf die Platte legt, soll sich ansehen lassen, WAS er laden wuerde.
+// Die Gefahr bei einem solchen Schalter ist nicht, dass er zu wenig tut,
+// sondern dass er still doch etwas festschreibt: Ein Index-Eintrag liesse
+// Suchbegriffe 21 Tage ruhen, ein Planzustand liesse Produkte als erledigt
+// gelten — beides, obwohl nie etwas geladen wurde.
+
+const { VORSCHAU_DATEI, schreibeVorschau, leseArgumente } = require('./tiktok-video-sync.js');
+
+const herunterladen = (aufrufe) => aufrufe.filter((a) => a.includes('-o'));
+
+test('Vorschau: sucht und bewertet wie ein echter Lauf, laedt aber nichts und schreibt nur vorschau.json', async () => {
+  const v = plattformLauf(['youtube'], { zusatz: { vorschau: true } });
+  assert.equal(await v.lauf, 0);
+  assert.ok(v.aufrufe.some((a) => a.includes('--dump-json')), 'bewertet wird trotzdem');
+  assert.equal(herunterladen(v.aufrufe).length, 0, 'kein einziger Download-Aufruf');
+  assert.deepEqual(fs.readdirSync(v.videos), [], 'keine Videodatei, nicht einmal ein leerer Produktordner');
+  assert.deepEqual(fs.readdirSync(v.daten), [VORSCHAU_DATEI], 'kein Index, keine Urteile, kein .gitignore — gefunden: ' + fs.readdirSync(v.daten).join(', '));
+
+  const inhalt = JSON.parse(fs.readFileSync(path.join(v.daten, VORSCHAU_DATEI), 'utf8'));
+  assert.equal(inhalt.kandidaten.length, 1, 'so viele, wie der echte Lauf laden wuerde');
+  const [k] = inhalt.kandidaten;
+  assert.equal(k.produkt_id, 10);
+  assert.equal(k.adresse, 'https://www.youtube.com/watch?v=HHHHHHHHHHH');
+  assert.equal(k.plattform, 'youtube');
+  assert.equal(k.format, 'hoch');
+  assert.match(inhalt.hinweis, /nichts davon ist geladen/);
+  assert.equal(v.bericht.geladen, 0, 'der Planlauf darf das nicht als geladen zaehlen');
+  assert.equal(v.bericht.vorschau, 1);
+
+  // GEGENPROBE: Derselbe Lauf ohne Vorschau laedt und schreibt fest — die
+  // Pruefung oben kann also wirklich etwas finden.
+  const echt = plattformLauf(['youtube']);
+  assert.equal(await echt.lauf, 0);
+  assert.equal(herunterladen(echt.aufrufe).length, 1);
+  assert.ok(fs.existsSync(path.join(echt.daten, 'index.json')));
+  assert.ok(fs.existsSync(path.join(echt.daten, 'urteile.json')));
+  assert.ok(!fs.existsSync(path.join(echt.daten, VORSCHAU_DATEI)));
+  assert.equal(echt.bericht.vorschau, undefined);
+});
+
+test('Vorschau: eine Sperre beendet auch die Vorschau — und wird gemeldet', async () => {
+  // Die Vorschau springt erst VOR dem Herunterladen ab. Haette sie den Lauf
+  // frueher beendet, ginge das Sperrsignal verloren und der Planlauf liefe
+  // weiter gegen eine Plattform, die gerade blockt.
+  const v = plattformLauf(['tiktok'], { zusatz: { vorschau: true } });
+  assert.equal(await v.lauf, 1);
+  assert.equal(v.bericht.gesperrt, true);
+  assert.equal(herunterladen(v.aufrufe).length, 0);
+  assert.ok(!fs.existsSync(path.join(v.daten, 'index.json')));
+});
+
+test('Vorschau: schreibeVorschau ueberschreibt die alte Datei, statt anzuhaengen', () => {
+  const ordner = tempOrdner();
+  schreibeVorschau(ordner, [{ adresse: 'a' }, { adresse: 'b' }], 'eins', still);
+  schreibeVorschau(ordner, [{ adresse: 'c' }], 'zwei', still);
+  const inhalt = JSON.parse(fs.readFileSync(path.join(ordner, VORSCHAU_DATEI), 'utf8'));
+  assert.equal(inhalt.erstellt, 'zwei');
+  assert.deepEqual(inhalt.kandidaten, [{ adresse: 'c' }]);
+});
+
+test('Vorschau: --vorschau und --produkt kommen aus der Befehlszeile an', () => {
+  const opt = leseArgumente(['--plan', '--sofort', '--vorschau']);
+  assert.equal(opt.vorschau, true);
+  assert.equal(opt.plan, true);
+  assert.equal(leseArgumente(['--interaktiv']).vorschau, false, 'ohne Schalter kein Vorschau-Lauf');
+  assert.equal(leseArgumente(['--interaktiv', '--produkt', '12']).produktNr, '12');
+});
+
+test('--produkt: die Nummer kommt im Lauf an, gefragt wird sie nicht mehr', async () => {
+  // tiktok:status empfiehlt seit dem 20.09. "npm run tiktok -- --produkt 12" —
+  // die Nummer kam aber nie an, und die erste Antwort (die Anzahl) wurde als
+  // Produktnummer gelesen.
+  const fragen = [];
+  const rest = ['1', '1', '1'];
+  const mit = plattformLauf(['youtube'], { zusatz: {
+    produktNr: '10', frage: async (f) => { fragen.push(f); return rest.shift(); },
+  } });
+  assert.equal(await mit.lauf, 0);
+  assert.ok(!fragen.some((f) => /Produktnummer/.test(f)), fragen.join(' | '));
+  assert.equal(ladeIndex(mit.daten).eintraege[0].produkt_id, 10);
+
+  // GEGENPROBE: Ohne --produkt wird gefragt, wie bisher.
+  const gefragt = [];
+  const antworten = ['10', '1', '1', '1'];
+  const ohne = plattformLauf(['youtube'], { zusatz: {
+    frage: async (f) => { gefragt.push(f); return antworten.shift(); },
+  } });
+  assert.equal(await ohne.lauf, 0);
+  assert.match(gefragt[0], /Produktnummer/);
+
+  // Und eine Nummer, die es nicht gibt, bricht ab, statt zu fragen.
+  const falsch = plattformLauf(['youtube'], { zusatz: { produktNr: '99', frage: async () => { throw new Error('gefragt'); } } });
+  assert.equal(await falsch.lauf, 1);
+  assert.equal(falsch.aufrufe.length, 0);
+});
+
+test('Planlauf-Vorschau: dieselbe Auswahl, aber kein Planzustand und keine Mail', async () => {
+  const daten = tempOrdner();
+  const { opt, mails } = planOpt(daten, { opt: { vorschau: true } });
+  const erhalten = [];
+  opt.interaktivFn = async (o) => {
+    const id = await o.frage();
+    erhalten.push({ id, vorschau: o.vorschau, sammler: o.vorschauSammler });
+    o.vorschauSammler.push({ produkt_id: Number(id), adresse: `https://beispiel.invalid/${id}` });
+    Object.assign(o.bericht, { geladen: 0, vorschau: 1 });
+    return 0;
+  };
+  assert.equal(await planlauf(opt), 0);
+  assert.equal(erhalten.length, 5);
+  assert.ok(erhalten.every((e) => e.vorschau === true), 'jedes Produkt laeuft als Vorschau');
+  assert.ok(erhalten.every((e) => e.sammler === erhalten[0].sammler), 'ein Sammler fuer alle Produkte');
+  assert.equal(mails.length, 0, 'eine Vorschau ist kein Lauf — keine Mail');
+  assert.ok(!fs.existsSync(path.join(daten, 'planlauf.json')), 'Planzustand unberuehrt');
+  const inhalt = JSON.parse(fs.readFileSync(path.join(daten, VORSCHAU_DATEI), 'utf8'));
+  assert.deepEqual(inhalt.kandidaten.map((k) => k.produkt_id), [1, 2, 3, 4, 5]);
+
+  // GEGENPROBE: Der echte Lauf danach waehlt DIESELBEN Produkte — haette die
+  // Vorschau zuletzt_dran gesetzt, kaemen hier 6, 7, … zuerst.
+  const echt = planOpt(daten);
+  assert.equal(await planlauf(echt.opt), 0);
+  assert.deepEqual(echt.aufrufe.map((a) => a[0]), erhalten.map((e) => e.id));
+  assert.equal(echt.mails.length, 1);
+  assert.ok(fs.existsSync(path.join(daten, 'planlauf.json')));
 });

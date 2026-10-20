@@ -20,10 +20,10 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   wird **nur über den Prüflauf** (`.github/workflows/pruefung.yml`): Lint → Tests → Prüfung auf
   Ereignisbehandler mit eingesetzten Werten → **Startprüfung** (Server hochfahren, `/health`
   abfragen, beenden) → erst dann der Deploy-Hook. Ist ein Schritt rot, bleibt der alte Stand live.
-  Von Hand: Render-Dashboard → „Manual Deploy". **612 automatische Prüfungen** im Prüflauf via
-  `npm test` — 262 Shop und 350 Bot (`test/lauf.js` sammelt `bot/*.test.js` mit ein, also **nicht
-  addieren**: genau das ist einmal passiert), dazu **345 Marketing** via
-  `py -m pytest Marketing/tests`, die **nur lokal** laufen (Stand 07.10.).
+  Von Hand: Render-Dashboard → „Manual Deploy". **635 automatische Prüfungen** im Prüflauf via
+  `npm test` — 279 Shop und 356 Bot (`test/lauf.js` sammelt `bot/*.test.js` mit ein, also **nicht
+  addieren**: genau das ist einmal passiert), dazu **362 Marketing** via
+  `py -m pytest Marketing/tests`, die **nur lokal** laufen (Stand 20.10.).
 - **Sicherheitsschicht** (alles seit Ende Juli, Details in §3): Datei-Freigabe
   (`static-guard.js`), Content-Security-Policy ohne `'unsafe-inline'` für Skripte
   (`csp-policy.js` + `csp-inline.js`), HSTS (`hsts-policy.js`), CSRF-Herkunftsprüfung,
@@ -154,17 +154,20 @@ npm run marketing:vorlage -- problem_loesung --produkt 10   # Schnitt-Entwurf au
 npm run marketing:pruefen -- fassung-10.json --bauversuch   # Schnittliste gegenlesen, ohne zu rendern
 npm run marketing:rendern    # Schnittlisten im Hintergrund rendern (fragt die DB NICHT im Takt)
 npm run marketing:rueckschau # beste/schwächste 5 Beiträge je Merkmal — Vorschläge für die Vorlagen, ändert nichts
-py -m pytest Marketing/tests # 345 Prüfungen der Marketing-Kette (49 davon nur mit Datenbank)
+npm run marketing:antworten -- --produkt 10 [--beitrag 42]   # Antwortbausteine für Kommentare, nur aus echten Quellen
+py -m pytest Marketing/tests # 362 Prüfungen der Marketing-Kette (49 davon nur mit Datenbank)
 py -m pipelines.orchestrator.run_loop --job render_style_a --once   # aus Marketing/ heraus
 
 # ── TikTok-Rohmaterial (Recherche, lädt nur über der Trefferschwelle) ──
 npm run tiktok:status        # Bestand und Grenzen anzeigen
-npm run tiktok:probe         # Trockenlauf: sucht und bewertet, lädt NICHTS
+npm run tiktok:probe         # fragt nur die in tiktok-quellen.json EINGETRAGENEN Adressen ab — sucht NICHT, lädt NICHTS
+npm run tiktok:vorschau      # sucht + bewertet wie der Planlauf, lädt NICHTS, schreibt nur vorschau.json
+npm run tiktok -- --produkt 12 --vorschau   # dasselbe für ein Produkt
 npm run tiktok:laden -- --max 2   # erst wenn die Prüfliste plausibel aussieht
 npm run tiktok:plan          # Planlauf: 2×/Woche, 5 Produkte rollierend — läuft nur, wenn fällig
 npm run tiktok:plan -- --aufgabe  # schtasks-Befehl für die Aufgabenplanung AUSGEBEN (nicht anlegen)
 npm run tiktok:bild          # alle Clips ansehen: Produkt, Gesichter, Einblendungen (~8 s je Clip)
-node bot/tiktok-video-sync.test.js  # 310 Prüfungen des Bots
+node bot/tiktok-video-sync.test.js  # 316 Prüfungen des Bots
 # YouTube Shorts ist zweite Quelle ("plattformen" in bot/tiktok-quellen.json) — eine Sperre gilt
 # nur für die Plattform, die sperrt. Instagram bewusst nicht (geht nur mit Anmeldung).
 ```
@@ -204,6 +207,9 @@ lautlos wirkt** — jeweils mit einem Test für den real aufgetretenen Fehler:
 | `marketing-betrieb.test.js` | Workflow, lokaler Läufer, npm-Skripte des Automaten | ein Workflow, der einen Ablauf nie zuteilt, sieht aus wie „gerade nichts fällig" — **und ein versehentlich abgeschalteter Trockenlauf sieht aus wie Normalbetrieb, bis der erste Beitrag öffentlich steht** |
 | `marketing-dashboard.test.js` | die Admin-Seite des Automaten | ein Feld, das nie gefüllt wird, steht dauerhaft auf „Lädt…" und wirkt wie „nichts zu zeigen" — keine Fehlermeldung, kein Protokolleintrag |
 | `keine-erfundenen-angaben.test.js` | fest eingetragene Sterne, Bewertungs-, Verkaufs-, Bestands- und Kundenzahlen; Telefonabfrage an der Kasse | alle 40 Produktseiten trugen eingetippte Bewertungen samt „Verifiziert"-Haken und „201x bestellt", die Startseite rechnete Sterne aus der Produkt-ID — sieht aus wie echt, keine Fehlermeldung, rechtlich irreführend (UWG Anhang Nr. 23b/23c) |
+| `produktliste-einmal.test.js` | dass eine Produktseite `products.json` **einmal** lädt (gemeinsames Versprechen `window.__maiosProdukte`) | sechs Skripte holten die Liste je selbst, teils mit `?v=Date.now()` — 5–8 Abrufe à 48 KB je Seitenaufruf, und der Zeitstempel hebelte das ETag aus (nie 304) |
+| `galerie-wischen.test.js` | Wischen in der Produktgalerie, Hauptbild bleibt dasselbe Element | `touchend` rief `this.handleSwipe()` — die Methode gab es nicht, auf dem Handy ein TypeError bei **jeder** Wischgeste, am Rechner unsichtbar |
+| `icons-eine-version.test.js` | eine Bootstrap-Icons-Version je Seite und im ganzen Shop | fünf Infoseiten luden 1.10.0 **und** (über `info.css`) 1.11.3 — zwei Schriftdateien für dieselben Symbole |
 
 Faustregel beim Ergänzen: **ein Test, der nur grün werden kann, ist wertlos.** Zu jedem
 behobenen Fehler gehört eine Gegenprobe, die das alte Verhalten nachbildet und belegt, dass

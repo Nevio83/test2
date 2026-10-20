@@ -80,8 +80,10 @@ class ImageColorSelection {
     
     async loadProductData() {
         try {
-            const response = await fetch('../products.json');
-            const products = await response.json();
+            // Punkt 60: das gemeinsame Versprechen aus app.js, sonst wie bisher selbst holen.
+            const products = window.maiosProdukte
+                ? await window.maiosProdukte()
+                : await fetch('/products.json').then(r => r.json());
             this.productData = products.find(p => p.id === this.productId);
             
             if (!this.productData) {

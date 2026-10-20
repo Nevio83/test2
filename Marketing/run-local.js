@@ -63,6 +63,13 @@
  *         Punkt 62: die fuenf besten und fuenf schwaechsten Beitraege
  *         nebeneinander, je Merkmal gezaehlt, mit Vorschlaegen fuer die
  *         Vorlagen. Liest nur — geaendert wird nichts.
+ *
+ *     npm run marketing:antworten -- --produkt 10               Antworten fuer Kommentare
+ *     npm run marketing:antworten -- --produkt 10 --beitrag 42  dazu der Link mit Kennung
+ *         Punkt 61: Preis, Ausfuehrungen, Versand, Lieferzeit, Rueckgabe,
+ *         Zahlarten — jede Angabe aus der Quelle, die auch der Shop nutzt,
+ *         jede Antwort gegen die Verbotsliste geprueft. Beantwortet wird
+ *         weiter von Hand.
  */
 
 'use strict';
@@ -128,6 +135,8 @@ function leseArgumente(argv) {
     else if (a === '--rendern') { opt.rendern = true; opt.rendernArgs = argv.slice(i + 1); break; }
     // Punkt 62: Rueckschau — alles dahinter (--tage, --anzahl) geht an das Modul.
     else if (a === '--rueckschau') { opt.rueckschau = true; opt.rueckschauArgs = argv.slice(i + 1); break; }
+    // Punkt 61: Antwortbausteine — alles dahinter (--produkt, --beitrag) geht an das Modul.
+    else if (a === '--antworten') { opt.antworten = true; opt.antwortenArgs = argv.slice(i + 1); break; }
     // npm reicht alles hinter "--" weiter; ein freies Wort nach --vorlage ist
     // der Vorlagenname, auch wenn es erst hinter --produkt steht.
     else if (opt.vorlage && !opt.vorlageName && !a.startsWith('--')) opt.vorlageName = a;
@@ -606,6 +615,11 @@ async function main() {
   // Punkt 62: liest nur — eine Abfrage, keine Schreibzugriffe.
   if (opt.rueckschau) {
     return fuehreModulAus(python, 'pipelines.learning.rueckschau', opt.rueckschauArgs);
+  }
+
+  // Punkt 61: liest nur — Bestand und (mit --beitrag) die Kennung, je eine Abfrage.
+  if (opt.antworten) {
+    return fuehreModulAus(python, 'pipelines.creative.antworten', opt.antwortenArgs);
   }
 
   // Punkt 48: Python laeuft in Marketing/ — ein Pfad, der relativ zum Ort des

@@ -121,7 +121,35 @@ function updateAllWishlistButtonsStates(productId) {
     });
 }
 
-// Produktdaten laden mit Cache-Busting
+// EIN Abruf von /products.json je Seitenaufruf — fuer ALLE Skripte (Punkt 60).
+//
+// GEMESSEN am 07.10. auf der Wasserspender-Seite: acht Abrufe beim Erstbesuch.
+// Das Inline-Skript der Seite, product-video.js, product-availability.js,
+// produkt-premium.js, color-image-selection.js, bundle-images-final.js und
+// dieses Skript holten die Liste jeweils selbst — dieses hier mit ?v=<Zeit>,
+// was jede 304-Antwort verhinderte. Das ?v= stammt aus der Woche im September
+// 2025, in der products.json ein Jahr zwischengespeichert wurde; seit die
+// Route mit ETag ausliefert, bewirkt es nur noch den vollen Download.
+//
+// Das Versprechen haelt das GEPARSTE Array (ein Antwortkoerper ist nur einmal
+// lesbar). `cache: 'no-cache'` heisst: Rueckfrage per ETag — der Bestand, den
+// der Server dazumischt, ist frisch, unveraendert kommt nur ein 304. Schlaegt
+// der Abruf fehl, wird das Versprechen geloescht, damit ein spaeterer Aufruf
+// es neu versucht. Das Inline-Skript der Produktseiten legt dasselbe
+// Versprechen schon vor app.js an; dann haengt sich diese Funktion daran.
+//
+// Alle Skripte bekommen DASSELBE Array. Keines veraendert es (nachgesehen am
+// 20.10.: kein sort/push/splice an Ort und Stelle) — wer das kuenftig tut,
+// trifft alle anderen mit.
+window.maiosProdukte = window.maiosProdukte || function () {
+  if (!window.__maiosProdukte) {
+    window.__maiosProdukte = fetch('/products.json', { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .catch(function (e) { window.__maiosProdukte = null; throw e; });
+  }
+  return window.__maiosProdukte;
+};
+
 // Gecachtes Promise: products.json wird pro Seitenaufruf nur EINMAL geladen
 // (vorher fetchte jeder der ~20 Aufrufe die 64-KB-Datei neu). Parallele Aufrufe
 // teilen sich denselben Fetch.
@@ -130,18 +158,12 @@ async function loadProducts(forceReload = false) {
   if (_productsPromise && !forceReload) return _productsPromise;
   _productsPromise = (async () => {
   try {
-    // Cache-busting für products.json
-    const cacheBuster = Date.now();
-    // Prüfe ob wir auf einer Produktseite sind (im produkte/ Ordner)
-    const isProductPage = window.location.pathname.includes("/produkte/");
-    const jsonPath = isProductPage ? "../products.json" : "products.json";
-    const response = await fetch(`${jsonPath}?v=${cacheBuster}`);
-    products = await response.json(); // Nutze die globale Variable
+    products = await window.maiosProdukte(); // Nutze die globale Variable
 
     // Speichere im localStorage als Backup
     localStorage.setItem("allProducts", JSON.stringify(products));
 
-    console.log("📋 Products loaded with cache-busting:", products.length);
+    console.log("📋 Products loaded:", products.length);
 
     // Validiere kritische Produkte (die 6 problematischen)
     const criticalIds = [10, 11, 19, 20, 24, 25];

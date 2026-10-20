@@ -405,8 +405,17 @@
     };
     window.product = product;
 
-    fetch('../products.json')
-      .then(function(r){ return r.json(); })
+    // EIN Abruf von /products.json fuer die ganze Seite (Punkt 60). Vorher holten
+    // sechs Skripte die Liste einzeln, eines davon mit ?v=<Zeit>, das jede
+    // 304-Antwort verhinderte. Dieses Skript laeuft als erstes und legt das
+    // gemeinsame Versprechen an; app.js (window.maiosProdukte) und die anderen
+    // haengen sich daran.
+    if (!window.__maiosProdukte) {
+      window.__maiosProdukte = fetch('/products.json', { cache: 'no-cache' })
+        .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .catch(function(e){ window.__maiosProdukte = null; throw e; });
+    }
+    window.__maiosProdukte
       .then(function(prods){
         var prod = prods.find(function(x){ return Number(x.id) === Number(product.id); });
         setTimeout(function(){

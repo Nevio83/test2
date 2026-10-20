@@ -283,8 +283,51 @@ der Bericht nicht hinter npm-Fehlermeldungen verschwindet.
 npm run tiktok:probe
 ```
 
-Der **Trockenlauf**: sucht Kandidaten, bewertet die Zuordnung, schreibt
+Der **Trockenlauf über die eingetragenen Quellen**: fragt die Konten und
+Adressen aus `tiktok-quellen.json` ab, bewertet die Zuordnung, schreibt
 `pruefliste.json`. **Lädt nichts herunter.**
+
+> ⚠️ **Er sucht nicht.** Bis zum 20.10. stand hier „sucht Kandidaten" — das
+> stimmte nie. Eigene Suche ginge nur über den Suchextractor von yt-dlp, und den
+> gibt es bei TikTok nicht (§2b). Für ein Produkt ohne Eintrag in
+> `tiktok-quellen.json` meldet die Probe „keine nutzbare Quelle" — das sind
+> **37 von 40**. Wer sehen will, was ein echter Lauf **finden** würde, nimmt
+> `tiktok:vorschau` (nächster Abschnitt).
+
+```bash
+npm run tiktok:vorschau
+npm run tiktok -- --produkt 12 --vorschau
+```
+
+Der **Vorschau-Lauf** (Punkt 86, seit 20.10.). Sucht und bewertet **genau wie
+ein echter Lauf** — Tavily, YouTube-Suche, `yt-dlp --dump-json`, alle Hürden vor
+dem Laden — und springt **vor dem Herunterladen** ab. Ohne Produktnummer nimmt
+er dieselben fünf Produkte, die der nächste Planlauf nähme; mit `--produkt`
+nur das eine. Ergebnis: `vorschau.json` im Datenordner, bei jedem Lauf
+überschrieben.
+
+Was er **nicht** schreibt, und warum:
+
+| bleibt unberührt | sonst |
+|---|---|
+| `index.json` (Herkunftsnachweis + Begriffs-Bilanz) | ein Suchbegriff ruhte 21 Tage, obwohl mit ihm nie etwas geladen wurde |
+| `urteile.json` | eine Vorschau zählte als Urteil über Material, das niemand angesehen hat |
+| `ablehnungen.json` | sie stünde dort als Lauf mit „0 geladen" — sähe aus wie eine tote Quelle |
+| `planlauf.json` | die fünf Produkte gälten als erledigt und kämen beim echten Lauf nicht dran |
+| Produktordner unter `rohmaterial/` | nach einer Vorschau stünde für jedes Produkt ein leerer Ordner da |
+| Mail, Kontaktbogen | eine Vorschau ist kein Lauf |
+
+**Was er durchaus tut:** echte Abrufe bei Tavily, YouTube und TikTok — mit
+denselben Pausen, derselben Obergrenze und **demselben Abbruch bei einer
+Sperre** wie ein echter Lauf. Er springt bewusst erst am Ende der Prüfkette ab,
+nicht vorher: Sonst ginge das Sperrsignal verloren und die Auswertung, *warum*
+Kandidaten durchgefallen sind — gerade die ist bei einer Vorschau das
+Interessante.
+
+**Was er nicht wissen kann:** Alles, was erst **nach** dem Laden geprüft wird —
+Tonspur, Doppelgänger, der Blick ins Bild (§6). Ein Kandidat in der Vorschau
+kann im echten Lauf also noch durchfallen; die Datei sagt das selbst
+(`hinweis`).
 
 ```bash
 npm run tiktok:laden -- --max 2
@@ -335,6 +378,7 @@ wenn ohnehin gerade an Videos gearbeitet wurde. Der Planlauf dreht das um:
 npm run tiktok:plan                  # läuft nur, wenn fällig — sonst "nicht fällig" in Sekundenbruchteilen
 npm run tiktok:plan -- --sofort      # jetzt, egal wann der letzte war
 npm run tiktok:plan -- --aufgabe     # Befehl für die Windows-Aufgabenplanung AUSGEBEN
+npm run tiktok:vorschau              # dieselbe Auswahl, sucht + bewertet, lädt NICHTS (Punkt 86)
 ```
 
 - **Zweimal je Woche**, jeweils zu einer **gewürfelten Uhrzeit zwischen 10 und
@@ -1911,6 +1955,10 @@ wertlos.** Zu jeder Prüfung steht eine Gegenprobe daneben:
 | schon Angesehene kommen nicht noch einmal dran | mit `--neu` kommen sie dran |
 | ein gescheiterter Blick hinterlässt nichts | eine Datei ohne Bildspur hinterlässt genau diesen Befund |
 | beide Module laden sich ohne Ring | auch in umgekehrter Reihenfolge |
+| die Vorschau lädt nichts und schreibt nur `vorschau.json` | derselbe Lauf ohne `--vorschau` lädt und schreibt Index und Urteile |
+| eine Sperre beendet auch die Vorschau | — (das Sperrsignal ginge verloren, spränge die Vorschau früher ab) |
+| die Planlauf-Vorschau lässt den Planzustand stehen | der echte Lauf danach nimmt **dieselben** fünf Produkte |
+| `--produkt 12` kommt an, gefragt wird nicht | ohne `--produkt` wird wie bisher gefragt |
 
 ---
 

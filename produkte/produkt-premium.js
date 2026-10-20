@@ -85,8 +85,8 @@
       const ap = JSON.parse(localStorage.getItem('allProducts') || '[]');
       if (ap && ap.length) return Promise.resolve();
     } catch (e) { /* ignore */ }
-    return fetch('../products.json')
-      .then(r => r.json())
+    // Punkt 60: das gemeinsame Versprechen aus app.js, sonst wie bisher selbst holen.
+    return (window.maiosProdukte ? window.maiosProdukte() : fetch('/products.json').then(r => r.json()))
       .then(p => { localStorage.setItem('allProducts', JSON.stringify(p)); })
       .catch(() => { /* offline → addToCart lädt selbst nach */ });
   }

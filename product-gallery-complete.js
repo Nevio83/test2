@@ -19,6 +19,20 @@ function vorschauAdresse(pfad) {
     return pfad + (pfad.includes('?') ? '&' : '?') + 'w=' + VORSCHAU_BREITE;
 }
 
+/**
+ * Zeigen zwei Adressen dieselbe Datei? Relativ ("../produkt bilder/…") und
+ * absolut (img.src liefert immer absolut) werden gleich behandelt.
+ * Bewusst nicht "gleicheAdresse" — so heisst schon eine globale Funktion in
+ * color-image-selection.js, und eine zweite Deklaration wuerde sie ersetzen.
+ */
+function gleicheBildadresse(a, b) {
+    try {
+        return new URL(a, document.baseURI).href === new URL(b, document.baseURI).href;
+    } catch (e) {
+        return a === b;
+    }
+}
+
 /** Nimmt die Groessenangabe wieder heraus — fuer Wege, die das Original brauchen. */
 function volleAdresse(pfad) {
     return String(pfad || '').replace(/([?&])w=\d+(&|$)/, '$1').replace(/[?&]$/, '');
@@ -793,6 +807,7 @@ class ProductImageGallery {
         }
         
         const parentContainer = existingImage.parentElement;
+        const platzNachBild = existingImage.nextSibling;
         // Erstelle Gallery Container
         this.galleryContainer = document.createElement('div');
         this.galleryContainer.className = 'product-gallery-container';
@@ -808,8 +823,18 @@ class ProductImageGallery {
         mainImageContainer.appendChild(counter);
         
         // Hauptbild
-        this.mainImage = document.createElement('img');
-        this.mainImage.src = this.images[0].src;
+        //
+        // DAS VORHANDENE BILD WIRD WEITERVERWENDET, wenn es dieselbe Datei zeigt
+        // (bei allen zehn Galerie-Produkten der Fall). Vorher entstand hier ein
+        // neues <img> — fuer den Browser ein neues Element, das erst nach dem
+        // Aufbau der Galerie gezeichnet wird. Chrome meldete als "groesstes
+        // Element" deshalb mal das alte, mal das neue Bild, und der Zeitpunkt
+        // rutschte nach hinten (Punkt 60, gemessen am 07.10.).
+        // Die Klassen werden UEBERSCHRIEBEN, nicht ergaenzt: pp-main-img wuerde
+        // Rand und Hintergrund doppelt setzen.
+        const bildWeiterverwenden = gleicheBildadresse(existingImage.src, this.images[0].src);
+        this.mainImage = bildWeiterverwenden ? existingImage : document.createElement('img');
+        if (!bildWeiterverwenden) this.mainImage.src = this.images[0].src;
         this.mainImage.alt = this.images[0].alt;
         this.mainImage.className = 'gallery-image main-product-image fade-in';
         mainImageContainer.appendChild(this.mainImage);
@@ -868,8 +893,12 @@ class ProductImageGallery {
             this.galleryContainer.appendChild(this.thumbnailsContainer);
         }
         
-        // Ersetze das alte Bild mit der Gallery
-        parentContainer.replaceChild(this.galleryContainer, existingImage);
+        // Die Galerie an die Stelle des alten Bildes setzen. Nicht mehr per
+        // replaceChild: Wurde das Bild oben umgehaengt, steht es nicht mehr im
+        // alten Eltern-Element, und replaceChild wuerde einen NotFoundError
+        // werfen — keine Galerie, kein Vollbild.
+        parentContainer.insertBefore(this.galleryContainer, platzNachBild);
+        if (!bildWeiterverwenden) existingImage.remove();
         
         // Füge Fullscreen-Funktionalität hinzu
         this.attachFullscreenListener();
@@ -938,18 +967,15 @@ class ProductImageGallery {
         });
         
         // Touch/Swipe Support für Mobile
+        //
+        // Hier stand `this.handleSwipe()`, definiert war aber nur die lokale
+        // Konstante darunter — jedes Loslassen nach dem Wischen warf einen
+        // TypeError, und das Bild wechselte nie (gefunden am 15.10. beim Lesen
+        // fuer Punkt 60). Ausgerechnet auf dem Handy, wo die Besucher aus den
+        // Videos ankommen. Jetzt zuerst definiert, dann aufgerufen.
         let touchStartX = 0;
         let touchEndX = 0;
-        
-        this.galleryContainer?.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-        });
-        
-        this.galleryContainer?.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            this.handleSwipe();
-        });
-        
+
         const handleSwipe = () => {
             if (touchEndX < touchStartX - 50) {
                 this.nextImage();
@@ -958,6 +984,15 @@ class ProductImageGallery {
                 this.previousImage();
             }
         };
+
+        this.galleryContainer?.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        this.galleryContainer?.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
     }
     
     attachFullscreenListener() {

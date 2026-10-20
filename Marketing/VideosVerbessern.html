@@ -434,6 +434,22 @@
       </table>
     </div>
 
+    <div class="pruef-banner" style="background:var(--green-dim, var(--blue-dim));border-color:color-mix(in srgb, var(--green) 32%, transparent);">
+      <h3>Stand am 20.10.: 84 gebaut, 4 halb, 0 offen, 1 anders gelöst, 1 ausgelassen — ausgezählt an den Abzeichen, geprüft am Code</h3>
+      <p class="warum" style="border-left:3px solid var(--muted-2);padding-left:12px;">
+        <b>Am 20.10. gebaut:</b> <strong>61</strong> — Antwortbausteine für Kommentare, jede Zahl aus einer Quelle des Shops, mit Selbstprüfung gegen Knappheit, Streichpreise und erfundene Bewertungen.
+        <b>Nachgezogen:</b> <strong>60</strong> — <code>products.json</code> einmal statt fünf- bis achtmal je Produktseite, Wischen in der Galerie auf dem Handy repariert (jede Geste war ein Fehler), Icons in einer Version. Nachgemessen: weniger Daten und Anfragen, <em>nicht</em> schneller sichtbar — das hängt an den fremden Schriften und Icons. Bleibt halb.
+        <b>Halb:</b> <strong>86</strong> — <code>npm run tiktok:vorschau</code> zeigt, was ein Lauf laden würde, ohne etwas zu laden oder festzuschreiben. Dabei kam heraus, dass <code>tiktok:probe</code> gar nicht sucht und der Planlauf nie gelaufen ist.
+      </p>
+      <p class="tun" style="border-left:3px solid var(--blue);padding-left:12px;">
+        <b>Was jetzt nur noch du entscheiden kannst</b> —
+        Render Starter und ein externer Pinger (<strong>60</strong>) ·
+        Schriften und Icons selbst ausliefern, also die Dateien von jsdelivr und Google herunterladen (<strong>60</strong>, nebenbei ein DSGVO-Gewinn) ·
+        die ersten echten Läufe und die Windows-Aufgabe für den Planlauf (<strong>86</strong>).
+        Kein Punkt dieser Liste ist mehr offen, ohne dass Code dafür steht.
+      </p>
+    </div>
+
     <div class="pruef-banner" style="background:var(--blue-dim);border-color:color-mix(in srgb, var(--blue) 32%, transparent);">
       <h3>Stand am 07.10.: 83 gebaut, 3 halb, 2 offen, 1 anders gelöst, 1 ausgelassen — ausgezählt an den Abzeichen, geprüft am Code</h3>
       <p class="warum" style="border-left:3px solid var(--muted-2);padding-left:12px;">
@@ -484,8 +500,8 @@
       <p class="warum" style="margin-top:10px;">
         <b>Was wirklich offen ist</b> —
         <strong>60</strong> (Render Starter, 7 $/Monat — deine Entscheidung; <em>am 07.10. gemessen, siehe beim Punkt</em>) ·
-        <strong>61</strong> (laufende Arbeit, kein Code) · <s><strong>62</strong> (laufende Arbeit, kein Code)</s> <em>62: das Werkzeug ist am 07.10. gebaut, die monatliche Entscheidung bleibt Handarbeit</em> ·
-        <strong>86</strong> (Material filmen oder Läufe — keine Programmieraufgabe) ·
+        <s><strong>61</strong> (laufende Arbeit, kein Code)</s> <em>61: die Antwortbausteine sind am 20.10. gebaut, antworten bleibt Handarbeit</em> · <s><strong>62</strong> (laufende Arbeit, kein Code)</s> <em>62: das Werkzeug ist am 07.10. gebaut, die monatliche Entscheidung bleibt Handarbeit</em> ·
+        <strong>86</strong> (Material filmen oder Läufe — <em>am 20.10. halb: die Vorschau steht, die Läufe brauchen deine Freigabe</em>) ·
         <s><strong>88</strong> (sieben Fassungen nachtragen — braucht die Datenbank; <em>seit dem 02.10. ist sie wieder erreichbar</em>).</s>
         <em>88 am 07.10. ausgelassen.</em>
         <s><strong>35</strong> (Produkt-Sichtbarkeit — braucht das Bildmodell aus Punkt 19, also eine neue
@@ -1194,7 +1210,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">60</span> Die Zielseite auf Video-Besucher vorbereiten <span class="chip p-mittel">halb am 07.10. — gemessen; Plan und Pinger entscheidest du</span> <span class="chip c-geld">7 $/Monat</span> <span class="chip c-klein">ein Klick</span></h4>
+        <h4><span class="nr">60</span> Die Zielseite auf Video-Besucher vorbereiten <span class="chip p-mittel">halb — am 20.10. im Code nachgezogen; Plan, Pinger und Selbsthosten entscheidest du</span> <span class="chip c-geld">7 $/Monat</span> <span class="chip c-klein">ein Klick</span></h4>
         <p class="warum"><b>Warum</b> Der Besucher aus einem TikTok-Video ist per Definition ein Erstaufruf — und auf dem kostenlosen Render-Plan dauert der erste Aufruf nach dem Schlaf rund 50 Sekunden. Niemand wartet 50 Sekunden. Der gesamte Aufwand dieses Papiers endet dann in einer weißen Seite.</p>
         <p class="tun"><b>Was tun</b> Render Starter statt Free (Punkt 12 im Hauptbericht) und ein externer Pinger als zweites Netz. Dazu die Produktseite auf Handy-Erstaufruf messen: Wie lange bis zum ersten sichtbaren Inhalt über Mobilfunk? Das ist die Zahl, die für Video-Besucher zählt, nicht die Bildgröße.</p>
         <p class="bringt"><b>Bringt</b> Der teuerste Moment der ganzen Kette ist der Klick vom Clip in den Shop. Alles davor ist Vorbereitung — und alles davor ist wertlos, wenn dieser Moment 50 Sekunden dauert.</p>
@@ -1209,13 +1225,28 @@
         <p class="warum"><b>Was das heißt</b> Google nennt bis 2,5&nbsp;s für den größten Inhalt „gut". Alle drei Seiten liegen knapp darüber, die Startseite mit 3,9&nbsp;s deutlich. Die Einzelläufe streuen stark (Startseite 3,4–5,2&nbsp;s) — die Zahlen sind ein Anhaltspunkt, keine Garantie.</p>
         <p class="tun"><b>Woran es liegt — aus der Ladereihenfolge der Wasserspender-Seite</b> Zwei <em>fremde</em> Stylesheets halten die Darstellung auf: Google Fonts (fertig nach 1,7&nbsp;s) und die Bootstrap-Icons von jsdelivr (2,0&nbsp;s), jedes mit eigener neuer Verbindung. Das eigene CSS ist nach 0,6&nbsp;s da. Hinter den beiden wartet alles: Die Skripte laufen erst danach, <code>products.json</code> wird erst bei 3,3&nbsp;s abgefragt, und die Galerie tauscht das Hauptbild danach noch einmal aus — deshalb steht als größtes Element mal <code>main-product-image</code>, mal <code>gallery-image</code>. Dazu wird <code>products.json</code> <strong>achtmal</strong> geladen, von verschiedenen Skripten. Das Hauptbild selbst (37&nbsp;KB) ist kein Problem. Auf der Startseite ist das größte Element ein Produktbild, das erst nach dem Ende des Ladens kommt — es wird von JavaScript eingesetzt.</p>
         <p class="warum"><b>Was offen ist</b> Render Starter (7&nbsp;$/Monat) und ein externer Pinger — beides deine Entscheidung. Und der größte Hebel im Code: Schriften und Icons selbst ausliefern statt von zwei fremden Servern (Inter und Outfit stehen unter OFL, die Icons unter MIT). Das betrifft 51 Seiten und ist ein Eingriff ins Design — deshalb nicht ungefragt gemacht.</p>
+        <p class="tun"><b>Gebaut am 20.10. — was im Code ging, ohne fremde Dateien zu holen.</b>
+          <strong>(1)</strong> <code>products.json</code> wird je Produktseite <strong>einmal</strong> geladen statt fünf- bis achtmal: Die Seite legt ein gemeinsames Versprechen an (<code>window.__maiosProdukte</code>), alle sechs Skripte hängen sich daran. Die Zeitstempel <code>?v=…</code> sind weg — mit ihnen kam nie eine 304; jetzt antwortet der Server beim zweiten Besuch mit 0 Byte statt 48&nbsp;KB.
+          <strong>(2)</strong> Wischen in der Galerie: <code>touchend</code> rief eine Methode, die es nicht gab — <em>jede</em> Wischgeste auf dem Handy endete in einem Fehler, am Rechner unsichtbar. Dazu tauscht die Galerie das Hauptbild nicht mehr aus, wenn es schon die richtige Datei zeigt.
+          <strong>(3)</strong> Bootstrap-Icons in einer Version: Fünf Infoseiten luden 1.10.0 <em>und</em> 1.11.3.
+          Je eine Prüfung mit Gegenprobe (<code>produktliste-einmal</code>, <code>galerie-wischen</code>, <code>icons-eine-version</code>).</p>
+        <p class="tun"><b>Nachgemessen — alter und neuer Stand am selben Tag, auf demselben Rechner, je fünf Läufe, Median:</b></p>
+        <table class="zahlen" style="margin:8px 0 12px"><thead><tr><th>Seite</th><th>Netz</th><th>größter Inhalt vorher → nachher</th><th>Daten</th><th>Anfragen</th></tr></thead><tbody>
+          <tr><td>Wasserspender</td><td>4G mittel</td><td class="num">3,1 → 3,4 s</td><td class="num">464 → 418 KB</td><td class="num">37 → 33</td></tr>
+          <tr><td>Mixer</td><td>4G mittel</td><td class="num">3,3 → 3,3 s</td><td class="num">568 → 460 KB</td><td class="num">39 → 34</td></tr>
+          <tr><td>Wasserspender</td><td>4G gut</td><td class="num">4,1 → 3,5 s</td><td class="num">475 → 418 KB</td><td class="num">38 → 33</td></tr>
+          <tr><td>Mixer</td><td>4G gut</td><td class="num">3,7 → 4,7 s</td><td class="num">568 → 460 KB</td><td class="num">39 → 34</td></tr>
+        </tbody></table>
+        <p class="warum"><b>Ehrlich gelesen</b> Weniger Daten und weniger Anfragen sind sicher. <strong>Schneller sichtbar ist die Seite dadurch nicht</strong> — die Zeiten springen in beide Richtungen, und die Einzelläufe streuen weiter als jeder Unterschied (Wasserspender nachher 2,9–6,6&nbsp;s). Eine erste Messung hatte „5,8 → 3,0&nbsp;s" gezeigt; das war der Unterschied zwischen zwei Messtagen, nicht zwischen zwei Ständen. Auch die Einblende-Animation ist es nicht (mit und ohne gemessen: im Rauschen). Der Grund steht oben: Die beiden fremden Stylesheets halten die Darstellung auf, alles andere wartet dahinter. <strong>Deshalb ist das Selbsthosten der Schriften und Icons der nächste Schritt</strong> — es braucht das Herunterladen der Dateien von jsdelivr und Google, also deine Freigabe. Nebenbei sähe Google dann die Adresse der Besucher nicht mehr (Google Fonts überträgt sie heute bei jedem Seitenaufruf).</p>
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">61</span> Kommentare unter den eigenen Beiträgen bearbeiten <span class="chip p-mittel">Priorität mittel</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">laufend</span></h4>
+        <h4><span class="nr">61</span> Kommentare unter den eigenen Beiträgen bearbeiten <span class="chip p-niedrig">gebaut am 20.10. — die Bausteine; antworten bleibt Handarbeit</span> <span class="chip c-gratis">gratis</span> <span class="chip c-klein">laufend</span></h4>
         <p class="warum"><b>Warum</b> Unter einem laufenden Beitrag stehen Kaufabsichten in Form von Fragen: „Preis?", „Link?", „gibt's das in weiß?". Unbeantwortet ist das verlorener Umsatz — und die Plattform wertet Beiträge mit Gespräch höher.</p>
         <p class="tun"><b>Was tun</b> Feste Zeit dafür (zweimal täglich zehn Minuten reicht anfangs). Fertige Antwortbausteine für die immer gleichen Fragen. Wiederkehrende Fragen sammeln und in den nächsten Clip einbauen — und in die Produktbeschreibung im Shop.</p>
         <p class="bringt"><b>Bringt</b> Der Beitrag läuft länger, und die Fragen verbessern Clip und Produktseite gleichzeitig. Das ist der einzige Punkt in diesem Papier, den man nicht automatisieren sollte.</p>
+        <p class="tun"><b>Gebaut am 20.10.: <code>npm run marketing:antworten -- --produkt 10</code>.</b> Antwortbausteine für die immer gleichen Fragen — Preis, Link, Farben, Versand, Lieferzeit, Rückgabe, Zahlung, lieferbar —, und jede Zahl darin kommt aus einer Quelle des Shops: Preis und Lieferzeit aus <code>products.json</code>, Versandkosten und Lieferländer aus <code>shipping-calculator.js</code>, die 30 Tage Rückgabe von derselben Stelle wie die Angaben für Google, die Zahlarten aus der Kasse in <code>server.js</code>. <strong>Fehlt eine Quelle, fehlt der Baustein</strong> — es gibt keinen Rückfallwert. Mit <code>--beitrag 42</code> trägt der Link dieselbe Kennung wie der Beitrag (<code>utm_campaign=mkt_42</code>); ohne sie wäre eine Bestellung aus dem Kommentar keinem Video zuzuordnen.</p>
+        <p class="warum"><b>Und was nicht drinsteht</b> Jeder Baustein läuft durch eine Selbstprüfung: die Rechtslisten des Automaten, dazu Knappheit („nur noch"), Bewertungen und Kundenzahlen, Streichpreise, Umsatzsteuer (Kleinunternehmer), Zahlarten, die die Kasse nicht anbietet, und jeder Betrag, der weder Preis noch Versandkosten ist. Die Ausgabe endet mit „Was du NICHT sagen solltest" — eine Antwort unter einem Video ist dieselbe Werbeaussage wie das Video selbst. 17 Prüfungen; vier eingebaute Fehler (Preis eingetippt, Knappheit erlaubt, Kanada aus der Kostentabelle mitgezählt, Streichpreis) werden alle rot. Das Antworten selbst bleibt, wie der Punkt sagt, Handarbeit.</p>
       </div>
 
       <div class="vb-item">
@@ -1508,10 +1539,13 @@
       <p class="vb-group-note">Vier Zahlen von der Platte. Sie beantworten die Frage, welche der neunzig Verbesserungen sich als Nächstes lohnt — und die Antwort ist unbequem.</p>
 
       <div class="vb-item">
-        <h4><span class="nr">86</span> Drei von 41 Produktordnern haben Material <span class="chip p-hoch">Priorität hoch</span> <span class="chip c-gratis">gratis</span> <span class="chip c-gross">laufend</span></h4>
+        <h4><span class="nr">86</span> Drei von 41 Produktordnern haben Material <span class="chip p-hoch">halb am 20.10. — Vorschau gebaut; echte Läufe gibst du frei</span> <span class="chip c-gratis">gratis</span> <span class="chip c-gross">laufend</span></h4>
         <p class="warum"><b>Warum</b> Unter <code>Marketing/videos/rohmaterial/</code> stehen 41 angelegte Produktordner. Gefüllt sind drei: der Wasserspender mit 25 Clips, der Mixer mit fünf, die Massagepistole mit einem. <strong>38 Ordner sind leer.</strong> Der Bot ist gründlich gebaut, der Filter ist an 80 echten Untertiteln geeicht, der Kontaktbogen sortiert Clips in Minuten — und für 38 von 41 Produkten gibt es nichts zu sortieren.</p>
         <p class="tun"><b>Was tun</b> Punkt 12 (Zielzahl je Produkt) und Punkt 06 (Läufe im Zeitplan) sind hierfür gebaut worden und stehen beide noch aus. Zusammen ein halber Tag. Bis dahin hilft das Stumpfe: zwei Läufe die Woche von Hand starten, rollierend fünf Produkte, und nachsehen, welche Ordner danach nicht mehr leer sind.</p>
         <p class="bringt"><b>Bringt</b> Jede weitere Verbesserung am Filter, am Schnitt und an der Freigabe wirkt auf drei Produkte. Material zu beschaffen, wirkt auf alle vierzig.</p>
+        <p class="tun"><b>Nachgesehen am 20.10. — und dabei zwei Fallen gefunden.</b> Punkt 12 und Punkt 06 sind inzwischen gebaut: Der Planlauf nimmt zweimal je Woche fünf Produkte, die mit der größten Lücke zuerst. <strong>Gelaufen ist er nie</strong> — es gibt keine <code>planlauf.json</code> und keine eingetragene Windows-Aufgabe. Wer ihn jetzt startet, lädt <em>sofort</em> bis zu fünfzehn fremde Clips und verschickt eine Mail. Und <code>tiktok:probe</code>, laut Handbuch und <code>CLAUDE.md</code> der Trockenlauf, <strong>sucht gar nicht</strong>: Sie fragt nur die in <code>tiktok-quellen.json</code> eingetragenen Adressen ab, und für 37 Produkte gibt es keine. Es gab also keinen Weg, vorher zu sehen, was ein echter Lauf laden würde.</p>
+        <p class="tun"><b>Gebaut: <code>npm run tiktok:vorschau</code></b> (für ein Produkt: <code>npm run tiktok -- --produkt 12 --vorschau</code>). Sucht und bewertet genau wie der Planlauf, springt <em>vor</em> dem Herunterladen ab und schreibt nur <code>vorschau.json</code> — keinen Index (sonst ruhten Suchbegriffe 21 Tage, obwohl nie etwas geladen wurde), keine Urteile, keinen Ablehnungsverlauf, keinen Planzustand, keine Mail, nicht einmal einen leeren Produktordner. Eine Sperre beendet auch die Vorschau. Nebenbei repariert: <code>--produkt 12</code>, das <code>tiktok:status</code> seit dem 20.09. empfiehlt, kam nie an — der Bot fragte trotzdem an der Konsole nach der Nummer. Sieben Prüfungen mit Gegenproben; acht von neun eingebauten Fehlern werden rot, der neunte ändert nachweislich nichts (der Planzustand im Speicher wird in der Vorschau nie festgeschrieben).</p>
+        <p class="warum"><b>Was offen ist</b> Die Läufe selbst. Eine Vorschau ruft Tavily, YouTube und TikTok wirklich ab, ein Planlauf lädt fremdes Material herunter, und die Windows-Aufgabe ist eine dauerhafte Einrichtung — alle drei nur mit deiner Freigabe. Filmen bleibt der andere Weg.</p>
       </div>
 
       <div class="vb-item">

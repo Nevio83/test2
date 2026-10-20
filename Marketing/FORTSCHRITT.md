@@ -745,7 +745,7 @@ npm run tiktok:finden -- --schreiben "https://www.tiktok.com/@handle/video/123"
 *Eine URL, die niemand aufgerufen hat, ist eine Behauptung* — deshalb wird jede Adresse
 einmal wirklich abgefragt, bevor sie in die Konfiguration wandert.
 
-**Schritt 4 — Trockenlauf.** Sucht, bewertet, schreibt `pruefliste.json`. Lädt **nichts**.
+**Schritt 4 — Trockenlauf.** Fragt die in Schritt 3 eingetragenen Adressen ab, bewertet, schreibt `pruefliste.json`. Lädt **nichts** und **sucht nicht selbst** — was ein Lauf *finden* würde, zeigt `npm run tiktok:vorschau` (seit 20.10.).
 
 ```bash
 npm run tiktok:probe

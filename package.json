@@ -21,6 +21,7 @@
     "marketing:pruefen": "node Marketing/run-local.js --pruefen",
     "marketing:rendern": "node Marketing/run-local.js --rendern",
     "marketing:rueckschau": "node Marketing/run-local.js --rueckschau",
+    "marketing:antworten": "node Marketing/run-local.js --antworten",
     "tiktok": "node bot/tiktok-video-sync.js --interaktiv",
     "tiktok:status": "node bot/tiktok-video-sync.js --status",
     "tiktok:finden": "node bot/tiktok-video-sync.js --fund",
@@ -30,6 +31,7 @@
     "tiktok:ordner": "node bot/tiktok-video-sync.js --ordner",
     "tiktok:herkunft": "node bot/tiktok-video-sync.js --herkunft",
     "tiktok:plan": "node bot/tiktok-video-sync.js --plan",
+    "tiktok:vorschau": "node bot/tiktok-video-sync.js --plan --sofort --vorschau",
     "tiktok:fragen": "node bot/tiktok-video-sync.js --fragen",
     "tiktok:bild": "node bot/tiktok-video-sync.js --bild",
     "tiktok:bogen": "node bot/kontaktbogen.js"
