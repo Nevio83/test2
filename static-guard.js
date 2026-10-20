@@ -30,9 +30,12 @@ const path = require('path');
 // Verzeichnisse, die ausgeliefert werden duerfen.
 // a29715347575 steht bewusst drin: der Ordner ist bereits durch die
 // Admin-Anmeldung geschuetzt (app.use('/a29715347575', requireAdminAuth)).
+// schriften/ seit 20.10.: Schriften und Icons, selbst ausgeliefert statt von
+// Google Fonts und jsdelivr (siehe schriften/README.md). Die .css darin laufen
+// trotzdem durch die Einbindungs-Pruefung unten, die .woff2 ueber PUBLIC_EXT.
 const PUBLIC_DIRS = new Set([
   'produkte', 'infos', 'images', 'karten', 'produkt bilder', 'produkt videos',
-  'a29715347575'
+  'a29715347575', 'schriften'
 ]);
 
 // HTML-Dateien im WURZELVERZEICHNIS: nur diese sind Kundenseiten.

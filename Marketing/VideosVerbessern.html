@@ -444,7 +444,7 @@
       <p class="tun" style="border-left:3px solid var(--blue);padding-left:12px;">
         <b>Was jetzt nur noch du entscheiden kannst</b> —
         Render Starter und ein externer Pinger (<strong>60</strong>) ·
-        Schriften und Icons selbst ausliefern, also die Dateien von jsdelivr und Google herunterladen (<strong>60</strong>, nebenbei ein DSGVO-Gewinn) ·
+        <s>Schriften und Icons selbst ausliefern, also die Dateien von jsdelivr und Google herunterladen (<strong>60</strong>, nebenbei ein DSGVO-Gewinn)</s> <em>am Abend freigegeben und umgestellt</em> ·
         die ersten echten Läufe und die Windows-Aufgabe für den Planlauf (<strong>86</strong>).
         Kein Punkt dieser Liste ist mehr offen, ohne dass Code dafür steht.
       </p>
@@ -1210,7 +1210,7 @@
       </div>
 
       <div class="vb-item">
-        <h4><span class="nr">60</span> Die Zielseite auf Video-Besucher vorbereiten <span class="chip p-mittel">halb — am 20.10. im Code nachgezogen; Plan, Pinger und Selbsthosten entscheidest du</span> <span class="chip c-geld">7 $/Monat</span> <span class="chip c-klein">ein Klick</span></h4>
+        <h4><span class="nr">60</span> Die Zielseite auf Video-Besucher vorbereiten <span class="chip p-mittel">halb — am 20.10. Code und Schriften erledigt; Plan und Pinger entscheidest du</span> <span class="chip c-geld">7 $/Monat</span> <span class="chip c-klein">ein Klick</span></h4>
         <p class="warum"><b>Warum</b> Der Besucher aus einem TikTok-Video ist per Definition ein Erstaufruf — und auf dem kostenlosen Render-Plan dauert der erste Aufruf nach dem Schlaf rund 50 Sekunden. Niemand wartet 50 Sekunden. Der gesamte Aufwand dieses Papiers endet dann in einer weißen Seite.</p>
         <p class="tun"><b>Was tun</b> Render Starter statt Free (Punkt 12 im Hauptbericht) und ein externer Pinger als zweites Netz. Dazu die Produktseite auf Handy-Erstaufruf messen: Wie lange bis zum ersten sichtbaren Inhalt über Mobilfunk? Das ist die Zahl, die für Video-Besucher zählt, nicht die Bildgröße.</p>
         <p class="bringt"><b>Bringt</b> Der teuerste Moment der ganzen Kette ist der Klick vom Clip in den Shop. Alles davor ist Vorbereitung — und alles davor ist wertlos, wenn dieser Moment 50 Sekunden dauert.</p>
@@ -1238,6 +1238,17 @@
           <tr><td>Mixer</td><td>4G gut</td><td class="num">3,7 → 4,7 s</td><td class="num">568 → 460 KB</td><td class="num">39 → 34</td></tr>
         </tbody></table>
         <p class="warum"><b>Ehrlich gelesen</b> Weniger Daten und weniger Anfragen sind sicher. <strong>Schneller sichtbar ist die Seite dadurch nicht</strong> — die Zeiten springen in beide Richtungen, und die Einzelläufe streuen weiter als jeder Unterschied (Wasserspender nachher 2,9–6,6&nbsp;s). Eine erste Messung hatte „5,8 → 3,0&nbsp;s" gezeigt; das war der Unterschied zwischen zwei Messtagen, nicht zwischen zwei Ständen. Auch die Einblende-Animation ist es nicht (mit und ohne gemessen: im Rauschen). Der Grund steht oben: Die beiden fremden Stylesheets halten die Darstellung auf, alles andere wartet dahinter. <strong>Deshalb ist das Selbsthosten der Schriften und Icons der nächste Schritt</strong> — es braucht das Herunterladen der Dateien von jsdelivr und Google, also deine Freigabe. Nebenbei sähe Google dann die Adresse der Besucher nicht mehr (Google Fonts überträgt sie heute bei jedem Seitenaufruf).</p>
+        <p class="tun"><b>Am Abend des 20.10. nach deiner Freigabe: Schriften und Icons selbst ausgeliefert.</b> Inter, Outfit, Manrope und Marcellus (je <em>latin</em> und <em>latin-ext</em> — acht Dateien, zusammen 244&nbsp;KB; eine Produktseite lädt davon zwei, nachgesehen im frischen Browser) und Bootstrap Icons 1.11.3 liegen jetzt unter <code>/schriften/</code>. 63 Seiten umgestellt, 86 Vorverbindungen zu Google entfernt, Google aus der CSP genommen. Bootstrap selbst kommt weiter von jsdelivr — das war nicht Teil der Freigabe. Neue Prüfung <code>schriften-selbst</code>: kein Google-Link mehr, jede Schriftdatei vorhanden und wirklich WOFF2, Datei-Freigabe und CSP passend — je mit Gegenprobe.</p>
+        <p class="tun"><b>Nachgemessen, ausgerollter Stand gegen umgestellten, je sieben Läufe, Median:</b></p>
+        <table class="zahlen" style="margin:8px 0 12px"><thead><tr><th>Seite</th><th>Netz</th><th>erster Inhalt</th><th>größter Inhalt</th></tr></thead><tbody>
+          <tr><td>Startseite</td><td>4G mittel</td><td class="num">2,5 → 2,0 s</td><td class="num">5,7 → 5,6 s</td></tr>
+          <tr><td>Wasserspender</td><td>4G mittel</td><td class="num">3,2 → 3,2 s</td><td class="num">5,1 → 4,2 s</td></tr>
+          <tr><td>Mixer</td><td>4G mittel</td><td class="num">2,9 → 3,1 s</td><td class="num">4,1 → 4,3 s</td></tr>
+          <tr><td>Startseite</td><td>4G gut</td><td class="num">1,4 → 1,7 s</td><td class="num">4,1 → 3,9 s</td></tr>
+          <tr><td>Wasserspender</td><td>4G gut</td><td class="num">2,5 → 1,7 s</td><td class="num">4,0 → 2,7 s</td></tr>
+          <tr><td>Mixer</td><td>4G gut</td><td class="num">2,6 → 2,9 s</td><td class="num">3,9 → 5,6 s</td></tr>
+        </tbody></table>
+        <p class="warum"><b>Wieder nicht messbar schneller — und ein Grund dafür liegt in der Messung.</b> Die Werte springen in beide Richtungen, einzelne Läufe streuen von 3,0 bis 10,8&nbsp;s. Die Drosselung der Chrome-Entwicklerwerkzeuge verzögert jede <em>Anfrage</em>, bildet aber nach meinem Kenntnisstand den Aufbau einer <em>neuen Verbindung</em> nicht ab — und genau den spart die Umstellung: Namensauflösung, Verbindung und Verschlüsselung zu zwei Google-Servern, auf echtem Mobilfunk je mehrere Umläufe. Das lässt sich von diesem Rechner aus nicht belegen. <strong>Sicher ist:</strong> zwei fremde Server weniger vor dem ersten Bild, gleiche Datenmenge (die Dateien sind dieselben, nur der Ort ist ein anderer), und Google sieht die Adressen der Besucher nicht mehr. Bei Punkt 60 bleiben damit nur Render Starter und ein externer Pinger offen.</p>
       </div>
 
       <div class="vb-item">

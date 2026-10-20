@@ -54,9 +54,11 @@ const GEO_DIENSTE = [
   'https://ip-api.com'
 ];
 
-// Schriften + Icons (index.html, alle Produktseiten, 404.html)
-const FONT_CSS = 'https://fonts.googleapis.com';
-const FONT_FILES = 'https://fonts.gstatic.com';
+// Bootstrap (CSS + JS) und chart.js im Admin-Bereich.
+// Schriften und Icons liegen seit dem 20.10. unter /schriften/ ('self') —
+// fonts.googleapis.com und fonts.gstatic.com sind deshalb NICHT mehr erlaubt.
+// Laedt doch noch etwas von dort, steht es in den CSP-Berichten, statt dass
+// Google weiter still die Adressen der Besucher sieht.
 const CDN = 'https://cdn.jsdelivr.net';
 
 // Tracking — laedt nur nach Cookie-Einwilligung (site-integrations.js),
@@ -132,8 +134,8 @@ function buildCsp(skriptHashes, stilHashes) {
     'script-src': dedupe(skriptQuellen),
     // Grundfassung — gilt zugleich als Rueckfall fuer aeltere Browser, die
     // style-src-elem/-attr noch nicht kennen. Die bekommen das alte Verhalten.
-    'style-src': dedupe(["'self'", "'unsafe-inline'", FONT_CSS, CDN, ...TAWK]),
-    'font-src': dedupe(["'self'", 'data:', FONT_FILES, CDN, ...TAWK]),
+    'style-src': dedupe(["'self'", "'unsafe-inline'", CDN, ...TAWK]),
+    'font-src': dedupe(["'self'", 'data:', CDN, ...TAWK]),
     // data: fuer eingebettete Platzhalter, blob: fuer im Browser erzeugte Bilder.
     'img-src': dedupe(["'self'", 'data:', 'blob:', ...EIGENE_DOMAIN, ...META_IMG, ...GA_CONNECT, ...TIKTOK, ...TAWK]),
     'connect-src': dedupe([
@@ -169,7 +171,7 @@ function buildCsp(skriptHashes, stilHashes) {
   // Gestaltung.
   if (Array.isArray(stilHashes) && !erlaubtInlineSkripte()) {
     directives['style-src-elem'] = dedupe([
-      "'self'", ...stilHashes, FONT_CSS, CDN, ...TAWK
+      "'self'", ...stilHashes, CDN, ...TAWK
     ]);
     directives['style-src-attr'] = ["'unsafe-inline'"];
   }
