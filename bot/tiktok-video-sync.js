@@ -5017,18 +5017,26 @@ const VORSCHAU_DATEI = 'vorschau.json';
  * Punkt 86: Was ein Vorschau-Lauf gefunden hat — die EINZIGE Datei, die er
  * schreibt. Wird bei jedem Vorschau-Lauf ueberschrieben; sie ist eine
  * Momentaufnahme zum Ansehen, kein Nachweis.
+ *
+ * Seit dem 21.10. auch ZWISCHENDURCH (vollstaendig: false): Der erste echte
+ * Vorschau-Lauf brach nach 14 Kandidaten ab, und weil die Datei erst am Ende
+ * entstand, lag danach nichts auf der Platte — die Kandidaten standen nur noch
+ * im Protokoll. Jetzt wird nach jedem Kandidaten still gespeichert; erst der
+ * letzte Aufruf setzt vollstaendig: true und meldet sich.
  */
-function schreibeVorschau(ordner, kandidaten, zeit, melde = console.log) {
+function schreibeVorschau(ordner, kandidaten, zeit, melde = console.log, { vollstaendig = true } = {}) {
   const pfad = path.join(ordner, VORSCHAU_DATEI);
   try {
     fs.mkdirSync(ordner, { recursive: true });
     fs.writeFileSync(pfad, JSON.stringify({
       erstellt: zeit,
+      vollstaendig,
       hinweis: 'Vorschau — nichts davon ist geladen. Was erst nach dem Laden geprueft wird '
-        + '(Ton, Doppelgaenger, Bild), fehlt hier; ein Kandidat kann im echten Lauf noch durchfallen.',
+        + '(Ton, Doppelgaenger, Bild), fehlt hier; ein Kandidat kann im echten Lauf noch durchfallen.'
+        + (vollstaendig ? '' : ' UNVOLLSTAENDIG: Der Lauf ist noch nicht fertig oder wurde abgebrochen.'),
       kandidaten,
     }, null, 2), 'utf8');
-    melde(`👁  Vorschau: ${kandidaten.length} Kandidat(en) in ${pfad}`);
+    if (vollstaendig) melde(`👁  Vorschau: ${kandidaten.length} Kandidat(en) in ${pfad}`);
     return pfad;
   } catch (fehler) {
     melde(`⚠️  Vorschau nicht gespeichert: ${fehler.code || fehler.message}`);
@@ -5439,7 +5447,7 @@ async function interaktiv(opt) {
       return 1;
     }
   }
-  melde(`   Ablage:  ${path.relative(sammelOrdner, videoZiel)}`);
+  melde(`   Ablage:  ${path.relative(sammelOrdner, videoZiel)}${vorschau ? '  (Vorschau — wird nicht angelegt)' : ''}`);
   melde('');
 
   const index = ladeIndex(datenZiel);
@@ -5866,6 +5874,10 @@ async function interaktiv(opt) {
         fremde_werbung: meta.video.fremde_werbung ? meta.video.fremde_werbung.arten : null,
       });
       geladen++;
+      // Zwischenstand sofort festhalten — bricht der Lauf ab (Sitzung zu, Strg+C,
+      // Absturz), ist bis hierhin nichts verloren. Im Planlauf ist vorschauListe
+      // der gemeinsame Sammler, die Datei waechst also ueber alle Produkte.
+      schreibeVorschau(datenZiel, vorschauListe, jetzt(), melde, { vollstaendig: false });
       melde(`👁  Vorschau — würde laden: ${url} (Trefferwert ${Number(bewertung.wert).toFixed(2)})`);
       continue;
     }

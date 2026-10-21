@@ -306,6 +306,12 @@ er dieselben fünf Produkte, die der nächste Planlauf nähme; mit `--produkt`
 nur das eine. Ergebnis: `vorschau.json` im Datenordner, bei jedem Lauf
 überschrieben.
 
+**Seit dem 21.10. nach jedem Kandidaten gespeichert** (`"vollstaendig": false`,
+erst der letzte Schreibvorgang setzt `true`). Der erste echte Vorschau-Lauf brach
+am 20.10. nach 14 Kandidaten ab, weil die Sitzung endete — die Datei entstand
+erst am Ende, also lag danach nichts auf der Platte. Steht `vollstaendig` auf
+`false`, ist der Lauf noch nicht fertig oder wurde abgebrochen.
+
 Was er **nicht** schreibt, und warum:
 
 | bleibt unberührt | sonst |
@@ -1957,6 +1963,7 @@ wertlos.** Zu jeder Prüfung steht eine Gegenprobe daneben:
 | beide Module laden sich ohne Ring | auch in umgekehrter Reihenfolge |
 | die Vorschau lädt nichts und schreibt nur `vorschau.json` | derselbe Lauf ohne `--vorschau` lädt und schreibt Index und Urteile |
 | eine Sperre beendet auch die Vorschau | — (das Sperrsignal ginge verloren, spränge die Vorschau früher ab) |
+| ein abgebrochener Vorschau-Lauf hinterlässt seine Kandidaten (`vollstaendig: false`) | derselbe Lauf bis zum Ende steht auf `vollstaendig: true`; ohne Zwischenspeichern gäbe es gar keine Datei |
 | die Planlauf-Vorschau lässt den Planzustand stehen | der echte Lauf danach nimmt **dieselben** fünf Produkte |
 | `--produkt 12` kommt an, gefragt wird nicht | ohne `--produkt` wird wie bisher gefragt |
 

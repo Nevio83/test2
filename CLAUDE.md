@@ -20,10 +20,10 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   wird **nur über den Prüflauf** (`.github/workflows/pruefung.yml`): Lint → Tests → Prüfung auf
   Ereignisbehandler mit eingesetzten Werten → **Startprüfung** (Server hochfahren, `/health`
   abfragen, beenden) → erst dann der Deploy-Hook. Ist ein Schritt rot, bleibt der alte Stand live.
-  Von Hand: Render-Dashboard → „Manual Deploy". **643 automatische Prüfungen** im Prüflauf via
-  `npm test` — 287 Shop und 356 Bot (`test/lauf.js` sammelt `bot/*.test.js` mit ein, also **nicht
+  Von Hand: Render-Dashboard → „Manual Deploy". **644 automatische Prüfungen** im Prüflauf via
+  `npm test` — 287 Shop und 357 Bot (`test/lauf.js` sammelt `bot/*.test.js` mit ein, also **nicht
   addieren**: genau das ist einmal passiert), dazu **362 Marketing** via
-  `py -m pytest Marketing/tests`, die **nur lokal** laufen (Stand 20.10.).
+  `py -m pytest Marketing/tests`, die **nur lokal** laufen (Stand 21.10.).
 - **Sicherheitsschicht** (alles seit Ende Juli, Details in §3): Datei-Freigabe
   (`static-guard.js`), Content-Security-Policy ohne `'unsafe-inline'` für Skripte
   (`csp-policy.js` + `csp-inline.js`), HSTS (`hsts-policy.js`), CSRF-Herkunftsprüfung,
@@ -167,7 +167,7 @@ npm run tiktok:laden -- --max 2   # erst wenn die Prüfliste plausibel aussieht
 npm run tiktok:plan          # Planlauf: 2×/Woche, 5 Produkte rollierend — läuft nur, wenn fällig
 npm run tiktok:plan -- --aufgabe  # schtasks-Befehl für die Aufgabenplanung AUSGEBEN (nicht anlegen)
 npm run tiktok:bild          # alle Clips ansehen: Produkt, Gesichter, Einblendungen (~8 s je Clip)
-node bot/tiktok-video-sync.test.js  # 316 Prüfungen des Bots
+node bot/tiktok-video-sync.test.js  # 317 Prüfungen des Bots
 # YouTube Shorts ist zweite Quelle ("plattformen" in bot/tiktok-quellen.json) — eine Sperre gilt
 # nur für die Plattform, die sperrt. Instagram bewusst nicht (geht nur mit Anmeldung).
 ```
@@ -215,6 +215,51 @@ lautlos wirkt** — jeweils mit einem Test für den real aufgetretenen Fehler:
 Faustregel beim Ergänzen: **ein Test, der nur grün werden kann, ist wertlos.** Zu jedem
 behobenen Fehler gehört eine Gegenprobe, die das alte Verhalten nachbildet und belegt, dass
 der Test es rot gemeldet hätte (Beispiele in `job-scheduler.test.js` und `cj-stock-sync.test.js`).
+
+### 2a. Vom Rohclip zum TikTok-Beitrag (Ablauf)
+
+Dieselbe Anleitung liegt zum Nachschlagen als `Marketing/videos/ANLEITUNG.txt`.
+Anhalten, egal was läuft: Datei `Marketing/STOP` anlegen.
+
+**1. Videos herunterladen**
+
+```bash
+npm run tiktok:status                        # Zustand, lädt nichts
+npm run tiktok:vorschau                      # was würde geladen? sucht + bewertet, lädt NICHTS
+npm run tiktok -- --produkt 12 --vorschau    # dasselbe für ein Produkt
+npm run tiktok -- --produkt 12               # laden, ein Produkt, geführt
+npm run tiktok:plan                          # laden, 5 Produkte (bis 15 Clips) + Mail — nur wenn fällig
+npm run tiktok:plan -- --sofort              # jetzt, egal wann der letzte war
+npm run tiktok:bild                          # Clips ansehen: Produkt, Gesichter, Einblendungen
+npm run tiktok:plan -- --aufgabe             # Befehl für die Windows-Aufgabe AUSGEBEN (legt nichts an)
+```
+
+Clips landen in `Marketing/videos/rohmaterial/<NN>_<slug>/`, der Kontaktbogen entsteht von
+selbst. Blockt TikTok, endet der Lauf und das wird protokolliert.
+
+**2. Schneiden** — am einfachsten Claude sagen: „Schneid aus den Clips von Produkt 12 einen
+Werbeclip". Eigene Aufnahmen gehören nach `Marketing/videos/rohmaterial/eigenes/`; die
+Schnittkette rendert eigenes Material und alles mit Lizenzeintrag. Selbst über die Kette:
+
+```bash
+npm run marketing:vorlage                                                  # Formen anzeigen
+npm run marketing:vorlage -- problem_loesung --produkt 12 --hook "…"       # → schnittlisten/_entwurf-12-problem_loesung.json
+npm run marketing:pruefen -- 12_a.json --bauversuch                        # nach dem Ausfüllen + Umbenennen
+npm run marketing:rendern                                                  # rendert im Hintergrund, Strg+C beendet
+```
+
+Formen: `problem_loesung`, `vorher_nachher`, `drei_gruende`, `alltag_szene`, `auspacken_kurz`.
+Ein Entwurf mit `_` am Anfang wird nie gerendert.
+
+**3. Auf TikTok veröffentlichen** — Standard ist der **Trockenlauf** (`npm run marketing:status`
+zeigt ihn), und jeder Beitrag braucht eine Freigabe in `…/a29715347575/marketing.html`.
+Am einfachsten: **`/veroeffentlichen <Video>`** (Dateiname, Produktnummer/-name, „das neueste",
+„alle neuen"; mit „direkt posten" ohne Rückfrage) — oder einfach schreiben „veröffentliche das
+Video vom Gemüseschneider". Der Skill (`.claude/skills/veroeffentlichen/SKILL.md`, lokal, nicht
+versioniert) sucht das Video, prüft Format und Herkunft, lädt über das eingeloggte Chrome hoch
+und führt `Marketing/videos/geschnitten/gepostet.txt`, damit nichts doppelt rausgeht. Später automatisch: `MARKETING_DRY_RUN=false` in
+`Marketing/.env`, dann `npm run marketing:local` (veröffentlicht nur Freigegebenes, wenn fällig).
+Antworten auf Kommentare: `npm run marketing:antworten -- --produkt 12 --beitrag 42`.
 
 ---
 

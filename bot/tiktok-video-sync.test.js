@@ -6475,3 +6475,27 @@ test('Planlauf-Vorschau: dieselbe Auswahl, aber kein Planzustand und keine Mail'
   assert.equal(echt.mails.length, 1);
   assert.ok(fs.existsSync(path.join(daten, 'planlauf.json')));
 });
+
+test('Vorschau: bricht der Lauf ab, liegen die Kandidaten bis dahin trotzdem auf der Platte', async () => {
+  // Am 20.10. brach der erste echte Vorschau-Lauf nach 14 Kandidaten ab (Sitzung
+  // zu). Die Datei entstand erst am Ende — danach lag nichts auf der Platte.
+  // Nachgebildet: Direkt nach dem ersten Kandidaten bricht der Lauf ab.
+  const abbruch = plattformLauf(['youtube'], { zusatz: { vorschau: true,
+    melde: (zeile) => { if (/Vorschau — würde laden/.test(zeile)) throw new Error('Abbruch'); } } });
+  await assert.rejects(abbruch.lauf, /Abbruch/);
+  const halb = JSON.parse(fs.readFileSync(path.join(abbruch.daten, VORSCHAU_DATEI), 'utf8'));
+  assert.equal(halb.vollstaendig, false);
+  assert.match(halb.hinweis, /UNVOLLSTAENDIG/);
+  assert.equal(halb.kandidaten.length, 1);
+
+  // GEGENPROBE: Laeuft er durch, steht dieselbe Datei auf vollstaendig — und die
+  // Ablage-Zeile sagt, dass in der Vorschau kein Ordner angelegt wird.
+  const zeilen = [];
+  const ganz = plattformLauf(['youtube'], { zusatz: { vorschau: true, melde: (zeile) => zeilen.push(String(zeile)) } });
+  assert.equal(await ganz.lauf, 0);
+  const fertig = JSON.parse(fs.readFileSync(path.join(ganz.daten, VORSCHAU_DATEI), 'utf8'));
+  assert.equal(fertig.vollstaendig, true);
+  assert.doesNotMatch(fertig.hinweis, /UNVOLLSTAENDIG/);
+  assert.ok(zeilen.some((zeile) => /Ablage:.*\(Vorschau — wird nicht angelegt\)/.test(zeile)), 'Ablage-Zeile ohne Vorschau-Hinweis');
+  assert.equal(zeilen.filter((zeile) => /👁 {2}Vorschau: \d+ Kandidat/.test(zeile)).length, 1, 'Zwischenstaende melden sich nicht');
+});

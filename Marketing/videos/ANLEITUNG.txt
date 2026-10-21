@@ -1,0 +1,112 @@
+VOM ROHCLIP ZUM TIKTOK-BEITRAG
+==============================
+
+Alle Befehle im Projektordner ausfuehren:
+  C:\Users\nevio\Documents\vscode\Maios
+
+Anhalten, egal was gerade laeuft: eine Datei  Marketing\STOP  anlegen (Inhalt egal).
+Danach startet kein Lauf mehr, bis die Datei wieder weg ist.
+
+
+1. VIDEOS HERUNTERLADEN
+-----------------------
+
+Zustand ansehen (aendert nichts, laedt nichts):
+  npm run tiktok:status
+
+Erst schauen, was geladen wuerde (sucht und bewertet, laedt NICHTS):
+  npm run tiktok:vorschau
+  npm run tiktok -- --produkt 12 --vorschau        (nur ein Produkt)
+  Ergebnis: vorschau.json im Datenordner (Pfad steht am Ende der Ausgabe)
+
+Laden, ein Produkt, gefuehrt (fragt Anzahl, Sprache, Ton):
+  npm run tiktok -- --produkt 12
+
+Laden, fuenf Produkte auf einmal (bis zu 15 Clips, danach Mail mit Zusammenfassung):
+  npm run tiktok:plan                 laeuft nur, wenn faellig (der allererste Aufruf ist sofort faellig)
+  npm run tiktok:plan -- --sofort     jetzt, egal wann der letzte war
+
+Wo die Clips landen:
+  Marketing\videos\rohmaterial\<Nummer>_<produkt>\    z. B. rohmaterial\12_multifunktions-gemueseschneider\
+  Ein Kontaktbogen (Standbilder je Clip) entsteht nach jedem Lauf mit Fund von selbst.
+
+Clips ansehen lassen (Produkt zu sehen? Gesichter? Einblendungen?):
+  npm run tiktok:bild
+  npm run tiktok:bogen               Kontaktbogen neu bauen
+
+Automatisch zweimal pro Woche:
+  npm run tiktok:plan -- --aufgabe   gibt den Befehl fuer die Windows-Aufgabenplanung AUS (legt nichts an)
+
+Blockt TikTok, endet der Lauf und das wird protokolliert. Keine Anmeldung, keine Umgehung.
+
+
+2. SCHNEIDEN
+------------
+
+Am einfachsten: Claude sagen
+  "Schneid aus den Clips von Produkt 12 einen Werbeclip"
+  -> Clips sichten, Szenen waehlen, 1080x1920, Text, Musik, Endkarte, Pruefung.
+
+Eigene Aufnahmen gehoeren nach:
+  Marketing\videos\rohmaterial\eigenes\
+  Die Schnittkette rendert eigenes Material und alles mit Lizenzeintrag.
+
+Selbst ueber die Schnittkette:
+  a) Formen anzeigen:
+       npm run marketing:vorlage
+     Vorhanden: problem_loesung, vorher_nachher, drei_gruende, alltag_szene, auspacken_kurz
+
+  b) Entwurf anlegen:
+       npm run marketing:vorlage -- problem_loesung --produkt 12 --hook "Gemuese in 10 Sekunden"
+     -> Marketing\schnittlisten\_entwurf-12-problem_loesung.json
+     Clips und Zeiten eintragen, dann ohne "_" am Anfang umbenennen, z. B. 12_a.json
+     (Dateien mit "_" am Anfang werden nie gerendert.)
+
+  c) Gegenlesen, ohne zu rendern (Sekunden statt Minuten):
+       npm run marketing:pruefen -- 12_a.json --bauversuch
+
+  d) Rendern:
+       npm run marketing:rendern              laeuft weiter, Strg+C beendet
+       npm run marketing:rendern -- --einmal  abarbeiten, was da ist, dann Ende
+     Jedes fertige Video meldet sich als Windows-Benachrichtigung,
+     das Protokoll liegt neben der Schnittliste (<liste>_stil_c.log).
+
+
+3. AUF TIKTOK VEROEFFENTLICHEN
+------------------------------
+
+Standard: Trockenlauf AN -> es wird nichts veroeffentlicht. Nachsehen mit:
+  npm run marketing:status
+
+Jeder Beitrag braucht eine Freigabe im Dashboard:
+  https://maiosshop.com/a29715347575/marketing.html
+  -> Warteschlange ansehen, das fertige Video anschauen, Beitrag freigeben.
+
+Hochladen, am einfachsten: Claude schreiben, welche Videos raus sollen
+  /veroeffentlichen 12_a                       ein Video (Dateiname oder Teil davon)
+  /veroeffentlichen gemüseschneider            neuestes Video zu diesem Produkt
+  /veroeffentlichen das neueste
+  /veroeffentlichen alle neuen
+  /veroeffentlichen 12_a direkt posten         ohne Rueckfrage
+  Geht auch ohne Befehl, z. B.: "veroeffentliche das Video vom Gemueseschneider"
+  -> sucht das Video (renders-Ordner und Marketing\videos\geschnitten\), prueft es,
+     laedt ueber dein eingeloggtes Chrome hoch, setzt Text und Hashtags und
+     postet nach einem "ja" (oder sofort bei "direkt posten").
+  Was schon draussen ist, steht in Marketing\videos\geschnitten\gepostet.txt -
+  nichts geht doppelt raus.
+
+Spaeter automatisch:
+  1. In  Marketing\.env  die Zeile  MARKETING_DRY_RUN=false  eintragen
+  2. Den Laeufer auf dem PC starten (5-Minuten-Takt, Strg+C beendet):
+       npm run marketing:local
+     Er veroeffentlicht nur freigegebene Beitraege, wenn sie faellig sind.
+  Erst einschalten, wenn ein Beitrag von Hand sauber durchgelaufen ist.
+  Zurueck auf sicher: MARKETING_DRY_RUN wieder loeschen oder auf true setzen.
+
+Nach dem Posten - Antworten auf Kommentare (Preis, Link, Versand ...),
+jede Zahl aus den Dateien des Shops, mit Link zum Beitrag:
+  npm run marketing:antworten -- --produkt 12 --beitrag 42
+  (42 = Nummer des Beitrags aus dem Dashboard)
+
+
+Mehr Einzelheiten: CLAUDE.md (Abschnitt 2a), bot\TIKTOK-VIDEO-SYNC.md, Marketing\SCHNITT.md, Marketing\README.md
