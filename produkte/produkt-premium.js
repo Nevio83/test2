@@ -186,16 +186,10 @@
     const p = window.product;
     if (!p) return;
     const q = qty || getQtyValue();
-    const totalPrice  = (p.price * q).toFixed(2);
-    const totalOrig   = (p.originalPrice * q).toFixed(2);
-    const totalSaving = ((p.originalPrice - p.price) * q).toFixed(2);
+    const totalPrice = (p.price * q).toFixed(2);
 
     const elCurrent = document.querySelector('.pp-price-current');
-    const elOrig    = document.querySelector('.pp-price-original');
-    const elSave    = document.querySelector('.pp-price-save');
     if (elCurrent) elCurrent.textContent = '€' + totalPrice;
-    if (elOrig)    elOrig.textContent    = '€' + totalOrig;
-    if (elSave)    elSave.textContent    = 'Du sparst €' + totalSaving;
   }
   window.updatePriceDisplay = updatePriceDisplay;
 
