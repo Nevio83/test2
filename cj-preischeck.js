@@ -154,4 +154,8 @@ async function main() {
   console.log(`\nFertig: ${ok}/${liste.length} vollständig geprüft. Ergebnis: ${path.relative(process.cwd(), AUSGABE)}`);
 }
 
-main().catch((err) => { console.error('Abbruch:', err.message); process.exit(1); });
+if (require.main === module) {
+  main().catch((err) => { console.error('Abbruch:', err.message); process.exit(1); });
+}
+
+module.exports = { frage, versand, produktZuSku, zahl, PAUSE_MS };
