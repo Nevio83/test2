@@ -593,7 +593,7 @@ function updateCartPage() {
                             <div class="cart-item-details">
                                 <h5>${item.name}</h5>
                                 ${isBundle ? '<div class="bundle-badge" title="Bundle" style="display:inline-flex; align-items:center; gap:6px; background:rgba(216,181,108,.12); color:#D8B56C; border:1px solid rgba(216,181,108,.4); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; margin-top:4px;"><i class="bi bi-box-seam"></i> Bundle</div>' : ''}
-                                <div class="cart-item-price">${currentCurrency.symbol}${convertPrice(item.price, currentCurrency.code).toFixed(2)}${item.originalPrice && item.originalPrice > item.price ? `<span class="uvp">${currentCurrency.symbol}${convertPrice(item.originalPrice, currentCurrency.code).toFixed(2)}</span>` : ''}</div>
+                                <div class="cart-item-price">${currentCurrency.symbol}${convertPrice(item.price, currentCurrency.code).toFixed(2)}</div>
                                 <div class="cart-item-ship"><i class="bi bi-truck"></i> Lieferung in ${item.shippingTime || '7-13 Werktage'}${shipping === 0 ? ' · Gratis' : ''}</div>
                             </div>
                             <div class="quantity-controls">

@@ -255,7 +255,7 @@ button { font-family: var(--sans); }
 .cat-tile:hover .arrow { background: var(--ac); color: var(--bg-deep); border-color: var(--ac); }
 .cat-tile .count { font-size: 12px; color: var(--muted); margin-top: 7px; letter-spacing: .04em; }
 
-/* ── Deal des Tages ───────────────────────────────────────── */
+/* ── Tipp des Tages ───────────────────────────────────────── */
 .deal-panel { background: var(--panel-grad); border: 1px solid rgba(216, 181, 108, .28); border-radius: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); overflow: hidden; }
 .deal-stage { position: relative; display: flex; align-items: center; justify-content: center; padding: 50px; min-height: 460px; background: radial-gradient(500px 320px at 50% 55%, #221C11 0%, transparent 75%); box-sizing: border-box; }
 .deal-stage img { width: 100%; max-height: 380px; object-fit: contain; filter: drop-shadow(0 40px 60px rgba(0, 0, 0, .55)); }
@@ -484,7 +484,7 @@ button { font-family: var(--sans); }
 .qv .trust { display: flex; gap: 18px; font-size: 11.5px; color: var(--dim); margin-top: 8px; flex-wrap: wrap; letter-spacing: .06em; }
 .qv .trust span { display: flex; align-items: center; gap: 6px; }
 
-/* ── Banner zum Deal des Tages ── */
+/* ── Banner zum Tipp des Tages ── */
 .promo { --p-bg: linear-gradient(120deg, #3A2410 0%, #8A5A22 44%, #D69A40 100%); --p-accent: #FFE4AE; --p-chip: rgba(255, 228, 174, .18); --p-border: rgba(255, 228, 174, .46); --p-glow: rgba(255, 205, 120, .5);
   position: relative; display: flex; align-items: center; justify-content: space-between; gap: 26px; flex-wrap: wrap; width: 100%; text-align: left; cursor: pointer; padding: 52px 56px; min-height: 210px; border: none; border-bottom: 1px solid var(--p-border); background: var(--p-bg); color: #fff; font-family: var(--sans); overflow: hidden; transition: filter .25s ease; box-sizing: border-box; }
 .promo:hover { filter: brightness(1.08); }
@@ -586,7 +586,7 @@ button { font-family: var(--sans); }
   .cat-tile .label { font-size: 22px; }
   .cat-tile .info { left: 18px; right: 18px; bottom: 18px; }
 
-  /* Deal des Tages */
+  /* Tipp des Tages */
   .deal-stage { min-height: 300px; padding: 26px; }
   .deal-stage img { max-height: 240px; }
   .deal-info { padding: 28px 22px; gap: 13px; }
@@ -770,7 +770,7 @@ button { font-family: var(--sans); }
             <a class="nav-logo" href="/index.html">MAIOS<span>.</span></a>
         </div>
         <div class="nav-links">
-            <a class="hot" href="#deal">Deal des Tages</a>
+            <a class="hot" href="#deal">Tipp des Tages</a>
             <a href="#bestseller">Highlights</a>
             <a href="#sortiment">Sortiment</a>
         </div>
@@ -813,7 +813,7 @@ button { font-family: var(--sans); }
                 <div class="m-results" id="mobileResults"></div>
             </div>
             <nav>
-                <a class="hot" href="#deal">Deal des Tages</a>
+                <a class="hot" href="#deal">Tipp des Tages</a>
                 <a href="#bestseller">Highlights</a>
                 <a href="#sortiment">Sortiment</a>
             </nav>
@@ -824,8 +824,8 @@ button { font-family: var(--sans); }
         </div>
     </div>
 
-    <!-- Banner zum Deal des Tages (Inhalt + Countdown rendert home.js) -->
-    <button class="promo" id="promoBanner" aria-label="Zum Deal des Tages"></button>
+    <!-- Banner zum Tipp des Tages (Inhalt rendert home.js) -->
+    <button class="promo" id="promoBanner" aria-label="Zum Tipp des Tages"></button>
 
     <!-- Hero / Showreel -->
     <header class="hero">
@@ -874,7 +874,7 @@ button { font-family: var(--sans); }
         </div>
     </section>
 
-    <!-- Deal des Tages -->
+    <!-- Tipp des Tages -->
     <section id="deal" class="reveal" data-reveal style="scroll-margin-top:90px;">
         <div class="wrap" style="padding-top:66px; padding-bottom:32px;">
             <div class="deal-panel" id="dealPanel"></div>
@@ -1024,7 +1024,7 @@ button { font-family: var(--sans); }
 
     <!-- Mobile Sticky-CTA -->
     <div class="mobile-sticky">
-        <a class="deal-cta" href="#deal"><i class="bi bi-lightning-charge-fill"></i> Deal des Tages</a>
+        <a class="deal-cta" href="#deal"><i class="bi bi-lightning-charge-fill"></i> Tipp des Tages</a>
         <button class="cart-mini" id="stickyCartBtn" aria-label="Warenkorb">
             <i class="bi bi-bag"></i>
             <span class="mini-badge" id="stickyCartCount" style="display:none;">0</span>

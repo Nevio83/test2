@@ -621,7 +621,6 @@ function addProductToCart(productsParam, productId, fromCartDropdown = false) {
         selectedColorCode: currentColorData.code || "#000000",
         selectedColorSku: currentColorData.sku || "default",
         price: currentColorData.price || product.price,
-        originalPrice: currentColorData.originalPrice || product.originalPrice,
         // Eindeutige ID für verschiedene Farben
         cartItemId: `${productId}-${currentColor.replace(/\s+/g, "-").toLowerCase()}`,
       };

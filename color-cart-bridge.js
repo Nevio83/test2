@@ -42,7 +42,6 @@
                         selectedColorCode: selectedColorData.code || '#000000',
                         selectedColorSku: selectedColorData.sku || 'default',
                         price: selectedColorData.price || product.price,
-                        originalPrice: selectedColorData.originalPrice || product.originalPrice,
                         // Eindeutige ID für verschiedene Farben
                         cartItemId: `${product.id}-${selectedColorData.name.replace(/\s+/g, '-').toLowerCase()}`
                     };
@@ -53,8 +52,7 @@
                         selectedColor: selectedColorData.name,
                         selectedColorCode: selectedColorData.code || '#000000',
                         selectedColorSku: selectedColorData.sku || 'default',
-                        price: selectedColorData.price || product.price,
-                        originalPrice: selectedColorData.originalPrice || product.originalPrice
+                        price: selectedColorData.price || product.price
                     };
                     
                     console.log('📦 Produkt mit Farbe:', coloredProduct);

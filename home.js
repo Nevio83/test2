@@ -33,13 +33,14 @@
 
   var COLOR_WORDS = ['schwarz','weiß','weiss','white','black','blau','blue','navy','marine','hellblau','dunkelblau','grün','gruen','green','mint','oliv','rot','red','gelb','yellow','lila','violett','violet','purple','grau','gray','grey','anthrazit','braun','brown','orange','beige','sand','khaki','gold','golden','silber','silver','rosa','pink','türkis','tuerkis','turquoise','cyan','magenta','creme','cream','champagner','champagne','bronze','kupfer','copper','natur','transparent','klar','clear','elfenbein','ivory','roségold','rosegold'];
 
-  // ── Deal des Tages: Banner + Countdown ────────────────────
+  // ── Tipp des Tages: Banner ────────────────────────────────
   // Ein Produkt pro Kalendertag (Ortszeit des Besuchers), Wechsel um
-  // Mitternacht — genau dorthin zählen Banner und Deal-Bereich herunter.
+  // Mitternacht. Kein Countdown und kein "Deal": der Preis ist der normale
+  // Verkaufspreis, ein Ablauf-Zaehler wuerde Dringlichkeit vortaeuschen.
   var PROMO = {
-    title: 'Deal des Tages', kicker: 'Jeden Tag neu',
+    title: 'Tipp des Tages', kicker: 'Jeden Tag neu',
     sub: 'Jeden Tag stellen wir ein anderes Produkt vor – um Mitternacht kommt das nächste.',
-    cta: 'Zum Deal', icon: 'bi-lightning-charge-fill'
+    cta: 'Zum Tipp', icon: 'bi-lightning-charge-fill'
   };
   // Tage seit 1970 nach Ortszeit (Date.now() allein zählt UTC-Tage und
   // würde in Deutschland erst um 1 bzw. 2 Uhr nachts wechseln).
@@ -69,7 +70,6 @@
         '<span class="icon-circle"><i class="bi ' + m.icon + '"></i></span>' +
         '<span style="min-width:0;">' +
           '<span class="meta">' +
-            '<span class="clock-pill"><i class="bi bi-hourglass-split"></i> endet in <span data-clock>' + windowRemaining().str + '</span></span>' +
             '<span class="kicker">' + esc(m.kicker) + '</span>' +
           '</span>' +
           '<h2 class="title">' + esc(m.title) + '</h2>' +
@@ -199,9 +199,6 @@
     return uniq[1] || '';
   }
 
-  // Preisprüfung: nie negative Prozente/Beträge anzeigen
-  function discountPct(price, orig) { return '−' + Math.max(0, Math.round((1 - price / orig) * 100)) + ' %'; }
-
   // ── Warenkorb (app.js-/cart.js-kompatibles Format) ────────
   function getCart() {
     try { return JSON.parse(localStorage.getItem('cart')) || []; } catch (e) { return []; }
@@ -243,7 +240,6 @@
         item.selectedColorCode = variant.code || '#000000';
         item.selectedColorSku = variant.sku || 'default';
         item.price = variant.price != null ? variant.price : product.price;
-        item.originalPrice = variant.originalPrice != null ? variant.originalPrice : product.originalPrice;
         if (variant.image) item.image = variant.image;
         item.cartItemId = product.id + '-' + variant.name.replace(/\s+/g, '-').toLowerCase();
         displayName = item.name;
@@ -363,7 +359,6 @@
   // ── Produktkarte ──────────────────────────────────────────
   function cardHTML(p, rank, ranked) {
     var ac = acFor(p.category);
-    var hasDisc = !!p.originalPrice && p.originalPrice > p.price;
     var sec = secondImg(p);
     var href = productHref(p);
     var wished = isWished(p.id);
@@ -375,9 +370,6 @@
           '<a class="stage" href="' + href + '" aria-label="' + esc(p.name) + '">' +
             '<img class="main" ' + imgAttrs(p.image) + ' alt="' + esc(p.name) + '" loading="lazy">' +
             (sec ? '<img class="second" ' + imgAttrs(sec) + ' alt="" aria-hidden="true" loading="lazy">' : '') +
-            // Bei ausverkauft kein Rabatt-Stoerer — sonst wirbt die Kachel mit
-            // einem Preisvorteil fuer etwas, das man nicht kaufen kann.
-            (hasDisc && !weg ? '<span class="disc">' + discountPct(p.price, p.originalPrice) + '</span>' : '') +
             (weg ? '<span class="soldout-band">Ausverkauft</span>' : '') +
           '</a>' +
           '<button class="wish' + (wished ? ' active' : '') + '" data-id="' + p.id + '" data-action="wish" aria-label="Merken"><i class="bi ' + (wished ? 'bi-heart-fill' : 'bi-heart') + '"></i></button>' +
@@ -390,7 +382,7 @@
             '<div class="cattag"><i class="bi ' + ac.icon + '"></i><span>' + esc(ac.short) + '</span></div>' +
           '</div>' +
           '<h3><a href="' + href + '">' + esc(p.name) + '</a></h3>' +
-          '<div class="priceline"><span class="price">' + eur(p.price) + '</span>' + (hasDisc ? '<span class="strike">' + eur(p.originalPrice) + '</span>' : '') + '</div>' +
+          '<div class="priceline"><span class="price">' + eur(p.price) + '</span></div>' +
           (weg ? '<div class="soldout-hint">Zurzeit nicht lieferbar — Benachrichtigung auf der Produktseite</div>' : '') +
           '<div class="ctas">' +
             (weg
@@ -428,12 +420,10 @@
     var idx = scene % ids.length;
     var p = byId(ids[idx]);
     var ac = acFor(p.category);
-    var hasDisc = !!p.originalPrice && p.originalPrice > p.price;
     var alt = idx % 2 === 0;
     el('reelCounter').textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(ids.length).padStart(2, '0');
     el('reelBody').innerHTML =
       '<div class="reel-stage">' +
-        (hasDisc ? '<span class="badge">' + discountPct(p.price, p.originalPrice) + '</span>' : '') +
         '<img class="product ' + (alt ? 'anim-a' : 'anim-b') + '" src="' + imgUrl(p.image) + '" alt="' + esc(p.name) + '" style="animation-duration:' + (REEL_SECS + 1) + 's;">' +
         '<button class="reel-prev" id="reelPrev" aria-label="Vorheriges Produkt"><i class="bi bi-arrow-left"></i></button>' +
         '<button class="reel-next" id="reelNext" aria-label="Nächstes Produkt"><i class="bi bi-arrow-right"></i></button>' +
@@ -444,7 +434,6 @@
         '<p class="reel-desc">' + esc(p.description || '') + '</p>' +
         '<div class="reel-priceline">' +
           '<span class="reel-price">' + eur(p.price) + '</span>' +
-          (hasDisc ? '<span class="strike">' + eur(p.originalPrice) + '</span>' : '') +
         '</div>' +
         '<div class="reel-ctas">' +
           '<button class="cta-gold" id="reelAdd"><i class="bi bi-bag-plus"></i> In den Warenkorb</button>' +
@@ -504,31 +493,21 @@
     });
   }
 
-  // ── Deal des Tages ────────────────────────────────────────
+  // ── Tipp des Tages ────────────────────────────────────────
   function renderDeal() {
     var pool = DEAL_POOL.filter(function (id) { return byId(id); });
     if (!pool.length) return;
     var p = byId(pool[dealDay() % pool.length]);
-    var hasDisc = !!p.originalPrice && p.originalPrice > p.price;
     el('dealPanel').innerHTML =
       '<div class="deal-stage">' +
         '<img src="' + imgUrl(p.image) + '" alt="' + esc(p.name) + '">' +
-        (hasDisc ? '<div class="badge">' + discountPct(p.price, p.originalPrice) + '</div>' : '') +
       '</div>' +
       '<div class="deal-info">' +
-        '<div class="deal-live"><span class="pulse-dot"></span> ' + esc(PROMO.title) + '&nbsp;— endet in</div>' +
-        '<div class="countdown">' +
-          '<div class="cd-cell"><div class="cd-num" data-cd="h">–</div><div class="cd-lbl">STUNDEN</div></div>' +
-          '<div class="cd-sep">:</div>' +
-          '<div class="cd-cell"><div class="cd-num" data-cd="m">–</div><div class="cd-lbl">MINUTEN</div></div>' +
-          '<div class="cd-sep">:</div>' +
-          '<div class="cd-cell"><div class="cd-num" data-cd="s">–</div><div class="cd-lbl">SEKUNDEN</div></div>' +
-        '</div>' +
+        '<div class="deal-live"><span class="pulse-dot"></span> ' + esc(PROMO.title) + '</div>' +
         '<h2 class="deal-name"><a href="' + productHref(p) + '">' + esc(p.name) + '</a></h2>' +
         '<p class="deal-desc">' + esc(p.description || '') + '</p>' +
         '<div class="deal-priceline">' +
           '<span class="deal-price">' + eur(p.price) + '</span>' +
-          (hasDisc ? '<span class="strike">' + eur(p.originalPrice) + '</span><span class="deal-save">Du sparst ' + eur(Math.max(0, p.originalPrice - p.price)) + '</span>' : '') +
         '</div>' +
         '<div class="deal-ctas">' +
           '<button class="deal-add" id="dealAdd">In den Warenkorb — ' + eur(p.price) + '</button>' +
@@ -570,11 +549,9 @@
     // Bewertungszahl, die es nicht gibt.
     { key: 'empfohlen', label: 'Empfohlen', fn: function (a, b) { return auswahlPlatz(a) - auswahlPlatz(b); } },
     { key: 'preis-auf', label: 'Preis ↑', fn: function (a, b) { return a.price - b.price; } },
-    { key: 'preis-ab', label: 'Preis ↓', fn: function (a, b) { return b.price - a.price; } },
-    { key: 'rabatt', label: 'Rabatt', fn: function (a, b) { return discFrac(b) - discFrac(a); } }
+    { key: 'preis-ab', label: 'Preis ↓', fn: function (a, b) { return b.price - a.price; } }
   ];
   function auswahlPlatz(p) { var i = BEST_ORDER.indexOf(Number(p.id)); return i < 0 ? BEST_ORDER.length : i; }
-  function discFrac(p) { return p.originalPrice && p.originalPrice > p.price ? (p.originalPrice - p.price) / p.originalPrice : 0; }
 
   function renderChips() {
     var cats = [{ key: 'alle', label: 'Alle', ac: { accent: '#D8B56C', rgb: '216,181,108', icon: 'bi-grid' } }]
@@ -743,8 +720,6 @@
     var colors = p.colors || [];
     var sel = colors[qvState.colorIdx];
     var vPrice = sel && sel.price != null ? sel.price : p.price;
-    var vOrig = sel && sel.originalPrice != null ? sel.originalPrice : p.originalPrice;
-    var hasDisc = !!(vOrig && vOrig > vPrice);
     var anyMotif = colors.some(function (c) { return !!c.image && !isColorName(c.name); });
     var allMotif = colors.length > 0 && colors.every(function (c) { return !!c.image && !isColorName(c.name); });
     var varLabel = allMotif ? 'Motiv' : anyMotif ? 'Variante' : 'Farbe';
@@ -771,7 +746,6 @@
             '<h3>' + esc(name) + '</h3>' +
             '<div class="priceline">' +
               '<span class="price">' + eur(vPrice) + '</span>' +
-              (hasDisc ? '<span class="strike">' + eur(vOrig) + '</span><span class="disc">' + discountPct(vPrice, vOrig) + '</span>' : '') +
             '</div>' +
             '<p class="desc">' + esc(p.description || '') + '</p>' +
             (colors.length ? '<div><div class="var-lbl">' + varLabel + ': <span>' + esc(sel ? sel.name : '') + '</span></div><div class="swatches">' + swatches + '</div></div>' : '') +
@@ -988,7 +962,7 @@
     updateWishUI();
     attachGridActions(el('bestGrid'));
     attachGridActions(el('allGrid'));
-    // Banner zum Deal des Tages (unabhängig von den Produktdaten)
+    // Banner zum Tipp des Tages (unabhängig von den Produktdaten)
     renderPromo();
     el('promoBanner').addEventListener('click', function () {
       var s = el('deal');
