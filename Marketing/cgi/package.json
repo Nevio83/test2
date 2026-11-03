@@ -1,0 +1,6 @@
+{
+  "name": "maios-cgi",
+  "private": true,
+  "description": "Maios Motion: CGI-Produktvideos (three.js) im Maios-Markenstil",
+  "dependencies": { "three": "0.170.0" }
+}
