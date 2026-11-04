@@ -34,7 +34,6 @@ const PRODUKTE = [
   ['2044606585511370753', 'Kaffee- und Gewürzmühle'],
   ['2039634149366321154', 'Hand-Dampfreiniger'],
   ['1968223869935730689', 'Elektrische Zahnbürste'],
-  ['2001125349598326785', 'Munddusche'],
   ['2107752716750032897', 'Massagepistole'],
   ['1998997697722175490', 'Körperfettwaage'],
   ['1955906646126264322', 'Haar- und Bartschneider'],
