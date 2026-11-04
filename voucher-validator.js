@@ -30,8 +30,11 @@ const VOUCHERS = [
   { code: 'SAVE15',    type: 'percentage', discount: 0.15, minOrder: 100, minItems: 0 },
   { code: 'SAVE20',    type: 'percentage', discount: 0.20, minOrder: 150, minItems: 0 },
   { code: 'FREESHIP',  type: 'shipping',   discount: 0,    minOrder: 0,   minItems: 0 },
-  { code: 'WELCOME25', type: 'percentage', discount: 0.25, minOrder: 0,   minItems: 0 },
-  { code: 'BUNDLE30',  type: 'percentage', discount: 0.30, minOrder: 0,   minItems: 3 }
+  // Newsletter-Dankeschoen: steht nur auf der Bestaetigungsseite
+  // (/api/newsletter/confirm). 10 % tragen sich bei ~40 % Gewinn je Produkt.
+  { code: 'WILLKOMMEN10', type: 'percentage', discount: 0.10, minOrder: 0, minItems: 0 }
+  // Abgeschaltet am 04.11.2026: WELCOME25 (25 % ohne Mindestwert) und
+  // BUNDLE30 (30 % ab 3 Artikeln) machten Bestellungen zum Verlust.
 ];
 
 /** Sucht einen Gutschein (Gross-/Kleinschreibung und Leerzeichen egal). */

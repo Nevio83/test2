@@ -52,14 +52,17 @@ test('Mindestbestellwert zählt die MENGE mit, nicht nur den Stückpreis', () =>
   assert.equal(r.ok, true);
 });
 
-test('Mindestanzahl Artikel wird durchgesetzt', () => {
-  // BUNDLE30 verlangt mindestens 3 Artikel.
-  const zuWenige = validateVoucher('BUNDLE30', korb([100, 2]));
-  assert.equal(zuWenige.ok, false);
-  assert.match(zuWenige.reason, /Mindestens 3/);
+test('abgeschaltete Codes werden abgelehnt (04.11.2026, machten Bestellungen zum Verlust)', () => {
+  for (const code of ['WELCOME25', 'BUNDLE30']) {
+    const r = validateVoucher(code, korb([100, 3]));
+    assert.equal(r.ok, false, code);
+  }
+});
 
-  const genug = validateVoucher('BUNDLE30', korb([10, 3]));
-  assert.equal(genug.ok, true);
+test('WILLKOMMEN10 gilt ohne Mindestbestellwert', () => {
+  const r = validateVoucher('WILLKOMMEN10', korb([9.99, 1]));
+  assert.equal(r.ok, true);
+  assert.equal(r.percent, 10);
 });
 
 test('Rabatt kommt aus der Liste, nicht aus der Anfrage', () => {

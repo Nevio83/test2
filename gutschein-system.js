@@ -50,24 +50,16 @@
             image: 'infos/Gutschein.jpg'
         },
         {
-            id: 5,
-            code: 'WELCOME25',
-            title: '25% Willkommensrabatt',
-            description: 'Exklusiv für Neukunden',
-            discount: 0.25,
+            id: 7,
+            code: 'WILLKOMMEN10',
+            title: '10% Willkommensrabatt',
+            description: 'Dankeschön für die Newsletter-Anmeldung',
+            discount: 0.10,
             minOrder: 0,
             type: 'percentage',
-            image: 'infos/Gutschein.jpg'
-        },
-        {
-            id: 6,
-            code: 'BUNDLE30',
-            title: '30% Bundle-Rabatt',
-            description: 'Spare 30% ab 3 Produkten',
-            discount: 0.30,
-            minOrder: 0,
-            minItems: 3,
-            type: 'percentage',
+            // frei: darf ohne vorheriges Sammeln auf gutscheine.html eingegeben
+            // werden — der Code steht nur auf der Newsletter-Bestaetigungsseite.
+            frei: true,
             image: 'infos/Gutschein.jpg'
         }
     ];
@@ -357,7 +349,7 @@
                         type="text" 
                         id="voucherInput"
                         aria-label="Gutscheincode"
-                        placeholder="Gutscheincode eingeben (z.B. WELCOME25)..."
+                        placeholder="Gutscheincode eingeben (z.B. SAVE10)..."
                         style="flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;"
                     >
                     <button 
@@ -461,7 +453,7 @@
         const myVouchers = JSON.parse(localStorage.getItem('myVouchers') || '[]');
         const hasVoucher = myVouchers.includes(voucher.id);
         
-        if (!hasVoucher) {
+        if (!hasVoucher && !voucher.frei) {
             showVoucherMessage('Du besitzt diesen Gutschein nicht.', 'error');
             return;
         }
@@ -823,9 +815,7 @@
     // addVoucherToUser(2)  // Für SAVE15 (15% ab 100€)
     // addVoucherToUser(3)  // Für SAVE20 (20% ab 150€)
     // addVoucherToUser(4)  // Für FREESHIP (Gratis Versand)
-    // addVoucherToUser(5)  // Für WELCOME25 (25% Willkommensrabatt)
-    // addVoucherToUser(6)  // Für BUNDLE30 (30% ab 3 Produkten)
 
     console.log('✅ Gutschein-System initialisiert');
-    console.log('💡 Gutscheine manuell hinzufügen: addVoucherToUser(1-6) in der Konsole eingeben');
+    console.log('💡 Gutscheine manuell hinzufügen: addVoucherToUser(1-4) in der Konsole eingeben');
 })();

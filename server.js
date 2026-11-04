@@ -3046,7 +3046,7 @@ app.get('/api/newsletter/confirm', async (req, res) => {
     res.set('Content-Type', 'text/html; charset=utf-8');
     if (r.ok) {
       return res.send(newsletterStatusPage('Anmeldung bestätigt 🎉',
-        'Danke! Du erhältst ab sofort unsere Angebote und News. Du kannst dich jederzeit wieder abmelden.'));
+        'Danke! Dein Willkommensrabatt: <strong>WILLKOMMEN10</strong> – 10 % auf deine Bestellung, einfach an der Kasse eingeben. Ab sofort bekommst du unsere Angebote und News, abmelden kannst du dich jederzeit.'));
     }
     return res.send(newsletterStatusPage('Link ungültig oder bereits bestätigt',
       'Dieser Bestätigungslink ist nicht mehr gültig. Falls du dich bereits bestätigt hast, ist alles in Ordnung.'));
