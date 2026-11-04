@@ -81,7 +81,7 @@ test('Gegenprobe: die alten Stellen hätte die Prüfung gemeldet', () => {
 });
 
 test('Produktseiten: keine fest eingetragenen Bewertungen, Verkaufs- oder Bestandszahlen', () => {
-  assert.ok(PRODUKTSEITEN.length >= 40, `nur ${PRODUKTSEITEN.length} Produktseiten gefunden`);
+  assert.ok(PRODUKTSEITEN.length >= 37, `nur ${PRODUKTSEITEN.length} Produktseiten gefunden`);
   const funde = PRODUKTSEITEN
     .map((rel) => [rel, erfundeneAngaben(lies(rel))])
     .filter(([, f]) => f.length);

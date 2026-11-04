@@ -28,7 +28,7 @@ function lies(datei) {
 
 test('es gibt überhaupt Produktseiten zu prüfen', () => {
   // Sonst waeren alle Tests hier leer und trotzdem gruen.
-  assert.ok(PRODUKTSEITEN.length >= 40, 'nur ' + PRODUKTSEITEN.length + ' Seiten gefunden');
+  assert.ok(PRODUKTSEITEN.length >= 37, 'nur ' + PRODUKTSEITEN.length + ' Seiten gefunden');
 });
 
 test('Empfehlungskacheln laden nicht in voller Größe', () => {

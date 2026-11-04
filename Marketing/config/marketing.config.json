@@ -166,11 +166,6 @@
         "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
         "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Eub Special Line (8-12 Tage), totalPostageFee"
       },
-      "34": {
-        "ek": 10.11,
-        "versand": 3.5,
-        "quelle": "excel/Maios Produkte.csv Zeile 53 (link)"
-      },
       "35": {
         "ek": 9.15,
         "versand": 8.66,
@@ -198,13 +193,6 @@
         "einfuhrumsatzsteuer": 0.64,
         "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
         "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Ordinary I (8-18 Tage), totalPostageFee"
-      },
-      "39": {
-        "ek": 23.09,
-        "versand": 7.62,
-        "quelle": "excel/Maios Produkte.csv Zeile 62 (link)",
-        "versand_geschaetzt": 4,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1792088342134267904 (288 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
       },
       "40": {
         "ek": 5.51,
@@ -247,11 +235,6 @@
         "einfuhrumsatzsteuer": 1.36,
         "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
         "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive F (12-20 Tage), totalPostageFee"
-      },
-      "46": {
-        "ek": 15.25,
-        "versand": 5,
-        "quelle": "excel/Maios Produkte.csv Zeile 47 (link)"
       },
       "47": {
         "ek": 5.03,

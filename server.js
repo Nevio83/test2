@@ -719,6 +719,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// Bei CJ ausgelaufene Produkte, die am 04.11.2026 ganz aus dem Shop genommen
+// wurden. Ihre alten Adressen (auch die produkt-<id>.html-Form) leiten auf das
+// naechstverwandte Produkt weiter statt ins 404 — Google, alte Links in
+// Videos und Merkzettel landen so auf einer lieferbaren Seite.
+const ENTFERNTE_PRODUKTE = {
+  gesichtssauna: 'mitesserentferner-geraet',
+  'elektronischer-premium-jade-stein': 'jade-stein',
+  'nordic-crystal-lamp': 'led-crystal-lampe',
+};
+const ENTFERNTE_IDS = { 34: 'gesichtssauna', 39: 'elektronischer-premium-jade-stein', 46: 'nordic-crystal-lamp' };
+app.use((req, res, next) => {
+  const m = req.path.match(/^\/produkte\/(?:produkt-(\d+)|([a-z0-9-]+))\.html$/);
+  const alt = m && (m[1] ? ENTFERNTE_IDS[m[1]] : m[2]);
+  if (alt && ENTFERNTE_PRODUKTE[alt]) return res.redirect(301, `/produkte/${ENTFERNTE_PRODUKTE[alt]}.html`);
+  next();
+});
+
 // ── products.json mit aktueller Verfuegbarkeit ausliefern ────────
 // Der CJ-Bestandsabgleich schreibt "nicht lieferbar" in die Datenbank, nicht in
 // die Datei — Renders Dateisystem ist fluechtig und wird bei jedem Deploy aus

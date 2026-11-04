@@ -70,7 +70,6 @@ class ProductImageGallery {
             43: 'Mini Thermal Drucker bilder',
             44: 'Smart Beamer bilder',
             45: 'Klimaanlage mit Displaybilder',
-            46: 'Nordic Crystal Lamp bilder',
             47: 'Tumbler becher bilder',
             51: 'auto bildschirm bilder'
         };
@@ -91,7 +90,6 @@ class ProductImageGallery {
             26: '4 In 1 Self Cleaning Hair Brush bilder',
             32: 'Indoor Sensing Wall Lamp bilder',
             33: 'Aromatherapy essential oil humidifier bilder',
-            34: 'Gesichtssauna bilder',
             35: 'Thermische Massage bilder',
             38: 'Jade Stein bilder',
             40: 'Wärmender Untersetzter bilder',
@@ -99,7 +97,6 @@ class ProductImageGallery {
             43: 'Mini Thermal Drucker bilder',
             44: 'Smart Beamer bilder',
             45: 'Klimaanlage mit Displaybilder',
-            46: 'Nordic Crystal Lamp bilder',
             47: 'Tumbler becher bilder',
             48: 'Tumbler becher winter bilder',
             49: '40 Oz Tumbler With Handle Straw Insulated Halloween bilder',
@@ -423,26 +420,6 @@ class ProductImageGallery {
                 ];
                 break;
 
-            case 34: // Gesichtssauna
-                this.images = [
-                    {
-                        src: `../produkt bilder/Gesichtssauna.jpg`,
-                        alt: 'Gesichtssauna - Hauptbild',
-                        color: 'Standard'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Gesichtssauna blau.jpg`,
-                        alt: 'Gesichtssauna - Blau',
-                        color: 'Blau'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Gesichtssauna weiß.jpg`,
-                        alt: 'Gesichtssauna - Weiß',
-                        color: 'Weiß'
-                    }
-                ];
-                break;
-
             case 35: // Thermische Massage
                 this.images = [
                     {
@@ -669,36 +646,6 @@ class ProductImageGallery {
                         src: `../produkt bilder/${folderName}/Klimaanlage mit Display.jpg`,
                         alt: 'Klimaanlage mit Display - Detail',
                         color: 'Detail'
-                    }
-                ];
-                break;
-                
-            case 46: // Nordic Crystal Lamp
-                this.images = [
-                    {
-                        src: `../produkt bilder/Nordic Crystal Lamp.jpg`,
-                        alt: 'Nordic Crystal Lamp - Hauptbild',
-                        color: 'Standard'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Nordic Crystal Lamp schwarz.jpg`,
-                        alt: 'Nordic Crystal Lamp - Schwarz',
-                        color: 'Schwarz'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Nordic Crystal Lamp weiß.jpg`,
-                        alt: 'Nordic Crystal Lamp - Weiß',
-                        color: 'Weiß'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Nordic Crystal Lamp gelb.jpg`,
-                        alt: 'Nordic Crystal Lamp - Gelb',
-                        color: 'Gelb'
-                    },
-                    {
-                        src: `../produkt bilder/${folderName}/Nordic Crystal Lamp beispiel.jpg`,
-                        alt: 'Nordic Crystal Lamp - Beispiel',
-                        color: 'Beispiel'
                     }
                 ];
                 break;

@@ -692,43 +692,6 @@
     ]
   },
   {
-    "id": 34,
-    "name": "Gesichtssauna",
-    "slug": "gesichtssauna",
-    "price": 18.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Gesichtssauna.jpg",
-    "description": "Ein 2-in-1-Gesichts- und Augendampfer mit Nano-Zerstäubungstechnologie. Spendet effektiv Feuchtigkeit, lindert trockene Haut und reduziert die Ermüdung der Augen. Klein, tragbar und über USB aufladbar - perfekt für die Hautpflege unterwegs.",
-    "sku": "CJMB1545970",
-    "inStock": false,
-    "shippingTime": "7-15 Werktage",
-    "showInSlider": true,
-    "colors": [
-      {
-        "name": "Blau",
-        "code": "#A0C4FF",
-        "sku": "CJMB154597002BY",
-        "price": 18.99,
-        "image": "produkt bilder/Gesichtssauna bilder/Gesichtssauna blau.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJMB154597001AZ",
-        "price": 18.99,
-        "image": "produkt bilder/Gesichtssauna bilder/Gesichtssauna weiß.jpg"
-      }
-    ],
-    "tags": [
-      "face steamer",
-      "moisturizer",
-      "wellness",
-      "hautpflege",
-      "beauty",
-      "gesichtssauna"
-    ]
-  },
-  {
     "id": 35,
     "name": "Thermische Massage",
     "slug": "thermische-massage",
@@ -845,26 +808,6 @@
       "gua sha",
       "wellness",
       "hautpflege"
-    ]
-  },
-  {
-    "id": 39,
-    "name": "Elektronischer premium Jade Stein",
-    "slug": "elektronischer-premium-jade-stein",
-    "price": 36.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Elektronischer premium Jade Stein.jpg",
-    "description": "Elektrisches Guasha-Massagegerät mit EMS-Mikrostrom, Heiß- und Kalt-Modus sowie 3-Farben-Lichttherapie zur Hautstraffung, Faltenreduzierung und Förderung der Aufnahme von Hautpflegeprodukten.",
-    "sku": "CJPF203924202BY",
-    "inStock": false,
-    "shippingTime": "7-13 Werktage",
-    "showInSlider": false,
-    "tags": [
-      "guasha",
-      "ems",
-      "face lifting",
-      "hautpflege",
-      "wellness"
     ]
   },
   {
@@ -1099,52 +1042,6 @@
       "Energiesparend"
     ],
     "showInSlider": false
-  },
-  {
-    "id": 46,
-    "name": "Nordic Crystal Lamp",
-    "slug": "nordic-crystal-lamp",
-    "price": 27.99,
-    "category": "Beleuchtung",
-    "image": "produkt bilder/Nordic Crystal Lamp.jpg",
-    "description": "Elegante nordische Kristalllampe mit USB-Anschluss und Touch-Dimming. Perfekte Atmosphärenbeleuchtung für Schlafzimmer mit Diamant-Nachtlicht-Effekt.",
-    "sku": "CJJT122932909IR",
-    "inStock": false,
-    "shippingTime": "7-13 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#000000",
-        "sku": "CJJT122932909IR",
-        "price": 27.99,
-        "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp schwarz.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJJT122932910JQ",
-        "price": 27.99,
-        "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp weiß.jpg"
-      },
-      {
-        "name": "Gelb",
-        "code": "#FFD700",
-        "sku": "CJJT122932915OL",
-        "price": 27.99,
-        "image": "produkt bilder/Nordic Crystal Lamp bilder/Nordic Crystal Lamp gelb.jpg"
-      }
-    ],
-    "tags": [
-      "Kristalllampe",
-      "USB Lampe",
-      "Touch Dimming",
-      "Nachtlicht",
-      "Atmosphäre",
-      "Schlafzimmer",
-      "Diamant Effekt",
-      "Nordisch"
-    ],
-    "showInSlider": true
   },
   {
     "id": 47,
