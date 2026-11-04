@@ -83,80 +83,88 @@
     "unbekannte_marge": "erlauben_mit_hinweis",
     "einkaufspreise": {
       "10": {
-        "ek": 20.5,
-        "versand": 9.71,
-        "quelle": "excel/Maios Produkte.csv Zeile 1 (kennung)",
-        "versand_geschaetzt": 8,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1621426087651717120 (459 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 10.52,
+        "versand": 11.33,
+        "einfuhrumsatzsteuer": 2,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "11": {
-        "ek": 24.98,
-        "versand": 15.38,
-        "quelle": "excel/Maios Produkte.csv Zeile 2 (link)",
-        "versand_geschaetzt": 5,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1392009096881901568 (660 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 12.46,
+        "versand": 17.42,
+        "einfuhrumsatzsteuer": 2.37,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "12": {
-        "ek": 7.92,
-        "versand": 5.73,
-        "quelle": "excel/Maios Produkte.csv Zeile 3 (link)",
-        "versand_geschaetzt": 3,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (CJPacket Ordinary E, 7-15 Tage), Variante 1633393678628696064 (198 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 3.09,
+        "versand": 6.12,
+        "einfuhrumsatzsteuer": 0.59,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Ordinary I (8-18 Tage), totalPostageFee"
       },
       "17": {
-        "ek": 4.47,
-        "versand": 2.5,
-        "quelle": "excel/Maios Produkte.csv Zeile 21 (kennung)"
+        "ek": 0.66,
+        "versand": 4.62,
+        "einfuhrumsatzsteuer": 0.13,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Eub Special Line (8-12 Tage), totalPostageFee"
       },
       "18": {
-        "ek": 8.6,
-        "versand": 3,
-        "quelle": "excel/Maios Produkte.csv Zeile 22 (link)"
+        "ek": 2.59,
+        "versand": 8.39,
+        "einfuhrumsatzsteuer": 0.49,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "19": {
-        "ek": 13.39,
-        "versand": 3.5,
-        "quelle": "excel/Maios Produkte.csv Zeile 34 (link)"
+        "ek": 9.61,
+        "versand": 5.42,
+        "einfuhrumsatzsteuer": 1.83,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Eub Special Line (8-12 Tage), totalPostageFee"
       },
       "21": {
-        "ek": 10.5,
-        "versand": 5.8,
-        "quelle": "excel/Maios Produkte.csv Zeile 37 (zahlen)",
-        "versand_geschaetzt": 3.5,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1363045795821129728 (140 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 1.84,
+        "versand": 10.48,
+        "einfuhrumsatzsteuer": 0.35,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "22": {
-        "ek": 8.43,
-        "versand": 5.8,
-        "quelle": "excel/Maios Produkte.csv Zeile 46 (link)",
-        "versand_geschaetzt": 3,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1363045795821129728 (140 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 3.64,
+        "versand": 6.68,
+        "einfuhrumsatzsteuer": 0.69,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Eub Special Line (8-12 Tage), totalPostageFee"
       },
       "26": {
-        "ek": 6.41,
-        "versand": 5.39,
-        "quelle": "excel/Maios Produkte.csv Zeile 50 (kennung)",
-        "versand_geschaetzt": 2.5,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (CJPacket Ordinary E, 7-15 Tage), Variante 1711943102094651392 (158 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 1.91,
+        "versand": 5.74,
+        "einfuhrumsatzsteuer": 0.36,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Ordinary I (8-18 Tage), totalPostageFee"
       },
       "27": {
-        "ek": 15.38,
-        "versand": 8.86,
-        "quelle": "excel/Maios Produkte.csv Zeile 51 (link)",
-        "versand_geschaetzt": 4,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 14 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1602125961246552064 (390 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 7.63,
+        "versand": 10.36,
+        "einfuhrumsatzsteuer": 1.45,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "32": {
-        "ek": 9.92,
-        "versand": 6.79,
-        "quelle": "excel/Maios Produkte.csv Zeile 35 (kennung)",
-        "versand_geschaetzt": 3.5,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 14 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1373821406403497984 (220 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 1.99,
+        "versand": 7.95,
+        "einfuhrumsatzsteuer": 0.38,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "33": {
-        "ek": 4.7,
-        "versand": 2.5,
-        "quelle": "excel/Maios Produkte.csv Zeile 52 (kennung)"
+        "ek": 0.4,
+        "versand": 5.21,
+        "einfuhrumsatzsteuer": 0.08,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Eub Special Line (8-12 Tage), totalPostageFee"
       },
       "34": {
         "ek": 10.11,
@@ -164,30 +172,32 @@
         "quelle": "excel/Maios Produkte.csv Zeile 53 (link)"
       },
       "35": {
-        "ek": 14.97,
-        "versand": 7.43,
-        "quelle": "excel/Maios Produkte.csv Zeile 55 (link)",
-        "versand_geschaetzt": 5,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1720366333893816320 (273 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 9.15,
+        "versand": 8.66,
+        "einfuhrumsatzsteuer": 1.74,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "36": {
-        "ek": 8.42,
-        "versand": 3,
-        "quelle": "excel/Maios Produkte.csv Zeile 57 (link)"
+        "ek": 2.78,
+        "versand": 7.88,
+        "einfuhrumsatzsteuer": 0.53,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "37": {
-        "ek": 47.12,
-        "versand": 30.53,
-        "quelle": "excel/Maios Produkte.csv Zeile 58 (link)",
-        "versand_geschaetzt": 8,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (YunExpress Sensitive, 8-15 Tage), Variante 1490985480559398912 (1700 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 20.1,
+        "versand": 33.42,
+        "einfuhrumsatzsteuer": 3.82,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option YunExpress Sensitive (8-15 Tage), totalPostageFee"
       },
       "38": {
-        "ek": 7.79,
-        "versand": 4.7,
-        "quelle": "excel/Maios Produkte.csv Zeile 59 (link)",
-        "versand_geschaetzt": 3,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (CJPacket Ordinary E, 7-15 Tage), Variante 1359775415635415040 (75 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 3.39,
+        "versand": 5.74,
+        "einfuhrumsatzsteuer": 0.64,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Ordinary I (8-18 Tage), totalPostageFee"
       },
       "39": {
         "ek": 23.09,
@@ -197,39 +207,46 @@
         "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1792088342134267904 (288 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
       },
       "40": {
-        "ek": 11.33,
-        "versand": 7.46,
-        "quelle": "excel/Maios Produkte.csv Zeile 18 (link)",
-        "versand_geschaetzt": 3.5,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 14 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1642512124960313344 (275 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 5.51,
+        "versand": 8.73,
+        "einfuhrumsatzsteuer": 1.05,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "41": {
-        "ek": 11.33,
-        "versand": 9.2,
-        "quelle": "excel/Maios Produkte.csv Zeile 17 (link)",
-        "versand_geschaetzt": 3.5,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (YunExpress Ordinary, 6-8 Tage), Variante 1715574082198048768 (575 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 2.77,
+        "versand": 9.3,
+        "einfuhrumsatzsteuer": 0.53,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Ordinary I (8-18 Tage), totalPostageFee"
+      },
+      "42": {
+        "ek": 5.82,
+        "versand": 10.18,
+        "einfuhrumsatzsteuer": 1.11,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "43": {
-        "ek": 19.78,
-        "versand": 7.62,
-        "quelle": "excel/Maios Produkte.csv Zeile 23 (link)",
-        "versand_geschaetzt": 4,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1465145114186878976 (288 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 16.41,
+        "versand": 10.19,
+        "einfuhrumsatzsteuer": 3.12,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "44": {
-        "ek": 59.3,
-        "versand": 14.77,
-        "quelle": "excel/Maios Produkte.csv Zeile 31 (link)",
-        "versand_geschaetzt": 10,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 14 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1684089881007497216 (872 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 48.82,
+        "versand": 17.16,
+        "einfuhrumsatzsteuer": 9.28,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
       "45": {
-        "ek": 20.59,
-        "versand": 14.86,
-        "quelle": "excel/Maios Produkte.csv Zeile 33 (link)",
-        "versand_geschaetzt": 5,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 12 Optionen (CJPacket Sensitive, 4-9 Tage), Variante 1665166365977743360 (880 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 7.14,
+        "versand": 17.98,
+        "einfuhrumsatzsteuer": 1.36,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive F (12-20 Tage), totalPostageFee"
       },
       "46": {
         "ek": 15.25,
@@ -237,27 +254,34 @@
         "quelle": "excel/Maios Produkte.csv Zeile 47 (link)"
       },
       "47": {
-        "ek": 14.45,
-        "versand": 10.12,
-        "quelle": "excel/Maios Produkte.csv Zeile 4 (link)",
-        "versand_geschaetzt": 4,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (YunExpress Ordinary, 6-8 Tage), Variante 1610884907591544832 (686 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 5.03,
+        "versand": 10.27,
+        "einfuhrumsatzsteuer": 0.96,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Ordinary I (8-18 Tage), totalPostageFee"
       },
       "48": {
-        "ek": 14.45,
-        "versand": 10.12,
-        "quelle": "excel/Maios Produkte.csv Zeile 4 (link)",
-        "versand_geschaetzt": 4,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (YunExpress Ordinary, 6-8 Tage), Variante 1610884907591544832 (686 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 3.94,
+        "versand": 10.27,
+        "einfuhrumsatzsteuer": 0.75,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Ordinary I (8-18 Tage), totalPostageFee"
       },
       "50": {
-        "ek": 9.69,
-        "versand": 7.75,
-        "quelle": "excel/Maios Produkte.csv Zeile 39 (link)",
-        "versand_geschaetzt": 3,
-        "versand_quelle": "CJ freightCalculate 07.09.2026, CN->DE, guenstigste von 23 Optionen (YunExpress Ordinary, 6-8 Tage), Variante 1555129918697254912 (400 g). Waehrung von CJ nicht ausgewiesen — roh uebernommen."
+        "ek": 2.7,
+        "versand": 7.77,
+        "einfuhrumsatzsteuer": 0.51,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Ordinary I (8-18 Tage), totalPostageFee"
       },
-      "_hinweis": "EK und Versand in Euro je Produkt-ID, am 07.09.2026 aus excel/Maios Produkte.csv uebernommen. Massgeblich war der LINK der CSV-Zeile, nicht ihre Namensspalte: die traegt Spitznamen und stimmt stellenweise nicht — Zeile 37 heisst LED Water in Crown, verlinkt aber ein Solarlicht. Bei jedem Eintrag steht die Herkunft: kennung = die Kennung hinter -p- deckt sich mit der SKU, link = der beschreibende Teil des Links benennt das Produkt, zahlen = Link widerspricht, aber Name und Verkaufspreis passen. Jeder Eintrag wurde gegen den Verkaufspreis im Shop gegengeprueft; bei Abweichung nicht uebernommen. VERSAND: Bei 20 Produkten steht seit dem 07.09. der echte CJ-Frachtpreis (Feld versand_quelle); die frueher geschaetzte Zahl bleibt als versand_geschaetzt daneben stehen. Genommen wurde jeweils die GUENSTIGSTE Option — die Realitaet kann also nur schlechter sein. CJ weist keine Waehrung aus; die Zahl ist roh uebernommen. Bei den uebrigen steht weiter die Schaetzung. Die 13 fehlenden Produkte bleiben leer statt geraten — eine unbekannte Marge ist ein Ergebnis, eine falsche Marge ist ein Fehler."
+      "51": {
+        "ek": 28.23,
+        "versand": 15.46,
+        "einfuhrumsatzsteuer": 5.36,
+        "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
+      },
+      "_hinweis": "EK und Versand in EUR je Produkt-ID, seit 03.11.2026 direkt per CJ-API abgefragt (npm run preischeck). Die alten Werte aus excel/Maios Produkte.csv lagen teils um ein Vielfaches daneben (Krystall Ball: CSV 9,69 EUR, CJ 2,94 USD). einfuhrumsatzsteuer = 19 % auf den Warenwert, die CJ ueber IOSS mitberechnet; fuer einen Kleinunternehmer nicht abziehbar. Nicht enthalten: Zahlungsgebuehr (Stripe/Klarna bis 2,99 % + 0,35 EUR). Ohne Eintrag: AliExpress-Produkte und bei CJ ausgelistete."
     },
     "max_posts_pro_produkt_pro_woche": 2,
     "min_passungs_score": 0.15,
@@ -306,7 +330,7 @@
     "ziel_lufs": -14,
     "_tempo": "Punkt 34: Hinweis-Grenzen fuer das Schnitttempo. KEINE Sperre — ein langsamer Clip kann richtig sein, eine Produktvorfuehrung braucht Zeit. Gemeldet wird beim Rendern von Stil C, gerechnet aus der Schnittliste.",
     "tempo_mittel_warnung_sek": 2.5,
-    "tempo_segment_warnung_sek": 4.0,
+    "tempo_segment_warnung_sek": 4,
     "_markenfarbe": "Punkt 42: Der Akzent aus dem Shop-Design (styles.css --orange-primary). Er faerbt den Preis auf der Endkarte. Gemessen am 20.09.: Der Preis trug vorher &H0000E5FF, also RGB(255,229,0) — Gelb, nicht das Orange des Shops. Clip und Zielseite hatten schlicht verschiedene Farben.",
     "markenfarbe": "#ff8c00",
     "_sperrzonen": "Punkt 31: Wieviele Pixel am Rand TikTok fuer eigene Bedienelemente beansprucht — rechts die Symbolspalte, unten Name und Unterschrift, oben die Suche. SCHAETZUNGEN, keine Messungen an unserem Bild: TikTok veroeffentlicht keine Masse, und die Elemente wandern zwischen App-Versionen. Wer nachmisst, traegt es hier ein. Nachgemessen am 23.09.: Eine Untertitelzeile mit 20 Zeichen (dem Maximum) laeuft wirklich unter die Symbolspalte, eine kurze nicht.",
@@ -331,7 +355,7 @@
     "untertitel_modell": "small",
     "_produkt_sichtbar": "Punkt 35: Beim Rendern von Stil C und beim Bauversuch (marketing:pruefen --bauversuch) die ersten produkt_sichtbar_bis_sek Sekunden gegen die Produktfotos halten. Liegt der BESTE Bildwert unter produkt_sichtbar_ab, gibt es einen Hinweis — nie eine Sperre. Nachgesehen am 02.10. an 15 Clips: vier von acht Anfaengen ohne Produkt fielen auf, keiner der sieben mit Produkt faelschlich; ein Weidenkorb (0,68) und ein Schreibtisch (0,70) kamen durch. Abstand duenn: 0,648 ohne, 0,664 mit. Zweites Signal seit dem 02.10.: Der Textteil des Modells meldet einen Anfang, in dem GAR KEIN Geraet dieser Art zu sehen ist (Weidenkorb 0,02 gegen 0,60 und mehr mit Geraet) — damit fuenf von acht. Laeuft nur, wenn die Modelle schon auf der Platte liegen (npm run tiktok:bild) — geladen wird beim Rendern nie.",
     "produkt_sichtbar_pruefen": true,
-    "produkt_sichtbar_bis_sek": 3.0,
+    "produkt_sichtbar_bis_sek": 3,
     "produkt_sichtbar_ab": 0.655,
     "_hinweis_stock_clips": "Wie viele lizenzierte Stockclips als Zwischenschnitt dazukommen, wenn es KEIN eigenes Produktvideo gibt. Sie zeigen nie das Produkt, nur Stimmung — deshalb bewusst hoechstens zwei, damit das Produkt die Mehrheit der Einstellungen behaelt. 0 schaltet sie ab. Braucht PEXELS_API_KEY; ohne Schluessel passiert nichts.",
     "stock_clips_max": 2,
