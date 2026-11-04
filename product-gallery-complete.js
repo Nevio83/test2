@@ -104,8 +104,22 @@ class ProductImageGallery {
             51: 'auto bildschirm bilder'
         };
         
+        // Neue Produkte (seit 04.11.2026) bringen ihre Bilderliste selbst mit:
+        // window.product.galerie = [{ src: 'produkt bilder/…', farbe: 'Schwarz' }].
+        // Fuer sie muss hier keine Liste mehr gepflegt werden.
+        const eigene = window.product && Number(window.product.id) === Number(this.productId) &&
+            Array.isArray(window.product.galerie) ? window.product.galerie : null;
+        if (eigene && eigene.length > 1) {
+            this.images = eigene.map((b, i) => ({
+                src: '../' + b.src,
+                alt: `${this.productName} - Bild ${i + 1}`,
+                color: b.farbe || 'Standard'
+            }));
+            this.createGalleryStructure();
+            this.attachEventListeners();
+            this.attachColorChangeListener();
         // Prüfe ob dieses Produkt einen Bildordner hat
-        if (this.productImageFolders[this.productId]) {
+        } else if (this.productImageFolders[this.productId]) {
             this.loadProductImages();
             this.createGalleryStructure();
             this.attachEventListeners();
@@ -1384,8 +1398,10 @@ document.addEventListener('DOMContentLoaded', function() {
                           document.querySelector('.product-title')?.textContent || 
                           'Produkt';
         
-        // Initialisiere Gallery nur für Produkte mit Bildordnern
-        if ([10, 11, 17, 21, 26, 32, 33, 43, 50, 51].includes(productId)) {
+        // Initialisiere Gallery nur für Produkte mit Bildordnern — oder mit
+        // eigener Bilderliste auf der Seite (window.product.galerie)
+        const eigeneGalerie = window.product && Array.isArray(window.product.galerie) && window.product.galerie.length > 1;
+        if (eigeneGalerie || [10, 11, 17, 21, 26, 32, 33, 43, 50, 51].includes(productId)) {
             new ProductImageGallery(productId, productName);
         }
     }
