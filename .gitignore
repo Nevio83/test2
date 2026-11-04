@@ -163,3 +163,9 @@ infos/nummernprodukte.html
 # 1 MB die groesste Binaerdatei, die das Repo sonst mitschleppen wuerde.
 # Die HTML-Fassung ist die Quelle und bleibt versioniert.
 Fortschrittsbericht*.pdf
+
+# Rohdaten der CJ-Skripte (npm run preischeck / sortiment, node cj-bestseller.js).
+# Bis zu 1 MB je Lauf und jederzeit neu abrufbar; ausgewertet wird lokal.
+Claude outputs/cj-*.json
+Claude outputs/nachtrag-pids.txt
+Claude outputs/preisplan.json
