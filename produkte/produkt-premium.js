@@ -1,6 +1,6 @@
 /* ========================================================
    MAIOS PRODUKT PREMIUM — Shared Behaviour
-   Countdown · Viewers · Sticky Bar · Toast · Cart ·
+   Sticky Bar · Toast · Cart ·
    Wishlist · Bundles · UI initialisierung
 
    WICHTIG: Cart/Wishlist nutzen dieselben localStorage-Keys
@@ -10,40 +10,6 @@
 
 (function () {
   'use strict';
-
-  /* --- Countdown --- */
-  function initCountdown() {
-    const boxes = document.querySelectorAll('.pp-cd-box[data-unit]');
-    if (!boxes.length) return;
-
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
-
-    function tick() {
-      const diff = Math.max(0, end - Date.now());
-      const h = Math.floor(diff / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
-      boxes.forEach(b => {
-        if (b.dataset.unit === 'h') b.textContent = String(h).padStart(2, '0');
-        if (b.dataset.unit === 'm') b.textContent = String(m).padStart(2, '0');
-        if (b.dataset.unit === 's') b.textContent = String(s).padStart(2, '0');
-      });
-    }
-    tick();
-    setInterval(tick, 1000);
-  }
-
-  /* --- Live Viewers --- */
-  function initViewers() {
-    const el = document.getElementById('pp-viewers-count');
-    if (!el) return;
-    const base = parseInt(el.textContent, 10) || 12;
-    setInterval(() => {
-      const delta = Math.floor(Math.random() * 5) - 2;
-      el.textContent = Math.max(3, base + delta);
-    }, 8000 + Math.random() * 4000);
-  }
 
   /* --- Notification (kurzer Hinweis oben rechts) --- */
   function showNotif(msg) {
@@ -308,8 +274,6 @@
 
   /* --- Init --- */
   document.addEventListener('DOMContentLoaded', function () {
-    initCountdown();
-    initViewers();
     initQty();
     bindButtons();
     initStickyBar();
