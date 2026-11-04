@@ -379,6 +379,32 @@ app.use((req, res, next) => {
 // obwohl ohne RESEND_API_KEY gar keine rausgehen konnte. Eine Rettung, die
 // faelschlich Erfolg meldet, ist schlimmer als gar keine — man verlaesst sich
 // darauf.
+/**
+ * Lager je Shop-Produkt fuer die CJ-Bestellung: "lager" aus products.json
+ * (seit 04.11.2026 "DE" fuer Ware aus dem deutschen CJ-Lager), gefunden ueber
+ * die Produkt-ID oder die SKU einer Farbe. Ohne Angabe: China (Standard).
+ * Bei jedem Aufruf frisch gelesen — ein Deploy mit neuen Produkten wirkt sofort.
+ */
+function lagerNachProdukt() {
+  let liste = [];
+  try { liste = JSON.parse(fs.readFileSync(path.join(__dirname, 'products.json'), 'utf8')); } catch (_) { /* ohne Katalog: China */ }
+  const nachId = new Map();
+  const nachSku = new Map();
+  for (const p of Array.isArray(liste) ? liste : []) {
+    if (!p || !p.lager) continue;
+    nachId.set(String(p.id), p.lager);
+    if (p.sku) nachSku.set(p.sku, p.lager);
+    for (const c of p.colors || []) if (c && c.sku) nachSku.set(c.sku, p.lager);
+  }
+  return (item) => nachId.get(String(item.product_id)) || nachSku.get(item.product_sku) || cjBestellung.HERKUNFT;
+}
+
+/** Warenwert eines Teils (EUR), wenn alle Preise bekannt sind — sonst der Gesamtwert. */
+function warenwertTeil(gruppe, gesamt) {
+  const summe = gruppe.positionen.reduce((s, p) => s + (Number.isFinite(p.preisEur) ? p.preisEur * (Number(p.quantity) || 1) : NaN), 0);
+  return Number.isFinite(summe) && summe > 0 ? summe : gesamt;
+}
+
 function sendOpsAlert(subject, html) {
   const to = process.env.ERROR_ALERT_EMAIL || process.env.RECEIPT_ARCHIVE_EMAIL || 'maioscorporation@gmail.com';
   return emailService.sendEmail({ to, subject, html })
@@ -1603,104 +1629,123 @@ app.post('/stripe-webhook', express.raw({type: 'application/json'}), async (req,
         // von cj-bestellung.js.
         if (cjAPI && orderData.items.length > 0) {
           console.log('📦 Erstelle CJ-Bestellung...');
-          let cjErgebnis = null;
-          let vorbereitet = null;
-          try {
-            vorbereitet = await cjBestellung.bereiteVor(cjAPI, {
-              zahlungsId: session.payment_intent,
-              bestellId: orderData.order_id,
-              adresse: JSON.parse(orderData.shipping_address || '{}'),
-              name: orderData.shipping_name || orderData.customer_name,
-              email: orderData.customer_email,
-              telefon: orderData.customer_phone,
-              // Fuer die 150-€-Grenze der IOSS. Nur bei EUR-Bestellungen
-              // bekannt; Bestellungen in anderer Waehrung gehen fast immer
-              // ausserhalb der EU, wo IOSS ohnehin nicht greift.
-              warenwertEur: orderData.currency === 'EUR' ? orderData.subtotal : undefined,
-              positionen: orderData.items.map((i) => ({
-                sku: i.product_sku,
-                quantity: i.quantity,
-                bezeichnung: i.product_name,
-              })),
-            }, {
-              // Entscheidung vom 23.09.: CJs IOSS (3). Aenderbar ohne Deploy.
-              iossType: process.env.CJ_IOSS_TYPE || 3,
-              iossNumber: process.env.CJ_IOSS_NUMBER || '',
-              // Nur wenn das Wallet die Bestellung deckt, wird abgebucht.
-              guthaben: await cjBestellung.walletGuthaben(cjAPI),
-            });
-            cjErgebnis = await cjBestellung.bestelle(cjAPI, vorbereitet.nutzlast);
-            // Ob wirklich abgebucht wurde, sagt nur CJ selbst — payType 2 ist
-            // ein Auftrag, keine Bestaetigung (die Steuer kennt man vorher
-            // nicht auf den Cent).
-            const bezahlt = vorbereitet.payType === 2
-              ? await cjBestellung.istBezahlt(cjAPI, cjErgebnis.cjBestellnummer)
-              : false;
-            console.log(`✅ CJ-Bestellung angelegt: ${cjErgebnis.cjBestellnummer} (Versand: ${vorbereitet.versand.logisticName}, ${bezahlt === true ? 'aus dem Wallet bezahlt' : bezahlt === false ? 'NICHT bezahlt' : 'Bezahlung unklar'})`);
-
-            // Angelegt, aber nicht bezahlt: CJ verschickt erst nach Bezahlung.
-            // Ohne diesen Hinweis laege die Bestellung still im CJ-Konto.
-            if (bezahlt !== true) {
-              const warum = vorbereitet.payType !== 2
-                ? `Das CJ-Wallet deckte die Bestellung nicht (geschaetzt ${Number(vorbereitet.kosten).toFixed(2)} USD zzgl. Einfuhrumsatzsteuer).`
-                : bezahlt === false
-                  ? 'Der Automat hat aus dem Wallet bezahlen lassen, CJ hat aber NICHT abgebucht (Guthaben am Ende doch zu knapp?).'
-                  : 'Ob CJ abgebucht hat, liess sich nicht pruefen — bitte in CJ nachsehen.';
-              sendOpsAlert(
-                `📦 CJ-Bestellung angelegt — bitte in CJ BEZAHLEN (${cjErgebnis.cjBestellnummer})`,
-                `<h2>Bestellung bei CJ angelegt, aber noch nicht bezahlt</h2>` +
-                `<p>${warum} CJ verschickt erst, wenn sie bezahlt ist.</p>` +
-                `<p><b>CJ-Bestellung:</b> ${cjErgebnis.cjBestellnummer}<br><b>Kunde:</b> ${String(orderData.customer_email).replace(/[<>&]/g, '')}</p>` +
-                `<p>Bitte in CJ unter „Orders" bezahlen — oder das Wallet aufladen (PayPal, Payoneer), ` +
-                `dann laufen kuenftige Bestellungen von selbst durch.</p>`
-              );
-            } else {
-              // Nach dem Abbuchen: Reicht das Wallet noch fuer die naechsten?
-              const rest = await cjBestellung.walletGuthaben(cjAPI);
-              const grenze = Number(process.env.CJ_WALLET_WARNUNG || 30);
-              if (Number.isFinite(rest) && rest < grenze) {
-                sendOpsAlert(
-                  `💰 CJ-Wallet fast leer — noch ${rest.toFixed(2)} USD`,
-                  `<p>Im CJ-Wallet sind noch <b>${rest.toFixed(2)} USD</b> (Warngrenze ${grenze} USD). ` +
-                  `Reicht es fuer eine Bestellung nicht mehr, wird sie nur noch angelegt und muss von Hand bezahlt werden.</p>` +
-                  `<p>Aufladen in CJ per PayPal oder Payoneer.</p>`
-                );
-              }
-            }
-          } catch (cjError) {
-            console.error('❌ CJ-Bestellung fehlgeschlagen:', cjError.message);
-            // Die Mail enthaelt alles, was man zum Nachbestellen von Hand
-            // braucht. Vorher stand darin nur die Bestellnummer — und die
-            // Adresse haette man erst in Stripe suchen muessen.
-            const f = (x) => String(x == null ? '' : x).replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
-            const adr = (() => { try { return JSON.parse(orderData.shipping_address || '{}'); } catch (_) { return {}; } })();
-            const zeilen = orderData.items.map((i) =>
-              `<li>${f(i.quantity)} × ${f(i.product_name)} — SKU <code>${f(i.product_sku || 'FEHLT')}</code>${i.color ? ' — Farbe ' + f(i.color) : ''}</li>`
-            ).join('');
-            sendOpsAlert(
-              `⚠️ CJ-Bestellung fehlgeschlagen — BEZAHLT, bitte von Hand bestellen (${orderData.customer_email})`,
-              `<h2>Bezahlte Bestellung konnte nicht bei CJ angelegt werden</h2>` +
-              `<p><b>Grund:</b> ${f(cjError.message)}</p>` +
-              `<p><b>Stripe-Zahlung:</b> ${f(session.payment_intent)}<br><b>Betrag:</b> ${f(orderData.total_amount)} ${f(orderData.currency)}</p>` +
-              `<p><b>Liefern an:</b><br>${f(orderData.shipping_name || orderData.customer_name)}<br>${f(adr.line1)}${adr.line2 ? '<br>' + f(adr.line2) : ''}<br>${f(adr.postal_code)} ${f(adr.city)}<br>${f(adr.country)}<br>${f(orderData.customer_email)}</p>` +
-              `<p><b>Positionen:</b></p><ul>${zeilen}</ul>`
-            );
-          }
-          // Getrennt vom Bestellen: Ein Datenbankfehler hier darf NICHT als
-          // "CJ-Bestellung fehlgeschlagen" gemeldet werden. Im alten Block
-          // stand beides im selben try — ein toter Datenbankzugriff haette
-          // eine erfolgreiche Bestellung als gescheitert gemeldet.
-          if (cjErgebnis) {
+          // Aus welchem CJ-Lager kommt jede Position? Steht in products.json
+          // ("lager": "DE", seit 04.11.2026); ohne Angabe China. CJ verschickt
+          // eine Bestellung nur aus EINEM Land — ein gemischter Warenkorb wird
+          // zu je einer CJ-Bestellung pro Lager. Jeder Teil wird fuer sich
+          // bestellt, bezahlt und gemeldet: Scheitert einer, laeuft der andere
+          // trotzdem, und die Warnmail nennt nur die Positionen, die fehlen.
+          const lagerFuer = lagerNachProdukt();
+          const gruppen = cjBestellung.nachLager(orderData.items.map((i) => ({
+            sku: i.product_sku,
+            quantity: i.quantity,
+            bezeichnung: i.product_name,
+            farbe: i.color,
+            preisEur: Number(i.unit_price),
+            lager: lagerFuer(i),
+          })));
+          for (const gruppe of gruppen) {
+            const teil = gruppen.length > 1 ? ` (Teil ab Lager ${gruppe.lager})` : '';
+            let cjErgebnis = null;
+            let vorbereitet = null;
             try {
-              await dbOperations.addTracking({
-                order_id: orderData.order_id,
-                status: 'order_placed',
-                description: 'Bestellung an CJ Dropshipping gesendet',
-                tracking_number: cjErgebnis.cjBestellnummer,
-                carrier: 'CJ Dropshipping'
+              vorbereitet = await cjBestellung.bereiteVor(cjAPI, {
+                zahlungsId: session.payment_intent,
+                bestellId: orderData.order_id,
+                adresse: JSON.parse(orderData.shipping_address || '{}'),
+                name: orderData.shipping_name || orderData.customer_name,
+                email: orderData.customer_email,
+                telefon: orderData.customer_phone,
+                // Fuer die 150-€-Grenze der IOSS (nur Ware aus China). Nur bei
+                // EUR-Bestellungen bekannt; Bestellungen in anderer Waehrung
+                // gehen fast immer ausserhalb der EU, wo IOSS ohnehin nicht
+                // greift. Bei geteiltem Warenkorb zaehlt der Wert dieses Teils.
+                warenwertEur: orderData.currency === 'EUR' ? warenwertTeil(gruppe, orderData.subtotal) : undefined,
+                positionen: gruppe.positionen,
+                herkunft: gruppe.lager,
+                nummerZusatz: gruppen.length > 1 ? `-${gruppe.lager}` : '',
+              }, {
+                // Entscheidung vom 23.09.: CJs IOSS (3). Aenderbar ohne Deploy.
+                iossType: process.env.CJ_IOSS_TYPE || 3,
+                iossNumber: process.env.CJ_IOSS_NUMBER || '',
+                // Nur wenn das Wallet die Bestellung deckt, wird abgebucht.
+                // Je Teil neu gefragt: der erste Teil hat schon abgebucht.
+                guthaben: await cjBestellung.walletGuthaben(cjAPI),
               });
-            } catch (e) {
-              console.warn('⚠️ CJ-Bestellung angelegt, aber nicht in der Datenbank vermerkt:', e.message);
+              cjErgebnis = await cjBestellung.bestelle(cjAPI, vorbereitet.nutzlast);
+              // Ob wirklich abgebucht wurde, sagt nur CJ selbst — payType 2 ist
+              // ein Auftrag, keine Bestaetigung (die Steuer kennt man vorher
+              // nicht auf den Cent).
+              const bezahlt = vorbereitet.payType === 2
+                ? await cjBestellung.istBezahlt(cjAPI, cjErgebnis.cjBestellnummer)
+                : false;
+              console.log(`✅ CJ-Bestellung angelegt${teil}: ${cjErgebnis.cjBestellnummer} (Versand: ${vorbereitet.versand.logisticName}, ${bezahlt === true ? 'aus dem Wallet bezahlt' : bezahlt === false ? 'NICHT bezahlt' : 'Bezahlung unklar'})`);
+
+              // Angelegt, aber nicht bezahlt: CJ verschickt erst nach Bezahlung.
+              // Ohne diesen Hinweis laege die Bestellung still im CJ-Konto.
+              if (bezahlt !== true) {
+                const steuer = cjBestellung.EU_LAGER.has(gruppe.lager) ? 'zzgl. Steuer' : 'zzgl. Einfuhrumsatzsteuer';
+                const warum = vorbereitet.payType !== 2
+                  ? `Das CJ-Wallet deckte die Bestellung nicht (geschaetzt ${Number(vorbereitet.kosten).toFixed(2)} USD ${steuer}).`
+                  : bezahlt === false
+                    ? 'Der Automat hat aus dem Wallet bezahlen lassen, CJ hat aber NICHT abgebucht (Guthaben am Ende doch zu knapp?).'
+                    : 'Ob CJ abgebucht hat, liess sich nicht pruefen — bitte in CJ nachsehen.';
+                sendOpsAlert(
+                  `📦 CJ-Bestellung angelegt${teil} — bitte in CJ BEZAHLEN (${cjErgebnis.cjBestellnummer})`,
+                  `<h2>Bestellung bei CJ angelegt, aber noch nicht bezahlt</h2>` +
+                  `<p>${warum} CJ verschickt erst, wenn sie bezahlt ist.</p>` +
+                  `<p><b>CJ-Bestellung:</b> ${cjErgebnis.cjBestellnummer}<br><b>Kunde:</b> ${String(orderData.customer_email).replace(/[<>&]/g, '')}</p>` +
+                  `<p>Bitte in CJ unter „Orders" bezahlen — oder das Wallet aufladen (PayPal, Payoneer), ` +
+                  `dann laufen kuenftige Bestellungen von selbst durch.</p>`
+                );
+              } else {
+                // Nach dem Abbuchen: Reicht das Wallet noch fuer die naechsten?
+                const rest = await cjBestellung.walletGuthaben(cjAPI);
+                const grenze = Number(process.env.CJ_WALLET_WARNUNG || 30);
+                if (Number.isFinite(rest) && rest < grenze) {
+                  sendOpsAlert(
+                    `💰 CJ-Wallet fast leer — noch ${rest.toFixed(2)} USD`,
+                    `<p>Im CJ-Wallet sind noch <b>${rest.toFixed(2)} USD</b> (Warngrenze ${grenze} USD). ` +
+                    `Reicht es fuer eine Bestellung nicht mehr, wird sie nur noch angelegt und muss von Hand bezahlt werden.</p>` +
+                    `<p>Aufladen in CJ per PayPal oder Payoneer.</p>`
+                  );
+                }
+              }
+            } catch (cjError) {
+              console.error(`❌ CJ-Bestellung fehlgeschlagen${teil}:`, cjError.message);
+              // Die Mail enthaelt alles, was man zum Nachbestellen von Hand
+              // braucht — nur fuer DIESEN Teil, damit nichts doppelt bestellt wird.
+              const f = (x) => String(x == null ? '' : x).replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+              const adr = (() => { try { return JSON.parse(orderData.shipping_address || '{}'); } catch (_) { return {}; } })();
+              const zeilen = gruppe.positionen.map((i) =>
+                `<li>${f(i.quantity)} × ${f(i.bezeichnung)} — SKU <code>${f(i.sku || 'FEHLT')}</code>${i.farbe ? ' — Farbe ' + f(i.farbe) : ''}</li>`
+              ).join('');
+              sendOpsAlert(
+                `⚠️ CJ-Bestellung fehlgeschlagen${teil} — BEZAHLT, bitte von Hand bestellen (${orderData.customer_email})`,
+                `<h2>Bezahlte Bestellung konnte nicht bei CJ angelegt werden</h2>` +
+                `<p><b>Grund:</b> ${f(cjError.message)}</p>` +
+                (gruppen.length > 1 ? `<p><b>Achtung, geteilter Warenkorb:</b> Dieser Teil kommt aus dem Lager ${f(gruppe.lager)}. Die übrigen Teile werden getrennt bestellt und gemeldet.</p>` : '') +
+                `<p><b>Stripe-Zahlung:</b> ${f(session.payment_intent)}<br><b>Betrag:</b> ${f(orderData.total_amount)} ${f(orderData.currency)}</p>` +
+                `<p><b>Liefern an:</b><br>${f(orderData.shipping_name || orderData.customer_name)}<br>${f(adr.line1)}${adr.line2 ? '<br>' + f(adr.line2) : ''}<br>${f(adr.postal_code)} ${f(adr.city)}<br>${f(adr.country)}<br>${f(orderData.customer_email)}</p>` +
+                `<p><b>Positionen${teil}:</b></p><ul>${zeilen}</ul>`
+              );
+            }
+            // Getrennt vom Bestellen: Ein Datenbankfehler hier darf NICHT als
+            // "CJ-Bestellung fehlgeschlagen" gemeldet werden. Im alten Block
+            // stand beides im selben try — ein toter Datenbankzugriff haette
+            // eine erfolgreiche Bestellung als gescheitert gemeldet.
+            if (cjErgebnis) {
+              try {
+                await dbOperations.addTracking({
+                  order_id: orderData.order_id,
+                  status: 'order_placed',
+                  description: `Bestellung an CJ Dropshipping gesendet${teil}`,
+                  tracking_number: cjErgebnis.cjBestellnummer,
+                  carrier: 'CJ Dropshipping'
+                });
+              } catch (e) {
+                console.warn('⚠️ CJ-Bestellung angelegt, aber nicht in der Datenbank vermerkt:', e.message);
+              }
             }
           }
         } else {

@@ -397,3 +397,77 @@ test('GEGENPROBE: die alte Nutzlast haette CJ genau so abgelehnt wie am 23.09.',
   assert.equal(ohnePuffer(13.00, 12.93), 2, 'Gegenprobe wertlos: ohne Puffer waere nicht bezahlt worden');
   assert.equal(cj.zahlweise(13.00, 12.93), 3);
 });
+
+// ── 8. Ware aus dem deutschen CJ-Lager (seit 04.11.2026) ────────────────
+//
+// Neue Produkte liegen im CJ-Lager in Deutschland (products.json:
+// "lager": "DE"). Bestellt der Automat sie wie bisher "ab China", findet CJ
+// keinen Versand oder schickt die Ware um die halbe Welt. Und ein Warenkorb
+// mit Ware aus beiden Lagern muss zu zwei CJ-Bestellungen werden.
+
+function nachbauMitFracht(opt = {}) {
+  const api = nachbauCj(opt);
+  api.aufrufe.frachtParameter = [];
+  const alt = api.freightCalculate.bind(api);
+  api.freightCalculate = async (p) => { api.aufrufe.frachtParameter.push(p); return alt(p); };
+  return api;
+}
+
+test('Ware aus dem DE-Lager geht ab Deutschland raus — Versand und Bestellung', async () => {
+  const api = nachbauMitFracht();
+  const b = { ...bestellungMond(), herkunft: 'DE' };
+  const { nutzlast, herkunft } = await cj.bereiteVor(api, b);
+  assert.equal(herkunft, 'DE');
+  assert.equal(nutzlast.fromCountryCode, 'DE');
+  assert.equal(api.aufrufe.frachtParameter[0].startCountryCode, 'DE', 'der Versand muss ab DE berechnet werden');
+});
+
+test('aus dem DE-Lager geht KEINE IOSS mit — auch nicht ueber 150 €', async () => {
+  const b = { ...bestellungMond(), herkunft: 'DE', warenwertEur: 400 };
+  const { nutzlast } = await cj.bereiteVor(nachbauCj(), b, { iossType: 3 });
+  assert.equal(nutzlast.iossType, undefined, 'aus einem EU-Lager wird nichts eingefuehrt');
+  assert.equal(nutzlast.iossNumber, undefined);
+});
+
+test('ohne Lagerangabe bleibt alles wie bisher: ab China, mit IOSS', async () => {
+  const api = nachbauMitFracht();
+  const { nutzlast } = await cj.bereiteVor(api, bestellungMond());
+  assert.equal(nutzlast.fromCountryCode, 'CN');
+  assert.equal(nutzlast.iossType, 3);
+  assert.equal(api.aufrufe.frachtParameter[0].startCountryCode, 'CN');
+});
+
+test('ein Tippfehler im Lager faellt auf China zurueck statt CJ etwas Unbekanntes zu schicken', () => {
+  assert.equal(cj.lagerVon({ lager: 'de' }), 'DE');
+  assert.equal(cj.lagerVon({ lager: 'Deutschland' }), 'CN');
+  assert.equal(cj.lagerVon({}), 'CN');
+});
+
+test('ein gemischter Warenkorb wird nach Lager geteilt, in Warenkorb-Reihenfolge', () => {
+  const gruppen = cj.nachLager([
+    { sku: 'A', lager: 'DE' }, { sku: 'B' }, { sku: 'C', lager: 'DE' },
+  ]);
+  assert.deepEqual(gruppen.map((g) => g.lager), ['DE', 'CN']);
+  assert.deepEqual(gruppen[0].positionen.map((p) => p.sku), ['A', 'C']);
+  assert.deepEqual(gruppen[1].positionen.map((p) => p.sku), ['B']);
+});
+
+test('Teilbestellungen bekommen eindeutige Nummern, die an der Zahlung haengen', () => {
+  const pi = 'pi_3UIZuMFTodqoWLSI0j0s4pDp';
+  const de = cj.bestellnummerFuer(pi, null, '-DE');
+  const cn = cj.bestellnummerFuer(pi, null, '-CN');
+  assert.notEqual(de, cn);
+  assert.ok(de.endsWith('-DE') && cn.endsWith('-CN'));
+  assert.equal(cj.bestellnummerFuer(pi, null, '-DE'), de, 'ein Wiederholungslauf ergibt dieselbe Nummer');
+  assert.equal(cj.bestellnummerFuer(pi), `MAIOS-${pi}`, 'ohne Teilung bleibt die Nummer wie bisher');
+  assert.ok(cj.bestellnummerFuer('x'.repeat(80), null, '-DE').length <= 50, 'CJ nimmt hoechstens 50 Zeichen');
+});
+
+test('der Webhook bestellt je Lager getrennt und meldet nur den gescheiterten Teil', () => {
+  assert.match(server, /const gruppen = cjBestellung\.nachLager\(/);
+  assert.match(server, /herkunft: gruppe\.lager,/);
+  assert.match(server, /nummerZusatz: gruppen\.length > 1 \? `-\$\{gruppe\.lager\}` : ''/);
+  assert.match(server, /const zeilen = gruppe\.positionen\.map\(/,
+    'die Warnmail darf nur die Positionen des gescheiterten Teils nennen — sonst wird doppelt bestellt');
+  assert.match(server, /function lagerNachProdukt\(\)/);
+});

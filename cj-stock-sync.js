@@ -68,9 +68,14 @@ function readStockValue(obj) {
 
 /**
  * Ermittelt den Gesamtbestand eines CJ-Produkts ueber alle Varianten.
+ *
+ * Mit `lager` (z. B. 'DE', seit 04.11.2026 fuer Ware aus dem deutschen
+ * CJ-Lager) zaehlt nur der Bestand in genau diesem Land — bestellt wird dort,
+ * Ware in China oder den USA hilft nicht. Zeilen ohne Laenderangabe zaehlen
+ * dann nicht; bleibt gar keine Zahl uebrig, gibt es keine Aussage.
  * @returns {number|null} Summe, oder null wenn keine belastbare Aussage moeglich ist.
  */
-async function fetchCjStock(cjAPI, pid) {
+async function fetchCjStock(cjAPI, pid, lager = null) {
   try {
     const variantRes = await cjAPI.queryProductVariant(pid);
     if (!variantRes || variantRes.success === false || variantRes.result === false) return null;
@@ -81,8 +86,9 @@ async function fetchCjStock(cjAPI, pid) {
     let gotAnyNumber = false;
 
     for (const v of variants) {
-      // Manche Antworten tragen den Bestand direkt an der Variante.
-      let n = readStockValue(v);
+      // Manche Antworten tragen den Bestand direkt an der Variante — aber
+      // ueber alle Lager. Ist ein Lager vorgegeben, zaehlt nur die Lagerzeile.
+      let n = lager ? null : readStockValue(v);
 
       if (n === null && v.vid) {
         const stockRes = await cjAPI.getProductStockByVid(v.vid);
@@ -90,6 +96,7 @@ async function fetchCjStock(cjAPI, pid) {
         if (stockRes && stockRes.success !== false && stockRes.result !== false) {
           const rows = Array.isArray(stockRes.data) ? stockRes.data : [stockRes.data];
           for (const row of rows) {
+            if (lager && String((row && row.countryCode) || '').toUpperCase() !== lager) continue;
             const rowNum = readStockValue(row);
             if (rowNum !== null) { n = (n === null ? 0 : n) + rowNum; }
           }
@@ -131,7 +138,8 @@ async function runCjStockSync(cjAPI) {
       if (!product) continue;
       summary.matched++;
 
-      const stock = await fetchCjStock(cjAPI, pid);
+      const lager = product.lager ? String(product.lager).toUpperCase() : null;
+      const stock = await fetchCjStock(cjAPI, pid, lager);
       if (stock === null) { summary.unavailable++; continue; } // keine Aussage -> nichts aendern
       summary.checked++;
       messwerte.push({ pid, product, stock });

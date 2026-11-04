@@ -40,9 +40,14 @@ function extractCjPidsFromCsv() {
   return [...pids];
 }
 
-/** Ordnet eine CJ-Produkt-ID einem Produkt aus products.json zu (ueber sku). */
+/**
+ * Ordnet eine CJ-Produkt-ID einem Produkt aus products.json zu: zuerst ueber
+ * das Feld cjPid (Produkte mit nur einer Variante tragen als sku die
+ * Varianten-SKU, in der die Produkt-ID nicht vorkommt), sonst ueber sku.
+ */
 function matchProductByPid(pid, products) {
-  return products.find((p) => p && typeof p.sku === 'string' && p.sku.includes(pid)) || null;
+  return products.find((p) => p && p.cjPid && String(p.cjPid) === String(pid))
+    || products.find((p) => p && typeof p.sku === 'string' && p.sku.includes(pid)) || null;
 }
 
 /**

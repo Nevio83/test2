@@ -38,6 +38,34 @@
 // Versand am 07.09. abgefragt wurde.
 const HERKUNFT = 'CN';
 
+// Seit 04.11.2026 kommen neue Produkte aus dem deutschen CJ-Lager. Sie tragen
+// in products.json "lager": "DE"; fehlt das Feld, gilt weiter China. Aus einem
+// EU-Lager wird nichts eingefuehrt: keine Einfuhrumsatzsteuer, also auch keine
+// IOSS-Angabe.
+const EU_LAGER = new Set(['AT', 'BE', 'CZ', 'DE', 'DK', 'ES', 'FR', 'HU', 'IE', 'IT', 'NL', 'PL', 'PT', 'SE']);
+
+/** Lagerland einer Position (zwei Grossbuchstaben); ohne Angabe China. */
+function lagerVon(p) {
+  const l = String((p && p.lager) || HERKUNFT).trim().toUpperCase();
+  return /^[A-Z]{2}$/.test(l) ? l : HERKUNFT;
+}
+
+/**
+ * Teilt die Positionen nach Lager. CJ verschickt eine Bestellung immer aus
+ * EINEM Land (fromCountryCode) — ein Warenkorb mit Ware aus China UND aus
+ * Deutschland wird deshalb zu zwei CJ-Bestellungen.
+ * @returns {Array<{lager: string, positionen: Array}>} Reihenfolge wie im Warenkorb
+ */
+function nachLager(positionen) {
+  const gruppen = new Map();
+  for (const p of positionen || []) {
+    const l = lagerVon(p);
+    if (!gruppen.has(l)) gruppen.set(l, []);
+    gruppen.get(l).push(p);
+  }
+  return [...gruppen].map(([lager, liste]) => ({ lager, positionen: liste }));
+}
+
 // CJ verlangt neben dem Laendercode den Laendernamen. Fuer Laender, die hier
 // nicht stehen, geht der Code selbst mit — das ist besser als nichts und
 // faellt spaetestens bei CJ auf.
@@ -56,10 +84,14 @@ const LAENDERNAMEN = {
  * Durchlauf haette bei CJ ein zweites Mal bestellt. Mit einer Nummer, die an
  * der Zahlung haengt, weist CJ das Duplikat ab.
  */
-function bestellnummerFuer(zahlungsId, rueckfall) {
+function bestellnummerFuer(zahlungsId, rueckfall, zusatz = '') {
   const basis = String(zahlungsId || rueckfall || '').replace(/[^A-Za-z0-9_-]/g, '');
   if (!basis) throw new Error('keine Zahlungs-ID fuer die CJ-Bestellnummer');
-  return `MAIOS-${basis}`.slice(0, 50);
+  // Wird ein Warenkorb auf zwei Lager geteilt, bekommt jede Teilbestellung
+  // ihr Lager als Zusatz (…-DE, …-CN) — eindeutig und trotzdem an die Zahlung
+  // gebunden, ein Wiederholungslauf bestellt also auch hier nicht doppelt.
+  const z = String(zusatz || '').replace(/[^A-Za-z0-9_-]/g, '');
+  return `MAIOS-${basis}`.slice(0, 50 - z.length) + z;
 }
 
 /**
@@ -166,9 +198,9 @@ function versandPreis(o) {
 }
 
 /** Guenstigster Versandweg, den CJ fuer genau diese Varianten anbietet. */
-async function guenstigsterVersand(api, positionen, zielLand) {
+async function guenstigsterVersand(api, positionen, zielLand, herkunft = HERKUNFT) {
   const r = await api.freightCalculate({
-    startCountryCode: HERKUNFT,
+    startCountryCode: herkunft,
     endCountryCode: zielLand,
     products: positionen.map((p) => ({ vid: p.vid, quantity: p.quantity })),
   });
@@ -181,7 +213,7 @@ async function guenstigsterVersand(api, positionen, zielLand) {
 }
 
 /** Die Nutzlast in dem flachen Format, das CJs createOrderV2 erwartet. */
-function baueNutzlast({ bestellnummer, adresse, name, email, telefon, positionen, logisticName, ioss, payType }) {
+function baueNutzlast({ bestellnummer, adresse, name, email, telefon, positionen, logisticName, ioss, payType, herkunft = HERKUNFT }) {
   const land = String(adresse.country || '').toUpperCase();
   return {
     ...(ioss || {}),
@@ -200,7 +232,7 @@ function baueNutzlast({ bestellnummer, adresse, name, email, telefon, positionen
     shippingPhone: telefon || '',
     email: email || '',
     logisticName,
-    fromCountryCode: HERKUNFT,
+    fromCountryCode: herkunft,
     products: positionen.map((p) => ({ vid: p.vid, quantity: p.quantity })),
   };
 }
@@ -210,15 +242,18 @@ function baueNutzlast({ bestellnummer, adresse, name, email, telefon, positionen
  *
  * @param {object} api  CJ-Client (makeRequest, freightCalculate)
  * @param {object} b    { zahlungsId, bestellId, adresse, name, email, telefon,
- *                        warenwertEur, positionen: [{ sku, quantity, bezeichnung }] }
+ *                        warenwertEur, positionen: [{ sku, quantity, bezeichnung }],
+ *                        herkunft (Lagerland, Standard CN), nummerZusatz }
  * @param {object} [e]  { iossType, iossNumber, guthaben } — aus der Umgebung
  * @returns {Promise<{nutzlast, versand, positionen, kosten, payType}>}
  * @throws  mit einer Meldung, die sagt, WAS fehlt
  */
 async function bereiteVor(api, b, e = {}) {
+  const herkunft = lagerVon({ lager: b.herkunft });
   // IOSS zuerst: Passt sie nicht (ueber 150 €, keine Nummer), braucht es
-  // gar keine Anfrage an CJ.
-  const ioss = iossAngabe(
+  // gar keine Anfrage an CJ. Ware aus einem EU-Lager wird nicht eingefuehrt —
+  // dort gibt es keine IOSS.
+  const ioss = EU_LAGER.has(herkunft) ? null : iossAngabe(
     { iossType: e.iossType === undefined ? 3 : e.iossType, iossNumber: e.iossNumber },
     b.warenwertEur
   );
@@ -245,8 +280,8 @@ async function bereiteVor(api, b, e = {}) {
     aufgeloest.push({ sku: p.sku, vid: v.vid, quantity: menge, bezeichnung: v.bezeichnung || was, preis: v.preis });
   }
 
-  const versand = await guenstigsterVersand(api, aufgeloest, String(a.country).toUpperCase());
-  if (!versand) throw new Error(`CJ bietet keinen Versand nach ${a.country} fuer diese Varianten an`);
+  const versand = await guenstigsterVersand(api, aufgeloest, String(a.country).toUpperCase(), herkunft);
+  if (!versand) throw new Error(`CJ bietet keinen Versand nach ${a.country} fuer diese Varianten an (ab Lager ${herkunft})`);
 
   // Geschaetzte Kosten in CJs Waehrung (USD): Ware + Versand, ohne Steuer.
   // Fehlt ein Preis, ist die Summe unbekannt — dann wird nicht automatisch
@@ -256,7 +291,7 @@ async function bereiteVor(api, b, e = {}) {
   const payType = zahlweise(Number(e.guthaben), kosten);
 
   const nutzlast = baueNutzlast({
-    bestellnummer: bestellnummerFuer(b.zahlungsId, b.bestellId),
+    bestellnummer: bestellnummerFuer(b.zahlungsId, b.bestellId, b.nummerZusatz),
     adresse: a,
     name: b.name,
     email: b.email,
@@ -265,8 +300,9 @@ async function bereiteVor(api, b, e = {}) {
     logisticName: versand.logisticName,
     ioss,
     payType,
+    herkunft,
   });
-  return { nutzlast, versand, positionen: aufgeloest, kosten, payType };
+  return { nutzlast, versand, positionen: aufgeloest, kosten, payType, herkunft };
 }
 
 /**
@@ -331,7 +367,7 @@ async function istBezahlt(api, cjBestellnummer) {
 }
 
 module.exports = {
-  HERKUNFT, LAENDERNAMEN, IOSS_GRENZE_EUR, WALLET_PUFFER,
+  HERKUNFT, EU_LAGER, LAENDERNAMEN, IOSS_GRENZE_EUR, WALLET_PUFFER, lagerVon, nachLager,
   ausDemNotbetrieb, bestellnummerFuer, vidFuerSku, versandPreis, guenstigsterVersand,
   iossAngabe, zahlweise, walletGuthaben,
   baueNutzlast, bereiteVor, bestelle, istBezahlt,

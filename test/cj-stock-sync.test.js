@@ -97,3 +97,50 @@ test('Antwort des Lieferanten im Original wird richtig gelesen', () => {
   };
   assert.equal(readStockValue(bestand), 12388);
 });
+
+// ── Ware aus dem deutschen CJ-Lager (seit 04.11.2026) ─────────────────
+// Bestellt wird dort — Bestand in China oder den USA darf ein DE-Produkt
+// nicht "lieferbar" halten, und fehlt die DE-Zeile, gibt es keine Aussage.
+
+const { fetchCjStock } = require('../cj-stock-sync');
+const { matchProductByPid } = require('../cj-price-sync');
+
+function lagerApi(zeilen) {
+  return {
+    async queryProductVariant() { return { result: true, data: [{ vid: 'v1', inventoryNum: 5000 }] }; },
+    async getProductStockByVid() { return { result: true, data: zeilen }; },
+  };
+}
+
+test('mit Lager DE zaehlt nur der deutsche Bestand', async () => {
+  const api = lagerApi([
+    { countryCode: 'CN', areaEn: 'China Warehouse', storageNum: 12388 },
+    { countryCode: 'DE', areaEn: 'Germany Warehouse', storageNum: 85 },
+  ]);
+  assert.equal(await fetchCjStock(api, '123', 'DE'), 85);
+});
+
+test('ist das DE-Lager leer, ist das Produkt ausverkauft — China rettet es nicht', async () => {
+  const api = lagerApi([
+    { countryCode: 'CN', storageNum: 12388 },
+    { countryCode: 'DE', storageNum: 0 },
+  ]);
+  assert.equal(await fetchCjStock(api, '123', 'DE'), 0);
+});
+
+test('fehlt die DE-Zeile ganz, gibt es keine Aussage statt einer erfundenen Null', async () => {
+  const api = lagerApi([{ countryCode: 'CN', storageNum: 12388 }]);
+  assert.equal(await fetchCjStock(api, '123', 'DE'), null);
+});
+
+test('ohne Lager zaehlt wie bisher alles — und der Variantenwert', async () => {
+  const api = lagerApi([{ countryCode: 'DE', storageNum: 85 }]);
+  assert.equal(await fetchCjStock(api, '123'), 5000, 'die Variante traegt hier selbst einen Bestand');
+});
+
+test('Produkte mit nur einer Variante finden ihre CJ-Produkt-ID ueber cjPid', () => {
+  const produkte = [{ id: 1, sku: 'CJ1621032671155597312' }, { id: 52, sku: 'CJQJ204534103AZ', cjPid: '2045341034818355201' }];
+  assert.equal(matchProductByPid('2045341034818355201', produkte).id, 52);
+  assert.equal(matchProductByPid('1621032671155597312', produkte).id, 1);
+  assert.equal(matchProductByPid('999', produkte), null);
+});
