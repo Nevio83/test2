@@ -169,3 +169,6 @@ Fortschrittsbericht*.pdf
 Claude outputs/cj-*.json
 Claude outputs/nachtrag-pids.txt
 Claude outputs/preisplan.json
+
+# Rohdaten und Bilder fuer neue Produkte (node cj-neue-produkte.js)
+Claude outputs/neue-produkte/
