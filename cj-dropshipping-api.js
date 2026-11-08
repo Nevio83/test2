@@ -444,7 +444,9 @@ class CJDropshippingAPI {
    * Delete Order
    */
   async deleteOrder(orderId) {
-    return this.makeRequest('/api2.0/v1/shopping/order/deleteOrder', 'POST', { orderId });
+    // CJ erwartet DELETE mit der Nummer in der Adresse; POST beantwortet CJ mit
+    // "Request method 'POST' not supported" (gesehen bei der Testbestellung am 08.11.2026).
+    return this.makeRequest(`/api2.0/v1/shopping/order/deleteOrder?orderId=${encodeURIComponent(orderId)}`, 'DELETE');
   }
 
   /**
