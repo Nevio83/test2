@@ -32,8 +32,8 @@ Hinweise
 | Mi 4.11. 12 Uhr | Mo-Story mit Erzählerstimme (Test 1 von 2): „Drei Uhr nachts. Ich muss mal.“ (Story 23,4 s) | 25 Nachtlichter mit Bewegungsmelder | 25_nachtlicht_mo-story_cgi_20261104.mp4 | geplant für 04.11. 12:00 (beide Kanäle, TikTok-Zeitplan; Freigabe Nevio 3.11. ca. 20:4x „mach für beide Kanäle die beiden Videos“; KI-Kennzeichnung an, Titelbild ca. 20 s, Hashtags geprüft) |
 | Di 3.11. 20 Uhr (Sonderslot, Nevio 3.11. 19:3x: „lade um 20 Uhr noch ein Video hoch“) | Handy-Look-Pointe: „17 Uhr. Draußen schon dunkel.“ (Loop 8 s) | 21 Led crystal lampe (Krone) | 21_crystal-lampe_polarlicht_cgi_20261104.mp4 | gepostet um 20:00 (beide Kanäle, laut Studio; vorher geplant, TikTok-Zeitplan; Captions wie Abschnitt Mi 4.11. 18 Uhr; Titelbild auf @maiosshop 4 s, auf @maiosshop.com Standard, weil das Chrome-Fenster dort zu klein war) |
 | Mi 4.11. 18 Uhr | Handy-Look-Pointe: „Nach dem Training. Shake? Läuft schon.“ (Loop 8 s), Ersatz für die Lampe (läuft schon 3.11. 20 Uhr) | 11 Mixer (Blau) | 11_mixer_gym_cgi_20261104.mp4 | geplant für 04.11. 18:00 (beide Kanäle, TikTok-Zeitplan; Freigabe Nevio 3.11. ca. 20:4x; Titelbild Standard = erstes Bild mit Mixer + Produktwort; Hashtags geprüft) |
-| Do 5.11. 12 Uhr | Trend-Format | | | offen |
-| Do 5.11. 18 Uhr | Trend-Format | | | offen |
+| Do 5.11. 12 Uhr | Geschenkidee unter 20 €: „Das Riesenrad steht schon. Im Glas, auf meinem Regal.“ (Loop 8 s) | 50 Krystall Ball Nachtlampe (Riesenrad) | 50_krystall-ball_riesenrad_cgi_20261105.mp4 | geplant für 05.11. 12:00 (beide Kanäle, TikTok-Zeitplan; auf Nevios Wunsch von 18 Uhr auf 12 Uhr verlegt, siehe Detail) |
+| Do 5.11. 18 Uhr | Handy-Look-Pointe: „Schlauch rein. Läuft.“ (Loop 8 s) | 10 Wasserspender (Weiß) | 10_wasserspender_kueche_cgi_20261105.mp4 | geplant für 05.11. 18:00 (beide Kanäle, TikTok-Zeitplan; siehe Detail) |
 | Fr 6.11. 12 Uhr | Trend-Format | | | offen |
 | Fr 6.11. 18 Uhr | Trend-Format | | | offen |
 | Reserve | zeitloser Satisfying-Loop für Notfälle, ohne Datum und Anlass | | | offen |
@@ -226,3 +226,28 @@ Je fertigem Video ein Abschnitt „### <Slot>“ mit: Datei (+ `_ohne_musik`), T
 - Zweiter Blick: „freigabefähig“, kein Muss. Kann: „Shake“ → „Smoothie“, Messer im Sockel nicht sichtbar, Wirbel bleibt marmoriert, Kernbild wieder „Wirbel in der Flasche“
 - KI-Kennzeichnung: nein
 
+### Do 5.11. 12 Uhr
+- Gebaut am 4./5.11. (Nevio: „mach TikTok Videos für morgen, wenn es keine gibt erstell welche“); zweiter Blick Runde 1 forderte Änderungen (Riesenrad-Form wich vom Shopfoto ab, zu ähnlich zur Schnee-Kugel), Runde 2 „freigabefähig“
+- Auf Nevios Wunsch („änder beides für 12 Uhr“) von 18 Uhr auf 12 Uhr verlegt; beim selben Slot läuft damit auch der Wasserspender (18 Uhr), beide mit unterschiedlichem Produkt
+- Datei: `50_krystall-ball_riesenrad_cgi_20261105.mp4` + `_ohne_musik.mp4` (Loop 8,0 s, −14,0/−14,1 LUFS)
+- Caption @maiosshop: Geschenkidee unter 20 € / Der Weihnachtsmarkt hat noch zu, das Riesenrad steht bei mir schon: Kristallkugel Nachtlampe mit Riesenrad im Glas, 7 Motive zur Auswahl. 16,99 €, Link im Profil. Riesenrad oder Sternenhimmel?
+- Hashtags: #werbung #nachtlampe #kristallkugel #geschenkidee
+- Angehefteter Kommentar: Riesenrad oder Sternenhimmel?
+- Szene: `scenes/kugel_riesenrad.js` + `_ton.py` (Riesenrad-Motiv in `lib/kugel_models.js` neu gebaut, 2. Runde mit H-Stützen, mehr Speichen, Kapsel-Gondeln)
+- Zweiter Blick Runde 2: freigabefähig, keine offenen Muss-Punkte
+- KI-Kennzeichnung: nein
+- Geplant auf beiden Kanälen für 05.11. 12:00 über TikTok-Zeitplan
+
+### Do 5.11. 18 Uhr
+- Gebaut am 4./5.11. zusammen mit dem Kugel-Video; zweiter Blick Runde 1 forderte Änderungen (Produktwort verschwand vor 3,0 s; Text zu ähnlich zum Homeoffice-Video; Hashtag #wasserflasche nicht in products.json verankert)
+- Fixes: Produktwort jetzt bis 3,75 s sichtbar; Text „Pumpt's direkt aus der Flasche.“ ersetzt durch „Schlauch rein. Läuft.“; Hashtag #wasserflasche ersetzt durch #schreibtisch (Produktslug elektrischer-wasserspender-fuer-schreibtisch); betroffene Sekunden (3,2–5,6 s) neu gerendert und in den Gesamt-Clip gespleißt
+- Bleibt auf 18 Uhr (Nevio: „Wasserspender soll 18“), nicht wie der Kugel-Slot auf 12 Uhr verlegt
+- Datei: `10_wasserspender_kueche_cgi_20261105.mp4` + `_ohne_musik.mp4` (Loop 8,0 s, −14,0/−14,1 LUFS, Titelbild 1,5 s)
+- Caption @maiosshop: Elektrischer Wasserspender für Gallon-Flaschen / Ich hab die Flasche nicht angefasst, und das Glas ist trotzdem voll. Schlauch rein, fertig – läuft direkt aus der Flasche. Wiederaufladbar, für Büro und Zuhause. 35,99 €, Link im Profil. Weiß oder Schwarz?
+- Caption @maiosshop.com: gleich, Hook-Zeile „Die Flasche bleibt stehen, das Glas wird trotzdem voll.“
+- Hashtags: #werbung #wasserspender #schreibtisch #küche
+- Angehefteter Kommentar: Weiß oder Schwarz?
+- Szene: `scenes/wasser_kueche.js` + `_ton.py`
+- Zweiter Blick Runde 2 (nach Fix nicht erneut vorgelegt, Muss-Punkte direkt behoben und per Stichprobe auf den fertigen Stills geprüft: Wortzeit, neuer Text, Preis 35,99 € stimmen)
+- KI-Kennzeichnung: nein
+- Geplant auf beiden Kanälen für 05.11. 18:00 über TikTok-Zeitplan
