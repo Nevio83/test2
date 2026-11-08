@@ -11,7 +11,7 @@
  * 1. Mojibake-Reparatur (app.js): die betroffenen Bytes wurden über eine
  *    CP1252-Rückabbildung repariert, nicht neu getippt -- ein Test prüft,
  *    dass kein Muster dieser Art mehr vorkommt.
- * 2. konsole-daempfer.js: neues, zuerst geladenes Skript auf allen 56
+ * 2. konsole-daempfer.js: neues, zuerst geladenes Skript auf allen 55
  *    betroffenen Seiten. Dämpft console.log/info/debug außerhalb von
  *    localhost -- das Gegenstück zum LOG_LEVEL-Schalter in server.js, nur
  *    per Hostname statt ENV, weil es für statische Seiten keine ENV gibt.
@@ -128,7 +128,7 @@ test('GEGENPROBE: ein Skript, das AUCH auf localhost dämpft, würde auffallen',
     'die Gegenprobe muss zeigen, dass eine kaputte Hostname-Prüfung auch localhost dämpfen würde');
 });
 
-// ── 3. Einbindung: das Dämpfer-Skript läuft auf allen 56 Seiten ZUERST ─
+// ── 3. Einbindung: das Dämpfer-Skript läuft auf allen 55 Seiten ZUERST ─
 
 const SEITEN = [
   'cart.html', 'gutscheine.html', 'success.html', 'wishlist.html',
@@ -138,8 +138,8 @@ const SEITEN = [
     .map((d) => 'produkte/' + d)
 ];
 
-test('konsole-daempfer.js ist auf allen 56 betroffenen Seiten das erste <script>', () => {
-  assert.equal(SEITEN.length, 56, 'unerwartete Seitenzahl -- Liste der Produktseiten geändert?');
+test('konsole-daempfer.js ist auf allen 55 betroffenen Seiten das erste <script>', () => {
+  assert.equal(SEITEN.length, 55, 'unerwartete Seitenzahl -- Liste der Produktseiten geändert?');
   for (const rel of SEITEN) {
     const html = fs.readFileSync(path.join(WURZEL, rel), 'utf8');
     const skriptTreffer = [...html.matchAll(/<script\b[^>]*\ssrc="([^"]+)"/g)];

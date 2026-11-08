@@ -76,9 +76,9 @@ test('genau eine Stelle in app.js legt das Versprechen an — ohne ?v=', () => {
   }
 });
 
-test('alle 51 Produktseiten legen das Versprechen im Inline-Skript an', () => {
+test('alle 50 Produktseiten legen das Versprechen im Inline-Skript an', () => {
   const seiten = produktseiten();
-  assert.ok(seiten.length >= 51, `nur ${seiten.length} Produktseiten gefunden`);
+  assert.ok(seiten.length >= 50, `nur ${seiten.length} Produktseiten gefunden`);
   for (const seite of seiten) {
     const arten = abrufe(lies(seite)).map((a) => a.art);
     assert.deepStrictEqual(arten, ['legt an'], `${seite}: ${arten.join(', ') || 'kein Abruf'}`);

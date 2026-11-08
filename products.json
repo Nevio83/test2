@@ -306,32 +306,6 @@
     "showInSlider": true
   },
   {
-    "id": 28,
-    "name": "Mini Muskel Massage Pistole",
-    "slug": "mini-muskel-massage-pistole",
-    "price": 24.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Mini Muskel Massage Pistole.jpeg",
-    "description": "Kompakte Mini-Massage-Pistole für Muskelentspannung und Regeneration. Ideal für Sport, Fitness und tägliche Wellness-Routine.",
-    "sku": "ALI1005007060455752",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "tags": [
-      "massage",
-      "muskel",
-      "regeneration",
-      "sport"
-    ],
-    "features": [
-      "Kompaktes Mini-Design",
-      "Verschiedene Massage-Aufsätze",
-      "Einstellbare Geschwindigkeitsstufen",
-      "Wiederaufladbar über USB",
-      "Leise Betriebsgeräusche"
-    ],
-    "showInSlider": false
-  },
-  {
     "id": 29,
     "name": "Haaröl-Applikator Kopfhaut Massager",
     "slug": "haaroel-applikator-kopfhaut-massager",

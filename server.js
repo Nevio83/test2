@@ -753,8 +753,9 @@ const ENTFERNTE_PRODUKTE = {
   gesichtssauna: 'mitesserentferner-geraet',
   'elektronischer-premium-jade-stein': 'jade-stein',
   'nordic-crystal-lamp': 'led-crystal-lampe',
+  'mini-muskel-massage-pistole': 'mini-massagepistole',
 };
-const ENTFERNTE_IDS = { 34: 'gesichtssauna', 39: 'elektronischer-premium-jade-stein', 46: 'nordic-crystal-lamp' };
+const ENTFERNTE_IDS = { 34: 'gesichtssauna', 39: 'elektronischer-premium-jade-stein', 46: 'nordic-crystal-lamp', 28: 'mini-muskel-massage-pistole' };
 app.use((req, res, next) => {
   const m = req.path.match(/^\/produkte\/(?:produkt-(\d+)|([a-z0-9-]+))\.html$/);
   const alt = m && (m[1] ? ENTFERNTE_IDS[m[1]] : m[2]);

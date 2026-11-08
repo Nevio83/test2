@@ -2420,7 +2420,7 @@ test('kein Ausschlusswort trifft das eigene Produkt', () => {
   assert.ok(tokens.some((t) => t.startsWith('gun')),
     'genau daran erkennt die Pruefung so ein Wort');
   assert.equal(
-    [].concat(konfig.produkte['28'].ausschluss || []).map(normalisiere).includes('gun'),
+    [].concat(konfig.produkte['58'].ausschluss || []).map(normalisiere).includes('gun'),
     false, '"gun" darf deshalb nicht in der Liste stehen');
 });
 
