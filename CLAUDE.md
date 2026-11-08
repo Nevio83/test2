@@ -10,7 +10,39 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 
 ---
 
-## 0. Aktueller Stand (2026-09-07)
+## 0. Aktueller Stand (2026-11-08)
+
+### Neu seit November 2026 (zuerst lesen)
+- **Sortiment: 51 Produkte**, davon **41 bei CJ** und 10 mit `ALI`-SKU. **15 Produkte (IDs 52–66)
+  kommen aus dem deutschen CJ-Lager** (Feld `lager: "DE"` in `products.json`, dazu `cjPid`):
+  Versand DE → DE kostenlos, 3–8 Werktage statt 10–20. Die Produkt-IDs 28, 34, 39 und 46 sind
+  entfernt (bei CJ ausgelaufen bzw. doppelt) und leiten per 301 weiter (`ENTFERNTE_PRODUKTE` in
+  `server.js`). **Entfernte IDs nicht neu vergeben.**
+- **Preise: ca. 40 % Gewinn auf die Gesamtkosten** (Einkauf × 0,92 €/$, 19 % Einfuhr-USt bzw.
+  MwSt., Versand, Klarna 2,99 % + 0,35 €). Formel und alle Zahlen: `excel/Maios Preisanalyse
+  2026-06.xlsx` (nicht im Repo) und `excel/Maios Produkte.csv`. Kleinunternehmer § 19 UStG:
+  Preis-Hinweis „Endpreis, keine MwSt."
+- **Keine Rabatt-Anzeigen mehr:** keine Streichpreise, kein Flash-Sale/Countdown, kein
+  Mengenrabatt, keine Besucherzähler, kein „Bestseller", „Passt gut dazu" statt „Häufig zusammen
+  gekauft". Gutscheine: WELCOME25 und BUNDLE30 aus, WILLKOMMEN10 aktiv. Zahlarten nur **Karte +
+  Klarna** (kein PayPal; in AGB/Datenschutz steht es noch, siehe offene Punkte).
+- **Bestellung ab Lager DE:** `cj-bestellung.js` teilt einen Warenkorb nach Lager auf
+  (`nachLager`) und schickt je Lager eine eigene CJ-Bestellung (`MAIOS-…-DE` / `-CN`), ab EU-Lager
+  ohne IOSS. **Am 08.11.2026 mit einer echten Bestellung bei CJ geprüft** (angenommen, DPD DE to
+  DE, danach gelöscht). Bestand und Preis gleichen `cj-stock-sync.js` / `cj-price-sync.js` über
+  die CJ-Links in der CSV ab, bei DE-Produkten zählt nur der DE-Bestand.
+- **Neues Produkt anlegen (Ablauf):** `node cj-bestseller.js` (Kandidaten im DE-Lager suchen) →
+  `node cj-neue-produkte.js` (Daten + Bilder nach `Claude outputs/neue-produkte/<pid>/`) →
+  Seite aus `produkte/auto-bildschirm.html` als Vorlage, Galerie über `window.product.galerie`
+  (keine Einträge mehr in `product-gallery-complete.js` nötig) → `npm run seo` → CSV-Zeile mit
+  CJ-Link, `matching.einkaufspreise` in der Marketing-Config, Eintrag in
+  `bot/tiktok-quellen.json` (sonst wird der Bot-Test rot) → Seitenzahl in den Tests anpassen.
+  Prüfen: `npm run preischeck` fragt jedes CJ-Produkt live ab.
+- **CJ-API nur vom eigenen PC:** Die Zugangsdaten liegen in der lokalen `.env`; Skripte, die CJ
+  fragen, laufen im VS-Code-Terminal.
+- **Offene Punkte:** PayPal steht noch in `infos/agb.html` und `infos/datenschutz.html`;
+  Registrierungen für Elektrogeräte und Batterien (ElektroG/stiftung ear, BattDG) und
+  Verpackung (LUCID) prüfen, bevor die neuen Elektro-Produkte in größerer Zahl verkauft werden.
 
 - **Live:** **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet auf Apex) +
   Fallback `https://maios-shop.onrender.com`. Free-Plan (schläft nach 15 Min → erster Aufruf
@@ -142,6 +174,9 @@ npm test                     # Tests (test/lauf.js sammelt alle test/*.test.js e
 npm run lint                 # ESLint
 npm run seo                  # Strukturdaten + kanonische Adressen in die Seiten schreiben
 npm run test-cj-api          # CJ Dropshipping API-Integration testen
+npm run preischeck           # jedes CJ-Produkt live bei CJ abfragen (Preis, Varianten, Versand)
+node cj-bestseller.js        # Kandidaten für neue Produkte im deutschen CJ-Lager suchen
+node cj-neue-produkte.js     # Daten + Bilder ausgewählter Produkte holen
 node test-retouren-email.js  # Retouren-/Refund-Mail-Flow testen
 node test-cj-api.js          # CJ-Verbindung direkt testen
 node get-cj-token.js         # CJ Access-Token holen/erneuern
@@ -207,6 +242,7 @@ lautlos wirkt** — jeweils mit einem Test für den real aufgetretenen Fehler:
 | `marketing-betrieb.test.js` | Workflow, lokaler Läufer, npm-Skripte des Automaten | ein Workflow, der einen Ablauf nie zuteilt, sieht aus wie „gerade nichts fällig" — **und ein versehentlich abgeschalteter Trockenlauf sieht aus wie Normalbetrieb, bis der erste Beitrag öffentlich steht** |
 | `marketing-dashboard.test.js` | die Admin-Seite des Automaten | ein Feld, das nie gefüllt wird, steht dauerhaft auf „Lädt…" und wirkt wie „nichts zu zeigen" — keine Fehlermeldung, kein Protokolleintrag |
 | `keine-erfundenen-angaben.test.js` | fest eingetragene Sterne, Bewertungs-, Verkaufs-, Bestands- und Kundenzahlen; Telefonabfrage an der Kasse | alle 40 Produktseiten trugen eingetippte Bewertungen samt „Verifiziert"-Haken und „201x bestellt", die Startseite rechnete Sterne aus der Produkt-ID — sieht aus wie echt, keine Fehlermeldung, rechtlich irreführend (UWG Anhang Nr. 23b/23c) |
+| `kaufbereich.test.js` | Farbwahl, Menge, Warenkorb-Knopf, Lieferzeit und Vertrauenszeile stehen in der rechten Spalte (`pp-buybox`); jedes `<div>` wird geschlossen | beim Entfernen des Countdowns blieb auf allen Produktseiten ein `</div>` zu viel stehen — am Computer rutschte der ganze Kaufbereich unter die Galerie, ohne Fehlermeldung |
 | `produktliste-einmal.test.js` | dass eine Produktseite `products.json` **einmal** lädt (gemeinsames Versprechen `window.__maiosProdukte`) | sechs Skripte holten die Liste je selbst, teils mit `?v=Date.now()` — 5–8 Abrufe à 48 KB je Seitenaufruf, und der Zeitstempel hebelte das ETag aus (nie 304) |
 | `galerie-wischen.test.js` | Wischen in der Produktgalerie, Hauptbild bleibt dasselbe Element | `touchend` rief `this.handleSwipe()` — die Methode gab es nicht, auf dem Handy ein TypeError bei **jeder** Wischgeste, am Rechner unsichtbar |
 | `icons-eine-version.test.js` | eine Bootstrap-Icons-Version je Seite und im ganzen Shop — bei der lokalen Kopie aus dem Dateikopf gelesen | fünf Infoseiten luden 1.10.0 **und** (über `info.css`) 1.11.3 — zwei Schriftdateien für dieselben Symbole |
@@ -282,7 +318,7 @@ Antworten auf Kommentare: `npm run marketing:antworten -- --produkt 12 --beitrag
 | `receipt-generator.js` | **Rechnung** (PDFKit-PDF + HTML), Kleinunternehmer §19 UStG ohne USt-Ausweis, echte Firmendaten aus ENV. |
 | `resend-service.js` | Transaktions-Mails (Bestellbestätigung, Admin-Benachrichtigung, **GoBD-Beleg-Archiv** mit PDF-Anhang) via Resend. |
 | `geolocation-tracker.js` | Standort-/Analytics-Tracking (Backend-Helfer für Dashboard). |
-| `cj-bestellung.js` | **Baut aus einer bezahlten Bestellung die Bestellung bei CJ** (seit 23.09.). SKU → Varianten-Nummer bei CJ nachschlagen, günstigster Versandweg, flache Adressfelder, IOSS (`CJ_IOSS_TYPE`, Standard 3 = CJs IOSS, über 150 € keine Automatik), Bestellnummer `MAIOS-<Stripe-Zahlung>` gegen Doppelbestellungen. **Bezahlt wird aus dem CJ-Wallet** (payType 2) nur, wenn es die Kosten mit 30 % Steuerpuffer deckt — sonst nur angelegt + Mail „bitte in CJ BEZAHLEN". **Stripe kann CJ nicht bezahlen**; der frühere „Stripe-Split an CJ" (`setup-stripe-cj-split.js`, `CJ_STRIPE_ACCOUNT_ID`) schickte Geld auf ein zweites *eigenes* Stripe-Konto und ist entfernt. Handbuch: `CJ-AUTOMATISIERUNG.md`. Tests: `test/cj-bestellung.test.js`. |
+| `cj-bestellung.js` | **Baut aus einer bezahlten Bestellung die Bestellung bei CJ** (seit 23.09.). SKU → Varianten-Nummer bei CJ nachschlagen, günstigster Versandweg, flache Adressfelder, IOSS (`CJ_IOSS_TYPE`, Standard 3 = CJs IOSS, über 150 € keine Automatik), Bestellnummer `MAIOS-<Stripe-Zahlung>` gegen Doppelbestellungen. **Seit 11/2026 mit Lagern:** Positionen werden nach `lager` getrennt (`nachLager`), je Lager eine Bestellung mit Zusatz `-DE`/`-CN`, ab EU-Lager ohne IOSS. **Bezahlt wird aus dem CJ-Wallet** (payType 2) nur, wenn es die Kosten mit 30 % Steuerpuffer deckt — sonst nur angelegt + Mail „bitte in CJ BEZAHLEN". **Stripe kann CJ nicht bezahlen**; der frühere „Stripe-Split an CJ" (`setup-stripe-cj-split.js`, `CJ_STRIPE_ACCOUNT_ID`) schickte Geld auf ein zweites *eigenes* Stripe-Konto und ist entfernt. Handbuch: `CJ-AUTOMATISIERUNG.md`. Tests: `test/cj-bestellung.test.js`. |
 | `get-cj-token.js`, `test-*.js` | Einmal-/Hilfsskripte. |
 
 ### Frontend (statisch)
@@ -291,7 +327,7 @@ Antworten auf Kommentare: `npm run marketing:antworten -- --produkt 12 --beitrag
 | `index.html` (165 KB) | Startseite/Shop. Nutzt **Tailwind (CDN)**. |
 | `app.js` (56 KB) | Frontend-Logik der **Produktseiten**: Produkte laden, in den Warenkorb legen, Merkzettel, Bildplatzhalter. Helper `productHref(id)` baut Slug-URLs. **Seit 2026-08-06 nur noch 1.798 statt 4.430 Zeilen** — die Kategorie-, Bestseller-, Such-, Sortier- und Scrollleisten-Maschinerie ist raus. Sie sprach **sieben Raster** an (`technikGrid`, `bestsellerGrid`, `productGrid` …), die in **keiner** Seite mehr vorkommen: die Startseite läuft seit ihrem Umbau auf `home.js` und lädt `app.js` nicht einmal, ein Suchfeld gibt es nur in `404.html` — die `app.js` ebenfalls nicht einbindet. **Nicht anfassen:** `addProductToCart` (die Produktseiten rufen sie über `window.addProductToCart([], id)` auf) und der `loadProducts()`-Aufruf beim Start — daraus zieht sie ihre Produktdaten. |
 | `cart.html` / `cart.js` (101 KB) | Warenkorb-Seite + Logik. Nutzt **Bootstrap**; die Styles stehen seit dem „Editorial Dark"-Umbau in einem `<style>`-Block in `cart.html` (die frühere `cart.css` war dadurch tot und ist entfernt). Helper `cartProductHref(id)` für Slug-URLs. |
-| `products.json` (64 KB) | **Single Source of Truth** für Produkte: id, name, **slug**, Preis, SKU, Farben, Bilder, Bundles. |
+| `products.json` | **Single Source of Truth** für Produkte: id, name, **slug**, Preis, SKU, Farben, Bilder, Bundles. Produkte aus einem EU-Lager tragen zusätzlich `lager` (z. B. `"DE"`) und `cjPid`. Bei nur einer Variante ist `sku` die Varianten-SKU, bei mehreren `"CJ"+pid` und die Varianten-SKUs stehen in `colors[].sku`. |
 | `color-image-selection.js` | Farbvarianten-Auswahl auf Produktseiten. |
 | `bundle-images-final.js` | Bundle-/Set-Bildlogik. |
 | `color-cart-bridge.js` | Brücke Farbauswahl → Warenkorb. |
