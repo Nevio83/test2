@@ -50,6 +50,7 @@ function erfundeneAngaben(text) {
     ['Bestseller-Behauptung', /BESTSELLER|Am häufigsten gekauft/],
     ['Kundenzahl', /data-stat="customers"|Zufriedene Kunden<\/div>/],
     ['Kundenstimmen', /class="voice"|id="stimmen"/],
+    ['Kaufhäufigkeit ohne Kaufdaten', /Häufig zusammen gekauft/i],
   ];
   return MUSTER.filter(([, re]) => re.test(text)).map(([name]) => name);
 }
@@ -70,6 +71,7 @@ test('Gegenprobe: die alten Stellen hätte die Prüfung gemeldet', () => {
     '<div class="stat-num" data-stat="customers">0+</div><div class="stat-lbl">Zufriedene Kunden</div>',
     '<section id="stimmen" class="reveal" data-reveal>',
     '<span class="sec-sub">Am häufigsten gekauft</span>',
+    '<h2 class="fbt-title">Häufig zusammen gekauft</h2>',
   ];
   for (const zeile of alt) {
     assert.ok(erfundeneAngaben(zeile).length > 0, `nicht erkannt: ${zeile}`);
@@ -81,7 +83,7 @@ test('Gegenprobe: die alten Stellen hätte die Prüfung gemeldet', () => {
 });
 
 test('Produktseiten: keine fest eingetragenen Bewertungen, Verkaufs- oder Bestandszahlen', () => {
-  assert.ok(PRODUKTSEITEN.length >= 37, `nur ${PRODUKTSEITEN.length} Produktseiten gefunden`);
+  assert.ok(PRODUKTSEITEN.length >= 51, `nur ${PRODUKTSEITEN.length} Produktseiten gefunden`);
   const funde = PRODUKTSEITEN
     .map((rel) => [rel, erfundeneAngaben(lies(rel))])
     .filter(([, f]) => f.length);
@@ -106,6 +108,16 @@ test('Startseite: keine erfundenen Sterne, Kundenstimmen, Kunden- oder Verkaufsz
   const helfer = js.match(/function\s+(rating|reviews|stockOf|soldToday|stars)\s*\(/g) || [];
   assert.deepStrictEqual(helfer, [], 'Pseudo-Wert-Helfer in home.js');
   assert.ok(!/STAT_(CUSTOMERS|RATING)/.test(js), 'erfundene Kennzahlen in home.js');
+});
+
+test('Empfehlungen: keine Behauptung über Kaufhäufigkeit', () => {
+  // bundle-images-final.js wählt die Vorschläge nach Kategorie und Produkt-ID,
+  // nicht nach echten Bestellungen. Die Überschrift stand trotzdem auf
+  // "Häufig zusammen gekauft" -- eine Angabe über Kaufverhalten, die es nicht gibt.
+  const js = lies('bundle-images-final.js')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^[ \t]*\/\/.*$/gm, '');
+  assert.deepStrictEqual(erfundeneAngaben(js), []);
 });
 
 test('Kasse: fragt keine Telefonnummer ab', () => {

@@ -264,6 +264,104 @@
         "quelle": "CJ-API product/query 03.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
         "versand_quelle": "CJ-API freightCalculate 03.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage), totalPostageFee"
       },
+      "52": {
+        "ek": 13.1,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.49,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "53": {
+        "ek": 13.25,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.52,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "54": {
+        "ek": 17.09,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 3.25,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "55": {
+        "ek": 10.54,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "56": {
+        "ek": 22.97,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 4.36,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DHL DE to DE (5-7 Tage), kostenlos"
+      },
+      "57": {
+        "ek": 10.42,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 1.98,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DHL DE to DE (3-7 Tage), kostenlos"
+      },
+      "58": {
+        "ek": 13.95,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.65,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "59": {
+        "ek": 11.95,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.27,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "60": {
+        "ek": 11.04,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.1,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DE post DE to DE #2 (3-7 Tage), kostenlos"
+      },
+      "61": {
+        "ek": 16.04,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 3.05,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "62": {
+        "ek": 14.68,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.79,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "63": {
+        "ek": 16.74,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 3.18,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "64": {
+        "ek": 13.54,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.57,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "65": {
+        "ek": 11.4,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.17,
+        "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
+      },
       "_hinweis": "EK und Versand in EUR je Produkt-ID, seit 03.11.2026 direkt per CJ-API abgefragt (npm run preischeck). Die alten Werte aus excel/Maios Produkte.csv lagen teils um ein Vielfaches daneben (Krystall Ball: CSV 9,69 EUR, CJ 2,94 USD). einfuhrumsatzsteuer = 19 % auf den Warenwert, die CJ ueber IOSS mitberechnet; fuer einen Kleinunternehmer nicht abziehbar. Nicht enthalten: Zahlungsgebuehr (Stripe/Klarna bis 2,99 % + 0,35 EUR). Ohne Eintrag: AliExpress-Produkte und bei CJ ausgelistete."
     },
     "max_posts_pro_produkt_pro_woche": 2,

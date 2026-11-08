@@ -1274,5 +1274,417 @@
       "multimedia"
     ],
     "showInSlider": true
+  },
+  {
+    "id": 52,
+    "name": "Akku-Reinigungsbürste mit 7 Aufsätzen",
+    "slug": "akku-reinigungsbuerste",
+    "price": 23.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Akku-Reinigungsbürste mit 7 Aufsätzen.jpg",
+    "description": "Kabellose Reinigungsbürste mit 7 Aufsätzen für Bad, Küche, Fugen und Grill. 1500-mAh-Akku mit USB-Ladung, spritzwassergeschützt nach IPX6.",
+    "sku": "CJDD284093601AZ",
+    "cjPid": "2045341034818355201",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "reinigungsbürste",
+      "akku",
+      "putzen",
+      "bad",
+      "küche",
+      "fugen"
+    ],
+    "features": [
+      "7 Aufsätze, mit einem Handgriff gewechselt",
+      "Kabellos dank 1500-mAh-Akku, Laden per USB",
+      "Rund 350 Umdrehungen pro Minute",
+      "Spritzwassergeschützt nach IPX6, nicht untertauchen",
+      "Griff mit rutschfester Silikonfläche"
+    ]
+  },
+  {
+    "id": 53,
+    "name": "Vakuumierer mit Folienschneider",
+    "slug": "vakuumierer-folienschneider",
+    "price": 23.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Vakuumierer mit Folienschneider.jpg",
+    "description": "Vakuumiergerät mit 5 Modi für trockene, feuchte und körnige Lebensmittel. Mit eingebautem Folienschneider und 10 Beuteln.",
+    "sku": "CJCF322994201AZ",
+    "cjPid": "2107749012068052993",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "vakuumierer",
+      "küche",
+      "frischhalten",
+      "folienschweißgerät"
+    ],
+    "features": [
+      "5 Modi: trocken, feucht, Reis, Versiegeln, Puls",
+      "Unterdruck bis ca. 65 kPa",
+      "Folienschneider im Gerät",
+      "Bedienfeld zum Reinigen abnehmbar",
+      "10 Vakuumbeutel 20 × 30 cm inklusive"
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Elektrische Lunchbox für Auto und Steckdose",
+    "slug": "elektrische-lunchbox-auto",
+    "price": 30.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Elektrische Lunchbox für Auto und Steckdose.jpg",
+    "description": "Beheizbare Lunchbox mit 1,5-l-Edelstahleinsatz und zwei Kabeln: für die Steckdose (230 V) und für Auto oder Lkw (12/24 V). Mit Tasche und Besteck.",
+    "sku": "CJCJ285501201AZ",
+    "cjPid": "2048305996111384578",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "lunchbox",
+      "essen warm",
+      "auto",
+      "lkw",
+      "büro"
+    ],
+    "features": [
+      "Zwei Kabel: 230 V und 12/24 V für Auto und Lkw",
+      "Edelstahleinsatz 1,5 l plus Zusatzbox 0,45 l",
+      "Deckel mit vier Klammern und Dichtring",
+      "Isoliertasche, Löffel und Gabel inklusive",
+      "Heizplatte bitte nicht mit Wasser reinigen"
+    ]
+  },
+  {
+    "id": 55,
+    "name": "Elektrische Kaffee- und Gewürzmühle",
+    "slug": "kaffee-gewuerzmuehle-elektrisch",
+    "price": 18.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Elektrische Kaffee- und Gewürzmühle.jpg",
+    "description": "Elektrische Mühle mit 200-W-Motor und Edelstahlmessern für Kaffeebohnen, Gewürze, Nüsse und Getreide. Bedienung mit einem Knopf.",
+    "sku": "CJCF283693701AZ",
+    "cjPid": "2044606585511370753",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "kaffeemühle",
+      "gewürzmühle",
+      "küche",
+      "kaffee"
+    ],
+    "features": [
+      "200-W-Motor",
+      "Messer aus Edelstahl 304",
+      "Mahlgrad über die Mahldauer bestimmen",
+      "Durchsichtiger Deckel mit Dichtring",
+      "Nur für trockene Zutaten"
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Hand-Dampfreiniger 1000 W",
+    "slug": "hand-dampfreiniger-1000w",
+    "price": 40.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Hand-Dampfreiniger 1000 W.jpg",
+    "description": "Handlicher Dampfreiniger mit 1000 W, rund 3 bar Dampfdruck und 9-teiligem Zubehör für Fliesen, Fugen, Armaturen, Fenster und Backofen.",
+    "sku": "CJSD28169150001",
+    "cjPid": "2039634149366321154",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "dampfreiniger",
+      "putzen",
+      "bad",
+      "küche",
+      "ohne chemie"
+    ],
+    "features": [
+      "1000 W, Dampfdruck ca. 3 bar",
+      "Wassertank mit 280 ml",
+      "9-teiliges Zubehör inklusive",
+      "Kindersicherung am Dampfknopf",
+      "Kabel 2,8 m mit EU-Stecker"
+    ]
+  },
+  {
+    "id": 57,
+    "name": "Elektrische Schallzahnbürste",
+    "slug": "elektrische-schallzahnbuerste",
+    "price": 18.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Elektrische Schallzahnbürste.jpg",
+    "description": "Schallzahnbürste mit 5 Putzmodi, 2-Minuten-Timer und 30-Sekunden-Intervall. Wasserdicht nach IPX7, läuft mit 2 AAA-Batterien (nicht enthalten).",
+    "sku": "CJ1968223869935730689",
+    "cjPid": "1968223869935730689",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#1C1C1C",
+        "sku": "CJST253292101AZ",
+        "price": 18.99,
+        "image": "produkt bilder/Elektrische Schallzahnbürste.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJST253292102BY",
+        "price": 18.99,
+        "image": "produkt bilder/Elektrische Schallzahnbürste bilder/Elektrische Schallzahnbürste weiß.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "zahnbürste",
+      "schallzahnbürste",
+      "mundpflege"
+    ],
+    "features": [
+      "Bis zu 40.000 Schwingungen pro Minute",
+      "5 Putzmodi",
+      "2-Minuten-Timer mit 30-Sekunden-Intervall",
+      "Wasserdicht nach IPX7",
+      "Läuft mit 2 AAA-Batterien (nicht enthalten)",
+      "Mit 2 Ersatzbürstenköpfen"
+    ]
+  },
+  {
+    "id": 58,
+    "name": "Mini-Massagepistole",
+    "slug": "mini-massagepistole",
+    "price": 24.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Mini-Massagepistole.jpg",
+    "description": "Kompakte Massagepistole mit 4 Aufsätzen, Display und leisem bürstenlosem Motor. Klein genug für jede Sporttasche.",
+    "sku": "CJAM323005201AZ",
+    "cjPid": "2107752716750032897",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "massagepistole",
+      "massage",
+      "sport",
+      "fitness"
+    ],
+    "features": [
+      "4 Aufsätze: Kugel, flach, Gabel, Spitze",
+      "Bürstenloser Motor, leise im Betrieb",
+      "Digitale Anzeige am Gerät",
+      "Kabellos, mit Akku",
+      "Klein: ca. 17,5 × 14 cm"
+    ]
+  },
+  {
+    "id": 59,
+    "name": "Körperfettwaage mit App",
+    "slug": "koerperfettwaage-bluetooth",
+    "price": 21.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Körperfettwaage mit App.jpg",
+    "description": "Smarte Personenwaage aus gehärtetem Glas bis 180 kg. Überträgt Gewicht, Körperfett, Wasser- und Muskelanteil per Bluetooth an die App.",
+    "sku": "CJZN263973201AZ",
+    "cjPid": "1998997697722175490",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "waage",
+      "körperfettwaage",
+      "bluetooth",
+      "fitness"
+    ],
+    "features": [
+      "Bis 180 kg, Anzeige in kg, lb oder st",
+      "Gewicht, Körperfett, Wasser, Muskeln, Knochen, BMI, Grundumsatz",
+      "App mit Verlauf und mehreren Nutzern",
+      "Trittfläche aus gehärtetem Glas, 26 × 26 cm",
+      "2 AAA-Batterien (nicht enthalten)"
+    ]
+  },
+  {
+    "id": 60,
+    "name": "Haar- und Bartschneider mit T-Klinge",
+    "slug": "haar-bartschneider-t-klinge",
+    "price": 19.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Haar- und Bartschneider mit T-Klinge.jpg",
+    "description": "Akku-Trimmer im gravierten Metallgehäuse mit T-Klinge für Konturen, Bart und kurze Haare. Mit LCD-Anzeige, 4 Aufsteckkämmen und USB-Ladekabel.",
+    "sku": "CJSD245621401AZ",
+    "cjPid": "1955906646126264322",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "haarschneider",
+      "bartschneider",
+      "trimmer",
+      "herren"
+    ],
+    "features": [
+      "T-Klinge für Konturen und kurze Längen",
+      "4 Aufsteckkämme: 1,5 / 2 / 3 / 4 mm",
+      "Graviertes Metallgehäuse mit LCD-Anzeige",
+      "Laden per USB in ca. 3 Stunden",
+      "Mit Reinigungsbürste und Pflegeöl"
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Kabelloser CarPlay- und Android-Auto-Adapter",
+    "slug": "carplay-android-auto-adapter",
+    "price": 28.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Kabelloser CarPlay- und Android-Auto-Adapter.jpg",
+    "description": "Macht kabelgebundenes CarPlay und Android Auto kabellos. Einstecken, einmal koppeln, danach verbindet sich das Handy beim Einsteigen von selbst.",
+    "sku": "CJCD325920701AZ",
+    "cjPid": "2110273969581109249",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "carplay",
+      "android auto",
+      "auto",
+      "kabellos"
+    ],
+    "features": [
+      "Für Autos mit CarPlay oder Android Auto per Kabel",
+      "Verbindet sich nach dem ersten Koppeln automatisch",
+      "5-GHz-WLAN und Bluetooth 5.0",
+      "USB-A-Stecker, Adapter auf USB-C liegt bei",
+      "Navigation, Musik, Anrufe und Sprachsteuerung wie gewohnt"
+    ]
+  },
+  {
+    "id": 62,
+    "name": "Kfz-Handyhalter mit kabellosem Laden",
+    "slug": "kfz-handyhalter-kabelloses-laden",
+    "price": 26.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Kfz-Handyhalter mit kabellosem Laden.jpg",
+    "description": "Transparenter Handyhalter für das Lüftungsgitter mit kabellosem Laden. Ein Sensor erkennt das Handy und schließt die Halterung automatisch.",
+    "sku": "CJSJ305903701AZ",
+    "cjPid": "2087874694086242306",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "handyhalter",
+      "auto",
+      "kabelloses laden",
+      "qi"
+    ],
+    "features": [
+      "Kabelloses Laden für Handys mit Qi-Funktion",
+      "Infrarotsensor öffnet und schließt die Halterung",
+      "360 Grad drehbar, Hoch- und Querformat",
+      "Klemme für das Lüftungsgitter, ohne Werkzeug",
+      "Transparentes Gehäuse mit Leuchtlogo"
+    ]
+  },
+  {
+    "id": 63,
+    "name": "Akku-Reifenpumpe mit Display",
+    "slug": "akku-reifenpumpe-display",
+    "price": 29.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Akku-Reifenpumpe mit Display.jpg",
+    "description": "Kabellose Luftpumpe mit Druckanzeige und Abschaltautomatik für Auto, Motorrad, Fahrrad und Bälle. Laden per USB-C, mit LED-Licht.",
+    "sku": "CJTY317531201AZ",
+    "cjPid": "2100773514514837505",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "reifenpumpe",
+      "kompressor",
+      "auto",
+      "fahrrad"
+    ],
+    "features": [
+      "Digitale Druckanzeige, stoppt beim Zieldruck",
+      "4 Modi: Auto, Motorrad, Fahrrad, Ball",
+      "Bis 150 PSI (ca. 10 bar)",
+      "Akku, Laden per USB-C",
+      "LED-Licht mit SOS-Funktion"
+    ]
+  },
+  {
+    "id": 64,
+    "name": "Faltbare 3-in-1-Ladestation",
+    "slug": "3-in-1-ladestation-faltbar",
+    "price": 24.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Faltbare 3-in-1-Ladestation.jpg",
+    "description": "Kabellose Ladestation für Handy, Apple Watch und Kopfhörer gleichzeitig. Faltbar für unterwegs, das Handy lädt mit bis zu 15 W.",
+    "sku": "CJSD284148601AZ",
+    "cjPid": "2045387644160598018",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "ladestation",
+      "kabelloses laden",
+      "apple watch",
+      "qi"
+    ],
+    "features": [
+      "Lädt Handy, Apple Watch und Kopfhörer gleichzeitig",
+      "Handy bis 15 W, Uhr und Kopfhörer je 5 W",
+      "Faltbar, Winkel 50 oder 60 Grad",
+      "Schutz vor Überhitzung, Überspannung und Kurzschluss",
+      "USB-C-Kabel dabei, Netzteil nicht enthalten"
+    ]
+  },
+  {
+    "id": 65,
+    "name": "Kabelloses Ladepad",
+    "slug": "kabelloses-ladepad",
+    "price": 20.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Kabelloses Ladepad.jpg",
+    "description": "Flaches Qi-Ladepad für Handys und Kopfhörer, lädt auch durch die Hülle. Nur 6,5 mm dünn, mit 1 m USB-C-Kabel.",
+    "sku": "CJSJ284162301AZ",
+    "cjPid": "2045394788166438913",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "ladepad",
+      "kabelloses laden",
+      "qi",
+      "handy"
+    ],
+    "features": [
+      "Für alle Handys mit kabellosem Laden (Qi)",
+      "Lädt durch Hüllen bis ca. 6 mm",
+      "Nur 6,5 mm flach, 9,8 cm Durchmesser",
+      "LED-Anzeige",
+      "1 m USB-C-Kabel dabei, Netzteil nicht enthalten"
+    ]
   }
 ]

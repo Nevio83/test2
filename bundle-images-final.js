@@ -1,4 +1,6 @@
-// Häufig zusammen gekauft — Amazon-Style FBT Section
+// Passt gut dazu — Amazon-Style FBT Section. Die Auswahl richtet sich nach
+// Kategorie und Produkt-ID, nicht nach echten Bestellungen. Deshalb steht hier
+// NICHT "Häufig zusammen gekauft": das wäre eine erfundene Angabe.
 console.log('🎁 Bundle Images Final (FBT) geladen');
 
 let bundleSystemInitialized = false;
@@ -98,7 +100,7 @@ function renderFBT(section, products) {
   section.innerHTML = `
     <div class="fbt-wrap">
       <div class="fbt-header">
-        <h2 class="fbt-title">Häufig zusammen gekauft</h2>
+        <h2 class="fbt-title">Passt gut dazu</h2>
         <p class="fbt-subtitle">Komplettiere dein Setup</p>
       </div>
       <div class="fbt-body">
