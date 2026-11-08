@@ -1660,5 +1660,35 @@
       "LED-Anzeige",
       "1 m USB-C-Kabel dabei, Netzteil nicht enthalten"
     ]
+  },
+  {
+    "id": 66,
+    "name": "Monitorständer für zwei Bildschirme",
+    "slug": "monitorstaender-zwei-bildschirme",
+    "price": 37.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Monitorständer für zwei Bildschirme.jpg",
+    "description": "Ausziehbarer Monitorständer von 80 bis 117 cm für bis zu zwei Bildschirme. Hebt die Monitore um 10 cm an, mit Stauraum darunter. Trägt bis 15 kg.",
+    "sku": "CJFU28780740001",
+    "cjPid": "2053740905123414017",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-6 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "monitorständer",
+      "schreibtisch",
+      "setup",
+      "bildschirm",
+      "büro"
+    ],
+    "features": [
+      "Ausziehbar von 80 bis 117 cm",
+      "Platz für bis zu zwei Monitore",
+      "Hebt die Bildschirme um ca. 10 cm an",
+      "Drei Ablagen darunter für Büromaterial",
+      "Belastbar bis 15 kg",
+      "Muss zusammengebaut werden"
+    ]
   }
 ]

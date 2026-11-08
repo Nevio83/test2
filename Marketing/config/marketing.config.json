@@ -362,6 +362,13 @@
         "quelle": "CJ-API product/query 04.11.2026 (teuerste Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
         "versand_quelle": "CJ-API freightCalculate 04.11.2026, DE->DE, guenstigste Option DPD DE to DE (5-7 Tage), kostenlos"
       },
+      "66": {
+        "ek": 21.02,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 3.99,
+        "quelle": "CJ-API product/query 08.11.2026 (1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate, DE->DE (3-5 Tage), kostenlos"
+      },
       "_hinweis": "EK und Versand in EUR je Produkt-ID, seit 03.11.2026 direkt per CJ-API abgefragt (npm run preischeck). Die alten Werte aus excel/Maios Produkte.csv lagen teils um ein Vielfaches daneben (Krystall Ball: CSV 9,69 EUR, CJ 2,94 USD). einfuhrumsatzsteuer = 19 % auf den Warenwert, die CJ ueber IOSS mitberechnet; fuer einen Kleinunternehmer nicht abziehbar. Nicht enthalten: Zahlungsgebuehr (Stripe/Klarna bis 2,99 % + 0,35 EUR). Ohne Eintrag: AliExpress-Produkte und bei CJ ausgelistete."
     },
     "max_posts_pro_produkt_pro_woche": 2,

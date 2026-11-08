@@ -62,7 +62,7 @@ function ausserhalb(html) {
 
 test('es gibt Produktseiten zu prüfen', () => {
   // Sonst wären die Prüfungen unten leer und trotzdem grün.
-  assert.ok(SEITEN.length >= 50, `nur ${SEITEN.length} Produktseiten gefunden`);
+  assert.ok(SEITEN.length >= 51, `nur ${SEITEN.length} Produktseiten gefunden`);
 });
 
 test('Farbwahl, Menge, Warenkorb-Knopf, Lieferzeit und Vertrauenszeile stehen in der rechten Spalte', () => {
