@@ -29,8 +29,31 @@
     return t;
   }
 
+  // Produktseiten haben schon eine eigene Pfadzeile (.pp-breadcrumb, mit
+  // Kategorie). Dort nur die Strukturdaten aus ihr ableiten, nicht doppelt anzeigen.
+  function strukturdatenAusVorhandener(nav) {
+    var punkte = [];
+    nav.querySelectorAll('a, .pp-bc-current').forEach(function (el) {
+      var name = el.textContent.trim();
+      if (!name) return;
+      var href = el.getAttribute('href');
+      var eintrag = { '@type': 'ListItem', position: punkte.length + 1, name: name };
+      eintrag.item = location.origin + (href && el.tagName === 'A' ? href : pfad);
+      punkte.push(eintrag);
+    });
+    if (!punkte.length) return;
+    var ld = document.createElement('script');
+    ld.type = 'application/ld+json';
+    ld.textContent = JSON.stringify({
+      '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: punkte
+    });
+    document.head.appendChild(ld);
+  }
+
   function brotkrumen() {
     if (istStart || document.getElementById('maios-brotkrumen')) return;
+    var vorhanden = document.querySelector('.pp-breadcrumb');
+    if (vorhanden) { strukturdatenAusVorhandener(vorhanden); return; }
     var name = seitenname();
     if (!name) return;
 
