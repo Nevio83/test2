@@ -6,6 +6,16 @@
   <title>Kontakt – Maios</title>
   <meta name="description" content="Kontakt zu Maios: Fragen zu Bestellung, Versand oder Retoure per E-Mail oder Kontaktformular klären.">
   <link rel="canonical" href="https://maiosshop.com/infos/kontakt.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Maios">
+  <meta property="og:title" content="Kontakt – Maios">
+  <meta property="og:description" content="Kontakt zu Maios: Fragen zu Bestellung, Versand oder Retoure per E-Mail oder Kontaktformular klären.">
+  <meta property="og:url" content="https://maiosshop.com/infos/kontakt.html">
+  <meta property="og:image" content="https://maiosshop.com/images/logo.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Kontakt – Maios">
+  <meta name="twitter:description" content="Kontakt zu Maios: Fragen zu Bestellung, Versand oder Retoure per E-Mail oder Kontaktformular klären.">
+  <meta name="twitter:image" content="https://maiosshop.com/images/logo.png">
   <link rel="stylesheet" href="/schriften/schriften.css">
   <link href="../styles.css" rel="stylesheet" />
   <link href="./info.css" rel="stylesheet" />
@@ -35,6 +45,7 @@
   <link rel="apple-touch-icon" href="/images/logo.png">
   <meta name="theme-color" content="#13100B">
   <link rel="manifest" href="/site.webmanifest">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wie lange dauert die Lieferung?","acceptedAnswer":{"@type":"Answer","text":"Die Lieferzeit beträgt in der Regel 7–13 Werktage. Bei Produkten aus dem deutschen Lager geht es schneller; die genaue Lieferzeit steht auf der jeweiligen Produktseite."}},{"@type":"Question","name":"Was kostet der Versand?","acceptedAnswer":{"@type":"Answer","text":"Nach Deutschland, Österreich, in die Schweiz und in viele weitere europäische Länder ist der Versand kostenlos. Gibt es für dein Land Versandkosten, siehst du sie vor dem Bezahlen an der Kasse."}},{"@type":"Question","name":"Kann ich einen Artikel zurückgeben?","acceptedAnswer":{"@type":"Answer","text":"Ja. Du hast 30 Tage Rückgaberecht nach Erhalt der Ware, die Rücksendung ist kostenlos."}},{"@type":"Question","name":"Welche Zahlungsarten gibt es?","acceptedAnswer":{"@type":"Answer","text":"Du bezahlst sicher per Karte oder mit Klarna. Die Zahlung läuft über Stripe, wir sehen deine Kartendaten nicht."}},{"@type":"Question","name":"Wo sehe ich, wo mein Paket ist?","acceptedAnswer":{"@type":"Answer","text":"Sobald deine Bestellung versendet wurde, bekommst du eine E-Mail mit Tracking-Link."}}]}</script>
 </head>
 <body>
   <header class="header-bar py-3">
@@ -92,6 +103,31 @@
          oben auf der Startseite — von der Seite aus, die selbst die Hilfe ist. -->
 
     <div class="footer-spacer"></div>
+    <div class="info-card p-4 p-md-5 mb-4" id="faq">
+      <h2 class="section-title h5 mb-3">Häufige Fragen</h2>
+      <details class="mb-3">
+        <summary class="fw-semibold" style="cursor:pointer">Wie lange dauert die Lieferung?</summary>
+        <p class="mt-2 mb-0 text-muted">Die Lieferzeit beträgt in der Regel 7–13 Werktage. Bei Produkten aus dem deutschen Lager geht es schneller; die genaue Lieferzeit steht auf der jeweiligen Produktseite. Mehr dazu auf der Seite <a href="/infos/versand.html">Versand &amp; Lieferzeiten</a>.</p>
+      </details>
+      <details class="mb-3">
+        <summary class="fw-semibold" style="cursor:pointer">Was kostet der Versand?</summary>
+        <p class="mt-2 mb-0 text-muted">Nach Deutschland, Österreich, in die Schweiz und in viele weitere europäische Länder ist der Versand kostenlos. Gibt es für dein Land Versandkosten, siehst du sie vor dem Bezahlen an der Kasse. Alle Infos: <a href="/infos/versand.html">Versand</a>.</p>
+      </details>
+      <details class="mb-3">
+        <summary class="fw-semibold" style="cursor:pointer">Kann ich einen Artikel zurückgeben?</summary>
+        <p class="mt-2 mb-0 text-muted">Ja. Du hast 30 Tage Rückgaberecht nach Erhalt der Ware, die Rücksendung ist kostenlos. So geht es Schritt für Schritt: <a href="/infos/retouren.html">Retouren</a>. Dein gesetzliches Recht: <a href="/infos/widerruf.html">Widerruf</a>.</p>
+      </details>
+      <details class="mb-3">
+        <summary class="fw-semibold" style="cursor:pointer">Welche Zahlungsarten gibt es?</summary>
+        <p class="mt-2 mb-0 text-muted">Du bezahlst sicher per Karte oder mit Klarna. Die Zahlung läuft über Stripe, wir sehen deine Kartendaten nicht. Datenschutz: <a href="/infos/datenschutz.html">Datenschutzerklärung</a>.</p>
+      </details>
+      <details class="mb-3">
+        <summary class="fw-semibold" style="cursor:pointer">Wo sehe ich, wo mein Paket ist?</summary>
+        <p class="mt-2 mb-0 text-muted">Sobald deine Bestellung versendet wurde, bekommst du eine E-Mail mit Tracking-Link. Oder direkt unter <a href="/tracking.html">Sendungsverfolgung</a>.</p>
+      </details>
+      <p class="mb-0 mt-4">Deine Frage ist nicht dabei? <a href="#kontakt-name" class="fw-semibold">Schreib uns über das Formular</a> — Antwort in der Regel innerhalb von 24 Stunden.</p>
+    </div>
+
   </main>
   <script>
     (function(){
@@ -144,6 +180,7 @@
     })();
   </script>
     <script src="../widerruf-button.js?v=1.0" defer></script>
+    <script src="../seiten-zusatz.js?v=1.0" defer></script>
     <script src="../cookie-consent.js?v=1.0" defer></script>
     <script src="../site-integrations.js?v=1.0" defer></script>
     <script src="../view-tracker.js?v=1.0" defer></script>
