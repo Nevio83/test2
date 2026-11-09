@@ -89,7 +89,10 @@
     a.textContent = 'Fragen? Schreib uns';
     a.title = 'Kontaktformular – Antwort in der Regel innerhalb von 24 Stunden';
     a.setAttribute('aria-label', 'Fragen? Zum Kontaktformular – Antwort in der Regel innerhalb von 24 Stunden');
-    a.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:9997;' +
+    // Produktseiten haben unten eine Kaufleiste (#pp-sticky, ca. 80 px hoch,
+    // blendet sich beim Scrollen ein) — der Knopf sitzt dann darüber.
+    var unten = document.getElementById('pp-sticky') ? 100 : 16;
+    a.style.cssText = 'position:fixed;right:16px;bottom:' + unten + 'px;z-index:9997;' +
       'background:#D8B56C;color:#13100B;font-weight:700;font-size:14px;line-height:1;' +
       'padding:12px 18px;border-radius:999px;text-decoration:none;' +
       'box-shadow:0 4px 14px rgba(0,0,0,.35);';
