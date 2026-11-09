@@ -107,6 +107,53 @@ export function makeLamp() {
   return { group, setColor, crystal, wood, glow, pl };
 }
 
+
+// ---------- Variante "Holz boden": Wuerfel aus Wellenglas auf dunklem, quadratischem Sockel (Shopfoto) ----------
+export const CUBE = 0.1, CUBE_BASE = 0.125, CUBE_BASE_H = 0.02;
+export const CUBE_MID = CUBE_BASE_H + CUBE * 0.5, CUBE_TOP = CUBE_BASE_H + CUBE;
+export function makeCube() {
+  const group = new THREE.Group();
+  const baseM = new THREE.MeshPhysicalMaterial({ color: '#2a2d37', roughness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.3 });
+  const base = new THREE.Mesh(new THREE.BoxGeometry(CUBE_BASE, CUBE_BASE_H, CUBE_BASE, 4, 1, 4), baseM);
+  base.position.y = CUBE_BASE_H / 2; base.castShadow = base.receiveShadow = true; group.add(base);
+  const lip = new THREE.Mesh(new THREE.BoxGeometry(CUBE_BASE - 0.012, 0.004, CUBE_BASE - 0.012), new THREE.MeshStandardMaterial({ color: '#0b0c10', roughness: 0.5 }));
+  lip.position.y = CUBE_BASE_H + 0.002; group.add(lip);
+  // Touch-Symbol vorne am Sockel
+  const icon = canvasTex(128, 128, (g, w, h) => {
+    g.clearRect(0, 0, w, h); g.strokeStyle = 'rgba(190,190,200,0.9)'; g.lineWidth = 8; g.lineCap = 'round';
+    g.beginPath(); g.arc(64, 68, 30, -Math.PI * 0.32, Math.PI * 1.32); g.stroke(); g.beginPath(); g.moveTo(64, 30); g.lineTo(64, 64); g.stroke();
+  });
+  const iconM = new THREE.Mesh(new THREE.PlaneGeometry(0.011, 0.011), new THREE.MeshBasicMaterial({ map: icon, transparent: true, depthWrite: false }));
+  iconM.position.set(0, CUBE_BASE_H * 0.5, CUBE_BASE / 2 + 0.0003); group.add(iconM);
+  // Wuerfel: Wellenmuster (Dellen) als Emissive + Bump
+  const hm = hammer(512, 512, 13);
+  const emi = new THREE.CanvasTexture(hm); emi.wrapS = emi.wrapT = THREE.RepeatWrapping; emi.repeat.set(1.2, 1.2); emi.colorSpace = THREE.SRGBColorSpace;
+  const bump = new THREE.CanvasTexture(hm); bump.wrapS = bump.wrapT = THREE.RepeatWrapping; bump.repeat.set(1.2, 1.2);
+  const crystal = new THREE.MeshStandardMaterial({
+    color: '#9fb0c8', roughness: 0.05, metalness: 0, transparent: true, opacity: 0.8,
+    emissive: new THREE.Color('#ffffff'), emissiveMap: emi, emissiveIntensity: 1.0,
+    bumpMap: bump, bumpScale: 3.2, side: THREE.DoubleSide, depthWrite: false, envMapIntensity: 1.6,
+  });
+  const outer = new THREE.Mesh(new THREE.BoxGeometry(CUBE, CUBE, CUBE, 1, 1, 1), crystal);
+  outer.position.y = CUBE_BASE_H + CUBE / 2 + 0.002; outer.renderOrder = 3; group.add(outer);
+  const innerMat = crystal.clone(); innerMat.opacity = 0.5; innerMat.emissiveIntensity = 0.6;
+  const inner = new THREE.Mesh(new THREE.BoxGeometry(CUBE - 0.008, CUBE - 0.008, CUBE - 0.008), innerMat);
+  inner.position.copy(outer.position); inner.renderOrder = 2; group.add(inner);
+  const glowTex = canvasTex(128, 128, (g, w, h) => { const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,0.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: '#ffffff', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  glow.scale.set(0.13, 0.13, 1); glow.position.y = CUBE_MID; glow.renderOrder = 5; group.add(glow);
+  const pl = new THREE.PointLight('#ffffff', 0, 2.5, 2); pl.position.y = CUBE_MID + 0.01; group.add(pl);
+  const col = new THREE.Color();
+  function setColor(c, k = 1) {
+    col.set(c); const em = col.clone().lerp(new THREE.Color('#ffffff'), 0.02);
+    crystal.emissive.copy(em); crystal.emissiveIntensity = 0.85 * k; innerMat.emissive.copy(em); innerMat.emissiveIntensity = 0.55 * k;
+    glow.material.color.copy(col.clone().lerp(new THREE.Color('#ffffff'), 0.45)).multiplyScalar(0.9 * k);
+    pl.color.copy(col); pl.intensity = 0.9 * k;
+  }
+  setColor('#2f8bff', 1);
+  return { group, setColor, crystal, glow, pl };
+}
+
 // Projektion der Lampe auf Raumflaechen (Wasserwellen, langsam drehend), periodisch in 8 s.
 // Material fuer Wand/Decke/Boden: Grundfarbe * (Umgebung + Projektion)
 export function projMaterial({ albedo = '#cfc8be', map = null, repeat = [1, 1] } = {}) {

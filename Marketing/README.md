@@ -1,3 +1,8 @@
+> **GILT AB 9.11.2026 (Nevio): Nevio lädt die Videos selbst in TikTok Studio hoch und plant sie selbst.**
+> Claude baut, prüft und liefert nur, was er eingeben soll: pro Kanal (@maiosshop, @maiosshop.com) Dateiname (mit Musik), Caption zum Kopieren, Hashtags, Datum und Uhrzeit für „Zeitplan“ (12:00 / 18:00, Europe/Berlin), Titelbild-Sekunde, Text für den angepinnten Kommentar. Claude öffnet dafür kein TikTok Studio, lädt nichts hoch, plant nichts ein und postet nichts.
+> Das geht den Schritten „Planen“ und „Nachlauf“ (Upload, Anpinnen) in der Routine „Maios Vorproduktion und veröffentlichung“ vor. Tageslog, Kennzahlen und Verschieben nach `hochgeladen` nur, wenn Nevio meldet, dass er gepostet hat.
+> Als Status in vorrat.md statt „geplant“: „fertig, Nevio lädt hoch“ und danach „von Nevio geplant/gepostet“.
+
 # Marketing-Automat — Bedienungsanleitung
 
 Was das System tut, wie du es startest, wie du es **anhältst**, was es kosten kann

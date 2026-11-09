@@ -1,3 +1,8 @@
+> **GILT AB 9.11.2026 (Nevio): Nevio lädt die Videos selbst in TikTok Studio hoch und plant sie selbst.**
+> Claude baut, prüft und liefert nur, was er eingeben soll: pro Kanal (@maiosshop, @maiosshop.com) Dateiname (mit Musik), Caption zum Kopieren, Hashtags, Datum und Uhrzeit für „Zeitplan“ (12:00 / 18:00, Europe/Berlin), Titelbild-Sekunde, Text für den angepinnten Kommentar. Claude öffnet dafür kein TikTok Studio, lädt nichts hoch, plant nichts ein und postet nichts.
+> Das geht den Schritten „Planen“ und „Nachlauf“ (Upload, Anpinnen) in der Routine „Maios Vorproduktion und veröffentlichung“ vor. Tageslog, Kennzahlen und Verschieben nach `hochgeladen` nur, wenn Nevio meldet, dass er gepostet hat.
+> Als Status in vorrat.md statt „geplant“: „fertig, Nevio lädt hoch“ und danach „von Nevio geplant/gepostet“.
+
 # Vorrat TikTok (Maios)
 
 Für jeden Slot steht hier, welches Video dafür gebaut wird und wie weit es ist. Gebaut wird mindestens einen Tag vor dem Slot (Aufgabe „Maios Vorproduktion“, 09:07 und 15:07). Gepostet wird genau um 12:00 und 18:00, auf beiden Kanälen dasselbe Video (Aufgabe „Maios Veröffentlichung“, 11:37 und 17:37). Was gepostet ist, steht zusätzlich im tageslog.
@@ -8,6 +13,9 @@ Hinweise
 - Stimme: Nevio findet die Erzählerstimme gut (Hörprobe am 28.10.). Test mit den Mo-Storys am 4.11. und 11.11.
 - Reveal und Grusel B (alter Motion-Look) werden nicht gepostet.
 - TikTok-Zeitplan: Nevio hat am 2.11. erlaubt, über „Zeitplan“ in TikTok Studio vorzuplanen. Die Aufgabe „Maios Vorproduktion“ lädt freigegebene Videos jetzt selbst hoch und plant sie auf die Slot-Zeit (beide Kanäle); „Maios Veröffentlichung“ fällt weg.
+- **Standregel ab 8.11. für jedes künftige Video (nicht nur einmalig prüfen, sondern bei jedem Bau-Lauf anwenden):** vor der Hashtag-/Hook-Wahl in TikTok Studio → Inspiration (Themen, Kategorie passend zum Produkt, z. B. Lebensstil) nachsehen, was gerade zieht, und wenn's passt in Hook oder Hashtags einbauen. Die eigentliche „Search Insights“-Funktion aus TikTok ist in TikTok Studio Web für @maiosshop nicht sichtbar (vermutlich Account-/Follower-abhängig oder nur in der App) – Stand 8.11. Sobald jemand mit Zugriff auf die TikTok-App (Handy) das prüfen kann, hier nachtragen, ob es dort sichtbar ist; bis dahin gilt der Inspiration-Workaround für jedes Video.
+- Claude + DaVinci-Resolve-Connector (Nevio 8.11., Punkt 3 von 4): geprüft, kein passender MCP-Connector in der Registry, und unsere Pipeline läuft komplett automatisiert über ffmpeg/three.js ohne manuellen Schnitt-Schritt – macht aktuell keinen Sinn umzusetzen. Bleibt offen, falls sich der Workflow mal ändert.
+- „Claude Motion Graphics“-Skill von Drittanbieter (Nevio 8.11., Punkt 4 von 4; Quelle: TikTok-Account „Skill Stack Store“, Bio-Link): nicht blind installiert – unbekannte Skills von Fremden können versteckte Anweisungen enthalten; außerdem kostet das Original 5,99 $ (Kauf/Zahlungsdaten kann ich nicht selbst eingeben). Nevio hat den Einbau grundsätzlich erlaubt („du darfst den skill einbauen“) und danach gebeten, stattdessen auf GitHub nach einem freien Äquivalent zu suchen. Gefunden & geprüft: `github.com/CloudAI-X/threejs-skills` (MIT-Lizenz, 4,1k⭐, aktiv gepflegt) – 5 Referenzdateien (Animation, Licht, Material/Glas, Shader, Postprocessing) als reines three.js-API-Material ohne verdächtige Inhalte bestätigt. Als Skill-Paket `threejs-cgi-techniken.skill` gebaut und an Nevio geschickt (8.11.); gilt ab jetzt als zusätzliches Nachschlagewerk zum maios-cgi-Skill für alle künftigen Videos, sobald Nevio es speichert. Ziel three.js r186 vs. unser Pipeline-Stand 0.170.0 – vor Übernahme eines Snippets API/Importpfad prüfen, WebGPU/TSL-Abschnitte NICHT nutzen (wir rendern headless per SwiftShader, kein WebGPU).
 
 ## Übersicht
 
@@ -36,6 +44,14 @@ Hinweise
 | Do 5.11. 18 Uhr | Handy-Look-Pointe: „Schlauch rein. Läuft.“ (Loop 8 s) | 10 Wasserspender (Weiß) | 10_wasserspender_kueche_cgi_20261105.mp4 | geplant für 05.11. 18:00 (beide Kanäle, TikTok-Zeitplan; siehe Detail) |
 | Fr 6.11. 12 Uhr | Trend-Format | | | offen |
 | Fr 6.11. 18 Uhr | Trend-Format | | | offen |
+| Mo 9.11. 12 Uhr | Handy-Look-Pointe: „An meiner Decke läuft was.“ (Loop 8 s, Schlafzimmer-POV, Würfel-Lampe) | 21 Led crystal lampe (Holz boden) | 21_crystal-lampe_decke_cgi_20261109.mp4 | geplant (beide Kanäle, 09.11.; Titelbild Standard) |
+| Mo 9.11. 18 Uhr | „Wichteln unter 20 €“ (feste Reihe ab 9.11.): „Wichteln. Limit: 20 €.“ (Loop 8 s, Geschenkbox geht auf, Saturn) | 50 Krystall Ball Nachtlampe (Saturn) | 50_krystall-ball_wichteln_cgi_20261109.mp4 | geplant (beide Kanäle, 09.11.; Titelbild Standard) |
+| Di 10.11. 12 Uhr | Christmas Switch: „Mein Kürbis muss jetzt ausziehen.“ (Loop 8 s, Halloween-Regal wird Weihnachtsregal) | 42 Aroma Öl Diffusor (Schwarz) | 42_aroma-diffusor_weihnachtsmodus_cgi_20261110.mp4 | von Nevio geplant für 10.11. 12:00 (beide Kanäle, Meldung 9.11.) |
+| Di 10.11. 18 Uhr | Handy-Look-Pointe: „7:12 Uhr. Frühstück fährt mit.“ (Loop 8 s, Pendlerzug) | 11 Mixer (Rosa) | 11_mixer_zug_cgi_20261110.mp4 | von Nevio geplant für 10.11. 18:00 (beide Kanäle, Meldung 9.11.) |
+| Mi 11.11. 12 Uhr | Mo-Story mit Erzählerstimme (Test 2 von 2, Story 20–25 s): verschoben, Slot jetzt Wasserspender-Story | | | verschoben, Nevio entscheidet (18 Uhr oder entfällt) |
+| Mi 11.11. 12 Uhr (Nevio 9.11.: „mach das für übermorgen 12 Uhr“) | Story im @mehr.optic-Stil (20,5 s): „Jeden Morgen dieselbe Gallone.“ (Figurenmenge, Blueprint, Explosionsansicht, Neon-Preis); Loop-Version bleibt Reserve | 10 Wasserspender (Weiß/Schwarz) | 10_wasserspender_story-mehroptic_cgi_20261111.mp4 | fertig, wartet auf Freigabe (Nevio 9.11.: „mach das“) |
+| Do 12.11. 12 Uhr | Trend-Format | | | offen |
+| Do 12.11. 18 Uhr | Trend-Format | | | offen |
 | Reserve | zeitloser Satisfying-Loop für Notfälle, ohne Datum und Anlass | | | offen |
 
 ## Details
@@ -251,3 +267,74 @@ Je fertigem Video ein Abschnitt „### <Slot>“ mit: Datei (+ `_ohne_musik`), T
 - Zweiter Blick Runde 2 (nach Fix nicht erneut vorgelegt, Muss-Punkte direkt behoben und per Stichprobe auf den fertigen Stills geprüft: Wortzeit, neuer Text, Preis 35,99 € stimmen)
 - KI-Kennzeichnung: nein
 - Geplant auf beiden Kanälen für 05.11. 18:00 über TikTok-Zeitplan
+
+### Mo 9.11. 12 Uhr
+- Gebaut am 8.11. (Nevio: „mach 2 videos für morgen mit dem neuen threejs-cgi-techniken skill“). Neues Modell: Wellenglas-Würfel auf dunklem Sockel (`makeCube` in `lib/crystal_models.js`, Variante „Holz boden“ laut Shopfoto), Bloom über `lib/post.js`.
+- Datei: `21_crystal-lampe_decke_cgi_20261109.mp4` + `_ohne_musik.mp4` (Loop 8,0 s, −14,1 LUFS, Datei 5,5 MB, Titelbild 4,0 s: Würfel + Produktwort)
+- Caption @maiosshop: LED Crystal Lampe mit Projektion / An meiner Decke läuft was. Rotierende Projektion, 16 Farben, per USB betrieben. 19,99 €, Link im Profil. Krone oder Holz boden?
+- Caption @maiosshop.com: gleich, Hook-Zeile „Nachts läuft bei mir was an der Decke.“
+- Hashtags: #werbung #crystallampe #projektionslampe #schlafzimmer
+- Angehefteter Kommentar: Krone oder Holz boden?
+- Szene: `scenes/crystal_decke.js` + `_ton.py` (Dream-Pop a-Moll). Farbe wechselt von Einstellung zu Einstellung (Schnitte), nicht live.
+- Trend/Quelle: Handy-Look-Loop (Regeln 28.10.), keine neue Trend-Recherche in diesem Lauf; TikTok-Studio-Inspiration (Standregel 8.11.) nicht geprüft (Chrome nicht genutzt). Kommentare der letzten Videos nicht gelesen.
+- Zweiter Blick: Runde 1 „nicht freigabefähig“ (Einstieg nur Nebel, Würfel flach/ausgewaschen, Schnitt vor 3 s). Behoben: Kamera startet an der leuchtenden Lampe und kippt zur Decke, Würfel kräftiger, Text/Schnitt ab Datei-Sekunde 3,2. Runde 2 nicht erneut vorgelegt.
+- Hinweis: Würfel in der Nahaufnahme noch recht hell (wirkt mehr Eis als Wellenglas).
+- KI-Kennzeichnung: nein
+
+### Mo 9.11. 18 Uhr
+- Gebaut am 8.11. für die feste Reihe „Wichteln unter 20 €“ (erste Folge). Bloom über `lib/post.js`.
+- Datei: `50_krystall-ball_wichteln_cgi_20261109.mp4` + `_ohne_musik.mp4` (Loop 8,0 s, −14,0 LUFS, Datei 5,5 MB, Titelbild 4,2 s: Kugel mit Saturn + Produktwort)
+- Caption @maiosshop: Geschenkidee unter 20 € / Wichteln. Limit: 20 €. Das steckt in meiner Box: Kristallkugel Nachtlampe mit Saturn im Glas, 7 Motive zur Auswahl. 16,99 €, Link im Profil. Saturn oder Mond?
+- Caption @maiosshop.com: gleich, Hook-Zeile „Wichtelgeschenk unter 20 €? Das hier.“
+- Hashtags: #werbung #nachtlampe #kristallkugel #wichteln
+- Angehefteter Kommentar: Saturn oder Mond?
+- Szene: `scenes/kugel_wichteln.js` + `_ton.py` (Weihnachts-Lo-Fi C-Dur, eigene Melodie). Box schließt sich am Ende (Loop).
+- Zweiter Blick: Runde 1 „nicht freigabefähig“ (zu wenig Bewegung im Einstieg, Kugel angeschnitten, Endbild ähnlich früheren). Behoben: Fugenlicht pulsiert, Bokeh driftet, weitere Kamera, Kugel komplett im Bild, Endbild schräg gerahmt. Der Einwand „Text fehlt“ war ein Stichproben-Effekt (Text läuft Datei 3,1–4,4 s). Runde 2 nicht erneut vorgelegt.
+- KI-Kennzeichnung: nein
+
+### Di 10.11. 12 Uhr
+- Datei: `42_aroma-diffusor_weihnachtsmodus_cgi_20261110.mp4` + `_ohne_musik.mp4` (Loop 8,0 s, 5,5 MB, −14,0 LUFS, Spitze −4,3 dBTP)
+- Zeitplan: Di 10.11.2026, 12:00 (Europe/Berlin), erst @maiosshop, dann @maiosshop.com
+- Titelbild: 2,4 s (Diffusor mit Tannenbaum, „Ab heute: Weihnachtsmodus.“, „Diffusor“ neben der Pille)
+- Caption @maiosshop: Aroma Öl Diffusor mit Flammeneffekt / Mein Kürbis muss jetzt ausziehen. Ab heute Weihnachtsmodus, die Flamme darf bleiben: Ultraschall-Nebel mit LED-Licht, 130 ml Tank für bis zu 6 Stunden. 25,99 €, Link im Profil. Schwarz oder Weiß?
+- Caption @maiosshop.com: Aroma Öl Diffusor mit Flammeneffekt / Halloween ist durch, der Kürbis zieht aus. Ab heute Weihnachtsmodus, die Flamme darf bleiben: Ultraschall-Nebel mit LED-Licht, 130 ml Tank für bis zu 6 Stunden. 25,99 €, Link im Profil. Schwarz oder Weiß?
+- Hashtags: #werbung #aromadiffusor #aromatherapie #weihnachtsdeko
+- Angehefteter Kommentar: Schwarz oder Weiß?
+- Preis: products.json steht seit 8.11. auf 25,99 € (vorher 26,99 €)
+- Trend + Quelle: „Christmas Switch“ (Halloween-Deko wird Weihnachtsdeko in einer Einstellung), socialpilot.co/blog/tiktok-trends (Nov. 2026); newengen.com/insights/tiktok-trends (Stand 5.11.) ohne passenden Trend für Produkte ohne Person
+- Vorlage-Videos: Handy-Look-Loops (Diffusor 29.10./3.11., Mixer 4.11.); 72-h-Werte in kennzahlen.csv noch leer, Kommentare nicht gelesen (kein TikTok Studio ab 9.11.)
+- Neu gegenüber den Diffusor-Videos 29.10. (Schlafzimmer, „Feuer ist kalt“) und 3.11. (Sideboard, Farbwechsel): Wandregal aus Nussbaum vor salbeigrauer Wand, Kürbis rollt ab Bild 0 aus dem Bild, Raumlicht flackert, danach Tannenbaum, rote Kugeln und Lichterkette; Flamme bleibt orange (kein Farbwechsel), Einstellung von rechts hinten auf Öffnung und Lichtring
+- Szene: `scenes/diffusor_switch.js` + `diffusor_switch.html`, Ton `scenes/diffusor_switch_ton.py` (Spieluhr d-Moll → F-Dur mit Glocken und Schellen, ohne Klang-Logo)
+- Videocheck: ok. Bewegung ab Bild 0 (Kürbis rollt, Flamme, Kerzen, Kamera), keine Auflösung bis 3 s („Ab heute: Weihnachtsmodus.“ ist die Wendung, Nutzen ab 4,2 s, Preis ab 5,45 s), „Diffusor“ + „Werbung“ durchgehend, letztes Bild = Bild 0, Einstellungen 2,5 (erste, mit Bewegung) / 1,6 / 1,3 / 1,2 s, Text außerhalb der Sperrzonen und nicht auf dem Produkt
+- Zweiter Blick: Runde 1 „freigabefähig“, keine Muss-Punkte. Kann-Punkte umgesetzt: Kürbis zieht sichtbar aus (rollt ab Bild 0), Nahaufnahme frontal mit „Nur Nebel und LED-Licht.“ (zu ähnlich zum Feuer-Video) ersetzt durch neue Einstellung von hinten oben mit „130 ml Tank. Bis zu 6 Stunden.“, Text nicht mehr über der Flamme. Offen als „Kann“: Rillen in der Nahaufnahme etwas verschmiert, Unterkante im Einstieg dunkel
+- KI-Kennzeichnung: nein (keine Stimme)
+
+### Di 10.11. 18 Uhr
+- Datei: `11_mixer_zug_cgi_20261110.mp4` + `_ohne_musik.mp4` (Loop 8,0 s, 5,5 MB, −14,1 LUFS, Spitze −3,9 dBTP)
+- Zeitplan: Di 10.11.2026, 18:00 (Europe/Berlin), erst @maiosshop, dann @maiosshop.com
+- Titelbild: 1,2 s (Mixer im Zug am Fenster, Hook, „Mixer“ neben der Pille)
+- Caption @maiosshop: Elektrischer Mixer Entsafter, 350 ml / 7:12 Uhr, Frühstück fährt mit. Kompakter Mixer für Smoothies und frische Säfte unterwegs. 47,99 €, Link im Profil. Rosa oder Weiß?
+- Caption @maiosshop.com: Elektrischer Mixer Entsafter, 350 ml / Frühstück im Zug um 7:12? Läuft. Kompakter Mixer für Smoothies und frische Säfte unterwegs. 47,99 €, Link im Profil. Rosa oder Weiß?
+- Hashtags: #werbung #mixer #smoothie #frühstück
+- Angehefteter Kommentar: Rosa oder Weiß?
+- Preis: products.json steht seit 8.11. auf 47,99 € (vorher 40,99 €)
+- Trend + Quelle: kein passender Wochen-Trend ohne Person/Song (newengen 5.11., socialpilot Nov. 2026); Handy-Look-Pointe mit Alltagsszene nach den Regeln vom 28.10.
+- Vorlage-Videos: Mixer „Gym“ 4.11. (Loop, Wirbel), Satisfying 2.11.; 72-h-Werte noch leer
+- Neu gegenüber früheren Mixer-Videos (Hexe 28.10., Satisfying 2.11., Gym 4.11.): Pendlerzug zur blauen Stunde, Klapptisch am Fenster, draußen ziehen Hügel, Bäume und Masten vorbei (Shader, periodisch), Mango-Milch-Wirbel, Schienenstöße im Ton
+- Szene: `scenes/mixer_zug.js` + `mixer_zug.html`, Ton `scenes/mixer_zug_ton.py` (Lo-Fi D-Dur, Pluck-Melodie, Mixer-Motor, ohne Klang-Logo)
+- Videocheck: ok. Mixer läuft und Landschaft zieht ab Bild 0, keine Auflösung bis 3 s (Nahaufnahme 2,4–3,2 ohne Text), „Mixer“ + „Werbung“ durchgehend, letztes Bild = Bild 0, Einstellungen 2,4 (erste, mit Bewegung) / 1,8 / 1,3 / 1,2 s, Text nicht auf dem Produkt, außerhalb der Sperrzonen
+- Zweiter Blick: Runde 1 „nicht freigabefähig“ (Zutaten-Text schon ab 2,5 s; Zug kaum zu erkennen; Henkel/Logo verdeckt; Text wie Gym-Video). Behoben: Text ab 3,22 s, Fensterrahmen hellgrau + Sitzlehne im Einstieg, Flasche gedreht (Ring + „FRESH JUICE“ sichtbar), „Nächster Halt: Büro.“ statt „Für unterwegs. 350 ml.“. Runde 2: „freigabefähig“. Offen als „Kann“: Rosa etwas zu lachsfarben, Deckel mint statt rosa (Modell vom 2.11.), Glashals vor dunklen Bäumen schwach, Füllung wie Gym/Satisfying (nächstes Mixer-Video andere Füllung oder Kamera)
+- KI-Kennzeichnung: nein (keine Stimme)
+
+### Mi 11.11. 12 Uhr
+- Design v2 (Nevio 9.11.: „nicht so kindlich“): dunkle, filmische Szene, Figur mit erwachsenen Proportionen (`lib/figur_pro.js`, `scenes/wasser_figur2.js`), Großbuchstaben mit farbigem Schlüsselwort. Die erste Kinder-Fassung (`wasser_figur.js`) ist verworfen.
+- **Neu (9.11. abends): Story-Fassung** `10_wasserspender_story-mehroptic_cgi_20261111.mp4` (+ `_ohne_musik.mp4`, `_titelbild.jpg`), 20,5 s, −14,1 LUFS, Spitze −2,4 dBFS, 9,2 MB, Titelbild-Sekunde 17,0 (Preis + Produktwort). Szene `cgi/scenes/wasser_story.js`, Ton `wasser_story_ton.py`, Kit `lib/story_kit.js`. Zweiter Blick durch Subagent gelaufen (Einstieg ok, keine Auflösung bis 3 s); behoben: Schlussbild ohne Text auf dem Produkt, Untertitel nicht auf dem Sockel. Captions unten gelten auch für die Story. Die Loop-Fassung `10_wasserspender_figur-mo_cgi_20261111.mp4` bleibt als Reserve.
+- Loop-Fassung: `10_wasserspender_figur-mo_cgi_20261111.mp4` (+ `_ohne_musik.mp4`), Loop 8 s, −14,0 LUFS, Spitze −2,0 dBFS, 5,4 MB. Titelbild-Sekunde 6,5 (Spender, Glas gefüllt, 35,99 €). Szene: `cgi/scenes/wasser_figur.js` + `wasser_figur_ton.py`.
+- Trend/Muster: Figuren-Geschichte nach @mehr.optic und @cano.essentials (`cgi/vorbilder.md`): eigene Figur Mo, „das Übliche“ (Gallone schleppen, kippen, Pfütze) gegen Produkt (Schlauch rein, Glas füllt sich). Testclip, nicht an einem Slot festgemacht; Slot Mi 11.11. 18 Uhr nur Vorschlag.
+- Caption @maiosshop: Elektrischer Wasserspender für Gallon-Flaschen
+Jeden Morgen dasselbe: Gallone schleppen, kippen, Pfütze. Schlauch rein, fertig – das Glas füllt sich direkt aus der Flasche. Wiederaufladbar, für Büro und Zuhause. 35,99 €, Link im Profil. Weiß oder Schwarz? #werbung #wasserspender #schreibtisch #küche
+- Caption @maiosshop.com: Elektrischer Wasserspender für Gallon-Flaschen
+Schleppen, kippen, Pfütze. Das war einmal. Schlauch rein, fertig – das Glas füllt sich direkt aus der Flasche. Wiederaufladbar, für Büro und Zuhause. 35,99 €, Link im Profil. Weiß oder Schwarz? #werbung #wasserspender #schreibtisch #küche
+- Frage für den angepinnten Kommentar: „Weiß oder Schwarz?“
+- KI-Kennzeichnung: nein (keine Stimme).
+- Videocheck: Bild 0 und letztes Bild gleich, Hook „Jeden Morgen dasselbe.“ ohne Auflösung bis 3 s (Dateizeit), Werbung-Pille und Produktwort sichtbar, Einstellungen ≤ 2,4 s. Zweiter Blick durch Subagent noch nicht gelaufen.
