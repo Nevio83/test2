@@ -38,5 +38,11 @@ module.exports = [
       'no-empty': 'warn',
       'no-constant-condition': ['warn', { checkLoops: false }]
     }
+  },
+  {
+    // .mjs-Skripte (free-claude, ask-free) nutzen import/export. Muss NACH dem
+    // Block oben stehen, sonst überschreibt dessen sourceType 'commonjs' das hier.
+    files: ['**/*.mjs'],
+    languageOptions: { sourceType: 'module' }
   }
 ];
