@@ -18,8 +18,9 @@ ap = argparse.ArgumentParser(); ap.add_argument('bild'); ap.add_argument('ton');
 ap.add_argument('--titel', type=float, default=None); ap.add_argument('--maxrate', default='4800k')
 ap.add_argument('--loop', type=float, default=None)
 a = ap.parse_args()
+# Ton 256k statt 192k: 192k schoss bei Klick-/Ting-Klängen bis +3,7 dB über die Spitze (gemessen 15.11.)
 enc = ['-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-maxrate', a.maxrate, '-bufsize', '9600k', '-profile:v', 'high', '-level', '4.1',
-       '-pix_fmt', 'yuv420p', '-r', '30', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-movflags', '+faststart']
+       '-pix_fmt', 'yuv420p', '-r', '30', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-movflags', '+faststart']
 if a.loop is None:
     subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-i', a.bild, '-i', a.ton, '-map', '0:v:0', '-map', '1:a:0',
                     *enc, '-shortest', a.ziel], check=True)

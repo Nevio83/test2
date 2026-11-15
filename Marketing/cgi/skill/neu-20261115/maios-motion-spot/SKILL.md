@@ -39,8 +39,9 @@ Hook: Aussage mit offener Frage, ≤ 6 Wörter, jedes Mal neu, ohne Preis. Bis 3
 1. Konfiguration `Marketing/cgi/spot/<NN>_<slug>.json` (UTF-8). Fotos = Pfade aus products.json (`colors[].image`/`image`), relativ zum Repo-Stamm.
 2. Standbilder: `node Marketing/cgi/spot/render_spot.mjs Marketing/cgi/spot/<datei>.json --stills 0,0.5,1.5,3,<je Szene eins>,<Ende> --dir <scratch>/spot` → als Bogen ansehen.
 3. Video: `node Marketing/cgi/spot/render_spot.mjs <datei>.json --out <scratch>/x_bild.mp4` (schreibt auch `x_bild.events.json`).
-4. Ton: `py Marketing/cgi/spot/spot_ton.py <scratch>/x_bild.events.json Marketing/musik/clean_minimal_112bpm.mp3 <scratch>/x_ton.wav` (`--musik-db`, `--sfx-db`).
-5. Fertig: `py Marketing/cgi/lib/finish.py <scratch>/x_bild.mp4 <scratch>/x_ton.wav Marketing/videos/geschnitten/<NN>_<slug>_spot_<YYYYMMDD>.mp4 --titel 0.8` → Ausgabe prüfen: −14 LUFS ±1, TP ≤ −1, ≤ 10 MB.
+4. Musik wählen: `py Marketing/cgi/spot/musik.py wahl --dauer <s> --stimmung klar` (Spot-Standard „klar“; Geschenk/Abend „warm“/„ruhig“, viele Farben „lebhaft“). Am besten **vor** Schritt 1, damit die Szenendauern auf die Schlaglänge passen.
+   Ton: `py Marketing/cgi/spot/spot_ton.py <scratch>/x_bild.events.json Marketing/musik/<stück> <scratch>/x_ton.wav --musik-ab <s>` (`--musik-db`, `--sfx-db`).
+5. Fertig: `py Marketing/cgi/lib/finish.py <scratch>/x_bild.mp4 <scratch>/x_ton.wav Marketing/videos/geschnitten/<NN>_<slug>_spot_<YYYYMMDD>.mp4 --titel 0.8`, dann **hören**: `py Marketing/cgi/spot/ton_check.py <fertig>.mp4 <scratch>/check --events <scratch>/x_bild.events.json` → −14 LUFS ±1, TP ≤ −1, ≤ 10 MB, `ton_bild.png` ansehen.
 6. Ohne Musik (stumme Spur): `ffmpeg -i <scratch>/x_bild.mp4 -f lavfi -i anullsrc=r=48000:cl=stereo -shortest -c:v libx264 -crf 20 -pix_fmt yuv420p -c:a aac …_ohne_musik.mp4`
 7. Bewegung prüfen: `ffmpeg -i <fertig>.mp4 -vf "fps=2,scale=216:-2,tile=6x4:padding=3" -frames:v 1 <scratch>/bogen.jpg`.
 

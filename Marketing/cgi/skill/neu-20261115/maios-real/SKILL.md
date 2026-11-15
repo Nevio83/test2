@@ -36,8 +36,11 @@ Arbeitsordner: Repo-Stamm `C:\Users\nevio\Documents\vscode\Maios`. **Alle Zwisch
 2. Probe: `py Marketing/cgi/real/gal.py x.json S/probe 0.5 3.4 5.0 11.5` → `S/probe_<t>.png` ansehen. Text steht seit 15.11. mittig im erlaubten Bereich (x 465), Hook trotzdem kurz halten.
 3. Rendern: `py Marketing/cgi/real/gal.py x.json S/x_video.mp4`
 4. Verkleinern: `ffmpeg -i S/x_video.mp4 -c:v libx264 -b:v 3200k -maxrate 3600k -bufsize 6400k -pix_fmt yuv420p S/x_small.mp4`
-5. Musik (Git Bash): `bash Marketing/cgi/real/mix.sh S/x_small.mp4 Marketing/musik/<stück>.mp3 12.0 S/X_mit.mp4` (normalisiert; `level=0` im Limiter nicht entfernen). Nachmessen mit `ebur128=peak=true`: −14 LUFS ±1, Spitze ≤ −1 dBFS, sonst `volume=-0.7dB`.
-   Optional (Sichtung 15.11.): leiser Whoosh auf jedes Wischen. Ereignisliste `S/ev.json` = `{"dauer": <Dauer>, "events": [{"t": 1.5, "typ": "whoosh", "staerke": 0.35}, {"t": 3.0, …}, …]}` (Zeiten = `seg`, 2×`seg`, … bis zum letzten Wechsel), dann `py Marketing/cgi/spot/spot_ton.py S/ev.json Marketing/musik/<stück>.mp3 S/ton.wav` und `py Marketing/cgi/lib/finish.py S/x_small.mp4 S/ton.wav <ziel>.mp4 --titel 0.8` statt mix.sh.
+5. **Ton (Standard seit 15.11.: Musik + Klänge):** `gal.py` schreibt beim Rendern `S/x_video.events.json` (leiser Whoosh auf jedes Wischen, Ting beim Preis).
+   Musik: `py Marketing/cgi/spot/musik.py wahl --dauer 12 --stimmung lebhaft` (Farben/Becher „lebhaft“, Nachtlampe/Diffusor „ruhig“, Technik „klar“).
+   `py Marketing/cgi/spot/spot_ton.py S/x_video.events.json Marketing/musik/<stück> S/ton.wav --musik-ab <s>` → `py Marketing/cgi/lib/finish.py S/x_small.mp4 S/ton.wav <ziel>.mp4 --titel 0.8` → `py Marketing/cgi/spot/ton_check.py <ziel>.mp4 S/check --events S/x_video.events.json` (Bild ansehen; bei lebhafter Musik ist der Ting oft verdeckt → `--sfx-db +4`).
+   Getestet 15.11. (Tumbler, bright_pop ab 3,76 s): −14,2 LUFS, −2,6 dBTP, 7,8 MB, Rendern ~2 min.
+   Alter Weg ohne Klänge (Git Bash): `bash Marketing/cgi/real/mix.sh …` – nur noch als Rückfall.
 6. Fassung ohne Musik mit stummer Tonspur: `ffmpeg -i S/x_small.mp4 -f lavfi -i anullsrc=r=48000:cl=stereo -shortest -c:v copy -c:a aac …_ohne_musik.mp4`
 7. Dateien: `<NN>_<produkt>_<galerie|farben>_echt_<YYYYMMDD>.mp4`, `…_ohne_musik.mp4`, `…_titelbild.jpg` (0,8 s) nach `Marketing/videos/geschnitten/`.
 

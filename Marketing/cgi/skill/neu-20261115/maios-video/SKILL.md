@@ -41,6 +41,13 @@ Die alten Konto-Skills `maios-video-cgi`, `maios-video-story`, `maios-video-mask
 - **Ende:** Produktwort + Preis exakt + „Link im Profil“ + **Versandhinweis** („Versandkostenfrei in Deutschland“ – Pflicht bei Preisnennung laut `compliance_rules.json` → `preisangaben`; Versand DE = 0 € laut `shipping-calculator.js`). Kein „zzgl./inkl. MwSt.“ (Kleinunternehmer). Format W: kein Preis im Bild, dann auch kein Hinweis nötig.
 - **Ton:** −14 LUFS ±1, Spitze ≤ −1 dBTP nach AAC; Datei ≤ 10 MB, 1080×1920, 30 fps, H.264 + AAC. **`finish.py` misst die Lautheit nur, es normalisiert nicht** – normalisiert wird vorher (`spot_ton.py` oder `mix.sh`). Fassung „ohne Musik“ = stumme Tonspur (`anullsrc`).
 
+## Ton – bei JEDEM neuen Video Pflicht (Nevio 15.11.)
+Jedes Video bekommt **passende Musik und Klänge**, abgestimmt auf das Bild:
+1. **Musik wählen:** `py Marketing/cgi/spot/musik.py wahl --dauer <s> --stimmung <ruhig|warm|klar|lebhaft|filmisch> [--stimme]` → Stück, Startsekunde auf einem Taktanfang (`--musik-ab`), Schlaglänge. Stimmung nach Produkt/Format (Tabelle im Skript-Kopf und im Handbuch §10a). Neue Stücke erst `musik.py analyse` laufen lassen (nur `gewerblich_erlaubt: true`).
+2. **Schnitte auf den Takt:** Szenen-/Bildwechsel möglichst auf Vielfache der Schlaglänge legen (`szenenlaengen_auf_schlag_s`), solange ≤ 2 s.
+3. **Klänge:** Klick/Tipp/Whoosh/Pop/Ting genau auf die Bewegungen – Motion-Spot und real schreiben die Ereignisse selbst (`*.events.json`), `spot_ton.py` synthetisiert sie (keine fremden Samples) und mischt mit Musik (+ Stimme/Originalton per `--spur`).
+4. **Hören = messen + ansehen:** `py Marketing/cgi/spot/ton_check.py <fertig>.mp4 <scratch>/check --events <x>.events.json` → Lautheit, Spitze, Stille, wie viele Klänge wirklich hörbar sind, dazu `ton_bild.png` (Wellenform + Spektrogramm) **ansehen**. Ist weniger als die Hälfte der Klänge hörbar: `--sfx-db +3…+5` oder `--musik-db` tiefer. Ob die Musik *gefällt*, kann Claude nicht hören – im Liefer-Paket das Stück nennen, Nevio entscheidet.
+
 ## Ablauf pro Slot
 1. `Marketing/trends/vorrat.md` lesen: welcher Slot ist frei, was lief zuletzt (Format/Produkt-Wechsel). Slot auf „in Arbeit (Lauf TT.MM. HH:MM)“ setzen.
 2. **Inspiration (nur lesen):** TikTok Studio → Inspiration, was gerade zieht; optional Kandidat `last30days` (siehe SKILLS-MAIOS.md). Passt es, in Hook oder Hashtags.

@@ -1,7 +1,8 @@
 """Ton für den Motion-Spot: eigene Musik + Klick-/Tipp-/Whoosh-/Pop-/Ting-Klänge genau auf die Ereignisse der Animation.
 Alle Klänge werden hier synthetisiert (keine Samples, keine fremden Rechte). Braucht nur numpy + ffmpeg.
 
-   py Marketing/cgi/spot/spot_ton.py <video>.events.json <musik.mp3|keine> ziel.wav [--musik-db -6] [--sfx-db 0]
+   py Marketing/cgi/spot/spot_ton.py <video>.events.json <musik.mp3|keine> ziel.wav [--musik-db -6] [--sfx-db 0] [--musik-ab <s>]
+        Stück und --musik-ab vorher mit "py Marketing/cgi/spot/musik.py wahl --dauer <s> --stimmung <…>" bestimmen.
         [--spur stimme.wav --spur-ab 0.0 --ducking 12]   Stimme (Format W) oder Originalton (eigene Clips) dazumischen;
                                                          die Musik wird unter der Spur um --ducking dB abgesenkt.
    Ohne Klang-Ereignisse geht auch eine Liste {"dauer": 12, "events": []}.
@@ -18,6 +19,7 @@ SR = 48000
 ap = argparse.ArgumentParser()
 ap.add_argument('events'); ap.add_argument('musik'); ap.add_argument('ziel')
 ap.add_argument('--musik-db', type=float, default=-6.0); ap.add_argument('--sfx-db', type=float, default=0.0)
+ap.add_argument('--musik-ab', type=float, default=0.0)   # Startsekunde im Stück (aus musik.py wahl, liegt auf einem Taktanfang)
 ap.add_argument('--spur', default=None); ap.add_argument('--spur-ab', type=float, default=0.0); ap.add_argument('--ducking', type=float, default=12.0)
 a = ap.parse_args()
 E = json.load(open(a.events, encoding='utf-8'))
@@ -74,7 +76,7 @@ if a.spur:
     duck = 1 - aktiv * (1 - 10 ** (-a.ducking / 20))
     stereo += spur
 if a.musik != 'keine':
-    mu = lade(a.musik)
+    mu = lade(a.musik)[int(a.musik_ab * SR):]
     if len(mu) < N: mu = np.concatenate([mu] * (N // len(mu) + 1))
     mu = mu[:N].copy(); fi, fo = int(0.25 * SR), int(1.0 * SR)
     mu[:fi] *= np.linspace(0, 1, fi)[:, None]; mu[-fo:] *= np.linspace(1, 0, fo)[:, None]
@@ -85,7 +87,7 @@ if not np.any(stereo):
 roh = a.ziel + '.roh.wav'
 pcm = (np.clip(stereo, -1, 1) * 32767).astype(np.int16).tobytes()
 subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-f', 's16le', '-ar', str(SR), '-ac', '2', '-i', '-', roh], input=pcm, check=True)
-LN = 'loudnorm=I=-14:TP=-2.2:LRA=9'   # Reserve: AAC hebt die Spitze um bis zu ~0,7 dB (Ziel nach finish.py: <= -1 dBTP)
+LN = 'loudnorm=I=-14:TP=-3.2:LRA=9'   # Reserve: AAC hebt die Spitze bei heller Musik um bis zu ~1,6 dB (gemessen 15.11.; Ziel nach finish.py: <= -1 dBTP)
 m = subprocess.run(['ffmpeg', '-nostdin', '-i', roh, '-af', LN + ':print_format=json', '-f', 'null', '-'], capture_output=True, text=True).stderr
 j = json.loads(m[m.rfind('{'):m.rfind('}') + 1])
 subprocess.run(['ffmpeg', '-nostdin', '-v', 'error', '-y', '-i', roh, '-af',

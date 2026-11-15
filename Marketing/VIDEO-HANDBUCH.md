@@ -74,7 +74,8 @@ Knete, Pop-up-Papier, @mehr.optic-Look mit Callout-Pills und Neon-Preis, Glow, p
 - **Einstellungen ≤ 2 s** (erste bis 4 s, wenn sich darin etwas bewegt; Schlussbild bis 3 s), alle 1–2 s etwas Neues.
 - **Ende:** Produktwort + Preis exakt + „Link im Profil“ + Versandhinweis (Format W: Preis nur in der Caption).
 - **Sperrzonen 1080×1920:** oben bis y 192, unten ab y 1536, rechts ab x 930 – dort kein Text, kein Preis. Werbung-Pille bei y 200.
-- **Technik:** 1080×1920, 30 fps, H.264 + AAC, ≤ 10 MB, −14 LUFS ±1, Spitze ≤ −1 dBTP nach AAC. Fassung „ohne Musik“ mit
+- **Ton:** immer passende Musik + Klänge auf den Bewegungen (Abschnitt 10a), danach `ton_check.py`.
+- **Technik:** 1080×1920, 30 fps, H.264 + AAC 256 kbit/s, ≤ 10 MB, −14 LUFS ±1, Spitze ≤ −1 dBTP nach AAC. Fassung „ohne Musik“ mit
   stummer Tonspur. Titelbild mit Produkt und Produktwort.
 
 ## 6. Ablauf pro Slot
@@ -124,7 +125,9 @@ Hashtags: keine Trend-Tags ohne Produktbezug. Kommentar-Frage ohne Belohnung/Bed
 | `Marketing/cgi/real/gal.py`, `common.py`, `mix.sh`, `fonts/` | `real`-Galerie (Pillow, Poppins OFL); `mix.sh` in Git Bash |
 | `Marketing/cgi/spot/spot.html` | Motion-Spot-Vorlage (Szenen per JSON, deterministisch) |
 | `Marketing/cgi/spot/render_spot.mjs` | rendert HTML mit installiertem Chrome + ffmpeg, keine Pakete, Node ≥ 22 |
-| `Marketing/cgi/spot/spot_ton.py` | Musik + synthetische Klänge (+ Stimme/Originalton per `--spur`), normalisiert auf −14 LUFS |
+| `Marketing/cgi/spot/spot_ton.py` | Musik (ab `--musik-ab`) + synthetische Klänge (+ Stimme/Originalton per `--spur`), normalisiert auf −14 LUFS |
+| `Marketing/cgi/spot/musik.py` | Musik messen (`analyse` → `Marketing/musik/analyse.json`) und passend wählen (`wahl`) |
+| `Marketing/cgi/spot/ton_check.py` | fertigen Ton prüfen: Lautheit, Spitze, hörbare Klänge, Wellenform + Spektrogramm als Bild |
 | `Marketing/cgi/lib/finish.py` | Bild + Ton zusammen, misst Lautheit (normalisiert **nicht**), Titelbild |
 | `Marketing/cgi/lib/render.py`, `scenes/`, `lib/*_models.js` | alter 3D-Weg (three.js), nur noch Ausnahme |
 | `Marketing/cgi/lib/stimme.py` | alte Piper-Stimme (klingt nach KI, nur mit Freigabe) |
@@ -140,6 +143,32 @@ Hashtags: keine Trend-Tags ohne Produktbezug. Kommentar-Frage ohne Belohnung/Bed
 Zweiter PC: i5-14400F + RTX 4060 (8 GB) – dort wäre lokale KI möglich (Skill `maios-ki-lokal`).
 **Installiert (15.11.):** ffmpeg 9, Node 24, Python 3.14 (`py`) mit numpy + Pillow, Git Bash, Chrome. **Nicht installiert:**
 scipy (für alte `klang.py`/`stimme.py`), Playwright (für alten `render.py`), Whisper, Remotion, VoiceStudio-MCP.
+
+## 10a. Musik und Klänge – bei jedem Video (seit 15.11.)
+Angeregt vom @denkbit-Video „Claude Code vertont dir jetzt deine Videos“ (Earshot/RealSFX/Openverse, `vorbilder.md`).
+Wir machen es mit eigenen Werkzeugen, ohne Installation und ohne fremde Samples.
+- **Kann Claude hören?** Nicht wie ein Mensch. Claude **misst** Ton (Tempo, Takt, Energie, Lautheit, Spitzen, Anschläge)
+  und **sieht** ihn als Bild (Wellenform + Spektrogramm). Ob ein Stück gefällt, entscheidet Nevio.
+- **Musik messen:** `py Marketing/cgi/spot/musik.py analyse` → `Marketing/musik/analyse.json`. Gemessen 15.11.:
+  upbeat_house 123 BPM, bright_pop 129, clean_minimal 112, lofi_chill 89, cinematic_soft 96 (passt zu den Dateinamen).
+- **Musik wählen:** `py Marketing/cgi/spot/musik.py wahl --dauer <s> --stimmung <…> [--stimme]` → Stück, Startsekunde auf
+  einem Taktanfang, Schlaglänge (Szenenwechsel auf den Schlag legen).
+
+  | Stimmung | Stück | passt zu |
+  |---|---|---|
+  | ruhig | lofi_chill_88bpm | Nachtlampe, Diffusor/Humidifier, Abend, Wellness |
+  | warm | cinematic_soft_96bpm | Geschenk, Wissensvideo unter der Stimme |
+  | klar | clean_minimal_112bpm | Technik, Motion-Spot, Finder, Drucker |
+  | lebhaft | bright_pop_128bpm | viele Farben/Galerie, Becher, Mixer |
+  | filmisch | upbeat_house_124bpm | Küche, Aktion, schnelle Schnitte |
+- **Klänge:** Klick, Tipp, Whoosh, Pop, Ting werden in `spot_ton.py` synthetisiert und genau auf die Ereignisse gelegt.
+  Motion-Spot (`render_spot.mjs`) und real (`gal.py`) schreiben die Ereignisliste `*.events.json` selbst; bei eigenen Clips
+  von Hand. Musik wird unter Stimme/Originalton automatisch abgesenkt (`--spur`, `--ducking`).
+- **Prüfen („hören“):** `py Marketing/cgi/spot/ton_check.py <video> <ordner> --events <x>.events.json` → Lautheit, Spitze,
+  Stille, Anteil hörbarer Klänge, `ton_bild.png` ansehen. Weniger als die Hälfte hörbar ⇒ `--sfx-db` hoch oder Musik leiser.
+- **Gelernt beim Test (15.11.):** AAC mit 192 kbit/s hob die Spitze bei Klick-Klängen um bis zu 3,7 dB → `finish.py` nutzt
+  jetzt 256 kbit/s, `spot_ton.py` normalisiert mit Reserve (−3,2 dBTP). Schnelle Tipp-Folgen (Zähler) und der Schluss-Ting
+  gehen unter lebhafter Musik leicht unter.
 
 ## 10. Stimme (Format W)
 - VoiceStudio (lokal, AGPL) mit **MOSS-TTS-Nano** (Apache-2.0) und Profil **„Thorsten CC0“**. **OmniVoice nie** (nicht kommerziell).

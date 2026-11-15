@@ -65,4 +65,8 @@ if __name__=='__main__':
     out=sys.argv[2]
     if len(sys.argv)>3:
         for t in map(float,sys.argv[3:]): frame(t).save(f'{out}_{t}.png')
-    else: pipe(out,int(DUR*FPS),frame)
+    else:
+        pipe(out,int(DUR*FPS),frame)
+        # Klang-Ereignisse für spot_ton.py: leiser Whoosh auf jedes Wischen, Ting, wenn Preis/Link erscheinen
+        ev=[{'t':round(SEG*i,3),'typ':'whoosh','staerke':0.35} for i in range(1,N)]+[{'t':round(DUR-LAST+0.4,3),'typ':'ting','staerke':1.2}]
+        json.dump({'dauer':round(DUR,3),'events':ev},open(os.path.splitext(out)[0]+'.events.json','w',encoding='utf-8'),indent=1)
