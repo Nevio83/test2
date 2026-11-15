@@ -507,6 +507,11 @@ nur über den grünen Prüflauf (§0 und §3). Node-Version via `NODE_VERSION`/`
 
 ## 9. Nützliche Skills (im Cowork/Claude-Umfeld)
 
+**Maßgeblich ist `SKILLS-MAIOS.md`** (wird hier mitgeladen): welcher Skill bei welcher Aufgabe
+ohne Nachfrage geladen wird, auch für Videos/TikTok. Die Tabelle darunter ist der ältere Überblick.
+
+@SKILLS-MAIOS.md
+
 Beim Arbeiten an diesem Projekt sind diese Skills typischerweise relevant:
 
 | Skill | Wofür hier |

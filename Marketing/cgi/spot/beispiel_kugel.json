@@ -1,0 +1,23 @@
+{
+  "_hinweis": "Beispiel Motion-Spot, Produkt 50. Angaben aus products.json: Name 'Krystall Ball Nachtlampe', 7 Motive (colors), Beschreibung 'Leuchtende Kristallkugel mit verschiedenen Motiven - Sternenhimmel, Planeten, Mond und mehr ... Dekoration für Zuhause oder als Geschenk', Preis 16,99 €. Versand DE kostenlos laut shipping-calculator.js. Echtes Produkt ab Bild 0, Einstellungen <= 2 s (erste <= 4 s).",
+  "wort": "Nachtlampe",
+  "oben": "Ich kann mich nicht entscheiden.",
+  "farbe": "#3F4BB5",
+  "hintergrund": ["#F3F1EE", "#DEDDEA"],
+  "szenen": [
+    { "typ": "galerie", "dauer": 3.0, "held": 0, "held_ab": 1.9, "fotos": [
+      ["Mond", "produkt bilder/Krystall Ball Nachtlampe bilder/Krystall Ball Mond.jpg"],
+      ["Saturn", "produkt bilder/Krystall Ball Nachtlampe bilder/Saturn.jpg"],
+      ["Riesenrad", "produkt bilder/Krystall Ball Nachtlampe bilder/Riesenrad.jpg"],
+      ["Sternenhimmel", "produkt bilder/Krystall Ball Nachtlampe bilder/Sternenhimmel.jpg"],
+      ["Segelboot", "produkt bilder/Krystall Ball Nachtlampe bilder/Segelboot.jpg"],
+      ["Schneemann", "produkt bilder/Krystall Ball Nachtlampe bilder/Schneemann.jpg"],
+      ["Wassermolch", "produkt bilder/Krystall Ball Nachtlampe bilder/Wassermolch.jpg"]
+    ] },
+    { "typ": "karte", "dauer": 2.0, "foto": "produkt bilder/Krystall Ball Nachtlampe bilder/Krystall Ball Mond.jpg",
+      "name": "Krystall Ball Nachtlampe", "nutzen": "Leuchtende Kristallkugel mit Motiv.", "tap": 0.9 },
+    { "typ": "zahl", "dauer": 1.6, "wert": 7, "label": "Motive", "zaehl": 0.9 },
+    { "typ": "nutzen", "dauer": 2.0, "zeilen": ["Sternenhimmel, Planeten, Mond", "Deko oder Geschenk"] },
+    { "typ": "ende", "dauer": 2.6, "wort": "Krystall Ball Nachtlampe", "preis": "16,99 €" }
+  ]
+}
