@@ -1,3 +1,40 @@
+> **Galerie-Format „real“ (Nevio 13.11.):** abgenommen, als Skill `real` gespeichert (Skripte `cgi/real/`). Notiz-Liste (Format A) verworfen.
+> **GILT AB SA 14.11.2026 (Nevio, 12.11.): „Echt statt KI“.** Neue Videos sollen nicht nach KI/CGI aussehen, sondern realistisch. Keine 3D-Szenen, keine Figuren, keine Knete/Papier-Welten, kein Glow, keine perfekten Kamerafahrten. Grundlage sind echte Fotos aus `produkt bilder` (inkl. Varianten-Ordner), geschnitten wie ein normales Handy-Video. Regeln ab 28.10. (Werbung-Pille, Produktwort in 0–3 s, keine Auflösung vor 3 s, Preise/Angaben nur aus products.json, keine fremden TikTok-Clips im Video) gelten weiter.
+> - **Format A „Handy-Notiz-Liste“ (15–20 s):** sieht aus wie eine Bildschirmaufnahme einer Notizen-App (eigenes neutrales Design, keine fremde App-Optik/Marke). Titel wird live getippt (Cursor, Tastaturklicks), dann Punkt für Punkt Produkte mit echtem Shopfoto als Anhang, Preis exakt, Häkchen, leichtes Scrollen. Beispiel: „Wichtel-Liste 2026 – alles unter 20 €“ mit Krystall-Ball-Nachtlampe 16,99 €, Kaffee- und Gewürzmühle 18,99 €, Schallzahnbürste 18,99 €, LED Crystal Lampe 19,99 €, Bluetooth-Finder 8,99 € (Preise vorher in products.json prüfen). Am Ende „Link im Profil“.
+> - **Format B „Echte Fotos, gefilmt wie mit dem Handy“ (12–18 s):** echte Produkt-/Variantenfotos, durchgewischt wie in der Galerie: leichte Handbewegung, kurze Unschärfe beim Wischen, Fokus zieht nach, Filmkorn, natürliche Farben, schnelle Schnitte im Takt, Text im TikTok-üblichen Stil (weiß mit dunkler Kontur, keine Pills/Glows). Beispiel: Krystall Ball Nachtlampe mit allen 7 Motiven („7 Motive. Ich kann mich nicht entscheiden.“).
+> - **Format C (nur wenn Nevio Material liefert):** eigene Handyclips (5–10 s, Hände, kein Gesicht) → Schnitt mit `maios-video-rohschnitt`. Wirkt am echtesten.
+> - Plan Sa 14.11.: 12 Uhr Format A (ersetzt dieses Mal den Satisfying-Loop), 18 Uhr Format B. Skill: `maios-video-rohschnitt` (ffmpeg, Fotos als Material) statt der CGI-Skills.
+> **Neue Formate ab 14.11. (aus der Sichtung von @mehr.optic, @cano.essentials und @smart_produkt am 12.11., Details in `cgi/vorbilder.md`):**
+> - **W „Warum ist das so?“, Wissensvideo (30–45 s):** eine überraschende, belegte Geschichte zum Produkt oder seiner Kategorie, z. B. warum frisch gemahlener Kaffee anders schmeckt oder woher die Schneekugel kommt. Fakten vorher per Websuche belegen und Quelle im vorrat-Abschnitt notieren. Erzählerstimme mit Untertiteln, das Produkt erst am Ende, Preis nur in der Caption. Bild aus echten Fotos und Archiv-Look, keine 3D-Figuren.
+> - **H „Hände-Alltag“ (15–25 s):** echte Handyclips (nur Hände) mit Stimme und Ein-Wort-Untertiteln, Schnitt alle 1–1,5 s, Ablauf Paket → auspacken → Problem → Einsatz → Ergebnis. Braucht Clips von Nevio.
+> - **K „Antwort auf Kommentar“:** Handy in der Hand zeigt den Shop bzw. das Produkt und beantwortet eine echte Frage. Braucht Clips von Nevio.
+> - **Stimme:** Die Treffer leben alle von einer Erzählerstimme. Die KI-Stimme (Piper) klingt nach KI, deshalb ist Nevios eigene Stimme (Sprachmemo) am besten. Ohne Nevio-Stimme: nur mit Nevios Freigabe die KI-Stimme, dann als KI kennzeichnen.
+
+> **Stimme, Stand 12.11. abends:** Nevio will kostenlos die eingebauten Stimmen von VoiceStudio nutzen, nicht seine eigene. **Wichtig:** Das Standardmodell OmniVoice hat laut VoiceStudio-Doku (docs/model-credits.md) **CC-BY-NC-Gewichte, also nur nichtkommerziell** und damit nicht für Maios-Werbung. In VoiceStudio stattdessen die Engine **CosyVoice 3** nehmen: kann Deutsch, Code laut Projekt Apache-2.0. Vorher im Model Manager prüfen, dass bei den Gewichten und bei der gewählten Stimme „commercial use“ erlaubt ist; die App zeigt das pro Modell an. Erlaubt der Model Manager keine kommerzielle Nutzung, keine Stimme verwenden. Beim Upload „KI-generiert“ setzen.
+
+> **Stimme (12.11.):** Nevio hat VoiceStudio vorgeschlagen (github.com/debpalash/VoiceStudio). Das ist eine kostenlose Desktop-App, läuft lokal und ist AGPL-3.0; kommerzielle Nutzung ist laut README unter AGPL frei. Das Standardmodell OmniVoice von k2-fsa steht unter Apache-2.0 und ist auf Deutsch mit rund 21.900 Stunden trainiert. Es kann eine Stimme aus einer kurzen Aufnahme klonen, deutsche Stimmen nach Beschreibung liefern dagegen nur unsicher.
+> Ablauf:
+> 1. Claude schreibt den Sprechertext pro Video in den vorrat-Abschnitt.
+> 2. Nevio erzeugt ihn in VoiceStudio mit der Thorsten-Vorlage (nicht mit seiner eigenen Stimme) und legt die WAV unter `Marketing/videos/rohmaterial/eigenes/stimme/<Dateiname des Videos>.wav` ab.
+> 3. Claude schneidet Bild und Untertitel auf die Stimme.
+> **Nevio will NICHT seine eigene Stimme (12.11.).** Stattdessen in VoiceStudio die freie deutsche Sprecherstimme „Thorsten-Voice“ als Klon-Vorlage nehmen: echte Aufnahmen von Thorsten Müller, laut Projekt frei nutzbar, Lizenz auf Zenodo prüfen (Datensatz 2022.10 Neutral, doi 10.5281/zenodo.7265581). Alternative: die Text-zu-Sprache-Funktion direkt in der TikTok-App. In der Cloud kann Claude das Modell nicht laden, weil HuggingFace dort gesperrt ist. Eine geklonte oder KI-Stimme wird beim Upload als KI-generiert gekennzeichnet.
+
+> **Gelernt am 12.11. (eigene Zahlen aus kennzahlen.csv + Recherche):** Die alten Clips mit echtem Material und kurzem POV-Text liefen 5–10× besser als die CGI-Videos. Bürste mit POV-Text, 6 s: 28,2 % ganz angeschaut, 4,4 s Wiedergabezeit. Mixer echt: 17–25 %. Die CGI-Videos ab 26.10. lagen bei 2,5–5 %, rund 2 s Wiedergabezeit, und die meisten waren nach 1 s weg. Daraus folgt:
+> 1. Echtes Bild schlägt jeden Effekt. Erste Sekunde: echtes Produkt in Aktion oder echte Situation, kein Logo, keine Animation, keine 3D-Welt.
+> 2. Kürzer: 6–12 s statt 20-s-Story. Story nur, wenn jede Sekunde echtes Material zeigt.
+> 3. Ein POV-/Alltagssatz oben im TikTok-Textstil (weiß, dunkle Kontur), dazu ehrliche, konkrete Hooks wie „Was kommt an, wenn man das bestellt?“, „Gleicher Tisch, eine Änderung“, „Nicht bestellen, bevor du das misst“ (Quellen: shortsfast.com, nexscope.ai, Nov. 2026).
+> 4. Formate im Wechsel, nie zweimal hintereinander dasselbe:
+>    (a) POV-Text über echtem Clip, 6–10 s;
+>    (b) Hände-Unboxing, 15 s, 5 Einstellungen: zu → öffnen → Produkt raus → erster Test → Ergebnis;
+>    (c) Problem → Beweis → Detail → Entscheidung, 4 Einstellungen;
+>    (d) Vorher/Nachher mit fester Kamera;
+>    (e) „Nicht kaufen, bevor …“ (ehrliche Angaben aus products.json, z. B. „Batterien nicht enthalten“);
+>    (f) Notiz-Liste mit echten Shopfotos;
+>    (g) Galerie-Durchwischen echter Fotos.
+>    CGI nur noch als Ausnahme.
+> 5. Formate (a)–(e) brauchen echte Clips. Fremde TikTok-Clips sind tabu (Für-dich-Sperre wegen „nicht originell“). Darum: Nevio filmt pro Produkt 5 kurze Einstellungen à 3–6 s (nur Hände, Anleitung in `videos/rohmaterial/eigenes/LIESMICH.md`), Claude schneidet. Bis Material da ist: Formate (f) und (g).
+
+
 > **GILT AB 9.11.2026 (Nevio): Nevio lädt die Videos selbst in TikTok Studio hoch und plant sie selbst.**
 > Claude baut, prüft und liefert nur, was er eingeben soll: pro Kanal (@maiosshop, @maiosshop.com) Dateiname (mit Musik), Caption zum Kopieren, Hashtags, Datum und Uhrzeit für „Zeitplan“ (12:00 / 18:00, Europe/Berlin), Titelbild-Sekunde, Text für den angepinnten Kommentar. Claude öffnet dafür kein TikTok Studio, lädt nichts hoch, plant nichts ein und postet nichts.
 > Das geht den Schritten „Planen“ und „Nachlauf“ (Upload, Anpinnen) in der Routine „Maios Vorproduktion und veröffentlichung“ vor. Tageslog, Kennzahlen und Verschieben nach `hochgeladen` nur, wenn Nevio meldet, dass er gepostet hat.
@@ -44,14 +81,19 @@ Hinweise
 | Do 5.11. 18 Uhr | Handy-Look-Pointe: „Schlauch rein. Läuft.“ (Loop 8 s) | 10 Wasserspender (Weiß) | 10_wasserspender_kueche_cgi_20261105.mp4 | geplant für 05.11. 18:00 (beide Kanäle, TikTok-Zeitplan; siehe Detail) |
 | Fr 6.11. 12 Uhr | Trend-Format | | | offen |
 | Fr 6.11. 18 Uhr | Trend-Format | | | offen |
-| Mo 9.11. 12 Uhr | Handy-Look-Pointe: „An meiner Decke läuft was.“ (Loop 8 s, Schlafzimmer-POV, Würfel-Lampe) | 21 Led crystal lampe (Holz boden) | 21_crystal-lampe_decke_cgi_20261109.mp4 | geplant (beide Kanäle, 09.11.; Titelbild Standard) |
-| Mo 9.11. 18 Uhr | „Wichteln unter 20 €“ (feste Reihe ab 9.11.): „Wichteln. Limit: 20 €.“ (Loop 8 s, Geschenkbox geht auf, Saturn) | 50 Krystall Ball Nachtlampe (Saturn) | 50_krystall-ball_wichteln_cgi_20261109.mp4 | geplant (beide Kanäle, 09.11.; Titelbild Standard) |
-| Di 10.11. 12 Uhr | Christmas Switch: „Mein Kürbis muss jetzt ausziehen.“ (Loop 8 s, Halloween-Regal wird Weihnachtsregal) | 42 Aroma Öl Diffusor (Schwarz) | 42_aroma-diffusor_weihnachtsmodus_cgi_20261110.mp4 | von Nevio geplant für 10.11. 12:00 (beide Kanäle, Meldung 9.11.) |
-| Di 10.11. 18 Uhr | Handy-Look-Pointe: „7:12 Uhr. Frühstück fährt mit.“ (Loop 8 s, Pendlerzug) | 11 Mixer (Rosa) | 11_mixer_zug_cgi_20261110.mp4 | von Nevio geplant für 10.11. 18:00 (beide Kanäle, Meldung 9.11.) |
+| Mo 9.11. 12 Uhr | Handy-Look-Pointe: „An meiner Decke läuft was.“ (Loop 8 s, Schlafzimmer-POV, Würfel-Lampe) | 21 Led crystal lampe (Holz boden) | 21_crystal-lampe_decke_cgi_20261109.mp4 | gepostet um 12:00 (@maiosshop „Alle“, laut Studio 11.11.) + https://www.tiktok.com/@maiosshop/video/7705945963394993410; @maiosshop.com nicht geprüft (Profil nicht verbunden) |
+| Mo 9.11. 18 Uhr | „Wichteln unter 20 €“ (feste Reihe ab 9.11.): „Wichteln. Limit: 20 €.“ (Loop 8 s, Geschenkbox geht auf, Saturn) | 50 Krystall Ball Nachtlampe (Saturn) | 50_krystall-ball_wichteln_cgi_20261109.mp4 | gepostet um 18:00 (@maiosshop „Alle“, laut Studio 11.11.) + https://www.tiktok.com/@maiosshop/video/7705946365968272662; @maiosshop.com nicht geprüft |
+| Di 10.11. 12 Uhr | Christmas Switch: „Mein Kürbis muss jetzt ausziehen.“ (Loop 8 s, Halloween-Regal wird Weihnachtsregal) | 42 Aroma Öl Diffusor (Schwarz) | 42_aroma-diffusor_weihnachtsmodus_cgi_20261110.mp4 | gepostet um 12:00 (@maiosshop „Alle“, laut Studio 11.11.) + https://www.tiktok.com/@maiosshop/video/7706194863909391638; @maiosshop.com nicht geprüft |
+| Di 10.11. 18 Uhr | Handy-Look-Pointe: „7:12 Uhr. Frühstück fährt mit.“ (Loop 8 s, Pendlerzug) | 11 Mixer (Rosa) | 11_mixer_zug_cgi_20261110.mp4 | gepostet um 18:00 (@maiosshop „Alle“, laut Studio 11.11.) + https://www.tiktok.com/@maiosshop/video/7706200919502900502; @maiosshop.com nicht geprüft |
 | Mi 11.11. 12 Uhr | Mo-Story mit Erzählerstimme (Test 2 von 2, Story 20–25 s): verschoben, Slot jetzt Wasserspender-Story | | | verschoben, Nevio entscheidet (18 Uhr oder entfällt) |
-| Mi 11.11. 12 Uhr (Nevio 9.11.: „mach das für übermorgen 12 Uhr“) | Story im @mehr.optic-Stil (20,5 s): „Jeden Morgen dieselbe Gallone.“ (Figurenmenge, Blueprint, Explosionsansicht, Neon-Preis); Loop-Version bleibt Reserve | 10 Wasserspender (Weiß/Schwarz) | 10_wasserspender_story-mehroptic_cgi_20261111.mp4 | fertig, wartet auf Freigabe (Nevio 9.11.: „mach das“) |
-| Do 12.11. 12 Uhr | Trend-Format | | | offen |
-| Do 12.11. 18 Uhr | Trend-Format | | | offen |
+| Mi 11.11. 12 Uhr (Nevio 9.11.: „mach das für übermorgen 12 Uhr“) | Story im @mehr.optic-Stil (20,5 s): „Jeden Morgen dieselbe Gallone.“ (Figurenmenge, Blueprint, Explosionsansicht, Neon-Preis); Loop-Version bleibt Reserve | 10 Wasserspender (Weiß/Schwarz) | 10_wasserspender_story-mehroptic_cgi_20261111.mp4 | gepostet um 12:00 (@maiosshop „Alle“, laut Studio 11.11.) + https://www.tiktok.com/@maiosshop/video/7706660931551497494; @maiosshop.com nicht geprüft |
+| Mi 11.11. 18 Uhr (Nevio 10.11.: „noch ein Video, das wir noch nicht hatten“) | Story im @mehr.optic-Stil (20,5 s): „Jeden Morgen dieselbe Suche.“ (Figurenmenge, Blueprint, Explosionsansicht, Radar im Wohnzimmer, Neon-Preis) | 17 Bluetooth Anti-Lost Finder Wassertropfen | 17_bluetooth-finder_story-mehroptic_cgi_20261111.mp4 | von Nevio geplant für 18:00 (@maiosshop „Alle“, laut Studio 11.11. 18:0x) + https://www.tiktok.com/@maiosshop/video/7706662035202772246; @maiosshop.com nicht geprüft |
+| Do 12.11. 12 Uhr | Story im @mehr.optic-Stil (20,5 s): „Nachts leuchtet jeder mit dem Handy.“ (Figurenmenge mit Handylampen, Stufe, Blueprint, Explosionsansicht, Treppe, Neon-Preis) | 25 Nachtlichter mit Bewegungsmelder | 25_nachtlicht_story-mehroptic_cgi_20261112.mp4 | von Nevio veröffentlicht/geplant für 12.11. 12:00 (beide Kanäle, Meldung 12.11. nachts; Freigabe damit erteilt). Links folgen im Nachlauf |
+| Do 12.11. 18 Uhr | Handy-Look-Loop (8 s, Zweitformat): „Heute Morgen um 7 eingefüllt.“ (Zeitraffer am Schreibtisch, Uhr rast, Sonne wandert) | 47 Tumbler Becher (Storm Sea) | 47_tumbler_zeitraffer_cgi_20261112.mp4 | von Nevio veröffentlicht/geplant für 12.11. 18:00 (beide Kanäle, Meldung 12.11. nachts; Freigabe damit erteilt). Links folgen im Nachlauf |
+| Fr 13.11. 12 Uhr | Neuer Stil auf Nevios Wunsch (12.11. nachts: „ganz neu, neuer Artstyle“): Knetanimation, Stop-Motion 12 fps (20,5 s) „Mein Kaffee fängt hier an.“ | 55 Elektrische Kaffee- und Gewürzmühle | 55_kaffeemuehle_knete-story_cgi_20261113.mp4 | von Nevio hochgeladen/geplant für 13.11. 12:00 (beide Kanäle, Meldung 12.11.; Freigabe damit erteilt). Links folgen im Nachlauf |
+| Fr 13.11. 18 Uhr | Neuer Stil: Pop-up-Buch aus Papier (20,5 s) „Zwei Minuten können lang sein.“ | 57 Elektrische Schallzahnbürste (Schwarz, am Ende Schwarz + Weiß) | 57_zahnbuerste_popup-story_cgi_20261113.mp4 | von Nevio hochgeladen/geplant für 13.11. 18:00 (beide Kanäle, Meldung 12.11.; Freigabe damit erteilt). Links folgen im Nachlauf |
+| Sa 14.11. 12 Uhr | „Echt statt KI“ Format B: Galerie-Wischen durch 7 Farben (Notiz-Liste auf Nevios Wunsch 13.11. gelöscht) | 47 Tumbler Becher | 47_tumbler_farben_echt_20261114.mp4 | von Nevio hochgeladen/geplant für 14.11. 12:00 (Meldung 13.11. abends). Links folgen im Nachlauf |
+| Sa 14.11. 18 Uhr | „Echt statt KI“ Format B: Galerie-Wischen, 7 Motive (überarbeitet: ohne Unschärfe-Balken, neuer Hook) | 50 Krystall Ball Nachtlampe | 50_krystall-ball_galerie_echt_20261114.mp4 | von Nevio hochgeladen/geplant für 14.11. 18:00 (Meldung 13.11. abends). Links folgen im Nachlauf |
 | Reserve | zeitloser Satisfying-Loop für Notfälle, ohne Datum und Anlass | | | offen |
 
 ## Details
@@ -338,3 +380,96 @@ Schleppen, kippen, Pfütze. Das war einmal. Schlauch rein, fertig – das Glas f
 - Frage für den angepinnten Kommentar: „Weiß oder Schwarz?“
 - KI-Kennzeichnung: nein (keine Stimme).
 - Videocheck: Bild 0 und letztes Bild gleich, Hook „Jeden Morgen dasselbe.“ ohne Auflösung bis 3 s (Dateizeit), Werbung-Pille und Produktwort sichtbar, Einstellungen ≤ 2,4 s. Zweiter Blick durch Subagent noch nicht gelaufen.
+
+### Mi 11.11. 18 Uhr
+- Produkt: 17 Bluetooth Anti-Lost Finder Wassertropfen, 8,99 €, Farben Schwarz/Weiß/Grün/Pink/Gold/Silber. Aussagen nur: Bluetooth-Tracker, Tropfenform, per Handy finden.
+- Story 20,5 s im @mehr.optic-Stil, Datei 17_bluetooth-finder_story-mehroptic_cgi_20261111.mp4 (+ _ohne_musik, _titelbild). Titelbild bei 16,8 s. Zweitblick durch Subagent gelaufen, Bildfehler behoben.
+- Status: von Nevio veröffentlicht/geplant (Meldung 10.11.: „beide veröffentlicht“). Dateien nach `hochgeladen` verschoben. Eingabe-Paket (Captions, Hashtags, Kommentar) am 10.11. im Chat geliefert.
+
+### Do 12.11. 12 Uhr
+- Datei: `25_nachtlicht_story-mehroptic_cgi_20261112.mp4` + `_ohne_musik.mp4` + `_titelbild.jpg` (Story 20,5 s, kein Loop, 9,4 MB, −14,1 LUFS, Spitze −1,9 dBFS nach AAC; ohne Musik −14,2 LUFS)
+- Zeitplan: Do 12.11.2026, 12:00 (Europe/Berlin), erst @maiosshop, dann @maiosshop.com
+- Titelbild: 17,5 s (zwei leuchtende Nachtlichter, Neon-Preis, „Nachtlicht“ neben der Pille)
+- Caption @maiosshop: Nachtlichter mit Bewegungsmelder / Nachts leuchtet jeder mit dem Handy, die Stufe sieht trotzdem keiner. Das Nachtlicht geht von allein an, wenn du kommst: warmes Licht, batteriebetrieben bis zu 12 Monate, klebt einfach an die Wand. 23,99 €, Link im Profil. Flur oder Schlafzimmer?
+- Caption @maiosshop.com: Nachtlichter mit Bewegungsmelder / Mit der Handylampe die Treppe runter? Die Stufe sieht trotzdem keiner. Das Nachtlicht geht von allein an, wenn du kommst: warmes Licht, batteriebetrieben bis zu 12 Monate, klebt einfach an die Wand. 23,99 €, Link im Profil. Flur oder Schlafzimmer?
+- Hashtags: #werbung #nachtlicht #bewegungsmelder #beleuchtung
+- Angehefteter Kommentar: Flur oder Schlafzimmer?
+- Trend + Quelle: Story im @mehr.optic-Stil (Standard ab 9.11., `cgi/vorbilder.md`); Wochen-Trends (socialpilot.co/blog/tiktok-trends, Nov. 2026) ohne passendes Format ohne Person/Song
+- Vorlage-Videos: Wasserspender-Story 11.11. (`wasser_story.js`), Finder-Story 11.11. (`finder_story.js`); 11.11. 12 Uhr laut Studio 242 Aufrufe, die Loops 9./10.11. je ca. 250
+- Neu gegenüber Flur 28.10. und Mo-Story 4.11.: keine Kinderfigur, kein Flur/Lego; erwachsene Figuren mit Handy-Lichtkegeln vor der Nachtstadt, Stufe, Blaupause mit Explosionsansicht (Bewegungsmelder, Klebestreifen), Treppe mit zwei Lichtern, Preis vor dunkelblauer Wand
+- Neu gerendert 11./12.11. auf Nevios Wunsch („deutlich realistischer, bessere Animationen“): Szene jetzt `cgi/scenes/nachtlicht_story2.js` + `nachtlicht_story2.html` mit `lib/post_pro.js` (Kantenglättung, Umgebungsverdeckung, Tiefenunschärfe, Grading), nasse Straße mit Spiegelung, weiche Lichtkegel + Staub, Armschwung, echtes Stolpern über die Kante, Gehen die Stufen runter, lackierte Treppe mit Sockelleiste und Bildern, Schatten der Nachtlichter, Nahaufnahme beim Einschalten (12,3–13,8 s). Zweiter Blick zur neuen Fassung: 3 Muss (Callout auf dem Holzstab, Lichtkegel durch den Körper beim Stolpern, Holz im Preisbild zu hell) behoben. Titelbild weiter 17,5 s.
+- Szene alt: `cgi/scenes/nachtlicht_story.js` + `nachtlicht_story.html`, Ton `scenes/nachtlicht_story_ton.py` (Lo-Fi a-Moll, Drop bei 5 s, Schritte, Stolpern, ohne Stimme)
+- Videocheck: ok. Bewegung ab Bild 0 (Menge läuft, Lichtkegel), bis 3 s keine Auflösung („Nachts leuchtet jeder mit dem Handy.“ / „Die Stufe sieht keiner.“), „Nachtlicht“ bis 3,3 s und ab 16,4 s, Werbung durchgehend, Einstellungen ≤ 3 s (Schnitt bei 9,3 s, Preis 16,2/18,3), „Link im Profil“ ab 19,5 s (letzte Sekunde), Text nicht auf dem Produkt, Untertitel x 105–929
+- Zweiter Blick (Subagent, 2 Runden): Runde 1 nicht freigabefähig (Untertitel in rechter Sperrzone, Preis-Einstellung 4,3 s, Explosionsansicht 3,4 s, Holzfarbe). Alles behoben; Runde 2: nur noch Holzfarbe im Preis-Ende, danach behoben (Lampenlicht auf dem Holz reduziert, Walnuss wie in der Blaupause). Offen als „Kann“: Stufe im Hook kaum zu sehen, Lampen auf der Treppe klein, gelber Ring schneidet bei 3,0 s die Pille „Nachtlicht“
+- Kommentare (Lauf 11.11.): @maiosshop nur ein Spam-Kommentar („follow back“), keine echte Frage; @maiosshop.com nicht gelesen (nur ein Chrome-Profil verbunden)
+- KI-Kennzeichnung: nein (keine Stimme)
+
+### Do 12.11. 18 Uhr
+- Datei: `47_tumbler_zeitraffer_cgi_20261112.mp4` + `_ohne_musik.mp4` + `_titelbild.jpg` (Loop 8,0 s, 5,5 MB, −14,2 LUFS, Spitze −3,9 dBFS; ohne Musik −14,8 LUFS)
+- Zeitplan: Do 12.11.2026, 18:00 (Europe/Berlin), erst @maiosshop, dann @maiosshop.com
+- Titelbild: 5,2 s (Becher mit Griff nah, „Mit Griff und Strohhalm.“, „Tumbler“ neben der Pille)
+- Caption @maiosshop: Tumbler Becher mit Griff und Strohhalm / Heute Morgen um 7 eingefüllt. Isoliert, hält Temperaturen bis zu 12 Stunden, für heiße und kalte Getränke. BPA-frei und spülmaschinenfest. 24,99 €, Link im Profil. Heiß oder kalt?
+- Caption @maiosshop.com: Tumbler Becher mit Griff und Strohhalm / Um 7 Uhr eingefüllt, bis zum Feierabend dabei. Isoliert, hält Temperaturen bis zu 12 Stunden, für heiße und kalte Getränke. BPA-frei und spülmaschinenfest. 24,99 €, Link im Profil. Heiß oder kalt?
+- Hashtags: #werbung #tumbler #becher #büroalltag
+- Angehefteter Kommentar: Heiß oder kalt?
+- Trend + Quelle: Handy-Look-Loop als Zweitformat (README „Regeln ab 28.10.“), Zeitraffer als Raum-Effekt; kein passender Wochen-Trend ohne Person/Song
+- Vorlage-Videos: Mixer „Zug“ 10.11. (Loop mit Bewegung im Raum, Uhrzeit-Hook); erstes Video dieses Produkts, neues Modell `cgi/lib/tumbler_models.js`
+- Neu gerendert 11./12.11. auf Nevios Wunsch: Szene jetzt `cgi/scenes/tumbler_tag2.js` + `tumbler_tag2.html`, Modell v2 (Deckel mit Drehschieber, Strohhalm als Rohr, Pulverstruktur), `lib/post_pro.js`, Sonnenstrahlen + Staub, Pflanze bewegt sich, Laptop, Kamerafahrt auf den Becher. Zweiter Blick: freigabefähig; Deckel danach auf Hellgrau korrigiert (war überbelichtet).
+- Szene alt: `cgi/scenes/tumbler_tag.js` + `tumbler_tag.html`, Ton `scenes/tumbler_tag_ton.py` (Lo-Fi C-Dur, Uhr-Ticken, ohne Klang-Logo). Zeitraffer 7–19 Uhr in 6,6 s, Nacht im Schnelldurchlauf zurück zum Morgen (Preis steht am Abend, unter 12 h nach dem Einfüllen)
+- Videocheck: ok. Licht und Uhr bewegen sich ab Bild 0, bis 3 s keine Auflösung („Isoliert. Bis zu 12 Stunden.“ ab 3,05 s), „Tumbler“ + „Werbung“ durchgehend, letztes Bild = Bild 0 (Kamera, Licht, Text), Einstellungen 2,6 (erste, mit Bewegung) / 1,7 / 1,4 / 1,5 s, Preis + Link vor dem Ende, Text nicht auf dem Produkt
+- Zweiter Blick (Subagent, 2 Runden): Runde 1 nicht freigabefähig (Farbe zu dunkel, 24-h-Zeitraffer behauptet indirekt mehr als 12 h, Griff im Preisbild nicht zu sehen, #thermobecher nicht in products.json). Alles behoben; Runde 2 „freigabefähig“. Offen als „Kann“: Einstieg ruhig (nur Raum bewegt sich), „Strohhalm“ über dem Zifferblatt, Uhr nah an der Werbung-Pille im Preisbild
+- KI-Kennzeichnung: nein (keine Stimme)
+
+### Fr 13.11. 12 Uhr
+- Neuer Stil auf Nevios Wunsch (12.11.: „ganz neu, neuer Artstyle, neue Animationen, neuer Aufbau“): Knetanimation als Stop-Motion mit 12 fps, Miniaturwelt aus Knete, nur die Mühle ist echt (Edelstahl, Glasdeckel)
+- Datei: `55_kaffeemuehle_knete-story_cgi_20261113.mp4` + `_ohne_musik.mp4` + `_titelbild.jpg` (20,5 s, 6,4 MB, −14,2 LUFS, Spitze −3,7 dBFS)
+- Zeitplan: Fr 13.11.2026, 12:00 (Europe/Berlin), erst @maiosshop, dann @maiosshop.com
+- Titelbild: 17,0 s (Mühle + Tasse, Preis, „Kaffeemühle“ neben der Pille)
+- Caption @maiosshop: Elektrische Kaffeemühle für Bohnen und Gewürze / Mein Kaffee fängt hier an: ganze Bohnen rein, Deckel drauf, Knopf drücken. 200-W-Motor und Messer aus Edelstahl, den Mahlgrad bestimmst du über die Mahldauer. Auch für Gewürze, Nüsse und Getreide, nur trockene Zutaten. 18,99 €, Link im Profil. Kaffee oder Gewürze?
+- Caption @maiosshop.com: Elektrische Kaffeemühle für Bohnen und Gewürze / Frischer Kaffee fängt bei ganzen Bohnen an: rein, Deckel drauf, Knopf drücken. (Rest wie oben)
+- Hashtags: #werbung #kaffeemühle #gewürzmühle #küche
+- Angehefteter Kommentar: Kaffee oder Gewürze?
+- Szene: `cgi/scenes/knete_muehle.js` + `knete_muehle.html`, Modell `cgi/lib/muehle_models.js`, Ton `scenes/knete_muehle_ton.py` (Marimba/Pizzicato G-Dur, Bohnen-Plips, Klick, Mahlwerk)
+- Zweiter Blick: 3 Runden, am Ende „freigabefähig“. Offen als „Kann“: Hand liegt knapp unter dem Knopf, Nüsse wie Kekse, Dampfringe, Mühlenfuß bei 18,8 s in der unteren Sperrzone (kein Text)
+- KI-Kennzeichnung: nein
+
+### Fr 13.11. 18 Uhr
+- Neuer Stil: Pop-up-Buch aus Papier (90° offen, Seiten klappen um, Papierelemente richten sich auf), Bürste echt (Schwarz, am Ende Schwarz + Weiß)
+- Datei: `57_zahnbuerste_popup-story_cgi_20261113.mp4` + `_ohne_musik.mp4` + `_titelbild.jpg` (20,5 s, 6,8 MB, −14,0 LUFS, Spitze −4,0 dBFS)
+- Zeitplan: Fr 13.11.2026, 18:00 (Europe/Berlin), erst @maiosshop, dann @maiosshop.com
+- Titelbild: 18,6 s (Schwarz + Weiß, Preis, „Zahnbürste“ neben der Pille)
+- Caption @maiosshop: Elektrische Schallzahnbürste / Zwei Minuten können lang sein. 2-Minuten-Timer mit 30-Sekunden-Intervall, bis zu 40.000 Schwingungen pro Minute, 5 Putzmodi, wasserdicht nach IPX7, mit 2 Ersatzbürstenköpfen. Läuft mit 2 AAA-Batterien (nicht enthalten). 18,99 €, Link im Profil. Schwarz oder Weiß?
+- Caption @maiosshop.com: Elektrische Schallzahnbürste / Zwei Minuten Zähneputzen ziehen sich? (Rest wie oben)
+- Hashtags: #werbung #zahnbürste #schallzahnbürste #mundpflege
+- Angehefteter Kommentar: Schwarz oder Weiß?
+- Szene: `cgi/scenes/popup_zahnbuerste.js` + `popup_zahnbuerste.html`, Modell `cgi/lib/zahnbuerste_models.js`, Ton `scenes/popup_zahnbuerste_ton.py` (gezupfte Akkorde D-Dur, Umblätter-Rascheln, Summen, Tings). Gerendert mit 15 Bildern/s (Papier-Look), ausgegeben mit 30 fps
+- Zweiter Blick: 3 Runden, am Ende „freigabefähig“. Offen als „Kann“: Einstieg (nur der Arm bewegt sich), Bürstenfuß bei 10,5 und 20,0 s in der unteren Sperrzone (kein Text)
+- KI-Kennzeichnung: nein
+
+### Sa 14.11. 12 Uhr
+- Notiz-Liste (`00_wichtelliste_notizen_echt_20261114*`) auf Nevios Wunsch gelöscht (13.11. abends).
+- Datei: `47_tumbler_farben_echt_20261114.mp4` + `_ohne_musik` + `_titelbild.jpg` (12,0 s, 5,1 MB). Echte Shopfotos aller 7 Farben, gewischt wie in der Galerie, mit Handbewegung, Fokus-Ziehen und Filmkorn.
+- Titelbild: 0,8 s
+- Caption @maiosshop: Tumbler Becher mit Griff und Strohhalm / Einer davon wird mein Winterbecher. 40 oz, hält heiß und kalt bis zu 12 Stunden, BPA-frei und spülmaschinenfest. 24,99 €, Link im Profil. Storm Sea oder Red Rust?
+- Caption @maiosshop.com: Tumbler Becher mit Griff und Strohhalm / Mein Winterbecher wird einer von diesen sieben. 40 oz, hält heiß und kalt bis zu 12 Stunden, BPA-frei und spülmaschinenfest. 24,99 €, Link im Profil. Storm Sea oder Red Rust?
+- Hashtags: #werbung #tumbler #thermobecher #winter
+- Angehefteter Kommentar: Storm Sea oder Red Rust?
+- Videocheck: Hook ab Bild 0, Produktwort „Tumbler“ durchgehend, „Hält bis zu 12 Stunden“ ab 4,5 s, Preis und Link erst ab 9,4 s, Werbung durchgehend, Text über dem Becher. Farben laut products.json. −14,7 LUFS, Spitze −1,7 dBFS. Musik: bright_pop (eigen).
+- KI-Kennzeichnung: nein
+
+### Sa 14.11. 18 Uhr
+- Datei: `50_krystall-ball_galerie_echt_20261114.mp4` + `_ohne_musik` + `_titelbild.jpg` (überarbeitet, 12,0 s, 5,0 MB). Kein unscharfer Füllbalken mehr, das Foto füllt das Bild. Sortiert von dunkel nach hell. Neuer Hook. Motivname, Preis und Link oben, nie auf der Kugel.
+- Titelbild: 0,8 s
+- Caption @maiosshop: Kristallkugel Nachtlampe mit 7 Motiven / Eine davon kommt unter den Baum. Mond, Riesenrad, Wassermolch, Sternenhimmel, Schneemann, Segelboot oder Saturn. 16,99 €, Link im Profil. Mond oder Sternenhimmel?
+- Caption @maiosshop.com: Kristallkugel Nachtlampe mit 7 Motiven / Eine von diesen sieben kommt unter den Baum. Mond, Riesenrad, Wassermolch, Sternenhimmel, Schneemann, Segelboot oder Saturn. 16,99 €, Link im Profil. Mond oder Sternenhimmel?
+- Hashtags: #werbung #nachtlampe #kristallkugel #geschenkidee
+- Angehefteter Kommentar: Mond oder Sternenhimmel?
+- Videocheck: Hook ab Bild 0, Produktwort-Pille durchgehend, Preis und Link erst ab 9,4 s, Werbung durchgehend, Text außerhalb der Sperrzonen. −13,6 LUFS, Spitze −1,4 dBFS. Musik: lofi_chill (eigen).
+- KI-Kennzeichnung: nein
+
+## Stimme, Stand 14.11. nachts (Claude)
+- CosyVoice 3 lässt sich auf Nevios PC nicht installieren (braucht Microsoft C++ Build Tools für PyWorld). Stattdessen läuft **MOSS-TTS-Nano** (Apache-2.0, "Kommerziell OK", 20 Sprachen inkl. Deutsch, CPU) in VoiceStudio.
+- Referenzstimme: `rohmaterial/eigenes/stimme/referenz_thorsten_cc0.wav` (Thorsten-Voice, CC0), in VoiceStudio als Profil "Thorsten CC0" gespeichert. OmniVoice nicht benutzen (CC-BY-NC).
+- Testsatz `stimme/test.wav` erzeugt (4,5 s, 48 kHz). Erster Satz dauert ~3 min (Modell lädt), danach schneller. Beim Upload "KI-generiert" setzen.
+- Patch nötig: VoiceStudio v0.5.8 hat einen Ladefehler mit MOSS (set + list). In `engines/moss_tts_nano_subprocess/main.py` (Programmordner und Laufzeitkopie) eine Versionsweiche eingebaut, Sicherung `main.py.bak_claude`. Ein VoiceStudio-Update kann das überschreiben.
+- Speichern-Dialog der App meldet "Datei nicht gefunden": Audio liegt automatisch in `AppData\Roaming\OmniVoice\outputs\`, von dort kopieren.
