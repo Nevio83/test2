@@ -6,8 +6,8 @@ argument-hint: "[optional: Produkt-ID/-name, Slot (z. B. 'Mo 12 Uhr'), Format]"
 
 # Maios-Video – Einstieg und gemeinsame Regeln
 
-Stand 15.11.2026. Hintergrund: `Marketing/UEBERGABE-CLAUDE-CODE.md`, Vorbilder: `Marketing/cgi/vorbilder.md`.
-Bei Widerspruch gilt: Nevios neueste Anweisung im Chat > Übergabe-Datei > `Marketing/trends/vorrat.md` (Kopf) > dieser Skill.
+Stand 15.11.2026. **Zuerst `Marketing/VIDEO-HANDBUCH.md` lesen** – dort steht alles ausführlich (Zahlen, Formate, Liefer-Paket-Vorlage, Prüfliste, Werkzeuge, offene Punkte). Vorbilder: `Marketing/cgi/vorbilder.md`.
+Bei Widerspruch gilt: Nevios neueste Anweisung im Chat > VIDEO-HANDBUCH.md > Übergabe-Datei > `Marketing/trends/vorrat.md` (Kopf) > dieser Skill.
 
 ## Harte Regeln (immer)
 1. **Nevio lädt selbst hoch und plant selbst.** Claude lädt nichts hoch, plant nichts, postet und kommentiert nichts. TikTok Studio nur lesen, ohne Anmeldung.

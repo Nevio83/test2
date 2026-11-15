@@ -289,11 +289,9 @@ Ein Entwurf mit `_` am Anfang wird nie gerendert.
 
 **3. Auf TikTok veröffentlichen** — Standard ist der **Trockenlauf** (`npm run marketing:status`
 zeigt ihn), und jeder Beitrag braucht eine Freigabe in `…/a29715347575/marketing.html`.
-Am einfachsten: **`/veroeffentlichen <Video>`** (Dateiname, Produktnummer/-name, „das neueste",
-„alle neuen"; mit „direkt posten" ohne Rückfrage) — oder einfach schreiben „veröffentliche das
-Video vom Gemüseschneider". Der Skill (`.claude/skills/veroeffentlichen/SKILL.md`, lokal, nicht
-versioniert) sucht das Video, prüft Format und Herkunft, lädt über das eingeloggte Chrome hoch
-und führt `Marketing/videos/geschnitten/gepostet.txt`, damit nichts doppelt rausgeht. Später automatisch: `MARKETING_DRY_RUN=false` in
+**Seit 9.11.2026 lädt Nevio selbst in TikTok Studio hoch und plant selbst**; Claude liefert nur das
+Liefer-Paket (siehe `Marketing/VIDEO-HANDBUCH.md` §7). Der frühere Upload-Skill `/veroeffentlichen`
+ist am 15.11. entfernt (Sicherung `Marketing/cgi/skill/alt-stand-20261115/veroeffentlichen/`). Später automatisch: `MARKETING_DRY_RUN=false` in
 `Marketing/.env`, dann `npm run marketing:local` (veröffentlicht nur Freigegebenes, wenn fällig).
 Antworten auf Kommentare: `npm run marketing:antworten -- --produkt 12 --beitrag 42`.
 
@@ -506,6 +504,8 @@ nur über den grünen Prüflauf (§0 und §3). Node-Version via `NODE_VERSION`/`
 ---
 
 ## 9. Nützliche Skills (im Cowork/Claude-Umfeld)
+
+**Videos/TikTok: vor jeder Video-Arbeit `Marketing/VIDEO-HANDBUCH.md` lesen** (Regeln, Formate, Ablauf, Werkzeuge, offene Punkte).
 
 **Maßgeblich ist `SKILLS-MAIOS.md`** (wird hier mitgeladen): welcher Skill bei welcher Aufgabe
 ohne Nachfrage geladen wird, auch für Videos/TikTok. Die Tabelle darunter ist der ältere Überblick.
