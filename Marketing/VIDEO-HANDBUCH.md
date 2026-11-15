@@ -57,7 +57,10 @@
 | **real** – Galerie echter Shopfotos, gewischt wie am Handy | `maios-real` | abgenommen 13.11., lokal lauffähig (Pillow + Poppins da) | Produkt hat ≥ 5 Farben/Motive mit Foto | 12 s (7 Fotos) |
 | **Motion-Spot** – Fotowand, Produktkarte „Gespeichert“, Zähler, Haken, Preis | `maios-motion-spot` | neu 15.11., getestet, **noch nicht von Nevio abgenommen** | jedes Produkt mit guten Fotos | 10–13 s |
 | **W Wissensvideo** – belegte Geschichte, Erzählerstimme, wortgenaue Untertitel | `maios-wissen` | wartet auf Freigabe der Stimme (`test.wav`) | Thema mit überraschender, belegbarer Antwort | 30–45 s |
-| **Schnitt aus eigenen Clips** – POV, Hände-Alltag, Antwort auf Kommentar, Vorher/Nachher | `maios-schnitt` | wartet auf Nevios Clips (größter Hebel) | Material in `rohmaterial/eigenes/` | 6–25 s |
+| **Duell „Dies oder das“** – zwei echte Fotos gegeneinander, „oder“, Antippen, 2–3 Runden, Zähler, Preis | `maios-duell` | neu 15.11., getestet, **noch nicht von Nevio abgenommen** | Produkt mit ≥ 4 Farben/Motiven; holt Kommentare | ~10 s |
+
+**Pausiert (Nevio 15.11.):** Videos aus echten Clips (POV, Hände-Alltag, Antwort auf Kommentar). Skill `maios-schnitt` ist
+entfernt, Sicherung in `Marketing/cgi/skill/alt-stand-20261115/maios-schnitt/`. Erst wieder, wenn Nevio es sagt.
 | **Lokale KI** – Bild-zu-Video aus Shopfoto | `maios-ki-lokal` | später, nur auf dem RTX-PC | kurzer Baustein, immer gekennzeichnet | 2–4 s |
 
 **Produkte für `real`** (≥ 5 Farben/Motive mit Foto, Stand 15.11.): 33 Aroma-Humidifier (12 Düfte, englische Namen;
@@ -172,15 +175,16 @@ Wir machen es mit eigenen Werkzeugen, ohne Installation und ohne fremde Samples.
 
 ## 10. Stimme (Format W)
 - VoiceStudio (lokal, AGPL) mit **MOSS-TTS-Nano** (Apache-2.0) und Profil **„Thorsten CC0“**. **OmniVoice nie** (nicht kommerziell).
-- `test.wav` liegt in `rohmaterial/eigenes/stimme/`, **von Nevio noch nicht freigegeben** – vor dem ersten W-Video fragen.
+- **VoiceStudio-MCP (seit 15.11. eingebunden, benutzerweit in `~/.claude.json`, Sicherung `~/.claude.json.bak-voicestudio-20261115`):** `http://127.0.0.1:3900/mcp/`, Kopfzeile `X-OmniVoice-Client-Id: claude-code`. Läuft nur, wenn die App offen ist (Port 3900 kommt erst einige Sekunden nach dem Start). Werkzeuge: `generate_speech` (mit `profile_id` 55f1d935 = Thorsten CC0, `language` de; Antwort enthält `wav_base64`; ~3 s Rechenzeit je 1 s Sprache auf der CPU), `list_voices`, `transcribe` (braucht Whisper Tiny im Model Catalogue, 0,1 GB, noch nicht installiert), `clone_voice`, `design_voice`. Der `claude`-Befehl fehlt auf diesem Rechner (nur Desktop-App), deshalb von Hand eingetragen; neue Sitzungen sehen die Werkzeuge, laufende erst nach Neustart.
+- Stimme freigegeben (Nevio 15.11.: „VoiceStudio-MCP einbinden“); erstes W-Video `55_kaffeemuehle_wissen_20261116.mp4`.
 - Fallen (Patch in v0.5.8, Neustart, Strg+R, Ausgaben in `%APPDATA%\OmniVoice\outputs\`): Übergabe-Datei Abschnitt 8.
 - Wortgenaue Untertitel brauchen Zeitstempel je Wort: Whisper (nicht installiert) oder Sätze einzeln erzeugen und messen.
 
 ## 11. Offene Punkte
 1. Motion-Spot von Nevio abnehmen lassen (Testvideo `geschnitten/_test_50_krystall-ball_spot_20261115.mp4`).
 2. Stimme `test.wav` freigeben lassen → erstes W-Video (Kaffeemühle, Produkt 55).
-3. Clips von Nevio (5 Einstellungen à 3–6 s je Produkt, nur Hände) → Format Schnitt.
+3. Duell von Nevio abnehmen lassen (Testvideo `geschnitten/_test_50_krystall-ball_duell_20261115.mp4`). Echte Clips: pausiert.
 4. Zahlen 12.–14.11. nachtragen und auswerten (lohnt `real`?).
-5. Alte Konto-Skills (`maios-video-cgi`, `-story`, `-maskottchen`, `-rohschnitt`, `real`) in claude.ai löschen – lokal nicht
+5. Im Konto: `maios-schnitt` löschen, `maios-duell` hochladen (alte Konto-Skills sind seit 15.11. gelöscht). Früher: Alte Konto-Skills in claude.ai löschen – lokal nicht
    möglich, die Synchronisierung spielt sie zurück. Neue Skills ggf. als `.skill` ins Konto hochladen (für Cowork).
 6. Später: Whisper, Remotion, VoiceStudio-MCP, lokale KI auf dem RTX-PC – jeweils nur nach Nevios Ja.

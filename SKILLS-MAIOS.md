@@ -12,7 +12,7 @@ Nevios neueste Anweisung > `Marketing/UEBERGABE-CLAUDE-CODE.md` > Skill-Text.
 | Produkt hat ≥ 5 Farben/Motive mit Foto (17, 33, 43, 47, 50) | `maios-real` | Galerie echter Fotos, 12 s. Skripte `Marketing/cgi/real/` (brauchen Pillow). |
 | Motion-Design-Spot (Typo, Suchfeld, Fotowand, Produktkarte, Preis) | `maios-motion-spot` | Neues Format aus der Sichtung 15.11.; rendert ohne Installation (`Marketing/cgi/spot/`). |
 | Wissensvideo W mit Erzählerstimme | `maios-wissen` | Stimme VoiceStudio „Thorsten CC0“, KI-Kennzeichnung ja. |
-| Nevio eigene Handyclips liefert (POV, Hände-Alltag, Antwort auf Kommentar) | `maios-schnitt` | Nur `videos/rohmaterial/eigenes/`. |
+| „Dies oder das“: zwei Farben/Motive gegeneinander, Kommentare holen | `maios-duell` | Neu 15.11.; Videos aus echten Clips (`maios-schnitt`) sind pausiert und der Skill entfernt. |
 | KI-Baustein aus Shopfoto (Wan-Modell, lokal) | `maios-ki-lokal` | Nur auf dem RTX-PC, noch nicht eingerichtet. |
 | fremde TikToks als Vorbild gesucht/angesehen werden | `tiktok-videos` | Nur Referenz, `rechte_geprueft: false`. **Nie** ins eigene Video. |
 | Fakten für ein Wissensvideo W belegt werden müssen | `anthropic-skills:deep-research` | Quellen in den vorrat-Abschnitt schreiben. |
@@ -20,7 +20,7 @@ Nevios neueste Anweisung > `Marketing/UEBERGABE-CLAUDE-CODE.md` > Skill-Text.
 | ein deutscher Text nach KI klingt und Nevio das entkitschen will | `humanizer-deutsch` | Nur auf Wunsch, nicht für jedes Korrektorat. |
 | TikTok Studio / Profile **lesen** | `anthropic-skills:built-in-browser` bzw. `anthropic-skills:chrome-browser` | Nur lesen, keine Anmeldung, nichts hochladen. |
 
-**Ersetzt** (nur auf Nevios ausdrücklichen Wunsch): Konto-Skills `maios-video-cgi`, `maios-video-story`, `maios-video-maskottchen` (seit 14.11. verworfen, Sicherung `Marketing/cgi/skill/alt-stand-20261115/`), `maios-video-rohschnitt` → `maios-schnitt`, `real` (Cloud) → `maios-real` (lokal). `veroeffentlichen` nicht benutzen: seit 9.11. lädt Nevio selbst hoch. Die neuen Skills liegen in `.claude/skills/` (nicht versioniert), Sicherung in `Marketing/cgi/skill/neu-20261115/`.
+**Ersetzt** (nur auf Nevios ausdrücklichen Wunsch): Konto-Skills `maios-video-cgi`, `maios-video-story`, `maios-video-maskottchen` (seit 14.11. verworfen, Sicherung `Marketing/cgi/skill/alt-stand-20261115/`), `maios-video-rohschnitt` und `maios-schnitt` (echte Clips, pausiert seit 15.11.), `real` (Cloud) → `maios-real` (lokal). `veroeffentlichen` nicht benutzen: seit 9.11. lädt Nevio selbst hoch. Die neuen Skills liegen in `.claude/skills/` (nicht versioniert), Sicherung in `Marketing/cgi/skill/neu-20261115/`.
 
 ## Shop (Code, Design, Daten)
 

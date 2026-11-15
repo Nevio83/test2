@@ -41,28 +41,37 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:var(--b
 .pk .nm{position:absolute;left:44px;right:150px;top:756px;font-size:46px;font-weight:800;letter-spacing:-.02em;line-height:1.08}
 .pk .nz{position:absolute;left:44px;right:44px;top:872px;font-size:32px;font-weight:600;color:var(--grau);line-height:1.25}
 .pk .herz{position:absolute;right:40px;top:752px;width:96px;height:96px;border-radius:48px;background:#F3EFE8;display:flex;align-items:center;justify-content:center}
-.toast{left:240px;width:460px;top:1444px;height:88px;border-radius:44px;background:var(--ink);color:#fff;font-size:36px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:16px}
+.toast{left:240px;width:460px;top:1420px;height:88px;border-radius:44px;background:var(--ink);color:#fff;font-size:36px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:16px}
 .nl{left:90px;width:760px;font-size:52px;font-weight:700;letter-spacing:-.015em;display:flex;align-items:center;gap:30px;line-height:1.1}
 .nl svg{flex:0 0 auto}
-.zahl{left:0;width:930px;top:700px;text-align:center;font-weight:800;font-size:330px;letter-spacing:-.05em;line-height:1}
-.zlbl{left:0;width:930px;top:1060px;text-align:center;font-size:62px;font-weight:700;letter-spacing:-.01em}
-.ring{left:265px;top:600px}
-.ende-w{left:0;width:930px;top:780px;text-align:center;font-size:58px;font-weight:700;color:var(--grau)}
+.zahl{left:205px;width:520px;top:560px;height:520px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:250px;letter-spacing:-.05em;line-height:1}  /* genau im Ring zentriert */
+.zlbl{left:0;width:930px;top:1110px;text-align:center;font-size:62px;font-weight:700;letter-spacing:-.01em}
+.ring{left:205px;top:560px}
+.ende-w{left:0;width:930px;top:780px;text-align:center;font-size:58px;font-weight:800;color:#3F3A35}
 .ende-p{left:0;width:930px;top:870px;text-align:center;font-size:190px;font-weight:800;letter-spacing:-.045em;line-height:1}
 .ende-l{left:285px;width:360px;top:1140px;height:100px;border-radius:50px;background:var(--akz);color:#fff;font-size:40px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.hinw{left:0;width:930px;top:1270px;text-align:center;font-size:34px;font-weight:600;color:var(--grau)}
+.hinw{left:0;width:930px;top:1270px;text-align:center;font-size:40px;font-weight:700;color:#3A3A3A}
 .marke{left:0;width:930px;top:1390px;text-align:center;font-size:40px;font-weight:800;letter-spacing:.32em;color:var(--ink);opacity:.55}
+.dk{width:410px;height:520px;top:640px;border-radius:40px;overflow:hidden;background:#fff;box-shadow:0 30px 70px rgba(0,0,0,.16)}
+.dk img{width:100%;height:100%;object-fit:cover;display:block}
+.dn{width:410px;top:1190px;text-align:center;font-size:46px;font-weight:800;letter-spacing:-.02em}
+.vs{z-index:5;left:395px;top:830px;width:140px;height:140px;border-radius:70px;background:var(--akz);color:#fff;font-size:40px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+.dfrage{left:0;width:930px;top:1320px;text-align:center;font-size:58px;font-weight:800;letter-spacing:-.025em}
 #ober{position:absolute;left:0;top:0;width:1080px;height:1920px;pointer-events:none}
 .pill{position:absolute;top:200px;height:60px;border-radius:30px;padding:0 24px;font-size:30px;font-weight:700;display:flex;align-items:center}
 .pw{left:50px;background:rgba(15,15,15,.92);color:#fff}
 .pp{background:#E8E8E8;color:#0F0F0F}
 .oben{position:absolute;left:0;width:930px;top:300px;text-align:center}
+.bk{left:90px;width:900px;top:540px;height:900px;border-radius:48px;overflow:hidden;background:#fff;box-shadow:0 40px 90px rgba(0,0,0,.16),0 6px 18px rgba(0,0,0,.07)}
+.bk img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;transform-origin:50% 50%}
+#ut{position:absolute;left:40px;width:850px;top:285px;text-align:center;font-family:Manrope,sans-serif;font-weight:800;font-size:60px;line-height:1.14;letter-spacing:-.02em;color:var(--ink)}
+#ut .uw{display:inline-block;white-space:pre}
 .oben span{display:inline-block;background:#fff;color:#111;font-size:44px;font-weight:700;padding:10px 26px;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
 </style>
 </head>
 <body>
 <div id="b"><div id="bg"></div><div id="szenen"></div>
-<div id="ober"><div class="pill pw">Werbung</div><div class="pill pp" id="pwort"></div><div class="oben" id="oben"><span></span></div></div></div>
+<div id="ober"><div class="pill pw">Werbung</div><div class="pill pp" id="pwort"></div><div class="oben" id="oben"><span></span></div><div id="ut"></div></div></div>
 <script>
 // ---------- Hilfen ----------
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
@@ -134,7 +143,8 @@ B.galerie={bau(r,s){
   for(let i=0;i<n;i++){const c=i%sp,row=Math.floor(i/sp);
     // Etiketten liegen im Foto -> Standard aus (kein Text auf dem Produkt); nur bei Fotos mit freiem Rand "namen": true
     const e=el('div','gk',r);e.innerHTML=`<img src="${bild(fotos[i][1])}">`+(s.namen===true?`<div class="lbl">${fotos[i][0]}</div>`:'');
-    const x=x0+c*(bw+gap),y=440+row*(bw*1.18+gap)+(c===1?50:0);
+    const inReihe=Math.min(sp,n-row*sp),versatz=(sp-inReihe)*(bw+gap)/2;  // unvollständige letzte Reihe mittig
+    const x=x0+versatz+c*(bw+gap),y=440+row*(bw*1.18+gap)+(c===1?50:0);
     s.k.push({e,x,y,w:bw,h:bw*1.18,d:0.06*i+R()*0.05,rot:(R()-.5)*8});
   }
   s.held=s.held??Math.min(1,n-1);s.hz=s.held_ab??1.5;
@@ -142,7 +152,7 @@ B.galerie={bau(r,s){
 },set(lt,s){
   const hp=E.inOut(seg(lt,s.hz,s.hz+0.7));
   s.k.forEach((k,i)=>{const p=E.outQ(seg(lt,k.d,k.d+0.7));const drift=-lt*14;
-    let x=k.x,y=k.y+(1-p)*420+drift,w=k.w,h=k.h,rot=k.rot*(1-p),op=p,bl=0,z=1;
+    let x=k.x,y=k.y+(1-p)*420+drift,w=k.w,h=k.h,rot=k.rot*(1-p),op=0.85+0.15*p,bl=0,z=1;  // ab Bild 0 sichtbar (echtes Produkt in der ersten Sekunde), fliegt nur noch ein
     if(i===s.held){x=lerp(x,110,hp);y=lerp(y,470,hp);w=lerp(w,720,hp);h=lerp(h,720,hp);z=5;const l=k.e.querySelector('.lbl');if(l)l.style.opacity=1-hp;}  // Ziel = Foto der Produktkarte (Anschluss ohne Sprung)
     else{op*=1-hp*0.85;bl=hp*10;}
     css(k.e,{left:x+'px',top:y+'px',width:w+'px',height:h+'px',opacity:op,filter:`blur(${bl}px)`,transform:`rotate(${rot}deg)`,zIndex:z,borderRadius:lerp(30,52,i===s.held?hp:0)+'px'});
@@ -177,9 +187,9 @@ B.nutzen={bau(r,s){
 
 // Zahl: zählt hoch, Ring füllt sich (nur echte Zahlen aus products.json, z. B. Anzahl Motive).
 B.zahl={bau(r,s){
-  s.ring=el('div','abs ring',r,`<svg width="400" height="400" viewBox="0 0 400 400" style="opacity:.0"><circle cx="200" cy="200" r="180" fill="none" stroke="#E2DBD0" stroke-width="14"/><circle cx="200" cy="200" r="180" fill="none" stroke="var(--akz)" stroke-width="14" stroke-linecap="round" stroke-dasharray="1131" transform="rotate(-90 200 200)" class="rr"/></svg>`);
+  s.ring=el('div','abs ring',r,`<svg width="520" height="520" viewBox="0 0 400 400" style="opacity:.0"><circle cx="200" cy="200" r="180" fill="none" stroke="#E2DBD0" stroke-width="14"/><circle cx="200" cy="200" r="180" fill="none" stroke="var(--akz)" stroke-width="14" stroke-linecap="round" stroke-dasharray="1131" transform="rotate(-90 200 200)" class="rr"/></svg>`);
   s.zz=el('div','abs zahl',r);s.lb=el('div','abs zlbl',r,s.label||'');
-  s.dz=s.zaehl||1.0;for(let k=1;k<=Math.min(s.wert,12);k++)ev(s.t0+0.1+s.dz*E.out(k/Math.min(s.wert,12))*0.95,'tipp',0.45);ev(s.t0+0.1+s.dz,'ting',0.9);
+  s.dz=s.zaehl||1.0;const nz=Math.min(s.wert,12);for(let k=1;k<=nz;k++)ev(s.t0+0.1+s.dz*(1-Math.cbrt(1-(k-0.5)/nz)),'tipp',0.45);  // Klick genau beim Zahlenwechsel (Umkehrung von E.out + Runden)ev(s.t0+0.1+s.dz,'ting',0.9);
 },set(lt,s){
   const p=E.out(seg(lt,0.1,0.1+s.dz));s.zz.textContent=Math.round(s.wert*p);
   const sv=s.ring.querySelector('svg');sv.style.opacity=E.out(seg(lt,0,0.3))*(s.ring_an===false?0:1);
@@ -187,6 +197,68 @@ B.zahl={bau(r,s){
   const lp=E.outQ(seg(lt,0.2,0.7));css(s.zz,{opacity:E.out(seg(lt,0,0.25)),transform:`scale(${lerp(.8,1,E.back(seg(lt,0,0.5)))})`});
   css(s.lb,{opacity:lp,transform:`translateY(${(1-lp)*30}px)`});
 }};
+
+// Duell ("Dies oder das"): zwei echte Fotos fliegen von links/rechts ein, "oder" springt auf,
+// erst links, dann rechts wird angetippt (hervorgehoben), darunter die Frage. Nur Farben/Motive aus products.json.
+B.duell={bau(r,s){
+  s.a=el('div','abs dk',r,`<img src="${bild(s.links[1])}">`);s.b=el('div','abs dk',r,`<img src="${bild(s.rechts[1])}">`);
+  s.na=el('div','abs dn',r,s.links[0]);s.nb=el('div','abs dn',r,s.rechts[0]);
+  s.v=el('div','abs vs',r,s.vs||'oder');s.f=el('div','abs dfrage',r,s.frage||'');
+  s.ta=s.tipp_a??0.85;s.tb=s.tipp_b??1.3;
+  ev(s.t0+0.02,'whoosh',0.55);ev(s.t0+0.38,'pop',0.7);ev(s.t0+s.ta,'klick',0.9);ev(s.t0+s.tb,'klick',0.9);
+},set(lt,s){
+  const pa=E.outQ(seg(lt,0,0.45)),pb=E.outQ(seg(lt,0.08,0.53)),pv=E.back(seg(lt,0.32,0.62)),pf=E.out(seg(lt,0.5,0.9));
+  // Hervorhebung: links zwischen tipp_a und tipp_b, rechts ab tipp_b bis kurz vor Schluss
+  const ha=Math.sin(Math.PI*seg(lt,s.ta,s.tb))*1, hb=Math.sin(Math.PI*seg(lt,s.tb,s.tb+0.6));
+  const kart=(e,n,x,p,h,von,rot)=>{
+    css(e,{left:lerp(von,x,p)+'px',opacity:clamp(p*1.4),transform:`rotate(${lerp(rot*2.5,rot,p)}deg) scale(${1+0.06*h})`,
+      boxShadow:`0 30px 70px rgba(0,0,0,.16), 0 0 0 ${8*h}px var(--akz)`,zIndex:h>0.05?3:1});
+    css(n,{left:x+'px',opacity:p,color:h>0.3?'var(--akz)':'var(--ink)',transform:`translateY(${(1-p)*30}px)`});
+  };
+  kart(s.a,s.na,40,pa,ha,-460,-2);kart(s.b,s.nb,480,pb,hb,1100,2);
+  css(s.v,{opacity:clamp(pv),transform:`scale(${clamp(pv,0,1.2)})`});
+  css(s.f,{opacity:pf,transform:`translateY(${(1-pf)*24}px)`});
+}};
+
+// Bild (Format W): echtes Foto als große Karte, langsamer Zoom (Ken Burns). "fokus" [x,y] in % = Bildausschnitt
+// (so lassen sich Infografik-Texte auf Herstellerfotos wegschneiden), "zoom" [von,bis]. Keine Klänge (liegt unter der Stimme).
+B.bild={bau(r,s){
+  s.k=el('div','abs bk',r,`<img src="${bild(s.foto)}">`);s.i=s.k.querySelector('img');
+  const f=s.fokus||[50,50];s.i.style.objectPosition=f[0]+'% '+f[1]+'%';s.i.style.transformOrigin=f[0]+'% '+f[1]+'%';
+  s.z=s.zoom||[1.0,1.08];if(s.klang)ev(s.t0+0.02,s.klang,0.35);
+},set(lt,s){
+  const p=seg(lt,0,s.dauer);css(s.i,{transform:`scale(${lerp(s.z[0],s.z[1],p)})`});
+  const pin=E.outQ(seg(lt,0,0.4));css(s.k,{transform:`translateY(${(1-pin)*40}px)`});
+}};
+
+// Untertitel (Format W): CFG.untertitel = [[[sek,"Wort"],…], …] je Satz, Zeiten absolut auf der Stimme.
+// Seiten mit höchstens ~38 Zeichen (2 Zeilen), gesprochene Wörter voll, das aktuelle in Akzentfarbe, kommende blass.
+let UT=[];
+function utTeilen(satz){
+  // beste Aufteilung: Seiten <= 52 Zeichen (2 Zeilen), Umbruch nach Satzzeichen belohnt, nach Artikel/Präposition bestraft
+  const FUNK=/^(der|die|das|dem|den|des|ein|eine|einer|einem|einen|ihr|ihre|in|im|um|mit|aus|über|vor|zum|und|oder|wird|ist|hält|frisch)$/i;
+  const n=satz.length,L=satz.map(w=>w[1].length+1),len=L.reduce((a,b)=>a+b,0);
+  const seiten=Math.max(1,Math.ceil(len/50)),ziel=len/seiten;
+  const best=new Array(n+1).fill(Infinity),von=new Array(n+1).fill(-1);best[0]=0;
+  for(let j=1;j<=n;j++){let m=0;for(let i=j-1;i>=0;i--){m+=L[i];if(m>53)break;
+    const ende=j===n,w=satz[j-1][1],sz=/[,.;:?!]$/.test(w),fk=FUNK.test(w);
+    const c=best[i]+0.35*(m-ziel)**2+(ende?0:(sz?-140:(fk?160:40)));
+    if(c<best[j]){best[j]=c;von[j]=i}}}
+  const out=[];for(let j=n;j>0;j=von[j])out.unshift(satz.slice(von[j],j));return out;
+}
+function utBauen(){
+  if(!CFG.untertitel)return;
+  for(const satz of CFG.untertitel)UT.push(...utTeilen(satz));
+  UT.forEach((s,i)=>{s.a=i===0?0:s[0][0];  // erste Seite (Hook) ab Bild 0 komplett lesbar
+   const naechste=UT[i+1];s.e=naechste?naechste[0][0]:s[s.length-1][0]+1.2;
+    const letzt=s[s.length-1][0]+0.9;if(s.e>letzt+0.6)s.e=letzt+0.6;});
+}
+function utSetzen(t){
+  const d=document.getElementById('ut');const s=UT.find(x=>t>=x.a-0.05&&t<x.e);
+  if(!s){d.innerHTML='';return}
+  let aktuell=-1;s.forEach((w,i)=>{if(t>=w[0]-0.02)aktuell=i});
+  d.innerHTML=s.map((w,i)=>`<span class="uw" style="opacity:${i<=aktuell?1:0.5};color:${i===aktuell?'var(--akz)':'var(--ink)'}">${w[1]}</span>`).join(' ');
+}
 
 // Ende: Produktwort, Preis exakt, "Link im Profil", Marke.
 B.ende={bau(r,s){
@@ -199,7 +271,7 @@ B.ende={bau(r,s){
   css(s.w,{opacity:a,transform:`translateY(${(1-a)*30}px)`});
   css(s.p,{opacity:b,filter:`blur(${(1-b)*14}px)`,transform:`scale(${lerp(1.12,1,b)})`});
   css(s.l,{opacity:clamp(c),transform:`scale(${lerp(.7,1,clamp(c))})`});
-  css(s.hw,{opacity:d});css(s.m,{opacity:d*0.55});
+  css(s.hw,{opacity:b});css(s.m,{opacity:d*0.55});  // Versandhinweis gleichzeitig mit dem Preis (Pflicht, sobald ein Preis zu sehen ist)
 }};
 
 // ---------- Aufbau ----------
@@ -219,6 +291,7 @@ async function start(){
   await Promise.all([...document.images].map(i=>i.decode().catch(()=>{throw new Error('Bild fehlt: '+i.src)})));
   await document.fonts.ready;
   if(!document.fonts.check('800 40px Manrope'))throw new Error('Schrift Manrope fehlt (../fonts/manrope-*.woff2)');
+  utBauen();
   window.__ready=true;
   if(Q.has('t'))frame(+Q.get('t'));
 }
@@ -235,6 +308,7 @@ function frame(t){
     css(s.r,{opacity:sicht,filter:sicht<1?`blur(${(1-sicht)*18}px)`:'none',transform:`scale(${kam*(aus<1?lerp(1.05,1,aus):1)})`});
     B[s.typ].set(lt,s);
   }
+  utSetzen(t);
   // obere Textzeile + Werbung immer sichtbar (ab Bild 0)
 }
 window.__frame=t=>new Promise(res=>{frame(t);requestAnimationFrame(()=>requestAnimationFrame(()=>res(true)))});

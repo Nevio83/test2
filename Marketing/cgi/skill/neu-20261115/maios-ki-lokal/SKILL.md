@@ -28,4 +28,4 @@ Installation/Download (Modelle mehrere GB) **nur nach Nevios Ja.**
 2. Prompt beschreibt nur Bewegung, die das Produkt wirklich hat (products.json): „sanfter Dampf steigt auf“, „Licht glimmt warm“. Keine neuen Teile, Knöpfe, Texte, Personen.
 3. 2–4 s, 9:16 oder Ausschnitt; mehrere Seeds, den besten nehmen.
 4. **Prüfen Bild für Bild:** Form, Farbe, Details gleich dem Shopfoto? Erfundene Elemente → verwerfen.
-5. Einbauen in `maios-motion-spot` (als Video-Element) oder `maios-schnitt`; Liefer-Paket mit **KI-Kennzeichnung: ja**.
+5. Einbauen in `maios-motion-spot` (als Video-Element); Liefer-Paket mit **KI-Kennzeichnung: ja**.

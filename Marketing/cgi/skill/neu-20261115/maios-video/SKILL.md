@@ -1,6 +1,6 @@
 ---
 name: maios-video
-description: "Maios-TikTok-Video planen und bauen – Einstieg für JEDES Maios-Video. Wählt das Format (real, Motion-Spot, Wissensvideo, Schnitt aus eigenen Clips, lokale KI), hält die gemeinsamen Regeln (products.json, Werbung-Pille, Sperrzonen, Prüfer, Liefer-Paket, vorrat.md) und ruft den passenden Format-Skill. Nutzen bei: Video bauen/erstellen/machen, TikTok für Slot, Vorproduktion, 'mach ein Video vom …', 'nächstes Video', 'für morgen 12 Uhr'."
+description: "Maios-TikTok-Video planen und bauen – Einstieg für JEDES Maios-Video. Wählt das Format (real, Motion-Spot, Duell 'Dies oder das', Wissensvideo, lokale KI), hält die gemeinsamen Regeln (products.json, Werbung-Pille, Sperrzonen, Prüfer, Liefer-Paket, vorrat.md) und ruft den passenden Format-Skill. Nutzen bei: Video bauen/erstellen/machen, TikTok für Slot, Vorproduktion, 'mach ein Video vom …', 'nächstes Video', 'für morgen 12 Uhr'."
 argument-hint: "[optional: Produkt-ID/-name, Slot (z. B. 'Mo 12 Uhr'), Format]"
 ---
 
@@ -25,11 +25,12 @@ Bei Widerspruch gilt: Nevios neueste Anweisung im Chat > VIDEO-HANDBUCH.md > Üb
 | **real** – Galerie echter Shopfotos | `maios-real` (lokal; Konto-Skill `real` = Cloud-Fassung) | Produkt hat ≥ 5 Farben/Motive mit Foto: **17, 33, 43, 47, 50** | 12 s |
 | **Motion-Spot** – Fotowand, Produktkarte, Zähler, Haken, Preis (2D-Motion-Design) | `maios-motion-spot` | jedes Produkt mit gutem Foto; neues Format neben real | 10–13 s |
 | **W Wissensvideo** – belegte Geschichte, Erzählerstimme, Wort-genaue Untertitel | `maios-wissen` | Stimme freigegeben (VoiceStudio „Thorsten CC0“) | 30–45 s |
-| **Schnitt aus eigenen Clips** (POV, Hände-Alltag, Antwort auf Kommentar) | `maios-schnitt` | nur wenn Nevio Clips geliefert hat | 6–25 s |
+| **Duell „Dies oder das“** – zwei echte Fotos gegeneinander, Antippen, 2–3 Runden, Preis | `maios-duell` | Produkt mit ≥ 4 Farben/Motiven; holt Kommentare | ~10 s |
 | **Lokale KI** (Bild-zu-Video aus Shopfoto) | `maios-ki-lokal` | nur auf Nevios RTX-PC, nur als Baustein | 2–4 s Baustein |
 
 Abwechseln: nie zweimal hintereinander dasselbe Format; 12- und 18-Uhr-Video am selben Tag mit verschiedenen Produkten.
 Verworfen, nicht wieder bauen: Notiz-Liste (Format A), 3D-Welten/CGI als ganzes Video, Figuren/Mo, Knete, Pop-up-Papier, Glow, Callout-Pills im @mehr.optic-Stil.
+**Pausiert (Nevio 15.11.): Videos aus echten Clips** – Skill `maios-schnitt` entfernt (Sicherung `Marketing/cgi/skill/alt-stand-20261115/maios-schnitt/`). Nur wieder aufnehmen, wenn Nevio es sagt.
 Die alten Konto-Skills `maios-video-cgi`, `maios-video-story`, `maios-video-maskottchen` sind durch diese Skills ersetzt (Sicherung: `Marketing/cgi/skill/alt-stand-20261115/`); nur auf Nevios ausdrücklichen Wunsch nutzen.
 
 ## Was jedes Video braucht (alle Formate)
