@@ -1,0 +1,38 @@
+{
+ "_hinweis": "Produkt 17, Slot Mo 16.11.2026 12:00. Angaben aus products.json: Name Bluetooth Anti-Lost Finder Wassertropfen, 6 Farben, Beschreibung: verlorene Gegenstände über das Smartphone finden, 8,99 €. Die PNG-Fotos (Schwarz/Weiß/Grün/Pink, ~390 px, transparent) werden vor dem Rendern auf weißen Grund mit 50 % Rand gesetzt, sonst wird der transparente Hintergrund beim RGB-Wandeln undefiniert und das Foto 4-fach hochgerechnet. Reihenfolge: Schwarz zuletzt, damit das Schlussbild mit Preis Kontrast hat (Prüfer 15.11.).",
+ "seg": 1.6,
+ "last": 3,
+ "wort": "Bluetooth-Finder",
+ "hook": "Wo ist mein Schlüssel?",
+ "mid_at": 4.5,
+ "mid": "Findet Verlorenes übers Handy.",
+ "end1": "Bluetooth-Finder 8,99 €",
+ "end2": "Link im Profil",
+ "end3": "Versandkostenfrei in Deutschland",
+ "items": [
+  [
+   "Grün",
+   "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png"
+  ],
+  [
+   "Weiß",
+   "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png"
+  ],
+  [
+   "Silber",
+   "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen Silber.jpg"
+  ],
+  [
+   "Gold",
+   "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen gold.jpg"
+  ],
+  [
+   "Pink",
+   "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png"
+  ],
+  [
+   "Schwarz",
+   "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png"
+  ]
+ ]
+}

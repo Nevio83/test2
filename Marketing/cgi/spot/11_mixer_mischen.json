@@ -1,0 +1,33 @@
+{
+  "_hinweis": "NEUES Format Karten mischen (Nevio 16.11.: 'etwas, das es noch nicht gab'), Slot Di 17.11.2026 18:00. Produkt 11. Angaben aus products.json: Name '350ml Elektrischer Mixer Entsafter', 47,99 €, Farben Weiß/Rosa/Blau (je ein echtes Variantenfoto), Beschreibung 'Kompakter elektrischer Mixer und Entsafter ... für Smoothies und frische Säfte unterwegs'. 'perfekt' bewusst nicht übernommen (Tabuwort brand_voice). Ehrliches Mischen: jeder Tausch sichtbar, Rosa endet auf Platz 3.",
+  "wort": "Mixer",
+  "oben": "Behalt den rosa Mixer im Blick.",
+  "farbe": "#D65A82",
+  "hintergrund": ["#F7F1F2", "#EBDDE2"],
+  "szenen": [
+    {
+      "typ": "mischen",
+      "dauer": 6.6,
+      "karten": [
+        ["Weiß", "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg", [48, 42], 1.7],
+        ["Rosa", "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png", [47, 52], 1.45],
+        ["Blau", "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Blau.jpg", [50, 48], 1.0]
+      ],
+      "ziel": 1,
+      "zu": 1.3,
+      "tausch": [[1, 2], [0, 1], [2, 0], [0, 1], [1, 2]],
+      "tausch_ab": 1.75,
+      "tausch_dauer": 0.42,
+      "frage": "Wo ist Rosa?",
+      "danach": "Hattest du ihn?",
+      "schnitte": [[0, 1.0, 0, 0], [3.11, 1.1, 0, 10], [4.75, 1.0, 0, -15]]
+    },
+    {
+      "typ": "nutzen",
+      "dauer": 2.1,
+      "takt": 0.38,
+      "zeilen": ["Fasst 350 ml", "Für Smoothies und Säfte", "Kompakt für unterwegs"]
+    },
+    { "typ": "ende", "dauer": 2.6, "wort": "350ml Elektrischer Mixer Entsafter", "preis": "47,99 €" }
+  ]
+}

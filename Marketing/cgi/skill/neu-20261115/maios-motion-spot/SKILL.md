@@ -24,6 +24,9 @@ Gelernt aus 5 Vorbildern (Runde 2 in `Marketing/cgi/vorbilder.md`): Was trägt, 
 | `typo` | `text` (`\|` = Zeilenumbruch, `*wort*` = Akzentfarbe), `klein`, `takt` | Wörter erscheinen nacheinander, unscharf → scharf | tipp |
 | `suche` | `text`, `platzhalter`, `status`, `cps` | Suchfeld fährt ein, tippt, Lupe wird gedrückt | whoosh, tipp, klick |
 | `ende` | `wort`, `preis` („16,99 €“ exakt; leer bei Format W), `hinweis` (Standard „Versandkostenfrei in Deutschland“), `link` | Produktwort, Preis, „Link im Profil“, Versandhinweis, MAIOS | whoosh, ting |
+| `raetsel` | `foto`, `fokus` [x%,y%], `zoom` [Start, vor der Auflösung], `aufloesung` (s, ≥ 3), `tipps` [[Text, ein, kreuz]…] (nur eindeutig falsche), `antwort` (`*wort*` = Akzent) | Zoom-Rätsel (neu 16.11.): Nahaufnahme ab Bild 0 zoomt langsam auf, Tipps erscheinen mit „?“ und werden rot weggekreuzt, ab `aufloesung` ganz auf + Antwort mit Haken. Frage gilt einem Detail, nicht dem Produkt (Produktwort steht ab Bild 0) | whoosh, pop, klick, ting |
+| `mischen` | `karten` [[Name, Pfad, fokus, zoom]…] (genau 3), `ziel` (Index), `zu` (s), `tausch` [[Platz a, Platz b]…], `tausch_ab`, `tausch_dauer`, `frage`, `danach`, `schnitte` [[ab s, Zoom, dx, dy]…] (harte Schnitte, damit keine Einstellung > 4 s; Beispiel `11_mixer_mischen.json`) | Karten mischen (neu 16.11.): 3 echte Fotos, das gesuchte wird markiert, alle drehen sich um, sichtbar vertauscht, Zahlen 1–3 + Frage, gesuchte wird aufgedeckt, dann die anderen, `danach` z. B. „Hattest du ihn?“ | whoosh, pop, klick, tipp, ting |
+| `zahl` mit `label` „A\|B“ | zweite Zeile klein und grau unter dem Label (z. B. „Modi\|Auto · Motorrad · Fahrrad · Ball“) | | |
 
 Oben: `wort` (Produktwort neben „Werbung“, immer sichtbar), `oben` (Hook als feste Zeile im weißen TikTok-Kasten, y ≈ 300 – so steht der Hook ab Bild 0 über dem echten Produkt), `farbe` (Akzent passend zum Produkt), `hintergrund` [hell, etwas dunkler].
 `typo` und `suche` zeigen kein Produkt → **nie als erste Szene** (Übergabe §5), außer Nevio gibt diesen Einstieg ausdrücklich frei; in der Mitte höchstens 2 s.
@@ -46,7 +49,7 @@ Hook: Aussage mit offener Frage, ≤ 6 Wörter, jedes Mal neu, ohne Preis. Bis 3
 7. Bewegung prüfen: `ffmpeg -i <fertig>.mp4 -vf "fps=2,scale=216:-2,tile=6x4:padding=3" -frames:v 1 <scratch>/bogen.jpg`.
 
 ## Neue Bausteine ergänzen
-In `spot.html` `B.<typ>={bau(r,s){…},set(lt,s){…}}`: `bau` legt Elemente an und meldet Klänge mit `ev(s.t0+sek,'klick'|'tipp'|'whoosh'|'pop'|'ting',stärke)`, `set` setzt alles nur aus der lokalen Zeit `lt` (Zufall nur über `rng(seed)`, keine CSS-Transitions). Layout in den erlaubten Bereich: x ≤ 930, y 192–1536. Ideen aus den Vorbildern, noch nicht gebaut: Karte mit Preis-Punkten, Prozentring, Buchstaben, die einzeln einfliegen, isometrische Szene mit Kamerafahrt.
+In `spot.html` `B.<typ>={bau(r,s){…},set(lt,s){…}}`: `bau` legt Elemente an und meldet Klänge mit `ev(s.t0+sek,'klick'|'tipp'|'whoosh'|'pop'|'ting',stärke)`, `set` setzt alles nur aus der lokalen Zeit `lt` (Zufall nur über `rng(seed)`, keine CSS-Transitions). Layout in den erlaubten Bereich: x ≤ 930, y 192–1536. Gebaut 16.11.: `raetsel`, `mischen` (Bild-Helfer `platziere()` = cover + Zoom um einen Fokuspunkt). Ideen aus den Vorbildern, noch nicht gebaut: Karte mit Preis-Punkten, Prozentring, Buchstaben, die einzeln einfliegen, isometrische Szene mit Kamerafahrt.
 
 ## Prüfen
 Prüfliste aus `maios-video` plus: Fotos unverzerrt, kein Text auf dem Produkt, Namen/Zahlen/Preis gegen products.json, keine fremden Marken. KI-Kennzeichnung: **nein** (echte Fotos, eigene Animation, synthetische Klänge).

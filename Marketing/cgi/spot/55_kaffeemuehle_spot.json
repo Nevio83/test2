@@ -1,0 +1,56 @@
+{
+  "_hinweis": "Motion-Spot Produkt 55 OHNE Fotos (Nevio 15.11.: 'ohne Bilder, anderer Skill, komplett neu'), ersetzt das Wissensvideo für Mo 16.11. 18:00. Der Einstieg ohne Produktfoto ist damit ausdrücklich freigegeben. Angaben aus products.json: 'Elektrische Kaffee- und Gewürzmühle', 18,99 €, 200-W-Motor, Messer aus Edelstahl 304, Mahlgrad über die Mahldauer bestimmen, für Kaffeebohnen, Gewürze, Nüsse und Getreide. Aussage 'gemahlen entweicht das Aroma schneller' belegt (SCA Coffee Decoded, Smrke et al. 2018, Barista Hustle), bewusst ohne Zeitangabe. Keine Stimme -> keine KI-Kennzeichnung.",
+  "wort": "Kaffee- und Gewürzmühle",
+  "oben": "Lohnt sich frisch mahlen?",
+  "farbe": "#8A5A3C",
+  "hintergrund": [
+    "#F4F0EA",
+    "#E6DCCF"
+  ],
+  "szenen": [
+    {
+      "typ": "suche",
+      "dauer": 3.2,
+      "text": "kaffee frisch mahlen",
+      "platzhalter": "Suchen",
+      "status": "Was bringt das eigentlich?",
+      "cps": 14
+    },
+    {
+      "typ": "typo",
+      "dauer": 1.9,
+      "text": "Gemahlen entweicht|das Aroma *schneller.*",
+      "klein": true,
+      "takt": 0.16
+    },
+    {
+      "typ": "typo",
+      "dauer": 1.9,
+      "text": "Darum *direkt* vor|dem Aufbrühen mahlen.",
+      "klein": true,
+      "takt": 0.16
+    },
+    {
+      "typ": "zahl",
+      "dauer": 1.5,
+      "wert": 200,
+      "label": "Watt Motor",
+      "zaehl": 0.9
+    },
+    {
+      "typ": "nutzen",
+      "dauer": 2,
+      "zeilen": [
+        "Messer aus Edelstahl 304",
+        "Mahlgrad über die Mahldauer",
+        "Auch für Gewürze und Nüsse"
+      ]
+    },
+    {
+      "typ": "ende",
+      "dauer": 2.6,
+      "wort": "Elektrische Kaffee- und Gewürzmühle",
+      "preis": "18,99 €"
+    }
+  ]
+}

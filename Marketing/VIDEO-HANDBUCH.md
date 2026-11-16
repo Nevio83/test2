@@ -58,6 +58,8 @@
 | **Motion-Spot** – Fotowand, Produktkarte „Gespeichert“, Zähler, Haken, Preis | `maios-motion-spot` | neu 15.11., getestet, **noch nicht von Nevio abgenommen** | jedes Produkt mit guten Fotos | 10–13 s |
 | **W Wissensvideo** – belegte Geschichte, Erzählerstimme, wortgenaue Untertitel | `maios-wissen` | wartet auf Freigabe der Stimme (`test.wav`) | Thema mit überraschender, belegbarer Antwort | 30–45 s |
 | **Duell „Dies oder das“** – zwei echte Fotos gegeneinander, „oder“, Antippen, 2–3 Runden, Zähler, Preis | `maios-duell` | neu 15.11., getestet, **noch nicht von Nevio abgenommen** | Produkt mit ≥ 4 Farben/Motiven; holt Kommentare | ~10 s |
+| **Zoom-Rätsel** – Nahaufnahme eines Produktdetails ab Bild 0, Hook-Frage, 2 eindeutig falsche Tipps werden weggekreuzt, ab 3 s zoomt das Foto auf + Antwort, dann Zahl/Haken/Preis | `maios-motion-spot`, Baustein `raetsel` | neu 16.11., erstes Video 63 Reifenpumpe (17.11. 12 Uhr) | Produkt mit auffälligem Detail (Anzeige, Form). Die Frage gilt dem **Detail**, nicht dem Produkt – das Produktwort steht ja ab Bild 0 neben „Werbung“ | ~10 s |
+| **Karten mischen** – 3 echte Variantenfotos, eine wird markiert, Karten drehen sich um, werden sichtbar vertauscht, „Wo ist …?“ + 1–3, Aufdecken, „Hattest du ihn?“ | `maios-motion-spot`, Baustein `mischen` | neu 16.11., erstes Video 11 Mixer (17.11. 18 Uhr) | Produkt mit genau 3 (oder 3 gewählten) Farben/Motiven mit Foto; holt Kommentare und zweites Ansehen | ~11 s |
 
 **Pausiert (Nevio 15.11.):** Videos aus echten Clips (POV, Hände-Alltag, Antwort auf Kommentar). Skill `maios-schnitt` ist
 entfernt, Sicherung in `Marketing/cgi/skill/alt-stand-20261115/maios-schnitt/`. Erst wieder, wenn Nevio es sagt.

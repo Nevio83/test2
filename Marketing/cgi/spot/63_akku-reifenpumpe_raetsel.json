@@ -1,0 +1,27 @@
+{
+  "_hinweis": "NEUES Format Zoom-Rätsel (Nevio 16.11.: 'etwas, das es noch nicht gab'), Slot Di 17.11.2026 12:00. Produkt 63 (Lager DE). Angaben aus products.json: Name 'Akku-Reifenpumpe mit Display', 29,99 €, Features 'Digitale Druckanzeige, stoppt beim Zieldruck', '4 Modi: Auto, Motorrad, Fahrrad, Ball', 'Akku, Laden per USB-C'. Foto = Hauptbild (weißer Grund, keine Marke, kein Fremdtext). Rätsel fragt nach der Anzeige '2.50' (im Foto mit Auto-Symbol und BAR), Produktwort bleibt laut Regel ab Bild 0 sichtbar. Falsche Tipps (Uhrzeit, Temperatur) sind eindeutig falsch. Auflösung erst ab 3,0 s.",
+  "wort": "Akku-Reifenpumpe",
+  "oben": "Wofür steht die 2.50?",
+  "farbe": "#2F6FD6",
+  "hintergrund": ["#F1F3F6", "#DCE3EE"],
+  "szenen": [
+    {
+      "typ": "raetsel",
+      "dauer": 4.0,
+      "foto": "produkt bilder/Akku-Reifenpumpe mit Display.jpg",
+      "fokus": [54, 30],
+      "zoom": [3.6, 2.3],
+      "aufloesung": 3.0,
+      "tipps": [["Uhrzeit?", 0.75, 1.3], ["Temperatur?", 1.55, 2.15]],
+      "antwort": "*Reifendruck* in bar."
+    },
+    { "typ": "zahl", "dauer": 1.6, "wert": 4, "label": "Modi|Auto · Motorrad · Fahrrad · Ball", "zaehl": 0.7 },
+    {
+      "typ": "nutzen",
+      "dauer": 2.1,
+      "takt": 0.38,
+      "zeilen": ["Stoppt beim Zieldruck", "Laden per USB-C", "LED-Licht mit SOS-Funktion"]
+    },
+    { "typ": "ende", "dauer": 2.6, "wort": "Akku-Reifenpumpe mit Display", "preis": "29,99 €" }
+  ]
+}

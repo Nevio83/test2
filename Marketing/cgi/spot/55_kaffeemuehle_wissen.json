@@ -1,0 +1,794 @@
+{
+ "_hinweis": "Wissensvideo (Format W) Produkt 55, Slot Mo 16.11.2026 18:00. Stimme: VoiceStudio MOSS-TTS-Nano, Profil Thorsten CC0 (KI-Stimme -> KI-Kennzeichnung ja), +6 % Tempo. Fakten: SCA Coffee Decoded (Frische/Entgasung), Smrke et al. 2018 J. Agric. Food Chem. (ZHAW, Entgasung gemahlen vs. ganz), Barista Hustle (Gewichtsverlust nach dem Mahlen). Produktangaben aus products.json: Ein Knopf, Edelstahl-304-Messer, Mahlgrad über Mahldauer, Bohnen/Gewürze/Nüsse/Getreide. Kein Preis im Bild (Format W). Herstellerfotos mit englischem Infotext nur als Ausschnitt ohne Text.",
+ "wort": "Kaffee- und Gewürzmühle",
+ "farbe": "#8A5A3C",
+ "hintergrund": [
+  "#F4F0EA",
+  "#E6DCCF"
+ ],
+ "szenen": [
+  {
+   "typ": "bild",
+   "dauer": 3.45,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle.jpg",
+   "fokus": [
+    50,
+    50
+   ],
+   "zoom": [
+    1,
+    1.15
+   ],
+   "_einstellung": "A"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.8,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 06.jpg",
+   "fokus": [
+    15,
+    5
+   ],
+   "zoom": [
+    2.8,
+    2.95
+   ],
+   "_einstellung": "D"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.9,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle.jpg",
+   "fokus": [
+    8,
+    92
+   ],
+   "zoom": [
+    1.9,
+    2.05
+   ],
+   "_einstellung": "B"
+  },
+  {
+   "typ": "bild",
+   "dauer": 2,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 05.jpg",
+   "fokus": [
+    62,
+    72
+   ],
+   "zoom": [
+    2.2,
+    2.3
+   ],
+   "_einstellung": "F"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.85,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 05.jpg",
+   "fokus": [
+    78,
+    72
+   ],
+   "zoom": [
+    1.5,
+    1.62
+   ],
+   "_einstellung": "P"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.8,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 05.jpg",
+   "fokus": [
+    82,
+    78
+   ],
+   "zoom": [
+    2,
+    2.15
+   ],
+   "_einstellung": "E"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.8,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 06.jpg",
+   "fokus": [
+    45,
+    10
+   ],
+   "zoom": [
+    2.8,
+    2.95
+   ],
+   "_einstellung": "D2"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.8,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 05.jpg",
+   "fokus": [
+    70,
+    74
+   ],
+   "zoom": [
+    1.9,
+    2
+   ],
+   "_einstellung": "F3"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.1,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 05.jpg",
+   "fokus": [
+    90,
+    86
+   ],
+   "zoom": [
+    2.6,
+    2.75
+   ],
+   "_einstellung": "E2"
+  },
+  {
+   "typ": "typo",
+   "dauer": 2,
+   "text": "Bohne: Wochen.|Pulver: *Minuten.*",
+   "klein": true,
+   "takt": 0.3
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.8,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle.jpg",
+   "fokus": [
+    78,
+    74
+   ],
+   "zoom": [
+    1.7,
+    1.85
+   ],
+   "_einstellung": "C"
+  },
+  {
+   "typ": "bild",
+   "dauer": 2,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle.jpg",
+   "fokus": [
+    72,
+    68
+   ],
+   "zoom": [
+    1.45,
+    1.35
+   ],
+   "_einstellung": "A2"
+  },
+  {
+   "typ": "bild",
+   "dauer": 2,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 05.jpg",
+   "fokus": [
+    75,
+    70
+   ],
+   "zoom": [
+    1.6,
+    1.7
+   ],
+   "_einstellung": "E3"
+  },
+  {
+   "typ": "bild",
+   "dauer": 2,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 05.jpg",
+   "fokus": [
+    55,
+    66
+   ],
+   "zoom": [
+    2.6,
+    2.7
+   ],
+   "_einstellung": "F2"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.7,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 03.jpg",
+   "fokus": [
+    62,
+    90
+   ],
+   "zoom": [
+    1.7,
+    1.8
+   ],
+   "_einstellung": "I"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.7,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle.jpg",
+   "fokus": [
+    82,
+    78
+   ],
+   "zoom": [
+    2.1,
+    2.25
+   ],
+   "_einstellung": "C2"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.9,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle.jpg",
+   "fokus": [
+    50,
+    50
+   ],
+   "zoom": [
+    1.08,
+    1
+   ],
+   "_einstellung": "A3"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.5,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 04.jpg",
+   "fokus": [
+    30,
+    55
+   ],
+   "zoom": [
+    1.25,
+    1.15
+   ],
+   "_einstellung": "I2"
+  },
+  {
+   "typ": "bild",
+   "dauer": 0.7,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle.jpg",
+   "fokus": [
+    33,
+    79
+   ],
+   "zoom": [
+    2.4,
+    2.55
+   ],
+   "_einstellung": "K"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.4,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 06.jpg",
+   "fokus": [
+    88,
+    36
+   ],
+   "zoom": [
+    2.6,
+    2.9
+   ],
+   "_einstellung": "M2"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.4,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 05.jpg",
+   "fokus": [
+    84,
+    80
+   ],
+   "zoom": [
+    2.3,
+    2.5
+   ],
+   "_einstellung": "E4"
+  },
+  {
+   "typ": "bild",
+   "dauer": 2,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle.jpg",
+   "fokus": [
+    33,
+    79
+   ],
+   "zoom": [
+    2,
+    2.6
+   ],
+   "_einstellung": "K2"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.3,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 05.jpg",
+   "fokus": [
+    50,
+    6
+   ],
+   "zoom": [
+    2,
+    2.12
+   ],
+   "_einstellung": "G"
+  },
+  {
+   "typ": "bild",
+   "dauer": 1.5,
+   "foto": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 04.jpg",
+   "fokus": [
+    50,
+    50
+   ],
+   "zoom": [
+    1,
+    1.08
+   ],
+   "_einstellung": "H"
+  },
+  {
+   "typ": "ende",
+   "dauer": 2.5,
+   "wort": "Elektrische Kaffee- und Gewürzmühle",
+   "preis": ""
+  }
+ ],
+ "untertitel": [
+  [
+   [
+    0.368,
+    "Warum"
+   ],
+   [
+    0.821,
+    "schmeckt"
+   ],
+   [
+    1.047,
+    "frisch"
+   ],
+   [
+    1.274,
+    "gemahlener"
+   ],
+   [
+    2.179,
+    "Kaffee"
+   ],
+   [
+    2.858,
+    "anders?"
+   ]
+  ],
+  [
+   [
+    3.594,
+    "Eine"
+   ],
+   [
+    4.012,
+    "ganze"
+   ],
+   [
+    4.431,
+    "Bohne"
+   ],
+   [
+    4.849,
+    "hält"
+   ],
+   [
+    5.058,
+    "ihr"
+   ],
+   [
+    5.267,
+    "Aroma"
+   ],
+   [
+    5.894,
+    "in"
+   ],
+   [
+    6.104,
+    "winzigen"
+   ],
+   [
+    6.731,
+    "Zellen"
+   ],
+   [
+    7.149,
+    "fest."
+   ]
+  ],
+  [
+   [
+    7.651,
+    "Beim"
+   ],
+   [
+    7.849,
+    "Mahlen"
+   ],
+   [
+    8.245,
+    "brechen"
+   ],
+   [
+    8.642,
+    "diese"
+   ],
+   [
+    9.038,
+    "Zellen"
+   ],
+   [
+    9.434,
+    "auf,"
+   ],
+   [
+    9.81,
+    "und"
+   ],
+   [
+    10.008,
+    "die"
+   ],
+   [
+    10.208,
+    "Oberfläche"
+   ],
+   [
+    11,
+    "wird"
+   ],
+   [
+    11.198,
+    "um"
+   ],
+   [
+    11.396,
+    "ein"
+   ],
+   [
+    11.594,
+    "Vielfaches"
+   ],
+   [
+    12.189,
+    "größer."
+   ]
+  ],
+  [
+   [
+    12.877,
+    "Gase,"
+   ],
+   [
+    13.456,
+    "die"
+   ],
+   [
+    13.655,
+    "eine"
+   ],
+   [
+    14.054,
+    "ganze"
+   ],
+   [
+    14.452,
+    "Bohne"
+   ],
+   [
+    14.851,
+    "über"
+   ],
+   [
+    15.249,
+    "Wochen"
+   ],
+   [
+    15.648,
+    "abgibt,"
+   ],
+   [
+    16.226,
+    "entweichen"
+   ],
+   [
+    16.824,
+    "aus"
+   ],
+   [
+    17.024,
+    "dem"
+   ],
+   [
+    17.223,
+    "Pulver"
+   ],
+   [
+    17.621,
+    "zum"
+   ],
+   [
+    17.821,
+    "großen"
+   ],
+   [
+    18.219,
+    "Teil"
+   ],
+   [
+    18.419,
+    "schon"
+   ],
+   [
+    18.618,
+    "in"
+   ],
+   [
+    18.817,
+    "Minuten."
+   ]
+  ],
+  [
+   [
+    19.717,
+    "Und"
+   ],
+   [
+    20.061,
+    "mit"
+   ],
+   [
+    20.406,
+    "ihnen"
+   ],
+   [
+    21.094,
+    "ein"
+   ],
+   [
+    21.439,
+    "Teil"
+   ],
+   [
+    21.783,
+    "des"
+   ],
+   [
+    22.127,
+    "Aromas."
+   ]
+  ],
+  [
+   [
+    23.446,
+    "Dazu"
+   ],
+   [
+    23.84,
+    "kommt"
+   ],
+   [
+    24.037,
+    "Sauerstoff."
+   ]
+  ],
+  [
+   [
+    24.804,
+    "Er"
+   ],
+   [
+    25.001,
+    "macht"
+   ],
+   [
+    25.197,
+    "die"
+   ],
+   [
+    25.394,
+    "Öle"
+   ],
+   [
+    25.788,
+    "im"
+   ],
+   [
+    25.984,
+    "Kaffee"
+   ],
+   [
+    26.575,
+    "mit"
+   ],
+   [
+    26.771,
+    "der"
+   ],
+   [
+    26.968,
+    "Zeit"
+   ],
+   [
+    27.165,
+    "schal."
+   ]
+  ],
+  [
+   [
+    27.644,
+    "Deshalb"
+   ],
+   [
+    28.046,
+    "mahlen"
+   ],
+   [
+    28.448,
+    "viele"
+   ],
+   [
+    28.849,
+    "erst"
+   ],
+   [
+    29.05,
+    "direkt"
+   ],
+   [
+    29.452,
+    "vor"
+   ],
+   [
+    29.653,
+    "dem"
+   ],
+   [
+    29.854,
+    "Aufbrühen."
+   ]
+  ],
+  [
+   [
+    30.72,
+    "Zum"
+   ],
+   [
+    30.929,
+    "Beispiel"
+   ],
+   [
+    31.347,
+    "mit"
+   ],
+   [
+    31.557,
+    "einer"
+   ],
+   [
+    31.975,
+    "elektrischen"
+   ],
+   [
+    32.811,
+    "Kaffeemühle."
+   ]
+  ],
+  [
+   [
+    34.045,
+    "Ein"
+   ],
+   [
+    34.255,
+    "Knopf,"
+   ],
+   [
+    34.652,
+    "Messer"
+   ],
+   [
+    35.07,
+    "aus"
+   ],
+   [
+    35.279,
+    "Edelstahl,"
+   ],
+   [
+    36.094,
+    "und"
+   ],
+   [
+    36.304,
+    "wie"
+   ],
+   [
+    36.513,
+    "fein"
+   ],
+   [
+    36.723,
+    "es"
+   ],
+   [
+    36.931,
+    "wird,"
+   ],
+   [
+    37.328,
+    "hängt"
+   ],
+   [
+    37.538,
+    "davon"
+   ],
+   [
+    37.956,
+    "ab,"
+   ],
+   [
+    38.354,
+    "wie"
+   ],
+   [
+    38.562,
+    "lange"
+   ],
+   [
+    38.981,
+    "sie"
+   ],
+   [
+    39.19,
+    "läuft."
+   ]
+  ],
+  [
+   [
+    39.71,
+    "Und"
+   ],
+   [
+    39.948,
+    "Gewürze"
+   ],
+   [
+    40.661,
+    "und"
+   ],
+   [
+    40.899,
+    "Nüsse"
+   ],
+   [
+    41.375,
+    "mahlt"
+   ],
+   [
+    41.612,
+    "sie"
+   ],
+   [
+    41.85,
+    "auch."
+   ]
+  ]
+ ]
+}

@@ -1,0 +1,70 @@
+{
+  "_hinweis": "Motion-Spot Produkt 43, Slot So 15.11.2026 18:00. Angaben aus products.json: Name 'Mini Thermal Drucker', 5 Farben (Grün, Blau, Pink, Gelb, Weiß), Beschreibung 'Tragbarer Mini-Thermodrucker für Etiketten, Fotos und Notizen. Bluetooth-kompatibel ...', Features 'Bluetooth-kompatibel', 'Einfache App-Steuerung', 'Wiederaufladbar', 'Kompakt und leicht', Preis 35,99 €. Versand DE kostenlos laut shipping-calculator.js. Produktwort wörtlich aus der Beschreibung (Mini-Thermodrucker). Rollen-Fotos bewusst NICHT verwendet (fremde Marke auf der Verpackung).",
+  "wort": "Mini-Thermodrucker",
+  "oben": "Was druckt dieses kleine Ding?",
+  "farbe": "#2B8C82",
+  "hintergrund": [
+    "#F2F5F4",
+    "#DCE9E6"
+  ],
+  "szenen": [
+    {
+      "typ": "galerie",
+      "dauer": 3,
+      "held": 1,
+      "held_ab": 1.9,
+      "fotos": [
+        [
+          "Grün",
+          "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker grün.jpg"
+        ],
+        [
+          "Blau",
+          "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker blau.jpg"
+        ],
+        [
+          "Pink",
+          "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker pink.jpg"
+        ],
+        [
+          "Gelb",
+          "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker gelb.jpg"
+        ],
+        [
+          "Weiß",
+          "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker weiß.jpg"
+        ]
+      ]
+    },
+    {
+      "typ": "karte",
+      "dauer": 2,
+      "foto": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker blau.jpg",
+      "name": "Mini Thermal Drucker",
+      "nutzen": "Für Etiketten, Fotos und Notizen.",
+      "tap": 0.9
+    },
+    {
+      "typ": "zahl",
+      "dauer": 1.6,
+      "wert": 5,
+      "label": "Farben",
+      "zaehl": 0.9
+    },
+    {
+      "typ": "nutzen",
+      "dauer": 2,
+      "zeilen": [
+        "Per Bluetooth und App",
+        "Wiederaufladbar",
+        "Kompakt und leicht"
+      ]
+    },
+    {
+      "typ": "ende",
+      "dauer": 2.6,
+      "wort": "Mini Thermal Drucker",
+      "preis": "35,99 €"
+    }
+  ]
+}

@@ -94,6 +94,12 @@ Hinweise
 | Fr 13.11. 18 Uhr | Neuer Stil: Pop-up-Buch aus Papier (20,5 s) „Zwei Minuten können lang sein.“ | 57 Elektrische Schallzahnbürste (Schwarz, am Ende Schwarz + Weiß) | 57_zahnbuerste_popup-story_cgi_20261113.mp4 | von Nevio hochgeladen/geplant für 13.11. 18:00 (beide Kanäle, Meldung 12.11.; Freigabe damit erteilt). Links folgen im Nachlauf |
 | Sa 14.11. 12 Uhr | „Echt statt KI“ Format B: Galerie-Wischen durch 7 Farben (Notiz-Liste auf Nevios Wunsch 13.11. gelöscht) | 47 Tumbler Becher | 47_tumbler_farben_echt_20261114.mp4 | von Nevio hochgeladen/geplant für 14.11. 12:00 (Meldung 13.11. abends). Links folgen im Nachlauf |
 | Sa 14.11. 18 Uhr | „Echt statt KI“ Format B: Galerie-Wischen, 7 Motive (überarbeitet: ohne Unschärfe-Balken, neuer Hook) | 50 Krystall Ball Nachtlampe | 50_krystall-ball_galerie_echt_20261114.mp4 | von Nevio hochgeladen/geplant für 14.11. 18:00 (Meldung 13.11. abends). Links folgen im Nachlauf |
+| So 15.11. 18 Uhr (Nevio 15.11.: „mach ein Video für heute 18 Uhr“) | Motion-Spot (2D, echte Fotos): „Was druckt dieses kleine Ding?“ | 43 Mini Thermal Drucker | 43_mini-thermal-drucker_spot_20261115.mp4 | von Nevio hochgeladen/geplant für 15.11. 18:00 (beide Kanäle, Meldung 15.11. nachmittags). Links folgen im Nachlauf |
+| Mo 16.11. 12 Uhr | real-Galerie (echte Fotos, 6 Farben): „Wo ist mein Schlüssel?“ | 17 Bluetooth Anti-Lost Finder | 17_bluetooth-finder_farben_echt_20261116.mp4 | von Nevio hochgeladen/geplant für 16.11. 12:00 (beide Kanäle, Meldung 15.11. abends). Links folgen im Nachlauf |
+| Mo 16.11. 18 Uhr | Motion-Spot OHNE Fotos (Nevio 15.11.: „ohne Bilder, anderer Skill, komplett neu“): „Lohnt sich frisch mahlen?“ (13,1 s) | 55 Elektrische Kaffee- und Gewürzmühle | 55_kaffeemuehle_spot_20261116.mp4 | von Nevio hochgeladen/geplant für 16.11. 18:00 (beide Kanäle, Meldung 15.11. abends). Links folgen im Nachlauf |
+| Di 17.11. 12 Uhr (Nevio 16.11.: „2 neue Videos für morgen, etwas, das es noch nicht gab“) | NEU: Zoom-Rätsel „Rate mal, was das ist.“ (Nahaufnahme zoomt auf, Auflösung ab 3 s) | 63 Akku-Reifenpumpe mit Display | 63_akku-reifenpumpe_raetsel_20261117.mp4 | fertig, Nevio lädt hoch |
+| Di 17.11. 18 Uhr (Nevio 16.11., wie oben) | NEU: Karten mischen „Behalt den rosa Mixer im Blick.“ (3 Farben, mischen, aufdecken) | 11 Mixer (Weiß, Rosa, Blau) | 11_mixer_mischen_20261117.mp4 | fertig, Nevio lädt hoch |
+| Reserve | Wissensvideo (Format W, KI-Stimme): „Warum schmeckt frisch gemahlener Kaffee anders?“ (44,9 s), von Nevio für 16.11. durch den Spot ersetzt | 55 Elektrische Kaffee- und Gewürzmühle | 55_kaffeemuehle_wissen_20261116.mp4 | fertig, nicht eingeplant (KI-Kennzeichnung ja) |
 | Reserve | zeitloser Satisfying-Loop für Notfälle, ohne Datum und Anlass | | | offen |
 
 ## Details
@@ -466,6 +472,89 @@ Schleppen, kippen, Pfütze. Das war einmal. Schlauch rein, fertig – das Glas f
 - Angehefteter Kommentar: Mond oder Sternenhimmel?
 - Videocheck: Hook ab Bild 0, Produktwort-Pille durchgehend, Preis und Link erst ab 9,4 s, Werbung durchgehend, Text außerhalb der Sperrzonen. −13,6 LUFS, Spitze −1,4 dBFS. Musik: lofi_chill (eigen).
 - KI-Kennzeichnung: nein
+
+### So 15.11. 18 Uhr
+- Auftrag: Nevio 15.11. nachmittags „mach ein Video für heute 18 Uhr“. Format Motion-Spot (2D, echte Fotos), weil am 14.11. zweimal `real` lief; Produkt 43, das noch nie lief.
+- Datei: `43_mini-thermal-drucker_spot_20261115.mp4` + `_ohne_musik` (stumme Spur) + `_titelbild.jpg` (11,2 s, 2,9 MB, −14,2 LUFS, Spitze −1,4 dBTP). Konfiguration `cgi/spot/43_mini-thermal-drucker.json`. Musik: bright_pop_128bpm (eigen).
+- Ablauf: Fotowand der 5 Farben (ab Bild 0 sichtbar) → Blau wird groß → Produktkarte „Gespeichert“ → „5 Farben“ → Haken „Per Bluetooth und App / Wiederaufladbar / Kompakt und leicht“ → 35,99 € + Link im Profil + „Versandkostenfrei in Deutschland“.
+- Rollen-Fotos aus `produkt bilder` bewusst nicht verwendet: Verpackung zeigt eine fremde Marke.
+- Titelbild: 0,8 s (alle 5 Farben, Hook, Produktwort)
+- Caption @maiosshop: Mini Thermodrucker für Etiketten, Fotos und Notizen / Was druckt dieses kleine Ding? Etiketten, Fotos und Notizen, per Bluetooth und App vom Handy. Wiederaufladbar, kompakt und leicht, in 5 Farben. 35,99 €, versandkostenfrei in Deutschland. Link im Profil. Speicher dir das für die Geschenkesuche. Blau oder Gelb?
+- Caption @maiosshop.com: Mini Thermodrucker für Etiketten, Fotos und Notizen / Klein, kabellos und druckt vom Handy. Etiketten, Fotos und Notizen per Bluetooth und App. Wiederaufladbar, kompakt und leicht, in 5 Farben. 35,99 €, versandkostenfrei in Deutschland. Link im Profil. Speicher dir das für die Geschenkesuche. Blau oder Gelb?
+- Hashtags: #werbung #minidrucker #etikettendrucker #geschenkidee
+- Angehefteter Kommentar: Blau oder Gelb?
+- Inspiration TikTok Studio: in diesem Lauf nicht geöffnet (kurzfristiger Auftrag); Geschenk-Anlass aus der laufenden Weihnachtsplanung.
+- Videocheck: Produkt ab Bild 0 in Bewegung, Preis/Link erst ab 8,9 s, Werbung + „Mini-Thermodrucker“ durchgehend, Sperrzonen frei, Einstellungen ≤ 2 s (Galerie 3 s mit Bewegung, Schluss 2,6 s).
+- Zweiter Prüfer (Subagent): 1 Muss-Punkt – Preis stand ~0,5 s ohne Versandhinweis → behoben (Hinweis kommt jetzt mit dem Preis, größer und dunkler). Ebenfalls übernommen: Produktwort wörtlich aus products.json („Mini-Thermodrucker“ statt „Mini-Drucker“), neutraler Hook statt Ich-Form, erstes Bild deckender, „Gespeichert“-Pille 24 px höher (nicht mehr an der Sperrzone), Zähler-Klicks auf den Zahlenwechseln. Vorlage `spot.html` entsprechend angepasst (gilt für alle künftigen Spots).
+- Nevio 15.11. nachmittags: „die Zahl 5 ist außerhalb des Kreises, sonst echt gut“ → Ring größer (520 px), Zahl kleiner und genau im Ring zentriert (`spot.html`, gilt für alle Spots). Neu gerendert: 11,2 s, 2,9 MB, −14,2 LUFS, −1,4 dBTP.
+- KI-Kennzeichnung: nein (echte Fotos, eigene Animation, synthetische Klänge)
+
+### Mo 16.11. 12 Uhr
+- Auftrag: Nevio 15.11. abends „bau 2 weitere Videos, die andere Skills sind“ → Skill `maios-real` (Galerie echter Fotos). Produkt 17, weil 47/50 am 14.11. und 43 am 15.11. liefen. Produkt 33 verworfen: die 12 Variantenfotos zeigen 10-ml-Duftölfläschchen, products.json beschreibt einen Luftbefeuchter (Datenfehler, siehe unten).
+- Datei: `17_bluetooth-finder_farben_echt_20261116.mp4` + `_ohne_musik` (stumme Spur) + `_titelbild.jpg` (11,0 s, 6,9 MB, −14,1 LUFS, −2,9 dBTP). Konfiguration `cgi/real/17_bluetooth-finder.json`. Die 4 PNG-Fotos (~390 px, transparent) wurden vorher auf Weiß mit Rand gesetzt (sonst undefinierter Hintergrund beim RGB-Wandeln). 6 Farben, 1,6 s je Foto (auf dem Schlag laut `musik.py`), Schwarz zuletzt unter dem Preis.
+- Ton: clean_minimal_112bpm ab 2,438 s, Klänge +4 dB. `ton_check`: Ting bei 8,4 s zählt als „nicht hörbar“, im Spektrogramm aber deutlich (Wischgeräusch davor verdeckt den Anschlag für den Zähler).
+- Titelbild: 0,8 s
+- Caption @maiosshop: Bluetooth Anti-Lost Finder Wassertropfen / Wo ist mein Schlüssel? Kleiner Bluetooth-Tracker im Wassertropfen-Design: Verlorenes übers Smartphone finden. In 6 Farben. 8,99 €, versandkostenfrei in Deutschland. Link im Profil. Schwarz oder Pink?
+- Caption @maiosshop.com: wie oben, Hook-Zeile „Schon wieder den Schlüssel gesucht?“
+- Hashtags: #werbung #bluetoothtracker #schlüsselfinder #geschenkidee
+- Angehefteter Kommentar: Schwarz oder Pink?
+- Zweiter Prüfer: kein Muss-Punkt. Übernommen: Schlussbild nicht mehr Weiß auf Weiß (Reihenfolge Grün → … → Schwarz). Offen gelassen: erstes Bild 0,3 s unscharf (Fokus-Ziehen des abgenommenen Formats), Farbname der letzten Farbe nur 0,2 s (Format-Eigenheit).
+- KI-Kennzeichnung: nein
+
+### Mo 16.11. 18 Uhr (neu: Motion-Spot ohne Fotos)
+- Nevio 15.11. abends: Kaffee-Video „anders, ohne Bilder, anderer Skill, komplett neu“. Skill `maios-motion-spot`, nur 2D-Animation, kein Produktfoto (Einstieg ohne Produkt damit ausdrücklich freigegeben). Keine Stimme.
+- Datei: `55_kaffeemuehle_spot_20261116.mp4` + `_ohne_musik` (stumme Spur) + `_titelbild.jpg` (13,1 s, 2,75 MB, −14,2 LUFS, −1,9 dBTP; 24/38 Klänge messbar hörbar). Konfiguration `cgi/spot/55_kaffeemuehle_spot.json`. Musik upbeat_house_124bpm ab 6,338 s (bewusst nicht clean_minimal wie um 12 Uhr).
+- Ablauf: Suchfeld tippt „kaffee frisch mahlen“ → „Gemahlen entweicht das Aroma schneller.“ → „Darum direkt vor dem Aufbrühen mahlen.“ → 200 Watt Motor → Haken: Messer aus Edelstahl 304 / Mahlgrad über die Mahldauer / Auch für Gewürze und Nüsse → 18,99 € + Versandkostenfrei in Deutschland.
+- Titelbild: 4,3 s („Gemahlen entweicht das Aroma schneller.“)
+- Caption @maiosshop: Elektrische Kaffee- und Gewürzmühle / Lohnt sich frisch mahlen? Gemahlen entweicht das Aroma schneller, darum direkt vor dem Aufbrühen mahlen. 200-W-Motor, Messer aus Edelstahl, den Mahlgrad bestimmst du über die Mahldauer. Auch für Gewürze und Nüsse. 18,99 €, versandkostenfrei in Deutschland. Link im Profil. Speicher dir das für den nächsten Kaffee. Kaffeebohnen oder Gewürze?
+- Caption @maiosshop.com: wie oben, Hook-Zeile „Frisch gemahlen oder fertiges Pulver?“
+- Hashtags: #werbung #kaffeemühle #gewürzmühle #kaffee
+- Angehefteter Kommentar: Kaffeebohnen oder Gewürze?
+- Zweiter Prüfer: kein Muss-Punkt. Übernommen: Zähler „Watt Motor“ statt „Watt“. Vorher selbst behoben (in `spot.html`, gilt für alle Spots): langer Produktname überlappte den Preis auf der Endkarte, dreistellige Zahl ragte aus dem Ring, Suchfeld war in Bild 0 unsichtbar.
+- KI-Kennzeichnung: nein
+
+### Di 17.11. 12 Uhr (NEU: Zoom-Rätsel)
+- Auftrag: Nevio 16.11. „bau 2 neue Videos für morgen, etwas, das es noch nicht gab, aber ähnlich wie die Videos“. Neues Format im Motion-Spot-Stil (echte Fotos, 2D-Animation), Baustein `raetsel` in `cgi/spot/spot.html`. Produkt 63 (Lager DE), lief noch nie.
+- Datei: `63_akku-reifenpumpe_raetsel_20261117.mp4` + `_ohne_musik` (stumme Spur) + `_titelbild.jpg` (10,3 s, 2,65 MB, −14,3 LUFS, −2,1 dBTP; 7/13 Klänge messbar hörbar). Konfiguration `cgi/spot/63_akku-reifenpumpe_raetsel.json`. Musik clean_minimal_112bpm ab 0,302 s.
+- Ablauf: Nahaufnahme der Anzeige „2.50“ ab Bild 0, zoomt langsam auf → Tipps „Uhrzeit?“ und „Temperatur?“ werden rot weggekreuzt → ab 3,0 s ganzes Foto + „Reifendruck in bar.“ → „4 Modi – Auto · Motorrad · Fahrrad · Ball“ → Haken: Stoppt beim Zieldruck / Laden per USB-C / LED-Licht mit SOS-Funktion → 29,99 € + Link im Profil + Versandkostenfrei in Deutschland.
+- Rätsel fragt nach dem Detail (der Anzeige), nicht nach dem Produkt: das Produktwort „Akku-Reifenpumpe“ steht laut Regel ab Bild 0 neben „Werbung“.
+- Titelbild: 0,8 s (Nahaufnahme „2.50“ + Hook)
+- Caption @maiosshop: Akku-Reifenpumpe mit Display / Wofür steht die 2.50? Für den Reifendruck in bar. Die Pumpe zeigt den Druck digital an und stoppt beim Zieldruck. 4 Modi für Auto, Motorrad, Fahrrad und Ball, Akku mit USB-C, LED-Licht mit SOS-Funktion. 29,99 €, versandkostenfrei in Deutschland. Link im Profil. Speicher dir das für den nächsten Reifencheck. Auto oder Fahrrad?
+- Caption @maiosshop.com: wie oben, Hook-Zeile „Was zeigt die 2.50 an?“
+- Hashtags: #werbung #reifenpumpe #reifendruck #autozubehör
+- Angehefteter Kommentar: Auto oder Fahrrad?
+- Inspiration TikTok Studio: in diesem Lauf nicht geöffnet.
+- Zweiter Prüfer: kein Muss-Punkt, „freigabefähig“. Übernommen: dritte Haken-Zeile steht länger (Takt 0,38 s, Szene 2,1 s), lange Zeilen werden in `spot.html` einzeilig gesetzt (44 px). Offen gelassen: „BAR“ ist im Zoom lesbar, das Rätsel ist also leicht lösbar. Das ist Absicht: Leichte Rätsel holen „Wusste ich“-Kommentare. Ausblenden ginge nur, wenn kaum noch gezoomt wird.
+- KI-Kennzeichnung: nein (echte Fotos, eigene Animation, synthetische Klänge)
+
+### Di 17.11. 18 Uhr (NEU: Karten mischen)
+- Auftrag wie 12 Uhr. Neues Format, Baustein `mischen` in `cgi/spot/spot.html`. Produkt 11 (lief zuletzt 10.11. als CGI), 3 echte Variantenfotos.
+- Datei: `11_mixer_mischen_20261117.mp4` + `_ohne_musik` (stumme Spur) + `_titelbild.jpg` (11,3 s, 3,16 MB, −14,4 LUFS, −2,8 dBTP; 8/12 Klänge messbar hörbar). Konfiguration `cgi/spot/11_mixer_mischen.json`. Musik bright_pop_128bpm ab 3,762 s.
+- Ablauf: Weiß, Rosa, Blau fliegen ein (ab Bild 0 sichtbar), Rosa wird markiert → Karten drehen sich um (1,3 s) → 5 sichtbare Vertauschungen (1,75–4,05 s) → Zahlen 1–3 + „Wo ist Rosa?“ → Rosa wird auf Platz 3 aufgedeckt, dann die anderen → „Hattest du ihn?“ → Haken: Fasst 350 ml / Für Smoothies und Säfte / Kompakt für unterwegs → 47,99 € + Link im Profil + Versandkostenfrei in Deutschland. „perfekt“ aus der Beschreibung bewusst nicht übernommen (Tabuwort).
+- Titelbild: 0,8 s (drei Farben offen, Rosa markiert)
+- Caption @maiosshop: Elektrischer Mixer Entsafter 350 ml / Behalt den rosa Mixer im Blick. Hast du ihn gefunden? Kompakter Mixer und Entsafter für Smoothies und frische Säfte unterwegs, in Weiß, Rosa und Blau. 47,99 €, versandkostenfrei in Deutschland. Link im Profil. Rosa oder Blau?
+- Caption @maiosshop.com: wie oben, Hook-Zeile „Wo landet der rosa Mixer?“
+- Hashtags: #werbung #mixer #smoothie #geschenkidee
+- Angehefteter Kommentar: Rosa oder Blau?
+- Zweiter Prüfer: 1 Muss-Punkt: Die Mischszene war eine Einstellung von 6,6 s, erlaubt sind höchstens 4 s. Behoben mit zwei harten Schnitten (`schnitte` im Baustein): bei 3,11 s enger (Zoom 1,1), bei 4,75 s wieder weit. Einstellungen jetzt 3,1 / 1,6 / 1,9 s. Übernommen: Kartenreihe aus der rechten Sperrzone (rechter Rand ≤ 921 px), dritte Haken-Zeile steht länger. Offen gelassen: Der Hook hat 6 Wörter, also genau die Grenze, und ist eine Aufforderung. So heißt das Spiel üblicherweise. „FRESH JUICE“ steht auf der Ware selbst, ist also kein fremdes Logo im Bild.
+- KI-Kennzeichnung: nein
+
+### Reserve: Wissensvideo Kaffeemühle (ursprünglich Mo 16.11. 18 Uhr)
+- Skill `maios-wissen` (Format W), erstes Wissensvideo. Stimme auf Nevios Wunsch über den VoiceStudio-MCP erzeugt (Port 3900, MOSS-TTS-Nano, Profil „Thorsten CC0“, id 55f1d935), +6 % Tempo. Stimmspur: `videos/rohmaterial/eigenes/stimme/55_kaffeemuehle_wissen_20261116.wav`.
+- Datei: `55_kaffeemuehle_wissen_20261116.mp4` + `_ohne_musik` (= nur Stimme, ohne Musik) + `_titelbild.jpg` (44,9 s, 9,5 MB, −14,6 LUFS, −3,0 dBTP). Konfiguration `cgi/spot/55_kaffeemuehle_wissen.json` (neue Bausteine `bild` und Untertitel in `spot.html`).
+- Sprechertext: Warum schmeckt frisch gemahlener Kaffee anders? Eine ganze Bohne hält ihr Aroma in winzigen Zellen fest. Beim Mahlen brechen diese Zellen auf, und die Oberfläche wird um ein Vielfaches größer. Gase, die eine ganze Bohne über Wochen abgibt, entweichen aus dem Pulver zum großen Teil schon in Minuten. Und mit ihnen ein Teil des Aromas. Dazu kommt Sauerstoff. Er macht die Öle im Kaffee mit der Zeit schal. Deshalb mahlen viele erst direkt vor dem Aufbrühen. Zum Beispiel mit einer elektrischen Kaffeemühle. Ein Knopf, Messer aus Edelstahl, und wie fein es wird, hängt davon ab, wie lange sie läuft. Und Gewürze und Nüsse mahlt sie auch.
+- Quellen: SCA „Coffee Decoded: What is freshly roasted coffee?“ (sca.coffee/sca-news/coffee-decoded-9-fresh-coffee) · Smrke et al. 2018, J. Agric. Food Chem., ZHAW (digitalcollection.zhaw.ch/handle/11475/12175) · Barista Hustle „Grinding Fresh“ (baristahustle.com/?p=15335) · Ratgeber roastmarket.de/magazin/kaffee-richtig-lagern, coffeeness.de/kaffeedose. Bewusst NICHT verwendet: „60 % Aroma in 15 Minuten“, „1000-fache Oberfläche“ (keine belastbare Quelle).
+- Titelbild: 1,5 s
+- Caption @maiosshop: Warum schmeckt frisch gemahlener Kaffee anders? Elektrische Kaffee- und Gewürzmühle / Gemahlen entweicht ein großer Teil der Gase in Minuten statt Wochen und mit ihnen ein Teil des Aromas. Darum erst direkt vor dem Aufbrühen mahlen. Ein Knopf, Messer aus Edelstahl, auch für Gewürze und Nüsse. 18,99 €, versandkostenfrei in Deutschland. Link im Profil. Speicher dir das für den nächsten Kaffee. Kaffeebohnen oder Gewürze?
+- Caption @maiosshop.com: wie oben, Hook-Zeile „Frisch gemahlen schmeckt anders. Hier ist der Grund.“
+- Hashtags: #werbung #kaffeemühle #kaffeewissen #kaffee
+- Angehefteter Kommentar: Kaffeebohnen oder Gewürze?
+- Zweiter Prüfer: 4 Muss-Punkte, alle behoben – Finger auf Herstellerfoto (Ausschnitt verschoben), überdehnte Aussage „die Gase … in wenigen Minuten“ (→ „zum großen Teil schon in Minuten“, neu gesprochen), Untertitel trennten Sinneinheiten (neue Aufteilung), Hook in Sekunde 1 nicht vollständig (steht jetzt ab Bild 0). Ebenfalls: „wie lange du drückst“ → „wie lange sie läuft“ (products.json: Mahlgrad über Mahldauer). Zweite Prüfrunde nach den Korrekturen nicht gelaufen, Standbilder selbst geprüft.
+- Stimme: Claude kann sie nicht hören; Rücktranskription ging nicht (in VoiceStudio kein Spracherkennungsmodell). **Nevio hört vor dem Upload einmal komplett an.**
+- KI-Kennzeichnung: **ja** (KI-Stimme) – beim Upload „KI-generiert“ setzen.
+
+### Datenfehler Produkt 33 (gefunden 15.11.)
+- products.json: „Aromatherapy Essential Oil Humidifier“, 300-ml-Tank, Ultraschall, 8,99 €; Beschreibung sagt 10 Düfte, Features 12. Die 12 Variantenfotos zeigen aber nur 10-ml-Duftöl-Fläschchen mit Karton, Aufdruck „RELAXING EFFECT“; Variante „Sweet“ zeigt „Osmanthus“. Vor einem Video (und für die Produktseite) klären, was bei CJ wirklich verkauft wird.
 
 ## Stimme, Stand 14.11. nachts (Claude)
 - CosyVoice 3 lässt sich auf Nevios PC nicht installieren (braucht Microsoft C++ Build Tools für PyWorld). Stattdessen läuft **MOSS-TTS-Nano** (Apache-2.0, "Kommerziell OK", 20 Sprachen inkl. Deutsch, CPU) in VoiceStudio.
