@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Manrope"; src: url("assets/fonts/manrope-latin.woff2") format("woff2"); font-weight: 200 800; }
+      @font-face { font-family: "Marcellus"; src: url("assets/fonts/marcellus-latin.woff2") format("woff2"); font-weight: 400; }
+      body { margin: 0; background: #0F0D0A; }
+      #main { background: #0F0D0A; font-family: "Manrope", sans-serif; }
+      #main-bg { position: absolute; inset: 0; background: #0F0D0A; }
+    </style>
+  </head>
+  <body>
+    <div id="main" data-composition-id="main" data-start="0" data-duration="11" data-width="1080" data-height="1920">
+      <div id="main-bg"></div>
+      <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html"
+           data-start="0" data-duration="4" data-track-index="1" data-width="1080" data-height="1920"></div>
+      <div id="motive" data-composition-id="motive" data-composition-src="compositions/motive.html"
+           data-start="4" data-duration="4" data-track-index="1" data-width="1080" data-height="1920"></div>
+      <div id="ende" data-composition-id="ende" data-composition-src="compositions/ende.html"
+           data-start="8" data-duration="3" data-track-index="1" data-width="1080" data-height="1920"></div>
+      <div id="ober" data-composition-id="ober" data-composition-src="compositions/ober.html"
+           data-start="0" data-duration="11" data-track-index="2" data-width="1080" data-height="1920"></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

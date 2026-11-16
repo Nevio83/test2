@@ -56,3 +56,23 @@ Dazu den Satz „Nur wenn Nevio ‚Free-claude' schreibt, wird alles Auslagerbar
 
 ## 4. Ranking aktualisieren
 `ranking.json` ist ein Schnappschuss des Katalogs vom 09.11.2026. Ändern sich die Gratis-Limits, sag mir Bescheid, dann rechne ich es neu.
+
+## Wenn das Claude-Limit erreicht ist (Frei-Modus, seit 16.11.2026)
+
+Kommt „Nutzungslimit erreicht“, Claude Code im VS-Code-Terminal so starten statt mit `claude`:
+
+```powershell
+.\free-claude\claude-free.cmd        # neue Sitzung
+.\free-claude\claude-free.cmd -c     # letzte Sitzung fortsetzen
+```
+
+Das Skript prüft, ob die FreeLLMAPI-App läuft (Port 31415), setzt `ANTHROPIC_BASE_URL` und
+`ANTHROPIC_AUTH_TOKEN` **nur für diesen Aufruf** (Schlüssel aus `FREELLMAPI_KEY` oder
+`~\.free-claude-key`) und gibt Claude Code feste Regeln mit: nur leichte Aufgaben, nichts an
+Kasse/Stripe/CJ/Sicherheit, keine Videos, kein Commit. Das Abo kommt nie an FreeLLMAPI.
+Ist das Limit zurück: `/exit` und wieder normal `claude` starten.
+
+Welches Modell antwortet, legt das Dashboard fest: **Keys → Anthropic**, je Familie
+(`default`, `opus`, `sonnet`, `haiku`) `auto` oder ein festes Modell. Für Code am besten ein Modell
+mit Tool-Unterstützung (siehe `RANKING.md`, `--code`). Gilt nur für Claude Code, nicht für die
+Claude-App/den Chat.

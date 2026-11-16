@@ -1,0 +1,18 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; pointer-events: none; z-index: 50; }
+    /* Werbung + Produktwort ab Bild 0, oben links ausserhalb der Sperrzone (y >= 192) */
+    #ober-leiste { position: absolute; left: 72px; top: 250px; display: flex; gap: 12px; }
+    .ober-pill { height: 60px; border-radius: 30px; padding: 0 24px; font-family: "Manrope", sans-serif; font-size: 30px; font-weight: 700; display: flex; align-items: center; }
+    #ober-werbung { background: rgba(15, 15, 15, 0.92); color: #fff; border: 1px solid rgba(240, 231, 212, 0.18); }
+    #ober-wort { background: #F0E7D4; color: #0F0D0A; }
+  </style>
+  <div id="root" data-composition-id="ober" data-width="1080" data-height="1920">
+    <div id="ober-leiste" class="clip" data-start="0" data-duration="11">
+      <span id="ober-werbung" class="ober-pill">Werbung</span><span id="ober-wort" class="ober-pill">Nachtlampe</span>
+    </div>
+  </div>
+  <script>
+    window.__timelines["ober"] = gsap.timeline({ paused: true });
+  </script>
+</template>

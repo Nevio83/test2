@@ -16,6 +16,19 @@ Alles fürs Design des Maios-Shops. Technik/Architektur stehen in `CLAUDE.md`, C
 - **Farb-/Bundle-Auswahl:** `color-image-selection.js`, `bundle-images-final.js`,
   `color-cart-bridge.js`, `cart-color-images-only.js`. Produkt 21 nutzt „Modell" statt „Farbe".
 - **Bild-Konvention:** `produkt bilder/<Name> bilder/<Name> <farbe>.jpg` — 1:1 zu `products.json`.
+- **Grundlage für Bedienung und Bewegung (seit 16.11.2026):** Skill `apple-design`
+  (`.claude/skills/apple-design/`, aus `emilkowalski/skills`, MIT). Apples WWDC-Prinzipien für
+  flüssige Oberflächen, fürs Web übersetzt. Für Maios heißt das vor allem: Rückmeldung schon beim
+  Drücken (`:active`, `pointerdown`), nicht erst beim Loslassen; Galerie und Leisten folgen dem
+  Finger 1:1 und lassen sich mitten in der Bewegung umkehren; Bewegungen starten vom aktuellen Wert
+  statt neu; `prefers-reduced-motion` beachten (siehe §5). Umsetzung nur in Vanilla CSS/JS, keine
+  Animationsbibliothek ohne Nevios Freigabe. Bei jeder UI-Arbeit am Shop mitladen.
+- **KI-Look aufräumen (seit 16.11.2026):** Skill `unslop` (`.claude/skills/unslop/`, heydamir,
+  CC BY 4.0). Findet die typischen KI-Merkmale (Lila-Verläufe, Glow, Verlaufstext, Emoji-Labels,
+  pulsierende Elemente, ungleiche Abstände) und richtet die Seite in 9 Durchgängen an der Marke aus.
+  Richtung ist immer „Editorial Dark“; erst Audit zeigen, dann umbauen. Erste Funde (16.11., nur
+  gezählt, nicht umgebaut): `styles.css` hat noch die typischen Lila-Glows (`#667eea`/`#764ba2` als
+  `rgba(102,126,234)`/`rgba(118,75,162)`), 12 Seiten tragen Emojis wie ✨🔥🚀.
 
 ---
 
@@ -108,5 +121,5 @@ Nur 4/61 Seiten mit `aria-`, 0 Skip-Links, 0 `prefers-reduced-motion`.
 5. 🟠 Accessibility-Pass (#5) + Build/Bildoptimierung (#6).
 6. 🟡 UX-/Konsistenz-Feinschliff (#7).
 
-> Tipp: `/graphify .` zeigt, welche Seite welches CSS/JS lädt — hilft, die Tailwind-/Bootstrap-
-> Grenze und doppelte Komponenten sichtbar zu machen, bevor du das Design-System vereinheitlichst.
+> Tipp: Welche Seite welches CSS/JS lädt, zeigt `grep -l "styles.css" *.html produkte/*.html` —
+> hilft, die Tailwind-/Bootstrap-Grenze und doppelte Komponenten sichtbar zu machen.

@@ -1,0 +1,10 @@
+{
+ "dauer": 11,
+ "events": [
+  {"t": 0.35, "typ": "tipp", "staerke": 0.6}, {"t": 0.55, "typ": "tipp", "staerke": 0.6}, {"t": 0.75, "typ": "tipp", "staerke": 0.6}, {"t": 0.95, "typ": "tipp", "staerke": 0.6},
+  {"t": 4.0, "typ": "whoosh", "staerke": 0.9}, {"t": 4.6, "typ": "whoosh", "staerke": 0.7}, {"t": 5.2, "typ": "whoosh", "staerke": 0.7},
+  {"t": 5.8, "typ": "whoosh", "staerke": 0.7}, {"t": 6.4, "typ": "whoosh", "staerke": 0.7}, {"t": 7.0, "typ": "whoosh", "staerke": 0.7},
+  {"t": 7.2, "typ": "ting", "staerke": 0.8},
+  {"t": 8.0, "typ": "whoosh", "staerke": 0.8}, {"t": 8.27, "typ": "ting", "staerke": 1}
+ ]
+}

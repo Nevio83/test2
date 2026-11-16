@@ -6,7 +6,7 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 > **Drei Doku-Dateien:** `CLAUDE.md` (dieser Guide: Architektur, Stand, Setup) ·
 > `CLAUDE-CODE.md` (Backlog: Sicherheit, Bugs, Aufräumen, Ausbau, Git) ·
 > `CLAUDE-DESIGN.md` (UI/UX, Design-System, Accessibility, SEO).
-> Für eine abfragbare Projektkarte statt Datei-für-Datei-Grep nutze **Graphify** (siehe §10).
+> Wissensablage: der Maios-Ordner ist ein **Obsidian-Vault** (Einstieg `notizen/Start.md`, siehe §10).
 
 ---
 
@@ -144,7 +144,7 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   **`marketing.html`** — die einzige Stelle, an der ein Mensch sieht, was der Automat tut, und
   der einzige Ort, an dem er ihn anhalten kann). Login via `ADMIN_USER`/`ADMIN_PASSWORD`.
 - **Wo anfangen:** offene Aufgaben stehen in `CLAUDE-CODE.md`, Design-Themen in
-  `CLAUDE-DESIGN.md`. Großes Repo → erst `/graphify .` (§10).
+  `CLAUDE-DESIGN.md`. Großes Repo → erst gezielt suchen (`grep`), Notizen in `notizen/` (§10).
 
 ---
 
@@ -516,7 +516,7 @@ Beim Arbeiten an diesem Projekt sind diese Skills typischerweise relevant:
 
 | Skill | Wofür hier |
 |---|---|
-| **graphify** | Projekt in einen abfragbaren Knowledge-Graph verwandeln statt Datei-für-Datei zu grep’en. Spart bei diesem großen Repo massiv Tokens. Siehe §10. |
+| **obsidian-markdown** (+ `obsidian-bases`, `json-canvas`, `obsidian-cli`) | Notizen im Maios-Vault schreiben/verlinken (Wiki-Links, Callouts, Bases, Canvas). Nach jeder Sitzung mit Änderungen `notizen/Entscheidungen.md` ergänzen (§10). |
 | **frontend-design** | Neue/überarbeitete UI-Komponenten, Produktseiten, Redesign (passt zum Designer-Review). |
 | **frontend-slides** | Pitch-/Investoren- oder Marketing-Decks aus dem Shop-Content. |
 | **pdf** | Belege/Rechnungen lesen, prüfen, neu generieren (ergänzt `receipt-generator.js`). |
@@ -532,49 +532,34 @@ sammeln, dann das Format-Skill für die Ausgabe.
 
 ---
 
-## 10. Graphify — Verwendung
+## 10. Obsidian — Wissensablage (seit 16.11.2026, ersetzt Graphify)
 
-Graphify (Repo: https://github.com/safishamsi/graphify, PyPI-Paket: **`graphifyy`**) baut aus
-diesem Ordner einen Knowledge-Graph aus Code, DB-Schema, Docs, Bildern und Videos. Bei einem
-Repo dieser Größe (≈19k JS-Zeilen, 64 HTML-Dateien) ist das der schnellste Weg, Zusammenhänge
-zu finden, ohne große Dateien komplett zu lesen.
+Graphify stand hier seit dem Sommer als Empfehlung, wurde aber **nie ausgeführt** (kein
+`graphify-out/`). Am 16.11. hat Nevio entschieden, stattdessen **Obsidian** zu nutzen.
 
-**Einmalige Installation (CLI):**
-```bash
-uv tool install graphifyy        # empfohlen (isolierte Umgebung, CLI heißt weiterhin "graphify")
-# Alternativen:
-pipx install graphifyy
-pip  install graphifyy           # nur wenn nötig; PATH/venv beachten
-```
-
-**Skill ins Tool installieren:**
-```bash
-graphify install                         # Claude Code (Linux/Mac)
-graphify install --platform windows      # Claude Code unter Windows
-graphify install --project               # projekt-lokal -> .claude/skills/graphify/SKILL.md
-```
-
-**Benutzen (im Assistenten):**
-```
-/graphify .          # gesamtes Projekt grafisch erfassen
-                     # (PowerShell: "graphify ." ohne führenden Slash)
-```
-Ergebnis liegt in `graphify-out/`:
-- `graph.html` — interaktiver Graph im Browser (Knoten anklicken, filtern, suchen)
-- `GRAPH_REPORT.md` — Highlights: Kernkonzepte, überraschende Verbindungen, Fragen
-- `graph.json` — vollständiger Graph, jederzeit abfragbar **ohne** Dateien neu zu lesen
-
-**Lesbare Architektur-Seite mit Mermaid-Callflow:**
-```bash
-graphify export callflow-html
-```
-
-**Optionale Extras** (nach Bedarf): `graphifyy[sql]` (DB-Schema), `graphifyy[mcp]`
-(MCP-Server), `graphifyy[svg]` (Graph-Export), `graphifyy[anthropic]` (Claude-Backend).
-
-**Empfehlung für dieses Repo:** `graphify-out/` in `.gitignore` aufnehmen und vor größeren
-Refactorings einmal `/graphify .` laufen lassen, um die zwei Backend-Pfade (§4) und die
-Skript-Abhängigkeiten sichtbar zu machen.
+- **Vault = der Maios-Ordner selbst.** In Obsidian „Ordner als Vault öffnen“ →
+  `C:\Users\nevio\Documents\vscode\Maios`. Kein Plugin, kein Login nötig.
+- `.obsidian/` (Einstellungen) ist gitignored. `.obsidian/app.json` blendet Bilder, Videos,
+  `node_modules/`, Belege und Exporte aus, damit Suche und Graph nur die Doku zeigen.
+- **Einstieg:** `notizen/Start.md`, Entscheidungs-Log `notizen/Entscheidungen.md`. Neue Notizen landen in `notizen/` (öffentliches Repo: keine
+  Schlüssel, Kundendaten oder `.env`-Inhalte).
+- **Quelle der Wahrheit bleiben die Dateien** (`CLAUDE.md`, `products.json`, …). Notizen verlinken
+  darauf mit `[[…]]`, sie kopieren nichts heraus.
+- **Immer aktuell halten (Pflicht für Claude, seit 16.11.2026):** Am Ende jeder Sitzung, in der
+  etwas entschieden, eingebaut, entfernt oder umgestellt wurde, ergänzt Claude ohne Nachfrage:
+  1. `notizen/Entscheidungen.md` – neuer Eintrag oben (Datum, was, Link auf die betroffene Datei),
+  2. `notizen/Start.md` – Link nachtragen, wenn ein neues Kern-Dokument dazukam oder eins wegfiel,
+  3. die betroffene Kern-Datei selbst (`CLAUDE.md` §0, `SKILLS-MAIOS.md`, …), damit Notiz und Datei
+     nicht auseinanderlaufen.
+  Reine Lese-/Fragesitzungen ohne Änderung brauchen keinen Eintrag. Kein Commit nur dafür: die
+  Notizen gehen mit dem nächsten normalen Commit mit (`git add notizen/`).
+- **Skills** (kepano/obsidian-skills, MIT, in `.claude/skills/`): `obsidian-markdown` (Wiki-Links,
+  Callouts, Eigenschaften), `obsidian-bases` (Tabellen-/Kartenansichten aus Notizen), `json-canvas`
+  (Canvas-Dateien), `obsidian-cli` (braucht die geöffnete Obsidian-App mit eingeschalteter CLI; ist seit 16.11. an, Befehl `obsidian` im PATH).
+- **Nicht genommen:** das Community-Plugin „Copilot“ mit Claude-Login (Konto in Drittanbieter-Plugin)
+  und Obsidian Sync/Publish (kostet).
+- Für Code-Zusammenhänge gibt es keinen Graphen mehr: gezielt mit `grep`/Suche arbeiten, bei großen
+  Umbauten über den Skill `grossumbau`.
 
 ---
 

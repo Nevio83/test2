@@ -1,0 +1,41 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0F0D0A; }
+    .motive-karte { position: absolute; left: 180px; top: 420px; width: 600px; height: 720px; border-radius: 24px; overflow: hidden;
+                    border: 1px solid rgba(216, 181, 108, 0.28); background: #17130D; }
+    .motive-karte img { width: 100%; height: 610px; object-fit: cover; display: block; }
+    .motive-karte p { margin: 0; height: 110px; display: flex; align-items: center; justify-content: center;
+                      font-family: "Marcellus", serif; font-size: 48px; color: #F0E7D4; }
+    #motive-zahl { position: absolute; left: 72px; width: 816px; top: 1180px; text-align: center; font-family: "Manrope", sans-serif;
+                   color: #D8B56C; font-size: 56px; font-weight: 700; }
+  </style>
+  <div id="root" data-composition-id="motive" data-width="1080" data-height="1920">
+    <div id="motive-k1" class="motive-karte clip" data-start="0" data-duration="4"><img src="assets/saturn.jpg" alt="Saturn" /><p>Saturn</p></div>
+    <div id="motive-k2" class="motive-karte clip" data-start="0" data-duration="4"><img src="assets/segelboot.jpg" alt="Segelboot" /><p>Segelboot</p></div>
+    <div id="motive-k3" class="motive-karte clip" data-start="0" data-duration="4"><img src="assets/sternenhimmel.jpg" alt="Sternenhimmel" /><p>Sternenhimmel</p></div>
+    <div id="motive-k4" class="motive-karte clip" data-start="0" data-duration="4"><img src="assets/schneemann.jpg" alt="Schneemann" /><p>Schneemann</p></div>
+    <div id="motive-k5" class="motive-karte clip" data-start="0" data-duration="4"><img src="assets/riesenrad.jpg" alt="Riesenrad" /><p>Riesenrad</p></div>
+    <div id="motive-k6" class="motive-karte clip" data-start="0" data-duration="4"><img src="assets/wassermolch.jpg" alt="Wassermolch" /><p>Wassermolch</p></div>
+    <div id="motive-zahl" class="clip" data-start="0" data-duration="4"><span id="motive-n">2</span> von 7 Motiven</div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    // Karten fliegen von rechts ein und legen sich auf den Stapel, alle 0,6 s eine (Einstellung < 2 s)
+    const karten = ["#motive-k1", "#motive-k2", "#motive-k3", "#motive-k4", "#motive-k5", "#motive-k6"];
+    karten.forEach((id, i) => {
+      const t = i * 0.6;
+      const dreh = [-4, 3, -2, 4, -3, 2][i];
+      tl.fromTo(id, { x: 900, rotation: 12, opacity: 0 }, { x: 0, rotation: dreh, opacity: 1, duration: 0.38, ease: "power3.out" }, t);
+      if (i > 0) {
+        // Beschriftung der verdeckten Karte ausblenden, sonst liegen zwei Namen uebereinander
+        tl.fromTo(karten[i - 1] + " p", { opacity: 1 }, { opacity: 0, duration: 0.15, ease: "power1.out", immediateRender: false }, t);
+        tl.fromTo(karten[i - 1], { scale: 1, opacity: 1 }, { scale: 0.94, opacity: 0.55, duration: 0.3, ease: "power2.out", immediateRender: false }, t + 0.05);
+      }
+    });
+    // Zaehler: 2..7 (Mond aus dem Hook zaehlt als 1)
+    const n = { v: 1 };
+    tl.fromTo(n, { v: 1 }, { v: 7, duration: 3.2, ease: "none", snap: { v: 1 },
+      onUpdate: () => { const el = document.querySelector("#motive-n"); if (el) el.textContent = String(Math.max(2, Math.round(n.v))); } }, 0);
+    window.__timelines["motive"] = tl;
+  </script>
+</template>

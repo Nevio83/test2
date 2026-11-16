@@ -1,0 +1,32 @@
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0F0D0A; }
+    #ende-foto { position: absolute; left: 290px; top: 330px; width: 380px; height: 400px; border-radius: 22px; overflow: hidden;
+                 border: 1px solid rgba(216, 181, 108, 0.28); }
+    #ende-foto img { width: 100%; height: 100%; object-fit: cover; }
+    #ende-text { position: absolute; left: 72px; width: 816px; top: 770px; text-align: center; color: #F0E7D4; font-family: "Manrope", sans-serif; }
+    #ende-name { font-family: "Marcellus", serif; font-size: 54px; line-height: 1.1; margin: 0 0 20px; }
+    #ende-preis { font-size: 88px; font-weight: 700; color: #D8B56C; margin: 0; font-variant-numeric: tabular-nums; }
+    #ende-versand { font-size: 34px; margin: 18px 0 0; color: rgba(240, 231, 212, 0.8); }
+    #ende-link { font-size: 38px; font-weight: 700; margin: 26px 0 0; }
+    #ende-marke { font-family: "Marcellus", serif; letter-spacing: 0.08em; font-size: 36px; margin: 28px 0 0; color: rgba(216, 181, 108, 0.9); }
+  </style>
+  <div id="root" data-composition-id="ende" data-width="1080" data-height="1920">
+    <div id="ende-foto" class="clip" data-start="0" data-duration="3"><img src="assets/mond.jpg" alt="Krystall Ball Nachtlampe" /></div>
+    <div id="ende-text" class="clip" data-start="0" data-duration="3">
+      <p id="ende-name">Krystall Ball Nachtlampe</p>
+      <p id="ende-preis">16,99 €</p>
+      <p id="ende-versand">Versandkostenfrei in Deutschland</p>
+      <p id="ende-link">Link im Profil</p>
+      <p id="ende-marke">MAIOS</p>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#ende-foto", { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" }, 0);
+    ["#ende-name", "#ende-preis", "#ende-versand", "#ende-link", "#ende-marke"].forEach((id, i) => {
+      tl.fromTo(id, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.28, ease: "power3.out" }, 0.15 + i * 0.12);
+    });
+    window.__timelines["ende"] = tl;
+  </script>
+</template>

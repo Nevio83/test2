@@ -106,6 +106,10 @@ venv/
 .claude/
 .DS_Store
 graphify-out/
+.obsidian/
+Marketing/cgi/hyperframes/*/
+!Marketing/cgi/hyperframes/_quelle/
+.hyperframes/
 
 # ── Generierte Artefakte ─────────────────────────────────────
 receipts/*.pdf
