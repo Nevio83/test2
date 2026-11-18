@@ -7,6 +7,10 @@ Neueste oben. Je Eintrag: Datum, was entschieden wurde, Link auf die Datei, in d
 Wird von Claude nach jeder Sitzung mit einer Entscheidung ergänzt (siehe [[CLAUDE#10. Obsidian — Wissensablage (seit 16.11.2026, ersetzt Graphify)|CLAUDE §10]]).
 
 ## 2026-11-18
+- **AGB und Datenschutz an den echten Stand angepasst** ([[infos/agb.html]], [[infos/datenschutz.html]], Stand November 2026):
+  PayPal und „Vorkasse“ raus (gibt es nicht), Zahlarten = Karte, Apple/Google Pay über Stripe, Klarna. Versand außerhalb
+  Europas nicht mehr „4,99 €“ (Kasse rechnet 12–20 €), sondern Verweis auf die Kasse. §5 Lieferung: kein „DHL/UPS,
+  nur DE/AT, 3–5 Werktage“ mehr, sondern Lieferländer laut Kasse, Lager DE oder China, Lieferzeit laut Produktseite.
 - **9 neue Produkte (IDs 67–75)**, Auswahl von Nevio aus CJ-Recherche (Projektor 360° bewusst nicht):
   Mini-Schlafkopfhörer 14,99 €, USB-Ladegerät 7 Anschlüsse 19,99 €, WLAN-Repeater 30,99 €, magnetische Powerbank 21,99 €,
   Laptopständer 15,99 € (diese vier aus dem DE-Lager), Salz-/Pfeffermühle 35,99 €, Thermobecher mit Temperaturanzeige

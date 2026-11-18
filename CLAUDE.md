@@ -25,7 +25,7 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 - **Keine Rabatt-Anzeigen mehr:** keine Streichpreise, kein Flash-Sale/Countdown, kein
   Mengenrabatt, keine Besucherzähler, kein „Bestseller", „Passt gut dazu" statt „Häufig zusammen
   gekauft". Gutscheine: WELCOME25 und BUNDLE30 aus, WILLKOMMEN10 aktiv. Zahlarten nur **Karte +
-  Klarna** (kein PayPal; in AGB/Datenschutz steht es noch, siehe offene Punkte).
+  Klarna** (kein PayPal; AGB/Datenschutz seit 18.11. angepasst).
 - **Bestellung ab Lager DE:** `cj-bestellung.js` teilt einen Warenkorb nach Lager auf
   (`nachLager`) und schickt je Lager eine eigene CJ-Bestellung (`MAIOS-…-DE` / `-CN`), ab EU-Lager
   ohne IOSS. **Am 08.11.2026 mit einer echten Bestellung bei CJ geprüft** (angenommen, DPD DE to
@@ -43,8 +43,7 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   `lager` nur bei DE-Ware und kennt die Kategorie Beleuchtung).
 - **CJ-API nur vom eigenen PC:** Die Zugangsdaten liegen in der lokalen `.env`; Skripte, die CJ
   fragen, laufen im VS-Code-Terminal.
-- **Offene Punkte:** PayPal steht noch in `infos/agb.html` und `infos/datenschutz.html`;
-  Registrierungen für Elektrogeräte und Batterien (ElektroG/stiftung ear, BattDG) und
+- **Offene Punkte:** Registrierungen für Elektrogeräte und Batterien (ElektroG/stiftung ear, BattDG) und
   Verpackung (LUCID) prüfen, bevor die neuen Elektro-Produkte in größerer Zahl verkauft werden.
 
 - **Live:** **https://maiosshop.com** (Custom-Domain auf Render, `www` leitet auf Apex) +
