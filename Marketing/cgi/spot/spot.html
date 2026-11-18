@@ -85,6 +85,31 @@ html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:var(--b
 .mk .hinten .mm{position:absolute;bottom:26px;font-size:24px;font-weight:800;letter-spacing:.3em;opacity:.8}
 .mn{width:260px;top:1120px;text-align:center;font-size:48px;font-weight:800;letter-spacing:-.02em}
 .mfrage{left:0;width:930px;top:1236px;text-align:center;font-size:76px;font-weight:800;letter-spacing:-.03em}
+/* Fallakte: Korkwand, Polaroid, Pins, rote Fäden, Zettel, Stempel, Aktenkarte */
+.ak-pol{background:#FBFAF6;box-shadow:0 26px 50px rgba(30,15,5,.45),0 3px 8px rgba(0,0,0,.25)}
+.ak-foto{position:absolute;left:20px;top:20px;overflow:hidden;background:#fff}
+.ak-foto img{width:100%;height:100%;object-fit:cover;display:block}
+.ak-hand{position:absolute;left:0;right:0;text-align:center;font-family:'Ink Free','Segoe Print',cursive;font-weight:700;color:#1E1E1E}
+.ak-pin{width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FF8A80 0%,#D32F2F 35%,#8E1414 100%);box-shadow:3px 6px 6px rgba(0,0,0,.45);z-index:20}
+.ak-tag{background:#EFE6CF;font-family:Consolas,'Courier New',monospace;font-weight:700;font-size:34px;letter-spacing:.06em;color:#2A2420;display:flex;align-items:center;justify-content:flex-start;padding-left:50px;white-space:nowrap;box-shadow:0 10px 20px rgba(30,15,5,.35)}
+.ak-karte{width:190px;height:212px;background:#FBF7EC;box-shadow:0 16px 30px rgba(30,15,5,.40);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:14px}
+.ak-karte svg{position:absolute;top:30px;left:35px}
+.ak-zettel{width:600px;height:150px;background:#F7F3E8;box-shadow:0 16px 30px rgba(30,15,5,.40);padding:22px 30px}
+.ak-zettel .lb{font-family:Consolas,monospace;font-weight:700;font-size:26px;letter-spacing:.12em;color:#8A8276}
+.ak-zettel .tx{font-family:'Courier New',monospace;font-weight:700;font-size:40px;color:#1F1B17;margin-top:10px;white-space:nowrap}
+.ak-stempel{font-family:Manrope,sans-serif;font-weight:800;font-size:66px;letter-spacing:.06em;color:#C8262B;border:8px solid #C8262B;border-radius:14px;padding:6px 26px;white-space:nowrap;z-index:25;background:#F6F0E0;box-shadow:0 12px 24px rgba(30,15,5,.40)}
+.ak-preis{background:#F8F4EA;box-shadow:0 30px 60px rgba(30,15,5,.5)}
+.ak-preis .kopf{position:absolute;left:40px;top:34px;font-family:Consolas,monospace;font-weight:700;font-size:28px;letter-spacing:.1em;color:#8A8276}
+.ak-preis .bild{position:absolute;left:40px;top:96px;width:240px;height:240px;background:#fff;padding:10px;box-shadow:0 8px 16px rgba(0,0,0,.18)}
+.ak-preis .bild img{width:100%;height:100%;object-fit:cover;display:block}
+.ak-preis .nm{position:absolute;left:306px;right:30px;top:118px;font-weight:800;font-size:42px;line-height:1.1;letter-spacing:-.02em;color:#1F1B17}
+.ak-preis .pr{position:absolute;left:0;right:0;top:372px;text-align:center;font-weight:800;font-size:150px;letter-spacing:-.045em;line-height:1;color:#141414}
+.ak-preis .ak-li{position:absolute;left:200px;width:360px;top:548px;height:92px;border-radius:46px;background:var(--akz);color:#fff;font-size:38px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.ak-preis .ak-vs{position:absolute;left:0;right:0;top:660px;text-align:center;font-size:36px;font-weight:700;color:#3A3A3A}
+.ak-lupe{position:absolute;width:0;height:0;z-index:15}
+.ak-lupe .glas{position:absolute;width:190px;height:190px;left:-95px;top:-95px;border-radius:50%;overflow:hidden;border:11px solid #26221F;box-shadow:0 14px 26px rgba(0,0,0,.45),inset 0 0 0 3px rgba(255,255,255,.5);background:#fff}
+.ak-lupe .glas img{position:absolute;max-width:none}
+.ak-lupe .griff{position:absolute;left:58px;top:58px;width:120px;height:26px;border-radius:13px;background:#26221F;transform-origin:0 50%;transform:rotate(45deg)}
 .zlbl small{display:block;margin-top:14px;font-size:44px;font-weight:700;color:var(--grau)}
 .rchip .ic{position:relative;width:56px;height:56px;flex:0 0 auto}
 .rchip .ic svg{position:absolute;left:0;top:0;width:56px;height:56px}
@@ -186,8 +211,9 @@ B.karte={bau(r,s){
   s.h=s.c.querySelector('.herz');s.toast=el('div','abs toast',r,HERZ('#fff','#fff')+(s.toast||'Gespeichert'));
   s.tap=s.tap??1.6;ev(s.t0+0.02,'whoosh',0.5);ev(s.t0+s.tap,'klick',1);ev(s.t0+s.tap+0.12,'pop',0.8);
 },set(lt,s){
-  const p=E.outQ(seg(lt,0,0.6));
-  css(s.c,{opacity:p,transform:`translateY(${(1-p)*160}px) scale(${lerp(.92,1,p)})`});
+  if(s.sofort){const z=E.out(seg(lt,0,1.4));css(s.c,{opacity:1,transform:`translateY(${(1-z)*36}px) scale(${lerp(1.05,1,z)})`});}  // sofort: ab Bild 0 sichtbar, zieht leicht nach (Einstieg ohne Leerbild)
+  else{const p=E.outQ(seg(lt,0,0.6));
+  css(s.c,{opacity:p,transform:`translateY(${(1-p)*160}px) scale(${lerp(.92,1,p)})`});}
   const tp=seg(lt,s.tap,s.tap+0.3),voll=lt>=s.tap+0.08;
   s.h.innerHTML=voll?HERZ('var(--akz)','var(--akz)'):HERZ('none','#141414');
   css(s.h,{transform:`scale(${1+Math.sin(Math.PI*tp)*0.28})`});
@@ -211,11 +237,11 @@ B.nutzen={bau(r,s){
 // Zahl: zählt hoch, Ring füllt sich (nur echte Zahlen aus products.json, z. B. Anzahl Motive).
 B.zahl={bau(r,s){
   s.ring=el('div','abs ring',r,`<svg width="520" height="520" viewBox="0 0 400 400" style="opacity:.0"><circle cx="200" cy="200" r="180" fill="none" stroke="#E2DBD0" stroke-width="14"/><circle cx="200" cy="200" r="180" fill="none" stroke="var(--akz)" stroke-width="14" stroke-linecap="round" stroke-dasharray="1131" transform="rotate(-90 200 200)" class="rr"/></svg>`);
-  s.zz=el('div','abs zahl',r);if(String(s.wert).length>=3)s.zz.style.fontSize=(String(s.wert).length>=4?140:180)+'px';
+  s.zz=el('div','abs zahl',r);if(String(s.wert).length>=3)s.zz.style.fontSize=(String(s.wert).length>=5?118:String(s.wert).length>=4?140:180)+'px';
   const lb=(s.label||'').split('|');s.lb=el('div','abs zlbl',r,lb[0]+(lb[1]?`<small>${lb[1]}</small>`:''));  // "Modi|Auto · Rad" = zweite Zeile klein
   s.dz=s.zaehl||1.0;const nz=Math.min(s.wert,12);for(let k=1;k<=nz;k++)ev(s.t0+0.1+s.dz*(1-Math.cbrt(1-(k-0.5)/nz)),'tipp',0.45);  // Klick genau beim Zahlenwechsel (Umkehrung von E.out + Runden)ev(s.t0+0.1+s.dz,'ting',0.9);
 },set(lt,s){
-  const p=E.out(seg(lt,0.1,0.1+s.dz));s.zz.textContent=Math.round(s.wert*p);
+  const p=E.out(seg(lt,0.1,0.1+s.dz));s.zz.textContent=Math.round(s.wert*p).toLocaleString('de-DE');  // 10000 -> 10.000
   const sv=s.ring.querySelector('svg');sv.style.opacity=E.out(seg(lt,0,0.3))*(s.ring_an===false?0:1);
   s.ring.querySelector('.rr').style.strokeDashoffset=1131*(1-p);
   const lp=E.outQ(seg(lt,0.2,0.7));css(s.zz,{opacity:E.out(seg(lt,0,0.25)),transform:`scale(${lerp(.8,1,E.back(seg(lt,0,0.5)))})`});
@@ -359,6 +385,95 @@ B.mischen={bau(r,s){
   const fp=E.out(seg(lt,s.fr,s.fr+0.35))*(s.danach?1-E.in(seg(lt,s.auf+0.45,s.auf+0.7)):1),fd=E.out(seg(lt,s.auf+0.7,s.auf+1.05));
   css(s.f,{opacity:fp,transform:`translateY(${(1-fp)*24}px)`});
   css(s.f2,{opacity:s.danach?fd:0,transform:`translateY(${(1-fd)*24}px)`,color:'var(--akz)'});
+}};
+
+// Eigene Strich-Piktogramme (keine Marken): auto, motorrad, fahrrad, ball
+const PIKTO={
+  auto:'<path d="M8 70 L18 48 Q24 36 40 36 L80 36 Q94 36 101 48 L112 70 Q118 72 118 80 L118 88 L2 88 L2 80 Q2 72 8 70 Z M22 68 L30 50 Q33 44 42 44 L78 44 Q87 44 90 50 L98 68 Z"/><circle cx="30" cy="90" r="11" fill="#FBF7EC"/><circle cx="90" cy="90" r="11" fill="#FBF7EC"/>',
+  motorrad:'<circle cx="22" cy="78" r="17"/><circle cx="98" cy="78" r="17"/><path d="M22 78 L44 54 L76 54 L98 78 M44 54 Q52 40 70 44 L76 54 M76 54 L86 34 L98 34 M44 54 L58 78 L80 78"/>',
+  fahrrad:'<circle cx="26" cy="74" r="22"/><circle cx="94" cy="74" r="22"/><path d="M26 74 L50 42 L82 42 L94 74 M50 42 L62 74 L26 74 M82 42 L78 28 L90 28 M50 42 L46 32 L58 32"/>',
+  ball:'<circle cx="60" cy="58" r="40"/><path d="M60 44 L73.3 53.7 L68.2 69.3 L51.8 69.3 L46.7 53.7 Z" fill="#2A2A2A"/><path d="M60 44 L60 18 M73.3 53.7 L98 45.6 M68.2 69.3 L83.5 90.4 M51.8 69.3 L36.5 90.4 M46.7 53.7 L22 45.6"/>'
+};
+const pikto=n=>`<svg width="120" height="108" viewBox="0 0 120 108" fill="none" stroke="#2A2A2A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">${PIKTO[n]||''}</svg>`;
+
+// Fallakte ("Ermittlungswand", neu 16.11., angeregt von einem mit Claude gebauten TikTok): Korkwand, echtes Produktfoto
+// als angepinntes Polaroid „Beweisstück A“ mit Lupe, rote Fäden zu den Einsatzorten (Karten mit Piktogramm),
+// getippte Hinweiszettel, Stempel, zum Schluss die Aktenkarte mit Preis + Versandhinweis.
+// Kamera: kamera [[ab s, cx, cy, zoomStart, zoomEnde]…] – jeder Eintrag ist ein harter Schnitt; (cx,cy) liegt dann bei x 465 / y 960
+// (Mitte des textsicheren Bereichs). Alle Koordinaten sind Wand-Koordinaten (bei Zoom 1 und cx 465/cy 960 = Bildpunkte).
+B.akte={bau(r,s){
+  const W=el('div','abs',r);css(W,{left:'0',top:'0',width:'1px',height:'1px',transformOrigin:'0 0'});s.wl=W;
+  const cv=el('canvas','abs',W);cv.width=3300;cv.height=3900;css(cv,{left:'-600px',top:'-600px',width:'3300px',height:'3900px'});
+  const g=cv.getContext('2d');g.fillStyle='#B07F4F';g.fillRect(0,0,3300,3900);const R=rng(11);
+  for(let i=0;i<150000;i++){const x=R()*3300,y=R()*3900,a=R(),d=1+R()*3.4;
+    g.fillStyle=a<.5?`rgba(70,40,15,${(.10+R()*.25).toFixed(3)})`:`rgba(235,200,150,${(.08+R()*.22).toFixed(3)})`;g.fillRect(x,y,d,d*(.6+R()*.8));}
+  const pin=(x,y)=>{const p=el('div','abs ak-pin',W);css(p,{left:x+'px',top:y+'px'});return p};
+  // Polaroid mit echtem Foto
+  const P=s.polaroid||{x:235,y:440,w:460,h:560,rot:-2.5,text:'Beweisstück A'};s.P=P;const fw=P.w-40;
+  s.p=el('div','abs ak-pol',W);css(s.p,{left:P.x+'px',top:P.y+'px',width:P.w+'px',height:P.h+'px',transform:`rotate(${P.rot}deg)`});
+  s.p.innerHTML=`<div class="ak-foto" style="width:${fw}px;height:${fw}px"><img src="${bild(s.foto)}"></div><div class="ak-hand" style="top:${fw+40}px;font-size:46px">${P.text}</div>`;
+  s.pinP=pin(P.x+P.w/2,P.y+16);s.pinU=pin(P.x+P.w/2,P.y+P.h-14);
+  // Lupe (vergrößert das Foto darunter), liegt im Polaroid und dreht mit
+  s.lu=el('div','ak-lupe',s.p);s.lu.innerHTML=`<div class="griff"></div><div class="glas"><img src="${bild(s.foto)}"></div>`;s.lui=s.lu.querySelector('img');s.fw=fw;
+  // Fall-Schild
+  const T=s.schild||{x:500,y:372,w:250,h:66,rot:4};s.tg=el('div','abs ak-tag',W,s.fall||'FALL');
+  css(s.tg,{left:T.x+'px',top:T.y+'px',width:T.w+'px',height:T.h+'px',transform:`rotate(${T.rot}deg)`});s.pinT=pin(T.x+22,T.y+T.h/2);
+  s.tT=s.t_schild??0.3;ev(s.t0+0.02,'whoosh',0.4);ev(s.t0+s.tT,'pop',0.7);
+  // Fäden + Orte
+  s.sv=document.createElementNS('http://www.w3.org/2000/svg','svg');W.appendChild(s.sv);
+  css(s.sv,{position:'absolute',left:'0',top:'0',width:'2000px',height:'2600px',overflow:'visible',zIndex:12});
+  const fa=s.faden_ab??2.75,ft=s.faden_takt??0.38,fd=s.faden_dauer??0.3,S=[P.x+P.w/2,P.y+P.h-14];
+  s.orte_el=(s.orte||[]).map(([nm,ic,x,y,rot],i)=>{
+    const k=el('div','abs ak-karte',W,pikto(ic)+`<div class="ak-hand" style="position:static;font-size:42px">${nm}</div>`);
+    css(k,{left:x+'px',top:y+'px'});const E=[x+95,y+16],pn=pin(E[0],E[1]);
+    const mx=(S[0]+E[0])/2,my=(S[1]+E[1])/2+70;
+    const pa=document.createElementNS('http://www.w3.org/2000/svg','path');pa.setAttribute('d',`M${S[0]} ${S[1]} Q${mx} ${my} ${E[0]} ${E[1]}`);
+    pa.setAttribute('fill','none');pa.setAttribute('stroke','#C8262B');pa.setAttribute('stroke-width','5');pa.setAttribute('stroke-linecap','round');
+    pa.style.filter='drop-shadow(2px 5px 3px rgba(0,0,0,.35))';s.sv.appendChild(pa);
+    const a=fa+i*ft;ev(s.t0+a,'whoosh',0.35);ev(s.t0+a+fd,'pop',0.75);
+    return {k,pn,pa,a,rot,L:0}});
+  // Hinweiszettel (getippt)
+  s.zt=(s.hinweise||[]).map(([lb,tx,x,y,rot,ab],i)=>{const z=el('div','abs ak-zettel',W,`<div class="lb">${lb}</div><div class="tx"></div>`);
+    css(z,{left:x+'px',top:y+'px',transform:`rotate(${rot}deg)`});const pn=pin(x+300,y+12);
+    const cps=s.cps||30;ev(s.t0+ab,'pop',0.6);for(let c=0;c<tx.length;c+=2)ev(s.t0+ab+0.25+c/cps,'tipp',0.45);
+    return {z,pn,tx,ab,cps,t:z.querySelector('.tx')}});
+  // Stempel
+  if(s.stempel){const St=s.stempel_pos||{x:560,y:1010,rot:-9};s.st=el('div','abs ak-stempel',W,s.stempel.toUpperCase());s.StP=St;s.stT=s.t_stempel??6.85;
+    ev(s.t0+s.stT,'klick',1);ev(s.t0+s.stT+0.05,'pop',0.9);}
+  // Aktenkarte mit Preis
+  if(s.preis){const A=s.akte_pos||{x:1300,y:560};s.ak=el('div','abs ak-preis',W,
+    `<div class="kopf">${s.akte_kopf||''}</div><div class="bild"><img src="${bild(s.foto)}"></div><div class="nm">${s.name}</div>`+
+    `<div class="pr">${s.preis}</div><div class="ak-li">Link im Profil</div><div class="ak-vs">${s.hinweis||'Versandkostenfrei in Deutschland'}</div>`);
+    css(s.ak,{left:A.x+'px',top:A.y+'px',width:'760px',height:'730px'});s.pinA=pin(A.x+380,A.y+14);s.akT=s.t_akte??8.1;
+    ev(s.t0+s.akT,'pop',0.8);ev(s.t0+s.akT+0.45,'ting',0.9);}
+  s.kamera.forEach(([t])=>{if(t>0)ev(s.t0+t,'whoosh',0.45)});
+},set(lt,s){
+  // Kamera: harter Schnitt je Eintrag, darin leichtes Zoomen
+  let i=0;s.kamera.forEach((x,j)=>{if(lt>=x[0])i=j});const k=s.kamera[i],ende=i+1<s.kamera.length?s.kamera[i+1][0]:s.dauer;
+  const z=lerp(k[3],k[4],E.inOut(seg(lt,k[0],ende)));
+  css(s.wl,{transform:`translate(${465-k[1]*z}px,${960-k[2]*z}px) scale(${z})`});
+  // Lupe: fährt zur Anzeige (Fokus in % des Fotos), schwebt dort
+  const lf=s.lupe||[54,30],lp=E.inOut(seg(lt,0.1,1.4)),fw=s.fw;
+  const lx=lerp(fw*0.78,fw*lf[0]/100,lp)+Math.sin(lt*2.2)*6,ly=lerp(fw*0.80,fw*lf[1]/100,lp)+Math.cos(lt*1.8)*5,M=1.9;
+  const lv=1-E.in(seg(lt,2.3,2.6));css(s.lu,{left:(20+lx)+'px',top:(20+ly)+'px',opacity:lt<2.6?lv:0});
+  css(s.lui,{width:fw*M+'px',height:fw*M+'px',left:(95-lx*M)+'px',top:(95-ly*M)+'px'});
+  // Schild
+  const tp=E.back(seg(lt,s.tT,s.tT+0.35));css(s.tg,{opacity:clamp(tp*1.5),transform:`rotate(${(s.schild||{rot:4}).rot}deg) scale(${lerp(1.3,1,clamp(tp,0,1.1))})`});s.pinT.style.opacity=clamp(tp*1.5);
+  // Fäden und Orte
+  for(const o of s.orte_el){if(!o.L)o.L=o.pa.getTotalLength();const p=E.out(seg(lt,o.a,o.a+(s.faden_dauer??0.3)));
+    o.pa.style.strokeDasharray=o.L;o.pa.style.strokeDashoffset=o.L*(1-p);o.pa.style.opacity=p>0?1:0;
+    const kp=E.back(seg(lt,o.a+(s.faden_dauer??0.3)-0.05,o.a+(s.faden_dauer??0.3)+0.3));
+    css(o.k,{opacity:clamp(kp*1.6),transform:`rotate(${o.rot}deg) scale(${lerp(1.25,1,clamp(kp,0,1.1))})`});o.pn.style.opacity=clamp(kp*1.6);}
+  // Zettel
+  for(const z of s.zt){const p=E.back(seg(lt,z.ab,z.ab+0.3));css(z.z,{opacity:clamp(p*1.6)});z.pn.style.opacity=clamp(p*1.6);
+    const n=Math.floor(clamp((lt-z.ab-0.25)*z.cps,0,z.tx.length));z.t.textContent=z.tx.slice(0,n)+(n<z.tx.length&&lt>z.ab?'▌':'');}
+  // Stempel: fällt groß ein und schlägt auf
+  if(s.st){const p=seg(lt,s.stT-0.18,s.stT),sc=lt<s.stT?lerp(2.4,1,E.in(p)):1+0.04*Math.sin(Math.PI*seg(lt,s.stT,s.stT+0.15));
+    css(s.st,{left:s.StP.x+'px',top:s.StP.y+'px',opacity:lt<s.stT-0.18?0:(lt<s.stT?0.5*p:0.96),
+      transform:`translate(-50%,-50%) rotate(${s.StP.rot}deg) scale(${sc})`});}
+  // Aktenkarte
+  if(s.ak){const p=E.back(seg(lt,s.akT,s.akT+0.4));css(s.ak,{opacity:clamp(p*1.6),transform:`rotate(-1.5deg) scale(${lerp(1.15,1,clamp(p,0,1.1))})`});s.pinA.style.opacity=clamp(p*1.6);
+    const q=E.outQ(seg(lt,s.akT+0.25,s.akT+0.7));for(const c of ['.pr','.ak-li','.ak-vs'])s.ak.querySelector(c).style.opacity=c==='.ak-li'?E.out(seg(lt,s.akT+0.35,s.akT+0.75)):q;}  // Versandhinweis zusammen mit dem Preis
 }};
 
 // Untertitel (Format W): CFG.untertitel = [[[sek,"Wort"],…], …] je Satz, Zeiten absolut auf der Stimme.

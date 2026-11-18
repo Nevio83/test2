@@ -1,0 +1,139 @@
+{
+  "_hinweis": "NEUES Format Fallakte / Ermittlungswand (Nevio 16.11.: 'das mit der Pumpe ganz neu', Inspiration: mit Claude gebaute TikToks, Korkwand mit Polaroids und roten Fäden). Ersetzt das Zoom-Rätsel im Slot Di 17.11.2026 12:00. Produkt 63 (Lager DE). Angaben aus products.json: Name 'Akku-Reifenpumpe mit Display', 29,99 €, Features '4 Modi: Auto, Motorrad, Fahrrad, Ball', 'Digitale Druckanzeige, stoppt beim Zieldruck', 'Akku, Laden per USB-C'. Foto = Hauptbild (weißer Grund, keine Marke). Piktogramme selbst gezeichnet. 'Fall Nr. 063' = Produkt-ID. Kamera mit harten Schnitten: 2,6 / 2,0 / 2,0 / 1,4 / 2,6 s.",
+  "wort": "Akku-Reifenpumpe",
+  "oben": "Ein Gerät. Vier Tatorte.",
+  "farbe": "#C8262B",
+  "hintergrund": [
+    "#B07F4F",
+    "#8E6238"
+  ],
+  "szenen": [
+    {
+      "typ": "akte",
+      "dauer": 10.6,
+      "foto": "produkt bilder/Akku-Reifenpumpe mit Display.jpg",
+      "fall": "FALL Nr. 063",
+      "schild": {
+        "x": 455,
+        "y": 372,
+        "w": 320,
+        "h": 66,
+        "rot": 4
+      },
+      "polaroid": {
+        "x": 235,
+        "y": 440,
+        "w": 460,
+        "h": 560,
+        "rot": -2.5,
+        "text": "Beweisstück A"
+      },
+      "lupe": [
+        54,
+        30
+      ],
+      "orte": [
+        [
+          "Auto",
+          "auto",
+          30,
+          1080,
+          -4
+        ],
+        [
+          "Motorrad",
+          "motorrad",
+          250,
+          1150,
+          3
+        ],
+        [
+          "Fahrrad",
+          "fahrrad",
+          470,
+          1095,
+          -2
+        ],
+        [
+          "Ball",
+          "ball",
+          690,
+          1160,
+          4
+        ]
+      ],
+      "faden_ab": 2.75,
+      "hinweise": [
+        [
+          "HINWEIS 1",
+          "Stoppt beim Zieldruck.",
+          150,
+          2100,
+          -2,
+          4.7
+        ],
+        [
+          "HINWEIS 2",
+          "Laden per USB-C.",
+          230,
+          2290,
+          2,
+          5.1
+        ]
+      ],
+      "stempel": "Fall gelöst",
+      "stempel_pos": {
+        "x": 470,
+        "y": 968,
+        "rot": -5
+      },
+      "t_stempel": 6.9,
+      "akte_kopf": "AKTE 063 · GESCHLOSSEN",
+      "akte_pos": {
+        "x": 1300,
+        "y": 560
+      },
+      "t_akte": 8.1,
+      "name": "Akku-Reifenpumpe mit Display",
+      "preis": "29,99 €",
+      "kamera": [
+        [
+          0,
+          465,
+          720,
+          1.45,
+          1.36
+        ],
+        [
+          2.6,
+          465,
+          900,
+          1,
+          1.03
+        ],
+        [
+          4.6,
+          490,
+          2270,
+          1.24,
+          1.27
+        ],
+        [
+          6.6,
+          465,
+          905,
+          1.05,
+          1.08
+        ],
+        [
+          8,
+          1680,
+          920,
+          1,
+          1.02
+        ]
+      ],
+      "cps": 36
+    }
+  ]
+}

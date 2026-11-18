@@ -1,0 +1,18 @@
+{
+ "_hinweis": "Duell OHNE Fotos (Nevio 17.11.: „mach ohne Bilder“), Vorlage voll.html, Slot Mi 18.11. 18 Uhr. Farbflächen in den Becherfarben, gemessen als Median über den Becherkörper der Shopfotos (Cream Weiß etwas wärmer und Thermal Sublimation reinweiß gesetzt, damit die beiden Weißtöne unterscheidbar sind) (produkt bilder/Tumbler becher bilder); Becher als eigene Strichfläche Ton in Ton, Deckel/Halm wie auf dem jeweiligen Foto. Musik bright_pop_128bpm ab 5,62 s, Schlag 0,4644 s: Runde = 4 Schläge, Farbfinale 10. Namen exakt aus products.json (Produkt 47). 8 Farben: 7 Farbnamen + „Thermal Sublimation“ (weißer Becher, im Shop wählbar, CSV „Tumbler Weiß“); „Strohalm“ ist kein Becher.",
+ "wort": "Tumbler Becher",
+ "oben": "Nicht nachdenken. Links oder rechts?",
+ "oben_bis": 5.25,
+ "szenen": [
+  {"typ": "farbduell", "dauer": 5.574, "runde": 1.858, "tipp": [0.929, 1.393], "ausgang": true,
+   "runden": [
+    {"l": ["Schwarz", "#1B1B1D", "#262628", "#D2D2D2"], "r": ["Peony Color", "#E28FAE", "#F4F2F2", "#F2A2C0"]},
+    {"l": ["Storm Sea", "#3A4C56", "#DCDDDE", "#E8E8E8"], "r": ["Red Rust", "#9B5249", "#232325", "#2A2A2C"]},
+    {"l": ["Bay Leaves", "#929E92", "#E4E5E4", "#EDEDED"], "r": ["Hell Lila", "#D3AFC9", "#F1EFF0", "#EFEFEF"]}
+   ]},
+  {"typ": "farbfinale", "dauer": 4.644, "wechsel": 1.858, "wert": 8, "label": "Farben zur Wahl",
+   "wort": "Tumbler Becher", "preis": "24,99 €", "link": "Link im Profil", "hinweis": "Versandkostenfrei in Deutschland",
+   "farben": [["Cream Weiß", "#EEE5CF"], ["Schwarz", "#1B1B1D"], ["Storm Sea", "#3A4C56"], ["Bay Leaves", "#929E92"],
+              ["Hell Lila", "#D3AFC9"], ["Peony Color", "#E28FAE"], ["Red Rust", "#9B5249"], ["Thermal Sublimation", "#F6F6F6"]]}
+ ]
+}

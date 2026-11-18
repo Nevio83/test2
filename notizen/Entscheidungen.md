@@ -7,6 +7,9 @@ Neueste oben. Je Eintrag: Datum, was entschieden wurde, Link auf die Datei, in d
 Wird von Claude nach jeder Sitzung mit einer Entscheidung ergänzt (siehe [[CLAUDE#10. Obsidian — Wissensablage (seit 16.11.2026, ersetzt Graphify)|CLAUDE §10]]).
 
 ## 2026-11-18
+- **Video für Do 19.11. 18 Uhr gebaut:** Motion-Spot „3 Dinge vor dem Kauf.“ für Produkt 70 (Magnetische Powerbank,
+  erstes Video eines Produkts aus Runde 2), Liefer-Paket in `Marketing/trends/vorrat.md`. `spot.html` kann jetzt
+  `karte` mit `sofort: true` (ab Bild 0 sichtbar) und Zahlen mit Tausenderpunkt; im Skill `maios-motion-spot` vermerkt.
 - **Rechtstexte-Fix aus dem Worktree übernommen** (Commit `22bb2c4` vom 21.10., war nie auf `main`): AGB nennen jetzt
   die elf Lieferländer und 12 € für die USA, Versandseite 3–20 Werktage je Artikel und Rechner ohne CA/AU/JP/BR/MX,
   Warenkorb ohne PayPal-Knopf, 20 Produktseiten mit Lieferzeit aus [[products.json]], Datenschutz mit jsDelivr,

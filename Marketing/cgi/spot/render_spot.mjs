@@ -3,6 +3,7 @@
 //   node Marketing/cgi/spot/render_spot.mjs <cfg.json> --out x.mp4            ganzes Video (30 fps, ohne Ton)
 //   node Marketing/cgi/spot/render_spot.mjs <cfg.json> --stills 0,0.5,1.5,3   nur Standbilder (still_<t>.jpg)
 //   Optionen: --fps 30  --dir <ordner für Standbilder/Ereignisse>  --chrome <pfad zu chrome.exe>
+//             --seite Marketing/cgi/spot/vision.html   andere Vorlage mit derselben Schnittstelle (Standard: spot.html)
 //
 // <cfg.json> liegt neben spot.html oder irgendwo im Repo. Nebenbei entsteht <out>.events.json
 // (Klang-Ereignisse: tipp/klick/whoosh/pop/ting mit Sekunde), die spot_ton.py liest.
@@ -65,7 +66,8 @@ const js = async (expr) => { const r = await cdp('Runtime.evaluate', { expressio
 try {
   await cdp('Emulation.setDeviceMetricsOverride', { width: 1080, height: 1920, deviceScaleFactor: 1, mobile: false });
   const rel = path.relative(STAMM, path.resolve(cfg)).split(path.sep).join('/');
-  const seite = `http://127.0.0.1:${PORT}/Marketing/cgi/spot/spot.html?cfg=${encodeURIComponent('/' + rel)}`;
+  const vorlage = path.relative(STAMM, path.resolve(STAMM, opt('seite', 'Marketing/cgi/spot/spot.html'))).split(path.sep).join('/');
+  const seite = `http://127.0.0.1:${PORT}/${vorlage}?cfg=${encodeURIComponent('/' + rel)}`;
   await cdp('Page.navigate', { url: seite });
   let ok = false;
   for (let i = 0; i < 240 && !ok; i++) { await new Promise(r => setTimeout(r, 250)); ok = await js('window.__ready===true').catch(() => false);

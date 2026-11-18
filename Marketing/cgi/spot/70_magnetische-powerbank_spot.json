@@ -1,0 +1,42 @@
+{
+  "_hinweis": "Motion-Spot Produkt 70, Dramaturgie 'Vor dem Kauf wissen'. Angaben aus products.json: Name 'Magnetische Powerbank 10.000 mAh', Beschreibung 'Flache Powerbank mit 10.000 mAh, die magnetisch hinten am iPhone hält und kabellos lädt. Dazu ein USB-C-Anschluss für ein zweites Gerät.', features '10.000 mAh', 'Hält magnetisch am iPhone (MagSafe-kompatibel)', 'Lädt kabellos', 'Zwei Geräte gleichzeitig', Preis 21,99 €, Lager DE. Versand DE kostenlos laut shipping-calculator.js. Nur das Hauptfoto (01/04 doppelt und mit englischem Werbetext, 03 mit Werbetext; Fotowand mit 3 Bildern wirkte leer). Szenen auf Schlag 0,534 s (clean_minimal_112bpm). Nach zweitem Prüfer: Liste <= 2 s, drei Dinge = Magnet, zwei Geräte, 10.000 mAh.",
+  "wort": "Powerbank",
+  "oben": "3 Dinge vor dem Kauf.",
+  "farbe": "#2F6FB0",
+  "hintergrund": [
+    "#F1F3F6",
+    "#DCE4EE"
+  ],
+  "szenen": [
+    {
+      "typ": "karte",
+      "dauer": 3.2,
+      "sofort": true,
+      "foto": "produkt bilder/Magnetische Powerbank 10.000 mAh.jpg",
+      "name": "Magnetische Powerbank",
+      "nutzen": "Flach und lädt kabellos.",
+      "tap": 1.6
+    },
+    {
+      "typ": "nutzen",
+      "dauer": 1.87,
+      "zeilen": [
+        "1. Hält am iPhone (MagSafe)",
+        "2. Zwei Geräte gleichzeitig"
+      ]
+    },
+    {
+      "typ": "zahl",
+      "dauer": 1.87,
+      "wert": 10000,
+      "label": "mAh|3. So viel Akku",
+      "zaehl": 0.9
+    },
+    {
+      "typ": "ende",
+      "dauer": 2.67,
+      "wort": "Magnetische Powerbank 10.000 mAh",
+      "preis": "21,99 €"
+    }
+  ]
+}

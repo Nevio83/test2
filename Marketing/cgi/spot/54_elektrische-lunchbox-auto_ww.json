@@ -1,0 +1,18 @@
+{
+ "_hinweis": "Format WW „Was wäre wenn“ OHNE Fotos (Nevio 17.11.: „mach ohne Bilder“), Vorlage voll.html, Slot Do 19.11. 12 Uhr. Eigene Strich-Piktogramme in Gold auf Editorial Dark. Musik clean_minimal_112bpm ab 0,302 s, Schlag 0,5341 s: erste Szene und Ende je 5 Schläge, sonst 3. Aussagen nur aus products.json (Produkt 54): beheizbar, Kabel 230 V und 12/24 V, Edelstahleinsatz 1,5 l + Zusatzbox 0,45 l, Tasche, Löffel und Gabel.",
+ "wort": "Elektrische Lunchbox",
+ "oben": "Dein Auto wird zur Kantine.",
+ "oben_bis": 2.55,
+ "szenen": [
+  {"typ": "zeichen", "dauer": 2.6705, "icon": "auto", "vorlauf": 0.35},
+  {"typ": "zeichen", "dauer": 1.6023, "icon": "uhr", "text": "*12:30.* Mittagspause.", "gross": true},
+  {"typ": "zeichen", "dauer": 1.6023, "icon": "mikrowelle", "text": "Mikrowelle? *Fehlanzeige.*", "gross": true},
+  {"typ": "zeichen", "dauer": 1.6023, "icon": "box", "text": "Was wäre, wenn die Box *wärmt?*"},
+  {"typ": "zeichen", "dauer": 1.6023, "icon": "autostecker", "text": "Kabel fürs Auto", "wert": "12/24 V"},
+  {"typ": "zeichen", "dauer": 1.6023, "icon": "steckdose", "text": "Kabel für die Steckdose", "wert": "230 V"},
+  {"typ": "zeichen", "dauer": 1.6023, "icon": "behaelter", "text": "Edelstahleinsatz + Zusatzbox", "wert": "1,5 Liter + 0,45 Liter", "wert_klein": true},
+  {"typ": "zeichen", "dauer": 1.6023, "icon": "besteck", "text": "Tasche, Löffel und Gabel *dabei.*"},
+  {"typ": "ende", "dauer": 2.6705, "wort": "Elektrische Lunchbox<br>für Auto und Steckdose", "versatz": 74, "preis": "30,99 €", "link": "Link im Profil",
+   "hinweis": "Versandkostenfrei in Deutschland", "icon": "box", "icon_y": 1000}
+ ]
+}

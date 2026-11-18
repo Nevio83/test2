@@ -1,0 +1,33 @@
+{
+  "_hinweis": "Vision-Edit (Marken-Video, 16.11.2026). Vorlage vision.html. Takt aus musik.py wahl --stimmung filmisch (upbeat_house_124bpm, 123 BPM).",
+  "schlag": 0.4876,
+  "wort": "Maios Shop",
+  "hook": ["JEDER HAT EIN ZUHAUSE.", "DRAUSSEN WIRD ES DUNKEL."],
+  "uhr": { "klein": "HEUTE", "zeiten": ["16:58", "16:59", "17:00"] },
+  "vision": ["UNSERE VISION", "JEDES ZUHAUSE", "EIN STÜCK BESSER."],
+  "kategorien": [
+    { "name": "LICHT IM HAUS", "icon": "lampe", "fotos": [
+      { "src": "produkt bilder/Krystall Ball Nachtlampe bilder/Krystall Ball Mond.jpg", "schlaege": 1, "produkt": 50 },
+      { "src": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwarz.jpg", "schlaege": 1, "produkt": 32 },
+      { "src": "produkt bilder/Led crystal lampe bilder/Led crystal lampe crown.png", "schlaege": 1, "produkt": 21 },
+      { "src": "produkt bilder/Krystall Ball Nachtlampe bilder/Riesenrad.jpg", "schlaege": 1, "produkt": 50 }
+    ]},
+    { "name": "IN DER KÜCHE", "icon": "tasse", "fotos": [
+      { "src": "produkt bilder/Elektrische Kaffee- und Gewürzmühle bilder/Elektrische Kaffee- und Gewürzmühle 04.jpg", "schlaege": 2, "produkt": 55 },
+      { "src": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png", "schlaege": 2, "produkt": 11 }
+    ]},
+    { "name": "PFLEGE", "icon": "funkeln", "fotos": [
+      { "src": "produkt bilder/Elektrische Schallzahnbürste bilder/Elektrische Schallzahnbürste 04.jpg", "schlaege": 2, "produkt": 57, "zoom": 1.75, "fx": 0.62, "fy": 0.78 }
+    ]},
+    { "name": "UNTERWEGS", "icon": "pin", "fotos": [
+      { "src": "produkt bilder/Akku-Reifenpumpe mit Display.jpg", "schlaege": 2, "produkt": 63, "_hinweis": "nicht Bild 05: auf dem Reifen steht ein fremder Markenschriftzug (zweiter Prüfer 16.11.)" }
+    ]}
+  ],
+  "ende": {
+    "satz": "FÜR JEDES ZUHAUSE.",
+    "marke": "MAIOS",
+    "zeile1": "maiosshop.com · Link im Profil",
+    "zeile2": "Versandkostenfrei in Deutschland",
+    "schlaege": 6
+  }
+}

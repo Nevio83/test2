@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Maios Vision-Edit</title>
+<!--
+  Maios Vision-Edit (Marken-Video, seit 16.11.2026): schwarzer Grund, eine Reihe leuchtender Figuren auf einer gestrichelten
+  Linie (Aufbau angeregt von einem Motivations-Edit, Vorbild in vorbilder.md Runde 5 – nur die Idee, alles eigen gezeichnet).
+  Anfang: Figuren leuchten nacheinander auf, Uhr springt auf 17:00, die Lichter gehen aus.
+  Mitte (auf den Drop): Vision, Figuren leuchten warm wieder auf, Kategorien mit echten Shopfotos im Takt.
+  Ende: Marke, Link im Profil, Versandhinweis.
+  Schnittstelle wie spot.html: window.__ready, window.__dauer, window.__frame(t), window.__events.
+  Rendern:  node Marketing/cgi/spot/render_spot.mjs Marketing/cgi/spot/vision_maios.json --seite Marketing/cgi/spot/vision.html --out x.mp4
+  Ansehen:  vision.html?cfg=/Marketing/cgi/spot/vision_maios.json&t=4.2
+  Alle Zeiten hängen am Schlag der Musik ("schlag" in der Konfiguration, aus musik.py wahl).
+-->
+<style>
+@font-face{font-family:'Manrope';src:url(../fonts/manrope-latin.woff2) format('woff2');font-weight:200 800}
+@font-face{font-family:'Manrope';src:url(../fonts/manrope-latin-ext.woff2) format('woff2');font-weight:200 800;unicode-range:U+0100-02BA,U+20A0-20C0}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#030303}
+*{box-sizing:border-box}
+#b{position:absolute;inset:0;font-family:Manrope,sans-serif;color:#fff;-webkit-font-smoothing:antialiased;overflow:hidden}
+#welt{position:absolute;inset:0;transform-origin:465px 1000px}
+.abs{position:absolute}
+#glut{position:absolute;left:-200px;top:500px;width:1330px;height:1100px;opacity:0;
+  background:radial-gradient(50% 45% at 50% 50%,rgba(255,176,104,.42) 0%,rgba(255,150,80,.14) 45%,rgba(0,0,0,0) 75%)}
+#linie{position:absolute;left:85px;width:760px;top:1100px;height:2px;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.38) 0 10px,rgba(0,0,0,0) 10px 20px)}
+.fig{position:absolute;top:1000px;width:40px;height:96px;transform-origin:50% 100%;--c:rgb(58,58,58)}
+.fig .k{position:absolute;left:5px;top:0;width:30px;height:30px;border-radius:15px;background:var(--c)}
+.fig .r{position:absolute;left:0;top:36px;width:40px;height:60px;border-radius:20px 20px 9px 9px;background:var(--c)}
+.txt{position:absolute;left:0;width:930px;text-align:center;white-space:nowrap;line-height:1.1}
+.txt .w{display:inline-block;white-space:pre;will-change:transform,opacity,filter}
+.txt svg{display:inline-block;vertical-align:-.12em}
+#uhr{left:345px;top:760px;width:240px;height:132px;border:3px solid rgba(255,255,255,.88);border-radius:18px;text-align:center}
+#uhr .uk{margin-top:12px;font-size:22px;font-weight:700;letter-spacing:.32em;padding-left:.32em;color:rgba(255,255,255,.75)}
+#uhr .uz{margin-top:2px;font-size:62px;font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1}
+#karte{left:185px;top:320px;width:560px;height:560px;border-radius:40px;overflow:hidden;background:#111;
+  border:2px solid rgba(255,255,255,.14);box-shadow:0 0 90px rgba(255,180,110,.22)}
+#karte img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;display:none}
+#blitz{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#vign{position:absolute;inset:0;pointer-events:none;background:radial-gradient(78% 62% at 50% 52%,rgba(0,0,0,0) 55%,rgba(0,0,0,.6) 100%)}
+#korn{position:absolute;left:0;top:0;opacity:.05;pointer-events:none;mix-blend-mode:screen}
+#ober{position:absolute;inset:0;pointer-events:none}
+.pill{position:absolute;top:200px;height:60px;border-radius:30px;padding:0 24px;font-size:30px;font-weight:700;display:flex;align-items:center;white-space:nowrap}
+.pw{left:50px;background:#F2F2F2;color:#0F0F0F}
+.pp{background:#262626;color:#fff;border:1px solid rgba(255,255,255,.22)}
+</style>
+</head>
+<body>
+<div id="b">
+  <div id="welt">
+    <div id="glut"></div>
+    <div id="linie"></div>
+  </div>
+  <svg id="korn" width="1080" height="1920"><filter id="kf"><feTurbulence id="kt" type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="1"/><feColorMatrix type="saturate" values="0"/></filter><rect width="1080" height="1920" filter="url(#kf)"/></svg>
+  <div id="vign"></div>
+  <div id="blitz"></div>
+  <div id="ober"><div class="pill pw">Werbung</div><div class="pill pp" id="pwort"></div></div>
+</div>
+<script>
+const Q=new URLSearchParams(location.search);
+const CX=465, N=10, ABST=74;
+const E={out:x=>1-Math.pow(1-x,3),in:x=>x*x*x,back:x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)}};
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const lerp=(a,b,p)=>a+(b-a)*p;
+const abkl=(t,tp,tau)=>t>=tp?Math.exp(-(t-tp)/tau):0;          // Abklingen nach einem Schlag
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const EV=[];const ev=(t,typ,st)=>EV.push({t:+t.toFixed(3),typ,staerke:st??1});
+const ICON={
+  lampe:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.3 1.1 2.2h5c0-.9.4-1.6 1.1-2.2A6 6 0 0 0 12 3z"/>',
+  tasse:'<path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V9z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/>',
+  funkeln:'<path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>',
+  pin:'<path d="M12 21s-6-5.4-6-10a6 6 0 0 1 12 0c0 4.6-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>'
+};
+const svg=n=>`<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
+let CFG,B,T,D,EN,DAUER;const TX=[],FIG=[],FOTO=[],PUNCH=[],SCHNITT=[];
+let welt,uhr,karte;
+function el(tag,cls,parent,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;parent.appendChild(e);return e}
+function css(e,o){for(const k in o)e.style[k]=o[k]}
+
+// Textzeile: Wörter (oder Buchstaben) kommen nacheinander aus der Unschärfe, gehen unscharf wieder raus
+function text({inhalt,top,size,track=.28,weight=700,farbe='#fff',t0,t1=1e9,takt=.08,icon=null,buchstaben=false}){
+  const d=el('div','txt',welt);css(d,{top:top+'px',fontSize:size+'px',letterSpacing:track+'em',fontWeight:weight,color:farbe,paddingLeft:track+'em'});
+  const ws=[];
+  if(icon){const s=el('span','w',d,svg(icon)+' ');ws.push(s)}
+  const teile=buchstaben?[...inhalt]:inhalt.split(' ');
+  teile.forEach((w,i,a)=>ws.push(el('span','w',d,esc(w)+(!buchstaben&&i<a.length-1?' ':''))));
+  TX.push({d,ws,t0,t1,takt});
+}
+function textSetzen(t){for(const x of TX){
+  if(t<x.t0-0.01||t>x.t1+0.3){x.d.style.display='none';continue}
+  x.d.style.display='block';const q=E.in(seg(t,x.t1,x.t1+0.22));
+  x.ws.forEach((w,k)=>{const a=x.t0+k*x.takt,p=E.out(seg(t,a,a+0.3));
+    css(w,{opacity:(p*(1-q)).toFixed(3),filter:`blur(${((1-p)*12+q*14).toFixed(2)}px)`,transform:`translateY(${((1-p)*16).toFixed(1)}px)`})});
+}}
+
+const DIM=[58,58,58],WEISS=[246,246,246],WARM=[255,212,158];
+function figSetzen(t){for(const g of FIG){
+  const pa=seg(t,g.an,g.an+0.24),a=E.out(pa);
+  const aus=E.out(seg(t,g.aus,g.aus+0.09)),lw=a*(1-aus),wm=E.out(seg(t,g.warm,g.warm+0.16));
+  const c=DIM.map((v,j)=>lerp(lerp(v,WEISS[j],lw),WARM[j],wm));
+  const glow=Math.max(lw,wm),gc=wm>0.01?'255,186,116':'255,255,255';
+  const s=(0.7+0.3*E.back(pa))*(1+0.14*abkl(t,g.warm,0.12));
+  css(g.f,{opacity:a.toFixed(3),transform:`scale(${s.toFixed(4)})`,
+    filter:glow>0.01?`drop-shadow(0 0 ${(6+4*glow).toFixed(1)}px rgba(${gc},${(.85*glow).toFixed(2)})) drop-shadow(0 0 ${(28*glow).toFixed(1)}px rgba(${gc},${(.5*glow).toFixed(2)}))`:'none'});
+  g.f.style.setProperty('--c',`rgb(${c.map(Math.round).join(',')})`);
+}}
+
+function uhrSetzen(t){
+  const p=seg(t,T,T+0.3),q=E.in(seg(t,D-0.32,D-0.06));
+  if(p<=0||q>=1){uhr.style.display='none';return}
+  uhr.style.display='block';
+  const i=t<T+B?0:t<T+2*B?1:2;uhr.lastChild.textContent=CFG.uhr.zeiten[i];
+  const tc=T+i*B,dunkel=seg(t,T+2*B,T+2*B+0.5);
+  const s=(0.85+0.15*E.back(p))*(1+0.06*abkl(t,tc,0.1));
+  css(uhr,{opacity:(E.out(p)*(1-q)).toFixed(3),transform:`scale(${s.toFixed(4)})`,filter:`blur(${(q*12).toFixed(2)}px)`,
+    boxShadow:`0 0 ${30-18*dunkel}px rgba(255,255,255,${(.28-.2*dunkel).toFixed(2)})`,borderColor:`rgba(255,255,255,${(.88-.4*dunkel).toFixed(2)})`});
+}
+
+function karteSetzen(t){
+  const k0=3*T,k1=EN,p=E.out(seg(t,k0,k0+0.3)),q=E.in(seg(t,k1-0.05,k1+0.2));
+  if(p<=0||q>=1){karte.style.display='none';return}
+  karte.style.display='block';
+  let akt=FOTO[0];for(const f of FOTO)if(t>=f.s)akt=f;
+  const pu=abkl(t,akt.s,0.1);
+  css(karte,{opacity:(p*(1-q)).toFixed(3),filter:`blur(${((1-p)*20+q*18).toFixed(2)}px) brightness(${(1+0.35*abkl(t,akt.s,0.06)).toFixed(3)})`,
+    transform:`translateY(${((1-p)*40).toFixed(1)}px) scale(${((1+0.05*pu)*(1-0.04*q)).toFixed(4)})`});
+  for(const f of FOTO){
+    if(f!==akt){f.img.style.display='none';continue}
+    const kb=1+0.06*seg(t,f.s,f.e);
+    css(f.img,{display:'block',transformOrigin:`${f.fx*100}% ${f.fy*100}%`,transform:`scale(${(f.zoom*kb).toFixed(4)})`});
+  }
+}
+
+function frame(t){
+  // Kamera: langsames Heranfahren je Abschnitt + kurzer Stoß auf den Schnitten
+  let a=0,b=DAUER;for(let i=0;i<SCHNITT.length;i++){if(t>=SCHNITT[i]){a=SCHNITT[i];b=SCHNITT[i+1]??DAUER}}
+  let kam=1+0.025*seg(t,a,b);for(const p of PUNCH)kam+=p.amp*abkl(t,p.t,0.12);
+  welt.style.transform=`translateY(70px) scale(${kam.toFixed(4)})`;   // 70 px tiefer: Mitte der sicheren Zone
+  document.getElementById('linie').style.transform=`scaleX(${E.out(seg(t,-0.2,0.45)).toFixed(4)})`;
+  const schlag=t<D?D:D+Math.floor((t-D)/B)*B;                      // letzter Schlag seit dem Drop: Licht pulsiert mit
+  const glut=t<D?0:.5*E.out(seg(t,D,D+.5))+.45*abkl(t,D,.35)+.2*(seg(t,3*T,3*T+.3)-seg(t,4*T-.2,4*T+.1))+.12*seg(t,EN,EN+.5)+.1*abkl(t,schlag,.16);
+  document.getElementById('glut').style.opacity=Math.min(1,glut).toFixed(3);
+  document.getElementById('blitz').style.opacity=(.22*abkl(t,D,.07)+.1*abkl(t,EN,.08)).toFixed(3);
+  document.getElementById('kt').setAttribute('seed',String(1+Math.floor(t*30)%97));
+  figSetzen(t);uhrSetzen(t);karteSetzen(t);textSetzen(t);
+}
+
+async function start(){
+  CFG=await (await fetch(Q.get('cfg'))).json();
+  B=CFG.schlag;T=4*B;D=2*T;EN=6*T;DAUER=EN+CFG.ende.schlaege*B;
+  welt=document.getElementById('welt');
+  document.getElementById('pwort').textContent=CFG.wort;
+  const pw=document.querySelector('.pw');document.getElementById('pwort').style.left=(50+pw.offsetWidth+14)+'px';
+
+  // Figuren: erscheinen nacheinander (Anfang), gehen um 17:00 aus, leuchten auf den Drop warm wieder auf (von der Mitte nach außen)
+  for(let i=0;i<N;i++){
+    const f=el('div','fig',welt,'<div class="k"></div><div class="r"></div>');f.style.left=(CX+(i-(N-1)/2)*ABST-20)+'px';
+    // erste Figur steht schon in Bild 0 (Bewegung ab Bild 0), die anderen folgen
+    const g={f,an:i===0?-0.3:0.02+i*0.11,aus:T+2*B+0.03+i*0.055,warm:D+Math.floor(Math.abs(i-(N-1)/2))*B/2};FIG.push(g);
+    if(g.an>=0)ev(g.an,'tipp',0.45);ev(g.aus,'klick',0.4);
+  }
+  for(let k=0;k<5;k++)ev(D+k*B/2,'tipp',0.55);
+
+  // Anfang
+  // Hook: erstes Wort ist in Bild 0 schon fast scharf; 46 px / Laufweite .1, damit die längste Zeile nicht an den Rand stößt
+  text({inhalt:CFG.hook[0],top:918,size:46,track:.1,t0:-0.15,t1:T-0.12,takt:.09});
+  text({inhalt:CFG.hook[1],top:918,size:46,track:.1,t0:T+0.08,t1:D-0.14,takt:.09});
+  uhr=el('div','abs',welt,`<div class="uk">${esc(CFG.uhr.klein)}</div><div class="uz"></div>`);uhr.id='uhr';
+  ev(T,'pop',0.5);ev(T+B,'tipp',0.5);ev(T+2*B,'tipp',0.6);
+  ev(D-0.42,'whoosh',0.9);ev(D,'pop',0.9);
+
+  // Mitte: Vision
+  text({inhalt:CFG.vision[0],top:690,size:34,track:.34,farbe:'#FFC98E',t0:D+0.05,t1:3*T-0.18});
+  text({inhalt:CFG.vision[1],top:764,size:66,track:.06,weight:800,t0:D+0.25,t1:3*T-0.18,takt:.1});
+  text({inhalt:CFG.vision[2],top:846,size:66,track:.06,weight:800,t0:D+0.49,t1:3*T-0.18,takt:.1});
+
+  // Mitte: Kategorien, Fotos wechseln auf dem Schlag
+  karte=el('div','abs',welt);karte.id='karte';
+  let t=3*T;
+  CFG.kategorien.forEach((k,ki)=>{
+    const k0=t;
+    k.fotos.forEach((f,fi)=>{
+      const img=el('img','',karte);img.src='/'+encodeURI(f.src);
+      const s=t,e=t+f.schlaege*B;FOTO.push({img,s,e,zoom:f.zoom||1,fx:f.fx??.5,fy:f.fy??.5});
+      if(fi>0)ev(s,'klick',0.35);t=e;
+    });
+    text({inhalt:k.name,icon:k.icon,top:918,size:46,track:.2,t0:k0+0.02,t1:t-0.14,takt:.06});
+    ev(k0,'whoosh',ki===0?0.7:0.45);PUNCH.push({t:k0,amp:.03});SCHNITT.push(k0);
+  });
+  if(Math.abs(t-EN)>0.01)throw new Error(`Kategorien dauern ${(t-3*T).toFixed(2)} s, erwartet ${(3*T).toFixed(2)} s (12 Schläge)`);
+
+  // Ende
+  const en=CFG.ende;
+  text({inhalt:en.satz,top:918,size:46,track:.14,farbe:'#FFD7A6',t0:EN+0.05});
+  text({inhalt:en.marke,top:690,size:132,track:.32,weight:800,t0:EN+0.4,takt:.06,buchstaben:true});
+  text({inhalt:en.zeile1,top:1160,size:40,track:.02,t0:EN+0.75,takt:.05});
+  text({inhalt:en.zeile2,top:1222,size:34,track:.02,weight:600,farbe:'rgba(255,255,255,.78)',t0:EN+0.95,takt:.05});
+  ev(EN,'whoosh',0.6);ev(EN+0.4,'ting',0.8);ev(EN+0.75,'pop',0.4);
+
+  PUNCH.push({t:T,amp:.02},{t:D,amp:.06},{t:EN,amp:.03});
+  SCHNITT.push(0,T,D,EN);SCHNITT.sort((x,y)=>x-y);
+
+  window.__dauer=DAUER;window.__events=EV.sort((x,y)=>x.t-y.t);
+  await Promise.all([...document.images].map(i=>i.decode().catch(()=>{throw new Error('Bild fehlt: '+decodeURI(i.src))})));
+  await document.fonts.ready;
+  if(!document.fonts.check('800 40px Manrope'))throw new Error('Schrift Manrope fehlt (../fonts/manrope-*.woff2)');
+  window.__ready=true;
+  if(Q.has('t'))frame(+Q.get('t'));
+}
+window.__frame=t=>new Promise(res=>{frame(t);requestAnimationFrame(()=>requestAnimationFrame(()=>res(true)))});
+start().catch(e=>{document.title='FEHLER '+e.message;console.error(e);window.__fehler=String(e)});
+</script>
+</body>
+</html>

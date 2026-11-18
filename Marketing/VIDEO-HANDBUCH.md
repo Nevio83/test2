@@ -59,14 +59,16 @@
 | **W Wissensvideo** – belegte Geschichte, Erzählerstimme, wortgenaue Untertitel | `maios-wissen` | wartet auf Freigabe der Stimme (`test.wav`) | Thema mit überraschender, belegbarer Antwort | 30–45 s |
 | **Duell „Dies oder das“** – zwei echte Fotos gegeneinander, „oder“, Antippen, 2–3 Runden, Zähler, Preis | `maios-duell` | neu 15.11., getestet, **noch nicht von Nevio abgenommen** | Produkt mit ≥ 4 Farben/Motiven; holt Kommentare | ~10 s |
 | **Zoom-Rätsel** – Nahaufnahme eines Produktdetails ab Bild 0, Hook-Frage, 2 eindeutig falsche Tipps werden weggekreuzt, ab 3 s zoomt das Foto auf + Antwort, dann Zahl/Haken/Preis | `maios-motion-spot`, Baustein `raetsel` | neu 16.11., erstes Video 63 Reifenpumpe (17.11. 12 Uhr) | Produkt mit auffälligem Detail (Anzeige, Form). Die Frage gilt dem **Detail**, nicht dem Produkt – das Produktwort steht ja ab Bild 0 neben „Werbung“ | ~10 s |
+| **Fallakte** – Korkwand-Ermittlung: echtes Foto als Polaroid „Beweisstück A“ mit Lupe, rote Fäden zu den Einsatzorten (eigene Piktogramme), getippte Hinweiszettel, Stempel „FALL GELÖST“, Aktenkarte mit Preis; Kamera mit harten Schnitten | `maios-motion-spot`, Baustein `akte` | neu 16.11. (Vorbild: mit Claude gebautes TikTok, `vorbilder.md` Runde 4), erstes Video 63 Reifenpumpe (17.11. 12 Uhr) | Produkt mit mehreren Einsatzorten/Modi in products.json | ~10,5 s |
 | **Karten mischen** – 3 echte Variantenfotos, eine wird markiert, Karten drehen sich um, werden sichtbar vertauscht, „Wo ist …?“ + 1–3, Aufdecken, „Hattest du ihn?“ | `maios-motion-spot`, Baustein `mischen` | neu 16.11., erstes Video 11 Mixer (17.11. 18 Uhr) | Produkt mit genau 3 (oder 3 gewählten) Farben/Motiven mit Foto; holt Kommentare und zweites Ansehen | ~11 s |
+| **Vision-Edit (Marken-Video)** – schwarzer Grund, Reihe leuchtender Figuren, Uhr 17:00, Lichter gehen aus → Drop (gedämpfte Musik öffnet sich) → Vision + Kategorien mit echten Shopfotos im Takt → MAIOS, Link im Profil; kein Preis | eigene Vorlage `cgi/spot/vision.html` (Konfiguration `vision_maios.json`), Render mit `render_spot.mjs --seite` | neu 16.11. auf Nevios Wunsch (Vorbild @lowkey.focus, `vorbilder.md` Runde 5), erstes Video Mi 18.11. 12 Uhr. **Ausnahme:** Einstieg ohne Produktfoto (Nevio ausdrücklich). **Feste Variante, aber jedes Mal abwandeln** (Nevio 16.11.): mindestens 3 Stellschrauben ändern – Anfangsbild (statt Figuren z. B. Fenster, Lampen, Türen), Hook-Paar/Alltagsmoment, Kategorien und Fotos, Lichtfarbe, Musik/Drop, Vision-Satz (als Ziel, nie als Versprechen) | Marken-/Imagevideo, nicht öfter als 1× pro Woche | ~14,6 s |
 
 **Pausiert (Nevio 15.11.):** Videos aus echten Clips (POV, Hände-Alltag, Antwort auf Kommentar). Skill `maios-schnitt` ist
 entfernt, Sicherung in `Marketing/cgi/skill/alt-stand-20261115/maios-schnitt/`. Erst wieder, wenn Nevio es sagt.
 | **Lokale KI** – Bild-zu-Video aus Shopfoto | `maios-ki-lokal` | später, nur auf dem RTX-PC | kurzer Baustein, immer gekennzeichnet | 2–4 s |
 
 **Produkte für `real`** (≥ 5 Farben/Motive mit Foto, Stand 15.11.): 33 Aroma-Humidifier (12 Düfte, englische Namen;
-„Aromatherapy“ im Namen ⇒ keine Wirkversprechen), 47 Tumbler (7 echte Farben + 2 Nicht-Farben-Einträge), 50 Krystall Ball
+„Aromatherapy“ im Namen ⇒ keine Wirkversprechen), 47 Tumbler (8 Becherfarben: 7 Farbnamen + „Thermal Sublimation“ = weißer Becher, im Shop wählbar, CSV „Tumbler Weiß“; nur „Strohalm“ ist keine Farbe – korrigiert 17.11. nach Prüferfund), 50 Krystall Ball
 Nachtlampe (7 Motive), 17 Bluetooth-Finder (6), 43 Mini-Thermodrucker (5). 47 und 50 liefen am 14.11.
 
 **Verworfen – nicht wieder bauen:** Notiz-Liste (Format A, 13.11.), 3D-Welten/CGI als ganzes Video, Figuren/Maskottchen Mo,
@@ -129,7 +131,9 @@ Hashtags: keine Trend-Tags ohne Produktbezug. Kommentar-Frage ohne Belohnung/Bed
 |---|---|
 | `Marketing/cgi/real/gal.py`, `common.py`, `mix.sh`, `fonts/` | `real`-Galerie (Pillow, Poppins OFL); `mix.sh` in Git Bash |
 | `Marketing/cgi/spot/spot.html` | Motion-Spot-Vorlage (Szenen per JSON, deterministisch) |
-| `Marketing/cgi/spot/render_spot.mjs` | rendert HTML mit installiertem Chrome + ffmpeg, keine Pakete, Node ≥ 22 |
+| `Marketing/cgi/spot/render_spot.mjs` | rendert HTML mit installiertem Chrome + ffmpeg, keine Pakete, Node ≥ 22; `--seite <html>` für andere Vorlagen mit derselben Schnittstelle |
+| `Marketing/cgi/spot/vision.html` + `vision_maios.json` | Vision-Edit (Marken-Video, Figurenreihe, Drop, Kategorien). Drop im Ton: Musik der ersten 2 Takte per ffmpeg-Tiefpass dämpfen, ab dem Drop voll + tiefer Schlag (Befehl im vorrat-Abschnitt Mi 18.11. 12 Uhr) |
+| `Marketing/cgi/spot/voll.html` | Vollbild-Vorlage im Editorial-Dark-Look (neu 17.11.): große echte Fotos statt kleiner Karten, warmes Schwarz, Gold, Marcellus + Manrope, Federn nach `apple-design`. Bausteine `duell` (Runden als Feed nach oben, hohe Paneele, Antippen), `finale` (Fächer aller Farben → Endkarte), `bild` (Foto als Band über unscharfem Hintergrund, Ken Burns, Untertitel Wort für Wort), `typo` (Wort durchstreichen), `ende`. **Ohne Fotos** (Nevio 17.11.: „mach ohne Bilder“, die Herstellerfotos sahen schlecht aus): `farbduell` (Farbflächen in den aus den Shopfotos gemessenen Becherfarben, gezeichneter Becher Ton in Ton, Naht springt beim Antippen), `farbfinale` (Farbstreifen → Karte „8 Farben“ → Punktreihe + Endkarte), `zeichen` (eigene Strich-Piktogramme in Gold: auto, uhr, mikrowelle, box, autostecker, steckdose, behaelter, besteck; Linien zeichnen sich, Wärmewellen steigen), `ende` mit `icon` statt Foto. Render: `render_spot.mjs <cfg> --seite Marketing/cgi/spot/voll.html`. Beispiele `47_tumbler-becher_duell.json`, `54_elektrische-lunchbox-auto_ww.json`. Geschütztes Leerzeichen (` `) hält „12/24 V“ als ein goldenes Wort zusammen |
 | `Marketing/cgi/spot/spot_ton.py` | Musik (ab `--musik-ab`) + synthetische Klänge (+ Stimme/Originalton per `--spur`), normalisiert auf −14 LUFS |
 | `Marketing/cgi/spot/musik.py` | Musik messen (`analyse` → `Marketing/musik/analyse.json`) und passend wählen (`wahl`) |
 | `Marketing/cgi/spot/ton_check.py` | fertigen Ton prüfen: Lautheit, Spitze, hörbare Klänge, Wellenform + Spektrogramm als Bild |
@@ -174,6 +178,9 @@ Wir machen es mit eigenen Werkzeugen, ohne Installation und ohne fremde Samples.
 - **Gelernt beim Test (15.11.):** AAC mit 192 kbit/s hob die Spitze bei Klick-Klängen um bis zu 3,7 dB → `finish.py` nutzt
   jetzt 256 kbit/s, `spot_ton.py` normalisiert mit Reserve (−3,2 dBTP). Schnelle Tipp-Folgen (Zähler) und der Schluss-Ting
   gehen unter lebhafter Musik leicht unter.
+- **Gelernt am 17.11. (Lunchbox, clean_minimal):** Ein Pop 0,1 s nach einem Whoosh geht im Rauschen unter (`ton_check`: 3/11 hörbar).
+  Lösung: Klänge für Text erst ab ~0,3 s nach dem Schnitt und als Tipp je Wort (hoher Anschlag) → 18/27 hörbar. Musik −6 dB,
+  Klänge +5 dB hielten −14,3 LUFS. Dateien > 10 MB: `finish.py --maxrate 4200k`.
 
 ## 10. Stimme (Format W)
 - VoiceStudio (lokal, AGPL) mit **MOSS-TTS-Nano** (Apache-2.0) und Profil **„Thorsten CC0“**. **OmniVoice nie** (nicht kommerziell).

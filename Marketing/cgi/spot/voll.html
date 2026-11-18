@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Maios Vollbild (Editorial Dark)</title>
+<!--
+  Maios Vollbild-Vorlage (neu 17.11.2026): große echte Shopfotos statt kleiner Karten, Look „Editorial Dark“ wie der Shop
+  (warmes Schwarz #0B0A09/#13100B, Gold #D8B56C, Marcellus + Manrope). Bewegung mit Federn nach dem Skill apple-design:
+  kritisch gedämpft (ζ 1, Antwort 0,3–0,45 s) als Standard, leichtes Nachschwingen (ζ ~0,8) nur bei Schwung (hereingeworfene
+  Karten, Antippen). Rein-/Rausweg gleich (Feed-Wischen nach oben).
+  Bausteine: duell (Runden als Feed, zwei hohe Fotopaneele, „oder“, Antippen links/rechts), finale (Fächer aller Farben,
+  dann Endkarte), bild (Foto voll oder als Band über Unschärfe-Hintergrund, Ken Burns, Untertitel Wort für Wort),
+  typo (große Schrift, Wort durchstreichen), ende (Endkarte mit Foto).
+  Text bleibt in der TikTok-Zone (x 72–888, y 168–1330), Fotos dürfen vollflächig sein.
+  Schnittstelle wie spot.html: window.__ready, window.__dauer, window.__frame(t), window.__events.
+  Rendern:  node Marketing/cgi/spot/render_spot.mjs <cfg>.json --seite Marketing/cgi/spot/voll.html --out x.mp4
+  Ansehen:  voll.html?cfg=/Marketing/cgi/spot/<cfg>.json&t=1.5
+-->
+<style>
+@font-face{font-family:'Manrope';src:url(../fonts/manrope-latin.woff2) format('woff2');font-weight:200 800}
+@font-face{font-family:'Manrope';src:url(../fonts/manrope-latin-ext.woff2) format('woff2');font-weight:200 800;unicode-range:U+0100-02BA,U+20A0-20C0}
+@font-face{font-family:'Marcellus';src:url(../fonts/marcellus-latin.woff2) format('woff2');font-weight:400}
+:root{--tief:#0B0A09;--bg:#13100B;--gold:#D8B56C;--goldp:#E4C077;--golddk:#8C6A2A;--txt:#F5F0E6;--muted:#A79E8B;--ink:#1C1813}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:var(--tief)}
+*{box-sizing:border-box}
+#b{position:absolute;inset:0;font-family:Manrope,sans-serif;color:var(--txt);-webkit-font-smoothing:antialiased;overflow:hidden}
+#bg{position:absolute;inset:0}
+.sz{position:absolute;inset:0}
+.abs{position:absolute}
+.serif{font-family:Marcellus,serif;font-weight:400}
+/* Duell */
+.dp{position:absolute;width:440px;height:900px;border-radius:34px;overflow:hidden;background:#fff;
+  box-shadow:0 40px 90px rgba(0,0,0,.55),0 4px 14px rgba(0,0,0,.35)}
+.dp img{position:absolute;max-width:none}
+.dp .nm{position:absolute;left:0;right:0;top:812px;text-align:center;font-family:Marcellus,serif;font-size:46px;color:var(--ink);white-space:nowrap}
+.dp .strich{position:absolute;left:50%;top:872px;width:120px;height:5px;margin-left:-60px;border-radius:3px;background:var(--gold);transform-origin:50% 50%}
+.vs{position:absolute;left:400px;top:812px;width:160px;height:160px;border-radius:80px;background:var(--gold);color:var(--bg);
+  display:flex;align-items:center;justify-content:center;font-family:Marcellus,serif;font-size:50px;z-index:6;
+  box-shadow:0 0 0 10px rgba(11,10,9,.92),0 18px 40px rgba(0,0,0,.5)}
+.welle{position:absolute;width:0;height:0;z-index:7}
+.welle i{position:absolute;left:-60px;top:-60px;width:120px;height:120px;border-radius:60px;border:6px solid var(--gold)}
+.runde{left:72px;width:816px;top:366px;text-align:center;font-size:33px;font-weight:700;color:#D9D0BD;letter-spacing:.01em}
+/* Fächer + Endkarte */
+.fk{position:absolute;width:250px;height:430px;border-radius:26px;overflow:hidden;background:#fff;
+  box-shadow:0 26px 60px rgba(0,0,0,.6),0 3px 10px rgba(0,0,0,.35);transform-origin:50% 100%}
+.fk img{position:absolute;max-width:none}
+.fz{left:72px;width:816px;top:300px;text-align:center;font-family:Marcellus,serif;font-size:300px;line-height:1;color:var(--goldp)}
+.fl{left:72px;width:816px;top:620px;text-align:center;font-size:56px;font-weight:800;letter-spacing:-.02em}
+.ew{left:72px;width:816px;top:318px;text-align:center;font-family:Marcellus,serif;font-size:66px;line-height:1.1;color:var(--txt)}
+.ep{left:72px;width:816px;top:420px;text-align:center;font-size:178px;font-weight:800;letter-spacing:-.045em;line-height:1;color:var(--goldp)}
+.el{left:300px;width:360px;top:640px;height:96px;border-radius:48px;background:var(--gold);color:var(--bg);font-size:40px;font-weight:800;
+  display:flex;align-items:center;justify-content:center}
+.eh{left:72px;width:816px;top:768px;text-align:center;font-size:40px;font-weight:700;color:var(--txt)}
+.em{left:72px;width:816px;top:840px;text-align:center;font-family:Marcellus,serif;font-size:40px;letter-spacing:.42em;padding-left:.42em;color:var(--muted)}
+/* Bild-Szenen */
+.amb{position:absolute;left:0;top:0;width:270px;height:480px;overflow:hidden;transform-origin:0 0;transform:scale(4);filter:blur(10px) brightness(.42) saturate(.85)}
+.amb img{position:absolute;max-width:none}
+.ton{position:absolute;inset:0;background:rgba(19,16,11,.45)}
+.rahmen{position:absolute;overflow:hidden;background:#000}
+.rahmen img{position:absolute;max-width:none;left:0;top:0;transform-origin:0 0}
+.linie{position:absolute;left:0;width:1080px;height:2px;background:linear-gradient(90deg,rgba(216,181,108,0),rgba(216,181,108,.75) 20%,rgba(216,181,108,.75) 80%,rgba(216,181,108,0))}
+.verlauf{position:absolute;left:0;top:0;width:1080px;height:760px;background:linear-gradient(180deg,rgba(11,10,9,.88) 0%,rgba(11,10,9,.62) 45%,rgba(11,10,9,0) 100%)}
+.cap{left:72px;width:816px;text-align:center;font-weight:800;font-size:66px;line-height:1.14;letter-spacing:-.02em;color:var(--txt);
+  text-shadow:0 3px 14px rgba(0,0,0,.65)}
+.cap.gross{font-size:92px}
+.cap .w{display:inline-block;white-space:pre;will-change:transform,opacity,filter}
+.typo{left:72px;width:816px;top:640px;text-align:center;font-family:Marcellus,serif;font-size:128px;line-height:1.08;color:var(--txt)}
+.typo .w{display:inline-block;white-space:pre;position:relative}
+.typo .ak{color:var(--goldp)}
+.typo .st{position:absolute;left:-6px;right:-6px;top:54%;height:10px;border-radius:5px;background:var(--gold);transform-origin:0 50%}
+.hp{position:absolute;overflow:hidden;border-radius:34px;background:#fff;box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 0 2px rgba(216,181,108,.35)}
+.hp img{position:absolute;max-width:none;left:0;top:0;transform-origin:0 0}
+/* Ohne Fotos (17.11.): Farb-Duell, Farbfinale, Strich-Piktogramme */
+.ff{position:absolute;top:0;height:1920px;overflow:hidden}
+.fbech{position:absolute;width:396px;height:593px;margin-left:-198px;transform-origin:50% 60%}
+.fname{position:absolute;top:1168px;width:420px;margin-left:-210px;text-align:center;font-size:52px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.rpill{left:72px;width:816px;top:370px;text-align:center}
+.rpill span{display:inline-block;background:rgba(19,16,11,.86);color:#E9E1CF;font-size:30px;font-weight:700;padding:6px 20px;border-radius:22px}
+.fstreif{position:absolute;left:0;top:0;width:135px;height:1920px}
+.fkarte{left:220px;width:520px;top:600px;height:520px;border-radius:44px;background:rgba(19,16,11,.93);box-shadow:0 30px 80px rgba(0,0,0,.45);
+  display:flex;flex-direction:column;align-items:center;justify-content:center}
+.fkarte .z8{font-family:Marcellus,serif;font-size:290px;line-height:.95;color:var(--goldp)}
+.fkarte .zl{font-size:54px;font-weight:800;letter-spacing:-.02em;margin-top:6px}
+.zw{position:absolute;left:170px;top:530px;width:620px;height:620px}
+.zw svg{width:620px;height:620px;overflow:visible}
+.zw .z{fill:none;stroke:var(--gold);stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+.zw .zf{fill:var(--gold);stroke:none}
+.wert{left:72px;width:816px;top:1170px;text-align:center;font-size:140px;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--goldp);white-space:nowrap}
+.wert.klein{font-size:66px;letter-spacing:-.02em;color:var(--goldp);top:1190px}
+/* oben: Werbung, Produktwort, Hook */
+#korn{position:absolute;left:-40px;top:-40px;opacity:.06;pointer-events:none;mix-blend-mode:screen;z-index:40}
+#vign{position:absolute;inset:0;pointer-events:none;z-index:41;background:radial-gradient(80% 62% at 50% 50%,rgba(0,0,0,0) 58%,rgba(0,0,0,.55) 100%)}
+#ober{position:absolute;inset:0;pointer-events:none;z-index:50}  /* Werbung + Produktwort immer über allen Szenen */
+.pill{position:absolute;top:200px;height:60px;border-radius:30px;padding:0 24px;font-size:30px;font-weight:700;display:flex;align-items:center;white-space:nowrap}
+.pw{left:50px;background:#F2ECDF;color:#0F0D0A}
+.pp{background:rgba(19,16,11,.88);color:var(--txt);border:1px solid rgba(216,181,108,.45)}
+#oben{position:absolute;left:72px;width:816px;top:286px;text-align:center}
+#oben span{display:inline-block;white-space:nowrap;background:var(--txt);color:var(--bg);font-size:39px;font-weight:800;letter-spacing:-.015em;padding:11px 24px;border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.45)}
+</style>
+</head>
+<body>
+<div id="b"><div id="bg"></div><div id="szenen"></div>
+  <svg id="korn" width="1160" height="2000"><filter id="kf"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="3"/><feColorMatrix type="saturate" values="0"/></filter><rect width="1160" height="2000" filter="url(#kf)"/></svg>
+  <div id="vign"></div>
+  <div id="ober"><div class="pill pw">Werbung</div><div class="pill pp" id="pwort"></div><div id="oben"><span></span></div></div>
+</div>
+<script>
+// ---------- Hilfen ----------
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const lerp=(a,b,x)=>a+(b-a)*x;
+const seg=(t,a,b)=>clamp((t-a)/(b-a));
+const E={out:x=>1-Math.pow(1-x,3),in:x=>x*x*x,inOut:x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+// Feder (Antwort = Zeit bis fast am Ziel, ζ = Dämpfung; 1 = kein Nachschwingen). Analytisch, hängt nur an t.
+function feder(t,resp=0.4,z=1){if(t<=0)return 0;const w=2*Math.PI/resp;
+  if(z>=0.999)return 1-Math.exp(-w*t)*(1+w*t);const wd=w*Math.sqrt(1-z*z);
+  return 1-Math.exp(-z*w*t)*(Math.cos(wd*t)+(z*w/wd)*Math.sin(wd*t));}
+const huckel=(t,a,b)=>Math.sin(Math.PI*seg(t,a,b));
+function rng(s){let a=s>>>0;return()=>{a|=0;a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296}}
+const el=(tag,cls,par,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;(par||document.body).appendChild(e);return e};
+const bild=p=>'/'+p.split('/').map(encodeURIComponent).join('/');
+const css=(e,o)=>{for(const k in o)e.style[k]=o[k]};
+const Q=new URLSearchParams(location.search);
+let CFG,SZ=[],DAUER=0;const EV=[];
+const ev=(t,typ,st)=>EV.push({t:+Math.max(0,t).toFixed(3),typ,staerke:st??1});
+const FEED=1580, GAP=990, LEAD=0.12;  // Feed-Wischen: Weg und Vorlauf vor dem Schlag
+
+// Becher/Produkt im Paneel: bbox [x0,x1,y0,y1] in % des Fotos → Produkt so hoch wie hoehe, waagerecht mittig bei mx, Oberkante bei oy
+function stelleProdukt(img,bbox,hoehe,mx,oy){const nw=img.naturalWidth,nh=img.naturalHeight;
+  const dh=hoehe/((bbox[3]-bbox[2])/100),dw=dh*nw/nh,cx=(bbox[0]+bbox[1])/200;
+  css(img,{width:dw+'px',height:dh+'px',left:(mx-cx*dw)+'px',top:(oy-bbox[2]/100*dh)+'px'});}
+// Ausschnitt q=[x,y,w,h] (Pixel im Foto) füllt Rahmen RW×RH (wie cover), Zoom z um Fokus f=[fx,fy] (0..1 im Ausschnitt); nie Rand außerhalb von q
+function setzeAusschnitt(img,q,RW,RH,z,f){const nw=img.naturalWidth,nh=img.naturalHeight;
+  const s=Math.max(RW/q[2],RH/q[3])*z,px=q[0]+f[0]*q[2],py=q[1]+f[1]*q[3];
+  const tx=clamp(RW/2-px*s,RW-(q[0]+q[2])*s,-q[0]*s),ty=clamp(RH/2-py*s,RH-(q[1]+q[3])*s,-q[1]*s);
+  css(img,{width:nw*s+'px',height:nh*s+'px',transform:`translate(${tx}px,${ty}px)`});}
+
+const B={};
+
+// ---------- Duell: Runden als Feed (Wischen nach oben), zwei hohe Paneele, „oder“, erst links, dann rechts angetippt ----------
+// runden: [{l:[Name,Foto,bbox], r:[Name,Foto,bbox]}…], runde (s), tipp [a,b] (s je Runde), ausgang (letzte Runde wischt nach oben weg)
+B.duell={bau(r,s){
+  s.R=s.runde||1.858;s.ta=(s.tipp||[0.93,1.39])[0];s.tb=(s.tipp||[0.93,1.39])[1];s.N=s.runden.length;
+  s.box=s.runden.map((rd,k)=>{const g=el('div','abs',r);css(g,{left:'0',top:'0',width:'1080px',height:'1920px'});
+    const pan=(seite,[nm,ft,bb],x)=>{const p=el('div','dp',g,`<img src="${bild(ft)}"><div class="nm">${nm}</div><div class="strich"></div>`);
+      css(p,{left:x+'px',top:'442px'});return {p,bb,img:p.querySelector('img'),nm:p.querySelector('.nm'),st:p.querySelector('.strich'),x}};
+    const L=pan('l',rd.l,30),Rr=pan('r',rd.r,490);
+    const wl=el('div','welle',g,'<i></i>'),wr=el('div','welle',g,'<i></i>');css(wl,{left:'250px',top:'872px'});css(wr,{left:'710px',top:'872px'});
+    return {g,L,R:Rr,wl,wr,k}});
+  s.vs=el('div','vs',r,s.vs_text||'oder');s.rl=el('div','abs runde',r,'');
+  for(let k=0;k<s.N;k++){const t0=s.t0+k*s.R;
+    if(k>0)ev(t0-LEAD,'whoosh',0.6);ev(t0+0.18,'pop',0.7);ev(t0+s.ta,'klick',0.95);ev(t0+s.tb,'klick',0.95);}
+  ev(s.t0,'whoosh',0.7);if(s.ausgang)ev(s.t0+s.dauer-LEAD,'whoosh',0.6);
+},set(lt,s){
+  if(!s.box[0].L.done){for(const b of s.box)for(const P of [b.L,b.R])stelleProdukt(P.img,P.bb,740,220,40);s.box[0].L.done=true;}
+  // Feed-Position: jede Rundengrenze schiebt um eins weiter (kritisch gedämpfte Feder)
+  let f=0;for(let j=1;j<s.N;j++)f+=feder(lt-(j*s.R-LEAD),0.4,1);
+  if(s.ausgang)f+=feder(lt-(s.dauer-LEAD),0.4,1);
+  const k=clamp(Math.floor(lt/s.R),0,s.N-1),u=lt-k*s.R;
+  for(const b of s.box){
+    const d=b.k-f,y=d*GAP,sicht=clamp((1-Math.abs(d))*3.5);if(sicht<=0.001){b.g.style.display='none';continue}b.g.style.display='block';
+    const uu=lt-b.k*s.R;
+    // erste Runde: Paneele kommen mit Schwung von den Seiten (ab Bild 0 schon fast da)
+    const sx=b.k===0?(1-feder(lt+0.24,0.45,0.82)):0;
+    const tief=1-0.035*Math.sin(Math.PI*clamp(Math.abs(f-Math.round(f))*2,0,1));  // beim Wischen leicht kleiner (Tiefe)
+    css(b.g,{transform:`translateY(${y}px) scale(${tief})`,transformOrigin:'480px 890px',opacity:sicht});
+    // Antippen: links von ta bis tb, rechts ab tb; Druck beim Aufsetzen sofort, dann Feder zurück
+    const los=(b.k<s.N-1||s.ausgang)?feder(uu-(s.R-0.34),0.26,1):0;
+    const hL=clamp(feder(uu-s.ta,0.3,1)-feder(uu-s.tb,0.3,1)),hR=clamp(feder(uu-s.tb,0.3,1)-los);
+    const druck=(tt)=>0.04*huckel(uu,tt-0.06,tt+0.1);
+    const fed=(tt)=>0.03*clamp(feder(uu-tt-0.04,0.35,0.7),0,1.4);
+    const setz=(P,h,hAnders,tt,dx)=>{
+      const sc=1-druck(tt)+(h>0.02?fed(tt)*h:0);
+      css(P.p,{transform:`translateX(${dx}px) scale(${sc})`,boxShadow:`0 40px 90px rgba(0,0,0,.55), 0 0 0 ${8*h}px var(--gold)`,
+        filter:`brightness(${1-0.42*hAnders}) saturate(${1-0.3*hAnders})`,zIndex:h>0.05?3:1});
+      P.nm.style.color=h>0.4?'var(--golddk)':'var(--ink)';P.nm.style.opacity=clamp(1-Math.abs(y)/200);css(P.st,{transform:`scaleX(${h})`,opacity:h*clamp(1-Math.abs(y)/200)});
+    };
+    setz(b.L,hL,hR,s.ta,-560*sx);setz(b.R,hR,hL,s.tb,560*sx);
+    // Tipp-Welle am Antipp-Punkt
+    for(const [w,tt] of [[b.wl,s.ta],[b.wr,s.tb]]){const p=seg(uu,tt,tt+0.5);const i=w.firstChild;
+      css(i,{opacity:p>0&&p<1?(1-p)*0.9:0,transform:`scale(${0.3+1.5*E.out(p)})`});}
+  }
+  // „oder“ springt je Runde neu auf (leichtes Nachschwingen), bleibt am Platz
+  const ur=lt-k*s.R,pop=feder(ur-0.12,0.42,0.62),weg=s.ausgang?feder(lt-(s.dauer-LEAD),0.3,1):0;
+  css(s.vs,{transform:`scale(${(0.55+0.45*pop)*(1-weg)}) rotate(${(1-pop)*-14}deg)`,opacity:clamp(pop*1.5)*(1-weg)});
+  s.rl.textContent=`Runde ${k+1} von ${s.N}`;css(s.rl,{opacity:1-weg});
+}};
+
+// ---------- Finale: Fächer aller Farben (Zahl aus products.json), danach Endkarte; Fächer rutscht nach unten ----------
+// fotos [[Name,Foto,bbox]…], wert, label, wechsel (s), wort, preis, link, hinweis
+B.finale={bau(r,s){
+  s.g=el('div','abs',r);css(s.g,{left:'0',top:'0',width:'1080px',height:'1920px'});
+  const n=s.fotos.length,spanne=s.spanne||40;
+  s.k=s.fotos.map(([nm,ft,bb],i)=>{const e=el('div','fk',s.g,`<img src="${bild(ft)}">`);
+    const a=n>1?-spanne/2+spanne*i/(n-1):0;return {e,bb,img:e.querySelector('img'),a,i}});
+  s.z=el('div','abs fz',s.g,String(s.wert));s.l=el('div','abs fl',s.g,s.label||'');
+  s.w=el('div','abs ew',r,s.wort);s.p=el('div','abs ep',r,s.preis);s.li=el('div','abs el',r,s.link||'Link im Profil');
+  s.h=el('div','abs eh',r,s.hinweis||'Versandkostenfrei in Deutschland');s.m=el('div','abs em',r,'MAIOS');
+  s.wx=s.wechsel??1.858;
+  ev(s.t0+0.02,'whoosh',0.5);s.k.forEach((c,i)=>ev(s.t0+0.06+i*0.04+0.18,'tipp',0.55));ev(s.t0+0.3,'ting',0.9);
+  ev(s.t0+s.wx,'whoosh',0.55);ev(s.t0+s.wx+0.3,'ting',0.95);
+},set(lt,s){
+  if(!s.k[0].done){for(const c of s.k)stelleProdukt(c.img,c.bb,350,125,30);s.k[0].done=true;}
+  const ein=feder(lt+LEAD,0.4,1);css(s.g,{transform:`translateY(${(1-ein)*GAP}px)`,opacity:clamp(ein*3.5)});
+  const runter=feder(lt-s.wx,0.45,1);  // Fächer gleitet für die Endkarte nach unten und wird kleiner
+  const PX=465,PY=1960+runter*60,RAD=760-runter*160,sc=1-0.24*runter;
+  for(const c of s.k){const p=feder(lt+0.14-c.i*0.035,0.5,0.8);   // geworfen: leichtes Nachschwingen
+    const a=c.a*p*Math.PI/180,x=PX+RAD*Math.sin(a)-125,y=PY-RAD*Math.cos(a)-430;
+    css(c.e,{left:x+'px',top:lerp(1500,y,clamp(p,0,1.2))+'px',transform:`rotate(${c.a*p}deg) scale(${sc*lerp(.8,1,clamp(p))})`,
+      opacity:clamp(p*2.5),filter:`brightness(${1-0.05*runter})`,zIndex:Math.round(20-2*Math.abs(c.i-(s.k.length-1)/2))});}
+  const zp=feder(lt+0.04,0.42,0.7),lp=feder(lt+0.04,0.4,1),zw=1-feder(lt-s.wx+0.14,0.18,1);
+  css(s.z,{opacity:clamp(zp)*zw,transform:`scale(${lerp(.7,1,clamp(zp,0,1.2))}) translateY(${(1-zw)*-60}px)`});
+  css(s.l,{opacity:lp*zw,transform:`translateY(${(1-lp)*30+(1-zw)*-60}px)`});
+  const a=feder(lt-s.wx+0.02,0.4,1),b=feder(lt-s.wx-0.12,0.4,1),c=feder(lt-s.wx-0.34,0.4,0.72),d=feder(lt-s.wx-0.12,0.4,1);
+  css(s.w,{opacity:a,transform:`translateY(${(1-a)*40}px)`});
+  css(s.p,{opacity:b,filter:`blur(${(1-clamp(b))*12}px)`,transform:`scale(${lerp(1.1,1,clamp(b))})`});
+  css(s.li,{opacity:clamp(c),transform:`scale(${lerp(.7,1,clamp(c,0,1.2))})`});
+  css(s.h,{opacity:d});css(s.m,{opacity:d*0.8});   // Versandhinweis zusammen mit dem Preis
+}};
+
+// ---------- Bild: Foto als Band (volle Breite) über unscharfem Hintergrund oder vollflächig; Ken Burns; Untertitel Wort für Wort ----------
+// foto, quelle [x,y,w,h], modus 'band'|'voll', band_y, band_h, zoom [a,b], fokus [[fx,fy],[fx,fy]], text (*wort* = Gold), text_y, gross
+B.bild={bau(r,s){
+  s.modus=s.modus||'band';
+  s.amb=el('div','amb',r,`<img src="${bild(s.foto)}">`);s.ambi=s.amb.querySelector('img');el('div','ton',r);
+  if(s.modus==='voll'){s.RW=1080;s.RH=1920;s.RX=0;s.RY=0;}
+  else{s.RW=1080;s.RH=s.band_h||Math.round(Math.min(1180,1080*s.quelle[3]/s.quelle[2]));s.RX=0;s.RY=s.band_y??Math.max(590,Math.round(960-s.RH/2));}
+  s.ra=el('div','rahmen',r,`<img src="${bild(s.foto)}">`);s.img=s.ra.querySelector('img');
+  css(s.ra,{left:s.RX+'px',top:s.RY+'px',width:s.RW+'px',height:s.RH+'px'});
+  if(s.modus==='band'){s.l1=el('div','linie',r);s.l2=el('div','linie',r);s.l1.style.top=(s.RY-2)+'px';s.l2.style.top=(s.RY+s.RH)+'px';}
+  else el('div','verlauf',r);
+  s.cap=el('div','abs cap'+(s.gross?' gross':''),r);s.cap.style.top=(s.text_y??300)+'px';
+  s.w=[];let i=0;
+  if(s.text)for(const roh of s.text.split(/ +/).filter(Boolean)){const ak=/^\*.*\*[.,!?:]?$/.test(roh);const w=el('span','w',s.cap,roh.replace(/\*/g,'')+' ');s.w.push({e:w,ak,i:i++});}
+  s.takt=s.takt||0.085;
+  ev(s.t0,s.klang||'whoosh',s.klang_st??0.35);s.w.forEach((w,i)=>{if(i<4)ev(s.t0+0.3+i*s.takt,'tipp',0.75)});  // Tipp je Wort, erst wenn der Whoosh abklingt (sonst verdeckt)
+  if(s.ting!=null)ev(s.t0+s.ting,'ting',0.85);
+},set(lt,s){
+  const z=s.zoom||[1.0,1.1],fk=s.fokus||[[0.5,0.5],[0.5,0.5]],p=(s.kurve==='out'?E.out:E.inOut)(seg(lt,0,s.dauer+0.3));
+  const zz=lerp(z[0],z[1],p),ff=[lerp(fk[0][0],fk[1][0],p),lerp(fk[0][1],fk[1][1],p)];
+  setzeAusschnitt(s.img,s.quelle,s.RW,s.RH,zz,ff);
+  setzeAusschnitt(s.ambi,s.quelle,270,480,1.15,ff);
+  // Schnitt auf den Schlag: Hintergrund sofort, Band federt von unten ein (kritisch gedämpft)
+  const erst=s.t0===0,ein=feder(lt+(erst?0.3:0.03),0.38,1),blende=erst?1:clamp(lt/0.08+0.35);
+  s.r.style.opacity=lt<0?0:blende;
+  css(s.ra,{transform:`translateY(${(1-ein)*90}px) scale(${lerp(1.04,1,ein)})`});
+  if(s.l1){s.l1.style.transform=`translateY(${(1-ein)*90}px) scaleX(${ein})`;s.l2.style.transform=`translateY(${(1-ein)*90}px) scaleX(${ein})`;}
+  // Untertitel: Wörter federn nacheinander ein, das gerade erscheinende Wort ist gold, *Wörter* bleiben gold
+  s.w.forEach((w,i)=>{const a=0.06+i*s.takt,q=feder(lt-a,0.32,1);const nx=0.06+(i+1)*s.takt;
+    const aktiv=lt>=a&&lt<nx+0.12&&i<s.w.length;
+    css(w.e,{opacity:q,filter:`blur(${(1-q)*10}px)`,transform:`translateY(${(1-q)*34}px)`,color:(w.ak||aktiv&&lt<0.06+s.w.length*s.takt+0.1)?'var(--goldp)':'var(--txt)'});});
+}};
+
+// ---------- Typo: große Schrift auf Dunkel (ohne Produkt, höchstens 2 s in der Mitte), ein Wort wird gold durchgestrichen ----------
+// text (*wort* = Gold, | = Zeilenumbruch), streich (Wortindex), streich_ab (s), foto (unscharfer Hintergrund, optional)
+B.typo={bau(r,s){
+  if(s.foto){s.amb=el('div','amb',r,`<img src="${bild(s.foto)}">`);s.ambi=s.amb.querySelector('img');el('div','ton',r);}
+  s.box=el('div','abs typo',r);s.w=[];let i=0;
+  for(const zeile of s.text.split('|')){const z=el('div','',s.box);
+    for(const roh of zeile.trim().split(/ +/).filter(Boolean)){const ak=/^\*.*\*[.,!?:]?$/.test(roh);
+      const w=el('span','w'+(ak?' ak':''),z,roh.replace(/\*/g,'')+' ');s.w.push({e:w,i:i++});}}
+  if(s.streich!=null){s.st=el('div','st',s.w[s.streich].e);s.sa=s.streich_ab??0.7;ev(s.t0+s.sa,'klick',0.9);}
+  s.takt=s.takt||0.16;s.w.forEach(w=>ev(s.t0+0.05+w.i*s.takt,'tipp',0.55));ev(s.t0,'whoosh',0.45);
+},set(lt,s){
+  if(s.ambi)setzeAusschnitt(s.ambi,s.quelle||[0,0,s.ambi.naturalWidth,s.ambi.naturalHeight],270,480,1.2,[0.5,0.5]);
+  s.r.style.opacity=lt<0?0:clamp(lt/0.08+0.35);
+  for(const w of s.w){const q=feder(lt+0.12-w.i*s.takt,0.34,1);
+    css(w.e,{opacity:q,filter:`blur(${(1-q)*14}px)`,transform:`translateY(${(1-q)*50}px) scale(${lerp(1.06,1,q)})`});}
+  if(s.st){const q=feder(lt-s.sa,0.28,1);css(s.st,{transform:`scaleX(${q})`});
+    s.w[s.streich].e.style.color=q>0.5?'var(--muted)':'var(--txt)';}
+}};
+
+// ---------- Ende: Produktwort, Preis exakt, Link im Profil, Versandhinweis, MAIOS, darunter das echte Foto ----------
+B.ende={bau(r,s){
+  if(s.foto){s.amb=el('div','amb',r,`<img src="${bild(s.foto)}">`);s.ambi=s.amb.querySelector('img');el('div','ton',r);
+    s.hp=el('div','hp',r,`<img src="${bild(s.foto)}">`);s.hpi=s.hp.querySelector('img');
+    const H=s.held||{x:190,y:940,w:560,h:560};s.H=H;css(s.hp,{left:H.x+'px',top:H.y+'px',width:H.w+'px',height:H.h+'px'});}
+  if(s.icon){s.zw=el('div','zw',r,`<svg viewBox="0 0 400 400">${ICON[s.icon]()}</svg>`);css(s.zw,{top:(s.icon_y??1000)+'px',left:'280px',width:'400px',height:'400px'});
+    s.zw.querySelector('svg').setAttribute('width','400');s.zw.querySelector('svg').setAttribute('height','400');css(s.zw.querySelector('svg'),{width:'400px',height:'400px'});s.pf=[...s.zw.querySelectorAll('.z')];}
+  s.w=el('div','abs ew',r,s.wort);s.p=el('div','abs ep',r,s.preis);s.li=el('div','abs el',r,s.link||'Link im Profil');
+  s.h=el('div','abs eh',r,s.hinweis||'Versandkostenfrei in Deutschland');s.m=el('div','abs em',r,'MAIOS');
+  if(s.versatz)for(const e of [s.p,s.li,s.h,s.m])e.style.top=(parseFloat(getComputedStyle(e).top)+s.versatz)+'px';
+  ev(s.t0,'whoosh',0.45);ev(s.t0+0.45,'ting',0.95);
+},set(lt,s){
+  s.r.style.opacity=lt<0?0:clamp(lt/0.08+0.35);
+  if(s.hp){const q=s.quelle||[0,0,s.hpi.naturalWidth,s.hpi.naturalHeight];
+    setzeAusschnitt(s.ambi,q,270,480,1.2,[0.5,0.5]);setzeAusschnitt(s.hpi,q,s.H.w,s.H.h,lerp(1.0,1.06,seg(lt,0,s.dauer)),[0.5,0.5]);
+    const e=feder(lt-0.05,0.45,1);css(s.hp,{transform:`translateY(${(1-e)*140}px) scale(${lerp(.92,1,e)})`,opacity:clamp(e*1.4)});}
+  const a=feder(lt-0.0,0.4,1),b=feder(lt-0.15,0.4,1),c=feder(lt-0.38,0.4,0.72),d=feder(lt-0.15,0.4,1);
+  css(s.w,{opacity:a,transform:`translateY(${(1-a)*40}px)`});
+  css(s.p,{opacity:b,filter:`blur(${(1-clamp(b))*12}px)`,transform:`scale(${lerp(1.1,1,clamp(b))})`});
+  css(s.li,{opacity:clamp(c),transform:`scale(${lerp(.7,1,clamp(c,0,1.2))})`});
+  css(s.h,{opacity:d});css(s.m,{opacity:d*0.8});
+  if(s.zw){s.pf.forEach((p,i)=>{const q=E.out(clamp((lt-0.1-i*0.03)/0.5));p.style.strokeDasharray='1 1';p.style.strokeDashoffset=String(1-q);});
+    const w=s.zw.querySelector('.wel');if(w)[...w.children].forEach((x,i)=>{const ph=((lt*0.9+i*0.33)%1);css(x,{transform:`translateY(${-ph*36}px)`,opacity:lt<0.5?0:Math.sin(Math.PI*ph)});});}
+}};
+
+// ================= Ohne Fotos (Nevio 17.11.: „mach ohne Bilder“) =================
+const hexRgb=h=>{h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16))};
+const rgbHex=a=>'#'+a.map(v=>Math.round(clamp(v,0,255)).toString(16).padStart(2,'0')).join('');
+const mische=(a,b,x)=>{const A=hexRgb(a),Bb=hexRgb(b);return rgbHex(A.map((v,i)=>lerp(v,Bb[i],x)))};
+const hell=h=>{const [r,g,b]=hexRgb(h);return (0.2126*r+0.7152*g+0.0722*b)/255};
+// Gezeichneter 40-oz-Becher (eigene Zeichnung, kein Foto): Ton in Ton zur Fläche, Deckel/Halm je Farbe wie auf dem Shopfoto
+function becherSVG(f,deckel,halm){
+  const dunkel=hell(f)<0.3,k=dunkel?mische(f,'#FFFFFF',0.16):mische(f,'#000000',0.24),dk=mische(deckel,'#000000',0.18),kontur=dunkel?mische(f,'#FFFFFF',0.3):mische(f,'#000000',0.42);
+  return `<svg viewBox="-50 -12 360 540" width="396" height="593">
+  <rect x="150" y="-8" width="16" height="112" rx="7" fill="${halm}" transform="rotate(5 158 100)"/>
+  <path d="M62 168 L22 168 Q-12 168 -12 200 L-12 318 Q-12 350 22 350 L64 350" fill="none" stroke="${k}" stroke-width="34" stroke-linecap="round"/>
+  <path d="M44 130 L256 130 L246 365 Q244 385 230 396 L219 404 L211 506 Q210 518 197 518 L103 518 Q90 518 89 506 L81 404 L70 396 Q56 385 54 365 Z" fill="${k}" stroke="${kontur}" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M198 142 L216 142 L207 372 L191 372 Z" fill="#fff" opacity=".14"/>
+  <rect x="40" y="112" width="220" height="22" rx="6" fill="#C9CDD1"/>
+  <path d="M44 116 Q46 80 80 76 L220 76 Q254 80 256 116 Z" fill="${deckel}"/>
+  <rect x="66" y="64" width="168" height="18" rx="9" fill="${dk}"/></svg>`;
+}
+
+// Farb-Duell: je Runde zwei Farbflächen über die ganze Höhe, Runden als Feed nach oben; Antippen schiebt die Naht zur anderen Seite
+// runden: [{l:[Name,Farbe,Deckel,Halm], r:[…]}…], runde, tipp [a,b], ausgang
+B.farbduell={bau(r,s){
+  s.R=s.runde||1.858;[s.ta,s.tb]=s.tipp||[0.93,1.39];s.N=s.runden.length;
+  s.box=s.runden.map((rd,k)=>{const g=el('div','abs',r);css(g,{left:'0',top:'0',width:'1080px',height:'1920px'});
+    const seite=([nm,fa,de,ha])=>{const f=el('div','ff',g);f.style.background=fa;const b=el('div','fbech',g,becherSVG(fa,de,ha));
+      const n=el('div','fname',g,`<span>${nm}</span>`);n.style.color=hell(fa)<0.45?'var(--txt)':'var(--ink)';
+      const w=el('div','welle',g,'<i></i>');w.firstChild.style.borderColor=hell(fa)<0.45?'rgba(245,240,230,.9)':'rgba(28,24,19,.75)';return {f,b,n,w}};
+    return {g,L:seite(rd.l),R:seite(rd.r),k}});
+  s.vs=el('div','vs',r,s.vs_text||'oder');s.rl=el('div','abs rpill',r,'<span></span>');
+  for(let k=0;k<s.N;k++){const t0=s.t0+k*s.R;if(k>0)ev(t0-LEAD,'whoosh',0.4);ev(t0+0.3,'pop',0.95);ev(t0+s.ta,'klick',0.95);ev(t0+s.tb,'klick',0.95);}  // Pop erst, wenn der Whoosh abklingt
+  ev(s.t0,'whoosh',0.45);if(s.ausgang)ev(s.t0+s.dauer-LEAD,'whoosh',0.45);
+},set(lt,s){
+  let f=0;for(let j=1;j<s.N;j++)f+=feder(lt-(j*s.R-LEAD),0.42,1);if(s.ausgang)f+=feder(lt-(s.dauer-LEAD),0.42,1);
+  const k=clamp(Math.floor(lt/s.R),0,s.N-1);let naht=540;
+  for(const b of s.box){const d=b.k-f;if(Math.abs(d)>=1){b.g.style.display='none';continue}b.g.style.display='block';
+    css(b.g,{transform:`translateY(${d*1920}px)`});
+    const uu=lt-b.k*s.R,los=(b.k<s.N-1||s.ausgang)?feder(uu-(s.R-0.34),0.26,1):0;
+    const hL=feder(uu-s.ta,0.36,0.7)-feder(uu-s.tb,0.36,0.7),hR=feder(uu-s.tb,0.36,0.7)-los;   // angetippt: Naht springt mit leichtem Nachschwingen
+    const x=540+80*hL-80*hR;if(b.k===k)naht=x;
+    const ein=b.k===0?feder(lt+0.24,0.45,0.82):1;  // erste Runde: Flächen fahren von den Seiten zusammen (ab Bild 0 fast da)
+    const off=(1-ein)*300,xl=x-off;
+    css(b.L.f,{left:'0px',width:Math.max(0,xl)+'px'});css(b.R.f,{left:(x+off)+'px',width:(1080-x)+'px'});
+    const cl=xl/2,cr=x+off+(1080-x)/2-50;   // rechte Seite etwas nach links (TikTok-Knöpfe am rechten Rand)
+    const dr=(tt)=>1-0.05*huckel(uu,tt-0.06,tt+0.12);
+    css(b.L.b,{left:cl+'px',top:'528px',transform:`scale(${dr(s.ta)*(1+0.05*clamp(hL))})`});css(b.R.b,{left:cr+'px',top:'528px',transform:`scale(${dr(s.tb)*(1+0.05*clamp(hR))})`});
+    for(const P of [b.L,b.R])if(!P.nw)P.nw=P.n.firstChild.offsetWidth;
+    // Namen bleiben in ihrem Feld und in der Textzone (x 82–878); reicht der Platz nicht, wird der Name kleiner
+    const setzName=(P,c,lo,hi)=>{const sc=Math.min(1,(hi-lo)/P.nw),m=clamp(c,lo+P.nw*sc/2,hi-P.nw*sc/2);
+      css(P.n,{left:m+'px',transform:`scale(${sc})`,opacity:clamp(1-Math.abs(d)*12)});};
+    setzName(b.L,cl,82,Math.min(878,xl-18));setzName(b.R,cr,Math.max(82,x+off+18),878);
+    for(const [w,tt,cx] of [[b.L.w,s.ta,cl],[b.R.w,s.tb,cr]]){const p=seg(uu,tt,tt+0.5);css(w,{left:cx+'px',top:'810px'});
+      css(w.firstChild,{opacity:p>0&&p<1?(1-p)*0.9:0,transform:`scale(${0.3+1.6*E.out(p)})`});}
+  }
+  const ur=lt-k*s.R,pop=feder(ur-0.12,0.42,0.62),weg=s.ausgang?feder(lt-(s.dauer-LEAD),0.3,1):0;
+  css(s.vs,{left:(naht-80)+'px',top:'760px',transform:`scale(${(0.55+0.45*pop)*(1-weg)}) rotate(${(1-pop)*-14}deg)`,opacity:clamp(pop*1.5)*(1-weg)});
+  s.rl.firstChild.textContent=`Runde ${k+1} von ${s.N}`;css(s.rl,{opacity:1-weg});
+}};
+
+// Farbfinale: alle Farben als Streifen über den ganzen Bildschirm, Karte „8 / Farben zur Wahl“; danach falten sich die Streifen
+// zu einer Punktreihe zusammen und die Endkarte erscheint. farben [[Name,Farbe]…], wert, label, wechsel, wort, preis, link, hinweis
+B.farbfinale={bau(r,s){
+  const n=s.farben.length,bw=1080/n;s.bw=bw;
+  s.st=s.farben.map(([nm,fa],i)=>{const e=el('div','fstreif',r);e.style.background=fa;return {e,i,fa}});
+  s.ka=el('div','abs fkarte',r,`<div class="z8">${s.wert}</div><div class="zl">${s.label||''}</div>`);
+  s.w=el('div','abs ew',r,s.wort);s.p=el('div','abs ep',r,s.preis);s.li=el('div','abs el',r,s.link||'Link im Profil');
+  s.h=el('div','abs eh',r,s.hinweis||'Versandkostenfrei in Deutschland');s.m=el('div','abs em',r,'MAIOS');
+  s.wx=s.wechsel??1.858;const D=70,G=24,x0=480-(n*D+(n-1)*G)/2;s.dot=i=>x0+i*(D+G);s.D=D;
+  s.st.forEach((c,i)=>{if(i%2===1)ev(s.t0+0.22+i*0.04,'tipp',0.8)});ev(s.t0+0.6,'ting',0.9);   // Einwisch-Whoosh kommt schon vom Duell
+  ev(s.t0+s.wx,'whoosh',0.35);ev(s.t0+s.wx+0.55,'ting',1);
+},set(lt,s){
+  const zu=feder(lt-s.wx,0.5,0.9);
+  for(const c of s.st){const p=feder(lt+0.22-c.i*0.04,0.4,0.9);   // Streifen wischen nacheinander von unten herein
+    const x=lerp(c.i*s.bw,s.dot(c.i),zu),y=lerp((1-clamp(p,0,1.1))*1920,1060,zu),w=lerp(s.bw+1,s.D,zu),h=lerp(1920,s.D,zu);
+    css(c.e,{left:x+'px',top:y+'px',width:w+'px',height:h+'px',borderRadius:(zu*s.D/2)+'px',boxShadow:zu>0.5?'0 10px 24px rgba(0,0,0,.45), 0 0 0 2px rgba(245,240,230,.28)':'none'});}
+  const kp=feder(lt-0.3,0.4,0.75),kw=1-feder(lt-s.wx+0.1,0.22,1);
+  css(s.ka,{opacity:clamp(kp*1.4)*kw,transform:`scale(${lerp(.85,1,clamp(kp,0,1.15))})`});
+  const a=feder(lt-s.wx-0.1,0.4,1),b=feder(lt-s.wx-0.24,0.4,1),c=feder(lt-s.wx-0.46,0.4,0.72);
+  css(s.w,{opacity:a,transform:`translateY(${(1-a)*40}px)`});
+  css(s.p,{opacity:b,filter:`blur(${(1-clamp(b))*12}px)`,transform:`scale(${lerp(1.1,1,clamp(b))})`});
+  css(s.li,{opacity:clamp(c),transform:`scale(${lerp(.7,1,clamp(c,0,1.2))})`});css(s.h,{opacity:b});css(s.m,{opacity:b*0.8});
+}};
+
+// Strich-Piktogramme (eigene Zeichnungen, viewBox 0 0 400 400). Klassen: z = wird gezeichnet, zf = Fläche,
+// m/h = Uhrzeiger, wel = Wärme-Welle, str = Durchstreichen, fahr = Fahrtstriche, stk = Stecker fährt ein, fu = Füllung steigt
+const P1=(d,c)=>`<path class="${c||'z'}" pathLength="1" d="${d}"/>`;
+const WELLE=x=>P1(`M${x} 104 q-12 -14 0 -28 q12 -14 0 -28`);
+const ICON={
+  auto:()=>P1('M40 250 L78 250 A42 42 0 0 1 162 250 L250 250 A42 42 0 0 1 334 250 L372 250 L372 212 Q372 192 352 186 L330 180 L290 130 Q278 118 262 118 L176 118 Q160 118 150 130 L110 180 L60 188 Q40 192 40 212 Z')
+    +P1('M126 178 L158 140 Q164 132 172 132 L212 132 L212 178 Z')+P1('M226 132 L262 132 Q270 132 276 140 L308 178 L226 178 Z')
+    +P1('M88 252 a32 32 0 1 0 64 0 a32 32 0 1 0 -64 0')+P1('M260 252 a32 32 0 1 0 64 0 a32 32 0 1 0 -64 0')
+    +'<g class="teller">'+P1('M168 50 a38 38 0 1 0 76 0 a38 38 0 1 0 -76 0')+P1('M182 50 a24 24 0 1 0 48 0 a24 24 0 1 0 -48 0')
+    +P1('M140 14 L140 38 Q140 48 148 48 M156 14 L156 38 Q156 48 148 48 M148 48 L148 92')+P1('M272 30 a8 12 0 1 0 16 0 a8 12 0 1 0 -16 0')+P1('M280 42 L280 92')+'</g>'
+    +'<g class="fahr">'+P1('M-20 316 L60 316')+P1('M120 316 L240 316')+P1('M300 316 L420 316')+'</g>',
+  uhr:()=>P1('M200 40 a160 160 0 1 0 0.01 0')+Array.from({length:12},(_,i)=>{const a=i*30*Math.PI/180,r1=i%3===0?116:128,r2=144;
+      return P1(`M${(200+r1*Math.sin(a)).toFixed(1)} ${(200-r1*Math.cos(a)).toFixed(1)} L${(200+r2*Math.sin(a)).toFixed(1)} ${(200-r2*Math.cos(a)).toFixed(1)}`)}).join('')
+    +'<g class="h">'+P1('M200 200 L200 118')+'</g><g class="m">'+P1('M200 200 L200 82')+'</g><circle class="zf" cx="200" cy="200" r="12"/>',
+  mikrowelle:()=>P1('M40 104 Q40 86 58 86 L342 86 Q360 86 360 104 L360 296 Q360 314 342 314 L58 314 Q40 314 40 296 Z')
+    +P1('M66 112 L256 112 L256 288 L66 288 Z')+P1('M284 86 L284 314')+P1('M304 150 a18 18 0 1 0 36 0 a18 18 0 1 0 -36 0')
+    +P1('M306 220 L338 220')+P1('M306 252 L338 252')+'<path class="z str" pathLength="1" d="M28 352 L372 48" style="stroke-width:14"/>',
+  box:()=>P1('M70 196 L330 196 L330 290 Q330 316 304 316 L96 316 Q70 316 70 290 Z')+P1('M58 196 Q58 164 90 164 L310 164 Q342 164 342 196 Z')
+    +P1('M46 190 L70 190 L70 236 L46 236 Z')+P1('M330 190 L354 190 L354 236 L330 236 Z')+P1('M140 164 L140 140 Q140 128 152 128 L248 128 Q260 128 260 140 L260 164')
+    +'<circle class="zf" cx="200" cy="270" r="9"/>'
+    +'<g class="wel">'+WELLE(160)+WELLE(200)+WELLE(240)+'</g>',
+  autostecker:()=>'<g class="stk">'+P1('M150 196 L250 196 L250 316 Q250 336 230 336 L170 336 Q150 336 150 316 Z')
+    +P1('M164 196 L164 92 Q164 70 186 70 L214 70 Q236 70 236 92 L236 196')+P1('M200 70 L200 30')+'<circle class="zf" cx="200" cy="24" r="9"/>'
+    +P1('M164 112 Q146 124 164 136')+P1('M236 112 Q254 124 236 136')+'<circle class="zf" cx="200" cy="270" r="9"/>'
+    +P1('M200 336 C200 392 128 372 104 410')+'</g>',
+  steckdose:()=>P1('M100 60 L300 60 Q340 60 340 100 L340 300 Q340 340 300 340 L100 340 Q60 340 60 300 L60 100 Q60 60 100 60 Z')
+    +P1('M112 200 a88 88 0 1 0 176 0 a88 88 0 1 0 -176 0')+'<circle class="zf" cx="166" cy="200" r="11"/><circle class="zf" cx="234" cy="200" r="11"/>'
+    +P1('M188 116 L212 116 M188 284 L212 284'),
+  behaelter:()=>'<rect class="fu" x="40" y="150" width="220" height="150" rx="22" fill="rgba(216,181,108,.30)"/><rect class="fu" x="282" y="214" width="96" height="86" rx="16" fill="rgba(216,181,108,.30)"/>'
+    +P1('M40 132 Q40 110 62 110 L238 110 Q260 110 260 132 L260 278 Q260 300 238 300 L62 300 Q40 300 40 278 Z')+P1('M40 150 L260 150')
+    +P1('M282 196 Q282 178 300 178 L360 178 Q378 178 378 196 L378 284 Q378 300 360 300 L300 300 Q282 300 282 284 Z')+P1('M282 214 L378 214'),
+  besteck:()=>P1('M40 186 Q40 170 56 170 L234 170 Q250 170 250 186 L250 324 Q250 340 234 340 L56 340 Q40 340 40 324 Z')+P1('M40 204 L250 204')+P1('M216 198 L236 198 L236 214 L216 214 Z')
+    +P1('M96 170 L96 132 Q96 120 108 120 L182 120 Q194 120 194 132 L194 170')
+    +P1('M278 70 a22 34 0 1 0 44 0 a22 34 0 1 0 -44 0')+P1('M300 104 L300 340')
+    +P1('M336 40 L336 104 Q336 122 352 122 Q368 122 368 104 L368 40')+P1('M352 40 L352 104')+P1('M352 122 L352 340')
+};
+// Szene mit Piktogramm: text (oben, Wort für Wort), icon, wert (groß, gold), wert_klein, vorlauf (s, Zeichnung schon begonnen bei Bild 0)
+B.zeichen={bau(r,s){
+  s.zw=el('div','zw',r,`<svg viewBox="0 0 400 400">${ICON[s.icon]()}</svg>`);s.pf=[...s.zw.querySelectorAll('.z')];
+  s.cap=el('div','abs cap'+(s.gross?' gross':''),r);s.cap.style.top=(s.text_y??330)+'px';
+  s.w=[];let i=0;if(s.text)for(const roh of s.text.split(/ +/).filter(Boolean)){const ak=/^\*.*\*[.,!?:]?$/.test(roh);const w=el('span','w',s.cap,roh.replace(/\*/g,'')+' ');s.w.push({e:w,ak,i:i++});}
+  if(s.wert){s.we=el('div','abs wert'+(s.wert_klein?' klein':''),r,s.wert);}
+  s.takt=s.takt||0.085;s.vl=s.vorlauf||0;
+  if(s.t0>0)ev(s.t0,'whoosh',0.35);s.w.forEach((w,i)=>{if(i<4)ev(s.t0+0.3+i*s.takt,'tipp',0.75)});
+  const ik={uhr:[[0.55,'tipp'],[0.75,'tipp'],[1.0,'ting']],mikrowelle:[[0.72,'klick']],box:[[0.6,'ting']],autostecker:[[0.72,'klick']],steckdose:[[0.6,'klick']],
+    behaelter:[[0.6,'pop'],[0.8,'pop']],besteck:[[0.5,'pop'],[0.65,'pop'],[0.8,'pop']],auto:[]}[s.icon]||[];
+  ik.forEach(([t,typ])=>ev(s.t0+t,typ,0.8));if(s.wert)ev(s.t0+0.5,'ting',0.7);
+},set(lt,s){
+  const L=lt+s.vl,erst=s.t0===0;s.r.style.opacity=lt<0?0:(erst?1:clamp(lt/0.06+0.4))*(lt>s.dauer?clamp(1-(lt-s.dauer)/0.05):1);
+  s.pf.forEach((p,i)=>{if(p.classList.contains('str'))return;const q=E.out(clamp((L-0.02-i*0.035)/0.5));p.style.strokeDasharray='1 1';p.style.strokeDashoffset=String(1-q);});
+  const ein=feder(L+0.05,0.4,1);css(s.zw,{transform:`translateY(${(1-ein)*60}px) scale(${lerp(.94,1,ein)})`});
+  const q=(sel)=>s.zw.querySelector(sel);
+  if(q('.m')){const p=E.inOut(seg(L,0.2,1.0));css(q('.m'),{transform:`rotate(${p*180}deg)`,transformOrigin:'200px 200px'});css(q('.h'),{transform:`rotate(${p*15}deg)`,transformOrigin:'200px 200px'});}
+  if(q('.str')){const p=E.out(seg(L,0.66,0.9));const st=q('.str');st.style.strokeDasharray='1 1';st.style.strokeDashoffset=String(1-p);}
+  if(q('.wel'))[...q('.wel').children].forEach((w,i)=>{const ph=((L*0.9+i*0.33)%1);css(w,{transform:`translateY(${-ph*36}px)`,opacity:L<0.4?0:Math.sin(Math.PI*ph)});});
+  if(q('.teller'))css(q('.teller'),{transform:`translateY(${Math.sin(L*3.2)*6}px)`});
+  if(q('.fahr'))[...q('.fahr').children].forEach((w)=>{css(w,{transform:`translateX(${-((L*420)%420)}px)`})});
+  if(q('.stk')){const p=feder(L-0.3,0.42,0.85);css(q('.stk'),{transform:`translateY(${(1-p)*90}px)`});}
+  [...s.zw.querySelectorAll('.fu')].forEach((f,i)=>{const p=E.out(seg(L,0.4+i*0.2,0.9+i*0.2));css(f,{transformBox:'fill-box',transformOrigin:'center bottom',transform:`scaleY(${p})`});});
+  s.w.forEach((w,i)=>{const a=0.06+i*s.takt,qq=feder(lt-a+(erst?0.5:0),0.32,1),nx=0.06+(i+1)*s.takt;const aktiv=lt>=a&&lt<nx+0.12&&lt<0.06+s.w.length*s.takt+0.1;
+    css(w.e,{opacity:qq,filter:`blur(${(1-qq)*10}px)`,transform:`translateY(${(1-qq)*34}px)`,color:(w.ak||aktiv)?'var(--goldp)':'var(--txt)'});});
+  if(s.we){const p=feder(lt-0.45,0.4,0.78);css(s.we,{opacity:clamp(p*1.4),transform:`scale(${lerp(.8,1,clamp(p,0,1.15))})`});}
+}};
+
+// ---------- Aufbau ----------
+async function start(){
+  CFG=await (await fetch(Q.get('cfg'))).json();
+  document.getElementById('pwort').textContent=CFG.wort;document.getElementById('pwort').style.left='250px';
+  const ob=document.getElementById('oben');if(CFG.oben)ob.firstChild.textContent=CFG.oben;else ob.style.display='none';
+  let t=0;const root=document.getElementById('szenen');
+  for(const s of CFG.szenen){s.t0=t;s.r=el('div','sz',root);B[s.typ].bau(s.r,s);SZ.push(s);t+=s.dauer;}
+  DAUER=t;window.__dauer=DAUER;window.__events=EV.sort((a,b)=>a.t-b.t);
+  await Promise.all([...document.images].map(i=>i.decode().catch(()=>{throw new Error('Bild fehlt: '+i.src)})));
+  await document.fonts.load('800 40px Manrope');await document.fonts.load('40px Marcellus');await document.fonts.ready;
+  if(!document.fonts.check('800 40px Manrope'))throw new Error('Schrift Manrope fehlt');
+  if(!document.fonts.check('40px Marcellus'))throw new Error('Schrift Marcellus fehlt');
+  window.__ready=true;if(Q.has('t'))frame(+Q.get('t'));
+}
+function frame(t){
+  const g=document.getElementById('bg');const gx=50+Math.sin(t*0.35)*14,gy=46+Math.cos(t*0.27)*8;
+  g.style.background=`radial-gradient(90% 60% at ${gx}% ${gy}%, #241D13 0%, #13100B 45%, #0B0A09 100%)`;
+  for(const s of SZ){const lt=t-s.t0;
+    if(lt<-0.35||lt>s.dauer+0.35){s.r.style.display='none';continue}
+    s.r.style.display='block';s.r.style.zIndex=String(SZ.indexOf(s)+1);B[s.typ].set(lt,s);}
+  // Filmkorn bewegt sich leicht (2 Bilder je Stellung)
+  const R=rng(Math.floor(t*15)+5);css(document.getElementById('korn'),{transform:`translate(${(R()*40-20).toFixed(1)}px,${(R()*40-20).toFixed(1)}px)`});
+  // Hook nur bis oben_bis (dann federt er weg)
+  const ob=document.getElementById('oben');if(CFG.oben){const bis=CFG.oben_bis??DAUER;const w=feder(t-bis,0.3,1);
+    const ein=feder(t+0.2,0.35,1);css(ob,{opacity:clamp(ein*1.3)*(1-w),transform:`translateY(${(1-ein)*-20+w*-30}px)`});}
+}
+window.__frame=t=>new Promise(res=>{frame(t);requestAnimationFrame(()=>requestAnimationFrame(()=>res(true)))});
+start().catch(e=>{document.title='FEHLER '+e.message;console.error(e);window.__fehler=String(e)});
+</script>
+</body>
+</html>
