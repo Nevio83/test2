@@ -13,7 +13,7 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 ## 0. Aktueller Stand (2026-11-08)
 
 ### Neu seit November 2026 (zuerst lesen)
-- **Sortiment: 51 Produkte**, davon **41 bei CJ** und 10 mit `ALI`-SKU. **15 Produkte (IDs 52–66)
+- **Sortiment: 60 Produkte**, davon **50 bei CJ** und 10 mit `ALI`-SKU. **19 Produkte (IDs 52–66 und 68–71)
   kommen aus dem deutschen CJ-Lager** (Feld `lager: "DE"` in `products.json`, dazu `cjPid`):
   Versand DE → DE kostenlos, 3–8 Werktage statt 10–20. Die Produkt-IDs 28, 34, 39 und 46 sind
   entfernt (bei CJ ausgelaufen bzw. doppelt) und leiten per 301 weiter (`ENTFERNTE_PRODUKTE` in
@@ -38,6 +38,9 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   CJ-Link, `matching.einkaufspreise` in der Marketing-Config, Eintrag in
   `bot/tiktok-quellen.json` (sonst wird der Bot-Test rot) → Seitenzahl in den Tests anpassen.
   Prüfen: `npm run preischeck` fragt jedes CJ-Produkt live ab.
+  **Runde 2 (18.11.2026):** IDs 67–75 dazu (5 aus China, 4 aus DE), eingebaut mit
+  `Claude outputs/neue-produkte/einbauen-runde2.js` + `spec-runde2.json` (Kopie von `einbauen.js`, setzt
+  `lager` nur bei DE-Ware und kennt die Kategorie Beleuchtung).
 - **CJ-API nur vom eigenen PC:** Die Zugangsdaten liegen in der lokalen `.env`; Skripte, die CJ
   fragen, laufen im VS-Code-Terminal.
 - **Offene Punkte:** PayPal steht noch in `infos/agb.html` und `infos/datenschutz.html`;
@@ -312,7 +315,7 @@ Antworten auf Kommentare: `npm run marketing:antworten -- --produkt 12 --beitrag
 | `price-validator.js` | **Serverseitige Preis-/Mengenvalidierung** gegen `products.json` (in `server.js`). Schützt vor Preis-Manipulation. |
 | `exchange-rate-service.js` | Live-Wechselkurse, Cache, `convertPrice()`. |
 | `shipping-calculator.js` | Pauschale Versandkosten nach Land + **`LIEFERLAENDER`** — die eine Liste, aus der die Länderauswahl der Stripe-Kasse *und* die Versandangaben in den Strukturdaten kommen (vorher stand die Liste doppelt). |
-| `seo-strukturdaten.js` | **Strukturdaten (JSON-LD) + kanonische Adressen.** Erzeugt für alle 51 Produktseiten den `Product`-Block aus echten Quellen: Preis/Lieferzeit aus `products.json`, Versandkosten und Lieferländer aus `shipping-calculator.js`, die 30-Tage-Rückgabe aus `infos/retouren.html`. Zusätzlich `FESTE_SEITEN` — eine Liste, die **Sitemap, `<link rel="canonical">` und `noindex` gemeinsam** steuert (vorher standen Warenkorb und Merkzettel in der Sitemap, während vier echte Inhaltsseiten fehlten). Lauf: `npm run seo`; `--pruefen` schreibt nichts, `--neu-datieren` setzt `priceValidUntil` neu. **Sternebewertungen stehen bewusst NICHT hier** — die trägt `product-reviews.js` zur Laufzeit aus der Datenbank nach, damit nie erfundene Werte im Markup stehen. Tests: `test/seo-strukturdaten.test.js`. |
+| `seo-strukturdaten.js` | **Strukturdaten (JSON-LD) + kanonische Adressen.** Erzeugt für alle 60 Produktseiten den `Product`-Block aus echten Quellen: Preis/Lieferzeit aus `products.json`, Versandkosten und Lieferländer aus `shipping-calculator.js`, die 30-Tage-Rückgabe aus `infos/retouren.html`. Zusätzlich `FESTE_SEITEN` — eine Liste, die **Sitemap, `<link rel="canonical">` und `noindex` gemeinsam** steuert (vorher standen Warenkorb und Merkzettel in der Sitemap, während vier echte Inhaltsseiten fehlten). Lauf: `npm run seo`; `--pruefen` schreibt nichts, `--neu-datieren` setzt `priceValidUntil` neu. **Sternebewertungen stehen bewusst NICHT hier** — die trägt `product-reviews.js` zur Laufzeit aus der Datenbank nach, damit nie erfundene Werte im Markup stehen. Tests: `test/seo-strukturdaten.test.js`. |
 | `receipt-generator.js` | **Rechnung** (PDFKit-PDF + HTML), Kleinunternehmer §19 UStG ohne USt-Ausweis, echte Firmendaten aus ENV. |
 | `resend-service.js` | Transaktions-Mails (Bestellbestätigung, Admin-Benachrichtigung, **GoBD-Beleg-Archiv** mit PDF-Anhang) via Resend. |
 | `geolocation-tracker.js` | Standort-/Analytics-Tracking (Backend-Helfer für Dashboard). |
@@ -354,7 +357,7 @@ Antworten auf Kommentare: `npm run marketing:antworten -- --produkt 12 --beitrag
 | `geolocation-tracker.js` | Ermittelt das Land des Besuchers (einwilligungspflichtig, `window.MaiosConsent`). **Einziger echter Abnehmer ist `view-tracker.js`**, das `localStorage.userCountry` ausliest. Die frühere Übersichtsseite `location-analytics-dashboard.html` ist **entfernt** — sie war öffentlich erreichbar, von nirgends verlinkt und zeigte nur die Daten des Browsers, der sie gerade öffnete. Mit ihr sind zwei Altlasten weg: die 50er-Standortliste im Browser (`locationStats`, hatte nach dem Wegfall keinen Leser mehr) und ein Versandbetrag in `localStorage`, der nie gelesen wurde und der echten Tabelle widersprach. **Die IP geht nicht mehr an Google Analytics** — sie hebelte das dort gesetzte `anonymize_ip` aus. Test: `test/geo-tracker.test.js`. |
 | `styles.css` (219 KB) | Globale Styles (zusätzlich zu Tailwind/Bootstrap — viel Overlap). |
 | `schriften/` | **Schriften und Icons, selbst ausgeliefert** (seit 20.10.). `schriften.css` definiert Inter, Outfit, Manrope und Marcellus (je `latin` + `latin-ext`, variable Schriften → eine Datei je Zeichensatz), `bootstrap-icons/` ist Bootstrap Icons 1.11.3 unverändert. Vorher kamen beide von `fonts.googleapis.com` und jsdelivr: zwei fremde, render-blockierende Verbindungen, und Google sah die Adresse jedes Besuchers. Google ist seitdem auch aus der CSP raus. Bootstrap selbst und `chart.js` kommen weiter von jsdelivr. Herkunft und Neubau: `schriften/README.md`. |
-| `produkte/<slug>.html` | 51 einzelne Produktseiten mit **sprechenden Slug-Dateinamen** (aus `products.json`). Jede trägt `<body data-product-id="NN">`. Nutzen **Bootstrap** + Kategorie-CSS (`elektronik.css`, `haushalt-kueche.css`, `beleuchtung.css`, `koerperpflege-wellness.css`). |
+| `produkte/<slug>.html` | 60 einzelne Produktseiten mit **sprechenden Slug-Dateinamen** (aus `products.json`). Jede trägt `<body data-product-id="NN">`. Nutzen **Bootstrap** + Kategorie-CSS (`elektronik.css`, `haushalt-kueche.css`, `beleuchtung.css`, `koerperpflege-wellness.css`). |
 | `infos/` | Statische Seiten: AGB, Datenschutz, Impressum, Versand, Retouren, Kontakt, Kategorien, Cookies, **Widerruf**. |
 | `a29715347575/` | Admin-Dashboards (orders, Gutscheine, **produkt-analyse**, **markt-insights** = Marktforschung, **newsletter** = Abonnenten + Werbe-Mail-Versand). Per **HTTP Basic Auth** geschützt (`requireAdminAuth` in `server.js`, ENV `ADMIN_USER`/`ADMIN_PASSWORD`). |
 | `karten/` | Kartendaten/Assets für Geo-Dashboard. |

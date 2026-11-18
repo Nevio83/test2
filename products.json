@@ -1690,5 +1690,355 @@
       "Belastbar bis 15 kg",
       "Muss zusammengebaut werden"
     ]
+  },
+  {
+    "id": 67,
+    "name": "Mini-Schlafkopfhörer Bluetooth",
+    "slug": "mini-schlafkopfhoerer-bluetooth",
+    "price": 14.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Mini-Schlafkopfhörer Bluetooth.jpg",
+    "description": "Kleine kabellose In-Ear-Kopfhörer mit weichen Silikonaufsätzen, flach genug für Seitenschläfer. Bluetooth, Ladecase, 4–8 Stunden Laufzeit laut Hersteller.",
+    "sku": "CJ2610180651421624700",
+    "cjPid": "2610180651421624700",
+    "inStock": true,
+    "shippingTime": "8-15 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#000000",
+        "sku": "CJYP327986901AZ",
+        "price": 14.99,
+        "image": "produkt bilder/Mini-Schlafkopfhörer Bluetooth.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJYP327986902BY",
+        "price": 14.99,
+        "image": "produkt bilder/Mini-Schlafkopfhörer Bluetooth bilder/Mini-Schlafkopfhörer Bluetooth weiß.jpg"
+      },
+      {
+        "name": "Beige",
+        "code": "#E8D5B7",
+        "sku": "CJYP327986903CX",
+        "price": 14.99,
+        "image": "produkt bilder/Mini-Schlafkopfhörer Bluetooth bilder/Mini-Schlafkopfhörer Bluetooth beige.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "kopfhörer",
+      "schlafen",
+      "bluetooth",
+      "earbuds",
+      "seitenschläfer"
+    ],
+    "features": [
+      "Flache Bauform, steht kaum aus dem Ohr",
+      "Weiche Silikonaufsätze",
+      "Bluetooth, ca. 10 m Reichweite",
+      "4–8 Stunden Laufzeit laut Hersteller",
+      "Mit Ladecase",
+      "Musik und Telefonate"
+    ]
+  },
+  {
+    "id": 68,
+    "name": "USB-Ladegerät mit 7 Anschlüssen",
+    "slug": "usb-ladegeraet-7-anschluesse",
+    "price": 19.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/USB-Ladegerät mit 7 Anschlüssen.jpg",
+    "description": "Ein Netzstecker für bis zu sieben Geräte: 4× USB-C und 3× USB-A. EU-Stecker, 100–240 V, laut Hersteller bis 15 W je Anschluss.",
+    "sku": "CJCD283680501AZ",
+    "cjPid": "2044597262555045890",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-7 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "ladegerät",
+      "usb-c",
+      "netzteil",
+      "laden",
+      "reise"
+    ],
+    "features": [
+      "4× USB-C und 3× USB-A",
+      "Bis zu 7 Geräte gleichzeitig",
+      "Laut Hersteller bis 15 W je Anschluss",
+      "EU-Stecker",
+      "100–240 V, auch für Reisen",
+      "Weiß"
+    ]
+  },
+  {
+    "id": 69,
+    "name": "WLAN-Repeater Dual-Band",
+    "slug": "wlan-repeater-dual-band",
+    "price": 30.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/WLAN-Repeater Dual-Band.jpg",
+    "description": "Verstärkt dein WLAN in Räumen mit schwachem Empfang. 2,4 und 5 GHz, laut Hersteller bis 1200 Mbit/s, vier Antennen, Einrichtung per WPS-Taste.",
+    "sku": "CJWX305504201AZ",
+    "cjPid": "2087422754358059009",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-7 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "wlan",
+      "repeater",
+      "wifi",
+      "internet",
+      "router"
+    ],
+    "features": [
+      "Dual-Band: 2,4 GHz und 5 GHz",
+      "Laut Hersteller bis 300 + 867 Mbit/s",
+      "Vier Antennen",
+      "Einrichtung per WPS-Taste",
+      "Direkt in die Steckdose",
+      "Weiß"
+    ]
+  },
+  {
+    "id": 70,
+    "name": "Magnetische Powerbank 10.000 mAh",
+    "slug": "magnetische-powerbank-10000mah",
+    "price": 21.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Magnetische Powerbank 10.000 mAh.jpg",
+    "description": "Flache Powerbank mit 10.000 mAh, die magnetisch hinten am iPhone hält und kabellos lädt. Dazu ein USB-C-Anschluss für ein zweites Gerät.",
+    "sku": "CJCD283694201AZ",
+    "cjPid": "2044607361015967745",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-7 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "powerbank",
+      "magsafe",
+      "iphone",
+      "laden",
+      "akku"
+    ],
+    "features": [
+      "10.000 mAh",
+      "Hält magnetisch am iPhone (MagSafe-kompatibel)",
+      "Lädt kabellos",
+      "USB-C zum Laden und Aufladen",
+      "Laut Hersteller bis 20 W",
+      "Zwei Geräte gleichzeitig"
+    ]
+  },
+  {
+    "id": 71,
+    "name": "Faltbarer Laptopständer aus Aluminium",
+    "slug": "laptopstaender-aluminium-faltbar",
+    "price": 15.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Faltbarer Laptopständer aus Aluminium.jpg",
+    "description": "Laptopständer aus Aluminium mit 7 Höhenstufen für Geräte von 8 bis 16 Zoll. Zusammengeklappt passt er in jede Tasche.",
+    "sku": "CJPB292027701AZ",
+    "cjPid": "2062105546332401666",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-7 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "laptop",
+      "ständer",
+      "schreibtisch",
+      "homeoffice",
+      "setup"
+    ],
+    "features": [
+      "7 Höhenstufen",
+      "Für Laptops von 8 bis 16 Zoll",
+      "Aluminium mit Silikonpads",
+      "Faltbar und leicht",
+      "Auch für Tablet und Buch",
+      "Schwarz"
+    ]
+  },
+  {
+    "id": 72,
+    "name": "Elektrische Salz- und Pfeffermühle",
+    "slug": "elektrische-salz-pfeffermuehle",
+    "price": 35.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Elektrische Salz- und Pfeffermühle.jpg",
+    "description": "Akku-Mühle für Salz und Pfeffer mit einer Hand bedienbar, Mahlgrad einstellbar, LED-Licht. Laden per USB, keine Batterien nötig.",
+    "sku": "CJ1459350976749244416",
+    "cjPid": "1459350976749244416",
+    "inStock": true,
+    "shippingTime": "12-20 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#1A1A1A",
+        "sku": "CJJT135136803CX",
+        "price": 35.99,
+        "image": "produkt bilder/Elektrische Salz- und Pfeffermühle.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJT135136801AZ",
+        "price": 35.99,
+        "image": "produkt bilder/Elektrische Salz- und Pfeffermühle bilder/Elektrische Salz- und Pfeffermühle weiß.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "pfeffermühle",
+      "salzmühle",
+      "küche",
+      "gewürze",
+      "kochen"
+    ],
+    "features": [
+      "Bedienung mit einer Hand",
+      "Mahlgrad einstellbar",
+      "LED-Licht",
+      "Akku 500 mAh, Laden per USB",
+      "Nachfüllbar",
+      "Schwarz oder Weiß"
+    ]
+  },
+  {
+    "id": 73,
+    "name": "Thermobecher mit Temperaturanzeige",
+    "slug": "thermobecher-temperaturanzeige",
+    "price": 21.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Thermobecher mit Temperaturanzeige.jpg",
+    "description": "Doppelwandiger Edelstahl-Becher mit 450 ml und Temperaturanzeige im Deckel. Mit Trageschlaufe, für Kaffee, Tee und kalte Getränke.",
+    "sku": "CJ1737828106674647040",
+    "cjPid": "1737828106674647040",
+    "inStock": true,
+    "shippingTime": "12-20 Werktage",
+    "colors": [
+      {
+        "name": "Weiß-Braun",
+        "code": "#8B5A2B",
+        "sku": "CJJT192676801AZ",
+        "price": 21.99,
+        "image": "produkt bilder/Thermobecher mit Temperaturanzeige.jpg"
+      },
+      {
+        "name": "Weiß-Schwarz",
+        "code": "#222222",
+        "sku": "CJJT192676802BY",
+        "price": 21.99,
+        "image": "produkt bilder/Thermobecher mit Temperaturanzeige bilder/Thermobecher mit Temperaturanzeige weiß-schwarz.jpg"
+      },
+      {
+        "name": "Weiß-Blau",
+        "code": "#1F3A6E",
+        "sku": "CJJT192676803CX",
+        "price": 21.99,
+        "image": "produkt bilder/Thermobecher mit Temperaturanzeige bilder/Thermobecher mit Temperaturanzeige weiß-blau.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "thermobecher",
+      "kaffee",
+      "to go",
+      "becher",
+      "temperatur"
+    ],
+    "features": [
+      "Temperaturanzeige im Deckel",
+      "450 ml",
+      "Doppelwandig, innen Edelstahl 316",
+      "Für heiße und kalte Getränke",
+      "Mit Trageschlaufe",
+      "3 Farben"
+    ]
+  },
+  {
+    "id": 74,
+    "name": "Akku-Munddusche",
+    "slug": "akku-munddusche",
+    "price": 28.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Akku-Munddusche.jpg",
+    "description": "Kabellose Munddusche mit 3 Modi und 240-ml-Wassertank. Laden per USB, schaltet nach 2 Minuten von selbst ab.",
+    "sku": "CJ1407593066453405696",
+    "cjPid": "1407593066453405696",
+    "inStock": true,
+    "shippingTime": "12-20 Werktage",
+    "colors": [
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJPF118780401AZ",
+        "price": 28.99,
+        "image": "produkt bilder/Akku-Munddusche.jpg"
+      },
+      {
+        "name": "Pink",
+        "code": "#F4B6C2",
+        "sku": "CJPF118780402BY",
+        "price": 28.99,
+        "image": "produkt bilder/Akku-Munddusche bilder/Akku-Munddusche pink.jpg"
+      },
+      {
+        "name": "Hellgrün",
+        "code": "#A8D8B9",
+        "sku": "CJPF118780403CX",
+        "price": 28.99,
+        "image": "produkt bilder/Akku-Munddusche bilder/Akku-Munddusche hellgrün.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "munddusche",
+      "zahnpflege",
+      "bad",
+      "reise",
+      "wellness"
+    ],
+    "features": [
+      "3 Modi: normal, sanft, Puls",
+      "240 ml Wassertank",
+      "Akku, Laden per USB",
+      "Abschaltung nach 2 Minuten",
+      "Kabellos, auch für Reisen",
+      "Weiß, Pink oder Hellgrün"
+    ]
+  },
+  {
+    "id": 75,
+    "name": "Astronaut Sternenhimmel-Projektor",
+    "slug": "astronaut-sternenhimmel-projektor",
+    "price": 34.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Astronaut Sternenhimmel-Projektor.jpg",
+    "description": "Astronauten-Figur, die Sterne und Nebel an Wand und Decke wirft. Kopf magnetisch, 360° drehbar, mit Fernbedienung und Timer.",
+    "sku": "CJYD191990201AZ",
+    "cjPid": "1734820599110836224",
+    "inStock": true,
+    "shippingTime": "12-20 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "projektor",
+      "sternenhimmel",
+      "astronaut",
+      "nachtlicht",
+      "deko"
+    ],
+    "features": [
+      "Sterne und Nebel, auch einzeln",
+      "Kopf magnetisch, 360° drehbar",
+      "Fernbedienung",
+      "Timer",
+      "USB-Stromversorgung",
+      "Nicht direkt in den Lichtstrahl schauen"
+    ]
   }
 ]

@@ -369,6 +369,69 @@
         "quelle": "CJ-API product/query 08.11.2026 (1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
         "versand_quelle": "CJ-API freightCalculate, DE->DE (3-5 Tage), kostenlos"
       },
+      "67": {
+        "ek": 2.7,
+        "versand": 5.58,
+        "einfuhrumsatzsteuer": 0.51,
+        "quelle": "CJ-API product/query 18.11.2026 (teuerste angebotene Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 18.11.2026, CN->DE, guenstigste Option CJPacket Eub Special Line (8-12 Tage)"
+      },
+      "68": {
+        "ek": 11.03,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.1,
+        "quelle": "CJ-API product/query 18.11.2026 (teuerste angebotene Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 18.11.2026, DE->DE, DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "69": {
+        "ek": 17.25,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 3.28,
+        "quelle": "CJ-API product/query 18.11.2026 (teuerste angebotene Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 18.11.2026, DE->DE, DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "70": {
+        "ek": 11.95,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 2.27,
+        "quelle": "CJ-API product/query 18.11.2026 (teuerste angebotene Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 18.11.2026, DE->DE, DPD DE to DE (5-7 Tage), kostenlos"
+      },
+      "71": {
+        "ek": 8.74,
+        "versand": 0,
+        "einfuhrumsatzsteuer": 1.66,
+        "quelle": "CJ-API product/query 18.11.2026 (teuerste angebotene Variante, 1 USD = 0,92 EUR inkl. Umtausch). Ware aus dem deutschen CJ-Lager: statt Einfuhr-USt 19 % MwSt., ebenfalls nicht abziehbar",
+        "versand_quelle": "CJ-API freightCalculate 18.11.2026, DE->DE, DE post (3-7 Tage), kostenlos"
+      },
+      "72": {
+        "ek": 9.4,
+        "versand": 11.13,
+        "einfuhrumsatzsteuer": 1.79,
+        "quelle": "CJ-API product/query 18.11.2026 (teuerste angebotene Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 18.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage)"
+      },
+      "73": {
+        "ek": 2.93,
+        "versand": 8.93,
+        "einfuhrumsatzsteuer": 0.56,
+        "quelle": "CJ-API product/query 18.11.2026 (teuerste angebotene Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 18.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage)"
+      },
+      "74": {
+        "ek": 5.79,
+        "versand": 10.64,
+        "einfuhrumsatzsteuer": 1.1,
+        "quelle": "CJ-API product/query 18.11.2026 (teuerste angebotene Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 18.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage)"
+      },
+      "75": {
+        "ek": 7.32,
+        "versand": 12.05,
+        "einfuhrumsatzsteuer": 1.39,
+        "quelle": "CJ-API product/query 18.11.2026 (teuerste angebotene Variante, 1 USD = 0,92 EUR inkl. Umtausch)",
+        "versand_quelle": "CJ-API freightCalculate 18.11.2026, CN->DE, guenstigste Option CJPacket Euro Sensitive (12-20 Tage)"
+      },
       "_hinweis": "EK und Versand in EUR je Produkt-ID, seit 03.11.2026 direkt per CJ-API abgefragt (npm run preischeck). Die alten Werte aus excel/Maios Produkte.csv lagen teils um ein Vielfaches daneben (Krystall Ball: CSV 9,69 EUR, CJ 2,94 USD). einfuhrumsatzsteuer = 19 % auf den Warenwert, die CJ ueber IOSS mitberechnet; fuer einen Kleinunternehmer nicht abziehbar. Nicht enthalten: Zahlungsgebuehr (Stripe/Klarna bis 2,99 % + 0,35 EUR). Ohne Eintrag: AliExpress-Produkte und bei CJ ausgelistete."
     },
     "max_posts_pro_produkt_pro_woche": 2,
