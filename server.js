@@ -772,17 +772,24 @@ app.use((req, res, next) => {
 let __stockOverrideCache = { at: 0, ids: new Set() };
 const STOCK_CACHE_MS = 60 * 1000;
 
+// Von Hand gesperrt: "inStock": false in products.json (z. B. bei CJ ausgelistet).
+// Gilt zusaetzlich zum CJ-Abgleich und auch ohne Datenbank - vorher sperrte die
+// Kasse nur, was in cj_stock_watch stand, und die Datei-Angabe war wirkungslos.
+function dateiGesperrteIds() {
+  return new Set(require('./products.json').filter((p) => p.inStock === false).map((p) => Number(p.id)));
+}
+
 async function getUnavailableIds() {
   if (Date.now() - __stockOverrideCache.at < STOCK_CACHE_MS) return __stockOverrideCache.ids;
-  if (!process.env.DATABASE_URL) return new Set();
+  if (!process.env.DATABASE_URL) return dateiGesperrteIds();
   try {
-    const ids = await dbOperations.getUnavailableProductIds();
+    const ids = new Set([...dateiGesperrteIds(), ...(await dbOperations.getUnavailableProductIds())]);
     __stockOverrideCache = { at: Date.now(), ids };
     return ids;
   } catch (e) {
     // Datenbank kurz weg -> lieber den letzten bekannten Stand als gar keine Produkte.
     console.warn('⚠️ Verfuegbarkeits-Overrides nicht ladbar:', e.message);
-    return __stockOverrideCache.ids;
+    return new Set([...dateiGesperrteIds(), ...__stockOverrideCache.ids]);
   }
 }
 

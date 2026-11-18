@@ -43,6 +43,9 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   `lager` nur bei DE-Ware und kennt die Kategorie Beleuchtung).
 - **CJ-API nur vom eigenen PC:** Die Zugangsdaten liegen in der lokalen `.env`; Skripte, die CJ
   fragen, laufen im VS-Code-Terminal.
+- **Nicht lieferbar (18.11.):** 57 Schallzahnbürste (bei CJ ausgelistet) und 66 Monitorständer (kein Bestand, kein
+  Versand nach DE) stehen in `products.json` auf `inStock: false` – das sperrt seit 18.11. auch die Kasse
+  (`dateiGesperrteIds` in `server.js`), zusätzlich zum CJ-Abgleich aus der Datenbank.
 - **Offene Punkte:** Registrierungen für Elektrogeräte und Batterien (ElektroG/stiftung ear, BattDG) und
   Verpackung (LUCID) prüfen, bevor die neuen Elektro-Produkte in größerer Zahl verkauft werden.
 

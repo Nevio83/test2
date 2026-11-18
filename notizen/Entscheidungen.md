@@ -7,6 +7,14 @@ Neueste oben. Je Eintrag: Datum, was entschieden wurde, Link auf die Datei, in d
 Wird von Claude nach jeder Sitzung mit einer Entscheidung ergänzt (siehe [[CLAUDE#10. Obsidian — Wissensablage (seit 16.11.2026, ersetzt Graphify)|CLAUDE §10]]).
 
 ## 2026-11-18
+- **Preischeck 18.11. (`npm run preischeck`, Ergebnis `Claude outputs/cj-preischeck.json`):** 49/50 ok.
+  **57 Schallzahnbürste** ist bei CJ ausgelistet („removed from shelves“), **66 Monitorständer** hat nur noch das
+  China-Lager mit Bestand 0 und keinen Versandweg nach DE. Beide in [[products.json]] auf `inStock: false`.
+  Neu in `server.js`: `inStock: false` aus der Datei sperrt jetzt auch die Kasse (409), nicht nur der CJ-Abgleich
+  aus der Datenbank – vorher war die Datei-Angabe an der Kasse wirkungslos. Strukturdaten neu geschrieben (`npm run seo`).
+- **Margen laut Preischeck** (EK + günstigster Versand, × 0,92 × 1,19, + Klarna; grob gerechnet): DE-Lager-Ware 37–68 %,
+  Runde 2 aus China 39–45 %, aber viele ältere China-Produkte nur 15–30 %, am schwächsten 43 Mini-Thermodrucker (≈ 7 %)
+  und 51 Auto-Bildschirm (≈ 8 %). Preise unverändert (Nevio 08.11.: gesenkte Preise erstmal lassen).
 - **Video für Do 19.11. 18 Uhr gebaut:** Motion-Spot „3 Dinge vor dem Kauf.“ für Produkt 70 (Magnetische Powerbank,
   erstes Video eines Produkts aus Runde 2), Liefer-Paket in `Marketing/trends/vorrat.md`. `spot.html` kann jetzt
   `karte` mit `sofort: true` (ab Bild 0 sichtbar) und Zahlen mit Tausenderpunkt; im Skill `maios-motion-spot` vermerkt.

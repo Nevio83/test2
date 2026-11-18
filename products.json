@@ -1404,7 +1404,7 @@
     "sku": "CJ1968223869935730689",
     "cjPid": "1968223869935730689",
     "lager": "DE",
-    "inStock": true,
+    "inStock": false,
     "shippingTime": "3-8 Werktage",
     "colors": [
       {
@@ -1672,7 +1672,7 @@
     "sku": "CJFU28780740001",
     "cjPid": "2053740905123414017",
     "lager": "DE",
-    "inStock": true,
+    "inStock": false,
     "shippingTime": "3-6 Werktage",
     "showInSlider": true,
     "tags": [
