@@ -20,6 +20,7 @@ Die Quelle der Wahrheit bleiben die Dateien im Repo, nicht diese Notiz.
 
 ## Entscheidungen
 - [[Entscheidungen]]: was wann entschieden wurde (neueste oben, Claude ergänzt nach jeder Sitzung)
+- [[Pflichten-ElektroG-BattDG-Verpackung]]: offene Registrierungen (stiftung ear, LUCID) mit Prüfliste und Anfrage an CJ
 
 ## Eigene Notizen
 Neue Notizen landen in `notizen/`. Ideen, Entscheidungen und Notizen zu Produkten hier ablegen

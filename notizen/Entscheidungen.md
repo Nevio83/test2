@@ -7,6 +7,13 @@ Neueste oben. Je Eintrag: Datum, was entschieden wurde, Link auf die Datei, in d
 Wird von Claude nach jeder Sitzung mit einer Entscheidung ergänzt (siehe [[CLAUDE#10. Obsidian — Wissensablage (seit 16.11.2026, ersetzt Graphify)|CLAUDE §10]]).
 
 ## 2026-11-18
+- **Rechtstexte-Fix aus dem Worktree übernommen** (Commit `22bb2c4` vom 21.10., war nie auf `main`): AGB nennen jetzt
+  die elf Lieferländer und 12 € für die USA, Versandseite 3–20 Werktage je Artikel und Rechner ohne CA/AU/JP/BR/MX,
+  Warenkorb ohne PayPal-Knopf, 20 Produktseiten mit Lieferzeit aus [[products.json]], Datenschutz mit jsDelivr,
+  Google Analytics, Standortdiensten und TDDDG. Neu dazu: Adresssuche (OpenStreetMap/Nominatim) und technische
+  Dienstleister (Render, Neon, Resend) in [[infos/datenschutz.html]]. Prüfung: `test/rechtstexte-kasse.test.js`.
+- **Prüfliste ElektroG/BattDG/LUCID** angelegt: [[Pflichten-ElektroG-BattDG-Verpackung]]. Nächster Schritt: CJ nach
+  WEEE-, Batterie- und LUCID-Nummern fragen.
 - **AGB und Datenschutz an den echten Stand angepasst** ([[infos/agb.html]], [[infos/datenschutz.html]], Stand November 2026):
   PayPal und „Vorkasse“ raus (gibt es nicht), Zahlarten = Karte, Apple/Google Pay über Stripe, Klarna. Versand außerhalb
   Europas nicht mehr „4,99 €“ (Kasse rechnet 12–20 €), sondern Verweis auf die Kasse. §5 Lieferung: kein „DHL/UPS,

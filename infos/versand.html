@@ -5,17 +5,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Versand – Maios</title>
-  <meta name="description" content="Versand und Lieferzeiten bei Maios: 7–13 Werktage, kostenfrei innerhalb Europas, mit Sendungsverfolgung per E-Mail.">
+  <meta name="description" content="Versand bei Maios: kostenfrei in alle Lieferländer außer die USA, Lieferzeit je Artikel auf der Produktseite, Sendungsverfolgung per E-Mail.">
   <link rel="canonical" href="https://maiosshop.com/infos/versand.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Maios">
   <meta property="og:title" content="Versand – Maios">
-  <meta property="og:description" content="Versand und Lieferzeiten bei Maios: 7–13 Werktage, kostenfrei innerhalb Europas, mit Sendungsverfolgung per E-Mail.">
+  <meta property="og:description" content="Versand bei Maios: kostenfrei in alle Lieferländer außer die USA, Lieferzeit je Artikel auf der Produktseite, Sendungsverfolgung per E-Mail.">
   <meta property="og:url" content="https://maiosshop.com/infos/versand.html">
   <meta property="og:image" content="https://maiosshop.com/images/logo.png">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Versand – Maios">
-  <meta name="twitter:description" content="Versand und Lieferzeiten bei Maios: 7–13 Werktage, kostenfrei innerhalb Europas, mit Sendungsverfolgung per E-Mail.">
+  <meta name="twitter:description" content="Versand bei Maios: kostenfrei in alle Lieferländer außer die USA, Lieferzeit je Artikel auf der Produktseite, Sendungsverfolgung per E-Mail.">
   <meta name="twitter:image" content="https://maiosshop.com/images/logo.png">
   <link rel="stylesheet" href="/schriften/schriften.css">
   <link href="../styles.css" rel="stylesheet" />
@@ -65,9 +65,10 @@
     <div class="info-card p-4 p-md-5 mb-4">
       <h2 class="section-title h5 mb-3">Standardversand</h2>
       <ul class="clean-list">
-        <li>Lieferzeit: 7–13 Werktage</li>
-        <li>Kostenloser Versand innerhalb Europas</li>
-        <li>Außerhalb Europas: 4,99€ Versandkosten</li>
+        <li>Lieferzeit: je nach Artikel zwischen 3 und 20 Werktagen – Artikel aus unserem Lager in Deutschland kommen am schnellsten, die genaue Angabe steht auf jeder Produktseite und im Warenkorb</li>
+        <li>Kostenloser Versand nach Deutschland, Österreich, in die Schweiz, nach Frankreich, Italien, Spanien, in die Niederlande, nach Belgien, Polen und in das Vereinigte Königreich</li>
+        <li>USA: 12,00 € Versandkosten</li>
+        <li>In andere Länder liefern wir derzeit nicht</li>
       </ul>
     </div>
 
@@ -90,19 +91,15 @@
             <option value="ES">Spanien</option>
             <option value="NL">Niederlande</option>
             <option value="BE">Belgien</option>
+            <option value="PL">Polen</option>
             <option value="GB">Vereinigtes Königreich</option>
             <option value="US">USA</option>
-            <option value="CA">Kanada</option>
-            <option value="AU">Australien</option>
-            <option value="JP">Japan</option>
-            <option value="BR">Brasilien</option>
-            <option value="MX">Mexiko</option>
           </select>
         </div>
         <div class="col-md-6">
           <div class="calc-output">
             <div><span class="text-muted">Versandkosten:</span> <strong id="shipCost">–</strong></div>
-            <div class="small text-muted">Kostenfrei in Europa, weltweit 12-20€</div>
+            <div class="small text-muted">Kostenfrei in alle europäischen Lieferländer, USA 12,00 €</div>
           </div>
         </div>
       </div>
@@ -116,13 +113,11 @@
     (function(){
       console.log('🚀 Versandkosten-Rechner geladen');
       
-      // Pauschale Versandkosten pro Land (in EUR)
+      // Pauschale Versandkosten pro Lieferland (in EUR) — Kopie aus
+      // shipping-calculator.js; test/rechtstexte-kasse.test.js gleicht sie ab.
       const shippingCosts = {
         'DE': 0, 'AT': 0, 'CH': 0, 'FR': 0, 'IT': 0, 'ES': 0, 'NL': 0, 'BE': 0, 'GB': 0, 'PL': 0,
-        'US': 12.00, 'CA': 12.00, 'MX': 15.00,
-        'JP': 15.00, 'CN': 15.00, 'KR': 15.00, 'SG': 15.00,
-        'AU': 20.00, 'NZ': 20.00,
-        'BR': 18.00, 'AR': 18.00
+        'US': 12.00
       };
       
       // Währungsumrechnung (wie in cart.js)

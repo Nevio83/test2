@@ -50,7 +50,10 @@ function erfundeneAngaben(text) {
     ['Bestseller-Behauptung', /BESTSELLER|Am häufigsten gekauft/],
     ['Kundenzahl', /data-stat="customers"|Zufriedene Kunden<\/div>/],
     ['Kundenstimmen', /class="voice"|id="stimmen"/],
-    ['Kaufhäufigkeit ohne Kaufdaten', /Häufig zusammen gekauft/i],
+    // Bis 21.10. auf allen 40 Produktseiten: "Spare mehr beim Kauf von 2+
+    // Stück!" — die Kasse kennt keinen Mengenrabatt. Der einzige Rabatt ab
+    // einer Stückzahl ist der Gutschein BUNDLE30 (ab 3 Artikeln, nur mit Code).
+    ['Mengenrabatt', /Spare mehr beim Kauf|Mengenrabatt|beim Kauf von \d+\s*\+?\s*Stück/i],
   ];
   return MUSTER.filter(([, re]) => re.test(text)).map(([name]) => name);
 }
@@ -71,13 +74,14 @@ test('Gegenprobe: die alten Stellen hätte die Prüfung gemeldet', () => {
     '<div class="stat-num" data-stat="customers">0+</div><div class="stat-lbl">Zufriedene Kunden</div>',
     '<section id="stimmen" class="reveal" data-reveal>',
     '<span class="sec-sub">Am häufigsten gekauft</span>',
-    '<h2 class="fbt-title">Häufig zusammen gekauft</h2>',
+    '<i class="bi bi-gift pp-purple"></i> Spare mehr beim Kauf von 2+ Stück!',
   ];
   for (const zeile of alt) {
     assert.ok(erfundeneAngaben(zeile).length > 0, `nicht erkannt: ${zeile}`);
   }
   // Und umgekehrt: Echtes darf nicht anschlagen.
-  for (const echt of ['Zurzeit nicht lieferbar', '30 Tage Rückgabe', '<h2 class="pr-title">Kundenbewertungen</h2>']) {
+  for (const echt of ['Zurzeit nicht lieferbar', '30 Tage Rückgabe', '<h2 class="pr-title">Kundenbewertungen</h2>',
+    '10/1 Stück Aroma Pads']) {
     assert.deepStrictEqual(erfundeneAngaben(echt), [], `Fehlalarm bei: ${echt}`);
   }
 });

@@ -54,7 +54,7 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   wird **nur über den Prüflauf** (`.github/workflows/pruefung.yml`): Lint → Tests → Prüfung auf
   Ereignisbehandler mit eingesetzten Werten → **Startprüfung** (Server hochfahren, `/health`
   abfragen, beenden) → erst dann der Deploy-Hook. Ist ein Schritt rot, bleibt der alte Stand live.
-  Von Hand: Render-Dashboard → „Manual Deploy". **644 automatische Prüfungen** im Prüflauf via
+  Von Hand: Render-Dashboard → „Manual Deploy". **682 automatische Prüfungen** im Prüflauf via
   `npm test` — 287 Shop und 357 Bot (`test/lauf.js` sammelt `bot/*.test.js` mit ein, also **nicht
   addieren**: genau das ist einmal passiert), dazu **362 Marketing** via
   `py -m pytest Marketing/tests`, die **nur lokal** laufen (Stand 21.10.).
@@ -249,6 +249,7 @@ lautlos wirkt** — jeweils mit einem Test für den real aufgetretenen Fehler:
 | `galerie-wischen.test.js` | Wischen in der Produktgalerie, Hauptbild bleibt dasselbe Element | `touchend` rief `this.handleSwipe()` — die Methode gab es nicht, auf dem Handy ein TypeError bei **jeder** Wischgeste, am Rechner unsichtbar |
 | `icons-eine-version.test.js` | eine Bootstrap-Icons-Version je Seite und im ganzen Shop — bei der lokalen Kopie aus dem Dateikopf gelesen | fünf Infoseiten luden 1.10.0 **und** (über `info.css`) 1.11.3 — zwei Schriftdateien für dieselben Symbole |
 | `schriften-selbst.test.js` | Schriften und Icons kommen aus `/schriften/`, nicht von Google/jsdelivr; jede Schriftdatei existiert; Datei-Freigabe und CSP passen dazu | Google Fonts hielt auf dem Handy die Darstellung auf und sah bei jedem Aufruf die Adresse des Besuchers — **ohne Einwilligung, ohne Erwähnung in der Datenschutzerklärung**. Eine fehlende Schriftdatei fiele lautlos auf die Ersatzschrift zurück |
+| `rechtstexte-kasse.test.js` | AGB, Versandseite, Warenkorb, Produktseiten und Datenschutz gegen die echte Kasse: Zahlarten aus `server.js`, Länder und Versandkosten aus `shipping-calculator.js`, Lieferzeiten aus `products.json`, fremde Quellen aus den Seiten | AGB nannten PayPal, Vorkasse, „DE/AT, DHL/UPS, 3–5 Werktage“ und 4,99 € außerhalb Europas; 20 Produktseiten widersprachen sich bei der Lieferzeit; die Datenschutzerklärung bestritt Google Analytics. Lag seit 21.10. ungemergt im Worktree `sweet-colden`, am 18.11. übernommen |
 
 Faustregel beim Ergänzen: **ein Test, der nur grün werden kann, ist wertlos.** Zu jedem
 behobenen Fehler gehört eine Gegenprobe, die das alte Verhalten nachbildet und belegt, dass

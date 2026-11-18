@@ -705,11 +705,6 @@ function updateCartPage() {
                             <option value="BE" ${currentCountry === 'BE' ? 'selected' : ''}>Belgien</option>
                             <option value="US" ${currentCountry === 'US' ? 'selected' : ''}>Vereinigte Staaten</option>
                             <option value="GB" ${currentCountry === 'GB' ? 'selected' : ''}>Vereinigtes Königreich</option>
-                            <option value="CA" ${currentCountry === 'CA' ? 'selected' : ''}>Kanada</option>
-                            <option value="AU" ${currentCountry === 'AU' ? 'selected' : ''}>Australien</option>
-                            <option value="JP" ${currentCountry === 'JP' ? 'selected' : ''}>Japan</option>
-                            <option value="BR" ${currentCountry === 'BR' ? 'selected' : ''}>Brasilien</option>
-                            <option value="MX" ${currentCountry === 'MX' ? 'selected' : ''}>Mexiko</option>
                         </select>
                         <div class="form-text text-info">
                             <i class="bi bi-info-circle"></i> Europäische Länder haben kostenlosen Versand
@@ -754,7 +749,6 @@ function updateCartPage() {
                     <!-- Express-Zahlung (führt in denselben Stripe-Checkout, dort stehen die Methoden zur Wahl) -->
                     <div class="express-divider"><div class="line"></div><span class="lbl">Oder Express</span><div class="line"></div></div>
                     <div class="express-row">
-                        <button type="button" class="express-btn" onclick="handleCheckout()" aria-label="Mit PayPal bezahlen"><img src="images/pay-paypal.jpg" alt="PayPal"></button>
                         <button type="button" class="express-btn" onclick="handleCheckout()" aria-label="Mit Google Pay bezahlen"><img src="images/pay-gpay.png" alt="Google Pay" style="height:21px;"></button>
                         <button type="button" class="express-btn" onclick="handleCheckout()" aria-label="Mit Klarna bezahlen"><img src="images/pay-klarna.png" alt="Klarna" style="height:17px;"></button>
                     </div>
