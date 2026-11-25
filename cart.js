@@ -27,6 +27,7 @@ const currencyByCountry = {
     'FR': { symbol: '€', code: 'EUR', name: 'Frankreich' },
     'IT': { symbol: '€', code: 'EUR', name: 'Italien' },
     'ES': { symbol: '€', code: 'EUR', name: 'Spanien' },
+    'IE': { symbol: '€', code: 'EUR', name: 'Irland' },
     'AT': { symbol: '€', code: 'EUR', name: 'Österreich' },
     'CH': { symbol: 'CHF', code: 'CHF', name: 'Schweiz' },
     'NL': { symbol: '€', code: 'EUR', name: 'Niederlande' },
@@ -250,7 +251,7 @@ window.convertPrice = convertPrice;
 function getShippingCost(countryCode) {
     // Pauschale Versandkosten pro Land (gleich wie shipping-calculator.js)
     const shippingCosts = {
-        'DE': 0, 'AT': 0, 'CH': 0, 'FR': 0, 'IT': 0, 'ES': 0, 'NL': 0, 'BE': 0, 'GB': 0, 'PL': 0,
+        'DE': 0, 'AT': 0, 'CH': 0, 'FR': 0, 'IT': 0, 'ES': 0, 'IE': 0, 'NL': 0, 'BE': 0, 'GB': 0, 'PL': 0,
         'US': 12.00, 'CA': 12.00, 'MX': 15.00,
         'JP': 15.00, 'CN': 15.00, 'KR': 15.00, 'SG': 15.00,
         'AU': 20.00, 'NZ': 20.00,
@@ -383,6 +384,8 @@ function getCountryCodeFromName(countryName) {
         'Italy': 'IT',
         'Spanien': 'ES',
         'Spain': 'ES',
+        'Irland': 'IE',
+        'Ireland': 'IE',
         'Niederlande': 'NL',
         'Netherlands': 'NL',
         'Belgien': 'BE',
@@ -696,18 +699,13 @@ function updateCartPage() {
                         <select id="country" class="form-control" onchange="onCountryChange()" required>
                             <option value="">Land auswählen</option>
                             <option value="DE" ${currentCountry === 'DE' ? 'selected' : ''}>Deutschland</option>
-                            <option value="AT" ${currentCountry === 'AT' ? 'selected' : ''}>Österreich</option>
-                            <option value="CH" ${currentCountry === 'CH' ? 'selected' : ''}>Schweiz</option>
                             <option value="FR" ${currentCountry === 'FR' ? 'selected' : ''}>Frankreich</option>
                             <option value="IT" ${currentCountry === 'IT' ? 'selected' : ''}>Italien</option>
                             <option value="ES" ${currentCountry === 'ES' ? 'selected' : ''}>Spanien</option>
-                            <option value="NL" ${currentCountry === 'NL' ? 'selected' : ''}>Niederlande</option>
-                            <option value="BE" ${currentCountry === 'BE' ? 'selected' : ''}>Belgien</option>
-                            <option value="US" ${currentCountry === 'US' ? 'selected' : ''}>Vereinigte Staaten</option>
-                            <option value="GB" ${currentCountry === 'GB' ? 'selected' : ''}>Vereinigtes Königreich</option>
+                            <option value="IE" ${currentCountry === 'IE' ? 'selected' : ''}>Irland</option>
                         </select>
                         <div class="form-text text-info">
-                            <i class="bi bi-info-circle"></i> Europäische Länder haben kostenlosen Versand
+                            <i class="bi bi-info-circle"></i> Versand in alle Lieferländer kostenlos
                         </div>
                     </div>
                     

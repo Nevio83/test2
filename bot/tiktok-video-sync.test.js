@@ -2337,6 +2337,12 @@ test('sortierte Trefferadressen kommen vor denen aus dem Seitentext', async () =
 });
 
 
+// Produkt 10 (Wasserspender) ist am 25.11.2026 aus dem Sortiment gegangen. Die
+// Pruefkette wird weiter an seinen echten Untertiteln gemessen: Produkt und
+// Wortlisten liegen dafuer eingefroren in test-daten/.
+const FIX10 = JSON.parse(fs.readFileSync(
+  path.join(__dirname, 'test-daten', 'produkt-10-wasserspender.json'), 'utf8'));
+
 // ── Die Wortlisten selbst pruefen ────────────────────────────────────
 //
 // 984 Suchbegriffe, 399 Kernwoerter, 820 Merkmale und 552 Ausschlusswoerter
@@ -2372,7 +2378,7 @@ test('jeder Suchbegriff benennt auch das Produkt', () => {
   // "tiktok made me buy it" ergaebe die Gruppe [made, buy] und haette jedem
   // beliebigen Einkaufsvideo Punkte gegeben.
   const schlechterBegriff = normalisiere('made me buy it');
-  const kern10 = ladeKonfig().produkte['10'].kernwoerter.map(normalisiere);
+  const kern10 = FIX10.eintrag.kernwoerter.map(normalisiere);
   assert.equal(
     kern10.some((w) => trifftWie_im_Betrieb(w, schlechterBegriff, schlechterBegriff.split(' '))),
     false, 'die Pruefung wuerde so einen Begriff melden');
@@ -2713,9 +2719,8 @@ test('die Anfrage-Obergrenze stoppt nicht, was schon geprueft ist', async () => 
 
 function urteilFuerProdukt10(titel) {
   const konfig = ladeKonfig();
-  const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
-  const produkt = produkte.find((p) => Number(p.id) === 10);
-  const eintrag = konfigZuProdukt(konfig, 10);
+  const produkt = FIX10.produkt;
+  const eintrag = FIX10.eintrag;
   const video = { title: titel };
 
   const verboten = ausschlussTreffer(video,
@@ -2900,8 +2905,9 @@ test('jedes Produkt bekommt einen Ordner, auch das noch leere', () => {
   }
 
   // Die Nummer wird aufgefuellt, sonst sortiert 10 vor 2 und die Liste ist
-  // genau da unlesbar, wo sie helfen soll.
-  assert.ok(vorhanden.every((o) => /^\d{2}_/.test(o)));
+  // genau da unlesbar, wo sie helfen soll. Seit 25.11.2026 gibt es IDs ab
+  // 100, die haben drei Stellen.
+  assert.ok(vorhanden.every((o) => /^\d{2,}_/.test(o)));
   assert.deepEqual(vorhanden.slice(0, 2).sort(), vorhanden.slice(0, 2),
     'die Ordner sortieren sich von selbst richtig');
 });
@@ -3043,7 +3049,7 @@ test('Likes werden richtig gelesen — auch mit K und M', () => {
 
 test('vorab aussortiert wird nur auf positiven Beweis', () => {
   const konfig = ladeKonfig();
-  const eintrag = konfigZuProdukt(konfig, 10);
+  const eintrag = FIX10.eintrag;
   const aus = [].concat(konfig.standard.ausschluss || [], eintrag.ausschluss || []);
 
   // Ein Standgeraet — im Seitentext erkennbar, ohne einen Abruf zu kosten.
@@ -3448,8 +3454,8 @@ test('Allerweltsbegriffe allein tragen keine Zuordnung mehr', () => {
   const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
   const konfig = ladeKonfig();
   const haeufigkeit = begriffsHaeufigkeit(konfig, produkte);
-  const p10 = produkte.find((p) => Number(p.id) === 10);
-  const gruppen = begriffsGruppen(p10, konfigZuProdukt(konfig, 10));
+  const p10 = FIX10.produkt;
+  const gruppen = begriffsGruppen(p10, FIX10.eintrag);
 
   const fremd = { title: 'Mini USB rechargeable LED light for bedroom, portable and cute' };
   const ohne = bewerte(gruppen, fremd);
@@ -3468,8 +3474,8 @@ test('GEGENPROBE: die echten angenommenen Untertitel bleiben angenommen', () => 
   const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
   const konfig = ladeKonfig();
   const haeufigkeit = begriffsHaeufigkeit(konfig, produkte);
-  const p10 = produkte.find((p) => Number(p.id) === 10);
-  const gruppen = begriffsGruppen(p10, konfigZuProdukt(konfig, 10));
+  const p10 = FIX10.produkt;
+  const gruppen = begriffsGruppen(p10, FIX10.eintrag);
 
   const echt = [
     'Staying hydrated with my new desktop water dispenser 💧office must have',
@@ -3490,8 +3496,8 @@ test('ohne Haeufigkeitstabelle bleibt alles wie vorher', () => {
   // Produktliste). Fehlt sie, darf sie NICHT stillschweigend alles ablehnen.
   const produkte = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'products.json'), 'utf8'));
   const konfig = ladeKonfig();
-  const p10 = produkte.find((p) => Number(p.id) === 10);
-  const gruppen = begriffsGruppen(p10, konfigZuProdukt(konfig, 10));
+  const p10 = FIX10.produkt;
+  const gruppen = begriffsGruppen(p10, FIX10.eintrag);
   const fremd = { title: 'Mini USB rechargeable LED light for bedroom, portable and cute' };
 
   assert.strictEqual(bewerte(gruppen, fremd).haelt, true);
@@ -5490,12 +5496,12 @@ test('jedes Produkt hat einen Eintrag in tiktok-quellen.json', () => {
   assert.deepEqual(ohneProdukt, [],
     'ein Eintrag ohne Produkt ist Pflegeaufwand fuer nichts — und verdeckt beim Zaehlen, wie viele Produkte wirklich versorgt sind');
 
-  // GEGENPROBE: Die Pruefung muss auch anschlagen. Ein erfundenes Produkt 99
+  // GEGENPROBE: Die Pruefung muss auch anschlagen. Ein erfundenes Produkt 9999
   // hat keinen Eintrag, und genau das soll die Liste melden.
-  const mitLuecke = produkte.concat([{ id: 99, name: 'Erfundenes Produkt' }]);
+  const mitLuecke = produkte.concat([{ id: 9999, name: 'Erfundenes Produkt' }]);
   const gemeldet = mitLuecke.filter((p) => !konfig.produkte[String(p.id)]);
   assert.equal(gemeldet.length, 1, 'die Pruefung erkennt eine Luecke');
-  assert.equal(gemeldet[0].id, 99);
+  assert.equal(gemeldet[0].id, 9999);
 });
 
 

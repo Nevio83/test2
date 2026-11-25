@@ -1,1255 +1,5 @@
 [
   {
-    "id": 10,
-    "name": "Elektrischer Wasserspender für Schreibtisch",
-    "slug": "elektrischer-wasserspender-fuer-schreibtisch",
-    "price": 35.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch.jpg",
-    "description": "Automatischer Wasserspender für Gallon-Flaschen. Wiederaufladbar und perfekt für Büro und Zuhause.",
-    "sku": "CJ1621032671155597312",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#2C2C2C",
-        "sku": "CJHS167415803CX",
-        "price": 35.99,
-        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch schwarz.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJHS167415802BY",
-        "price": 35.99,
-        "image": "produkt bilder/Elektrischer Wasserspender für Schreibtisch bilder/Elektrischer Wasserspender für Schreibtisch weiß.jpg"
-      }
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 11,
-    "name": "350ml Elektrischer Mixer Entsafter",
-    "slug": "350ml-elektrischer-mixer-entsafter",
-    "price": 47.99,
-    "category": "Haushalt und Küche",
-    "image": "produkt bilder/350ml Elektrischer Mixer Entsafter.jpg",
-    "description": "Kompakter elektrischer Mixer und Entsafter. Perfekt für Smoothies und frische Säfte unterwegs.",
-    "sku": "CJ1621032671155597313",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "colors": [
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJJD112318801AZ",
-        "price": 47.99,
-        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Weiß.jpg"
-      },
-      {
-        "name": "Rosa",
-        "code": "#FFC0CB",
-        "sku": "CJJD112318812LO",
-        "price": 47.99,
-        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Rosa.png"
-      },
-      {
-        "name": "Blau",
-        "code": "#4A90E2",
-        "sku": "CJJD112318814NM",
-        "price": 47.99,
-        "image": "produkt bilder/350ml Elektrischer Mixer Entsafter bilder/350ml Elektrischer Mixer Entsafter Blau.jpg"
-      }
-    ],
-    "tags": [
-      "mixer",
-      "entsafter",
-      "smoothie",
-      "350ml",
-      "elektrisch",
-      "tragbar"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 12,
-    "name": "Multifunktions Gemüseschneider",
-    "slug": "multifunktions-gemueseschneider",
-    "price": 14.99,
-    "category": "Haushalt und Küche",
-    "image": "produkt bilder/Multifunktions Gemüseschneider.jpg",
-    "description": "Vielseitiger Gemüseschneider mit austauschbaren Klingen. Spart Zeit und Mühe beim Kochen.",
-    "sku": "CJCJ170137301AZ",
-    "inStock": true,
-    "shippingTime": "6-11 Werktage",
-    "tags": [
-      "gemüse",
-      "schneider",
-      "küche",
-      "multifunktion"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 13,
-    "name": "Luft Wasser Flasche mit Pumpe",
-    "slug": "luft-wasser-flasche-mit-pumpe",
-    "price": 24.99,
-    "category": "Haushalt und Küche",
-    "image": "produkt bilder/Luft Wasser Flasche mit Pumpe.jpeg",
-    "description": "Innovative Wasserflasche mit integrierter Luftpumpe. Perfekt für Sport, Reisen und den täglichen Gebrauch.",
-    "sku": "ALI1005007209",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "tags": [
-      "wasser",
-      "sport",
-      "pumpe",
-      "flasche"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 14,
-    "name": "10-1 Stück Aroma-Pads",
-    "slug": "10-1-stueck-aroma-pads",
-    "price": 12.99,
-    "category": "Haushalt und Küche",
-    "image": "produkt bilder/10-1 Stück Aroma-Pads.jpeg",
-    "description": "Hochwertige Aroma-Pads für Kaffeemaschinen. Wiederverwendbar und umweltfreundlich für perfekten Kaffeegenuss.",
-    "sku": "ALI1005008666",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "tags": [
-      "kaffee",
-      "pads",
-      "wiederverwendbar",
-      "umweltfreundlich"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 15,
-    "name": "Drahtlose elektrische tragbare Espressomaschine",
-    "slug": "drahtlose-elektrische-tragbare-espressomaschine",
-    "price": 89.99,
-    "category": "Haushalt und Küche",
-    "image": "produkt bilder/Drahtlose elektrische tragbare Espressomaschine.jpeg",
-    "description": "Premium tragbare Espressomaschine mit drahtloser Technologie. Perfekter Espresso überall und jederzeit.",
-    "sku": "ALI1005007317",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "tags": [
-      "espresso",
-      "kaffee",
-      "tragbar",
-      "drahtlos"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 16,
-    "name": "Elektrische Küchenwaage Digital",
-    "slug": "elektrische-kuechenwaage-digital",
-    "price": 49.99,
-    "category": "Haushalt und Küche",
-    "image": "produkt bilder/ware.png",
-    "description": "Präzise digitale Küchenwaage mit LCD-Display. Ideal für genaues Wiegen beim Kochen und Backen.",
-    "sku": "ALI1005007542",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "tags": [
-      "waage",
-      "küche",
-      "digital",
-      "präzise"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 19,
-    "name": "Elektronisches Distanzmessgerät Digital",
-    "slug": "elektronisches-distanzmessgeraet-digital",
-    "price": 25.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/Elektronisches Distanzmessgerät Digital.jpg",
-    "description": "Präzises elektronisches Distanzmessgerät mit LCD-Display. Ideal für Handwerker, Architekten und Heimwerker.",
-    "sku": "CJXFLPJY00674-Black",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "tags": [
-      "messen",
-      "werkzeug",
-      "elektronisch",
-      "digital"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 20,
-    "name": "ZigBee Smart DIY Motorisierte Rollos",
-    "slug": "zigbee-smart-diy-motorisierte-rollos",
-    "price": 89.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/ZigBee Smart DIY Motorisierte Rollos.jpeg",
-    "description": "Intelligente motorisierte Rollos mit ZigBee-Technologie. Einfache Installation und Smart Home Integration für automatische Lichtsteuerung.",
-    "sku": "ALI1005005801",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "tags": [
-      "smart",
-      "automation"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 24,
-    "name": "COBLED Arbeitsleuchte",
-    "slug": "cobled-arbeitsleuchte",
-    "price": 29.99,
-    "category": "Beleuchtung",
-    "image": "produkt bilder/COBLED Arbeitsleuchte.jpeg",
-    "description": "Professionelle COBLED Arbeitsleuchte mit COB LED-Technologie. Ideal für Werkstatt, Garage, Camping und alle Arbeiten die helles, gleichmäßiges Licht benötigen.",
-    "sku": "ALI1005007024",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "features": [
-      "COB LED-Technologie für gleichmäßiges Licht",
-      "Bis zu 1000 Lumen Helligkeit",
-      "Wiederaufladbar über USB",
-      "Magnetische Befestigung und Haken",
-      "Wasserdicht (IP54) für Outdoor-Einsatz"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 25,
-    "name": "Nachtlichter mit Bewegungsmelder",
-    "slug": "nachtlichter-mit-bewegungsmelder",
-    "price": 23.99,
-    "category": "Beleuchtung",
-    "image": "produkt bilder/Nachtlichter mit Bewegungsmelder.jpeg",
-    "description": "Automatische Nachtlichter mit Bewegungsmelder für sicheres Navigieren in der Dunkelheit. Perfekt für Schlafzimmer, Badezimmer, Flure und Kinderzimmer.",
-    "sku": "ALI1005007025",
-    "inStock": true,
-    "shippingTime": "7-14 Werktage",
-    "features": [
-      "Automatischer Bewegungsmelder",
-      "Warmes, augenschonendes Licht",
-      "Batteriebetrieben - bis zu 12 Monate",
-      "Klebestreifen für einfache Montage",
-      "Kompaktes, unauffälliges Design"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 26,
-    "name": "4 In 1 Self Cleaning Hair Brush",
-    "slug": "4-in-1-self-cleaning-hair-brush",
-    "price": 12.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush.jpg",
-    "description": "Revolutionäre 4-in-1 selbstreinigende haarbürste mit Anti-Statik-Massage-Funktion. Skalierbar, rotierend und selbstreinigend für perfekte haarpflege.",
-    "sku": "CJ1711943102027542528",
-    "inStock": true,
-    "shippingTime": "7-15 Werktage",
-    "colors": [
-      {
-        "name": "Roland Purple",
-        "code": "#663399",
-        "sku": "CJYD186774301AZ",
-        "price": 12.99,
-        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush roland purple.jpg"
-      },
-      {
-        "name": "Lunar Rock",
-        "code": "#708090",
-        "sku": "CJYD186774302BY",
-        "price": 12.99,
-        "image": "produkt bilder/4 In 1 Self Cleaning Hair Brush bilder/4 In 1 Self Cleaning Hair Brush lunar rock.jpg"
-      }
-    ],
-    "features": [
-      "4-in-1 Multifunktions-Design",
-      "Selbstreinigende Technologie",
-      "Anti-Statik-Massage-Funktion",
-      "Skalierbar und rotierend",
-      "Ergonomischer Griff"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 27,
-    "name": "Volcanic Flame Aroma Essential Oil Diffuser",
-    "slug": "volcanic-flame-aroma-essential-oil-diffuser",
-    "price": 28.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Volcanic Flame Aroma Essential Oil Diffuser.jpg",
-    "description": "USB-betriebener Vulkanflammen-Aromadiffuser mit Quallen-Luftbefeuchter und Nachtlicht. Perfekt für entspannende Atmosphäre und Wellness.",
-    "sku": "CJJT163563001AZ",
-    "inStock": true,
-    "shippingTime": "7-15 Werktage",
-    "tags": [
-      "aromadiffuser",
-      "luftbefeuchter",
-      "nachtlicht",
-      "wellness"
-    ],
-    "features": [
-      "Vulkanflammen-Design für entspannende Atmosphäre",
-      "USB-betrieben für einfache Nutzung",
-      "Quallen-Luftbefeuchter-Funktion",
-      "Integriertes Nachtlicht",
-      "Tragbar und kompakt"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 29,
-    "name": "Haaröl-Applikator Kopfhaut Massager",
-    "slug": "haaroel-applikator-kopfhaut-massager",
-    "price": 8.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Haaröl-Applikator Kopfhaut Massager.jpeg",
-    "description": "Innovativer Haaröl-Applikator mit Kopfhaut-Massage-Funktion. Gleichmäßige Verteilung von Haarölen und entspannende Kopfhautmassage in einem Gerät.",
-    "sku": "ALI1005007010671073",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "tags": [
-      "haaröl",
-      "kopfhaut",
-      "massage",
-      "haarpflege"
-    ],
-    "features": [
-      "Präzise Haaröl-Verteilung",
-      "Integrierte Kopfhautmassage",
-      "Ergonomisches Design",
-      "Einfache Reinigung",
-      "Für alle Haartypen geeignet"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 21,
-    "name": "Led crystal lampe",
-    "slug": "led-crystal-lampe",
-    "price": 19.99,
-    "category": "Beleuchtung",
-    "image": "produkt bilder/Led crystal lampe .jpg",
-    "description": "USB Rotating Projection Crystal Table Lamp mit RGB Dimmable Home Decoration und 16 Farben. Perfekt für stimmungsvolle Beleuchtung.",
-    "sku": "CJLED21001",
-    "inStock": true,
-    "shippingTime": "6-11 Werktage",
-    "colors": [
-      {
-        "name": "Krone",
-        "code": "#FFD700",
-        "sku": "CJYD188109101AZ",
-        "price": 19.99,
-        "image": "produkt bilder/Led crystal lampe  bilder/Led crystal Krone .png"
-      },
-      {
-        "name": "Holz boden",
-        "code": "#C0C0C0",
-        "sku": "CJYD188109102BY",
-        "price": 19.99,
-        "image": "produkt bilder/Led crystal lampe  bilder/Led Crystal Holz boden.png"
-      }
-    ],
-    "features": [
-      "USB-betrieben für einfache Nutzung",
-      "Rotierende Projektion für dynamische Effekte",
-      "16 verschiedene Farben verfügbar",
-      "RGB dimmbar für perfekte Atmosphäre",
-      "Kristall-Design für elegante Optik"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 22,
-    "name": "Waterproof RGB LED Solar Light",
-    "slug": "waterproof-rgb-led-solar-light",
-    "price": 16.99,
-    "category": "Beleuchtung",
-    "image": "produkt bilder/Waterproof RGB LED Solar Light.jpg",
-    "description": "Wasserdichtes RGB LED Solar Licht für Stufen und Zäune. Energieeffiziente Solarbeleuchtung mit automatischer Ein-/Ausschaltung bei Dämmerung.",
-    "sku": "CJLE101693101AZ",
-    "inStock": true,
-    "shippingTime": "7-15 Werktage",
-    "showInSlider": true
-  },
-  {
-    "id": 23,
-    "name": "LED Motion Sensor Licht Drahtlose",
-    "slug": "led-motion-sensor-licht-drahtlose",
-    "price": 19.99,
-    "category": "Beleuchtung",
-    "image": "produkt bilder/LED Motion Sensor Licht Drahtlose.jpeg",
-    "description": "Drahtloses LED Motion Sensor Licht mit Bewegungsmelder. Perfekt für Flure, Treppen, Schränke und andere Bereiche wo automatische Beleuchtung benötigt wird.",
-    "sku": "ALI1005007023",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "features": [
-      "Drahtlos - einfache Installation überall",
-      "Bewegungsmelder mit 3m Reichweite",
-      "Batteriebetrieben - bis zu 6 Monate Laufzeit",
-      "Automatische Ein-/Ausschaltung",
-      "Kompaktes Design für unauffällige Montage"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 31,
-    "name": "Elektrischer Kopfhaut-Massagekamm",
-    "slug": "elektrischer-kopfhaut-massagekamm",
-    "price": 12.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Elektrischer Kopfhaut-Massagekamm.jpeg",
-    "description": "Elektrischer Kopfhaut-Massagekamm für entspannende Kopfmassage und verbesserte Durchblutung. Fördert Haarwachstum und Entspannung.",
-    "sku": "ALI1005007987737586",
-    "inStock": true,
-    "shippingTime": "10-20 Werktage",
-    "tags": [
-      "kopfhautmassage",
-      "elektrisch",
-      "haarwachstum",
-      "entspannung"
-    ],
-    "features": [
-      "Elektrische Vibrations-Massage",
-      "Fördert die Durchblutung der Kopfhaut",
-      "Unterstützt natürliches Haarwachstum",
-      "Wasserdicht für Duschnutzung",
-      "Ergonomischer Griff"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 17,
-    "name": "Bluetooth Anti-Lost Finder Wassertropfen",
-    "slug": "bluetooth-anti-lost-finder-wassertropfen",
-    "price": 8.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen.jpg",
-    "description": "Kompakter Bluetooth-Tracker in Wassertropfen-Design. Finden Sie verlorene Gegenstände schnell und einfach über Ihr Smartphone.",
-    "sku": "CJ9FA9912D",
-    "inStock": true,
-    "shippingTime": "8-15 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#2C2C2C",
-        "sku": "CJJSAQJK00001-Black Opp",
-        "price": 8.99,
-        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen schwarz.png"
-      },
-      {
-        "name": "Weiß",
-        "code": "#F8F8F8",
-        "sku": "CJJSAQJK00001-White Opp",
-        "price": 8.99,
-        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen weiß.png"
-      },
-      {
-        "name": "Grün",
-        "code": "#7ED321",
-        "sku": "CJJSAQJK00001-Green Opp",
-        "price": 8.99,
-        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen grün.png"
-      },
-      {
-        "name": "Pink",
-        "code": "#E91E63",
-        "sku": "CJJSAQJK00001-Pink Opp",
-        "price": 8.99,
-        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen pink.png"
-      },
-      {
-        "name": "Gold",
-        "code": "#FFD700",
-        "sku": "CJJSAQJK00001-1PC Gold",
-        "price": 8.99,
-        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen gold.jpg"
-      },
-      {
-        "name": "Silber",
-        "code": "#C0C0C0",
-        "sku": "CJJSAQJK00001-1PC Silver",
-        "price": 8.99,
-        "image": "produkt bilder/Bluetooth Anti-Lost Finder Wassertropfen bilder/Bluetooth Anti-Lost Finder Wassertropfen Silber.jpg"
-      }
-    ],
-    "tags": [
-      "bluetooth",
-      "tracker",
-      "finder"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 18,
-    "name": "Home Electronic Clock Digitale Uhr",
-    "slug": "home-electronic-clock-digitale-uhr",
-    "price": 17.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/Home Electronic Clock Digitale Uhr.jpg",
-    "description": "Moderne digitale Wanduhr mit LED-Display. Perfekt für Wohnzimmer, Büro oder Küche mit großer, gut lesbarer Anzeige.",
-    "sku": "CJXFZNZN00532-Black USB",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "tags": [
-      "uhr",
-      "digital",
-      "led"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 32,
-    "name": "Indoor Sensing Wall Lamp",
-    "slug": "indoor-sensing-wall-lamp",
-    "price": 15.99,
-    "category": "Beleuchtung",
-    "image": "produkt bilder/Indoor Sensing Wall Lamp.jpg",
-    "description": "USB-aufladbare Wandlampe mit Bewegungssensor. Perfekt für Flure, Treppen und Schränke mit automatischer Ein-/Ausschaltung bei Bewegung.",
-    "sku": "CJ1373821404948074496",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#000000",
-        "sku": "CJSN105028901AZ",
-        "price": 15.99,
-        "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp schwarz.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJSN105028907GT",
-        "price": 15.99,
-        "image": "produkt bilder/Indoor Sensing Wall Lamp bilder/Indoor Sensing Wall Lamp weiß.jpg"
-      }
-    ],
-    "features": [
-      "USB-aufladbar für kabellose Nutzung",
-      "Bewegungssensor mit automatischer Aktivierung",
-      "Verschiedene Größen verfügbar (14x6cm, 22x11cm, 29x11cm)",
-      "Weiß- und Warmlicht-Modi",
-      "Einfache Wandmontage ohne Verkabelung"
-    ],
-    "tags": [
-      "wandlampe",
-      "bewegungsmelder",
-      "usb",
-      "sensor",
-      "beleuchtung",
-      "automatisch"
-    ]
-  },
-  {
-    "id": 33,
-    "name": "Aromatherapy Essential Oil Humidifier",
-    "slug": "aromatherapy-essential-oil-humidifier",
-    "price": 8.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Aromatherapy essential oil humidifier.jpg",
-    "description": "Aromatherapy Essential Oil Humidifier mit 10 verschiedenen Düften. Perfekt für Entspannung, besseren Schlaf und Wellness zu Hause.",
-    "sku": "CJ09477003744E498990DA",
-    "inStock": true,
-    "shippingTime": "7-15 Werktage",
-    "showInSlider": true,
-    "colors": [
-      {
-        "name": "Cherry Blossoms",
-        "code": "#FFB6C1",
-        "sku": "CJBJPFJY00081-Cherry blossoms",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier Cherry blossoms.jpg"
-      },
-      {
-        "name": "Green Tea",
-        "code": "#90EE90",
-        "sku": "CJBJPFJY00081-Green Tea",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier green tea.jpg"
-      },
-      {
-        "name": "Jasmine",
-        "code": "#F8F8FF",
-        "sku": "CJBJPFJY00081-Jasmine",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier jasmine.jpg"
-      },
-      {
-        "name": "Lavender",
-        "code": "#E6E6FA",
-        "sku": "CJBJPFJY00081-Lavender",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lavender.jpg"
-      },
-      {
-        "name": "Lemon",
-        "code": "#FFFF99",
-        "sku": "CJBJPFJY00081-Lemon",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lemon.jpg"
-      },
-      {
-        "name": "Lily",
-        "code": "#87CEEB",
-        "sku": "CJBJPFJY00081-Lily",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier lily.jpg"
-      },
-      {
-        "name": "Ocean",
-        "code": "#FF69B4",
-        "sku": "CJBJPFJY00081-Ocean",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier ocean.jpg"
-      },
-      {
-        "name": "Rose",
-        "code": "#D2B48C",
-        "sku": "CJBJPFJY00081-Rose",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier rose.jpg"
-      },
-      {
-        "name": "Sandalwood",
-        "code": "#F5DEB3",
-        "sku": "CJBJPFJY00081-Sandalwood",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sandalwood.jpg"
-      },
-      {
-        "name": "Sweet",
-        "code": "#F5DEB3",
-        "sku": "CJBJPFJY00081-Sweet",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier sweet.jpg"
-      },
-      {
-        "name": "Vanilla",
-        "code": "#FFF8DC",
-        "sku": "CJBJPFJY00081-Vanilla",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier vanilla.jpg"
-      },
-      {
-        "name": "Violet",
-        "code": "#8A2BE2",
-        "sku": "CJBJPFJY00081-violet",
-        "price": 8.99,
-        "image": "produkt bilder/Aromatherapy essential oil humidifier bilder/Aromatherapy essential oil humidifier violet.jpg"
-      }
-    ],
-    "features": [
-      "12 verschiedene Aromatherapy-Düfte verfügbar",
-      "Ultraschall-Technologie für feine Nebel-Verteilung",
-      "LED-Beleuchtung mit verschiedenen Farben",
-      "Automatische Abschaltung bei niedrigem Wasserstand",
-      "Leiser Betrieb für Schlafzimmer geeignet",
-      "300ml Wassertank für bis zu 10 Stunden Betrieb"
-    ],
-    "tags": [
-      "aromatherapy",
-      "humidifier",
-      "wellness",
-      "entspannung",
-      "duft",
-      "luftbefeuchter",
-      "essential oil"
-    ]
-  },
-  {
-    "id": 35,
-    "name": "Thermische Massage",
-    "slug": "thermische-massage",
-    "price": 29.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Thermische Massage.jpg",
-    "description": "Ein EMS Thermal Neck Lifting und Tighten Massager, der mit elektrischem Mikrostrom Falten entfernt und die Haut strafft. Ideal für eine entspannende und verjüngende Nackenmassage.",
-    "sku": "CJYD1887254",
-    "inStock": true,
-    "shippingTime": "7-15 Werktage",
-    "showInSlider": false,
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#000000",
-        "sku": "CJYD188725403CX",
-        "price": 29.99,
-        "image": "produkt bilder/Thermische Massage bilder/Thermische Massage schwarz.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJYD188725404DW",
-        "price": 29.99,
-        "image": "produkt bilder/Thermische Massage bilder/Thermische Massage weiß.jpg"
-      }
-    ],
-    "tags": [
-      "neck massager",
-      "wellness",
-      "hautpflege",
-      "faltenentferner",
-      "ems"
-    ]
-  },
-  {
-    "id": 36,
-    "name": "Mitesserentferner Gerät",
-    "slug": "mitesserentferner-geraet",
-    "price": 16.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Mitesserentferner Gerät.jpg",
-    "description": "Elektrisches Mitesser-Entferner-Instrument mit Saugfunktion zur Gesichtsreinigung. Entfernt effektiv Akne und Mitesser für eine reinere Haut.",
-    "sku": "CJBJMRDD00019-White",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "showInSlider": false,
-    "tags": [
-      "blackhead remover",
-      "hautpflege",
-      "gesichtsreinigung",
-      "wellness",
-      "mitesserentferner"
-    ]
-  },
-  {
-    "id": 37,
-    "name": "Professioneller 5 in 1 Haar Trockner",
-    "slug": "professioneller-5-in-1-haar-trockner",
-    "price": 84.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Professioneller 5 in 1 Haar Trockner .jpg",
-    "description": "Professioneller 5-in-1 Haartrockner mit Bürste, Glätter und Lockenwickler. Elektrisches Haarstyling-Tool für alle Haartypen.",
-    "sku": "CJTF141037802BY",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "showInSlider": true,
-    "tags": [
-      "hair dryer",
-      "haarstyling",
-      "föhn",
-      "wellness",
-      "beauty"
-    ]
-  },
-  {
-    "id": 38,
-    "name": "Jade Stein",
-    "slug": "jade-stein",
-    "price": 14.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Jade Stein.jpg",
-    "description": "Natürlicher Jade-Massager und Gua Sha Stein zur Förderung der Durchblutung, Reduzierung von Schwellungen und zur Entspannung der Gesichtsmuskulatur. Ideal für die tägliche Hautpflege-Routine.",
-    "sku": "CJPF1011351",
-    "inStock": true,
-    "shippingTime": "6-11 Werktage",
-    "showInSlider": true,
-    "colors": [
-      {
-        "name": "Grün",
-        "code": "#008000",
-        "sku": "CJPF101135115OL",
-        "price": 14.99,
-        "image": "produkt bilder/Jade Stein bilder/Jade Stein grün.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJPF101135123WD",
-        "price": 14.99,
-        "image": "produkt bilder/Jade Stein bilder/Jade Stein weiß.jpg"
-      },
-      {
-        "name": "Pink",
-        "code": "#FFC0CB",
-        "sku": "CJPF101135119SH",
-        "price": 14.99,
-        "image": "produkt bilder/Jade Stein bilder/Jade Stein pink.jpg"
-      }
-    ],
-    "tags": [
-      "jade",
-      "massager",
-      "gua sha",
-      "wellness",
-      "hautpflege"
-    ]
-  },
-  {
-    "id": 40,
-    "name": "Wärmender Untersetzer",
-    "slug": "waermender-untersetzer",
-    "price": 22.99,
-    "category": "Haushalt und Küche",
-    "image": "produkt bilder/Wärmender Untersetzter.jpg",
-    "description": "Halten Sie Ihr Getränk mit diesem intelligenten Tassenwärmer-Untersetzer konstant auf der perfekten Temperatur. Ideal für Kaffee, Tee oder Kakao am Schreibtisch oder zu Hause.",
-    "sku": "CJJT1723382",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "showInSlider": true,
-    "colors": [
-      {
-        "name": "Grün",
-        "code": "#008000",
-        "sku": "CJJT172338203CX",
-        "price": 22.99,
-        "image": "produkt bilder/Wärmender Untersetzter bilder/Wärmender Untersetzter grün.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJJT172338201AZ",
-        "price": 22.99,
-        "image": "produkt bilder/Wärmender Untersetzter bilder/Wärmender Untersetzter weiß.jpg"
-      }
-    ],
-    "tags": [
-      "mug warmer",
-      "tassenwärmer",
-      "kaffee",
-      "tee",
-      "haushalt"
-    ]
-  },
-  {
-    "id": 41,
-    "name": "2 in 1 Öl Sprayer Flasche",
-    "slug": "2-in-1-oel-sprayer-flasche",
-    "price": 18.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/2 in 1 öl sprayer Flasche.jpg",
-    "description": "Praktische 2-in-1-Ölsprühflasche für die Küche. Perfekt zum Kochen, Grillen und für Salate. Ermöglicht einfaches Sprühen und Ausgießen von Öl und Essig.",
-    "sku": "CJYD187611401AZ",
-    "inStock": true,
-    "shippingTime": "6-11 Werktage",
-    "tags": [
-      "öl",
-      "sprayer",
-      "küche",
-      "kochen",
-      "grillen"
-    ],
-    "features": [
-      "2-in-1-Funktion: Sprühen und Ausgießen",
-      "Geeignet für Öl, Essig und andere Flüssigkeiten",
-      "Einfach zu befüllen und zu reinigen",
-      "Gleichmäßiges Sprühen für gesünderes Kochen",
-      "Modernes Design für jede Küche"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 42,
-    "name": "Aroma Öl Diffusor",
-    "slug": "aroma-oel-diffusor",
-    "price": 25.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Aroma Öl Diffusor.jpg",
-    "description": "Innovativer RGB Flame Aroma Diffuser mit realistischem 3D-Vulkan-Flammeneffekt. 130ml Kapazität mit bunter LED-Beleuchtung für entspannende Aromatherapie und stimmungsvolle Beleuchtung.",
-    "sku": "CJJD1582742",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#2C2C2C",
-        "sku": "CJJD1582742-Black",
-        "price": 25.99,
-        "image": "produkt bilder/Aroma Öl Diffusor bilder/Aroma Öl Diffusor schwarz.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJJD1582742-White",
-        "price": 25.99,
-        "image": "produkt bilder/Aroma Öl Diffusor bilder/Aroma Öl Diffusor weiß.jpg"
-      }
-    ],
-    "tags": [
-      "aroma diffuser",
-      "rgb beleuchtung",
-      "vulkan effekt",
-      "aromatherapie",
-      "wellness",
-      "entspannung",
-      "luftbefeuchter"
-    ],
-    "features": [
-      "3D Vulkan-Flammeneffekt mit RGB-Beleuchtung",
-      "130ml Wassertank für bis zu 6 Stunden Betrieb",
-      "Ultraschall-Vernebelungstechnologie",
-      "7 verschiedene LED-Farbmodi",
-      "Automatische Abschaltung bei leerem Tank",
-      "Whisper-leise Technologie",
-      "Perfekt für Schlafzimmer, Wohnzimmer und Büro"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 43,
-    "name": "Mini Thermal Drucker",
-    "slug": "mini-thermal-drucker",
-    "price": 35.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/Mini Thermal Drucker.jpg",
-    "description": "Tragbarer Mini-Thermodrucker für Etiketten, Fotos und Notizen. Bluetooth-kompatibel mit verschiedenen Papierrollen und Farben verfügbar.",
-    "sku": "CJJT1365880",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "colors": [
-      {
-        "name": "Grün",
-        "code": "#008000",
-        "sku": "CJJT136588021UF",
-        "price": 35.99,
-        "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker grün.jpg"
-      },
-      {
-        "name": "Blau",
-        "code": "#0066CC",
-        "sku": "CJJT136588022VE",
-        "price": 35.99,
-        "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker blau.jpg"
-      },
-      {
-        "name": "Pink",
-        "code": "#FFC0CB",
-        "sku": "CJJT136588034HS",
-        "price": 35.99,
-        "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker pink.jpg"
-      },
-      {
-        "name": "Gelb",
-        "code": "#FFD700",
-        "sku": "CJJT136588024XC",
-        "price": 35.99,
-        "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker gelb.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJJT136588038LO",
-        "price": 35.99,
-        "image": "produkt bilder/Mini Thermal Drucker bilder/Mini Thermal Drucker weiß.jpg"
-      }
-    ],
-    "tags": [
-      "thermal printer",
-      "label printer",
-      "bluetooth",
-      "portable",
-      "mini printer",
-      "photo printer",
-      "gadget"
-    ],
-    "features": [
-      "Bluetooth-kompatibel",
-      "Tragbares Design",
-      "Verschiedene Papierrollen verfügbar",
-      "Für Etiketten, Fotos und Notizen",
-      "Einfache App-Steuerung",
-      "Wiederaufladbar",
-      "Kompakt und leicht"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 44,
-    "name": "Smart Beamer",
-    "slug": "smart-beamer",
-    "price": 93.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/Smart Beamer.jpg",
-    "description": "Kompakter tragbarer Projektor für den Heimgebrauch mit 180° Projektionswinkel und automatischem Fokus. Perfekt für Filme, Präsentationen und Gaming.",
-    "sku": "CJYD180802920TG",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "colors": [
-      {
-        "name": "Silber",
-        "code": "#C0C0C0",
-        "sku": "CJYD180802920TG",
-        "price": 93.99,
-        "image": "produkt bilder/Smart Beamer bilder/Smart Beamer silber.jpg"
-      }
-    ],
-    "tags": [
-      "Projektor",
-      "Heimkino",
-      "Tragbar",
-      "180° Winkel",
-      "Automatischer Fokus",
-      "HD Qualität",
-      "Kompakt",
-      "Multimedia"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 45,
-    "name": "Klimaanlage mit Display",
-    "slug": "klimaanlage-mit-display",
-    "price": 39.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/Klimaanlage mit Display.jpg",
-    "description": "Tragbare Klimaanlage mit Display und Wasserkühlung für Räume, Büros und Autos. Effiziente Luftkühlung mit integriertem Ventilator und Wassertank.",
-    "sku": "CJYD177061602BY",
-    "inStock": true,
-    "shippingTime": "7-13 Werktage",
-    "tags": [
-      "Klimaanlage",
-      "Luftkühler",
-      "Tragbar",
-      "Wasserkühlung",
-      "Ventilator",
-      "Büro",
-      "Auto",
-      "Energiesparend"
-    ],
-    "showInSlider": false
-  },
-  {
-    "id": 47,
-    "name": "Tumbler Becher",
-    "slug": "tumbler-becher",
-    "price": 24.99,
-    "category": "Haushalt und Küche",
-    "image": "produkt bilder/Tumbler becher.jpg",
-    "description": "Isolierter 40 Oz Tumbler mit Griff und Strohhalm. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
-    "sku": "CJJT165633304DW",
-    "inStock": true,
-    "shippingTime": "6-11 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#000000",
-        "sku": "CJJT165633304DW",
-        "price": 24.99,
-        "image": "produkt bilder/Tumbler becher bilder/Tumbler becher schwarz.jpg"
-      },
-      {
-        "name": "Cream Weiß",
-        "code": "#FFF8DC",
-        "sku": "CJJT165633305EV",
-        "price": 24.99,
-        "image": "produkt bilder/Tumbler becher bilder/Tumbler becher cream white.jpg"
-      },
-      {
-        "name": "Bay Leaves",
-        "code": "#8FBC8F",
-        "sku": "CJJT165633312LO",
-        "price": 24.99,
-        "image": "produkt bilder/Tumbler becher bilder/Tumbler becher bay leaves.jpg"
-      },
-      {
-        "name": "Red Rust",
-        "code": "#B7410E",
-        "sku": "CJJT165633311KP",
-        "price": 24.99,
-        "image": "produkt bilder/Tumbler becher bilder/Tumbler becher red rust.jpg"
-      },
-      {
-        "name": "Peony Color",
-        "code": "#F8BBD0",
-        "sku": "CJJT1656333101WD",
-        "price": 24.99,
-        "image": "produkt bilder/Tumbler becher bilder/Tumbler becher peony color.jpg"
-      },
-      {
-        "name": "Hell Lila",
-        "code": "#E6E6FA",
-        "sku": "CJJT165633389KP",
-        "price": 24.99,
-        "image": "produkt bilder/Tumbler becher bilder/Tumbler becher hell lila.jpg"
-      },
-      {
-        "name": "Storm Sea",
-        "code": "#4682B4",
-        "sku": "CJJT165633310JQ",
-        "price": 24.99,
-        "image": "produkt bilder/Tumbler becher bilder/Tumbler becher storm sea.jpg"
-      },
-      {
-        "name": "Strohalm",
-        "code": "#FFFFFF",
-        "sku": "CJJT165633324XC",
-        "price": 24.99,
-        "image": "produkt bilder/Tumbler becher bilder/Tumbler becher Strohalm.jpg"
-      },
-      {
-        "name": "Thermal Sublimation",
-        "code": "#FFFFFF",
-        "sku": "CJJT165633302BY",
-        "price": 24.99,
-        "image": "produkt bilder/Tumbler becher bilder/Tumbler becher Thermal sublimation.jpg"
-      }
-    ],
-    "tags": [
-      "Tumbler",
-      "Isoliert",
-      "40 Oz",
-      "Strohhalm",
-      "Griff",
-      "BPA-frei",
-      "Spülmaschinenfest",
-      "Thermobecher",
-      "Küche",
-      "Getränke"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 48,
-    "name": "Tumbler Becher Winter",
-    "slug": "tumbler-becher-winter",
-    "price": 22.99,
-    "category": "Haushalt und Küche",
-    "image": "produkt bilder/Tumbler becher Winter.jpg",
-    "description": "Isolierter 40 Oz Winter Tumbler mit Griff und Strohhalm in festlichen Weihnachtsfarben. Perfekt für heiße und kalte Getränke. Hält Temperaturen bis zu 12 Stunden. BPA-frei und spülmaschinenfest.",
-    "sku": "CJJT165633331EV",
-    "inStock": true,
-    "shippingTime": "6-11 Werktage",
-    "colors": [
-      {
-        "name": "Weihnachtszauber",
-        "code": "#B22222",
-        "sku": "CJJT165633331EV",
-        "price": 22.99,
-        "image": "produkt bilder/Tumbler becher winter bilder/Tumbler becher Weihnachtszauber.jpg"
-      },
-      {
-        "name": "Strohalm",
-        "code": "#F5DEB3",
-        "sku": "CJJT165633324XC",
-        "price": 22.99,
-        "image": "produkt bilder/Tumbler becher winter bilder/Tumbler becher winter Strohalm.jpg"
-      }
-    ],
-    "tags": [
-      "Tumbler",
-      "Isoliert",
-      "40 Oz",
-      "Strohhalm",
-      "Griff",
-      "BPA-frei",
-      "Spülmaschinenfest",
-      "Winter",
-      "Weihnachten",
-      "Christmas",
-      "Thermobecher",
-      "Küche",
-      "Getränke"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 50,
-    "name": "Krystall Ball Nachtlampe",
-    "slug": "krystall-ball-nachtlampe",
-    "price": 16.99,
-    "category": "Beleuchtung",
-    "image": "produkt bilder/Krystall Ball Nachtlampe.jpg",
-    "description": "Leuchtende Kristallkugel mit verschiedenen Motiven - Sternenhimmel, Planeten, Mond und mehr. Perfekte Dekoration für Zuhause oder als Geschenk.",
-    "sku": "CJJT153840401AZ",
-    "inStock": true,
-    "shippingTime": "7-15 Werktage",
-    "colors": [
-      {
-        "name": "Mond",
-        "code": "#F4E4C1",
-        "sku": "CJJT153840404DW",
-        "price": 16.99,
-        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Krystall Ball Mond.jpg"
-      },
-      {
-        "name": "Riesenrad",
-        "code": "#FFB6C1",
-        "sku": "CJJT153840405EV",
-        "price": 16.99,
-        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Riesenrad.jpg"
-      },
-      {
-        "name": "Wassermolch",
-        "code": "#98D8C8",
-        "sku": "CJJT153840435IR",
-        "price": 16.99,
-        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Wassermolch.jpg"
-      },
-      {
-        "name": "Saturn",
-        "code": "#E6B87E",
-        "sku": "CJJT153840403CX",
-        "price": 16.99,
-        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Saturn.jpg"
-      },
-      {
-        "name": "Segelboot",
-        "code": "#87CEEB",
-        "sku": "CJJT153840418RI",
-        "price": 16.99,
-        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Segelboot.jpg"
-      },
-      {
-        "name": "Schneemann",
-        "code": "#FFFFFF",
-        "sku": "CJJT153840433GT",
-        "price": 16.99,
-        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Schneemann.jpg"
-      },
-      {
-        "name": "Sternenhimmel",
-        "code": "#4B0082",
-        "sku": "CJJT153840408HS",
-        "price": 16.99,
-        "image": "produkt bilder/Krystall Ball Nachtlampe bilder/Sternenhimmel.jpg"
-      }
-    ],
-    "tags": [
-      "kristallkugel",
-      "leuchtend",
-      "dekoration",
-      "geschenk",
-      "sternenhimmel"
-    ],
-    "features": [
-      "Leuchtende Kristallkugel",
-      "7 verschiedene Motive",
-      "Perfekte Dekoration",
-      "Ideal als Geschenk",
-      "Hochwertige Verarbeitung"
-    ],
-    "showInSlider": true
-  },
-  {
-    "id": 51,
-    "name": "Auto Bildschirm",
-    "slug": "auto-bildschirm",
-    "price": 58.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/auto bildschirm.jpg",
-    "description": "Kompakter Auto-Bildschirm für Navigation, Multimedia und Rückfahrkamera-Ansicht. Einfache Montage und klare Darstellung für Alltag und Reisen.",
-    "sku": "CJPB164582102BY",
-    "inStock": true,
-    "shippingTime": "6-11 Werktage",
-    "tags": [
-      "auto",
-      "bildschirm",
-      "display",
-      "navigation",
-      "multimedia"
-    ],
-    "showInSlider": true
-  },
-  {
     "id": 52,
     "name": "Akku-Reinigungsbürste mit 7 Aufsätzen",
     "slug": "akku-reinigungsbuerste",
@@ -1692,58 +442,6 @@
     ]
   },
   {
-    "id": 67,
-    "name": "Mini-Schlafkopfhörer Bluetooth",
-    "slug": "mini-schlafkopfhoerer-bluetooth",
-    "price": 14.99,
-    "category": "Technik/Gadgets",
-    "image": "produkt bilder/Mini-Schlafkopfhörer Bluetooth.jpg",
-    "description": "Kleine kabellose In-Ear-Kopfhörer mit weichen Silikonaufsätzen, flach genug für Seitenschläfer. Bluetooth, Ladecase, 4–8 Stunden Laufzeit laut Hersteller.",
-    "sku": "CJ2610180651421624700",
-    "cjPid": "2610180651421624700",
-    "inStock": true,
-    "shippingTime": "8-15 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#000000",
-        "sku": "CJYP327986901AZ",
-        "price": 14.99,
-        "image": "produkt bilder/Mini-Schlafkopfhörer Bluetooth.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJYP327986902BY",
-        "price": 14.99,
-        "image": "produkt bilder/Mini-Schlafkopfhörer Bluetooth bilder/Mini-Schlafkopfhörer Bluetooth weiß.jpg"
-      },
-      {
-        "name": "Beige",
-        "code": "#E8D5B7",
-        "sku": "CJYP327986903CX",
-        "price": 14.99,
-        "image": "produkt bilder/Mini-Schlafkopfhörer Bluetooth bilder/Mini-Schlafkopfhörer Bluetooth beige.jpg"
-      }
-    ],
-    "showInSlider": true,
-    "tags": [
-      "kopfhörer",
-      "schlafen",
-      "bluetooth",
-      "earbuds",
-      "seitenschläfer"
-    ],
-    "features": [
-      "Flache Bauform, steht kaum aus dem Ohr",
-      "Weiche Silikonaufsätze",
-      "Bluetooth, ca. 10 m Reichweite",
-      "4–8 Stunden Laufzeit laut Hersteller",
-      "Mit Ladecase",
-      "Musik und Telefonate"
-    ]
-  },
-  {
     "id": 68,
     "name": "USB-Ladegerät mit 7 Anschlüssen",
     "slug": "usb-ladegeraet-7-anschluesse",
@@ -1864,181 +562,1295 @@
     ]
   },
   {
-    "id": 72,
-    "name": "Elektrische Salz- und Pfeffermühle",
-    "slug": "elektrische-salz-pfeffermuehle",
-    "price": 35.99,
+    "id": 76,
+    "name": "Gemüseschneider mit Handschutz",
+    "slug": "gemueseschneider-handschutz",
+    "price": 18.99,
     "category": "Haushalt und Küche",
-    "image": "produkt bilder/Elektrische Salz- und Pfeffermühle.jpg",
-    "description": "Akku-Mühle für Salz und Pfeffer mit einer Hand bedienbar, Mahlgrad einstellbar, LED-Licht. Laden per USB, keine Batterien nötig.",
-    "sku": "CJ1459350976749244416",
-    "cjPid": "1459350976749244416",
+    "image": "produkt bilder/Gemüseschneider mit Handschutz.jpg",
+    "description": "Stehender Gemüseschneider mit Drehknopf für die Schnittart und einem Schieber, der die Finger von der Klinge fernhält.",
+    "sku": "CJCJ299865201AZ",
+    "cjPid": "2079841735473528833",
+    "lager": "DE",
     "inStock": true,
-    "shippingTime": "12-20 Werktage",
-    "colors": [
-      {
-        "name": "Schwarz",
-        "code": "#1A1A1A",
-        "sku": "CJJT135136803CX",
-        "price": 35.99,
-        "image": "produkt bilder/Elektrische Salz- und Pfeffermühle.jpg"
-      },
-      {
-        "name": "Weiß",
-        "code": "#FFFFFF",
-        "sku": "CJJT135136801AZ",
-        "price": 35.99,
-        "image": "produkt bilder/Elektrische Salz- und Pfeffermühle bilder/Elektrische Salz- und Pfeffermühle weiß.jpg"
-      }
-    ],
+    "shippingTime": "5-8 Werktage",
     "showInSlider": true,
     "tags": [
-      "pfeffermühle",
-      "salzmühle",
-      "küche",
-      "gewürze",
-      "kochen"
+      "gemüseschneider",
+      "mandoline",
+      "küche"
     ],
     "features": [
-      "Bedienung mit einer Hand",
-      "Mahlgrad einstellbar",
-      "LED-Licht",
-      "Akku 500 mAh, Laden per USB",
-      "Nachfüllbar",
-      "Schwarz oder Weiß"
+      "Schnittart und Dicke über einen Drehknopf",
+      "Schieber mit Handschutz",
+      "Keine Klingen zum Wechseln",
+      "Steht stabil auf der Arbeitsfläche",
+      "Für Scheiben, Stifte und Pommes"
     ]
   },
   {
-    "id": 73,
-    "name": "Thermobecher mit Temperaturanzeige",
-    "slug": "thermobecher-temperaturanzeige",
+    "id": 77,
+    "name": "Digitale Küchenwaage 10 kg",
+    "slug": "kuechenwaage-digital-10kg",
     "price": 21.99,
     "category": "Haushalt und Küche",
-    "image": "produkt bilder/Thermobecher mit Temperaturanzeige.jpg",
-    "description": "Doppelwandiger Edelstahl-Becher mit 450 ml und Temperaturanzeige im Deckel. Mit Trageschlaufe, für Kaffee, Tee und kalte Getränke.",
-    "sku": "CJ1737828106674647040",
-    "cjPid": "1737828106674647040",
+    "image": "produkt bilder/Digitale Küchenwaage 10 kg.jpg",
+    "description": "Flache Küchenwaage aus Edelstahl, wiegt bis 10 kg auf 1 g genau. Blau beleuchtetes Display, Tara-Funktion.",
+    "sku": "CJCF295304701AZ",
+    "cjPid": "2069710983674114050",
+    "lager": "DE",
     "inStock": true,
-    "shippingTime": "12-20 Werktage",
-    "colors": [
-      {
-        "name": "Weiß-Braun",
-        "code": "#8B5A2B",
-        "sku": "CJJT192676801AZ",
-        "price": 21.99,
-        "image": "produkt bilder/Thermobecher mit Temperaturanzeige.jpg"
-      },
-      {
-        "name": "Weiß-Schwarz",
-        "code": "#222222",
-        "sku": "CJJT192676802BY",
-        "price": 21.99,
-        "image": "produkt bilder/Thermobecher mit Temperaturanzeige bilder/Thermobecher mit Temperaturanzeige weiß-schwarz.jpg"
-      },
-      {
-        "name": "Weiß-Blau",
-        "code": "#1F3A6E",
-        "sku": "CJJT192676803CX",
-        "price": 21.99,
-        "image": "produkt bilder/Thermobecher mit Temperaturanzeige bilder/Thermobecher mit Temperaturanzeige weiß-blau.jpg"
-      }
-    ],
+    "shippingTime": "5-8 Werktage",
     "showInSlider": true,
     "tags": [
-      "thermobecher",
-      "kaffee",
-      "to go",
-      "becher",
-      "temperatur"
+      "küchenwaage",
+      "waage",
+      "backen"
     ],
     "features": [
-      "Temperaturanzeige im Deckel",
-      "450 ml",
-      "Doppelwandig, innen Edelstahl 316",
-      "Für heiße und kalte Getränke",
-      "Mit Trageschlaufe",
-      "3 Farben"
+      "Wiegt bis 10 kg, Anzeige in 1-g-Schritten",
+      "Wiegefläche aus Edelstahl",
+      "LCD mit blauer Beleuchtung",
+      "Tara- und Einheiten-Taste",
+      "Abschaltautomatik nach 120 Sekunden"
     ]
   },
   {
-    "id": 74,
-    "name": "Akku-Munddusche",
-    "slug": "akku-munddusche",
-    "price": 28.99,
-    "category": "Körperpflege/Wellness",
-    "image": "produkt bilder/Akku-Munddusche.jpg",
-    "description": "Kabellose Munddusche mit 3 Modi und 240-ml-Wassertank. Laden per USB, schaltet nach 2 Minuten von selbst ab.",
-    "sku": "CJ1407593066453405696",
-    "cjPid": "1407593066453405696",
+    "id": 78,
+    "name": "Magnetische LED-Arbeitsleuchte, 2 Stück",
+    "slug": "led-arbeitsleuchte-magnetisch-2er",
+    "price": 22.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Magnetische LED-Arbeitsleuchte, 2 Stück.jpg",
+    "description": "Zwei Akku-Arbeitsleuchten mit COB-LED, Magnetfuß und Haken. Helligkeit über einen Drehschalter stufenlos einstellbar.",
+    "sku": "CJSD245627301AZ",
+    "cjPid": "1955909163225804801",
+    "lager": "DE",
     "inStock": true,
-    "shippingTime": "12-20 Werktage",
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "arbeitsleuchte",
+      "werkstatt",
+      "led"
+    ],
+    "features": [
+      "2 Leuchten im Set",
+      "COB-LED, Helligkeit stufenlos per Drehschalter",
+      "Magnetfuß und Haken zum Aufhängen",
+      "Kopf knickbar",
+      "Eingebauter Akku, Micro-USB-Ladekabel"
+    ]
+  },
+  {
+    "id": 79,
+    "name": "Solar-Wandleuchte mit Bewegungsmelder",
+    "slug": "solar-wandleuchte-bewegungsmelder",
+    "price": 32.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Solar-Wandleuchte mit Bewegungsmelder.jpg",
+    "description": "Solarleuchte mit 265 LEDs und drei verstellbaren Köpfen. Bewegungsmelder bis 5 m, wasserfest nach IP65, ohne Stromanschluss.",
+    "sku": "CJSD31872050001",
+    "cjPid": "2102307865772339201",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "solarleuchte",
+      "außenleuchte",
+      "bewegungsmelder"
+    ],
+    "features": [
+      "265 LEDs, ca. 3000 Lumen, 6500 K Tageslicht",
+      "Bewegungs- und Dämmerungssensor",
+      "Hell bei Bewegung, nach 30 s gedimmt",
+      "IP65 staub- und strahlwassergeschützt",
+      "Schrauben zur Wandmontage dabei"
+    ]
+  },
+  {
+    "id": 80,
+    "name": "Mini-Luftkühler mit Sprühnebel",
+    "slug": "mini-luftkuehler-spruehnebel",
+    "price": 30.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Mini-Luftkühler mit Sprühnebel.jpg",
+    "description": "Tischventilator ohne Flügel mit Sprühnebel, 6 Stufen und Timer. Läuft über USB, mit Farblicht.",
+    "sku": "CJ2077583157631160322",
+    "cjPid": "2077583157631160322",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
     "colors": [
       {
         "name": "Weiß",
         "code": "#FFFFFF",
-        "sku": "CJPF118780401AZ",
-        "price": 28.99,
-        "image": "produkt bilder/Akku-Munddusche.jpg"
+        "sku": "CJKD298714201AZ",
+        "price": 30.99,
+        "image": "produkt bilder/Mini-Luftkühler mit Sprühnebel bilder/Mini-Luftkühler mit Sprühnebel weiss.jpg"
+      },
+      {
+        "name": "Blau",
+        "code": "#5B8DEF",
+        "sku": "CJKD298714202BY",
+        "price": 30.99,
+        "image": "produkt bilder/Mini-Luftkühler mit Sprühnebel bilder/Mini-Luftkühler mit Sprühnebel blau.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "ventilator",
+      "luftkühler",
+      "schreibtisch"
+    ],
+    "features": [
+      "Ventilator ohne Flügel mit Sprühnebel",
+      "6 Geschwindigkeitsstufen",
+      "Timer 1–6 Stunden, Touch-Bedienung",
+      "Wechselndes Farblicht",
+      "Stromversorgung über USB (5 V/2 A)"
+    ]
+  },
+  {
+    "id": 81,
+    "name": "Faltbarer Haartrockner mit Ionen",
+    "slug": "haartrockner-faltbar-ionen",
+    "price": 21.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Faltbarer Haartrockner mit Ionen.jpg",
+    "description": "Kompakter Haartrockner mit Ionen-Funktion und klappbarem Griff, umschaltbar zwischen warmer und kalter Luft.",
+    "sku": "CJTF285505501AZ",
+    "cjPid": "2048312770399854593",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "föhn",
+      "haartrockner",
+      "reise"
+    ],
+    "features": [
+      "Klappbarer Griff",
+      "Ionen-Funktion",
+      "Warm- und Kaltstufe",
+      "Kompakte Bauform",
+      "Für Haushalt und Reise"
+    ]
+  },
+  {
+    "id": 82,
+    "name": "Akku-Tischlampe mit Stoffschirm",
+    "slug": "akku-tischlampe-stoffschirm",
+    "price": 35.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Akku-Tischlampe mit Stoffschirm.jpg",
+    "description": "Kabellose Tischlampe mit Touch-Dimmer, drei Lichtfarben und Akku für 12 bis 32 Stunden. Laden über USB-C.",
+    "sku": "CJSD31871830001",
+    "cjPid": "2102307266121084930",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "tischlampe",
+      "akku",
+      "nachttisch"
+    ],
+    "features": [
+      "Akku 18650, 4000–5200 mAh",
+      "Touch-Dimmer: 30/60/100 % oder stufenlos",
+      "Lichtfarben 3000 K, 4500 K, 6000 K",
+      "Stoffschirm, Metallfuß",
+      "E12-LED-Birne und USB-C-Kabel dabei"
+    ]
+  },
+  {
+    "id": 83,
+    "name": "Akku-Pilzlampe mit Wasserwellen-Licht",
+    "slug": "pilzlampe-wasserwellen",
+    "price": 33.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/Akku-Pilzlampe mit Wasserwellen-Licht.jpg",
+    "description": "Tischlampe mit abnehmbarem Schirm: mit Schirm warmes Licht, ohne Schirm Wasserwellen an Wand und Decke. 16 Farben, Fernbedienung.",
+    "sku": "CJSD37072630001",
+    "cjPid": "2122537460479262721",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "stimmungslicht",
+      "projektor",
+      "nachtlicht"
+    ],
+    "features": [
+      "Zwei Modi: Lampe mit Schirm oder Wellen-Projektion",
+      "16 RGB-Farben, Weißlicht stufenlos 2500–6000 K",
+      "4 Geschwindigkeiten für die Wellen, 10–100 % Helligkeit",
+      "Akku 5200 mAh, 8–20 Stunden, Laden über USB-C",
+      "IP44 spritzwassergeschützt, Tasten und IR-Fernbedienung"
+    ]
+  },
+  {
+    "id": 84,
+    "name": "Tragbare Akku-Munddusche",
+    "slug": "munddusche-akku-tragbar",
+    "price": 40.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Tragbare Akku-Munddusche.jpg",
+    "description": "Kabellose Munddusche mit 4 Modi und Wassertank. Laden über USB-C, in Grün oder Pink.",
+    "sku": "CJ2001125349598326785",
+    "cjPid": "2001125349598326785",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "colors": [
+      {
+        "name": "Grün",
+        "code": "#8FD18F",
+        "sku": "CJST265051002BY",
+        "price": 40.99,
+        "image": "produkt bilder/Tragbare Akku-Munddusche bilder/Tragbare Akku-Munddusche grün.jpg"
       },
       {
         "name": "Pink",
         "code": "#F4B6C2",
-        "sku": "CJPF118780402BY",
-        "price": 28.99,
-        "image": "produkt bilder/Akku-Munddusche bilder/Akku-Munddusche pink.jpg"
-      },
-      {
-        "name": "Hellgrün",
-        "code": "#A8D8B9",
-        "sku": "CJPF118780403CX",
-        "price": 28.99,
-        "image": "produkt bilder/Akku-Munddusche bilder/Akku-Munddusche hellgrün.jpg"
+        "sku": "CJST265051001AZ",
+        "price": 40.99,
+        "image": "produkt bilder/Tragbare Akku-Munddusche bilder/Tragbare Akku-Munddusche pink.jpg"
       }
     ],
     "showInSlider": true,
     "tags": [
       "munddusche",
       "zahnpflege",
-      "bad",
-      "reise",
-      "wellness"
+      "reise"
     ],
     "features": [
-      "3 Modi: normal, sanft, Puls",
-      "240 ml Wassertank",
-      "Akku, Laden per USB",
-      "Abschaltung nach 2 Minuten",
-      "Kabellos, auch für Reisen",
-      "Weiß, Pink oder Hellgrün"
+      "4 Modi: Puls, Sanft, Normal, Stark",
+      "Kabellos mit eingebautem Akku",
+      "Laden über USB-C",
+      "Wassertank am Gerät",
+      "Leiser Betrieb"
     ]
   },
   {
-    "id": 75,
-    "name": "Astronaut Sternenhimmel-Projektor",
-    "slug": "astronaut-sternenhimmel-projektor",
-    "price": 34.99,
-    "category": "Beleuchtung",
-    "image": "produkt bilder/Astronaut Sternenhimmel-Projektor.jpg",
-    "description": "Astronauten-Figur, die Sterne und Nebel an Wand und Decke wirft. Kopf magnetisch, 360° drehbar, mit Fernbedienung und Timer.",
-    "sku": "CJYD191990201AZ",
-    "cjPid": "1734820599110836224",
+    "id": 85,
+    "name": "Öl-Sprühflasche aus Glas 470 ml",
+    "slug": "oel-spruehflasche-glas",
+    "price": 20.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Öl-Sprühflasche aus Glas 470 ml.jpg",
+    "description": "2-in-1-Ölflasche aus Glas: sprühen oder gießen. 470 ml, mit weiter Öffnung zum Befüllen.",
+    "sku": "CJCC30571340001",
+    "cjPid": "2087734299197730818",
+    "lager": "DE",
     "inStock": true,
-    "shippingTime": "12-20 Werktage",
+    "shippingTime": "5-8 Werktage",
     "showInSlider": true,
     "tags": [
-      "projektor",
-      "sternenhimmel",
-      "astronaut",
-      "nachtlicht",
-      "deko"
+      "ölsprüher",
+      "küche",
+      "glas"
     ],
     "features": [
-      "Sterne und Nebel, auch einzeln",
-      "Kopf magnetisch, 360° drehbar",
+      "Sprüh- und Gießfunktion",
+      "Flasche aus Glas",
+      "470 ml Inhalt",
+      "Weite Einfüllöffnung",
+      "Für Öl, Essig und Soßen"
+    ]
+  },
+  {
+    "id": 86,
+    "name": "Manuelle Kapsel-Kaffeepresse",
+    "slug": "kapsel-kaffeepresse-manuell",
+    "price": 20.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Manuelle Kapsel-Kaffeepresse.jpg",
+    "description": "Kaffeezubereiter für Kapseln, der ohne Strom und Akku auskommt: Kapsel einlegen, Wasser rein, von Hand drücken.",
+    "sku": "CJCF217538701AZ",
+    "cjPid": "1851205156130934784",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "kaffee",
+      "kapsel",
+      "camping"
+    ],
+    "features": [
+      "Rein manuell, ohne Strom und Batterie",
+      "Für Kapseln (laut Hersteller Nestlé, K-Cup) und Kaffeepulver",
+      "Standfuß mit Tassenplatz",
+      "Gehäuse aus ABS",
+      "Schwarz"
+    ]
+  },
+  {
+    "id": 87,
+    "name": "LED-Flaschenlampe, 2er-Set",
+    "slug": "led-flaschenlampe-2er",
+    "price": 24.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/LED-Flaschenlampe, 2er-Set.jpg",
+    "description": "Zwei Lampenaufsätze für Flaschen: einfach auf eine leere Flasche stecken. Touch-dimmbar, 3 Lichtfarben, Akku.",
+    "sku": "CJ2090719214553784322",
+    "cjPid": "2090719214553784322",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#1C1C1C",
+        "sku": "CJSN308130501AZ",
+        "price": 24.99,
+        "image": "produkt bilder/LED-Flaschenlampe, 2er-Set bilder/LED-Flaschenlampe, 2er-Set schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJSN308130502BY",
+        "price": 24.99,
+        "image": "produkt bilder/LED-Flaschenlampe, 2er-Set bilder/LED-Flaschenlampe, 2er-Set weiss.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "flaschenlampe",
+      "deko",
+      "tischlampe"
+    ],
+    "features": [
+      "2 Aufsätze im Set",
+      "Passt auf die meisten Wein- und Likörflaschen",
+      "3 Lichtfarben, stufenlos dimmbar per Touch",
+      "Akku 1200 mAh, kabellos",
+      "In Schwarz oder Weiß"
+    ]
+  },
+  {
+    "id": 88,
+    "name": "Mini-Beamer für Handy und USB",
+    "slug": "mini-beamer-handy",
+    "price": 34.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Mini-Beamer für Handy und USB.jpg",
+    "description": "Kleiner LED-Beamer für Filme vom Handy (per Kabel), vom USB-Stick oder von der SD-Karte. Mit Fernbedienung.",
+    "sku": "CJTY284166701AZ",
+    "cjPid": "2045397744410615809",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "beamer",
+      "projektor",
+      "filmabend"
+    ],
+    "features": [
+      "LED-Mini-Beamer",
+      "Eingänge: USB, SD-Karte, AV, HDMI",
+      "Handy per Kabel anschließbar",
+      "Stromversorgung über USB",
+      "Fernbedienung und AV-Kabel dabei"
+    ]
+  },
+  {
+    "id": 89,
+    "name": "Nackenmassagegerät mit Wärme",
+    "slug": "nackenmassagegeraet-waerme",
+    "price": 30.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Nackenmassagegerät mit Wärme.jpg",
+    "description": "Massagegerät für den Nacken in U-Form mit Impuls-Massage, Wärme bis 42 °C, 4 Modi und 15 Stufen. Per USB aufladbar.",
+    "sku": "CJAM353478201AZ",
+    "cjPid": "2115738233280737282",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "nacken",
+      "massage",
+      "wärme"
+    ],
+    "features": [
+      "Impuls-Massage für den Nacken",
+      "4 Modi und 15 Intensitätsstufen",
+      "Wärmefunktion bis 42 °C",
+      "Akku 700 mAh, Laden über USB",
+      "Elastische U-Form"
+    ]
+  },
+  {
+    "id": 90,
+    "name": "Schallzahnbürste mit 2 Modi",
+    "slug": "schallzahnbuerste-2-modi",
+    "price": 19.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Schallzahnbürste mit 2 Modi.jpg",
+    "description": "Schallzahnbürste mit Reinigungs- und Sensitiv-Modus, 2-Minuten-Timer und 2 Ersatzköpfen. In Schwarz oder Rot.",
+    "sku": "CJ1968203527550689281",
+    "cjPid": "1968203527550689281",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#1C1C1C",
+        "sku": "CJST253278301AZ",
+        "price": 19.99,
+        "image": "produkt bilder/Schallzahnbürste mit 2 Modi bilder/Schallzahnbürste mit 2 Modi schwarz.jpg"
+      },
+      {
+        "name": "Rot",
+        "code": "#D7263D",
+        "sku": "CJST253278302BY",
+        "price": 19.99,
+        "image": "produkt bilder/Schallzahnbürste mit 2 Modi bilder/Schallzahnbürste mit 2 Modi rot.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "zahnbürste",
+      "schallzahnbürste",
+      "mundpflege"
+    ],
+    "features": [
+      "Modi Clean und Sensitive",
+      "Speicherfunktion für den letzten Modus",
+      "2-Minuten-Timer mit 30-Sekunden-Intervall",
+      "Borsten aus DuPont-Nylon",
+      "2 Ersatz-Bürstenköpfe"
+    ]
+  },
+  {
+    "id": 91,
+    "name": "Ultraschallreiniger 0,8 l",
+    "slug": "ultraschallreiniger-0-8l",
+    "price": 43.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Ultraschallreiniger 0,8 l.jpg",
+    "description": "Ultraschallreiniger aus Edelstahl für Brillen, Schmuck, Uhrenarmbänder und Prothesen. 18 Zeitstufen, Heizfunktion.",
+    "sku": "CJSD28169280001",
+    "cjPid": "2039634350174236673",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "ultraschallreiniger",
+      "schmuck",
+      "brille"
+    ],
+    "features": [
+      "Fassungsvermögen 0,8 l",
+      "18 Zeitstufen von 0 bis 30 Minuten",
+      "Heizfunktion, Anzeige für Zeit und Temperatur",
+      "Behälter und Gehäuse aus Edelstahl",
+      "Laut Hersteller CE-, FCC- und RoHS-zertifiziert"
+    ]
+  },
+  {
+    "id": 92,
+    "name": "Retro-Wasserkocher 1,7 l mit Thermometer",
+    "slug": "retro-wasserkocher-thermometer",
+    "price": 58.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Retro-Wasserkocher 1,7 l mit Thermometer.jpg",
+    "description": "Wasserkocher im Retro-Look mit Thermometer vorne, 1,7 l Inhalt, Innenseite aus Edelstahl 304, Strix-Regler.",
+    "sku": "CJ1968522246648938497",
+    "cjPid": "1968522246648938497",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "colors": [
+      {
+        "name": "Creme",
+        "code": "#F3EBDD",
+        "sku": "CJCF253364301AZ",
+        "price": 58.99,
+        "image": "produkt bilder/Retro-Wasserkocher 1,7 l mit Thermometer bilder/Retro-Wasserkocher 1,7 l mit Thermometer creme.jpg"
+      },
+      {
+        "name": "Rosa",
+        "code": "#F4C6CC",
+        "sku": "CJCF253364302BY",
+        "price": 58.99,
+        "image": "produkt bilder/Retro-Wasserkocher 1,7 l mit Thermometer bilder/Retro-Wasserkocher 1,7 l mit Thermometer rosa.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "wasserkocher",
+      "retro",
+      "tee"
+    ],
+    "features": [
+      "1,7 l Fassungsvermögen",
+      "Thermometer an der Front",
+      "Innen Edelstahl 304, Strix-Regler",
+      "Trockengehschutz",
+      "Doppelwandig, außen weniger heiß"
+    ]
+  },
+  {
+    "id": 93,
+    "name": "Akku-Hochdruckreiniger mit 6-in-1-Düse",
+    "slug": "akku-hochdruckreiniger-6in1",
+    "price": 43.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Akku-Hochdruckreiniger mit 6-in-1-Düse.jpg",
+    "description": "Kabelloser Hochdruckreiniger mit 21-V-Akku, 6-in-1-Düse und 5-m-Schlauch. Saugt aus dem Eimer oder läuft am Wasserhahn.",
+    "sku": "CJXC316647601AZ",
+    "cjPid": "2099833790608031746",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "hochdruckreiniger",
+      "auto",
+      "garten"
+    ],
+    "features": [
+      "21-V-Akku, kabellos",
+      "6-in-1-Düse für verschiedene Strahlarten",
+      "Bis 3,7 l/min, Reichweite 6–10 m",
+      "Ansaugen aus Behälter oder Anschluss am Wasserhahn",
+      "Überhitzungsschutz"
+    ]
+  },
+  {
+    "id": 94,
+    "name": "Handmixer mit Ständer und Schüssel",
+    "slug": "handmixer-staender-schuessel",
+    "price": 31.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Handmixer mit Ständer und Schüssel.jpg",
+    "description": "Mixer mit 7 Stufen, der mit Ständer und Schüssel oder einzeln als Handmixer arbeitet. 1,7-l-Edelstahlschüssel.",
+    "sku": "CJJT28031080001",
+    "cjPid": "2036653351707394050",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "mixer",
+      "backen",
+      "küche"
+    ],
+    "features": [
+      "Mit Ständer oder als Handmixer nutzbar",
+      "7 Geschwindigkeitsstufen",
+      "Edelstahlschüssel 1,7 l",
+      "Rührbesen dabei",
+      "Leistung bis 150 W"
+    ]
+  },
+  {
+    "id": 95,
+    "name": "LED-Lupenleuchte 10-fach",
+    "slug": "led-lupenleuchte-10fach",
+    "price": 34.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/LED-Lupenleuchte 10-fach.jpg",
+    "description": "Schreibtischlampe mit 10-fach-Lupe und 72 LEDs, 3 Lichtfarben und stufenlos dimmbar. Mit Standfuß und Tischklemme.",
+    "sku": "CJ2109933671990857729",
+    "cjPid": "2109933671990857729",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#1C1C1C",
+        "sku": "CJJY325376301AZ",
+        "price": 34.99,
+        "image": "produkt bilder/LED-Lupenleuchte 10-fach bilder/LED-Lupenleuchte 10-fach schwarz.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJJY325376302BY",
+        "price": 34.99,
+        "image": "produkt bilder/LED-Lupenleuchte 10-fach bilder/LED-Lupenleuchte 10-fach weiss.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "lupe",
+      "schreibtischlampe",
+      "basteln"
+    ],
+    "features": [
+      "Lupe mit 10-facher Vergrößerung",
+      "72 LEDs, 3 Lichtfarben",
+      "Helligkeit stufenlos 10–100 %",
+      "Standfuß und Tischklemme (bis 5,3 cm) dabei",
+      "Schwenkarm, Montage ohne Werkzeug"
+    ]
+  },
+  {
+    "id": 96,
+    "name": "Powerbank 20.000 mAh mit 45 W",
+    "slug": "powerbank-20000mah-45w",
+    "price": 43.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Powerbank 20.000 mAh mit 45 W.jpg",
+    "description": "Powerbank mit 20.000 mAh, Schnellladen und Prozent-Anzeige. Lädt bis zu drei Geräte gleichzeitig, USB-C-Kabel dabei.",
+    "sku": "CJ2105228689626152962",
+    "cjPid": "2105228689626152962",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#1C1C1C",
+        "sku": "CJCD321252601AZ",
+        "price": 43.99,
+        "image": "produkt bilder/Powerbank 20.000 mAh mit 45 W bilder/Powerbank 20.000 mAh mit 45 W schwarz.jpg"
+      },
+      {
+        "name": "Rosa",
+        "code": "#F4C6CC",
+        "sku": "CJCD321252602BY",
+        "price": 43.99,
+        "image": "produkt bilder/Powerbank 20.000 mAh mit 45 W bilder/Powerbank 20.000 mAh mit 45 W rosa.jpg"
+      },
+      {
+        "name": "Blau",
+        "code": "#9EC5E8",
+        "sku": "CJCD321252603CX",
+        "price": 43.99,
+        "image": "produkt bilder/Powerbank 20.000 mAh mit 45 W bilder/Powerbank 20.000 mAh mit 45 W blau.jpg"
+      },
+      {
+        "name": "Weiß",
+        "code": "#FFFFFF",
+        "sku": "CJCD321252605EV",
+        "price": 43.99,
+        "image": "produkt bilder/Powerbank 20.000 mAh mit 45 W bilder/Powerbank 20.000 mAh mit 45 W weiss.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "powerbank",
+      "laden",
+      "reise"
+    ],
+    "features": [
+      "Kapazität 20.000 mAh",
+      "Schnellladen bis 45 W, USB-C in beide Richtungen",
+      "Bis zu 3 Geräte gleichzeitig",
+      "Digitale Anzeige 0–100 %",
+      "USB-C-auf-USB-C-Kabel dabei"
+    ]
+  },
+  {
+    "id": 97,
+    "name": "Mini-Powerbank 5.000 mAh für iPhone",
+    "slug": "mini-powerbank-5000mah-iphone",
+    "price": 19.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Mini-Powerbank 5.000 mAh für iPhone.jpg",
+    "description": "Mini-Powerbank in Lippenstiftgröße mit Lightning-Stecker, die direkt am iPhone steckt. 20 W, mit Ausklappständer.",
+    "sku": "CJ2045400942378672130",
+    "cjPid": "2045400942378672130",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#1C1C1C",
+        "sku": "CJCD284169701AZ",
+        "price": 19.99,
+        "image": "produkt bilder/Mini-Powerbank 5.000 mAh für iPhone bilder/Mini-Powerbank 5.000 mAh für iPhone schwarz.jpg"
+      },
+      {
+        "name": "Rosa",
+        "code": "#F4C6CC",
+        "sku": "CJCD284169702BY",
+        "price": 19.99,
+        "image": "produkt bilder/Mini-Powerbank 5.000 mAh für iPhone bilder/Mini-Powerbank 5.000 mAh für iPhone rosa.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "powerbank",
+      "iphone",
+      "mini"
+    ],
+    "features": [
+      "5.000 mAh",
+      "Lightning-Stecker für iPhone bis iPhone 14",
+      "Schnellladen mit 20 W",
+      "Ausklappbarer Ständer",
+      "Laden in ca. 2 Stunden"
+    ]
+  },
+  {
+    "id": 98,
+    "name": "Elektrorasierer 3-in-1 nass und trocken",
+    "slug": "elektrorasierer-3in1",
+    "price": 20.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Elektrorasierer 3-in-1 nass und trocken.jpg",
+    "description": "Rotationsrasierer mit 3 Aufsätzen: Scherkopf, Barttrimmer, Nasenhaartrimmer. Nass und trocken nutzbar, Laden per USB.",
+    "sku": "CJTX28390680001",
+    "cjPid": "2045028095207788546",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "rasierer",
+      "herren",
+      "bart"
+    ],
+    "features": [
+      "3 wechselbare Köpfe",
+      "Nass- und Trockenrasur",
+      "Schwimmender Rotations-Scherkopf",
+      "Selbstschärfende Klingen",
+      "Laden über USB-Kabel"
+    ]
+  },
+  {
+    "id": 99,
+    "name": "Damenrasierer 2-in-1",
+    "slug": "damenrasierer-2in1",
+    "price": 30.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Damenrasierer 2-in-1.jpg",
+    "description": "Elektrischer Rasierer für Frauen mit Trimmer- und Scherkopf für Beine, Achseln und Bikinizone. Wasserdicht nach IPX7.",
+    "sku": "CJTX29896600001",
+    "cjPid": "2077972413068238850",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "damenrasierer",
+      "bikini",
+      "beauty"
+    ],
+    "features": [
+      "Keramik-Trimmerkopf und Scherkopf",
+      "Wasserdicht nach IPX7",
+      "Nass- und Trockenrasur",
+      "Akku, Laden über USB",
+      "Aufsteckkämme dabei"
+    ]
+  },
+  {
+    "id": 100,
+    "name": "Fensterputzroboter mit Sprühfunktion",
+    "slug": "fensterputzroboter-spruehfunktion",
+    "price": 115.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Fensterputzroboter mit Sprühfunktion.jpg",
+    "description": "Fensterputzroboter mit eingebautem Sprühsystem, 5600 Pa Saugkraft und Fernbedienung. Sicherheitsseil und Notakku.",
+    "sku": "CJQX324570001AZ",
+    "cjPid": "2109461063528398850",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "fensterputzroboter",
+      "fenster",
+      "putzen"
+    ],
+    "features": [
+      "Automatisches Sprühsystem",
+      "Saugkraft 5600 Pa",
       "Fernbedienung",
-      "Timer",
-      "USB-Stromversorgung",
-      "Nicht direkt in den Lichtstrahl schauen"
+      "Sicherheitsseil und Notakku (ca. 20 min)",
+      "EU-Stecker, Reinigungstücher dabei"
+    ]
+  },
+  {
+    "id": 101,
+    "name": "Polster- und Teppichreiniger 400 W",
+    "slug": "polster-teppichreiniger-400w",
+    "price": 96.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Polster- und Teppichreiniger 400 W.jpg",
+    "description": "Sprüh-Saug-Reiniger für Sofa, Teppich, Treppe und Autositze. 400 W, 9 kPa, Frischwasser- und Schmutzwassertank.",
+    "sku": "CJFU32889380001",
+    "cjPid": "2112467189881737218",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "polsterreiniger",
+      "teppich",
+      "sofa"
+    ],
+    "features": [
+      "Sprüht und saugt in einem Gang",
+      "400 W, Unterdruck mindestens 9 kPa",
+      "Frischwassertank 1 l, Schmutzwassertank 0,5 l",
+      "5 m Kabel, 1,3 m Schlauch",
+      "Polsterbürste, Fugendüse und Winkelbürste dabei"
+    ]
+  },
+  {
+    "id": 102,
+    "name": "Bluetooth-Audio-Adapter 2-in-1",
+    "slug": "bluetooth-audio-adapter-2in1",
+    "price": 39.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Bluetooth-Audio-Adapter 2-in-1.jpg",
+    "description": "Bluetooth-5.2-Adapter als Empfänger oder Sender: macht alte Lautsprecher, Autoradios oder den Fernseher kabellos.",
+    "sku": "CJSD35152740001",
+    "cjPid": "2114570069535686658",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "bluetooth",
+      "adapter",
+      "auto"
+    ],
+    "features": [
+      "Bluetooth 5.2, Empfänger- und Sendermodus",
+      "Zwei Geräte gleichzeitig",
+      "aptX, aptX HD, aptX LL, AAC, SBC",
+      "3,5-mm-AUX, USB-C",
+      "Ohne App und Treiber"
+    ]
+  },
+  {
+    "id": 103,
+    "name": "Kabelloses Ansteckmikrofon fürs iPhone",
+    "slug": "ansteckmikrofon-iphone",
+    "price": 18.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Kabelloses Ansteckmikrofon fürs iPhone.jpg",
+    "description": "Funk-Ansteckmikrofon mit Lightning-Empfänger: einstecken, einschalten, aufnehmen. Ohne App, Reichweite bis 20 m.",
+    "sku": "CJYP353437801AZ",
+    "cjPid": "2115727603937128450",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "mikrofon",
+      "iphone",
+      "tiktok"
+    ],
+    "features": [
+      "Sender und Empfänger, koppeln automatisch",
+      "2,4-GHz-Funk, bis ca. 20 m",
+      "Rauschunterdrückung, Windschutz",
+      "Empfänger mit Lightning-Stecker",
+      "Nicht für iPhone 15/16 (USB-C)"
+    ]
+  },
+  {
+    "id": 104,
+    "name": "Soundbar 80 W mit Bluetooth",
+    "slug": "soundbar-80w-bluetooth",
+    "price": 63.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Soundbar 80 W mit Bluetooth.jpg",
+    "description": "Kompakte 2.0-Soundbar von VEVOR für Fernseher, Beamer und PC. Bluetooth, AUX und Fernbedienung, 45 cm breit.",
+    "sku": "CJFU27075930001",
+    "cjPid": "2006182605298880514",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "soundbar",
+      "lautsprecher",
+      "fernseher"
+    ],
+    "features": [
+      "2.0-Kanal-Soundbar",
+      "Bluetooth und AUX",
+      "Fernbedienung",
+      "Stehend oder Wandmontage",
+      "Zubehör komplett dabei"
+    ]
+  },
+  {
+    "id": 105,
+    "name": "Magnetische Frontscheiben-Abdeckung",
+    "slug": "frontscheiben-abdeckung-magnetisch",
+    "price": 23.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Magnetische Frontscheiben-Abdeckung.jpg",
+    "description": "Abdeckung für die Windschutzscheibe gegen Eis, Schnee und Sonne. 9 Magnete, Seitenflügel und Spiegelhüllen.",
+    "sku": "CJQC25686320001",
+    "cjPid": "1981648385234214914",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "auto",
+      "winter",
+      "eisschutz"
+    ],
+    "features": [
+      "9 eingenähte Magnete",
+      "Seitenflügel zum Einklemmen in die Türen",
+      "Hüllen für die Außenspiegel mit Reflektorstreifen",
+      "4 Lagen mit Alu-Beschichtung",
+      "Für Kleinwagen bis kleine SUVs"
+    ]
+  },
+  {
+    "id": 106,
+    "name": "Fitnessbänder, 5er-Set",
+    "slug": "fitnessbaender-5er-set",
+    "price": 14.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Fitnessbänder, 5er-Set.jpg",
+    "description": "Fünf Fitnessbänder in fünf Stärken, von extra leicht bis extra schwer. Mit Tasche für unterwegs.",
+    "sku": "CJYD291837401AZ",
+    "cjPid": "2061723970746679297",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "fitness",
+      "fitnessband",
+      "training"
+    ],
+    "features": [
+      "5 Bänder in 5 Widerstandsstufen",
+      "Geschlossene Schlaufen",
+      "Für Einsteiger und Fortgeschrittene",
+      "Für Beine, Po, Rücken, Arme",
+      "Aufbewahrungstasche dabei"
+    ]
+  },
+  {
+    "id": 107,
+    "name": "3D-Holzpuzzle Tischuhr",
+    "slug": "3d-holzpuzzle-tischuhr",
+    "price": 37.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/3D-Holzpuzzle Tischuhr.jpg",
+    "description": "Bausatz aus Holz für eine verzierte Tischuhr. Wird ohne Kleber zusammengesteckt, ab 14 Jahren.",
+    "sku": "CJJM282475201AZ",
+    "cjPid": "2042072527486746626",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "holzpuzzle",
+      "bausatz",
+      "geschenk"
+    ],
+    "features": [
+      "3D-Bausatz aus Holz",
+      "Zusammenstecken ohne Kleber",
+      "Verzierte Tischuhr im Retro-Stil",
+      "Empfohlen ab 14 Jahren",
+      "Marke Music Park, Modell SZ-003"
+    ]
+  },
+  {
+    "id": 108,
+    "name": "3D-Holzpuzzle Dampflok",
+    "slug": "3d-holzpuzzle-dampflok",
+    "price": 36.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/3D-Holzpuzzle Dampflok.jpg",
+    "description": "Bausatz aus Holz für eine Dampflok mit Tender. Wird ohne Kleber zusammengesteckt, ab 14 Jahren.",
+    "sku": "CJJM282480701AZ",
+    "cjPid": "2042079089449422850",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "holzpuzzle",
+      "eisenbahn",
+      "geschenk"
+    ],
+    "features": [
+      "3D-Bausatz aus Holz",
+      "Lok mit Tender",
+      "Zusammenstecken ohne Kleber",
+      "Empfohlen ab 14 Jahren",
+      "Marke Music Park, Modell KWC-001"
+    ]
+  },
+  {
+    "id": 109,
+    "name": "Weihnachtsdorf-Bauset mit LED",
+    "slug": "weihnachtsdorf-bauset-led",
+    "price": 67.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Weihnachtsdorf-Bauset mit LED.jpg",
+    "description": "Bauset aus 2097 Mini-Bausteinen: Lebkuchen-Werkstatt mit Weihnachtsmann, Rentierschlitten, Zug und warmem LED-Licht.",
+    "sku": "CJSD35150430001",
+    "cjPid": "2114562539556241410",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "weihnachten",
+      "bauset",
+      "advent"
+    ],
+    "features": [
+      "2097 Mini-Bausteine (3,6 mm)",
+      "Lebkuchen-Werkstatt, Weihnachtsmann, Rentierschlitten, Zug",
+      "Warmes LED-Licht",
+      "Ab 12 Jahren",
+      "Countdown-Set für die Adventszeit"
+    ]
+  },
+  {
+    "id": 110,
+    "name": "Akku-Schlagbohrschrauber 21 V",
+    "slug": "akku-schlagbohrschrauber-21v",
+    "price": 40.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Akku-Schlagbohrschrauber 21 V.jpg",
+    "description": "Bürstenloser Akku-Schlagbohrschrauber mit 2 Akkus, 32 Nm, 2 Gängen und 30 Teilen Zubehör im Koffer.",
+    "sku": "CJDD295053601AZ",
+    "cjPid": "2069243966507024385",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "akkuschrauber",
+      "bohrmaschine",
+      "werkzeug"
+    ],
+    "features": [
+      "Bürstenloser Motor, max. 32 Nm",
+      "2 Gänge: 0–700 und 0–1500 U/min",
+      "2 × 1,5-Ah-Akku, Ladegerät",
+      "10-mm-Schnellspannfutter, LED-Licht",
+      "30 Zubehörteile und Koffer"
+    ]
+  },
+  {
+    "id": 111,
+    "name": "Akku-Poliermaschine 12 V",
+    "slug": "akku-poliermaschine-12v",
+    "price": 53.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Akku-Poliermaschine 12 V.jpg",
+    "description": "Kabelloser Exzenterpolierer fürs Auto mit 125-mm-Teller, 8 Stufen und Akku. Polierpads dabei.",
+    "sku": "CJSD27849700001",
+    "cjPid": "2031998483746418689",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "poliermaschine",
+      "auto",
+      "autopflege"
+    ],
+    "features": [
+      "Exzenterbewegung, 9 mm Hub",
+      "Teller 125 mm mit Klett",
+      "8 Stufen von 2800 bis 5500 U/min",
+      "12-V-Akku und Ladegerät",
+      "Polier- und Wellenpads dabei"
+    ]
+  },
+  {
+    "id": 112,
+    "name": "Flugscheiben-Werfer mit 10 Scheiben",
+    "slug": "flugscheiben-werfer-spielzeug",
+    "price": 13.99,
+    "category": "Technik/Gadgets",
+    "image": "produkt bilder/Flugscheiben-Werfer mit 10 Scheiben.jpg",
+    "description": "Spielzeug für Stubentiger mit USB-Akku: schießt kleine Propeller-Scheiben durch den Raum. Mit 10 Flugscheiben.",
+    "sku": "CJCT321746601AZ",
+    "cjPid": "2106279496371990530",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "spielzeug",
+      "flugscheiben",
+      "stubentiger"
+    ],
+    "features": [
+      "Wirft Propeller-Scheiben per Knopfdruck",
+      "Eingebauter Akku, Laden über USB",
+      "10 Flugscheiben dabei",
+      "Für Katzen jeden Alters",
+      "Handlich, ca. 13,5 cm"
+    ]
+  },
+  {
+    "id": 113,
+    "name": "LED-Stirnlampe mit Zoom",
+    "slug": "led-stirnlampe-zoom",
+    "price": 19.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/LED-Stirnlampe mit Zoom.jpg",
+    "description": "Stirnlampe mit Zoom-Kopf, 3 Modi (hell, gedimmt, SOS) und eingebautem Akku. Kopf bis 90° neigbar.",
+    "sku": "CJSD255803101AZ",
+    "cjPid": "1978001431875346433",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "stirnlampe",
+      "camping",
+      "taschenlampe"
+    ],
+    "features": [
+      "Q5-LED mit Zoom-Kopf",
+      "3 Modi: hell, gedimmt, SOS",
+      "Kopf bis 90° neigbar",
+      "Verstellbares Kopfband",
+      "Eingebauter Akku, Ladekabel dabei"
+    ]
+  },
+  {
+    "id": 114,
+    "name": "LED-Partylicht mit 8 Strahlern",
+    "slug": "led-partylicht-8-strahler",
+    "price": 53.99,
+    "category": "Beleuchtung",
+    "image": "produkt bilder/LED-Partylicht mit 8 Strahlern.jpg",
+    "description": "Bewegliches Partylicht mit 8 RGBW-LEDs, Musiksteuerung, Automatik und DMX512. 80 W, EU-Stecker.",
+    "sku": "CJSD30177250001",
+    "cjPid": "2082403891470417922",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "3-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "partylicht",
+      "disco",
+      "lichteffekt"
+    ],
+    "features": [
+      "8 LEDs à 10 W in Rot, Grün, Blau, Weiß",
+      "Musik-, Auto-, Master-Slave- und DMX512-Modus",
+      "7 oder 15 DMX-Kanäle",
+      "Stufenlos dimmbar, LCD-Display",
+      "Halterung, EU-Stecker"
+    ]
+  },
+  {
+    "id": 115,
+    "name": "Wachs-Set mit Wachswärmer",
+    "slug": "wachs-set-wachswaermer",
+    "price": 26.99,
+    "category": "Körperpflege/Wellness",
+    "image": "produkt bilder/Wachs-Set mit Wachswärmer.jpg",
+    "description": "Set zur Haarentfernung mit Wachs: 200-ml-Wärmer, 2 × 50 g Wachsperlen, Silikonschale, Spatel. EU-Stecker.",
+    "sku": "CJ1908805818926628866",
+    "cjPid": "1908805818926628866",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "colors": [
+      {
+        "name": "Schwarz",
+        "code": "#1C1C1C",
+        "sku": "CJST234717101AZ",
+        "price": 26.99,
+        "image": "produkt bilder/Wachs-Set mit Wachswärmer bilder/Wachs-Set mit Wachswärmer schwarz.jpg"
+      },
+      {
+        "name": "Pink",
+        "code": "#E0418F",
+        "sku": "CJST234717102BY",
+        "price": 26.99,
+        "image": "produkt bilder/Wachs-Set mit Wachswärmer bilder/Wachs-Set mit Wachswärmer pink.jpg"
+      }
+    ],
+    "showInSlider": true,
+    "tags": [
+      "waxing",
+      "haarentfernung",
+      "beauty"
+    ],
+    "features": [
+      "Wachswärmer 200 ml",
+      "2 Beutel Wachsperlen à 50 g",
+      "Silikonschale und Silikonspatel",
+      "5 Holzspatel fürs Gesicht",
+      "Anleitung, EU-Stecker"
+    ]
+  },
+  {
+    "id": 116,
+    "name": "Ausziehbarer Schrank-Organizer",
+    "slug": "schrank-organizer-ausziehbar",
+    "price": 44.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Ausziehbarer Schrank-Organizer.jpg",
+    "description": "Ausziehbare Schublade für Küchen- oder Badschränke, Breite von 32 bis 52 cm verstellbar. Einbau ohne Bohren.",
+    "sku": "CJCF30547190001",
+    "cjPid": "2087398515266609154",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "organizer",
+      "küchenschrank",
+      "aufbewahrung"
+    ],
+    "features": [
+      "Breite verstellbar von 32 bis 52 cm",
+      "Leise Teleskopschienen",
+      "Aus Karbonstahl",
+      "Montage ohne Bohren",
+      "Für Küche, Bad und Wohnzimmer"
+    ]
+  },
+  {
+    "id": 117,
+    "name": "Teleskop-Duschregal mit 4 Ablagen",
+    "slug": "teleskop-duschregal-4-ablagen",
+    "price": 53.99,
+    "category": "Haushalt und Küche",
+    "image": "produkt bilder/Teleskop-Duschregal mit 4 Ablagen.jpg",
+    "description": "Duschregal mit vier Eckablagen, das zwischen Boden und Decke gespannt wird. Schwarz, ohne Bohren.",
+    "sku": "CJYS30394880001",
+    "cjPid": "2085183758376947713",
+    "lager": "DE",
+    "inStock": true,
+    "shippingTime": "5-8 Werktage",
+    "showInSlider": true,
+    "tags": [
+      "duschregal",
+      "bad",
+      "aufbewahrung"
+    ],
+    "features": [
+      "4 Eckablagen",
+      "Teleskopstange, Boden bis Decke",
+      "Fixierung durch Drehen, ohne Bohren",
+      "Schmale Bauform für Dusche und Wanne",
+      "Schwarze, korrosionsbeständige Oberfläche"
     ]
   }
 ]

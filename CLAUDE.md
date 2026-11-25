@@ -13,11 +13,17 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
 ## 0. Aktueller Stand (2026-11-08)
 
 ### Neu seit November 2026 (zuerst lesen)
-- **Sortiment: 60 Produkte**, davon **50 bei CJ** und 10 mit `ALI`-SKU. **19 Produkte (IDs 52–66 und 68–71)
-  kommen aus dem deutschen CJ-Lager** (Feld `lager: "DE"` in `products.json`, dazu `cjPid`):
-  Versand DE → DE kostenlos, 3–8 Werktage statt 10–20. Die Produkt-IDs 28, 34, 39 und 46 sind
-  entfernt (bei CJ ausgelaufen bzw. doppelt) und leiten per 301 weiter (`ENTFERNTE_PRODUKTE` in
-  `server.js`). **Entfernte IDs nicht neu vergeben.**
+- **Sortiment seit 25.11.2026: 61 Produkte, alle aus dem deutschen CJ-Lager** (Feld `lager: "DE"` in
+  `products.json`, dazu `cjPid`): IDs 52–66, 68–71 und neu 76–117. Versand DE → DE kostenlos, 3–8 Werktage.
+  **Alle 41 China-Produkte sind raus** (IDs 10–27, 29, 31–33, 35–38, 40–45, 47, 48, 50, 51, 67, 72–75,
+  darunter die 10 `ALI`-Produkte). Ihre Adressen leiten per 301 auf den Ersatz oder ein verwandtes Produkt
+  (`ENTFERNTE_PRODUKTE`/`ENTFERNTE_IDS` in `server.js`, Liste auch für 28, 34, 39, 46). **Entfernte IDs nicht
+  neu vergeben.** Seit IDs ab 100 gibt es, haben die Bot-Ordner/Dateinamen eine dreistellige Nummer
+  (`bot/tiktok-video-sync.js`, Muster `\d{2,}`). Die Prüfkette des Bots misst weiter an den echten
+  Untertiteln des alten Wasserspenders: eingefroren in `bot/test-daten/produkt-10-wasserspender.json`.
+  **Lieferländer seit 25.11.: nur DE, FR, IT, ES, IE** (dorthin verschickt CJ DE-Lager-Ware), alle
+  versandkostenfrei. `LIEFERLAENDER` in `shipping-calculator.js`, AGB §3/§5, Versandseite, Kontakt-FAQ und
+  Warenkorb sind angepasst; `test/rechtstexte-kasse.test.js` hält sie gleich.
 - **Preise: ca. 40 % Gewinn auf die Gesamtkosten** (Einkauf × 0,92 €/$, 19 % Einfuhr-USt bzw.
   MwSt., Versand, Klarna 2,99 % + 0,35 €). Formel und alle Zahlen: `excel/Maios Preisanalyse
   2026-06.xlsx` (nicht im Repo) und `excel/Maios Produkte.csv`. Kleinunternehmer § 19 UStG:
@@ -33,7 +39,7 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   die CJ-Links in der CSV ab, bei DE-Produkten zählt nur der DE-Bestand.
 - **Neues Produkt anlegen (Ablauf):** `node cj-bestseller.js` (Kandidaten im DE-Lager suchen) →
   `node cj-neue-produkte.js` (Daten + Bilder nach `Claude outputs/neue-produkte/<pid>/`) →
-  Seite aus `produkte/auto-bildschirm.html` als Vorlage, Galerie über `window.product.galerie`
+  Seite aus `produkte/kabelloses-ladepad.html` als Vorlage, Galerie über `window.product.galerie`
   (keine Einträge mehr in `product-gallery-complete.js` nötig) → `npm run seo` → CSV-Zeile mit
   CJ-Link, `matching.einkaufspreise` in der Marketing-Config, Eintrag in
   `bot/tiktok-quellen.json` (sonst wird der Bot-Test rot) → Seitenzahl in den Tests anpassen.
@@ -41,6 +47,9 @@ Sprache im Repo: Deutsch (Code-Kommentare, UI, Logs). Antworten und Commits auf 
   **Runde 2 (18.11.2026):** IDs 67–75 dazu (5 aus China, 4 aus DE), eingebaut mit
   `Claude outputs/neue-produkte/einbauen-runde2.js` + `spec-runde2.json` (Kopie von `einbauen.js`, setzt
   `lager` nur bei DE-Ware und kennt die Kategorie Beleuchtung).
+  **Runde 3 (25.11.2026):** 42 Produkte (IDs 76–117) aus dem DE-Lager, Daten von den CJ-Produktseiten
+  (`window.productDetailData`), Bilder direkt vom CJ-CDN, gebaut mit einem Generator auf Basis von
+  `produkte/kabelloses-ladepad.html`.
 - **CJ-API nur vom eigenen PC:** Die Zugangsdaten liegen in der lokalen `.env`; Skripte, die CJ
   fragen, laufen im VS-Code-Terminal.
 - **Nicht lieferbar (18.11.):** 57 Schallzahnbürste (bei CJ ausgelistet) und 66 Monitorständer (kein Bestand, kein
@@ -180,6 +189,10 @@ npm run lint                 # ESLint
 npm run seo                  # Strukturdaten + kanonische Adressen in die Seiten schreiben
 npm run test-cj-api          # CJ Dropshipping API-Integration testen
 npm run preischeck           # jedes CJ-Produkt live bei CJ abfragen (Preis, Varianten, Versand)
+npm run spot -- neu 11       # Motion-Spot-Gerüst aus products.json, wechselnde Form (--form entdecken|vorkauf|gruende|duell|mischen|raetsel|suche)
+npm run spot -- neu 11 --ki  # Texte schreibt FreeLLMAPI (Gratis-Modelle) oder Ollama, mit harter Prüfung; Rest bleibt HIER_
+npm run spot -- 11           # Motion-Spot fertig rendern, ohne KI: Prüfung (Preis/Fotos/Platzhalter) → Bild → Musik → Ton → Marketing/videos/geschnitten/
+npm run spot -- 11 --stills  # nur Standbilder + Übersicht · `npm run spot -- liste` zeigt alle Konfigurationen
 node cj-bestseller.js        # Kandidaten für neue Produkte im deutschen CJ-Lager suchen
 node cj-neue-produkte.js     # Daten + Bilder ausgewählter Produkte holen
 node test-retouren-email.js  # Retouren-/Refund-Mail-Flow testen

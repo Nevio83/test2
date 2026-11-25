@@ -6,6 +6,70 @@ tags: [maios, entscheidungen]
 Neueste oben. Je Eintrag: Datum, was entschieden wurde, Link auf die Datei, in der es umgesetzt ist.
 Wird von Claude nach jeder Sitzung mit einer Entscheidung ergänzt (siehe [[CLAUDE#10. Obsidian — Wissensablage (seit 16.11.2026, ersetzt Graphify)|CLAUDE §10]]).
 
+## 2026-11-25
+- **Nur noch Ware aus dem deutschen CJ-Lager** (Nevio: „Ich will die China Produkte nicht mehr im Sortiment“,
+  danach „bau alle ein und die anderen raus und such mehr produkte … ca. 30“). Alle 41 China-/AliExpress-Produkte
+  entfernt, 42 neue aus dem DE-Lager (IDs 76–117) in [[products.json]]: 17 Ersatz für alte Produkte, 25 neu.
+  Preise nach der 40-%-Formel (Einkauf inkl. Versand × 0,92 × 1,19 + Klarna, auf x,99), Holzpuzzles wegen
+  Mindestpreis des Herstellers 36,99 €. Weiterleitungen in [[server.js]] (`ENTFERNTE_PRODUKTE`), Startseite
+  ([[home.js]] Showreel), Lieferzeit-Texte (Startseite, [[infos/versand.html]], [[infos/kontakt.html]]) auf 3–8 Werktage.
+- Bewusst **nicht** aufgenommen: Turbo-Gebläse und Kfz-Batterieladegerät (Bilder zeigen UK-Stecker),
+  Glättbürste (unklar ob elektrisch, 11 Stück Bestand), Gesichtssprüher (sieht aus wie ein Inhalator),
+  Kinder-Zahnbürste (nur spanische Bilder), Walking Pad (Bestand 0), Tablet und Speisenwärmematte (Versand nicht DE→DE).
+- Bot: dreistellige Produktnummern erlaubt, Wasserspender als eingefrorene Testdaten
+  ([[bot/test-daten/produkt-10-wasserspender.json]]).
+- Lieferländer auf DE, FR, IT, ES, IE gekürzt (dorthin liefert CJ DE-Lager-Ware), überall versandkostenfrei: [[shipping-calculator.js]], AGB, [[infos/versand.html]], Warenkorb.
+- OmniRoute wird nicht mehr genutzt, nur noch FreeLLMAPI; der OmniRoute-Rückfall in `Marketing/cgi/spot/spot_ki.mjs` ist raus.
+
+## 2026-11-24
+- **Neues Format „Zerlegt“** nach Nevios Vorbild (@aiagentgeorg, „6 Animations-Stile mit Claude“, Sichtung in
+  [[Marketing/cgi/vorbilder.md]] Runde 7): dunkles Studio, ein Teil springt ab, Zubehör fliegt in eine Reihe mit Nummern,
+  Linien-Etiketten am Gerät, Maßlinien, Endkarte. Vorlage [[Marketing/cgi/spot/zerlegt.html]], Freisteller
+  [[Marketing/cgi/spot/freistellen.py]]. **Bewusst ohne 3D-Modell und ohne KI:** alle Teile sind Freisteller echter Shopfotos,
+  Etiketten nur aus [[products.json]]. Erstes Video: 58 Mini-Massagepistole (DE-Lager, lief noch nie),
+  `58_mini-massagepistole_zerlegt_20261125.mp4`, von Nevio freigegeben für Mi 25.11. 12:00.
+  Format in [[Marketing/VIDEO-HANDBUCH.md]] §4.
+- Gelernt: TikTok liefert manche Videos im Web gar nicht aus (keine Abspieladresse) – dann über die Begleitseite des
+  Creators sichten. Zweiter Prüfer fand: Zubehör, das „aus dem Gerät“ fliegt, behauptet, es werde darin aufbewahrt –
+  Zubehör kommt jetzt von außen ins Bild.
+- **Nevio: „das Video ist richtig gut“** → Zerlegt-Look ist Qualitätsmaßstab. Daraus der **Skill `maios-zerlegt`**
+  (lokal `.claude/skills/maios-zerlegt/`, versioniert [[Marketing/cgi/skill/maios-zerlegt/SKILL.md]] + `maios-zerlegt.skill`
+  fürs Konto). Dafür Vorlage und Freisteller auf die Konfiguration umgestellt (Boxen, Lagen, Etiketten mit Anker oder
+  Rundbild, auch ohne abnehmbares Teil); `freistellen_58.py` ist im allgemeinen `freistellen.py` aufgegangen. Gegenprobe:
+  die 58-Konfiguration ergibt pixelgleiche Freisteller und bis auf JPEG-Rauschen gleiche Bilder. Eingetragen in
+  [[SKILLS-MAIOS.md]].
+- **Zweites Zerlegt-Video mit dem Skill:** 52 Akku-Reinigungsbürste (Nevio: „Ja, 52 bauen“),
+  `52_akku-reinigungsbuerste_zerlegt_20261126.mp4`, von Nevio freigegeben und selbst auf Mi 25.11. 18:00 gelegt
+  (58 läuft am selben Tag um 12:00 – Zahlen beider Zerlegt-Videos vergleichen).
+  Vorlage dafür erweitert (zwei Reihen, Etiketten ohne Nummer, Takt/Einblendzeiten einstellbar, Umbruch langer Namen),
+  Freisteller um `schwelle` und `boden` (Ellipsen-Unterkante gegen Fotoschatten). 58 nach jeder Änderung gegengeprüft:
+  unverändert. Konfiguration [[Marketing/cgi/spot/52_akku-reinigungsbuerste_zerlegt.json]].
+
+## 2026-11-23
+- **CGI/3D wieder erlaubt, als Ausnahme:** Nevio wollte ausdrücklich ein „CGI/3D-Animationsvideo“ nach dem Vorbild der
+  „mit Claude gebauten“ 3D-TikToks (Sichtung in [[Marketing/cgi/vorbilder.md]], Runde 6). Gebaut als neue Vorlage
+  [[Marketing/cgi/spot/haus3d.html]] (three.js, isometrisches Puppenhaus). Das Produkt ist ein 3D-Körper in echter Größe mit
+  dem echten Shopfoto als Vorderseite – kein KI-Bild, keine KI-Rekonstruktion. Erstes Video: 69 WLAN-Repeater (DE-Lager),
+  `69_wlan-repeater-dual-band_3d_20261124.mp4`, von Nevio freigegeben für Di 24.11. 18:00. Format in [[Marketing/VIDEO-HANDBUCH.md]] §4.
+- **three.js installiert** (Nevios Ja): `Marketing/cgi/node_modules` (gitignored) + `package-lock.json`. HyperFrames fehlt in
+  diesem Ordner; `render_spot.mjs` rendert das 3D genauso Bild für Bild, gemessen 0,1 s/Bild auf dem Laptop.
+- **Recherche** „Claude TikTok CGI Produktvideos“ (Bericht in `Marketing/videos/geschnitten/reports/`, gitignored): Blender-MCP
+  und Bild-zu-3D nicht nehmen (Sicherheit, Lizenz – Hunyuan3D schließt die EU aus –, Rechenzeit); echte Fotos + Code-Animation
+  brauchen nach dem Wortlaut der Regeln kein KI-Label; TikTok Shop verbietet „fake 3D“ aus flachen Fotos.
+
+## 2026-11-22
+- **Motion-Spots ohne KI und ohne Claude:** neuer Befehl `npm run spot` ([[Marketing/cgi/spot/spot.mjs]]) über der
+  vorhandenen Vorlage `spot.html`. `neu <ID>` legt ein Gerüst aus [[products.json]] an (Fotos, Name, Preis; Platzhalter
+  `HIER_` für Hook und Nutzen), `<ID>` prüft (Preis = products.json, Fotos vorhanden, keine Platzhalter, Szenen ≤ 4 s) und
+  rendert Bild, Musik, Ton und eine Fassung ohne Musik nach `Marketing/videos/geschnitten/`. Erstes Beispiel:
+  `Marketing/cgi/spot/11_350ml-elektrischer-mixer_spot.json` (9,6 s, −14,3 LUFS, 1,7 MB). Galerie erst ab 5 Fotos.
+- **Mehr Abwechslung:** `npm run spot -- neu` wechselt zwischen 7 Formen, 8 Farbpaletten und je zwei Musikstücken pro Stimmung.
+  Mit `--ki` schreibt eine lokale/kostenlose KI (OmniRoute, sonst Ollama) Hook und Texte ([[Marketing/cgi/spot/spot_ki.mjs]]);
+  geprüft werden Länge, Hook als Aussage, keine Zahlen außerhalb von products.json, kein Preis, keine Werbe-/Gesundheitswörter,
+  keine Doppelungen. Nevio hat das am 22.11. ausdrücklich gewollt (Ausnahme zur Regel „Maios-Videos nur mit Claude“, nur für die Texte).
+- **Lokale KI (Wan2GP, Arena) getestet:** KI-Videos verformen den Mixer (Henkel, Farbe, Sockel), nur Arena B blieb sauber.
+  KI bleibt Baustein, das Produkt im Shop bleibt das echte Foto.
+
 ## 2026-11-18
 - **Preischeck 18.11. (`npm run preischeck`, Ergebnis `Claude outputs/cj-preischeck.json`):** 49/50 ok.
   **57 Schallzahnbürste** ist bei CJ ausgelistet („removed from shelves“), **66 Monitorständer** hat nur noch das

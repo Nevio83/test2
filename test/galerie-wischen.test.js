@@ -137,7 +137,7 @@ class El {
   }
 }
 
-const BASIS = 'https://maiosshop.com/produkte/elektrischer-wasserspender-fuer-schreibtisch.html';
+const BASIS = 'https://maiosshop.com/produkte/kabelloses-ladepad.html';
 
 /** Laedt die Datei in eine Sandbox. `quelle` erlaubt eine veraenderte Fassung fuer Gegenproben. */
 function lade(quelle = QUELLE) {

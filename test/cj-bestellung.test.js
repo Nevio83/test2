@@ -83,14 +83,15 @@ const bestellungMond = () => ({
 // ── 1. Die Farbe ueberlebt den Warenkorb ────────────────────────────────
 
 test('validateCart behaelt die Farbe und loest die SKU aus dem KATALOG auf', () => {
-  const [p] = validateCart([{ id: 50, price: 17.99, quantity: 1, selectedColor: 'Mond', selectedColorSku: 'GEFAELSCHT' }]);
-  assert.equal(p.farbe, 'Mond');
-  assert.equal(p.sku, MOND_SKU, 'die SKU muss aus products.json kommen');
+  // Die Krystall-Ball-Lampe (50) ist seit 25.11.2026 raus; Stichprobe: Schallzahnbuerste in Rot.
+  const [p] = validateCart([{ id: 90, price: 19.99, quantity: 1, selectedColor: 'Rot', selectedColorSku: 'GEFAELSCHT' }]);
+  assert.equal(p.farbe, 'Rot');
+  assert.equal(p.sku, 'CJST253278302BY', 'die SKU muss aus products.json kommen');
   assert.notEqual(p.sku, 'GEFAELSCHT', 'eine vom Browser geschickte SKU darf nicht durchgehen');
 });
 
 test('eine unbekannte Farbe wird zu null statt erfunden', () => {
-  const [p] = validateCart([{ id: 50, price: 17.99, quantity: 1, selectedColor: 'Gibtsnicht' }]);
+  const [p] = validateCart([{ id: 90, price: 19.99, quantity: 1, selectedColor: 'Gibtsnicht' }]);
   assert.equal(p.farbe, null);
 });
 

@@ -14,9 +14,9 @@
   'use strict';
 
   // ── Konfiguration ─────────────────────────────────────────
-  var REEL_IDS = [44, 46, 43, 33, 47];
-  var BEST_ORDER = [46, 37, 47, 43, 33, 50, 27, 18];
-  var DEAL_POOL = [44, 46, 43, 33, 27, 18, 50, 37, 47, 21];
+  var REEL_IDS = [83, 100, 82, 109, 93];
+  var BEST_ORDER = [83, 100, 82, 61, 56, 110, 92, 87];
+  var DEAL_POOL = [83, 100, 82, 109, 93, 61, 56, 91, 92, 114];
   var REEL_SECS = 5;
   // Kennzahlen der Stats-Sektion. Nur, was nachpruefbar stimmt: keine
   // Kundenzahl und keine Durchschnittsbewertung — die standen hier frei
@@ -750,7 +750,7 @@
             '<p class="desc">' + esc(p.description || '') + '</p>' +
             (colors.length ? '<div><div class="var-lbl">' + varLabel + ': <span>' + esc(sel ? sel.name : '') + '</span></div><div class="swatches">' + swatches + '</div></div>' : '') +
             '<div class="shiprow">' +
-              '<span><i class="bi bi-truck"></i> Lieferung: ' + esc(p.shippingTime || '6–13 Werktage') + '</span>' +
+              '<span><i class="bi bi-truck"></i> Lieferung: ' + esc(p.shippingTime || '3–8 Werktage') + '</span>' +
               (soldOut(p) ? '<span class="low">Zurzeit nicht lieferbar</span>' : '') +
             '</div>' +
             '<div class="buyrow">' +

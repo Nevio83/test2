@@ -84,7 +84,7 @@ test('jedes <div> wird genau einmal geschlossen', () => {
 
 test('GEGENPROBE: das überzählige </div> nach dem Preis fällt auf', () => {
   // Baut den Fehler genau so nach, wie er auf allen Seiten stand.
-  const echt = lies('produkte/auto-bildschirm.html');
+  const echt = lies('produkte/kabelloses-ladepad.html');
   const kaputt = echt.replace(
     /(<div class="pp-price-hint">[^\n]*<\/div>\r?\n)/,
     (zeile) => zeile + '            </div>\n'

@@ -140,7 +140,7 @@ test('Gegenprobe Zahlarten: alter Stand und eine Kasse ohne Klarna wären aufgef
 // geliefert wird — nur so fällt auf, wenn ein Text sie trotzdem nennt.
 const LAENDERNAMEN = {
   DE: /Deutschland/, AT: /Österreich/, CH: /Schweiz/, FR: /Frankreich/, IT: /Italien/,
-  ES: /Spanien/, NL: /Niederlande/, BE: /Belgien/, PL: /Polen/,
+  ES: /Spanien/, IE: /Irland/, NL: /Niederlande/, BE: /Belgien/, PL: /Polen/,
   US: /\bUSA\b|Vereinigte(?:n)? Staaten/, GB: /Vereinigte[sn]? Königreich|Großbritannien/,
   CA: /Kanada/, AU: /Australien/, JP: /Japan/, BR: /Brasilien/, MX: /Mexiko/,
   CN: /China/, KR: /Korea/, SG: /Singapur/, NZ: /Neuseeland/, AR: /Argentinien/,
@@ -155,10 +155,9 @@ function optionen(quelle, id) {
   return [...block[0].matchAll(/<option value="([A-Z]{2})"/g)].map((m) => m[1]).sort();
 }
 
-// Polen fehlt im Warenkorb, weil cart.js keine Złoty-Anzeige kennt (die Kasse
-// rechnet für PL in PLN). Polnische Adressen nimmt Stripe trotzdem an. Wer PL
-// im Warenkorb ergänzt, nimmt es hier heraus.
-const NICHT_IM_WARENKORB = ['PL'];
+// Länder, die die Kasse annimmt, der Warenkorb aber nicht anbietet. Seit dem
+// 25.11.2026 (nur noch DE, FR, IT, ES, IE) keins mehr; früher stand hier PL.
+const NICHT_IM_WARENKORB = [];
 
 test('jedes Lieferland hat einen deutschen Namen für die Prüfung', () => {
   for (const l of LIEFERLAENDER) assert.ok(LAENDERNAMEN[l], `Lieferland ${l} fehlt in LAENDERNAMEN`);
@@ -183,7 +182,7 @@ test('Gegenprobe Länder: alte AGB und alter Versandrechner wären aufgefallen',
   assert.notDeepStrictEqual(genannteLaender(altAgb), sortiert(LIEFERLAENDER));
   const altRechner = '<select id="shipCountry"><option value="DE">Deutschland</option>'
     + '<option value="US">USA</option><option value="CA">Kanada</option><option value="MX">Mexiko</option></select>';
-  assert.deepStrictEqual(optionen(altRechner, 'shipCountry').filter((l) => !LIEFERLAENDER.includes(l)), ['CA', 'MX']);
+  assert.deepStrictEqual(optionen(altRechner, 'shipCountry').filter((l) => !LIEFERLAENDER.includes(l)), ['CA', 'MX', 'US']);
 });
 
 // ── Versandkosten ───────────────────────────────────────────────────────────
@@ -227,9 +226,8 @@ test('AGB §3 und Versandseite nennen genau die Versandkosten der Kasse', () => 
 test('Gegenprobe Versandkosten: 4,99 € und eine abweichende Kopie wären aufgefallen', () => {
   assert.deepStrictEqual(betraege('<li>Außerhalb Europas: 4,99€ Versandkosten</li>'), [4.99]);
   assert.deepStrictEqual(betraege('Kostenfrei in Europa, weltweit 12-20€'), [20]);
-  const falsch = "const shippingCosts = { 'DE': 0, 'AT': 0, 'CH': 0, 'FR': 0, 'IT': 0, 'ES': 0, 'NL': 0, "
-    + "'BE': 0, 'GB': 0, 'PL': 0, 'US': 9.00 };";
-  assert.deepStrictEqual(abweichendePreise(preistabelle(falsch)), ['US: 9 statt 12']);
+  const falsch = "const shippingCosts = { 'DE': 0, 'FR': 0, 'IT': 0, 'ES': 0, 'IE': 4.99 };";
+  assert.deepStrictEqual(abweichendePreise(preistabelle(falsch)), ['IE: 4.99 statt 0']);
 });
 
 // ── Lieferzeit ──────────────────────────────────────────────────────────────
@@ -278,7 +276,7 @@ test('AGB und Versandseite nennen keine erfundene Pauschal-Lieferzeit', () => {
 });
 
 test('Gegenprobe Lieferzeit: das alte Datenblatt und die alten Pauschalen wären aufgefallen', () => {
-  const flasche = PRODUKTE.find((p) => Number(p.id) === 13);
+  const flasche = PRODUKTE.find((p) => Number(p.id) === 65);
   assert.deepStrictEqual(falscheLieferzeiten('<div class="pp-spec-value">6-11 Werktage</div>', flasche),
     [`6-11 statt ${spanne(flasche.shippingTime)[0]}`]);
   assert.deepStrictEqual(falscheSpannen('<li>Lieferzeit: 7–13 Werktage</li>'), ['7-13']);

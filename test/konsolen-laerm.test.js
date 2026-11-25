@@ -138,8 +138,8 @@ const SEITEN = [
     .map((d) => 'produkte/' + d)
 ];
 
-test('konsole-daempfer.js ist auf allen 65 betroffenen Seiten das erste <script>', () => {
-  assert.equal(SEITEN.length, 65, 'unerwartete Seitenzahl -- Liste der Produktseiten geändert?');
+test('konsole-daempfer.js ist auf allen 66 betroffenen Seiten das erste <script>', () => {
+  assert.equal(SEITEN.length, 66, 'unerwartete Seitenzahl -- Liste der Produktseiten geändert?');
   for (const rel of SEITEN) {
     const html = fs.readFileSync(path.join(WURZEL, rel), 'utf8');
     const skriptTreffer = [...html.matchAll(/<script\b[^>]*\ssrc="([^"]+)"/g)];

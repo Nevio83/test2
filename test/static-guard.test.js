@@ -100,7 +100,7 @@ test('Frontend-Dateien sind abrufbar', () => {
     '/app.js',
     '/cart.js',
     '/styles.css',
-    '/produkte/led-crystal-lampe.html',
+    '/produkte/kabelloses-ladepad.html',
     '/infos/agb.html',
     '/images/logo.png'
   ];

@@ -6,7 +6,9 @@
 // Wohin geliefert wird. Diese Liste steuert die Laenderauswahl in der
 // Stripe-Kasse UND die Versandangaben in den Strukturdaten fuer Suchmaschinen.
 // Stehen beide getrennt, weicht irgendwann das eine vom anderen ab.
-const LIEFERLAENDER = ['DE', 'AT', 'CH', 'FR', 'IT', 'ES', 'NL', 'BE', 'PL', 'US', 'GB'];
+// Seit 25.11.2026 nur noch die Laender, in die CJ aus dem deutschen Lager
+// liefert (alle Artikel kommen von dort): DE, FR, IT, ES, IE.
+const LIEFERLAENDER = ['DE', 'FR', 'IT', 'ES', 'IE'];
 
 // PAUSCHALE VERSANDKOSTEN (Durchschnitt für alle Produkte)
 // Einfach und funktioniert für 90% der Fälle
@@ -18,6 +20,7 @@ const FLAT_SHIPPING_COSTS = {
   'FR': 0,
   'IT': 0,
   'ES': 0,
+  'IE': 0,
   'NL': 0,
   'BE': 0,
   'GB': 0,

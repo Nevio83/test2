@@ -159,7 +159,7 @@ test('nach einem Fehler darf ein spaeterer Aufruf neu laden', async () => {
 });
 
 test('das Inline-Skript legt an, app.js haengt sich daran — kein zweiter Abruf', async () => {
-  const seite = lies('produkte/elektrischer-wasserspender-fuer-schreibtisch.html');
+  const seite = lies('produkte/kabelloses-ladepad.html');
   const start = seite.indexOf('if (!window.__maiosProdukte) {');
   const ende = seite.indexOf('\n    }', start);
   assert.ok(start > 0 && ende > start, 'Anlegen im Inline-Skript nicht gefunden');

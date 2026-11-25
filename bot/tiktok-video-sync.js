@@ -4691,7 +4691,8 @@ function fremdmaterialAmFalschenOrt(index) {
 const HERKUNFT_MUSTER = /_(\d{10,25}|yt-[A-Za-z0-9_-]{11})\.(mp4|mov|webm|mkv)$/i;
 
 /** Das Schema der eigenen Renderings — und, seit der Umstellung, auch der fremden. */
-const RENDER_MUSTER = /^(\d{2})_(.+?)_(\d+)s_stil-([abc])\.(mp4|mov|webm|mkv)$/i;
+// Seit 25.11.2026 gibt es Produkt-IDs ab 100: die Nummer hat mindestens zwei Stellen.
+const RENDER_MUSTER = /^(\d{2,})_(.+?)_(\d+)s_stil-([abc])\.(mp4|mov|webm|mkv)$/i;
 
 /**
  * Was ein Dateiname ueber seine Herkunft verraet.
@@ -4703,7 +4704,7 @@ function herkunftAusName(name) {
   const roh = String(name || '');
   const mitId = roh.match(HERKUNFT_MUSTER);
   if (mitId) {
-    const nummer = roh.match(/^(\d{2})_/);
+    const nummer = roh.match(/^(\d{2,})_/);
     const youtube = mitId[1].startsWith('yt-');
     return {
       schema: 'mit-video-id',

@@ -116,6 +116,6 @@ test('jede Seite des echten Projekts bekommt ihre Stil-Hashes', () => {
   assert.ok(statistik.stilHashes > 20, 'es müssen Stilblöcke gefunden werden');
 
   // Stichproben: die Seiten mit den meisten Laufzeit-Stylesheets
-  assert.ok(stilIndex.get('/produkte/led-crystal-lampe.html').length >= 5);
+  assert.ok(stilIndex.get('/produkte/kabelloses-ladepad.html').length >= 5);
   assert.ok(stilIndex.get('/cart.html').length >= 3);
 });
