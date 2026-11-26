@@ -15,7 +15,7 @@ Die erste Zeile der Antwort zeigt, welches Modell über welchen Anbieter geantwo
 
 ## 3. Trigger „Free-claude"
 
-### a) Claude Code: in `C:\Users\nevio\.claude\CLAUDE.md` den alten OmniRoute-Abschnitt ersetzen durch:
+### a) Claude Code: in `C:\Users\nevio\.claude\CLAUDE.md` den alten Abschnitt zum Auslagern (ask-free.mjs) ersetzen durch:
 ```
 ## Free-claude (FreeLLMAPI)
 - Schreibt Nevio „Free-claude" (irgendwo in der Nachricht), erledigt Claude alles Auslagerbare über FreeLLMAPI, auch Code:
@@ -52,7 +52,7 @@ await (async () => {
 })()
 ```
 Der Key steht dann in den Projektanweisungen. Das Gateway läuft nur lokal, trotzdem den Key nicht weitergeben.
-Dazu den Satz „Nur wenn Nevio ‚Free-claude' schreibt, wird alles Auslagerbare ausgelagert; sonst nur leichte Aufgaben" ergänzen und alle OmniRoute-Verweise streichen.
+Dazu den Satz „Nur wenn Nevio ‚Free-claude' schreibt, wird alles Auslagerbare ausgelagert; sonst nur leichte Aufgaben" ergänzen und alle alten Gateway-Verweise (Port 20128) streichen.
 
 ## 4. Ranking aktualisieren
 `ranking.json` ist ein Schnappschuss des Katalogs vom 09.11.2026. Ändern sich die Gratis-Limits, sag mir Bescheid, dann rechne ich es neu.

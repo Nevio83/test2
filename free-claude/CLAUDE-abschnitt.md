@@ -10,4 +10,3 @@
 - Aufträge kurz halten (nur nötige Fakten, höchstens ca. 1.000 Zeichen), mehrere Aufgaben in einen Aufruf bündeln.
 - Ergebnis ist Rohmaterial: gegen products.json und die Videoregeln prüfen, Unbelegtes streichen.
 - Meldet das Skript FEHLER: einmal mit gekürztem Auftrag wiederholen, sonst selbst erledigen und in einem Satz sagen, was schiefging.
-- Der alte OmniRoute-Weg (ask-free.mjs, Port 20128) wird nicht mehr benutzt.

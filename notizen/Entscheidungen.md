@@ -6,7 +6,31 @@ tags: [maios, entscheidungen]
 Neueste oben. Je Eintrag: Datum, was entschieden wurde, Link auf die Datei, in der es umgesetzt ist.
 Wird von Claude nach jeder Sitzung mit einer Entscheidung ergänzt (siehe [[CLAUDE#10. Obsidian — Wissensablage (seit 16.11.2026, ersetzt Graphify)|CLAUDE §10]]).
 
+## 2026-11-26
+- **Preisanalyse neu** für alle 61 DE-Produkte: `excel/Maios Preisanalyse 2026-11.xlsx` (nur lokal, Formeln, Annahmen-Blatt). Die Fassung 2026-06 (40 alte Produkte) wird gelöscht.
+- **Alte Produktbilder raus:** Bilder der entfernten China-/AliExpress-Produkte werden aus `produkt bilder/` gelöscht (Skript `alte-bilder-weg.ps1`, behält nur Bilder der 61 Produkte und `ware.png`).
+- **OmniRoute komplett weg**, nur noch FreeLLMAPI: Hinweise in [[SKILLS-MAIOS.md]] und [[free-claude/ANLEITUNG.md]] entfernt; Abschnitt für die Projektanweisungen steht in [[free-claude/PROJEKTANWEISUNG-abschnitt.md]].
+- **Neuer Skill `stimme`** (Nevio: „Bau ein skill der Stimme heißt … nur mit pc … den lokalen voice app vom PC nutzen für stimmen im video“).
+  Erzeugt die Sprecherstimme mit VoiceStudio (MOSS-TTS-Nano, Profil Thorsten CC0, `55f1d935`), läuft nur mit Shell auf dem PC.
+  Neues Skript [[Marketing/cgi/lib/stimme_vs.mjs]] (Node, keine Pakete): spricht direkt mit VoiceStudios MCP-Server
+  (`127.0.0.1:3900`), schreibt je Satz eine WAV, die Gesamt-WAV und Wortzeiten fürs `untertitel`-Feld nach
+  `Marketing/videos/rohmaterial/eigenes/stimme/<video>/`. Bricht ab, wenn OmniVoice gemeldet wird. Gegen einen nachgebauten
+  Server getestet, **gegen das echte VoiceStudio noch nicht** (erster Lauf: `node Marketing/cgi/lib/stimme_vs.mjs pruefen`).
+  Skill: `.claude/skills/stimme/`, versioniert [[Marketing/cgi/skill/stimme/SKILL]], Eintrag in [[SKILLS-MAIOS]].
+
 ## 2026-11-25
+- **MotionForge eingebaut, nicht installiert** (Nevio: „bau das für /maios-video ein so gut es geht und so detailliert es geht“,
+  nach dem TikTok von @jackroberts____, Sichtung [[Marketing/cgi/vorbilder.md]] Runde 8). Durchgesehen: alle 100 Stile, Hooks,
+  Erzählformen, Bewegungsregeln, Prüfung, Kritiker. Übernommen als Maios-Fassung in [[Marketing/cgi/motionforge/README|Marketing/cgi/motionforge/]]
+  (Stilkatalog mit Urteil je Stil, Hooks + eine Tabuliste, Handwerk, Kritiker-Auftrag, MIT-Lizenz). **Bewusst nicht:** Plugin,
+  GSAP, HyperFrames, Playwright, KI-Avatare, Beispieldaten – alles läuft über `render_spot.mjs` ohne neue Pakete.
+- **Zwei neue Vorlagen (Test, noch nicht abgenommen):** „Edel“ [[Marketing/cgi/spot/edel.html]] (Stil `luxury-product`:
+  Produkt taucht aus Schwarz in Lichtkegel, Goldkante, Marcellus) mit 85 Öl-Sprühflasche, und „Katalog“
+  [[Marketing/cgi/spot/katalog.html]] (Stil `catalog-grid`: Kachelwand, Kamera taucht ein, Anhänger mit Name + Preis direkt aus
+  products.json) mit 4 Wichtel-Ideen (55, 71, 113, 85). `freistellen.py` kann jetzt leeres Glas durchsichtig machen (`"glas"`).
+- **Neue Prüfwerkzeuge** in [[Marketing/cgi/pruefung/]]: `text_check.mjs` (Sperrzonen, Überlappung, Schriftgröße, Lesezeit,
+  Hook in Bild 0), `video_check.py` (Datenstrom, Schwarzbild, Blitze, Lautheit, 10 MB, Fassung ohne Musik), `kontaktbogen.py`.
+  Befund am abgenommenen Zerlegt-Video 58: kein großer Hook-Text in Bild 0, Versandzeile 27 px – nicht geändert, Nevio entscheidet.
 - **Nur noch Ware aus dem deutschen CJ-Lager** (Nevio: „Ich will die China Produkte nicht mehr im Sortiment“,
   danach „bau alle ein und die anderen raus und such mehr produkte … ca. 30“). Alle 41 China-/AliExpress-Produkte
   entfernt, 42 neue aus dem DE-Lager (IDs 76–117) in [[products.json]]: 17 Ersatz für alte Produkte, 25 neu.
